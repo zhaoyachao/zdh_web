@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />  
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">  
+        <encoder>  
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg %n</pattern>
+            <charset>UTF-8</charset>  
+        </encoder>  
+    </appender>  
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">  
+        <file>/home/_xyy_/output/SpringBootDemo/logs/stdout.log</file>  
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+            <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->  
+          <fileNamePattern>/home/_xyy_/output/SpringBootDemo/logs/stdout.log.%d{yyyy-MM-dd}.log</fileNamePattern>  
+          <!-- keep 30 days' worth of history -->  
+          <maxHistory>30</maxHistory>  
+      </rollingPolicy>  
+      <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">  
+          <maxFileSize>10MB</maxFileSize>  
+      </triggeringPolicy>  
+      <encoder>  
+          <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+          <charset>UTF-8</charset> <!-- 此处设置字符集 -->  
+        </encoder>  
+    </appender>
+    
+    <logger name="com.zyc.zspringboot.shiro" level="debug" />
+    <logger name="com.zyc.zspringboot.dao"	level="debug"></logger>
+    <logger name="com.zyc.zspringboot.util.SpringLoadInit"	level="debug"></logger>
+    <logger name="com.zyc.zspringboot.netty"	level="debug"></logger>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"></appender-ref> 
+        <appender-ref ref="FILE"></appender-ref>  
+    </root>  
+</configuration>  

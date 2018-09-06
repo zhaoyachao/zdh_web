@@ -1,0 +1,30 @@
+@charset "utf-8";
+
+/* -------------------------------------------------
+ * 公共部分
+ * ------------------------------------------------- */
+
+body{
+	background: #e5e5e5 url(../../assets/images/background.png);
+	width: 100%;
+	overflow-x: hidden;
+	padding: 1rem 10%;
+	padding-bottom: 0;
+	box-sizing: border-box;
+	font-size: .9em;
+
+	.fa{
+		margin-right: .3em;
+	}
+
+	.info-unit{
+		margin-bottom: 1rem;
+		h2{
+			font-weight: 700;
+		}
+		h3{
+			font-weight: 300;
+		}
+		
+	}
+}

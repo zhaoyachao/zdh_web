@@ -1,0 +1,157 @@
+@charset "utf-8";
+
+/* -------------------------------------------------
+ * 主体部分
+ * ------------------------------------------------- */
+
+.container{
+	// 侧边栏
+	.side{
+		position: absolute;
+		width: 20rem;
+		// height: 70rem;
+		background: #fff;
+		border-radius: 5px;
+    	box-shadow: 0 5px 20px #bbb;
+    	box-sizing: border-box;
+    	padding: 1rem;
+    	.me{
+    		text-align: center;
+    		margin-bottom: 2rem;
+    		.portrait{
+    			margin: 0 auto;
+                margin-bottom: 1rem;
+                width: 8rem;
+                height: 8rem;
+                overflow: hidden;
+                position: relative;
+                .loading{
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 8rem;
+                    height: 4rem;
+                    margin: 0 auto;
+                }
+                .loading span{
+                    display: inline-block;
+                    width: 8px;
+                    height: 100%;
+                    border-radius: 4px;
+                    background: lightgreen;
+                    -webkit-animation: load 1s ease infinite;
+                }
+                @-webkit-keyframes load{
+                    0%,100%{
+                        height: 3rem;
+                        margin: .5rem 0;
+                        background: lightblue;
+                    }
+                    50%{
+                        height: 1rem;
+                        margin: 1.5rem 0;
+                        background: lightgreen;
+                    }
+                }
+                @keyframes{
+                    0%,100%{
+                        height: 3rem;
+                        margin: .5rem 0;
+                        background: lightblue;
+                    }
+                    50%{
+                        height: 1rem;
+                        margin: 1.5rem 0;
+                        background: lightgreen;
+                    }
+                }
+                .loading span:nth-child(2){
+                    -webkit-animation-delay:0.2s;
+                }
+                .loading span:nth-child(3){
+                    -webkit-animation-delay:0.4s;
+                }
+                .loading span:nth-child(4){
+                    -webkit-animation-delay:0.6s;
+                }
+                .loading span:nth-child(5){
+                    -webkit-animation-delay:0.8s;
+                }
+    			img{
+                    display: none;
+                    width: 8rem;
+                    height: 8rem;
+                    border-radius: 50%;
+                }
+    		}
+
+    	}
+    	.info-unit{
+    		ul{
+				li{
+	    			label{
+	    				display: inline-block;
+	    				width: 35%;
+	    			}
+	    			span{
+	    				display: inline-block;
+	    				vertical-align: top;
+	    				width: 60%;
+	    			}
+	    		}
+			}
+    	}
+    	
+	}
+
+	// 主体内容
+	.main{
+		position: relative;
+		margin-left: 22rem;
+		background: #fff;
+		border-radius: 5px;
+    	box-shadow: 0 5px 20px #bbb;
+    	box-sizing: border-box;
+    	padding: 1rem;
+    	// height: 75rem;
+    	.info-unit{
+    		h2{
+    			// font-weight: 300;
+    		}
+    		ul{
+    			box-sizing: border-box;
+    			padding-left: 1.2rem;
+    			padding-right: 0.8rem;
+    			li{
+    				margin-bottom: 1rem;
+    				list-style: disc;
+    				h3{
+    					.link{
+    						font-size: .5rem;
+						    border: 1px solid #4db6ac;
+						    padding: 1px 3px;
+						    -webkit-border-radius: 5px;
+						    border-radius: 5px;
+						    margin-left: .5rem;
+    					}
+    					time{
+    						text-align: right;
+    						float: right;
+    					}
+    				}
+    				.info-content{
+						li{
+							list-style: circle;
+							margin: 0;
+						}
+						.fa{
+							font-size: 1em;
+						}
+    				}
+
+    			}
+    		}
+    	}
+	}
+
+}
