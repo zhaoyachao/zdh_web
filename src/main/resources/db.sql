@@ -80,6 +80,15 @@ PRIMARY KEY (TASK_ID)
 );
 
 
+drop TABLE if EXISTS zhd_logs;
+create table zhd_logs(
+etl_task_id VARCHAR(100),
+log_time TIMESTAMP ,
+msg text
+);
+
+
+
 -- quartz
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
