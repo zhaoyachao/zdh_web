@@ -127,6 +127,12 @@
             <artifactId>druid</artifactId>
             <version>1.1.5</version>
         </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.11</version>
+        </dependency>
         <!-- fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -219,6 +225,20 @@
             <artifactId>spring-kafka</artifactId>
             <version>1.0.6.RELEASE</version>
         </dependency>
+
+        <!--httpclient-->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.5</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -266,7 +286,7 @@
                     <dependency>
                         <groupId>mysql</groupId>
                         <artifactId>mysql-connector-java</artifactId>
-                        <version>5.1.45</version>
+                        <version>8.0.11</version>
                     </dependency>
                     <dependency>
                         <groupId>org.mybatis.generator</groupId>
