@@ -16,7 +16,7 @@ import com.zyc.zspringboot.quartz.QuartzManager;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { ZspringbootApplication.class })
 //@ActiveProfiles(resolver = ProfilesResolver.class)
-@ActiveProfiles(value={"pro"})
+@ActiveProfiles(value={"dev"})
 public class QuartzTest {
 
 	@Resource(name = "quartzManager")
