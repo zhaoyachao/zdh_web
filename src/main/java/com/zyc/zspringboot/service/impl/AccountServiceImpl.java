@@ -39,4 +39,14 @@ public class AccountServiceImpl implements AccountService {
 		return findList;
 	}
 
+	@Override
+	public List<User> findByUserName(User user) {
+		return accountDao.findByUserName(user);
+	}
+
+	@Override
+	public int insert(User user) {
+		return accountDao.insert(user);
+	}
+
 }

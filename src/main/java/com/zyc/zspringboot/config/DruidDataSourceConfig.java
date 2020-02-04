@@ -97,6 +97,35 @@ public class DruidDataSourceConfig {
 		return datasource;
 	}
 
+
+	@Bean(name = "dataSource2")
+	public DataSource dataSource2() {
+		// @Primary 注解作用是当程序选择dataSource时选择被注解的这个
+		DruidDataSource datasource = new DruidDataSource();
+		datasource.setUrl("jdbc:mysql://127.0.0.1:3306/quartz?serverTimezone=GMT%2B8&useSSL=false");
+		datasource.setUsername(username);
+		datasource.setPassword(password);
+		datasource.setDriverClassName(driverClassName);
+		datasource.setInitialSize(initialSize);
+		datasource.setMinIdle(minIdle);
+		datasource.setMaxActive(maxActive);
+		datasource.setMaxWait(maxWait);
+		datasource.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+		datasource.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+		datasource.setValidationQuery(validationQuery);
+		datasource.setTestWhileIdle(testWhileIdle);
+		datasource.setTestOnBorrow(testOnBorrow);
+		datasource.setTestOnReturn(testOnReturn);
+		datasource.setPoolPreparedStatements(poolPreparedStatements);
+		try {
+			datasource.setFilters(filters);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return datasource;
+	}
+
 	@Bean
 	public ServletRegistrationBean druidServlet() {
 		ServletRegistrationBean reg = new ServletRegistrationBean();

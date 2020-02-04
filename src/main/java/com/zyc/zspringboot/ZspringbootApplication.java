@@ -25,11 +25,11 @@ public class ZspringbootApplication {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		int week=cal.get(Calendar.DAY_OF_WEEK)-1;//从星期日开始
-		if(week<=5){
-			springApplication.setAdditionalProfiles("pro");
-		}else{
+		//if(week<=5){
+		//	springApplication.setAdditionalProfiles("pro");
+		//}else{
 			springApplication.setAdditionalProfiles("dev");
-		}
+		//}
 		System.out.println("ApplicationRun......run....");
 		springApplication.run(args);
 	}

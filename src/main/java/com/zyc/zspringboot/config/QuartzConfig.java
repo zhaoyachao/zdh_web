@@ -2,6 +2,7 @@ package com.zyc.zspringboot.config;
 
 import java.util.Properties;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.quartz.Scheduler;
@@ -26,14 +27,14 @@ public class QuartzConfig {
 	@Autowired
 	Environment ev;
 
-	@Autowired
-	DataSource dataSource;
+	@Resource(name = "dataSource2")
+	DataSource dataSource2;
 
 	@Bean
 	public SchedulerFactoryBean schedulerFactoryBean(MyJobFactory myJobFactory) {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
 
-		schedulerFactoryBean.setDataSource(dataSource);
+		schedulerFactoryBean.setDataSource(dataSource2);
 		// 使job实例(本文中job实例是MyJobBean)支持spring 容器管理
 		schedulerFactoryBean.setOverwriteExistingJobs(true);
 		schedulerFactoryBean.setJobFactory(myJobFactory);
@@ -87,14 +88,14 @@ public class QuartzConfig {
 		prop.put("org.quartz.jobStore.txIsolationLevelSerializable", "false");
 		prop.put("org.quartz.jobStore.useProperties", "true");
 
-		// prop.put("org.quartz.dataSource.quartzDataSource.driver",
-		// "oracle.jdbc.driver.OracleDriver");
-		// prop.put("org.quartz.dataSource.quartzDataSource.URL",
-		// "jdbc:oracle:thin:@10.31.2.153/orcl");
-		// prop.put("org.quartz.dataSource.quartzDataSource.user", "spcp");
-		// prop.put("org.quartz.dataSource.quartzDataSource.password", "spcp");
-		// prop.put("org.quartz.dataSource.quartzDataSource.maxConnections",
-		// "10");
+		 prop.put("org.quartz.dataSource.quartzDataSource.driver",
+		 "com.mysql.cj.jdbc.Driver");
+		 prop.put("org.quartz.dataSource.quartzDataSource.URL",
+		 "jdbc:mysql://127.0.0.1:3306/quartz?serverTimezone=GMT%2B8");
+		 prop.put("org.quartz.dataSource.quartzDataSource.user", "zyc");
+		 prop.put("org.quartz.dataSource.quartzDataSource.password", "123456");
+		 prop.put("org.quartz.dataSource.quartzDataSource.maxConnections",
+		 "10");
 
 		prop.put("org.quartz.jobStore.dontSetAutoCommitFalse", "false");
 

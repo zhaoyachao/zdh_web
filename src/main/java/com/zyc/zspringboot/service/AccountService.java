@@ -15,4 +15,8 @@ public interface AccountService {
 	public User findByPw(User user);
 	
 	public List<User> findList(User user);
+
+	public List<User> findByUserName(User user);
+
+	public int insert(User user);
 }

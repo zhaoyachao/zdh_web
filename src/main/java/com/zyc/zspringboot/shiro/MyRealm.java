@@ -66,8 +66,8 @@ public class MyRealm extends AuthorizingRealm {
 		String userName = ((MyAuthenticationToken) arg0).getUsername();
 		char[] password = ((MyAuthenticationToken) arg0).getPassword();
 		User user = new User();// 根据用户名密码获取user
-		Object obj = new SimpleHash("md5", new String(password), null, 1);
-		user.setPassword(obj.toString());
+		//Object obj = new SimpleHash("md5", new String(password), null, 1);
+		user.setPassword(new String(password));
 		user.setUserName(userName);
 		user = ((AccountService) SpringContext.getBean("accountService"))
 				.findByPw(user);
@@ -76,7 +76,7 @@ public class MyRealm extends AuthorizingRealm {
 		}
 
 		SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(
-				userName, user.getPassword(), this.getName());
+				user, user.getPassword(), this.getName());
 		return simpleAuthenticationInfo;
 	}
 

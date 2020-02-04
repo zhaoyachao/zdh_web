@@ -128,7 +128,7 @@ public class ShiroConfig {
 		myRealm.setAuthenticationCachingEnabled(true);
 		myRealm.setAuthenticationCacheName("shiro-AuthenticationCache");
 		myRealm.setCacheManager(shiroRedisCacheManager);
-		myRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+		//myRealm.setCredentialsMatcher(hashedCredentialsMatcher());
 		return myRealm;
 	}
 
@@ -223,7 +223,7 @@ public class ShiroConfig {
 		// SecurityUtils.setSecurityManager(defaultWebSecurityManager);
 		ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
 		shiroFilterFactoryBean.setLoginUrl("/login");
-		shiroFilterFactoryBean.setSuccessUrl("/getIndex");
+		shiroFilterFactoryBean.setSuccessUrl("/index");
 		shiroFilterFactoryBean.setUnauthorizedUrl("/login");
 		shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
 		Map<String, Filter> filterMap1 = shiroFilterFactoryBean.getFilters();
@@ -231,10 +231,15 @@ public class ShiroConfig {
 		shiroFilterFactoryBean.setFilters(filterMap1);
 		Map<String, String> filterMap = new LinkedHashMap<String, String>();
 		filterMap.put("/static/**", "anon");
+		filterMap.put("/js/**", "anon");
+		filterMap.put("/css/**", "anon");
 		filterMap.put("/api/**", "anon");
 		filterMap.put("/logout", "anon");
 		filterMap.put("/login", "authc");
+		filterMap.put("/register**", "anon");
+		filterMap.put("/register/**", "anon");
 		filterMap.put("/**", "authc");
+
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
 		return shiroFilterFactoryBean;
 
