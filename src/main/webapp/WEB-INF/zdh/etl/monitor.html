@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 监控首页</title>
+    <meta name="keywords" content="ZDH 监控首页">
+    <meta name="description" content="ZDH 监控首页">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="row  border-bottom white-bg dashboard-header">
+
+
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5 id="current_status">任务状态</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="../html/graph_flot.html#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="../html/graph_flot.html#">选项1</a>
+                                </li>
+                                <li><a href="../html/graph_flot.html#">选项2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="echarts" id="echarts-pie-chart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>历史任务状态</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="../html/graph_flot.html#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="../html/graph_flot.html#">选项1</a>
+                                </li>
+                                <li><a href="../html/graph_flot.html#">选项2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+
+                        <div class="echarts" id="echarts-bar-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>任务状态查询</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+
+                <form role="form" class="form-inline" id="task_logs_form">
+                    <div class="form-group">
+                        <div class="input-group date form_datetime" >
+                            <input id="start_time" name="start_time" class="form-control" type="text" value="" placeholder="开始时间" readonly>
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group date form_datetime" >
+                            <input id="end_time" name="end_time" class="form-control" type="text" value="" placeholder="结束时间" readonly>
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select data-placeholder="状态" class="chosen-select" style="width:110px;" tabindex="2" id="status" name="status">
+                                <option value="">状态</option>
+                                <option value="running" hassubinfo="true">运行中</option>
+                                <option value="finish" hassubinfo="true">成功</option>
+                                <option value="error" hassubinfo="true">失败</option>
+                            </select>
+                        </div>
+                        <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                    </div>
+
+                </form>
+
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                                <button id="remove" type="button" class="btn btn-outline btn-default">
+                                    <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true">
+
+                            </table>
+                        </div>
+                    </div>
+                    <!-- End Example Events -->
+                </div>
+            </div>
+        </div>
+
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>运行中调度任务查询</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+
+                <form role="form" class="form-inline" id="dispatch_task_form">
+
+                    <div class="form-group">
+                        <input id="search2" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                    </div>
+
+                </form>
+
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <table id="exampleTableEvents2" data-height="500" data-mobile-responsive="true">
+
+                            </table>
+                        </div>
+                    </div>
+                    <!-- End Example Events -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- ECharts -->
+    <script src="js/plugins/echarts/echarts-all.js"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+
+    <script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+    <script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+    <!-- Bootstrap table -->
+    <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+    <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="js/plugins/layer/laydate/laydate.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var pieChart = echarts.init(document.getElementById("echarts-pie-chart"));
+            var barChart = echarts.init(document.getElementById("echarts-bar-chart"));
+
+            function requestEcharts(){
+                barChart.showLoading();
+                $.ajax({
+                    type : "post",
+                    url:"/etlEcharts",
+                    data : {},
+                    dataType : "json",
+                    success : function(res) {
+                        var etl_date_datas = new Array();// 声明一个数组
+                        var running_datas = new Array();// 声明一个数组
+                        var error_datas = new Array();// 声明一个数组
+                        var finish_datas = new Array();// 声明一个数组
+                        for (i = 0; i < res.length; i++) {
+                            etl_date_datas.push(res[i].etl_date)
+                            running_datas.push(res[i].running)
+                            error_datas.push(res[i].error)
+                            finish_datas.push(res[i].finish)
+                        }
+
+                        var baroption = {
+                            title : {
+                                text: '调度任务总计'
+                            },
+                            tooltip : {
+                                trigger: 'axis'
+                            },
+                            legend: {
+                                data:['正在执行','已完成','失败']
+                            },
+                            grid:{
+                                x:30,
+                                x2:40,
+                                y2:24
+                            },
+                            calculable : true,
+                            xAxis : [
+                                {
+                                    type : 'category',
+                                    data : etl_date_datas
+                                }
+                            ],
+                            yAxis : [
+                                {
+                                    type : 'value'
+                                }
+                            ],
+                            series : [
+                                {
+                                    name:'正在执行',
+                                    type:'bar',
+                                    data:running_datas
+                                },
+                                {
+                                    name:'已完成',
+                                    type:'bar',
+                                    data:finish_datas
+                                },
+                                {
+                                    name:'失败',
+                                    type:'bar',
+                                    data:error_datas
+                                }
+                            ]
+                        };
+                        barChart.setOption(baroption);
+                        if(etl_date_datas.length>0){
+                            barChart.hideLoading();
+                        }
+                    },
+                    error : function(errorMsg) {
+                        //请求失败时执行该函数
+                        console.info("图表请求数据失败!");
+                        barChart.hideLoading();
+                    }
+                })
+            }
+
+            function requestCurrentEcharts() {
+                pieChart.showLoading();
+                $.get('/etlEchartsCurrent', function(res) {
+
+                    var etl_date_datas = new Array();// 声明一个数组
+                    var running_datas = new Array();// 声明一个数组
+                    var error_datas = new Array();// 声明一个数组
+                    var finish_datas = new Array();// 声明一个数组
+                    for (i = 0; i < res.length; i++) {
+                        etl_date_datas.push(res[i].etl_date)
+                        running_datas.push(res[i].running)
+                        error_datas.push(res[i].error)
+                        finish_datas.push(res[i].finish)
+                    }
+
+                    var pieoption = {
+                        title : {
+                            text: '任务状态分配',
+                            subtext: '调度任务',
+                            x:'center'
+                        },
+                        tooltip : {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        legend: {
+                            orient : 'vertical',
+                            x : 'left',
+                            data:['正在执行','执行成功','失败']
+                        },
+                        calculable : true,
+                        series : [
+                            {
+                                name:'任务状态',
+                                type:'pie',
+                                radius : '55%',
+                                center: ['50%', '60%'],
+                                data:[
+                                    {value:running_datas, name:'正在执行'},
+                                    {value:finish_datas, name:'执行成功'},
+                                    {value:error_datas, name:'失败'}
+                                ]
+                            }
+                        ]
+                    };
+                    pieChart.setOption(pieoption);
+                    pieChart.hideLoading()
+                })
+            }
+
+            requestEcharts()
+            requestCurrentEcharts()
+             setInterval(function () {
+                 requestEcharts()
+                 requestCurrentEcharts
+             },60000)
+
+
+
+            var day2 = new Date();
+            day2.setTime(day2.getTime());
+            var s2 = day2.getFullYear()+"-" + (day2.getMonth()+1) + "-" + day2.getDate();
+            $('#current_status').html(s2+"任务状态")
+
+            function openTabPage(url, title) {
+                var wpd = $(window.parent.document);
+                var mainContent = wpd.find('.J_mainContent');
+                var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
+                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+                pageTabs.find(".J_menuTab.active").removeClass("active");
+                mainContent.find("iframe").css("display", "none");
+                if (thisIframe.length > 0) {	// 选项卡已打开
+                    thisIframe.css("display", "inline");
+                    pageTabs.find(".J_menuTab[data-id='" + url + "']").addClass("active");
+                } else {
+                    var menuItem = wpd.find("a.J_menuItem[href='" + url + "']");
+                    var dataIndex = title == undefined ? menuItem.attr("data-index") : '9999';
+                    var _title = title == undefined ? menuItem.find('.nav-label').text() : title;
+                    var iframe = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + url + '" frameborder="0" data-id="' + url
+                        + '" seamless="" style="display: inline;"></iframe>';
+                    pageTabs.append(
+                        ' <a href="javascript:;" class="J_menuTab active" data-id="' + url + '">' + _title + ' <i class="fa fa-times-circle"></i></a>');
+                    mainContent.append(iframe);
+                    //显示loading提示
+                    var loading = top.layer.load();
+                    mainContent.find('iframe:visible').load(function () {
+                        //iframe加载完成后隐藏loading提示
+                        top.layer.close(loading);
+                    });
+                }
+
+            }
+
+
+            //日期范围限制
+            var start = {
+                elem: '#start_time',
+                format: 'YYYY-MM-DD',
+                min: '2000-01-01',
+                max: '2099-06-16', //最大日期
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    end.min = datas; //开始日选好后，重置结束日的最小日期
+                    end.start = datas //将结束日的初始值设定为开始日
+                }
+            };
+            var end = {
+                elem: '#end_time',
+                format: 'YYYY-MM-DD',
+                min: '2000-01-01',
+                max: '2099-06-16',
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    start.max = datas; //结束日选好后，重置开始日的最大日期
+                }
+            };
+            laydate(start);
+            laydate(end);
+            $("#start_time").val(getCurrentDate())
+            $("#end_time").val(getCurrentDate())
+
+
+            $('#status').chosen();
+
+            function getCurrentDate(){
+                var oDate = new Date(),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay);//最后拼接时间
+                return oTime;
+            };
+
+            function getMyDate(str){
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay) +" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+            //补0操作
+            function getzf(num){
+                if(parseInt(num) < 10){
+                    num = '0'+num;
+                }
+                return num;
+            }
+
+            $('#search').click(function () {
+                $('#exampleTableEvents').bootstrapTable('refresh', {
+                    url: "/task_logs?"+$("#task_logs_form").serialize(),
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json"
+                });
+
+            })
+
+            $('#remove').click(function () {
+
+                var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
+                if (rows.length == 0) {// rows 主要是为了判断是否选中，下面的else内容才是主要
+                    alert("请先选择要删除的记录!");
+                    return;
+                } else {
+                    var ids = new Array();// 声明一个数组
+                    $(rows).each(function() {// 通过获得别选中的来进行遍历
+                        ids.push(this.id);// cid为获得到的整条数据中的一列
+                    });
+                    console.log(ids)
+                    deleteMs(ids)
+                }
+
+            })
+
+            function deleteMs(ids) {
+                $.ajax({
+                    url : "task_logs_delete",
+                    data : "ids=" + ids,
+                    type : "post",
+                    dataType : "json",
+                    success : function(data) {
+                        console.info("success")
+                        $('#exampleTableEvents').bootstrapTable('refresh', {
+                            url: "/task_logs?"+$("#task_logs_form").serialize(),
+                            contentType: "application/json;charset=utf-8",
+                            dataType: "json"
+                        });
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+            }
+
+            window.operateEvents = {
+                'click #log_txt': function (e, value, row, index) {
+                    openTabPage("log_txt.html?id=" + row.job_id+"&start_time="+row.start_time+"&update_time="+row.update_time, "日志")
+                }
+            };
+
+            function operateFormatter(value, row, index) {
+                return [
+                    ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+                    ' <button id="log_txt" name="log_txt" type="button" class="btn btn-outline btn-sm" title="日志">\n' +
+                    '                                        <i class="glyphicon glyphicon-file" aria-hidden="true"></i>\n' +
+                    '                                    </button>'
+                    +
+                    '</div>'
+
+                ].join('');
+
+            }
+
+            $('#exampleTableEvents').bootstrapTable({
+                url: "/task_logs?"+$("#task_logs_form").serialize(),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                search: true,
+                pagination: true,
+                showRefresh: false,
+                showToggle: true,
+                showColumns: true,
+                iconSize: 'outline',
+                toolbar: '#exampleTableEventsToolbar',
+                icons: {
+                    refresh: 'glyphicon-repeat',
+                    toggle: 'glyphicon-list-alt',
+                    columns: 'glyphicon-list'
+                },
+                columns: [{
+                    checkbox: true,
+                    field:'state',
+                    sortable:true
+                }, {
+                    field: 'id',
+                    title: 'ID',
+                    visible:false
+                }, {
+                    field: 'job_id',
+                    title: '任务ID',
+                    sortable:true
+                }, {
+                    field: 'job_context',
+                    title: '任务说明',
+                    sortable:true
+                }, {
+                    field: 'etl_date',
+                    title: '数据处理日期',
+                    sortable:true
+                }, {
+                    field: 'status',
+                    title: '状态',
+                    sortable:true
+                }, {
+                    field: 'process',
+                    title: '进度',
+                    sortable:true,
+                    formatter: function (value,row,index) {
+                        var context="调度任务"
+                        if(value==""){
+                            value=10
+                        }
+                        if(value>15 && value<25){
+                            context="加载数据"
+                        }
+                        if(value > 25 && value<55){
+                            context="转换处理"
+                        }
+                        if(value == 100){
+                            context="采集完成"
+                        }
+                        var class_str="progress-bar progress-bar-success"
+                        if(row.status=="error"){
+                            class_str="progress-bar progress-bar-danger"
+                            context="采集失败"
+                        }
+                        return [
+                            '<small>'+context+value+'%</small>'+
+                           '<div class="progress progress-mini">' +
+                            '<div style="width: '+value+'%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="35" role="progressbar" class="'+class_str+'">' +
+                           '</div>'+
+                           '</div>'
+                        ].join('');
+                    }
+                }, {
+                    field: 'start_time',
+                    title: '任务触发时间',
+                    sortable:true,
+                    formatter: function (value, row, index) {
+                        return getMyDate(value);
+                    }
+                }, {
+                    field: 'update_time',
+                    title: '任务更新时间',
+                    sortable:true,
+                    formatter: function (value, row, index) {
+                        return getMyDate(value);
+                    }
+                }, {
+                    field: 'operate',
+                    title: '日志分析',
+                    events: operateEvents,//给按钮注册事件
+                    align : "center",
+                    valign : "middle",
+                    formatter: operateFormatter //表格中增加按钮
+                }]
+            });
+
+
+            $('#exampleTableEvents2').bootstrapTable({
+                url: "/getScheduleTask",
+                search: true,
+                pagination: true,
+                showRefresh: true,
+                showToggle: true,
+                showColumns: true,
+                iconSize: 'outline',
+                icons: {
+                    refresh: 'glyphicon-repeat',
+                    toggle: 'glyphicon-list-alt',
+                    columns: 'glyphicon-list'
+                },
+                columns: [{
+                    checkbox: true,
+                    field: 'state',
+                    sortable: true
+                }, {
+                    field: 'job_id',
+                    title: 'JOB_ID',
+                    sortable: false
+                }, {
+                    field: 'job_context',
+                    title: '调度说明',
+                    sortable: false
+                }, {
+                    field: 'etl_context',
+                    title: 'ETL任务说明',
+                    sortable: false
+                }
+                ]
+            });
+
+            $('#search2').click(function () {
+                $('#exampleTableEvents2').bootstrapTable('refresh', {
+                    url: "/getScheduleTask",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json"
+                });
+
+            })
+        });
+
+        (function(document, window, $) {
+
+
+
+
+
+        })(document, window, jQuery);
+
+
+    </script>
+</body>
+
+</html>

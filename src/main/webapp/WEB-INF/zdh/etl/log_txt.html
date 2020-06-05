@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>H+ 后台主题UI框架 - Bootstrap Table</title>
+    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台">
+    <meta name="description" content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>日志查询</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div class="row row-lg">
+
+                <form id="form_log" class="form-inline">
+                    <div class="col-sm-2 form-group">
+                        <div class="input-group date form_datetime">
+                            <input id="start_time" name="start_time" class="form-control" type="text" value=""
+                                   placeholder="开始时间" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 form-group">
+                        <div class="input-group date form_datetime">
+                            <input id="end_time" name="end_time" class="form-control" type="text" value=""
+                                   placeholder="结束时间" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2 form-group">
+                        <select class="form-control m-b" data-live-search="true" name="level" id="level">
+                            <option>DEBUG</option>
+                            <option>INFO</option>
+                            <option>ERROR</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="btn_search" name="btn_search" class="btn btn-primary btn-sm"
+                                        οnsubmit='return false'
+                                        type="button">查询
+                                </button>
+                                <button id="btn_del" name="btn_del" class="btn btn-warning btn-sm"
+                                        οnsubmit='return false'
+                                        type="button">删除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+                <br/> <br/>
+
+
+                <div class="col-sm-12">
+                    <textarea id="textarea_logs" name="textarea_logs" class="form-control"
+                              rows="20" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Panel Other -->
+</div>
+
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!--iframe 标签-->
+<script type="text/javascript" src="js/contabs.js"></script>
+
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+
+<script>
+
+
+    $(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();//定义一个全局变量-存储任务ID
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        //日期范围限制
+        var start = {
+            elem: '#start_time',
+            format: 'YYYY-MM-DD hh:mm:ss',
+            min: '2000-01-01 00:00:00',
+            max: '2099-06-16 23:59:59',
+            trigger:'click',
+            istime: true,
+            istoday: false,
+            choose: function (datas) {
+                end.min = datas; //开始日选好后，重置结束日的最小日期
+                end.start = datas //将结束日的初始值设定为开始日
+            }
+        };
+        var end = {
+            elem: '#end_time',
+            format: 'YYYY-MM-DD hh:mm:ss',
+            min: '2000-01-01 00:00:00',
+            max: '2099-06-16 23:59:59',
+            istime: true,
+            istoday: false,
+            choose: function (datas) {
+                start.max = datas; //结束日选好后，重置开始日的最大日期
+            }
+        };
+        laydate(start);
+        laydate(end);
+
+        function getMyDate(str){
+            var oDate = new Date(parseInt(str)),
+                oYear = oDate.getFullYear(),
+                oMonth = oDate.getMonth()+1,
+                oDay = oDate.getDate(),
+                oHour = oDate.getHours(),
+                oMin = oDate.getMinutes(),
+                oSen = oDate.getSeconds(),
+                oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay) +" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+            return oTime;
+        };
+        //补0操作
+        function getzf(num){
+            if(parseInt(num) < 10){
+                num = '0'+num;
+            }
+            return num;
+        }
+
+        if(s.start_time!="" && typeof(s.start_time) != "undefined"){
+            $("#start_time").val(getMyDate(s.start_time))
+        }
+        if(s.update_time!=""&& typeof(s.update_time) != "undefined"){
+            $("#end_time").val(getMyDate(s.update_time))
+        }
+
+        $('#btn_search').click(function () {
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+            $.ajax({
+                type: 'POST',
+                url: "zhd_logs",
+                dataType: 'json',
+                data: $("#form_log").serialize() + "&id=" + s.id,
+                //发送数据前
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#btn_search").attr({disabled: "disabled"});
+                },
+                //成功返回
+                success: function (data) {
+                    $("#btn_search").removeAttr('disabled');
+                    $("#textarea_logs").val(data.logs);
+                    layer.msg("查询完成")
+                    //  layer.close(layer.index)
+                },
+                //处理完成
+                complete: function () {
+                    $("#btn_search").removeAttr('disabled');
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    $("#btn_search").removeAttr('disabled');
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+
+        })
+
+
+        $('#btn_del').click(function () {
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+            $.ajax({
+                type: 'POST',
+                url: "zhd_logs",
+                dataType: 'json',
+                data: $("#form_log").serialize() + "&id=" + s.id+"&del=1",
+                //发送数据前
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#btn_del").attr({disabled: "disabled"});
+                },
+                //成功返回
+                success: function (data) {
+                    $("#btn_del").removeAttr('disabled');
+                    $("#textarea_logs").val(data.logs);
+                    layer.msg("删除完成")
+                    //  layer.close(layer.index)
+                },
+                //处理完成
+                complete: function () {
+                    $("#btn_del").removeAttr('disabled');
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+
+        })
+
+        $('#btn_search').click()
+    });
+
+
+</script>
+
+</body>
+
+</html>

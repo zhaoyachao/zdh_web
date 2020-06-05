@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--360浏览器优先以webkit内核解析-->
+
+
+    <title>ZDH 使用帮助</title>
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-1">
+
+            </div>
+            <div class="col-sm-10">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>使用说明</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="buttons.html#">选项1</a>
+                                </li>
+                                <li><a href="buttons.html#">选项2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <article class="markdown-body entry-content" itemprop="mainContentOfPage">
+
+                            <h1><a id="user-content-bootstrap-search-suggest" class="anchor" href="#bootstrap-search-suggest" aria-hidden="true"><span class="octicon octicon-link"></span></a>创建ETL任务全流程</h1>
+
+
+
+                            <h4>创建数据源</h4>
+
+                            <ol>
+                                <li>进入数据源管理： <code>选择ETL配置>数据源管理</code>
+                                </li>
+                                <li>新增数据源选项： <code>点击数据源管理界面的左上角+号按钮</code>
+                                </li>
+                                <li>数据源参数配置
+                                    <pre>
+    数据源说明：简要说明数据源作用，此说明最好不要重复
+    数据源类型：选择数据源类型 目前支持 JDBC,HDFS,HBASE,HIVE,KAFKA
+    驱动类：当数据源选择JDBC 时 配置驱动程序
+    连接串：数据源选择JDBC,HDFS,HBASE,KAFKA 时填写
+        JDBC: 填写数据库连接的url
+        example:jdbc:mysql://127.0.0.1:3306/mydb?serverTimezone=GMT%2B8&useSSL=false
+        HDFS：填写hadoop 的连接url ，hdfs://ip:port
+        HBASE：填写hbase 对应zookeeper 的连接
+        KAFKA：填写对应zookeeper 的连接
+        MONGODB:填写对应的mongo连接串mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
+        ES: 填写 ip:port 格式
+        HTTP: 填写http://ip:port/[根路径]
+        REDIS: 填写ip:port 格式，如果是redis cluster 模式 填写其中一个ip 和port 即可
+        CASSANDRA:填写ip:port 格式，如果多个ip 则写ip1,ip2,ip3:port 格式，待优化
+        SFTP:填写ip:port 格式
+        KUDU:填写ip:port 格式，如果多个ip 则写ip1,ip2,ip3:port 格式
+        外部上传:需要在用户设置中设置sftp 登陆的用户名密码
+        FLUME:填写ip:port 格式，如果多个ip 则写ip1,ip2,ip3:port 格式
+        外部下载:需要在用户设置中设置sftp 登陆的用户名密码
+
+    用户名：JDBC 数据源 用户名
+    密码：JDBC数据源 密码
+                                </pre>
+                                </li>
+                            </ol>
+
+                            <h4>创建ETL任务</h4>
+
+                            <ol>
+                                <li>进入ETL任务： <code>选择ETL配置>ETL任务</code>
+                                </li>
+                                <li>新增ETL任务选项： <code>点击ETL任务界面的左上角+号按钮</code>
+                                </li>
+                                <li>ETL任务参数配置：
+                                   <pre>
+    1 ETL说明：ETL 任务的的一个简要说明，比如说从数据库mydb:account到mydb:accoun_tmp
+
+    2 输入数据源：选择要读取的数据源
+
+    3 数据源类型：只读模式，选择数据源后会自动填充
+
+    4 其他参数：表示对输入数据源的一些配置，具体如下：
+        JDBC: 暂时没有参数
+        HDFS:
+               sep:分割符,特殊字符需要转义,example:{"sep":"\\|"},{"sep","="}
+               fileType:文件类型,可选择parquet,orc,csv,json...,example {"fileType":"csv"}
+               partitionBy:分区字段,example {"partitionBy":"ETL_DATE"}
+               model:文件写入模式 默认append,overwrite,append,errorifexists,ignore,example {"model":"overwrite"}
+               encoding:文件编码 默认UTF-8,example {"encoding":"gbk"}
+               merge: 合并小文件 手动填写分区个数example {"merge":"50"}
+        HBASE:暂时没有参数
+        HIVE:
+              format:orc,parquet
+              partitionBy:分区字段
+               path:如果存储打算存储外部表 需要指定路径example 外部表t1 path:/dir1/dir2/t1
+               merge: 合并小文件 手动填写分区个数example {"merge":"50"}
+        KAFKA:
+             msgType:消息类型,支持csv,json 2种格式
+             sep:分割符 当消息类型选择csv 时使用
+             groupId:消费者组，默认g1
+        HTTP:
+           sep:分割符，可为空
+           fileType:可选csv,json 默认json
+        
+        REDIS:
+            data_type:写入数据类型，可选，string,hash,list,set,table
+            key.column:当选择写入数据类型为table 时配置此选项可以生成特定规则key
+        CASSANDRA:
+        
+        KUDU:
+            primary_key:创建表的主键字段,如果不输入此参数会创建一个默认字段zdh_auto_md5 作为主键
+            replicas:副本个数
+        SFTP:
+           sep:分割符，可为空
+           fileType:可选csv,json,orc 默认csv
+
+    5 输入表名/文件名：当选择JDBC 数据源时，可以下拉选择对应的表，其他数据源都需要手动输入表名或者文件名,
+        KAFKA 数据源输入对应得topic
+        HTTP数据源输入要查询的路径名
+        REDIS数据源 输入要查询的表名称，key 或者key 表达式
+        CASSANDRA数据源 输入要查询的keyspace.table
+        KUDU 数据源 输入查询的表名
+        MONGODB 数据源 输入查询collection(可以认为是数据库中的表名)
+        HBASE 数据源 输入查询的表名
+        SFTP 数据源 输入相对SFTP服务器的绝对路径
+
+    6 过滤条件：表示对选择的数据过滤条件 直接写sql 表达式 example: name=zyc,如果式hbase数据源只需输入开始的rowkey 和结束的rowkey 通过逗号分割
+
+    7 配置选择的列：如果选的是JDBC 数据源 那么直接点击[获取] 按钮即可，否则只能手动输入列名，多个列名直接通过逗号分割（特殊情况，如果是hbase 数据源 列名格式必须是列族:列名，这种格式）
+    8 配置字段映射：配置好第7步之后点击获取按钮，会自动生成默认的字段映射
+        如果想对字段做操作，比如字段截取，数学运算 都是在此处输入的如下图
+        此处支持的函数运算都是基于标准sql 的 sql 的函数可以通过
+        http://spark.apache.org/docs/2.4.4/api/sql/index.html 网站获取
+
+
+    至此输入数据源参数已经配置完成
+    9 配置字段高级用法
+        (1)新增一列和跑批日期相关 只需 字段表达式写 $zdh_etl_date 即可,日期默认格式yyyy-MM-dd HH:mm:ss
+        (2) to_date($zdh_etl_date)   结果是yyyy-MM-dd 格式
+        参考函数http://spark.apache.org/docs/2.4.4/api/sql/index.html
+
+</pre>
+                                </li>
+                            </ol>
+
+
+
+                            <h4>任务调度</h4>
+
+
+                            <ol>
+                                <li>进入调度ETL管理： <code>选择ETL配置>调度ETL</code>
+                                </li>
+                                <li>新增调度选项： <code>点击调度ETL管理界面的左上角+号按钮</code>
+                                </li>
+                                <li>调度ETL参数配置：
+<pre>
+    1调度说明：简要概述此调度任务
+    2 ETL任务：选择创建好的ETL任务
+    3 任务类型：选择调度任务的类型，现支持SHELL，JDBC,FTP,CLASS 调度
+    4 表达式：表示触发任务的时间段，可以是特定时间间隔，10s,10m,10h ,也支持corn 表达式
+    5 开始时间，结束时间：表示任务执行时间，调度器会记录执行日期，每成功执行一次日期就加一天
+    6 步长:表示下次执行时间 在本次执行时间的距离
+    7 任务执行模式：
+        顺时间执行，日期限制，当执行到结束日期 则停止
+        执行一次
+        重复执行 ，只有次数限制，不做日期限制，任务运行的永远都是设置好的那天
+    8 失败重试次数：设置为-1 表示无限次,失败重试次数
+    9 重置执行次数：当前执行的任务次数设置为0
+    10 任务命令：
+        SHELL 命令 ,如果是SHELL 脚本 ,选中上方的脚本执行
+        JDBC 命令，select * from t1 查询语句
+
+    11 其他参数配置：
+        参数支持日期，select * from t1 where etl_date=zdh.date ，加入当前任务调度日期是2020-02-29此语句会转换成
+        select * from t1 where etl_date=2020-02-29
+
+        日期参数zdh.date => yyyy-MM-dd 模式
+        日期参数zdh.date.nodash=> yyyyMMdd 模式
+
+        当使用JDBC 调度模式时需要配置基本连接串
+            {"zdh.jdbc.url":"jdbc:mysql://127.0.0.1:3306/mydb?serverTimezone=GMT%2B8&useSSL=false",
+            "zdh.jdbc.driver":"com.mysql.cj.jdbc.Driver",
+            "zdh.jdbc.username":"zyc",
+            "zdh.jdbc.password":"123456"}
+</pre>
+                                </li>
+                            </ol>
+
+
+
+
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <script src="js/plugins/suggest/bootstrap-suggest.min.js"></script>
+
+    <script type="text/javascript">
+        var testBsSuggest = $("#test").bsSuggest({
+            url: "js/plugins/suggest/data.json",
+            /*effectiveFields: ["userName", "shortAccount"],
+            searchFields: [ "shortAccount"],
+            effectiveFieldsAlias:{userName: "姓名"},*/
+            idField: "userId",
+            keyField: "userName"
+        }).on('onDataRequestSuccess', function (e, result) {
+            console.log('onDataRequestSuccess: ', result);
+        }).on('onSetSelectValue', function (e, keyword) {
+            console.log('onSetSelectValue: ', keyword);
+        }).on('onUnsetSelectValue', function (e) {
+            console.log("onUnsetSelectValue");
+        });
+        /**
+         * 不显示下拉按钮
+         */
+        var testBsSuggest = $("#testNoBtn").bsSuggest({
+            //url: "/rest/sys/getuserlist?keyword=",
+            url: "js/plugins/suggest/data.json",
+            /*effectiveFields: ["userName", "shortAccount"],
+            searchFields: [ "shortAccount"],
+            effectiveFieldsAlias:{userName: "姓名"},*/
+            showBtn: false,
+            idField: "userId",
+            keyField: "userName"
+        }).on('onDataRequestSuccess', function (e, result) {
+            console.log('onDataRequestSuccess: ', result);
+        }).on('onSetSelectValue', function (e, keyword) {
+            console.log('onSetSelectValue: ', keyword);
+        }).on('onUnsetSelectValue', function (e) {
+            console.log("onUnsetSelectValue");
+        });
+
+        //data 数据中获取
+        var testdataBsSuggest = $("#test_data").bsSuggest({
+            indexId: 2, //data.value 的第几个数据，作为input输入框的内容
+            indexKey: 1, //data.value 的第几个数据，作为input输入框的内容
+            data: {
+                'value': [
+                    {
+                        'id': '0',
+                        'word': 'lzw',
+                        'description': 'http://lzw.me'
+                    },
+                    {
+                        'id': '1',
+                        'word': 'lzwme',
+                        'description': 'http://w.lzw.me'
+                    },
+                    {
+                        'id': '2',
+                        'word': 'meizu',
+                        'description': 'http://www.meizu.com'
+                    },
+                    {
+                        'id': '3',
+                        'word': 'flyme',
+                        'description': 'http://flyme.meizu.com'
+                    }
+   ],
+                'defaults': 'http://lzw.me'
+            }
+        });
+        //百度搜索测试
+        var baiduBsSuggest = $("#baidu").bsSuggest({
+            allowNoKeyword: false, //是否允许无关键字时请求数据
+            multiWord: true, //以分隔符号分割的多关键字支持
+            separator: ",", //多关键字支持时的分隔符，默认为空格
+            getDataMethod: "url", //获取数据的方式，总是从 URL 获取
+            url: 'http://unionsug.baidu.com/su?p=3&t=' + (new Date()).getTime() + '&wd=',
+            /*优先从url ajax 请求 json 帮助数据，注意最后一个参数为关键字请求参数*/
+            jsonp: 'cb',
+            /*如果从 url 获取数据，并且需要跨域，则该参数必须设置*/
+            processData: function (json) { // url 获取数据时，对数据的处理，作为 getData 的回调函数
+                var i, len, data = {
+                    value: []
+                };
+                if (!json || !json.s || json.s.length === 0) {
+                    return false;
+                }
+
+                console.log(json);
+                len = json.s.length;
+
+                jsonStr = "{'value':[";
+                for (i = 0; i < len; i++) {
+                    data.value.push({
+                        word: json.s[i]
+                    });
+                }
+                data.defaults = 'baidu';
+
+                //字符串转化为 js 对象
+                return data;
+            }
+        });
+        //淘宝搜索建议测试
+        var taobaoBsSuggest = $("#taobao").bsSuggest({
+            indexId: 2, //data.value 的第几个数据，作为input输入框的内容
+            indexKey: 1, //data.value 的第几个数据，作为input输入框的内容
+            allowNoKeyword: false, //是否允许无关键字时请求数据
+            multiWord: true, //以分隔符号分割的多关键字支持
+            separator: ",", //多关键字支持时的分隔符，默认为空格
+            getDataMethod: "url", //获取数据的方式，总是从 URL 获取
+            effectiveFieldsAlias: {
+                Id: "序号",
+                Keyword: "关键字",
+                Count: "数量"
+            },
+            showHeader: true,
+            url: 'http://suggest.taobao.com/sug?code=utf-8&extras=1&q=',
+            /*优先从url ajax 请求 json 帮助数据，注意最后一个参数为关键字请求参数*/
+            jsonp: 'callback',
+            /*如果从 url 获取数据，并且需要跨域，则该参数必须设置*/
+            processData: function (json) { // url 获取数据时，对数据的处理，作为 getData 的回调函数
+                var i, len, data = {
+                    value: []
+                };
+
+                if (!json || !json.result || json.result.length == 0) {
+                    return false;
+                }
+
+                console.log(json);
+                len = json.result.length;
+
+                for (i = 0; i < len; i++) {
+                    data.value.push({
+                        "Id": (i + 1),
+                        "Keyword": json.result[i][0],
+                        "Count": json.result[i][1]
+                    });
+                }
+                console.log(data);
+                return data;
+            }
+        });
+
+        $("form").submit(function (e) {
+            return false;
+        });
+    </script>
+</body>
+
+</html>
