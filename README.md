@@ -115,7 +115,8 @@
 
 # 提示
    
-    zdh 分2部分,前端配置+后端数据ETL处理,此部分只包含前端配置,有意者联系1299898281@qq.com
+    zdh 分2部分,前端配置+后端数据ETL处理,此部分只包含前端配置
+    后端数据etl 请参见项目 https://github.com/zhaoyachao/zdh_server.git
    
    
 
