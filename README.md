@@ -91,7 +91,13 @@
     依赖
      1 必须提前安装redis 
 
-# 打包
+# 下载编译好的包
+
+    1 找到项目目录下的release 目录 直接将release 目录拷贝
+    2 到relase的bin 目录下执行start 脚本(启动脚本必须到bin 目录下执行)
+    3 执行编译好的包需要提前安装mysql8,redis
+
+# 源码自定义打包
     
     清理命令 mvn clean
     打包命令 mvn package -Dmaven.test.skip=true
@@ -117,6 +123,8 @@
 # 界面预览   
 
 ![登陆界面](img/login.jpg)
+
+![功能预览](img/index.jpg)
 
 ![数据源界面](img/sources_list.jpg)
 
