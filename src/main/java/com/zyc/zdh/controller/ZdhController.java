@@ -81,6 +81,8 @@ public class ZdhController {
     QualityMapper qualityMapper;
     @Autowired
     SqlTaskMapper sqlTaskMapper;
+    @Autowired
+    MetaDatabaseMapper metaDatabaseMapper;
 
 
     @RequestMapping("/data_sources_index")
@@ -1252,39 +1254,89 @@ public class ZdhController {
         return json.toJSONString();
     }
 
-    @RequestMapping("/show_databases")
+
+    @RequestMapping("/load_meta_databases")
     @ResponseBody
-    public String show_databases() {
+    public String load_meta_databases() {
 
         String url = JobCommon.getZdhUrl(zdhHaInfoMapper);
         try {
             String databases = HttpUtil.postJSON(url + "/show_databases", new JSONObject().toJSONString());
 
-            JSONArray jsa=new JSONArray();
+            List<meta_database_info> meta_database_infos= new ArrayList<meta_database_info>();
+
+            System.out.println("databases:"+databases);
             JSONArray jary=JSON.parseArray(databases);
             for(Object o:jary){
                 JSONObject jo=new JSONObject();
                 String tableNames = HttpUtil.postJSON(url + "/show_tables", "{\"databaseName\":\""+o.toString()+"\"}");
-                jo.put("id",o.toString());
-                jo.put("parent","#");
-                jo.put("text",o.toString());
                 JSONArray tableAry=JSON.parseArray(tableNames);
-                JSONArray tn=new JSONArray();
-                for (Object t:tableAry){
-                    JSONObject jt=new JSONObject();
-                    jt.put("id",o.toString()+"."+t.toString());
-                    jt.put("parent",o.toString());
-                    jt.put("text",t.toString());
-                    jsa.add(jt);
+                meta_database_info meta_database_info_d=new meta_database_info();
+                meta_database_info_d.setOwner(getUser().getId());
+                metaDatabaseMapper.delete(meta_database_info_d);
+                if(tableAry.isEmpty()){
+                    meta_database_info meta_database_info=new meta_database_info();
+                    meta_database_info.setDb_name(o.toString());
+                    meta_database_info.setTb_name("");
+                    meta_database_info.setOwner(getUser().getId());
+                    meta_database_info.setCreate_time(new Timestamp(new Date().getTime()));
+                    metaDatabaseMapper.insert(meta_database_info);
                 }
-               // jo.put("children",tn);
-                jsa.add(jo);
+
+                for (Object t:tableAry){
+                    meta_database_info meta_database_info=new meta_database_info();
+                    meta_database_info.setDb_name(o.toString());
+                    meta_database_info.setTb_name(t.toString());
+                    meta_database_info.setOwner(getUser().getId());
+                    meta_database_info.setCreate_time(new Timestamp(new Date().getTime()));
+                    meta_database_infos.add(meta_database_info);
+                    metaDatabaseMapper.insert(meta_database_info);
+                }
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+
+        return "{}";
+    }
+
+    @RequestMapping("/show_databases")
+    @ResponseBody
+    public String show_databases() {
+        meta_database_info meta_database_info=new meta_database_info();
+        meta_database_info.setOwner(getUser().getId());
+        List<meta_database_info> meta_database_infos= metaDatabaseMapper.select(meta_database_info);
+        try {
+            JSONArray jsa=new JSONArray();
+            Map<String,String> dbMap=new HashMap<>();
+
+            for(meta_database_info o:meta_database_infos){
+                dbMap.put(o.getDb_name(),"");
+                JSONObject jo1=new JSONObject();
+                jo1.put("id",o.getDb_name()+"."+o.getTb_name());
+                jo1.put("parent",o.getDb_name());
+                jo1.put("text",o.getTb_name());
+                jsa.add(jo1);
+                }
+
+            for( Map.Entry<String,String> entry:dbMap.entrySet()){
+                String dbName=entry.getKey();
+                JSONObject jo1=new JSONObject();
+                jo1.put("id",dbName);
+                jo1.put("parent","#");
+                jo1.put("text",dbName);
+                jsa.add(jo1);
             }
 
             return jsa.toJSONString();
 
         } catch (Exception e) {
             e.printStackTrace();
+
         }
 
 

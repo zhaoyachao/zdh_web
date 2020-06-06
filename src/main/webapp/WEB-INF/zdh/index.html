@@ -50,6 +50,7 @@
                                 <li class="divider"></li>-->
                                 <li><a class="J_menuItem" href="user.html">用户中心</a>
                                 <li><a class="J_menuItem" href="file_manager.html">文件服务器</a>
+                                <li><a href="javascript:void(0);" onclick="load_meta_databases()" id="load_meta_databases">同步元数据</a>
                                 <li><a href="logout">安全退出</a>
                                 </li>
                             </ul>
@@ -443,8 +444,6 @@
                 }
             });
 
-
-
             function load_notice() {
 
                 $.ajax({
@@ -507,7 +506,27 @@
 
         })(document, window, jQuery);
 
-
+        function load_meta_databases() {
+            $.ajax({
+                type: 'POST',
+                url: "load_meta_databases",
+                async:false,
+                dataType: 'json',
+                data: '',
+                //成功返回
+                success: function (data) {
+                    layer.msg("更新元信息完成")
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
     </script>
 
 

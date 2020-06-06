@@ -242,7 +242,7 @@ update_time TIMESTAMP,
 owner VARCHAR(100)
 );
 
---2020-05-25 更新
+--2020-05-25 更新;
 alter table etl_task_info add column primary_columns varchar(100);
 alter table etl_task_info add column column_size varchar(100);
 alter table etl_task_info add column rows_range varchar(100);
@@ -262,11 +262,11 @@ create_time TIMESTAMP,
 owner varchar(100)
 );
 
---2020-05-26 更新
+--2020-05-26 更新;
 alter table etl_more_task_info add column drop_tmp_tables varchar(500);
 
 
---2020-05-28 更新
+--2020-05-28 更新;
 drop table if EXISTS sql_task_info;
 create table sql_task_info(
  id bigint not null AUTO_INCREMENT,
@@ -289,6 +289,29 @@ create table sql_task_info(
  update_context varchar(100),
  PRIMARY KEY (id)
 );
+
+--2020-06-06 更新;
+drop table if EXISTS meta_database_info;
+create table meta_database_info(
+ id bigint not null AUTO_INCREMENT,
+ db_name VARCHAR(200),
+ tb_name varchar(100),
+ owner varchar(100),
+ create_time TIMESTAMP ,
+ PRIMARY KEY (id)
+);
+
+drop table if EXISTS meta_table_info;
+create table meta_table_info(
+ tb_id varchar(20),
+ col_name varchar(100),
+ data_type varchar(100),
+ comment varchar(100),
+ owner varchar(100),
+ order varchar(5)
+ create_time TIMESTAMP
+);
+
 
 
 create database if NOT EXISTS quartz;
