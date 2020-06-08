@@ -36,7 +36,7 @@ public class RedisTest {
 	@Autowired
 	private RedisOtherDb redisOtherDb;
 
-	//@Test
+	//@TestA
 	public void redisDb() {
 		Set<String> set = new HashSet<String>();
 		for (int i = 0; i < 100; i++) {
@@ -71,7 +71,7 @@ public class RedisTest {
 		System.out.println(((Map) redisOtherDb.get("map1",1)).size());*/
 	}
 
-	// @Test
+	// @TestA
 	public void redisSet() {
 		Set<String> set = new HashSet<String>();
 		for (int i = 0; i < 100; i++) {
@@ -105,7 +105,7 @@ public class RedisTest {
 		}
 	}
 
-	// @Test
+	// @TestA
 	public void redisTest() {
 		redisUtil.set("abc", "zyc");
 		redisUtil.set("twodb", "twodb", 1);

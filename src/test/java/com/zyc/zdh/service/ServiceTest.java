@@ -35,7 +35,7 @@ public class ServiceTest {
 	@Autowired
 	private AccountService accountService;
 	
-	//@Test
+	//@TestA
 	public void testTransaction(){
 		PlatformTransactionManager a=(PlatformTransactionManager) SpringContext.getBean("txManager");
 		PlatformTransactionManager b=(PlatformTransactionManager) SpringContext.getBean("txManager2");

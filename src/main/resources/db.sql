@@ -315,6 +315,19 @@ create table meta_table_info(
 --2020-06-08 更新;
 alter table quartz_job_info add column job_ids varchar(500);
 
+alter table etl_task_info add column file_type_input varchar(10);
+alter table etl_task_info add column encoding_input varchar(10);
+alter table etl_task_info add column sep_input varchar(10);
+
+alter table etl_task_info add column file_type_output varchar(10);
+alter table etl_task_info add column encoding_output varchar(10);
+alter table etl_task_info add column sep_output varchar(10);
+
+alter table etl_more_task_info add column file_type_output varchar(10);
+alter table etl_more_task_info add column encoding_output varchar(10);
+alter table etl_more_task_info add column sep_output varchar(10);
+
+
 
 
 create database if NOT EXISTS quartz;

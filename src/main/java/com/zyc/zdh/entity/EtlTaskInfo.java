@@ -1,7 +1,9 @@
 package com.zyc.zdh.entity;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -32,6 +34,12 @@ public class EtlTaskInfo {
     private String data_sources_file_columns;
     //输入数据源表字段名
     private String data_sources_table_columns;
+    //文件类型
+    private String file_type_input;
+    //文件编码
+    private String encoding_input;
+    //文件分割符
+    private String sep_input;
     //输入数据源其他参数
     private String data_sources_params_input;
 
@@ -46,6 +54,12 @@ public class EtlTaskInfo {
     private String data_sources_table_name_output;
     //输出数据源文件名
     private String data_sources_file_name_output;
+    //文件类型
+    private String file_type_output;
+    //文件编码
+    private String encoding_output;
+    //文件分割符
+    private String sep_output;
     //输出数据源其他参数
     private String data_sources_params_output;
 
@@ -58,7 +72,7 @@ public class EtlTaskInfo {
     @Transient
     private List<column_data> column_data_list;
 
-    private String  owner;
+    private String owner;
 
     private Timestamp create_time;
 
@@ -180,14 +194,14 @@ public class EtlTaskInfo {
     }
 
     public List<column_data> getColumn_data_list() {
-        if(getColumn_datas()!=null && !getColumn_datas().equals(""))
-        return JSONArray.parseArray(getColumn_datas(),column_data.class);
+        if (getColumn_datas() != null && !getColumn_datas().equals(""))
+            return JSONArray.parseArray(getColumn_datas(), column_data.class);
         else
             return null;
     }
 
     public void setColumn_data_list(List<column_data> column_data_list) {
-        this.column_data_list = JSONArray.parseArray(getColumn_datas(),column_data.class);
+        this.column_data_list = JSONArray.parseArray(getColumn_datas(), column_data.class);
     }
 
 
@@ -326,6 +340,54 @@ public class EtlTaskInfo {
 
     public void setDuplicate_columns(String duplicate_columns) {
         this.duplicate_columns = duplicate_columns;
+    }
+
+    public String getFile_type_input() {
+        return file_type_input;
+    }
+
+    public void setFile_type_input(String file_type_input) {
+        this.file_type_input = file_type_input;
+    }
+
+    public String getEncoding_input() {
+        return encoding_input;
+    }
+
+    public void setEncoding_input(String encoding_input) {
+        this.encoding_input = encoding_input;
+    }
+
+    public String getSep_input() {
+        return sep_input;
+    }
+
+    public void setSep_input(String sep_input) {
+        this.sep_input = sep_input;
+    }
+
+    public String getFile_type_output() {
+        return file_type_output;
+    }
+
+    public void setFile_type_output(String file_type_output) {
+        this.file_type_output = file_type_output;
+    }
+
+    public String getEncoding_output() {
+        return encoding_output;
+    }
+
+    public void setEncoding_output(String encoding_output) {
+        this.encoding_output = encoding_output;
+    }
+
+    public String getSep_output() {
+        return sep_output;
+    }
+
+    public void setSep_output(String sep_output) {
+        this.sep_output = sep_output;
     }
 }
 

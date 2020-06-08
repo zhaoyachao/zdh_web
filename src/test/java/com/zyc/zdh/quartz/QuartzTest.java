@@ -31,7 +31,7 @@ public class QuartzTest {
 	private QuartzJobMapper quartzJobMapper;
 
 
-//	@Test
+//	@TestA
 //	public void testQuartzCreate() {
 //		TaskInfo createTaskInfo = quartzManager.createTaskInfo("任务7", "tb7",
 //				"100s", 0, "测试任务");
