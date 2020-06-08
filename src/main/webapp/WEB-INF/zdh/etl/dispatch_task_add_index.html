@@ -99,33 +99,13 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">起始日期：</label>
+                            <label class="col-sm-2 control-label">起始日期</label>
                             <div class="col-sm-10">
                                 <input placeholder="开始日期" class="form-control layer-date" id="start_time" name="start_time">
                                 <input placeholder="结束日期" class="form-control layer-date" id="end_time" name="end_time">
                             </div>
                         </div>
 
-                        <!--<div class="form-group">-->
-                            <!--<label class="col-sm-2 control-label">开始时间</label>-->
-                            <!--<div class="col-sm-10">-->
-                                <!--<div class="input-group date form_datetime" >-->
-                                    <!--<input id="start_time" name="start_time" class="form-control" type="text" value="" placeholder="开始时间" readonly>-->
-                                    <!--<span class="add-on"><i class="icon-remove"></i></span>-->
-                                    <!--<span class="add-on"><i class="icon-calendar"></i></span>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="form-group">-->
-                            <!--<label class="col-sm-2 control-label">结束时间</label>-->
-                            <!--<div class="col-sm-10">-->
-                                <!--<div class="input-group date form_datetime" >-->
-                                    <!--<input id="end_time" name="end_time" class="form-control" type="text" value="" placeholder="结束时间" readonly>-->
-                                    <!--<span class="add-on"><i class="icon-remove"></i></span>-->
-                                    <!--<span class="add-on"><i class="icon-calendar"></i></span>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                        <!--</div>-->
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">步长</label>
@@ -161,6 +141,16 @@
                                     <label class="no-padding">
                                         <input id="reset_count" name="reset_count" type="checkbox"><i></i> 选择重置</label>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">依赖调度任务</label>
+                            <div class="col-sm-10">
+                                <select id="job_ids" name="job_ids" data-placeholder="选择调度任务"
+                                        multiple class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">选择调度任务</option>
+                                </select>
                             </div>
                         </div>
 
@@ -207,16 +197,6 @@
                             </div>
                         </div>
 
-                        <!--<div class="form-group">-->
-                            <!--<label class="col-sm-2 control-label">上次执行时间</label>-->
-                            <!--<div class="col-sm-10">-->
-                                <!--<div class="input-group date form_datetime" >-->
-                                    <!--<input id="last_time" name="last_time" class="form-control" type="text" value="" placeholder="开始时间" readonly>-->
-                                    <!--<span class="add-on"><i class="icon-remove"></i></span>-->
-                                    <!--<span class="add-on"><i class="icon-calendar"></i></span>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                        <!--</div>-->
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">下次执行时间</label>
@@ -225,16 +205,6 @@
                             </div>
                         </div>
 
-                        <!--<div class="form-group">-->
-                            <!--<label class="col-sm-2 control-label">下次执行时间</label>-->
-                            <!--<div class="col-sm-10">-->
-                                <!--<div class="input-group date form_datetime" >-->
-                                    <!--<input id="next_time" name="next_time" class="form-control" type="text" value="" placeholder="结束时间" readonly>-->
-                                    <!--<span class="add-on"><i class="icon-remove"></i></span>-->
-                                    <!--<span class="add-on"><i class="icon-calendar"></i></span>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                        <!--</div>-->
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">数据处理状态</label>
@@ -445,6 +415,80 @@
                 });
             }
 
+            //初始化依赖调度任务数据
+            function init_job_sources(){
+                $.ajax({
+                    type: 'POST',
+                    url: "dispatch_task_list2",
+                    dataType: 'json',
+                    async: false,
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].job_id + "\" mytype=\"" + data[i].job_id + "\" hassubinfo=\"true\">" + data[i].job_context + "</option>"
+                        }
+                        //ETL单任务下拉框
+                        $('#job_ids').html(str);
+                        $('#job_ids').chosen().on("change", function (evt, params) {
+                            $("#job_ids").trigger("chosen:updated");
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+                $.ajax({
+                    type: 'POST',
+                    url: "data_sources_list",
+                    dataType: 'json',
+                    async: false,
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        }
+                        //输出数据源类型下拉框
+                        $('#data_sources_choose_output').html(str);
+
+                        $('#data_sources_choose_output').chosen().on("change", function (evt, params) {
+                            $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
+                            $("#data_sources_choose_output").trigger("chosen:updated");
+                            if ($('#data_sources_choose_output').find("option:selected").attr("mytype") == 'JDBC') {
+                                init_table_name_output($('#data_sources_choose_output').val());
+
+                                $('#div_data_sources_table_name_output')[0].style.display='block';
+                                $('#div_data_sources_file_name_output')[0].style.display='block';
+                            } else{
+                                $('#div_data_sources_file_name_output')[0].style.display='block';
+                                $('#div_data_sources_table_name_output')[0].style.display='none';
+
+                            }
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+
+
             $('#more_task').chosen().on("change", function (evt, params) {
                 if($("#more_task").val()=="多源ETL"){
                     console.info("选中多源ETL")
@@ -461,6 +505,8 @@
             //启动数据源select 初始化函数
             $('#etl_task_id').chosen();
             init_etl_task_sources();
+
+            init_job_sources();
             //s.id=-1 表示新增,否则表示更新
             if(s.id==-1){
                 $('#update_dispatch_task').hide()
@@ -506,31 +552,6 @@
             laydate(start);
             laydate(end);
 
-//            $("#start_time").datetimepicker({
-//                format: 'yyyy-mm-dd hh:ii:ss',
-//                timepicker: true,
-//                autoclose:true,
-//                minView:0,
-//                pickerPosition: "top-right",
-//                language:"zh-CN", //语言选择中文 注：旧版本 新版方法：$.datetimepicker.setLocale('ch');
-//                yearStart:2000,     //设置最小年份
-//                yearEnd:2050,        //设置最大年份
-//                todayBtn:true,    //关闭选择今天按钮
-//                initalDate:new Date()
-//            });
-//            $("#start_time").val(getCurrentDate())
-//
-//            $("#end_time").datetimepicker({
-//                format: 'yyyy-mm-dd HH:mm:ss',
-//                autoclose:true,
-//                minView:2,
-//                pickerPosition: "top-right",
-//                language:"zh-CN", //语言选择中文 注：旧版本 新版方法：$.datetimepicker.setLocale('ch');
-//                yearStart:2000,     //设置最小年份
-//                yearEnd:2050,        //设置最大年份
-//                todayBtn:true    //关闭选择今天按钮
-//            });
-//            $("#end_time").val(getCurrentDate())
             $('#job_type').chosen();
             $('#job_model').chosen();
             $('#last_status').chosen();
@@ -560,26 +581,6 @@
             };
             laydate(last_time);
             laydate(next_time);
-//            $("#last_time").datetimepicker({
-//                format: 'yyyy-mm-dd HH:mm:ss',
-//                autoclose:true,
-//                minView:2,
-//                pickerPosition: "top-right",
-//                language:"zh-CN", //语言选择中文 注：旧版本 新版方法：$.datetimepicker.setLocale('ch');
-//                yearStart:2000,     //设置最小年份
-//                yearEnd:2050,        //设置最大年份
-//                todayBtn:true   //关闭选择今天按钮
-//            });
-//            $("#next_time").datetimepicker({
-//                format: 'yyyy-mm-dd HH:mm:ss',
-//                autoclose:true,
-//                minView:2,
-//                pickerPosition: "top-right",
-//                language:"zh-CN", //语言选择中文 注：旧版本 新版方法：$.datetimepicker.setLocale('ch');
-//                yearStart:2000,     //设置最小年份
-//                yearEnd:2050,        //设置最大年份
-//                todayBtn:true   //关闭选择今天按钮
-//            });
 
             function getCurrentDate(){
                 var oDate = new Date(),
@@ -680,6 +681,15 @@
                         var plan_count=data[0].plan_count
                         $("#plan_count").val(plan_count);
 
+                        //调度任务依赖
+                        var job_ids=data[0].job_ids
+                        if(job_ids!='' && typeof(job_ids) !="undefined"){
+                            //初始化输入数据源select 组件
+                            $("#job_ids").val(job_ids.split(","));
+                            $("#job_ids").trigger("chosen:updated");
+                        }
+
+                        //是否脚本选择
                         var is_script=data[0].is_script
                         console.info("is_script:"+is_script)
                         if(is_script=="true"){
@@ -698,6 +708,7 @@
                         $("#params").val(params);
 
                         var last_status=data[0].last_status
+                        console.info("last_status:"+last_status)
                         $("#last_status").val(last_status);
                         $("#last_status").trigger("chosen:updated");
 
@@ -856,6 +867,7 @@
         if($('#is_script').is(':checked')){
             script_str="&is_script=true"
         }
+        console.info($("#dispatch_task_add_form").serialize())
         $.ajax({
             type: 'POST',
             url: "dispatch_task_update",

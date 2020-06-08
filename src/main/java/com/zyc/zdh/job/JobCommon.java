@@ -18,10 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class JobCommon {
@@ -51,21 +48,35 @@ public class JobCommon {
     }
 
     /**
-     * @param job            SHELL,JDBC,FTP,CLASS
+     * @param jobType            SHELL,JDBC,FTP,CLASS
      * @param quartzManager2
      * @param quartzJobInfo
      */
-    public static boolean isCount(String job, QuartzManager2 quartzManager2, QuartzJobInfo quartzJobInfo) {
+    public static boolean isCount(String jobType, QuartzManager2 quartzManager2, QuartzJobInfo quartzJobInfo) {
+
+        //判断次数,上次任务完成重置次数
+        if (quartzJobInfo.getLast_status() == null || quartzJobInfo.getLast_status().equals("finish")) {
+            quartzJobInfo.setCount(0);
+        }
+        quartzJobInfo.setCount(quartzJobInfo.getCount() + 1);
+
+        if (quartzJobInfo.getPlan_count().trim().equals("-1")) {
+            logger.info("[" + jobType + "] JOB ,当前任务未设置执行次数限制");
+            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,当前任务未设置执行次数限制");
+        }
+
         if (!quartzJobInfo.getPlan_count().trim().equals("") && !quartzJobInfo.getPlan_count().trim().equals("-1")) {
             //任务有次数限制,满足添加说明这是最后一次任务
             System.out.println(quartzJobInfo.getCount() + "================" + quartzJobInfo.getPlan_count().trim());
             if (quartzJobInfo.getCount() > Long.parseLong(quartzJobInfo.getPlan_count().trim())) {
-                logger.info("[" + job + "] JOB 检测到任务次数超过限制,删除任务并直接返回结束");
+                logger.info("[" + jobType + "] JOB 检测到任务次数超过限制,删除任务并直接返回结束");
+                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB 检测到任务次数超过限制,删除任务并直接返回结束");
                 quartzManager2.deleteTask(quartzJobInfo, "finish");
                 return true;
             }
             if (quartzJobInfo.getCount() == Long.parseLong(quartzJobInfo.getPlan_count().trim())) {
-                logger.info("[" + job + "] JOB ,当前执行的任务是最后一次任务,设置调度任务的状态为[finish]");
+                logger.info("[" + jobType + "] JOB ,当前执行的任务是最后一次任务,设置调度任务的状态为[finish]");
+                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,当前执行的任务是最后一次任务,设置调度任务的状态为[finish]");
                 quartzJobInfo.setStatus("finish");
                 return false;
             }
@@ -578,6 +589,19 @@ public class JobCommon {
         taskLogsMapper.updateByPrimaryKey(taskLogs);
     }
 
+    /**
+     * 更新任务日志,etl_date
+     * @param taskLogs
+     * @param quartzJobInfo
+     * @param taskLogsMapper
+     */
+    public static void updateTaskLogEtlDate(TaskLogs taskLogs,  QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper) {
+        String date = DateUtil.formatTime(quartzJobInfo.getLast_time());
+        taskLogs.setEtl_date(date);
+        taskLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+        updateTaskLog(taskLogs, taskLogsMapper);
+    }
+
 
     public static void updateTaskLog12(String task_logs_id, TaskLogsMapper taskLogsMapper) {
         TaskLogs taskLogs = taskLogsMapper.selectByPrimaryKey(task_logs_id);
@@ -595,6 +619,233 @@ public class JobCommon {
         updateTaskLog(taskLogs, taskLogsMapper);
     }
 
+    /**
+     * 检查任务依赖
+     * @param jobType
+     * @param quartzJobInfo
+     * @param taskLogsMapper
+     */
+    public static boolean checkDep(String jobType,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper){
+        //检查任务依赖
+        String job_ids=quartzJobInfo.getJob_ids();
+        if(job_ids!=null && job_ids.split(",").length>0){
+            for(String dep_job_id:job_ids.split(",")){
+                String etl_date=DateUtil.formatTime(quartzJobInfo.getLast_time());
+                List<TaskLogs> taskLogsList=  taskLogsMapper.selectByIdEtlDate(getUser().getId(),dep_job_id,etl_date);
+                if(taskLogsList==null || taskLogsList.size()<=0){
+                    String msg="["+jobType+"] JOB ,依赖任务"+dep_job_id+",ETL日期"+etl_date+",未完成";
+                    logger.info(msg);
+                    insertLog(quartzJobInfo.getJob_id(), "INFO", msg);
+                    return false;
+                }
+                String msg2="["+jobType+"] JOB ,依赖任务"+dep_job_id+",ETL日期"+etl_date+",已完成";
+                logger.info(msg2);
+                insertLog(quartzJobInfo.getJob_id(), "INFO", msg2);
+            }
+
+        }
+        return true;
+    }
+
+    /**
+     * 检查任务状态,并修改参数(任务执行日期等)
+     * @param jobType
+     * @param quartzJobInfo
+     * @param taskLogsMapper
+     * @param quartzManager2
+     * @return
+     */
+    public static boolean checkStatus(String jobType,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper,QuartzManager2 quartzManager2){
+        //第一次 last_time 为空 赋值start_time
+        if (quartzJobInfo.getLast_time() == null) {
+            quartzJobInfo.setLast_time(quartzJobInfo.getStart_time());
+        }
+
+        //last_status 表示 finish,etl,error
+        //finish 表示成功,etl 表示正在处理,error 表示失败
+        if (quartzJobInfo.getLast_status() != null &&
+                (quartzJobInfo.getLast_status().equals("etl") || quartzJobInfo.getLast_status().equals("dispatch"))) {
+            logger.info("[" + jobType + "] JOB ,当前任务正在处理中");
+            insertLog(quartzJobInfo.getJob_id(), "INFO", "[" + jobType + "] JOB ,当前任务正在处理中");
+            return false;
+        }
+
+
+        //finish 状态 last_time 增加步长
+        if (quartzJobInfo.getLast_status() != null && quartzJobInfo.getLast_status().equals("finish")) {
+            Timestamp last = quartzJobInfo.getLast_time();
+            String step_size = quartzJobInfo.getStep_size();
+            int dateType = Calendar.DAY_OF_MONTH;
+            int num = 1;
+            if (step_size.endsWith("s")) {
+                dateType = Calendar.SECOND;
+                num = Integer.parseInt(step_size.split("s")[0]);
+            }
+            if (step_size.endsWith("m")) {
+                dateType = Calendar.MINUTE;
+                num = Integer.parseInt(step_size.split("m")[0]);
+            }
+            if (step_size.endsWith("h")) {
+                dateType = Calendar.HOUR;
+                num = Integer.parseInt(step_size.split("h")[0]);
+            }
+            if (step_size.endsWith("d")) {
+                dateType = Calendar.DAY_OF_MONTH;
+                num = Integer.parseInt(step_size.split("d")[0]);
+            }
+
+            //finish成功状态 判断last_time 是否超过结束日期,超过，删除任务,更新状态
+            if (DateUtil.add(last, dateType, num).after(quartzJobInfo.getEnd_time())) {
+                logger.info("[" + jobType + "] JOB ,当前任务时间超过结束时间,任务结束");
+                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,当前任务时间超过结束时间,任务结束");
+                quartzJobInfo.setStatus("finish");
+                //删除quartz 任务
+                quartzManager2.deleteTask(quartzJobInfo, "finish");
+
+                return false;
+            }
+
+            if (quartzJobInfo.getStart_time().before(DateUtil.add(last, dateType, num)) ||
+                    quartzJobInfo.getStart_time().equals(DateUtil.add(last, dateType, num))) {
+                logger.info("[" + jobType + "] JOB,上次执行任务成功,计数新的执行日期:" + DateUtil.add(last, dateType, num));
+                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB,上次执行任务成功,计数新的执行日期:" + DateUtil.add(last, dateType, num));
+                quartzJobInfo.setLast_time(DateUtil.add(last, dateType, num));
+                quartzJobInfo.setNext_time(DateUtil.add(quartzJobInfo.getLast_time(), dateType, num));
+            } else {
+                logger.info("[" + jobType + "] JOB,首次执行任务,下次执行日期为起始日期:" + quartzJobInfo.getStart_time());
+                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB,首次执行任务,下次执行日期为起始日期:" + quartzJobInfo.getStart_time());
+            }
+        }
+
+        //error 状态  last_time 不变继续执行
+        if (quartzJobInfo.getLast_status() != null && quartzJobInfo.getLast_status().equals("error")) {
+            logger.info("[" + jobType + "] JOB ,上次任务处理失败,将重新执行,上次日期:" + quartzJobInfo.getLast_time());
+            //插入日志
+            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,上次任务处理失败,将重新执行,上次日期:" + quartzJobInfo.getLast_time());
+        }
+
+        return true;
+
+    }
+
+
+    /**
+     * 时间序列发送etl任务到后台执行
+     * @param jobType
+     * @param task_logs_id
+     * @param exe_status
+     * @param quartzJobInfo
+     * @param taskLogsMapper
+     * @param quartzManager2
+     * @return
+     */
+    public static boolean runTimeSeq(String jobType,String task_logs_id,boolean exe_status,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper,QuartzManager2 quartzManager2){
+        logger.info("[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
+        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
+        exe_status = sendZdh(task_logs_id, "[" + jobType + "]", exe_status, quartzJobInfo);
+
+        if (exe_status) {
+            logger.info("[" + jobType + "] JOB ,执行命令成功");
+            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,执行命令成功");
+
+            if (quartzJobInfo.getEnd_time() == null) {
+                logger.info("[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
+                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
+                quartzJobInfo.setEnd_time(new Timestamp(new Date().getTime()));
+            }
+
+        } else {
+            logger.info("发送ETL任务到zdh处理引擎,存在问题");
+            updateTaskLogError(task_logs_id, "12", taskLogsMapper);
+            quartzJobInfo.setLast_status("error");
+        }
+        return exe_status;
+    }
+
+    /**
+     * 执行一次任务发送etl任务到后台执行
+     * @param jobType
+     * @param task_logs_id
+     * @param exe_status
+     * @param quartzJobInfo
+     * @param taskLogsMapper
+     * @param quartzManager2
+     * @return
+     */
+    public static boolean runOnce(String jobType,String task_logs_id,boolean exe_status,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper,QuartzManager2 quartzManager2){
+        logger.info("[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
+        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
+        exe_status = sendZdh(task_logs_id, "[" + jobType + "]", exe_status, quartzJobInfo);
+
+        if (exe_status) {
+            logger.info("[" + jobType + "] JOB ,执行命令成功");
+            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,执行命令成功");
+
+            if (quartzJobInfo.getEnd_time() == null) {
+                logger.info("[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
+                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
+                quartzJobInfo.setEnd_time(new Timestamp(new Date().getTime()));
+            }
+
+            System.out.println("===================================");
+            quartzJobInfo.setStatus("finish");
+            //delete 里面包含更新
+            quartzManager2.deleteTask(quartzJobInfo, "finish");
+            //插入日志
+            logger.info("[" + jobType + "] JOB ,结束调度任务");
+            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束调度任务");
+
+        } else {
+            //调度完成,拼接任务信息异常
+            updateTaskLogError(task_logs_id, "12", taskLogsMapper);
+            quartzJobInfo.setLast_status("error");
+            //如果执行失败 next_time 时间不变,last_time 不变
+        }
+        return exe_status;
+    }
+
+    /**
+     * 重复执行任务发送etl任务到后台执行
+     * @param jobType
+     * @param task_logs_id
+     * @param exe_status
+     * @param quartzJobInfo
+     * @param taskLogsMapper
+     * @param quartzManager2
+     * @return
+     */
+    public static boolean runRepeat(String jobType,String task_logs_id,boolean exe_status,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper,QuartzManager2 quartzManager2){
+        logger.info("[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
+        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
+        exe_status = sendZdh(task_logs_id, "[" + jobType + "]", exe_status, quartzJobInfo);
+        if (exe_status) {
+            logger.info("[" + jobType + "] JOB ,执行命令成功");
+            insertLog(quartzJobInfo.getJob_id(), "INFO", "[" + jobType + "] JOB ,执行命令成功");
+
+            if (quartzJobInfo.getEnd_time() == null) {
+                logger.info("[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
+                insertLog(quartzJobInfo.getJob_id(), "INFO", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
+                quartzJobInfo.setEnd_time(new Timestamp(new Date().getTime()));
+            }
+        } else {
+            //调度完成,发送任务时异常
+            updateTaskLogError(task_logs_id, "12", taskLogsMapper);
+            quartzJobInfo.setLast_status("error");
+        }
+        return exe_status;
+    }
+
+    public static void jobFail(String jobType,String task_logs_id,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper){
+        logger.info("[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行");
+        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行");
+        //调度时异常
+        updateTaskLogError(task_logs_id, "8", taskLogsMapper);
+        quartzJobInfo.setLast_status("error");
+    }
+
+    public static void resetCount(){
+
+    }
 
     public static User getUser() {
         User user = (User) SecurityUtils.getSubject().getPrincipal();

@@ -312,6 +312,9 @@ create table meta_table_info(
  create_time TIMESTAMP
 );
 
+--2020-06-08 更新;
+alter table quartz_job_info add column job_ids varchar(500);
+
 
 
 create database if NOT EXISTS quartz;

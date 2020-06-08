@@ -48,6 +48,7 @@ public class QuartzJobInfo implements Serializable {
     private String etl_context;
     private String  owner;
     private String is_script;
+    private String job_ids;
 
     public long getCount() {
         return count;
@@ -240,5 +241,13 @@ public class QuartzJobInfo implements Serializable {
 
     public void setIs_script(String is_script) {
         this.is_script = is_script;
+    }
+
+    public String getJob_ids() {
+        return job_ids;
+    }
+
+    public void setJob_ids(String job_ids) {
+        this.job_ids = job_ids;
     }
 }
