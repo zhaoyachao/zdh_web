@@ -94,7 +94,7 @@
 # 下载修改基础配置
 
     打开resources/application-dev.properties
-     1 修改服务器端口默认8080
+     1 修改服务器端口默认8081
      2 修改数据源连接(默认支持mysql8),外部数据库必须引入
      3 修改redis配置
 

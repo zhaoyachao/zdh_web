@@ -308,7 +308,7 @@ create table meta_table_info(
  data_type varchar(100),
  comment varchar(100),
  owner varchar(100),
- order varchar(5)
+ `order` varchar(5),
  create_time TIMESTAMP
 );
 
