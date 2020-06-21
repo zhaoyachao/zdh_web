@@ -222,7 +222,7 @@
     d.inaccurateSelection = false;
 
     // Tracks the maximum line length so that the horizontal scrollbar
-    // can be kept static when scrolling.
+    // can be kept statics when scrolling.
     d.maxLine = null;
     d.maxLineLength = 0;
     d.maxLineChanged = false;

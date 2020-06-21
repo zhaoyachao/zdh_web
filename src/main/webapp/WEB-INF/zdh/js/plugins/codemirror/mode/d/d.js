@@ -200,7 +200,7 @@ CodeMirror.defineMode("d", function(config, parserConfig) {
     keywords: words("abstract alias align asm assert auto break case cast cdouble cent cfloat const continue " +
                     "debug default delegate delete deprecated export extern final finally function goto immutable " +
                     "import inout invariant is lazy macro module new nothrow override package pragma private " +
-                    "protected public pure ref return shared short static super synchronized template this " +
+                    "protected public pure ref return shared short statics super synchronized template this " +
                     "throw typedef typeid typeof volatile __FILE__ __LINE__ __gshared __traits __vector __parameters " +
                     blockKeywords),
     blockKeywords: words(blockKeywords),

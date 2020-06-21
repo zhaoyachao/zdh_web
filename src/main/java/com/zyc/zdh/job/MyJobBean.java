@@ -62,6 +62,10 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 			QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
 			quartzJobInfo = quartzJobMapper2.selectByPrimaryKey(taskId);
 
+			if(quartzJobInfo==null){
+				logger.info("调度任务发现空的任务,任务id"+taskId);
+			}
+
 			if(quartzJobInfo.getJob_type().equals("SHELL")){
 				logger.info("调度任务[SHELL],开始调度");
 				ShellJob.run(quartzJobInfo);

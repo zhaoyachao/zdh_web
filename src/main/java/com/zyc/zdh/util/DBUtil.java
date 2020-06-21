@@ -1,4 +1,6 @@
 package com.zyc.zdh.util;
+import com.zyc.zdh.entity.rdp.TableColumnBean;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -196,6 +198,39 @@ public class DBUtil{
             release(connection, preparedStatement, resultSet);
         }
     }
+
+    public List<TableColumnBean> R5(String driver, String url, String username, String password, String sql, Object ...args) throws Exception{
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = getConnection(driver,url,username,password);
+            preparedStatement = connection.prepareStatement(sql);
+
+            resultSet = preparedStatement.executeQuery();
+
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+            int columnCount=resultSetMetaData.getColumnCount();
+            List<TableColumnBean> result=new ArrayList<TableColumnBean>();
+            for (int i = 1; i <= columnCount; i++) {
+                TableColumnBean tcb=new TableColumnBean();
+                System.out.println(resultSetMetaData.getColumnName(i));
+                tcb.setColumnName(resultSetMetaData.getColumnName(i));
+                tcb.setColumnType( resultSetMetaData.getColumnTypeName(i));
+                tcb.setColumnComments(resultSetMetaData.getColumnLabel(i));
+                tcb.setTableName(resultSetMetaData.getTableName(i));
+                result.add(tcb);
+            }
+            return result;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }finally {
+            release(connection, preparedStatement, resultSet);
+        }
+    }
+
     /**
      * 数据库记录增删改的方法
      * @param sql        字符串，要执行的sql语句  如果其中有变量的话，就用  ‘"+变量+"’

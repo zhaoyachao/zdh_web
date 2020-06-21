@@ -25,7 +25,7 @@ package com.zyc.zdh.shiro;//package com.zyc.springboot.shiro;
 //public class MyShiroFilterFactoryBean extends ShiroFilterFactoryBean {
 //
 //    // 对ShiroFilter来说，需要直接忽略的请求
-//    private static Set<String> ignoreExt;
+//    private statics Set<String> ignoreExt;
 //
 //    private org.apache.shiro.mgt.SecurityManager securityManager2;
 //    

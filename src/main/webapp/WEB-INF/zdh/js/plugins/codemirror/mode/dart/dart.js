@@ -11,7 +11,7 @@
 })(function(CodeMirror) {
   "use strict";
 
-  var keywords = ("this super static final const abstract class extends external factory " +
+  var keywords = ("this super statics final const abstract class extends external factory " +
     "implements get native operator set typedef with enum throw rethrow " +
     "assert break case continue default in return new deferred async await " +
     "try catch finally do else for if switch while import library export " +

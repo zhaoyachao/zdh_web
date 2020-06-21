@@ -75,15 +75,18 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		//registry.addResourceHandler("/**").addResourceLocations("/");
-		registry.addResourceHandler("/register**","/static/**","/css/**","/js/**","/fonts/**","/img/**",
-				"/plugins/**","/zdh_flow/**","/favicon.ico","/etl/js/**","etl/css/**")
+		registry.addResourceHandler("/register**","/statics/**","/css/**","/js/**","/fonts/**","/img/**",
+				"/plugins/**","/zdh_flow/**","/favicon.ico","/etl/js/**","etl/css/**","/statics/**")
 				.addResourceLocations(ev.getProperty("web.path"))
-				.addResourceLocations(
-				"/static/").addResourceLocations(ev.getProperty("web.path")+"css/").addResourceLocations(ev.getProperty("web.path")+"js/")
-				.addResourceLocations(ev.getProperty("web.path")+"fonts/").addResourceLocations(ev.getProperty("web.path")+"img/")
+				.addResourceLocations("/statics/")
+				.addResourceLocations(ev.getProperty("web.path")+"css/")
+				.addResourceLocations(ev.getProperty("web.path")+"js/")
+				.addResourceLocations(ev.getProperty("web.path")+"fonts/")
+				.addResourceLocations(ev.getProperty("web.path")+"img/")
 				.addResourceLocations(ev.getProperty("web.path")+"plugins/")
 				.addResourceLocations(ev.getProperty("web.path")+"zdh_flow/")
-				.addResourceLocations(ev.getProperty("web.path")+"favicon.ico");
+				.addResourceLocations(ev.getProperty("web.path")+"favicon.ico")
+				.addResourceLocations(ev.getProperty("web.path")+"statics/");
 
 	}
 

@@ -98,7 +98,7 @@
         regex: '(?:true|false|yes|no|on|off|null|void|undefined)' + keywordend
       }, {
         token: 'invalid.illegal',
-        regex: '(?:p(?:ackage|r(?:ivate|otected)|ublic)|i(?:mplements|nterface)|enum|static|yield)' + keywordend
+        regex: '(?:p(?:ackage|r(?:ivate|otected)|ublic)|i(?:mplements|nterface)|enum|statics|yield)' + keywordend
       }, {
         token: 'language.support.class',
         regex: '(?:R(?:e(?:gExp|ferenceError)|angeError)|S(?:tring|yntaxError)|E(?:rror|valError)|Array|Boolean|Date|Function|Number|Object|TypeError|URIError)' + keywordend

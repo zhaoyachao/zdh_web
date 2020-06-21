@@ -188,7 +188,7 @@ if ($.fn.dataTable.Api) {
                             });
                     }
 
-                    // Add / remove disabled classes from the static elements
+                    // Add / remove disabled classes from the statics elements
                     if (oPaging.iPage === 0) {
                         $('li:first', an[i]).addClass('disabled');
                     } else {

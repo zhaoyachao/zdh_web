@@ -893,7 +893,7 @@
          * 创建Uploader实例，等同于new Uploader( opts );
          * @method create
          * @class Base
-         * @static
+         * @statics
          * @grammar Base.create( opts ) => Uploader
          */
         Base.create = Uploader.create = function( opts ) {
@@ -2527,7 +2527,7 @@
          * @property {Object} Status
          * @namespace File
          * @class File
-         * @static
+         * @statics
          */
         WUFile.Status = {
             INITED:     'inited',    // 初始状态

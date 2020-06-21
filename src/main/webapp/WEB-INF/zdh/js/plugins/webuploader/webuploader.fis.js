@@ -868,7 +868,7 @@ return (function( root, factory ) {
          * 创建Uploader实例，等同于new Uploader( opts );
          * @method create
          * @class Base
-         * @static
+         * @statics
          * @grammar Base.create( opts ) => Uploader
          */
         Base.create = Uploader.create = function( opts ) {
@@ -2502,7 +2502,7 @@ return (function( root, factory ) {
          * @property {Object} Status
          * @namespace File
          * @class File
-         * @static
+         * @statics
          */
         WUFile.Status = {
             INITED:     'inited',    // 初始状态
@@ -7159,7 +7159,7 @@ return (function( root, factory ) {
          * SparkMD5 OOP implementation.
          *
          * Use this class to perform an incremental md5, otherwise use the
-         * static methods instead.
+         * statics methods instead.
          */
         SparkMD5 = function () {
             // call reset to init the instance
