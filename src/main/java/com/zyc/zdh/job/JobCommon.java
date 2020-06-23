@@ -48,7 +48,7 @@ public class JobCommon {
     }
 
     /**
-     * @param jobType            SHELL,JDBC,FTP,CLASS
+     * @param jobType        SHELL,JDBC,FTP,CLASS
      * @param quartzManager2
      * @param quartzJobInfo
      */
@@ -131,7 +131,7 @@ public class JobCommon {
         if (map != null) {
             logger.info("单源,自定义参数不为空,开始替换:" + quartzJobInfo.getParams());
             //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-            DynamicParams(map, quartzJobInfo, etlTaskInfo,null);
+            DynamicParams(map, quartzJobInfo, etlTaskInfo, null);
         }
 
         //获取数据源信息
@@ -251,7 +251,7 @@ public class JobCommon {
             for (EtlTaskInfo etlTaskInfo : etlTaskInfos) {
                 if (map != null) {
                     logger.info("多源,自定义参数不为空,开始替换:" + quartzJobInfo.getParams());
-                    DynamicParams(map, quartzJobInfo, etlTaskInfo,null);
+                    DynamicParams(map, quartzJobInfo, etlTaskInfo, null);
                 }
 
                 //获取数据源信息
@@ -280,9 +280,9 @@ public class JobCommon {
     }
 
     public static ZdhSqlInfo create_zhdSqlInfo(QuartzJobInfo quartzJobInfo, QuartzJobMapper quartzJobMapper,
-                                         SqlTaskMapper sqlTaskMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) {
+                                               SqlTaskMapper sqlTaskMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) {
 
-        try{
+        try {
             JSONObject json = new JSONObject();
             String date = DateUtil.formatTime(quartzJobInfo.getLast_time());
             json.put("ETL_DATE", date);
@@ -298,18 +298,18 @@ public class JobCommon {
             if (map != null) {
                 logger.info("单源,自定义参数不为空,开始替换:" + quartzJobInfo.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, quartzJobInfo, null,sqlTaskInfo);
+                DynamicParams(map, quartzJobInfo, null, sqlTaskInfo);
             }
 
             //获取数据源信息
             String data_sources_choose_input = sqlTaskInfo.getData_sources_choose_input();
             String data_sources_choose_output = sqlTaskInfo.getData_sources_choose_output();
             DataSourcesInfo dataSourcesInfoInput = new DataSourcesInfo();
-            if(data_sources_choose_input!=null){
-                dataSourcesInfoInput=dataSourcesServiceImpl.selectById(data_sources_choose_input);
+            if (data_sources_choose_input != null) {
+                dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
             }
             DataSourcesInfo dataSourcesInfoOutput = null;
-            if (data_sources_choose_input==null || !data_sources_choose_input.equals(data_sources_choose_output)) {
+            if (data_sources_choose_input == null || !data_sources_choose_input.equals(data_sources_choose_output)) {
                 dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
             } else {
                 dataSourcesInfoOutput = dataSourcesInfoInput;
@@ -350,7 +350,7 @@ public class JobCommon {
 
             return zdhSqlInfo;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
@@ -358,12 +358,11 @@ public class JobCommon {
     }
 
 
-
-    public static void DynamicParams(Map<String, Object> map, QuartzJobInfo quartzJobInfo, EtlTaskInfo etlTaskInfo,SqlTaskInfo sqlTaskInfo) {
+    public static void DynamicParams(Map<String, Object> map, QuartzJobInfo quartzJobInfo, EtlTaskInfo etlTaskInfo, SqlTaskInfo sqlTaskInfo) {
         String date_nodash = DateUtil.formatNodash(quartzJobInfo.getLast_time());
         String date_time = DateUtil.formatTime(quartzJobInfo.getLast_time());
         String date_dt = DateUtil.format(quartzJobInfo.getLast_time());
-        if(etlTaskInfo!=null){
+        if (etlTaskInfo != null) {
             final String filter = etlTaskInfo.getData_sources_filter_input().replace("zdh.date.nodash", date_nodash).
                     replace("zdh.date.time", date_time).
                     replace("zdh.date", date_dt);
@@ -377,7 +376,7 @@ public class JobCommon {
             });
         }
 
-        if(sqlTaskInfo!=null){
+        if (sqlTaskInfo != null) {
             final String etl_sql = sqlTaskInfo.getEtl_sql().replace("zdh.date.nodash", date_nodash).
                     replace("zdh.date.time", date_time).
                     replace("zdh.date", date_dt);
@@ -393,7 +392,6 @@ public class JobCommon {
         }
 
     }
-
 
 
     /**
@@ -428,8 +426,9 @@ public class JobCommon {
         zdhLogs.setLog_time(lon_time);
         zdhLogs.setMsg(msg);
         zdhLogs.setLevel(level.toUpperCase());
-        linkedBlockingDeque.add(zdhLogs);
-        // zdhLogsService.insert(zdhLogs);
+        //linkedBlockingDeque.add(zdhLogs);
+        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+        zdhLogsService.insert(zdhLogs);
     }
 
 
@@ -465,7 +464,7 @@ public class JobCommon {
 
         ZdhMoreInfo zdhMoreInfo = new ZdhMoreInfo();
         ZdhInfo zdhInfo = new ZdhInfo();
-        ZdhSqlInfo zdhSqlInfo=new ZdhSqlInfo();
+        ZdhSqlInfo zdhSqlInfo = new ZdhSqlInfo();
         if (quartzJobInfo.getMore_task().equals("多源ETL")) {
             logger.info("组装多源ETL任务信息");
             zdhMoreInfo = create_more_task_zdhInfo(quartzJobInfo, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
@@ -474,7 +473,7 @@ public class JobCommon {
             zdhInfo = create_zhdInfo(quartzJobInfo, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
         } else {
             logger.info("组装SQL任务信息");
-            zdhSqlInfo=create_zhdSqlInfo(quartzJobInfo,quartzJobMapper,sqlTaskMapper,dataSourcesServiceImpl, zdhNginxMapper);
+            zdhSqlInfo = create_zhdSqlInfo(quartzJobInfo, quartzJobMapper, sqlTaskMapper, dataSourcesServiceImpl, zdhNginxMapper);
 
         }
         TaskLogs taskLogs = taskLogsMapper.selectByPrimaryKey(task_logs_id);
@@ -491,17 +490,17 @@ public class JobCommon {
                 updateTaskLog(taskLogs, taskLogsMapper);
 
                 if (quartzJobInfo.getMore_task().equals("多源ETL")) {
-                    logger.info("[调度平台]:" +url+ "/more,参数:"+ JSON.toJSONString(zdhMoreInfo));
-                    insertLog(zdhMoreInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:" +url+ "/sql,参数:"+ JSON.toJSONString(zdhMoreInfo));
+                    logger.info("[调度平台]:" + url + "/more,参数:" + JSON.toJSONString(zdhMoreInfo));
+                    insertLog(zdhMoreInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:" + url + "/sql,参数:" + JSON.toJSONString(zdhMoreInfo));
                     HttpUtil.postJSON(url + "/more", JSON.toJSONString(zdhMoreInfo));
-                } else if (quartzJobInfo.getMore_task().equals("单源ETL")){
-                    logger.info("[调度平台]:" +url+"参数:"+ JSON.toJSONString(zdhInfo));
-                    insertLog(zdhInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:" +url+ "/sql,参数:"+ JSON.toJSONString(zdhInfo));
+                } else if (quartzJobInfo.getMore_task().equals("单源ETL")) {
+                    logger.info("[调度平台]:" + url + "参数:" + JSON.toJSONString(zdhInfo));
+                    insertLog(zdhInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:" + url + "/sql,参数:" + JSON.toJSONString(zdhInfo));
                     HttpUtil.postJSON(url, JSON.toJSONString(zdhInfo));
-                }else{
-                    logger.info("[调度平台]:" +url+ "/sql,参数:"+ JSON.toJSONString(zdhSqlInfo));
-                    insertLog(zdhSqlInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:" +url+ "/sql,参数:"+ JSON.toJSONString(zdhSqlInfo));
-                    HttpUtil.postJSON(url+ "/sql", JSON.toJSONString(zdhSqlInfo));
+                } else {
+                    logger.info("[调度平台]:" + url + "/sql,参数:" + JSON.toJSONString(zdhSqlInfo));
+                    insertLog(zdhSqlInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:" + url + "/sql,参数:" + JSON.toJSONString(zdhSqlInfo));
+                    HttpUtil.postJSON(url + "/sql", JSON.toJSONString(zdhSqlInfo));
                 }
                 logger.info(model_log + " JOB ,更新调度任务状态为etl");
                 quartzJobInfo.setLast_status("etl");
@@ -591,11 +590,12 @@ public class JobCommon {
 
     /**
      * 更新任务日志,etl_date
+     *
      * @param taskLogs
      * @param quartzJobInfo
      * @param taskLogsMapper
      */
-    public static void updateTaskLogEtlDate(TaskLogs taskLogs,  QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper) {
+    public static void updateTaskLogEtlDate(TaskLogs taskLogs, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper) {
         String date = DateUtil.formatTime(quartzJobInfo.getLast_time());
         taskLogs.setEtl_date(date);
         taskLogs.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -621,24 +621,25 @@ public class JobCommon {
 
     /**
      * 检查任务依赖
+     *
      * @param jobType
      * @param quartzJobInfo
      * @param taskLogsMapper
      */
-    public static boolean checkDep(String jobType,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper){
+    public static boolean checkDep(String jobType, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper) {
         //检查任务依赖
-        String job_ids=quartzJobInfo.getJob_ids();
-        if(job_ids!=null && job_ids.split(",").length>0){
-            for(String dep_job_id:job_ids.split(",")){
-                String etl_date=DateUtil.formatTime(quartzJobInfo.getLast_time());
-                List<TaskLogs> taskLogsList=  taskLogsMapper.selectByIdEtlDate(getUser().getId(),dep_job_id,etl_date);
-                if(taskLogsList==null || taskLogsList.size()<=0){
-                    String msg="["+jobType+"] JOB ,依赖任务"+dep_job_id+",ETL日期"+etl_date+",未完成";
+        String job_ids = quartzJobInfo.getJob_ids();
+        if (job_ids != null && job_ids.split(",").length > 0) {
+            for (String dep_job_id : job_ids.split(",")) {
+                String etl_date = DateUtil.formatTime(quartzJobInfo.getLast_time());
+                List<TaskLogs> taskLogsList = taskLogsMapper.selectByIdEtlDate(getUser().getId(), dep_job_id, etl_date);
+                if (taskLogsList == null || taskLogsList.size() <= 0) {
+                    String msg = "[" + jobType + "] JOB ,依赖任务" + dep_job_id + ",ETL日期" + etl_date + ",未完成";
                     logger.info(msg);
                     insertLog(quartzJobInfo.getJob_id(), "INFO", msg);
                     return false;
                 }
-                String msg2="["+jobType+"] JOB ,依赖任务"+dep_job_id+",ETL日期"+etl_date+",已完成";
+                String msg2 = "[" + jobType + "] JOB ,依赖任务" + dep_job_id + ",ETL日期" + etl_date + ",已完成";
                 logger.info(msg2);
                 insertLog(quartzJobInfo.getJob_id(), "INFO", msg2);
             }
@@ -649,13 +650,14 @@ public class JobCommon {
 
     /**
      * 检查任务状态,并修改参数(任务执行日期等)
+     *
      * @param jobType
      * @param quartzJobInfo
      * @param taskLogsMapper
      * @param quartzManager2
      * @return
      */
-    public static boolean checkStatus(String jobType,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper,QuartzManager2 quartzManager2){
+    public static boolean checkStatus(String jobType, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper, QuartzManager2 quartzManager2) {
         //第一次 last_time 为空 赋值start_time
         if (quartzJobInfo.getLast_time() == null) {
             quartzJobInfo.setLast_time(quartzJobInfo.getStart_time());
@@ -731,6 +733,7 @@ public class JobCommon {
 
     /**
      * 时间序列发送etl任务到后台执行
+     *
      * @param jobType
      * @param task_logs_id
      * @param exe_status
@@ -739,7 +742,7 @@ public class JobCommon {
      * @param quartzManager2
      * @return
      */
-    public static boolean runTimeSeq(String jobType,String task_logs_id,boolean exe_status,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper,QuartzManager2 quartzManager2){
+    public static boolean runTimeSeq(String jobType, String task_logs_id, boolean exe_status, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper, QuartzManager2 quartzManager2) {
         logger.info("[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
         insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
         exe_status = sendZdh(task_logs_id, "[" + jobType + "]", exe_status, quartzJobInfo);
@@ -764,6 +767,7 @@ public class JobCommon {
 
     /**
      * 执行一次任务发送etl任务到后台执行
+     *
      * @param jobType
      * @param task_logs_id
      * @param exe_status
@@ -772,7 +776,7 @@ public class JobCommon {
      * @param quartzManager2
      * @return
      */
-    public static boolean runOnce(String jobType,String task_logs_id,boolean exe_status,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper,QuartzManager2 quartzManager2){
+    public static boolean runOnce(String jobType, String task_logs_id, boolean exe_status, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper, QuartzManager2 quartzManager2) {
         logger.info("[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
         insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
         exe_status = sendZdh(task_logs_id, "[" + jobType + "]", exe_status, quartzJobInfo);
@@ -806,6 +810,7 @@ public class JobCommon {
 
     /**
      * 重复执行任务发送etl任务到后台执行
+     *
      * @param jobType
      * @param task_logs_id
      * @param exe_status
@@ -814,7 +819,7 @@ public class JobCommon {
      * @param quartzManager2
      * @return
      */
-    public static boolean runRepeat(String jobType,String task_logs_id,boolean exe_status,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper,QuartzManager2 quartzManager2){
+    public static boolean runRepeat(String jobType, String task_logs_id, boolean exe_status, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper, QuartzManager2 quartzManager2) {
         logger.info("[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
         insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
         exe_status = sendZdh(task_logs_id, "[" + jobType + "]", exe_status, quartzJobInfo);
@@ -835,7 +840,7 @@ public class JobCommon {
         return exe_status;
     }
 
-    public static void jobFail(String jobType,String task_logs_id,QuartzJobInfo quartzJobInfo,TaskLogsMapper taskLogsMapper){
+    public static void jobFail(String jobType, String task_logs_id, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper) {
         logger.info("[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行");
         insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行");
         //调度时异常
@@ -843,7 +848,7 @@ public class JobCommon {
         quartzJobInfo.setLast_status("error");
     }
 
-    public static void resetCount(){
+    public static void resetCount() {
 
     }
 

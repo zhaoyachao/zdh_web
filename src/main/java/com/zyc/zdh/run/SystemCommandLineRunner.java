@@ -3,9 +3,12 @@ package com.zyc.zdh.run;
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
 import com.zyc.zdh.job.EmailJob;
+import com.zyc.zdh.job.JobCommon;
 import com.zyc.zdh.job.JobModel;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
+import com.zyc.zdh.service.ZdhLogsService;
+import com.zyc.zdh.util.SpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +61,11 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         //获取服务id
         String myid = ev.getProperty("myid", "0");
         SnowflakeIdWorker.init(Integer.parseInt(myid), 0);
+    }
+
+    public void runLogMQ(){
+        logger.info("初始化日志");
+        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+        JobCommon.logThread(zdhLogsService);
     }
 }

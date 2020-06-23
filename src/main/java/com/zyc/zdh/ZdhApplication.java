@@ -25,7 +25,5 @@ public class ZdhApplication {
 		SpringApplication springApplication = new SpringApplication(ZdhApplication.class);
 		System.out.println("ApplicationRun......run....");
 		springApplication.run(args);
-		ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-		JobCommon.logThread(zdhLogsService);
 	}
 }
