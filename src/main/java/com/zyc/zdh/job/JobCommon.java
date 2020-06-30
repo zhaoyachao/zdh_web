@@ -508,9 +508,9 @@ public class JobCommon {
         } catch (Exception e) {
             e.printStackTrace();
             if (quartzJobInfo.getMore_task().equals("多源ETL")) {
-                insertLog(zdhMoreInfo.getQuartzJobInfo().getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求," + e.getMessage());
+                insertLog(zdhMoreInfo.getQuartzJobInfo().getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
             } else {
-                insertLog(zdhInfo.getQuartzJobInfo().getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求," + e.getMessage());
+                insertLog(zdhInfo.getQuartzJobInfo().getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
             }
             taskLogs.setStatus("error");
             taskLogs.setProcess("15");
