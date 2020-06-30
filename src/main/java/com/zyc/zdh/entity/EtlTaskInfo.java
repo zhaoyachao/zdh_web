@@ -38,6 +38,8 @@ public class EtlTaskInfo {
     private String file_type_input;
     //文件编码
     private String encoding_input;
+    //是否有头标题
+    private String header_input;
     //文件分割符
     private String sep_input;
     //输入数据源其他参数
@@ -58,6 +60,8 @@ public class EtlTaskInfo {
     private String file_type_output;
     //文件编码
     private String encoding_output;
+    //是否有头标题
+    private String header_output;
     //文件分割符
     private String sep_output;
     //输出数据源其他参数
@@ -388,6 +392,22 @@ public class EtlTaskInfo {
 
     public void setSep_output(String sep_output) {
         this.sep_output = sep_output;
+    }
+
+    public String getHeader_input() {
+        return header_input;
+    }
+
+    public void setHeader_input(String header_input) {
+        this.header_input = header_input;
+    }
+
+    public String getHeader_output() {
+        return header_output;
+    }
+
+    public void setHeader_output(String header_output) {
+        this.header_output = header_output;
     }
 }
 

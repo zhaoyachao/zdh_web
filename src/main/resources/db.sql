@@ -327,6 +327,19 @@ alter table etl_more_task_info add column file_type_output varchar(10);
 alter table etl_more_task_info add column encoding_output varchar(10);
 alter table etl_more_task_info add column sep_output varchar(10);
 
+--2020-06-30 更新;
+alter table etl_task_info add column header_input varchar(10);
+alter table etl_task_info add column header_output varchar(10);
+
+alter table etl_more_task_info add column header_output varchar(10);
+
+alter table sql_task_info add column file_type_output varchar(10);
+alter table sql_task_info add column encoding_output varchar(10);
+alter table sql_task_info add column sep_output varchar(10);
+alter table sql_task_info add column header_output varchar(10);
+
+
+
 
 
 

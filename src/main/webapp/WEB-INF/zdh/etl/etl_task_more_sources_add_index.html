@@ -135,6 +135,13 @@
                                     <option value="UTF-8" mytype="">UTF-8</option>
                                     <option value="ISO-8859-1" mytype="">ISO-8859-1</option>
                                 </select>
+                                <select id="header_output" name="header_output"
+                                        data-placeholder="标题"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">标题</option>
+                                    <option value="true" mytype="">有</option>
+                                    <option value="false" mytype="">无</option>
+                                </select>
                             </div>
 
                         </div>
@@ -300,6 +307,7 @@
 
             $('#file_type_output').chosen()
             $('#encoding_output').chosen()
+            $('#header_output').chosen()
 
             //初始化数据源--把所有数据源都加载到下拉框
             function init_data_sources(){
@@ -517,6 +525,10 @@
                             var encoding_output = data[0].encoding_output
                             $("#encoding_output").val(encoding_output)
                             $("#encoding_output").trigger("chosen:updated");
+
+                            var header_output = data[0].header_output
+                            $("#header_output").val(header_output)
+                            $("#header_output").trigger("chosen:updated");
 
                             var sep_output = data[0].sep_output
                             $("#sep_output").val(sep_output)

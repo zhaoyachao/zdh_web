@@ -17,6 +17,14 @@ public class SqlTaskInfo {
     private String data_sources_params_input ;
     private String etl_sql ;
     private String data_sources_choose_output ;
+    //文件类型
+    private String file_type_output;
+    //文件编码
+    private String encoding_output;
+    //是否有头标题
+    private String header_output;
+    //文件分割符
+    private String sep_output;
     private String data_source_type_output ;
     private String data_sources_table_name_output ;
     private String data_sources_file_name_output ;
@@ -171,5 +179,37 @@ public class SqlTaskInfo {
 
     public void setUpdate_context(String update_context) {
         this.update_context = update_context;
+    }
+
+    public String getFile_type_output() {
+        return file_type_output;
+    }
+
+    public void setFile_type_output(String file_type_output) {
+        this.file_type_output = file_type_output;
+    }
+
+    public String getEncoding_output() {
+        return encoding_output;
+    }
+
+    public void setEncoding_output(String encoding_output) {
+        this.encoding_output = encoding_output;
+    }
+
+    public String getHeader_output() {
+        return header_output;
+    }
+
+    public void setHeader_output(String header_output) {
+        this.header_output = header_output;
+    }
+
+    public String getSep_output() {
+        return sep_output;
+    }
+
+    public void setSep_output(String sep_output) {
+        this.sep_output = sep_output;
     }
 }

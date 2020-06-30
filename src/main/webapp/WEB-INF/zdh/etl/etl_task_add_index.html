@@ -107,6 +107,13 @@
                                     <option value="UTF-8" mytype="">UTF-8</option>
                                     <option value="ISO-8859-1" mytype="">ISO-8859-1</option>
                                 </select>
+                                <select id="header_input" name="header_input"
+                                        data-placeholder="标题"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">标题</option>
+                                    <option value="true" mytype="">有</option>
+                                    <option value="false" mytype="">无</option>
+                                </select>
                             </div>
 
                         </div>
@@ -114,7 +121,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">分割符</label>
                             <div class="col-sm-10"><input id="sep_input" name="sep_input" type="text"
-                                        placeholder="分割符" class="form-control"></div>
+                                        placeholder="分割符" class="form-control">
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -317,6 +325,13 @@
                                     <option value="UTF-8" mytype="">UTF-8</option>
                                     <option value="ISO-8859-1" mytype="">ISO-8859-1</option>
                                 </select>
+                                <select id="header_output" name="header_output"
+                                        data-placeholder="标题"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">标题</option>
+                                    <option value="true" mytype="">有</option>
+                                    <option value="false" mytype="">无</option>
+                                </select>
                             </div>
 
                         </div>
@@ -324,7 +339,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">分割符</label>
                             <div class="col-sm-10"><input id="sep_output" name="sep_output" type="text"
-                                                          placeholder="分割符" class="form-control"></div>
+                                                          placeholder="分割符" class="form-control">
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -529,8 +545,10 @@
 
             $('#file_type_input').chosen()
             $('#encoding_input').chosen()
+            $('#header_input').chosen()
             $('#file_type_output').chosen()
             $('#encoding_output').chosen()
+            $('#header_output').chosen()
 
             //定义特定数据源展示的div
             function fileShow() {
@@ -967,6 +985,10 @@
                             $("#encoding_input").val(encoding_input)
                             $("#encoding_input").trigger("chosen:updated");
 
+                            var header_input = data[0].header_input
+                            $("#header_input").val(header_input)
+                            $("#header_input").trigger("chosen:updated");
+
                             var sep_input = data[0].sep_input
                             $("#sep_input").val(sep_input)
 
@@ -1110,6 +1132,10 @@
                             var encoding_output = data[0].encoding_output
                             $("#encoding_output").val(encoding_output)
                             $("#encoding_output").trigger("chosen:updated");
+
+                            var header_output = data[0].header_output
+                            $("#header_output").val(header_output)
+                            $("#header_output").trigger("chosen:updated");
 
                             var sep_output = data[0].sep_output
                             $("#sep_output").val(sep_output)

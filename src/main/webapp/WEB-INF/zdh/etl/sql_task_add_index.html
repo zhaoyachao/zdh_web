@@ -128,6 +128,50 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">常用参数</label>
+                            <div class="col-sm-10">
+                                <select id="file_type_output" name="file_type_output"
+                                        data-placeholder="文件类型"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">文件类型</option>
+                                    <option value="csv" mytype="">CSV</option>
+                                    <option value="csv" mytype="">TXT文本</option>
+                                    <option value="orc" mytype="">ORC</option>
+                                    <option value="parquet" mytype="">PARQUET</option>
+                                    <option value="excel" mytype="">EXCEL</option>
+                                    <option value="json" mytype="">JSON</option>
+                                    <option value="xml" mytype="">XML</option>
+                                    <option value="hudi" mytype="">HUDI</option>
+                                    <option value="delta" mytype="">DELTA</option>
+                                </select>
+                                <select id="encoding_output" name="encoding_output"
+                                        data-placeholder="编码"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">编码</option>
+                                    <option value="GBK" mytype="">GBK</option>
+                                    <option value="GB2312" mytype="">GB2312</option>
+                                    <option value="GB18030" mytype="">GB18030</option>
+                                    <option value="UTF-8" mytype="">UTF-8</option>
+                                    <option value="ISO-8859-1" mytype="">ISO-8859-1</option>
+                                </select>
+                                <select id="header_output" name="header_output"
+                                        data-placeholder="标题"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">标题</option>
+                                    <option value="true" mytype="">有</option>
+                                    <option value="false" mytype="">无</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">分割符</label>
+                            <div class="col-sm-10"><input id="sep_output" name="sep_output" type="text"
+                                                          placeholder="分割符" class="form-control"></div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">其他参数</label>
                             <div class="col-sm-10" id="div_data_sources_params_output">
                                 <textarea id="data_sources_params_output" name="data_sources_params_output"
@@ -329,6 +373,9 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
+            $('#file_type_output').chosen()
+            $('#encoding_output').chosen()
+            $('#header_output').chosen()
 
             //定义特定数据源展示的div
             function fileShow() {
@@ -611,7 +658,23 @@
                             var data_source_type_output = data[0].data_source_type_output
                             $("#data_source_type_output").val(data_source_type_output)
 
-                            //获取输入源数据其他参数
+                            //输出文件类型参数
+                            var file_type_output = data[0].file_type_output
+                            $("#file_type_output").val(file_type_output)
+                            $("#file_type_output").trigger("chosen:updated");
+
+                            var encoding_output = data[0].encoding_output
+                            $("#encoding_output").val(encoding_output)
+                            $("#encoding_output").trigger("chosen:updated");
+
+                            var header_output = data[0].header_output
+                            $("#header_output").val(header_output)
+                            $("#header_output").trigger("chosen:updated");
+
+                            var sep_output = data[0].sep_output
+                            $("#sep_output").val(sep_output)
+
+                            //获取输出源数据其他参数
                             var data_sources_params_output = data[0].data_sources_params_output
                             $("#data_sources_params_output").val(data_sources_params_output)
 
