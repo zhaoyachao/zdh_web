@@ -1379,6 +1379,15 @@ public class ZdhController {
 
         return "";
     }
+    @RequestMapping("/spark_web_ui_port")
+    @ResponseBody
+    public String spark_web_ui_port(){
+        List<ZdhHaInfo> zdhHaInfoList=new ArrayList<>();
+        zdhHaInfoList = zdhHaInfoMapper.selectByStatus("enabled");
+
+        return JSON.toJSONString(zdhHaInfoList);
+    }
+
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

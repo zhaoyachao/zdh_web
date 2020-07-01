@@ -16,6 +16,7 @@ public class ZdhHaInfo extends PageBase implements Serializable {
     private String zdh_url;
     private String zdh_host;
     private String zdh_port;
+    private String web_port;
     private String zdh_status;
 
 
@@ -65,5 +66,13 @@ public class ZdhHaInfo extends PageBase implements Serializable {
 
     public void setZdh_status(String zdh_status) {
         this.zdh_status = zdh_status;
+    }
+
+    public String getWeb_port() {
+        return web_port;
+    }
+
+    public void setWeb_port(String web_port) {
+        this.web_port = web_port;
     }
 }

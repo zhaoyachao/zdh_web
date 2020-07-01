@@ -24,6 +24,7 @@ public interface ZdhHaInfoMapper extends BaseMapper<ZdhHaInfo> {
             @Result(column="zhd_url",property="zhd_url"),
             @Result(column="zhd_host",property="zhd_host"),
             @Result(column="zhd_port",property="zhd_port"),
+            @Result(column="web_port",property="web_port"),
             @Result(column="zdh_status",property="zdh_status")
     })
     public List<ZdhHaInfo> selectByStatus(@Param("status") String status);

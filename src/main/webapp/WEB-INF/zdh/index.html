@@ -100,6 +100,10 @@
                         <a class="J_menuItem" href="zdh_help.html"> <i class="fa fa-hand-o-right"></i>
                             <span class="nav-label">使用技巧</span></a>
                     </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="jump_spark_web()" id="jump_spark_web"> <i class="fa fa-star"></i>
+                            <span class="nav-label">SPARK监控</span></a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -516,6 +520,33 @@
                 //成功返回
                 success: function (data) {
                     layer.msg("更新元信息完成")
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function jump_spark_web() {
+            $.ajax({
+                type: 'get',
+                url: "spark_web_ui_port",
+                dataType: 'json',
+                data: {},
+                //成功返回
+                success: function (data) {
+                    console.info("success")
+                    console.info(data.length)
+                    if(data.length==1){
+                        window.open("http://"+data[0].zdh_host+":"+data[0].web_port)
+                    }else{
+                        layer.msg("请检查zdh_server服务是否正常启动")
+                    }
                 },
                 //处理完成
                 complete: function () {

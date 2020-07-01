@@ -338,6 +338,8 @@ alter table sql_task_info add column encoding_output varchar(10);
 alter table sql_task_info add column sep_output varchar(10);
 alter table sql_task_info add column header_output varchar(10);
 
+--2020-06-31 更新
+alter table zdh_ha_info add column web_port varchar(100) after zdh_port;
 
 
 
