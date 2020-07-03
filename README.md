@@ -1,5 +1,11 @@
 # 数据采集,处理,监控,调度,管理一体化平台
 
+# 提示
+   
+    zdh 分2部分,前端配置+后端数据ETL处理,此部分只包含前端配置
+    后端数据etl 请参见项目 https://github.com/zhaoyachao/zdh_server.git
+    zdh_web 和zdh_server 保持同步 大版本会同步兼容 如果zdh_web 选择版本1.0 ,zdh_server 使用1.x 都可兼容
+
 # 特色
     开箱即用
     支持多数据源
@@ -11,7 +17,7 @@
 # 使用场景
   + 数据采集(本地上传数据,hdfs,jdbc,http,cassandra,mongodb,redis,kafka,hbase,es,sftp,hive)
   + 数据加密
-  + 数据转换
+  + 数据转换,数据离线同步,实时数据同步
   + 质量检测
   + 元数据,指标管理
   
@@ -126,11 +132,7 @@
   + 2.X 单任务多数据源处理
     
 
-# 提示
-   
-    zdh 分2部分,前端配置+后端数据ETL处理,此部分只包含前端配置
-    后端数据etl 请参见项目 https://github.com/zhaoyachao/zdh_server.git
-   
+ 
 # 个人联系方式
     邮件：1209687056@qq.com
 
