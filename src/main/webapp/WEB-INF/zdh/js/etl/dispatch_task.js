@@ -3,7 +3,7 @@
     // Example Bootstrap Table Events
     // ------------------------------
     (function () {
-
+        $('#exampleTableEvents').attr("data-height",$(document.body).height()*0.8)
         $('#add').click(function () {
             parent.layer.open({
                 type: 2,

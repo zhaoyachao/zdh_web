@@ -88,7 +88,7 @@ function buildTable($el, cells, rows) {
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-
+      $('#exampleTableEvents').attr("data-height",$(document.body).height()*0.8)
       function getMyDate(str){
           var oDate = new Date(str),
               oYear = oDate.getFullYear(),

@@ -1,5 +1,7 @@
 $(function () {
 
+    $('#exampleTableEvents').attr("data-height",$(document.body).height()*0.6)
+    $('#exampleTableEvents').attr("data-height",$(document.body).height()*0.6)
     // var barChart = echarts.init(document.getElementById("echarts-bar-chart"));
     var pieChart = echarts.init(document.getElementById("echarts-pie-chart"));
 

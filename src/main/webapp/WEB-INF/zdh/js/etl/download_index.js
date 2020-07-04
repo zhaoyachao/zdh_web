@@ -89,7 +89,7 @@ function buildTable($el, cells, rows) {
   // ------------------------------
   (function() {
 
-
+      $('#exampleTableEvents').attr("data-height",$(document.body).height()*0.8)
       $('#remove').click(function () {
 
         var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
