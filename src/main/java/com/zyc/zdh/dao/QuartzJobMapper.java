@@ -29,11 +29,13 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
             "select",
             "*",
             "from quartz_job_info",
-            "where job_id in",
+            "where owner=#{owner}",
+            "<when test='job_ids!=null and job_ids.size > 0'>",
+            " and job_id in ",
             "<foreach collection='job_ids' item='job_id' open='(' separator=',' close=')'>",
             "#{job_id}",
             "</foreach>",
-            " and owner=#{owner}",
+            "</when>",
             "</script>"
     })
     public List<QuartzJobInfo> selectRunJobByOwner(@Param("owner") String owner,@Param("job_ids") List<String> job_ids );
