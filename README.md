@@ -132,6 +132,11 @@
   + 2.X 单任务多数据源处理
     
 
+# 版本更新说明
+   + v1.0 支持常用数据jdbc,hive,kafka,http,flume,redis,es,kudu,mongodb,hbase,cassandra,hdfs(csv,json,orc,parquet,xml,excel...),本地上传数据(csv)
+   + v1.0 调度支持任务依赖等
+   
+   + v1.1 支持clickhouse-jdbc
  
 # 个人联系方式
     邮件：1209687056@qq.com

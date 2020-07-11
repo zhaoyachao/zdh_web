@@ -143,19 +143,29 @@ public class DBUtil{
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
+            List<String> result=new ArrayList<String>();
             connection = getConnection(driver,url,username,password);
+
+            if(url.startsWith("jdbc:clickhouse")){
+                preparedStatement=connection.prepareStatement("select database,name from system.tables where database != 'system'");
+                resultSet=preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    result.add(resultSet.getString("database")+"."+resultSet.getString("name"));
+                }
+
+                return result;
+            }
 
             DatabaseMetaData dbm=connection.getMetaData();
 
             ResultSet rs=dbm.getTables(connection.getCatalog(), username.toUpperCase(), "%", new String[] { "TABLE"});
-            List<String> result=new ArrayList<String>();
             while (rs.next()) {
-                if(driver.contains("mysql")){
+                if(url.startsWith("jdbc:mysql")){
                     result.add(rs.getString("TABLE_NAME"));
-                }else if(driver.contains("oracle")){
+                }else if(url.startsWith("jdbc:oracle")){
                     if(rs.getString("TABLE_SCHEM").toLowerCase().equals(username.toLowerCase()))
                         result.add(rs.getString("TABLE_NAME"));
-                }else if(driver.contains("postgresql")){
+                }else if(url.startsWith("jdbc:postgresql")){
                     result.add(rs.getString("TABLE_NAME"));
                 }else{
                     result.add(rs.getString("TABLE_NAME"));

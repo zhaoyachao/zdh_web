@@ -83,7 +83,7 @@
                                 <ul>
                                     <li>数据源说明：简要说明数据源作用，此说明最好不要重复</li>
                                     <li>数据源类型：选择数据源类型 目前支持 JDBC,HDFS,HBASE,HIVE,KAFKA</li>
-                                    <li>驱动类：当数据源选择JDBC 时 配置驱动程序</li>
+                                    <li>驱动类：当数据源选择JDBC 时 配置驱动程序,clickhouse 只支持ClickHouse-Native-JDBC</li>
                                     <li>连接串：数据源选择JDBC,HDFS,HBASE,KAFKA 时填写</li>
                                     <li>   JDBC: 填写数据库连接的url</li>
                                     <li>   example:jdbc:mysql://127.0.0.1:3306/mydb?serverTimezone=GMT%2B8&useSSL=false</li>
@@ -92,8 +92,8 @@
                                     <li>   KAFKA：填写对应zookeeper 的连接</li>
                                     <li>   MONGODB:填写对应的mongo连接串mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]</li>
                                     <li>   ES: 填写 ip:port 格式</li>
-                                    <li>    HTTP: 填写http://ip:port/[根路径]</li>
-                                    <li>    REDIS: 填写ip:port 格式，如果是redis cluster 模式 填写其中一个ip 和port 即可</li>
+                                    <li>   HTTP: 填写http://ip:port/[根路径]</li>
+                                    <li>   REDIS: 填写ip:port 格式，如果是redis cluster 模式 填写其中一个ip 和port 即可</li>
                                     <li>   CASSANDRA:填写ip:port 格式，如果多个ip 则写ip1,ip2,ip3:port 格式，待优化</li>
                                     <li>   SFTP:填写ip:port 格式</li>
                                     <li>   KUDU:填写ip:port 格式，如果多个ip 则写ip1,ip2,ip3:port 格式</li>
@@ -253,12 +253,12 @@
                 return ;
             }
             if ($('#data_source_type').val() == 'JDBC' && $('#username').val() == '') {
-                layer.msg("数据源为JDBC时,用户不能为空！");
-                return ;
+               // layer.msg("数据源为JDBC时,用户不能为空！");
+              //  return ;
             }
             if ($('#data_source_type').val() == 'JDBC' && $('#password').val() == '') {
-                layer.msg("数据源为JDBC时,密码不能为空！");
-                return ;
+              //  layer.msg("数据源为JDBC时,密码不能为空！");
+              //  return ;
             }
             $.ajax({
                 type: 'POST',
@@ -308,12 +308,12 @@
                 return ;
             }
             if ($('#data_source_type').val() == 'JDBC' && $('#username').val() == '') {
-                layer.msg("数据源为JDBC时,用户不能为空！");
-                return ;
+               // layer.msg("数据源为JDBC时,用户不能为空！");
+              //  return ;
             }
             if ($('#data_source_type').val() == 'JDBC' && $('#password').val() == '') {
-                layer.msg("数据源为JDBC时,密码不能为空！");
-                return ;
+               // layer.msg("数据源为JDBC时,密码不能为空！");
+               // return ;
             }
             $.ajax({
                 type: 'POST',
