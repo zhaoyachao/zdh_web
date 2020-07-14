@@ -69,11 +69,11 @@ jQuery(function() {
         dnd: '#uploader .queueList',
         paste: document.body,
 
-        accept: {
-            title: 'Images',
-            extensions: 'gif,jpg,jpeg,bmp,png',
-            mimeTypes: 'image/*'
-        },
+        // accept: {
+        //     title: 'Images',
+        //     extensions: 'gif,jpg,jpeg,bmp,png',
+        //     mimeTypes: 'image/*'
+        // },
 
         // swf文件路径
         swf: BASE_URL + '/Uploader.swf',
@@ -82,10 +82,10 @@ jQuery(function() {
 
         chunked: true,
         // server: 'http://webuploader.duapp.com/server/fileupload.php',
-        server: 'http://2betop.net/fileupload.php',
+        server: 'etl_task_jar_add_file.html',
         fileNumLimit: 300,
-        fileSizeLimit: 5 * 1024 * 1024,    // 200 M
-        fileSingleSizeLimit: 1 * 1024 * 1024    // 50 M
+        fileSizeLimit: 600 * 1024 * 1024,    // 200 M
+        fileSingleSizeLimit: 200 * 1024 * 1024    // 50 M
     });
 
     // 添加“添加文件”的按钮，

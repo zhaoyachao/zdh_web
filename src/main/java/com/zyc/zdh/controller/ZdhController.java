@@ -83,6 +83,10 @@ public class ZdhController {
     SqlTaskMapper sqlTaskMapper;
     @Autowired
     MetaDatabaseMapper metaDatabaseMapper;
+    @Autowired
+    JarTaskMapper jarTaskMapper;
+    @Autowired
+    JarFileMapper jarFileMapper;
 
 
     @RequestMapping("/data_sources_index")
@@ -1263,19 +1267,19 @@ public class ZdhController {
         try {
             String databases = HttpUtil.postJSON(url + "/show_databases", new JSONObject().toJSONString());
 
-            List<meta_database_info> meta_database_infos= new ArrayList<meta_database_info>();
+            List<meta_database_info> meta_database_infos = new ArrayList<meta_database_info>();
 
-            System.out.println("databases:"+databases);
-            JSONArray jary=JSON.parseArray(databases);
-            for(Object o:jary){
-                JSONObject jo=new JSONObject();
-                String tableNames = HttpUtil.postJSON(url + "/show_tables", "{\"databaseName\":\""+o.toString()+"\"}");
-                JSONArray tableAry=JSON.parseArray(tableNames);
-                meta_database_info meta_database_info_d=new meta_database_info();
+            System.out.println("databases:" + databases);
+            JSONArray jary = JSON.parseArray(databases);
+            for (Object o : jary) {
+                JSONObject jo = new JSONObject();
+                String tableNames = HttpUtil.postJSON(url + "/show_tables", "{\"databaseName\":\"" + o.toString() + "\"}");
+                JSONArray tableAry = JSON.parseArray(tableNames);
+                meta_database_info meta_database_info_d = new meta_database_info();
                 meta_database_info_d.setOwner(getUser().getId());
                 metaDatabaseMapper.delete(meta_database_info_d);
-                if(tableAry.isEmpty()){
-                    meta_database_info meta_database_info=new meta_database_info();
+                if (tableAry.isEmpty()) {
+                    meta_database_info meta_database_info = new meta_database_info();
                     meta_database_info.setDb_name(o.toString());
                     meta_database_info.setTb_name("");
                     meta_database_info.setOwner(getUser().getId());
@@ -1283,8 +1287,8 @@ public class ZdhController {
                     metaDatabaseMapper.insert(meta_database_info);
                 }
 
-                for (Object t:tableAry){
-                    meta_database_info meta_database_info=new meta_database_info();
+                for (Object t : tableAry) {
+                    meta_database_info meta_database_info = new meta_database_info();
                     meta_database_info.setDb_name(o.toString());
                     meta_database_info.setTb_name(t.toString());
                     meta_database_info.setOwner(getUser().getId());
@@ -1307,28 +1311,28 @@ public class ZdhController {
     @RequestMapping("/show_databases")
     @ResponseBody
     public String show_databases() {
-        meta_database_info meta_database_info=new meta_database_info();
+        meta_database_info meta_database_info = new meta_database_info();
         meta_database_info.setOwner(getUser().getId());
-        List<meta_database_info> meta_database_infos= metaDatabaseMapper.select(meta_database_info);
+        List<meta_database_info> meta_database_infos = metaDatabaseMapper.select(meta_database_info);
         try {
-            JSONArray jsa=new JSONArray();
-            Map<String,String> dbMap=new HashMap<>();
+            JSONArray jsa = new JSONArray();
+            Map<String, String> dbMap = new HashMap<>();
 
-            for(meta_database_info o:meta_database_infos){
-                dbMap.put(o.getDb_name(),"");
-                JSONObject jo1=new JSONObject();
-                jo1.put("id",o.getDb_name()+"."+o.getTb_name());
-                jo1.put("parent",o.getDb_name());
-                jo1.put("text",o.getTb_name());
+            for (meta_database_info o : meta_database_infos) {
+                dbMap.put(o.getDb_name(), "");
+                JSONObject jo1 = new JSONObject();
+                jo1.put("id", o.getDb_name() + "." + o.getTb_name());
+                jo1.put("parent", o.getDb_name());
+                jo1.put("text", o.getTb_name());
                 jsa.add(jo1);
-                }
+            }
 
-            for( Map.Entry<String,String> entry:dbMap.entrySet()){
-                String dbName=entry.getKey();
-                JSONObject jo1=new JSONObject();
-                jo1.put("id",dbName);
-                jo1.put("parent","#");
-                jo1.put("text",dbName);
+            for (Map.Entry<String, String> entry : dbMap.entrySet()) {
+                String dbName = entry.getKey();
+                JSONObject jo1 = new JSONObject();
+                jo1.put("id", dbName);
+                jo1.put("parent", "#");
+                jo1.put("text", dbName);
                 jsa.add(jo1);
             }
 
@@ -1368,8 +1372,8 @@ public class ZdhController {
 
         String url = JobCommon.getZdhUrl(zdhHaInfoMapper);
         try {
-            JSONObject p=new JSONObject();
-            p.put("table",table);
+            JSONObject p = new JSONObject();
+            p.put("table", table);
             String desc_table = HttpUtil.postJSON(url + "/desc_table", p.toJSONString());
             return desc_table;
         } catch (Exception e) {
@@ -1379,15 +1383,217 @@ public class ZdhController {
 
         return "";
     }
+
     @RequestMapping("/spark_web_ui_port")
     @ResponseBody
-    public String spark_web_ui_port(){
-        List<ZdhHaInfo> zdhHaInfoList=new ArrayList<>();
+    public String spark_web_ui_port() {
+        List<ZdhHaInfo> zdhHaInfoList = new ArrayList<>();
         zdhHaInfoList = zdhHaInfoMapper.selectByStatus("enabled");
 
         return JSON.toJSONString(zdhHaInfoList);
     }
 
+
+    @RequestMapping(value = "/etl_task_jar_list", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String etl_task_jar_list(String etl_context) {
+        List<JarTaskInfo> jarTaskInfos = new ArrayList<>();
+        String owner = getUser().getId();
+        jarTaskInfos = jarTaskMapper.selectByParams(owner, etl_context);
+        return JSON.toJSONString(jarTaskInfos);
+    }
+    @RequestMapping(value = "/etl_task_jar_delete", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String etl_task_jar_delete(String[] ids) {
+        List<JarTaskInfo> jarTaskInfos = new ArrayList<>();
+        String owner = getUser().getId();
+        jarTaskMapper.deleteBatchById(ids);
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+
+    @RequestMapping("/etl_task_jar_add_file")
+    @ResponseBody
+    public String etl_task_jar_add_file(MultipartFile[] jar_files, JarTaskInfo jarTaskInfo, HttpServletRequest request) {
+        String json_str = JSON.toJSONString(request.getParameterMap());
+        String owner = getUser().getId();
+        String id = SnowflakeIdWorker.getInstance().nextId() + "";
+        jarTaskInfo.setId(id);
+        jarTaskInfo.setOwner(owner);
+        jarTaskInfo.setFiles("");
+        jarTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+        debugInfo(jarTaskInfo);
+        jarTaskMapper.insert(jarTaskInfo);
+        System.out.println(json_str);
+        System.out.println(jar_files);
+        if (jar_files != null && jar_files.length > 0) {
+            for (MultipartFile jar_file : jar_files) {
+                String fileName = jar_file.getOriginalFilename();
+                System.out.println("上传文件不为空");
+                JarFileInfo jarFileInfo = new JarFileInfo();
+                jarFileInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                jarFileInfo.setJar_etl_id(id);
+                jarFileInfo.setFile_name(fileName);
+                jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
+                jarFileInfo.setOwner(owner);
+                jarFileMapper.insert(jarFileInfo);
+
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+                File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
+                File fileDir = new File(zdhNginx.getTmp_dir() + "/" + owner);
+                if (!fileDir.exists()) {
+                    fileDir.mkdirs();
+                }
+                String nginx_dir = zdhNginx.getNginx_dir();
+                try {
+                    jar_file.transferTo(tempFile);
+                    if (!zdhNginx.getHost().equals("")) {
+                        System.out.println("通过sftp上传文件");
+                        SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
+                                zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
+                        sftp.login();
+                        InputStream is = new FileInputStream(tempFile);
+                        sftp.upload(nginx_dir + "/" + owner + "/", fileName, is);
+                        sftp.logout();
+                    }
+                    jarFileInfo.setStatus("success");
+                    jarFileMapper.updateByPrimaryKey(jarFileInfo);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (SftpException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+        }
+
+
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+
+    @RequestMapping("/etl_task_jar_update")
+    @ResponseBody
+    public String etl_task_jar_update(MultipartFile[] jar_files, JarTaskInfo jarTaskInfo, HttpServletRequest request){
+        String json_str = JSON.toJSONString(request.getParameterMap());
+        String owner = getUser().getId();
+        String id =jarTaskInfo.getId();
+        jarTaskInfo.setOwner(owner);
+        debugInfo(jarTaskInfo);
+        jarTaskMapper.updateByPrimaryKey(jarTaskInfo);
+        System.out.println(json_str);
+
+        if (jar_files != null && jar_files.length > 0) {
+            for (MultipartFile jar_file : jar_files) {
+                String fileName = jar_file.getOriginalFilename();
+                if(fileName.isEmpty()){
+                    System.out.println("上传文件名称为空"+fileName);
+                    continue;
+                }
+                System.out.println("上传文件不为空"+fileName);
+                JarFileInfo jarFileInfo = new JarFileInfo();
+                jarFileInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                jarFileInfo.setJar_etl_id(id);
+                jarFileInfo.setFile_name(fileName);
+                jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
+                jarFileInfo.setOwner(owner);
+                jarFileMapper.insert(jarFileInfo);
+
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+                File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
+                File fileDir = new File(zdhNginx.getTmp_dir() + "/" + owner);
+                if (!fileDir.exists()) {
+                    fileDir.mkdirs();
+                }
+                String nginx_dir = zdhNginx.getNginx_dir();
+                try {
+                    jar_file.transferTo(tempFile);
+                    if (!zdhNginx.getHost().equals("")) {
+                        System.out.println("通过sftp上传文件");
+                        SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
+                                zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
+                        sftp.login();
+                        InputStream is = new FileInputStream(tempFile);
+                        sftp.upload(nginx_dir + "/" + owner + "/", fileName, is);
+                        sftp.logout();
+                    }
+                    jarFileInfo.setStatus("success");
+                    jarFileMapper.updateByPrimaryKey(jarFileInfo);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (SftpException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+
+    @RequestMapping("/etl_task_jar_del_file")
+    @ResponseBody
+    public String etl_task_jar_del_file(String[] ids, HttpServletRequest request) {
+        String json_str = JSON.toJSONString(request.getParameterMap());
+        String owner = getUser().getId();
+
+        List<JarFileInfo> jarFileInfos= jarFileMapper.selectByParams(owner,ids);
+        ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+        String nginx_dir = zdhNginx.getNginx_dir();
+        for(JarFileInfo jarFileInfo:jarFileInfos){
+            String fileName=jarFileInfo.getFile_name();
+            if (!zdhNginx.getHost().equals("")) {
+                System.out.println("通过sftp删除文件");
+                SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
+                        zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
+                sftp.login();
+
+                try {
+                    sftp.delete(nginx_dir + "/" + owner + "/", fileName);
+                } catch (SftpException e) {
+                    e.printStackTrace();
+                }
+                sftp.logout();
+            }else{
+                File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
+                if(tempFile.exists()){
+                    tempFile.delete();
+                }
+            }
+            jarFileMapper.deleteByPrimaryKey(jarFileInfo.getId());
+        }
+
+
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+    @RequestMapping("/etl_task_jar_file_list")
+    @ResponseBody
+    public List<JarFileInfo> etl_task_jar_file_list(String id, HttpServletRequest request) {
+        String json_str = JSON.toJSONString(request.getParameterMap());
+        String owner = getUser().getId();
+        JarFileInfo jarFileInfo = new JarFileInfo();
+        jarFileInfo.setOwner(owner);
+        jarFileInfo.setJar_etl_id(id);
+        List<JarFileInfo> jarFileInfos=jarFileMapper.select(jarFileInfo);
+
+        return jarFileInfos;
+    }
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

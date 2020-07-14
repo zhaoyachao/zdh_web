@@ -29,7 +29,7 @@ public class CommandUtils {
      */
     public static String exeCommand(String command) throws IOException {
         try{
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream error = new ByteArrayOutputStream();
             int exitCode = exeCommand(command, out,error);
             if (exitCode == 0) {

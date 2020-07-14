@@ -2,15 +2,14 @@ package com.zyc.zdh.job;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.service.impl.DataSourcesServiceImpl;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.HttpUtil;
-import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.*;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,7 +130,7 @@ public class JobCommon {
         if (map != null) {
             logger.info("单源,自定义参数不为空,开始替换:" + quartzJobInfo.getParams());
             //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-            DynamicParams(map, quartzJobInfo, etlTaskInfo, null);
+            DynamicParams(map, quartzJobInfo, etlTaskInfo, null,null);
         }
 
         //获取数据源信息
@@ -251,7 +250,7 @@ public class JobCommon {
             for (EtlTaskInfo etlTaskInfo : etlTaskInfos) {
                 if (map != null) {
                     logger.info("多源,自定义参数不为空,开始替换:" + quartzJobInfo.getParams());
-                    DynamicParams(map, quartzJobInfo, etlTaskInfo, null);
+                    DynamicParams(map, quartzJobInfo, etlTaskInfo, null,null);
                 }
 
                 //获取数据源信息
@@ -286,7 +285,7 @@ public class JobCommon {
             JSONObject json = new JSONObject();
             String date = DateUtil.formatTime(quartzJobInfo.getLast_time());
             json.put("ETL_DATE", date);
-            logger.info(" JOB ,单源,处理当前日期,传递参数ETL_DATE 为" + date);
+            logger.info(" JOB ,SQL,处理当前日期,传递参数ETL_DATE 为" + date);
             quartzJobInfo.setParams(json.toJSONString());
 
             String etl_task_id = quartzJobInfo.getEtl_task_id();
@@ -296,9 +295,9 @@ public class JobCommon {
             Map<String, Object> map = (Map<String, Object>) JSON.parseObject(quartzJobInfo.getParams());
             //此处做参数匹配转换
             if (map != null) {
-                logger.info("单源,自定义参数不为空,开始替换:" + quartzJobInfo.getParams());
+                logger.info("SQL,自定义参数不为空,开始替换:" + quartzJobInfo.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, quartzJobInfo, null, sqlTaskInfo);
+                DynamicParams(map, quartzJobInfo, null, sqlTaskInfo,null);
             }
 
             //获取数据源信息
@@ -357,8 +356,47 @@ public class JobCommon {
 
     }
 
+    public static ZdhJarInfo create_zhdJarInfo(QuartzJobInfo quartzJobInfo, QuartzJobMapper quartzJobMapper,
+                                               JarTaskMapper jarTaskMapper, ZdhNginxMapper zdhNginxMapper) {
 
-    public static void DynamicParams(Map<String, Object> map, QuartzJobInfo quartzJobInfo, EtlTaskInfo etlTaskInfo, SqlTaskInfo sqlTaskInfo) {
+        try {
+            JarFileMapper jarFileMapper= (JarFileMapper) SpringContext.getBean("jarFileMapper");
+            JSONObject json = new JSONObject();
+            String date = DateUtil.formatTime(quartzJobInfo.getLast_time());
+            json.put("ETL_DATE", date);
+            logger.info(" JOB ,外部JAR,处理当前日期,传递参数ETL_DATE 为" + date);
+            quartzJobInfo.setParams(json.toJSONString());
+
+            String etl_task_id = quartzJobInfo.getEtl_task_id();
+            //获取etl 任务信息
+            JarTaskInfo jarTaskInfo = jarTaskMapper.selectByPrimaryKey(etl_task_id);
+
+            Map<String, Object> map = (Map<String, Object>) JSON.parseObject(quartzJobInfo.getParams());
+            //此处做参数匹配转换
+            if (map != null) {
+                logger.info("JAR,自定义参数不为空,开始替换:" + quartzJobInfo.getParams());
+                //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
+                DynamicParams(map, quartzJobInfo, null, null,jarTaskInfo);
+            }
+
+                //获取文件服务器信息 配置到数据源选项
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(jarTaskInfo.getOwner());
+                List<JarFileInfo> jarFileInfos=jarFileMapper.selectByParams2(jarTaskInfo.getOwner(),new String[]{jarTaskInfo.getId()});
+
+            ZdhJarInfo zdhJarInfo = new ZdhJarInfo();
+            zdhJarInfo.setZdhInfo(jarTaskInfo, quartzJobInfo,zdhNginx,jarFileInfos);
+
+            return zdhJarInfo;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
+
+
+    public static void DynamicParams(Map<String, Object> map, QuartzJobInfo quartzJobInfo, EtlTaskInfo etlTaskInfo, SqlTaskInfo sqlTaskInfo,JarTaskInfo jarTaskInfo) {
         String date_nodash = DateUtil.formatNodash(quartzJobInfo.getLast_time());
         String date_time = DateUtil.formatTime(quartzJobInfo.getLast_time());
         String date_dt = DateUtil.format(quartzJobInfo.getLast_time());
@@ -369,10 +407,12 @@ public class JobCommon {
             final String clear = etlTaskInfo.getData_sources_clear_output().replace("zdh.date.nodash", date_nodash).
                     replace("zdh.date.time", date_time).
                     replace("zdh.date", date_dt);
+            etlTaskInfo.setData_sources_filter_input(filter);
+            etlTaskInfo.setData_sources_clear_output(clear);
             map.forEach((k, v) -> {
                 logger.info("key:" + k + ",value:" + v);
-                etlTaskInfo.setData_sources_filter_input(filter.replace(k, v.toString()));
-                etlTaskInfo.setData_sources_clear_output(clear.replace(k, v.toString()));
+                etlTaskInfo.setData_sources_filter_input(etlTaskInfo.getData_sources_filter_input().replace(k, v.toString()));
+                etlTaskInfo.setData_sources_clear_output(etlTaskInfo.getData_sources_clear_output().replace(k, v.toString()));
             });
         }
 
@@ -383,11 +423,24 @@ public class JobCommon {
             final String clear = sqlTaskInfo.getData_sources_clear_output().replace("zdh.date.nodash", date_nodash).
                     replace("zdh.date.time", date_time).
                     replace("zdh.date", date_dt);
-
+            sqlTaskInfo.setEtl_sql(etl_sql);
+            sqlTaskInfo.setData_sources_clear_output(clear);
             map.forEach((k, v) -> {
                 logger.info("key:" + k + ",value:" + v);
-                sqlTaskInfo.setEtl_sql(etl_sql.replace(k, v.toString()));
-                sqlTaskInfo.setData_sources_clear_output(clear.replace(k, v.toString()));
+                sqlTaskInfo.setEtl_sql(sqlTaskInfo.getEtl_sql().replace(k, v.toString()));
+                sqlTaskInfo.setData_sources_clear_output(sqlTaskInfo.getData_sources_clear_output().replace(k, v.toString()));
+            });
+        }
+
+        if(jarTaskInfo!=null){
+            final String spark_submit_params = jarTaskInfo.getSpark_submit_params().replace("zdh.date.nodash", date_nodash).
+                    replace("zdh.date.time", date_time).
+                    replace("zdh.date", date_dt);
+
+            jarTaskInfo.setSpark_submit_params(spark_submit_params);
+            map.forEach((k, v) -> {
+                logger.info("key:" + k + ",value:" + v);
+                jarTaskInfo.setSpark_submit_params(jarTaskInfo.getSpark_submit_params().replace(k, v.toString()));
             });
         }
 
@@ -443,6 +496,7 @@ public class JobCommon {
         ZdhNginxMapper zdhNginxMapper = (ZdhNginxMapper) SpringContext.getBean("zdhNginxMapper");
         EtlMoreTaskMapper etlMoreTaskMapper = (EtlMoreTaskMapper) SpringContext.getBean("etlMoreTaskMapper");
         SqlTaskMapper sqlTaskMapper = (SqlTaskMapper) SpringContext.getBean("sqlTaskMapper");
+        JarTaskMapper jarTaskMapper = (JarTaskMapper) SpringContext.getBean("jarTaskMapper");
         String params = quartzJobInfo.getParams().trim();
         String url = getZdhUrl(zdhHaInfoMapper);
         JSONObject json = new JSONObject();
@@ -465,16 +519,20 @@ public class JobCommon {
         ZdhMoreInfo zdhMoreInfo = new ZdhMoreInfo();
         ZdhInfo zdhInfo = new ZdhInfo();
         ZdhSqlInfo zdhSqlInfo = new ZdhSqlInfo();
+        ZdhJarInfo zdhJarInfo=new ZdhJarInfo();
         if (quartzJobInfo.getMore_task().equals("多源ETL")) {
             logger.info("组装多源ETL任务信息");
             zdhMoreInfo = create_more_task_zdhInfo(quartzJobInfo, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
         } else if (quartzJobInfo.getMore_task().equals("单源ETL")) {
             logger.info("组装单源ETL任务信息");
             zdhInfo = create_zhdInfo(quartzJobInfo, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
-        } else {
+        } else if (quartzJobInfo.getMore_task().equalsIgnoreCase("SQL")) {
             logger.info("组装SQL任务信息");
             zdhSqlInfo = create_zhdSqlInfo(quartzJobInfo, quartzJobMapper, sqlTaskMapper, dataSourcesServiceImpl, zdhNginxMapper);
 
+        }else if (quartzJobInfo.getMore_task().equalsIgnoreCase("外部JAR")) {
+            logger.info("组装外部JAR任务信息");
+            zdhJarInfo=create_zhdJarInfo(quartzJobInfo,quartzJobMapper,jarTaskMapper,zdhNginxMapper);
         }
         TaskLogs taskLogs = taskLogsMapper.selectByPrimaryKey(task_logs_id);
         try {
@@ -497,20 +555,36 @@ public class JobCommon {
                     logger.info("[调度平台]:" + url + "参数:" + JSON.toJSONString(zdhInfo));
                     insertLog(zdhInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:" + url + "/sql,参数:" + JSON.toJSONString(zdhInfo));
                     HttpUtil.postJSON(url, JSON.toJSONString(zdhInfo));
-                } else {
+                } else if(quartzJobInfo.getMore_task().equals("SQL")){
                     logger.info("[调度平台]:" + url + "/sql,参数:" + JSON.toJSONString(zdhSqlInfo));
                     insertLog(zdhSqlInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:" + url + "/sql,参数:" + JSON.toJSONString(zdhSqlInfo));
                     HttpUtil.postJSON(url + "/sql", JSON.toJSONString(zdhSqlInfo));
+                }else if(quartzJobInfo.getMore_task().equals("外部JAR")){
+                    logger.info("[调度平台]:外部JAR,参数:" + JSON.toJSONString(zdhJarInfo));
+                    insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,参数:" + JSON.toJSONString(zdhJarInfo));
+                    submit_jar(quartzJobInfo,zdhJarInfo);
                 }
-                logger.info(model_log + " JOB ,更新调度任务状态为etl");
-                quartzJobInfo.setLast_status("etl");
+                if(!quartzJobInfo.getMore_task().equals("外部JAR")){
+                    logger.info(model_log + " JOB ,更新调度任务状态为etl");
+                    quartzJobInfo.setLast_status("etl");
+                }else{
+                    logger.info(model_log + " JOB ,外部JAR更新调度任务状态为finish,提交jar任务暂不支持状态跟踪,计划在2.x版本支持");
+                    insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", model_log + " JOB ,外部JAR更新调度任务状态为finish,提交jar任务暂不支持状态跟踪,计划在2.x版本支持");
+                    quartzJobInfo.setLast_status("finish");
+                }
+
+
             }
         } catch (Exception e) {
             e.printStackTrace();
             if (quartzJobInfo.getMore_task().equals("多源ETL")) {
-                insertLog(zdhMoreInfo.getQuartzJobInfo().getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
-            } else {
-                insertLog(zdhInfo.getQuartzJobInfo().getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
+                insertLog(zdhMoreInfo.getQuartzJobInfo().getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送多源 ETL处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
+            } else if (quartzJobInfo.getMore_task().equals("单源ETL")){
+                insertLog(zdhInfo.getQuartzJobInfo().getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送单源 ETL处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
+            } else if (quartzJobInfo.getMore_task().equals("SQL")){
+                insertLog(zdhSqlInfo.getQuartzJobInfo().getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送SQL ETL处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
+            }else if(quartzJobInfo.getMore_task().equals("外部JAR")){
+                insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送外部JAR ETL处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
             }
             taskLogs.setStatus("error");
             taskLogs.setProcess("15");
@@ -527,40 +601,112 @@ public class JobCommon {
 
     }
 
-    public static void create_sql_file(QuartzJobInfo quartzJobInfo, SqlTaskInfo sqlTaskInfo) {
+    public static void submit_jar(QuartzJobInfo quartzJobInfo, ZdhJarInfo zdhJarInfo) throws IOException {
         try {
+            logger.info("[调度平台]:外部JAR,开始提交jar 任务");
+            insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,开始提交jar 任务");
             String system = System.getProperty("os.name");
-            String[] str = sqlTaskInfo.getEtl_sql().split("\r\n");
+            String[] str = zdhJarInfo.getJarTaskInfo().getSpark_submit_params().split("\r\n");
             String newcommand = "";
             String line = System.getProperty("line.separator");
             for (String s : str) {
                 newcommand = newcommand + s + line;
             }
 
-            String fileName = sqlTaskInfo.getSql_context();
+            String fileName = zdhJarInfo.getJarTaskInfo().getEtl_context();
             if (system.toLowerCase().startsWith("win")) {
                 fileName = fileName + ".bat";
             } else {
                 fileName = fileName + ".sh";
             }
 
-            File file = new File("shell_script/" + quartzJobInfo.getJob_id());
+            File file = new File("spark_submit/" + quartzJobInfo.getJob_id());
             if (!file.exists()) {
                 file.mkdirs();
             }
 
-            File file2 = new File("shell_script/" + quartzJobInfo.getJob_id() + "/" + fileName);
+            File file2 = new File("spark_submit/" + quartzJobInfo.getJob_id() + "/" + fileName);
             if (file2.exists()) {
                 file2.delete();
             }
             file2.createNewFile();
-
-            logger.info("生成脚本临时文件:" + file2.getAbsolutePath());
-            logger.info("脚本内容:" + line + newcommand);
+            newcommand=newcommand.replace("$zdh_jar_path","spark_submit/" + quartzJobInfo.getJob_id());
+            logger.info("[调度平台]:外部JAR,生成脚本临时文件:" + file2.getAbsolutePath());
+            insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,生成脚本临时文件:" + file2.getAbsolutePath());
+            logger.info("[调度平台]:外部JAR,脚本内容:" + line + newcommand);
+            insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,脚本内容:" + line + newcommand);
             BufferedWriter fileWritter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file2.getAbsolutePath(), true), "UTF-8"));
             fileWritter.write(newcommand);
             fileWritter.close();
-        } catch (IOException e) {
+
+            List<JarFileInfo> jarFileInfos= zdhJarInfo.getJarFileInfos();
+
+            for(JarFileInfo jarFileInfo:jarFileInfos){
+                //检查文件是否存在
+
+                File file_jar=new File("spark_submit/" + quartzJobInfo.getJob_id()+"/"+jarFileInfo.getFile_name());
+                if(file_jar.exists()){
+                    file_jar.delete();
+                }
+                logger.info("[调度平台]:外部JAR,开始下载文件:" + jarFileInfo.getFile_name());
+                ZdhNginx zdhNginx=zdhJarInfo.getZdhNginx();
+                //下载文件
+                if (zdhNginx.getHost() != null && !zdhNginx.getHost().equals("")) {
+                    logger.info("开始下载文件:SFTP方式" + jarFileInfo.getFile_name());
+                    insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,开始下载文件:SFTP方式" + jarFileInfo.getFile_name());
+                    //连接sftp 下载
+                    SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
+                            zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
+                    sftp.login();
+                   sftp.download(zdhNginx.getNginx_dir()+"/"+zdhNginx.getOwner(), jarFileInfo.getFile_name(),"spark_submit/" + quartzJobInfo.getJob_id()+"/"+jarFileInfo.getFile_name());
+                } else {
+                    logger.info("开始下载文件:本地方式" + jarFileInfo.getFile_name());
+                    insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,开始下载文件:本地方式" + jarFileInfo.getFile_name());
+                    //本地文件
+                    BufferedOutputStream  bos=null;
+                    FileInputStream in=null;
+                    try{
+                        in=new FileInputStream(zdhNginx.getTmp_dir()+"/"+zdhNginx.getOwner()+"/"+jarFileInfo.getFile_name());
+                        ByteArrayOutputStream out=new ByteArrayOutputStream(1024);
+                        System.out.println("bytes available:"+in.available());
+                        byte[] temp=new byte[1024];
+                        int size=0;
+                        while((size=in.read(temp))!=-1)
+                        {
+                            out.write(temp,0,size);
+                        }
+                        byte[] bytes=out.toByteArray();
+                        System.out.println("bytes size got is:"+bytes.length);
+
+                        bos = new BufferedOutputStream(new FileOutputStream("spark_submit/" + quartzJobInfo.getJob_id()+"/"+jarFileInfo.getFile_name(), true));
+                        bos.write(bytes);
+                        bos.flush();
+                    }catch (Exception e){
+                          e.printStackTrace();
+                    }finally {
+                        if(in!=null) in.close();
+                        if(bos!=null) bos.close();
+                    }
+
+                }
+
+            }
+
+            //执行脚本
+            logger.info("当前系统为：" + system+",运行脚本:"+file2.getAbsolutePath());
+            insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,当前系统为:" + system+",运行脚本:"+file2.getAbsolutePath()+",请耐心等待jar 任务开始执行....");
+            long t1=System.currentTimeMillis();
+            if (system.toLowerCase().startsWith("win")) {
+                CommandUtils.exeCommand("cmd.exe /C  " +file2.getAbsolutePath());
+            } else {
+                CommandUtils.exeCommand("sh " + file2.getAbsolutePath());
+            }
+            long t2=System.currentTimeMillis();
+            insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,jar 任务执行结束,耗时:"+(t2-t1)/1000+"s");
+
+
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

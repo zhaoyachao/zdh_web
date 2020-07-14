@@ -338,11 +338,36 @@ alter table sql_task_info add column encoding_output varchar(10);
 alter table sql_task_info add column sep_output varchar(10);
 alter table sql_task_info add column header_output varchar(10);
 
---2020-06-31 更新
+--2020-06-31 更新;
 alter table zdh_ha_info add column web_port varchar(100) after zdh_port;
 
 
+--2020-07-13 更新;
+drop table if EXISTS jar_file_info;
+create table jar_file_info(
+ id varchar(20),
+ file_name varchar(100),
+ path varchar(100),
+ create_time TIMESTAMP,
+ jar_etl_id varchar(20),
+ owner varchar(100),
+ status varchar(10)
+);
 
+drop table if EXISTS jar_task_info;
+create table jar_task_info(
+ id varchar(20),
+ etl_context varchar(100),
+ files varchar(100),
+ master varchar(100),
+ deploy_mode varchar(20),
+ cpu varchar(100),
+ memory varchar(100),
+ main_class varchar(100),
+ spark_submit_params text,
+ owner varchar(10),
+ create_time TIMESTAMP
+);
 
 
 create database if NOT EXISTS quartz;

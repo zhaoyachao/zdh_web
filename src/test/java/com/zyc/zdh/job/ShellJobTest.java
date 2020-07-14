@@ -34,5 +34,12 @@ public class ShellJobTest {
 
         System.out.println(file.getPath());
     }
+    @Test
+    public void run3() throws IOException {
+
+        CommandUtils.exeCommand("cmd.exe /c start spark_submit\\732547003703103488\\第一个jar.bat" );
+      //  CommandUtils.exeCommand("cmd /c start java -version" );
+
+    }
 
 }

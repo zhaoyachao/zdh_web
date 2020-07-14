@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 多源ETL新增</title>
+    <meta name="keywords" content="ZDH 多源ETL新增">
+    <meta name="description" content="ZDH 多源ETL新增">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/fileinput.js" type="text/javascript"></script>
+    <script src="js/fileinput/locale/fr.js" type="text/javascript"></script>
+    <script src="js/fileinput/locale/es.js" type="text/javascript"></script>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>JAR任务配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="etl_task_jar_add_form" name="etl_task_jar_add_form" method="post" class="form-horizontal"
+                          action="" enctype="multipart/form-data">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">JAR任务说明</label>
+                            <div class="col-sm-10">
+                                <input id="etl_context" name="etl_context" type="text"
+                                       placeholder="JAR任务说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">创建时间</label>
+                            <div class="col-sm-10">
+                                <input id="create_time" name="create_time" type="text" readonly
+                                       placeholder="创建时间" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">已上传文件</label>
+                            <div class="col-sm-10" id="file_list">
+
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">上传文件/JAR</label>
+
+                            <div class="form-group col-sm-10">
+                                <input id="jar_files" name="jar_files" class="file" type="file" multiple data-preview-file-type="any" data-upload-url="#">
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">集群信息</label>
+                            <div class="col-sm-10">
+                                <input id="master" name="master" type="text"
+                                       placeholder="集群地址,yarn,mesos,standlone 暂不支持k8s" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">CPU资源</label>
+                            <div class="col-sm-10">
+                                <input id="cores" name="cores" type="text"
+                                       placeholder="线程数,example:1,4,..." class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">内存资源</label>
+                            <div class="col-sm-10">
+                                <input id="memory" name="memory" type="text"
+                                       placeholder="内存大小,example:500M,1G" class="form-control" aria-required="true"> </span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">集群常用参数</label>
+                            <div class="col-sm-5">
+                                <select id="deploy_mode" name="deploy_mode"
+                                        data-placeholder="集群模式"
+                                        class="chosen-select form-control" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">空</option>
+                                    <option value="client" mytype="">CLIENT</option>
+                                    <option value="cluster" mytype="">CLUSTER</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-5">
+                                <input id="main_class" name="main_class" type="text"
+                                       placeholder="启动类" class="form-control" aria-required="true"> </span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">其他参数</label>
+                            <div class="col-sm-10" id="div_spark_submit_params">
+                                <textarea id="spark_submit_params" name="spark_submit_params" class="form-control" rows="5" placeholder="参数使用 --conf key=value,其他参数参考启动脚本,换行符分割"></textarea>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!-- 输出数据源结束-->
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_etl_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+    var id_tmp="";
+
+    (function(document, window, $) {
+
+
+        (function () {
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+            id_tmp=s.id;
+            $('#deploy_mode').chosen()
+
+
+
+
+            // ------------------------------------------------------------------
+
+            //s.id=-1 表示新增,否则表示更新
+            if(s.id==-1){
+                console.info("新增按钮触发")
+                //$('#data_sources_table_name_input').chosen();
+                //$('#data_sources_table_name_output').chosen();
+                $('#update_etl_task').hide()
+                $('#save_etl_task').show()
+            }else{
+                //init_table_name(s.id)
+                if(s.is_copy =="true"){
+                    console.info("拷贝按钮触发")
+                    $('#update_etl_task').hide()
+                    $('#save_etl_task').show()
+                }else{
+                    console.info("更新按钮触发")
+                    $('#save_etl_task').hide()
+                    $('#update_etl_task').show()
+                }
+                buildParam()
+            }
+
+            function getMyDate(str){
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay) +" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+            //补0操作
+            function getzf(num){
+                if(parseInt(num) < 10){
+                    num = '0'+num;
+                }
+                return num;
+            }
+
+
+
+
+            function  buildParam(){
+                if(s.id !='-1'){
+                    console.info("更新按钮触发--开始赋值对应参数:"+s.id)
+                    //开始赋值
+                    file_list_m(s.id)
+
+                    $.ajax({
+                        url : "etl_task_jar_list",
+                        data : "ids=" + s.id,
+                        type : "post",
+                        async: false,
+                        dataType : "json",
+                        success : function(data) {
+                            console.info("success")
+
+
+                            //获取输入数据源id
+                            var id=data[0].id
+                            console.info("参数赋值:多源etl任务id:"+id)
+
+                            //获取ETL 说明
+                            var etl_context=data[0].etl_context
+                            $("#etl_context").val(etl_context);
+
+                            var create_time=data[0].create_time
+                            $("#create_time").val(getMyDate(create_time));
+
+                            //集群连接信息
+                            var master = data[0].master
+                            $("#master").val(master)
+
+                            //cpu 资源信息
+                            var cpu = data[0].cpu
+                            $("#cpu").val(cpu)
+
+                            //内存信息
+                            var memory = data[0].memory
+                            $("#memory").val(memory)
+
+                            //初始化集群模式select 组件
+                            var deploy_mode=data[0].deploy_mode
+                            $("#deploy_mode").val(deploy_mode);
+                            $("#deploy_mode").trigger("chosen:updated");
+
+                            var main_class = data[0].main_class
+                            $("#main_class").val(main_class)
+
+
+                            var spark_submit_params = data[0].spark_submit_params
+                            $("#spark_submit_params").val(spark_submit_params)
+
+
+
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+
+                }
+            }
+
+        })();
+
+
+    })(document, window, jQuery);
+    function file_list_m(id) {
+        $.ajax({
+            url : "etl_task_jar_file_list",
+            data : "id=" + id+"&random="+new Date().getTime(),
+            type : "post",
+            async: false,
+            dataType : "json",
+            success : function(data) {
+                console.info("success")
+                //获取输入数据源id
+                $("#file_list").html("")
+                for (var i = 0; i < data.length; i++) {
+                    var id=data[i].id
+                    var fileName=data[i].file_name
+                    console.info("参数赋值:文件唯一id:"+id)
+                    var div1=' <div class="checkbox i-checks">'+
+                        '<label class="no-padding">'+
+                        ' <input type="checkbox" value="'+id+'"><i></i> '+fileName+'</label>'+
+                        '  </div>'
+                    $("#file_list").prepend(div1)
+                }
+                if(data.length>0){
+                    var div2='<div class="">'+
+                        '<button id="del_fils" name="del_fils" class="btn btn-outline btn-default" onclick="del_files()" type="button"> <i class="glyphicon glyphicon-trash" aria-hidden="true"></i> </button>'+
+                        '</div>'
+                    $("#file_list").prepend(div2)
+                }
+
+            },
+            error: function (data) {
+                console.info("error: " + data.responseText);
+            }
+
+        });
+    }
+
+    function del_files(){
+        var ids = new Array();// 声明一个数组
+        $('#file_list input:checked').each(function () {
+            ids.push($(this).attr("value"))
+           // alert($(this).attr("value"))
+        })
+        if(ids.length>0){
+            $.ajax({
+                url : "etl_task_jar_del_file",
+                data : "ids=" + ids,
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+                    console.info("success:s.id:"+id_tmp)
+                    file_list_m(id_tmp)
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }else{
+            layer.msg("请选择删除的文件")
+        }
+
+    }
+
+    $('#save_etl_task').click(function () {
+
+        if ($('#etl_context').val() == '') {
+            layer.msg("ETL任务说明不能为空！");
+            return;
+        }
+
+        var formData = new FormData($("#etl_task_jar_add_form")[0]);//获取表单中的文件
+
+       // alert(formData)
+        $.ajax({
+            type: 'POST',
+            url: "etl_task_jar_add_file",
+            data: formData,
+            processData: false,
+            contentType: false,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    })
+
+    $('#update_etl_task').click(function () {
+
+        if ($('#etl_context').val() == '') {
+            layer.msg("ETL任务说明不能为空！");
+            return;
+        }
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var formData = new FormData($("#etl_task_jar_add_form")[0]);//获取表单中的文件
+        formData.append('id',s.id)
+
+        $.ajax({
+            type: 'POST',
+            url: "etl_task_jar_update",
+            data: formData,
+            processData: false,
+            contentType: false,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
+
+</script>
+
+</body>
+
+</html>
