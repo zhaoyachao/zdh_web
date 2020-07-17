@@ -84,21 +84,21 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">集群信息</label>
                             <div class="col-sm-10">
-                                <input id="master" name="master" type="text"
+                                <input id="master" name="master" type="text" readonly
                                        placeholder="集群地址,yarn,mesos,standlone 暂不支持k8s" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">CPU资源</label>
                             <div class="col-sm-10">
-                                <input id="cores" name="cores" type="text"
+                                <input id="cores" name="cores" type="text" readonly
                                        placeholder="线程数,example:1,4,..." class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">内存资源</label>
                             <div class="col-sm-10">
-                                <input id="memory" name="memory" type="text"
+                                <input id="memory" name="memory" type="text" readonly
                                        placeholder="内存大小,example:500M,1G" class="form-control" aria-required="true"> </span>
                             </div>
 
@@ -106,17 +106,17 @@
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">集群常用参数</label>
+<!--                            <div class="col-sm-5">-->
+<!--                                <select id="deploy_mode" name="deploy_mode"-->
+<!--                                        data-placeholder="集群模式"-->
+<!--                                        class="chosen-select form-control" tabindex="2" style="width: 30%">-->
+<!--                                    <option value="" mytype="">空</option>-->
+<!--                                    <option value="client" mytype="">CLIENT</option>-->
+<!--                                    <option value="cluster" mytype="">CLUSTER</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
                             <div class="col-sm-5">
-                                <select id="deploy_mode" name="deploy_mode"
-                                        data-placeholder="集群模式"
-                                        class="chosen-select form-control" tabindex="2" style="width: 30%">
-                                    <option value="" mytype="">空</option>
-                                    <option value="client" mytype="">CLIENT</option>
-                                    <option value="cluster" mytype="">CLUSTER</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-5">
-                                <input id="main_class" name="main_class" type="text"
+                                <input id="main_class" name="main_class" type="text" readonly
                                        placeholder="启动类" class="form-control" aria-required="true"> </span>
                             </div>
 
@@ -125,7 +125,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">提交脚本</label>
                             <div class="col-sm-10" id="div_spark_submit_params">
-                                <textarea id="spark_submit_params" name="spark_submit_params" class="form-control" rows="5" placeholder="参数使用 spark-submit 参数 其他参数参考启动脚本,换行符分割"></textarea>
+                                <textarea id="spark_submit_params" name="spark_submit_params" class="form-control" rows="5" placeholder="参数使用 spark-submit 参数 其他参数参考启动脚本,换行符分割 example spark-submit.cmd --master local[1] --class xxx.xx "></textarea>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
