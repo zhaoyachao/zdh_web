@@ -30,6 +30,7 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
             "*",
             "from quartz_job_info",
             "where owner=#{owner}",
+            " AND status='running'",
             "<when test='job_ids!=null and job_ids.size > 0'>",
             " and job_id in ",
             "<foreach collection='job_ids' item='job_id' open='(' separator=',' close=')'>",
