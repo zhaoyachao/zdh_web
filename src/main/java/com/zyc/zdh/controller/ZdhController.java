@@ -87,6 +87,8 @@ public class ZdhController {
     JarTaskMapper jarTaskMapper;
     @Autowired
     JarFileMapper jarFileMapper;
+    @Autowired
+    EtlDroolsTaskMapper etlDroolsTaskMapper;
 
 
     @RequestMapping("/data_sources_index")
@@ -1594,6 +1596,76 @@ public class ZdhController {
 
         return jarFileInfos;
     }
+
+
+    @RequestMapping(value = "/etl_task_drools_list", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String etl_task_drools_list(String[] ids) {
+        EtlDroolsTaskInfo etlDroolsTaskInfo = new EtlDroolsTaskInfo();
+        etlDroolsTaskInfo.setOwner(getUser().getId());
+        List<EtlDroolsTaskInfo> etlDroolsTaskInfos = new ArrayList<EtlDroolsTaskInfo>();
+        if (ids == null) {
+            etlDroolsTaskInfos = etlDroolsTaskMapper.select(etlDroolsTaskInfo);
+        } else {
+            etlDroolsTaskInfos.add(etlDroolsTaskMapper.selectByPrimaryKey(ids[0]));
+        }
+
+        return JSON.toJSONString(etlDroolsTaskInfos);
+    }
+
+    @RequestMapping(value = "/etl_task_drools_list2", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String etl_task_drools_list2(String etl_context, String file_name) {
+        List<EtlDroolsTaskInfo> etlDroolsTaskInfos = new ArrayList<EtlDroolsTaskInfo>();
+        etlDroolsTaskInfos = etlDroolsTaskMapper.selectByParams(getUser().getId(), etl_context, file_name);
+        return JSON.toJSONString(etlDroolsTaskInfos);
+    }
+
+
+    @RequestMapping("/etl_task_drools_add")
+    @ResponseBody
+    public String etl_task_more_sources_add(EtlDroolsTaskInfo etlDroolsTaskInfo) {
+        etlDroolsTaskInfo.setOwner(getUser().getId());
+        etlDroolsTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+        debugInfo(etlDroolsTaskInfo);
+        etlDroolsTaskMapper.insert(etlDroolsTaskInfo);
+
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+    @RequestMapping("/etl_task_drools_delete")
+    @ResponseBody
+    public String etl_task_drools_delete(String[] ids) {
+        if (ids != null) {
+            for (String id : ids) {
+                etlDroolsTaskMapper.deleteBatchById(id);
+            }
+        }
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+    @RequestMapping("/etl_task_drools_update")
+    @ResponseBody
+    public String etl_task_drools_update(EtlDroolsTaskInfo etlDroolsTaskInfo) {
+        String owner = getUser().getId();
+        etlDroolsTaskInfo.setOwner(owner);
+        debugInfo(etlDroolsTaskInfo);
+
+        etlDroolsTaskMapper.updateByPrimaryKey(etlDroolsTaskInfo);
+
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

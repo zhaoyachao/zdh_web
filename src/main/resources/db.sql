@@ -369,6 +369,32 @@ create table jar_task_info(
  create_time TIMESTAMP
 );
 
+--2020-07-25 更新;
+DROP TABLE IF EXISTS `etl_drools_task_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `etl_drools_task_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `etl_context` varchar(200) DEFAULT NULL,
+  `etl_id` varchar(200) DEFAULT NULL,
+  `etl_drools` text,
+  `data_sources_filter_input` text,
+  `data_sources_choose_output` varchar(100) DEFAULT NULL,
+  `data_source_type_output` varchar(100) DEFAULT NULL,
+  `data_sources_table_name_output` varchar(100) DEFAULT NULL,
+  `data_sources_file_name_output` varchar(100) DEFAULT NULL,
+  `data_sources_params_output` varchar(500) DEFAULT NULL,
+  `data_sources_clear_output` varchar(500) DEFAULT NULL,
+  `owner` varchar(100) DEFAULT NULL,
+  `create_time` timestamp NULL DEFAULT NULL,
+  `drop_tmp_tables` varchar(500) DEFAULT NULL,
+  `file_type_output` varchar(10) DEFAULT NULL,
+  `encoding_output` varchar(10) DEFAULT NULL,
+  `sep_output` varchar(10) DEFAULT NULL,
+  `header_output` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 create database if NOT EXISTS quartz;
 
