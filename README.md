@@ -20,6 +20,7 @@
   + 数据转换,数据离线同步,实时数据同步
   + 质量检测
   + 元数据,指标管理
+  + drools灵活动态的数据清洗
   
   
   
@@ -43,6 +44,7 @@
   + 支持本地上传,下载文件
   + 支持多源ETL
   + 任务监控
+  + 灵活动态drools规则清理
   
 # 功能图
 ![功能图](img/zdh_web.jpg)  
@@ -54,6 +56,8 @@
   + v1.1 支持clickhouse-jdbc
   
   + v1.2 支持外部jar etl任务(任务状态需要外部jar 自己跟踪)
+  
+  + v1.3 支持drools 数据清理
   
   
 # FAQ
@@ -89,6 +93,7 @@
    + sftp
    + cassandra
    + redis
+   + flume
 
 # 支持的调度对象
    + shell 命令
