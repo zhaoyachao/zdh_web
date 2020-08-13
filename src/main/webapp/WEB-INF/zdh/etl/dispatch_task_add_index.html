@@ -157,6 +157,20 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">跳过检查</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="jump_dep" name="jump_dep" type="checkbox"><i></i> 跳过任务依赖</label>
+                                </div>
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="jump_script" name="jump_script" type="checkbox"><i></i> 跳过脚本检查</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">是否脚本</label>
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
@@ -218,6 +232,7 @@
                                     <option value="finish" mytype="">finish</option>
                                     <option value="etl" mytype="">etl</option>
                                     <option value="error" mytype="">error</option>
+                                    <option value="retry" mytype="">retry</option>
                                 </select>
                             </div>
                         </div>
@@ -766,6 +781,17 @@
                             $("#job_ids").trigger("chosen:updated");
                         }
 
+                        var jump_dep=data[0].jump_dep
+                        console.info("jump_dep:"+jump_dep)
+                        if(jump_dep=="on"){
+                            $('#jump_dep').iCheck('check');
+                        }
+                        var jump_script=data[0].jump_script
+                        console.info("jump_script:"+jump_script)
+                        if(jump_script=="on"){
+                            $('#jump_script').iCheck('check');
+                        }
+
                         //是否脚本选择
                         var is_script=data[0].is_script
                         console.info("is_script:"+is_script)
@@ -870,6 +896,7 @@
         if($('#is_script').is(':checked')){
             script_str="&is_script=true"
         }
+
         $("#dispatch_task_add_form").attr("etl_context",etl_context)
         $.ajax({
             type: 'POST',
@@ -944,6 +971,14 @@
         if($('#is_script').is(':checked')){
             script_str="&is_script=true"
         }
+        // var jump_dep=""
+        // if($('#jump_dep').is(':checked')){
+        //     jump_dep="&jump_dep=true"
+        // }
+        // var jump_script=""
+        // if($('#jump_script').is(':checked')){
+        //     jump_script="&jump_script=true"
+        // }
         console.info($("#dispatch_task_add_form").serialize())
         $.ajax({
             type: 'POST',

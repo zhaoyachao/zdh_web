@@ -23,40 +23,54 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class JdbcJob extends JobCommon {
 
-    private static String jobType="JDBC";
+    private static String jobType = "JDBC";
 
-    public static void run(QuartzJobInfo quartzJobInfo) {
+    public static void run(QuartzJobInfo quartzJobInfo, Boolean is_retry) {
+
+        Thread td = Thread.currentThread();
+        td.setName(quartzJobInfo.getJob_context());
+        long threadId = td.getId();
+        System.out.println("线程id:" + threadId);
+        String task_logs_id = SnowflakeIdWorker.getInstance().nextId() + "";
+        String tk = myid + "_" + threadId + "_" + task_logs_id;
 
         ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
         TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
-        QuartzManager2 quartzManager2=(QuartzManager2)SpringContext.getBean("quartzManager2");
+        QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
 
-        String task_logs_id=SnowflakeIdWorker.getInstance().nextId()+"";
-        TaskLogs taskLogs =insertTaskLog(task_logs_id,quartzJobInfo,null,"running","5",taskLogsMapper);
-        logger.info("开始执行["+jobType+"] JOB");
-        insertLog(quartzJobInfo.getJob_id(),"info",
-                "开始执行["+jobType+"] JOB");
-        //debugInfo(quartzJobInfo);
+        try {
+            TaskLogs taskLogs = insertTaskLog(task_logs_id, quartzJobInfo, null, "running", "5", tk, taskLogsMapper);
+            logger.info("开始执行[" + jobType + "] JOB");
+            insertLog(quartzJobInfo.getJob_id(), "info",
+                    "开始执行[" + jobType + "] JOB");
+            //debugInfo(quartzJobInfo);
 
-        //检查任务状态,并初始化相应的初始值 比如执行日期
-        boolean checks=checkStatus(jobType,quartzJobInfo,taskLogsMapper,quartzManager2);
-        if(checks==false) return ;
+            //检查任务状态,并初始化相应的初始值 比如执行日期
+            boolean checks = checkStatus(jobType, quartzJobInfo, taskLogsMapper, quartzManager2);
 
-        //检查任务依赖
-        boolean dep = checkDep(jobType, quartzJobInfo, taskLogsMapper);
-        if (dep == false) return;
+            if (checks == false) return;
 
-        updateTaskLogEtlDate(taskLogs,quartzJobInfo,taskLogsMapper);
+            //检查任务依赖
+            boolean dep = checkDep(jobType, quartzJobInfo, taskLogsMapper);
+            if (dep == false) return;
 
-        if (quartzJobInfo.getJob_model().equals(JobModel.TIME_SEQ.getValue())) {
-            runTimeSeq(quartzJobInfo,task_logs_id);
-        } else if (quartzJobInfo.getJob_model().equals(JobModel.ONCE.getValue())) {
-            runOnce(quartzJobInfo,task_logs_id);
-        } else if (quartzJobInfo.getJob_model().equals(JobModel.REPEAT.getValue())) {
-            runRepeat(quartzJobInfo,task_logs_id);
+            updateTaskLogEtlDate(taskLogs, quartzJobInfo, taskLogsMapper);
+
+            if (quartzJobInfo.getJob_model().equals(JobModel.TIME_SEQ.getValue())) {
+                runTimeSeq(quartzJobInfo, task_logs_id);
+            } else if (quartzJobInfo.getJob_model().equals(JobModel.ONCE.getValue())) {
+                runOnce(quartzJobInfo, task_logs_id);
+            } else if (quartzJobInfo.getJob_model().equals(JobModel.REPEAT.getValue())) {
+                runRepeat(quartzJobInfo, task_logs_id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JobCommon.chm.remove(tk);
         }
 
 
@@ -72,7 +86,7 @@ public class JdbcJob extends JobCommon {
             if (params.equals("")) {
                 exe_status = false;
                 logger.info("参数不可为空,必须包含特定参数,zdh.jdbc.url,zdh.jdbc.driver,zdh.jdbc.username,zdh.jdbc.password");
-                insertLog(quartzJobInfo.getJob_id(),"error",
+                insertLog(quartzJobInfo.getJob_id(), "error",
                         "参数不可为空,必须包含特定参数,zdh.jdbc.url,zdh.jdbc.driver,zdh.jdbc.username,zdh.jdbc.password");
 
                 return exe_status;
@@ -84,9 +98,9 @@ public class JdbcJob extends JobCommon {
 
             if (url == null || url.equals("") || driver == null || driver.equals("") || username == null || username.equals("") || password == null || password.equals("")) {
                 exe_status = false;
-                logger.info("["+jobType+"] JOB ,参数不可为空");
+                logger.info("[" + jobType + "] JOB ,参数不可为空");
                 //插入日志
-                insertLog(quartzJobInfo.getJob_id(),"error",
+                insertLog(quartzJobInfo.getJob_id(), "error",
                         "参数不可为空,必须包含特定参数,zdh.jdbc.url,zdh.jdbc.driver,zdh.jdbc.username,zdh.jdbc.password");
 
                 return exe_status;
@@ -103,7 +117,7 @@ public class JdbcJob extends JobCommon {
             if (quartzJobInfo.getLast_time() == null) {
                 //第一次执行,下次执行时间为起始时间+1
                 if (quartzJobInfo.getStart_time() == null) {
-                    logger.info("["+jobType+"] JOB ,开始日期为空设置当前日期为开始日期");
+                    logger.info("[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
                     quartzJobInfo.setStart_time(new Timestamp(new Date().getTime()));
                 }
                 quartzJobInfo.setNext_time(quartzJobInfo.getStart_time());
@@ -122,8 +136,8 @@ public class JdbcJob extends JobCommon {
         } catch (Exception ex) {
             ex.printStackTrace();
             //插入日志
-            insertLog(quartzJobInfo.getJob_id(),"error",
-                    "[调度平台]:"+ex.getMessage());
+            insertLog(quartzJobInfo.getJob_id(), "error",
+                    "[调度平台]:" + ex.getMessage());
             logger.error(ex.getMessage());
             return false;
         }
@@ -135,7 +149,7 @@ public class JdbcJob extends JobCommon {
      *
      * @param quartzJobInfo
      */
-    public static void runTimeSeq(QuartzJobInfo quartzJobInfo,String task_logs_id) {
+    public static void runTimeSeq(QuartzJobInfo quartzJobInfo, String task_logs_id) {
 
 
         QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
@@ -143,7 +157,7 @@ public class JdbcJob extends JobCommon {
         EtlTaskService etlTaskService = (EtlTaskService) SpringContext.getBean("etlTaskServiceImpl");
         DataSourcesServiceImpl dataSourcesServiceImpl = (DataSourcesServiceImpl) SpringContext.getBean("dataSourcesServiceImpl");
         ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-        ZdhHaInfoMapper zdhHaInfoMapper=(ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
+        ZdhHaInfoMapper zdhHaInfoMapper = (ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
         TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
 
 
@@ -155,14 +169,13 @@ public class JdbcJob extends JobCommon {
 
         Boolean exe_status = runCommand(quartzJobInfo, zdhLogsService);
 
+        if (!exe_status) {
+            jobFail(jobType, task_logs_id, quartzJobInfo, taskLogsMapper);
+        }
         //拼接任务信息发送请求
         if (exe_status) {
-            JobCommon.runTimeSeq(jobType,task_logs_id,exe_status,quartzJobInfo,taskLogsMapper,quartzManager2);
-        } else {
-            jobFail(jobType,task_logs_id,quartzJobInfo,taskLogsMapper);
+            JobCommon.runTimeSeq(jobType, task_logs_id, exe_status, quartzJobInfo, taskLogsMapper, quartzManager2);
         }
-
-
 
         //更新任务信息
         debugInfo(quartzJobInfo);
@@ -178,9 +191,9 @@ public class JdbcJob extends JobCommon {
      *
      * @param quartzJobInfo
      */
-    private static void runOnce(QuartzJobInfo quartzJobInfo,String task_logs_id) {
+    private static void runOnce(QuartzJobInfo quartzJobInfo, String task_logs_id) {
 
-        logger.info("["+jobType+"] JOB,任务模式为[ONCE]");
+        logger.info("[" + jobType + "] JOB,任务模式为[ONCE]");
 
         QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
         QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
@@ -195,14 +208,14 @@ public class JdbcJob extends JobCommon {
 
         Boolean exe_status = runCommand(quartzJobInfo, zdhLogsService);
 
-        //拼接任务信息发送请求
-        if (exe_status) {
-            JobCommon.runOnce(jobType,task_logs_id,exe_status,quartzJobInfo,taskLogsMapper,quartzManager2);
-        } else {
-            jobFail(jobType,task_logs_id,quartzJobInfo,taskLogsMapper);
+        if (!exe_status) {
+            jobFail(jobType, task_logs_id, quartzJobInfo, taskLogsMapper);
         }
 
-
+        //拼接任务信息发送请求
+        if (exe_status) {
+            JobCommon.runOnce(jobType, task_logs_id, exe_status, quartzJobInfo, taskLogsMapper, quartzManager2);
+        }
 
         quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
 
@@ -215,9 +228,9 @@ public class JdbcJob extends JobCommon {
      *
      * @param quartzJobInfo
      */
-    private static void runRepeat(QuartzJobInfo quartzJobInfo,String task_logs_id) {
+    private static void runRepeat(QuartzJobInfo quartzJobInfo, String task_logs_id) {
 
-        logger.info("["+jobType+"] JOB,任务模式为[重复执行模式]");
+        logger.info("[" + jobType + "] JOB,任务模式为[重复执行模式]");
 
         QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
         QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
@@ -232,19 +245,17 @@ public class JdbcJob extends JobCommon {
 
         Boolean exe_status = false;
         exe_status = runCommand(quartzJobInfo, zdhLogsService);
-
+        if (!exe_status) {
+            jobFail(jobType, task_logs_id, quartzJobInfo, taskLogsMapper);
+        }
         //拼接任务信息发送请求
         if (exe_status) {
             JobCommon.runRepeat(jobType, task_logs_id, exe_status, quartzJobInfo, taskLogsMapper, quartzManager2);
-        } else {
-            jobFail(jobType,task_logs_id,quartzJobInfo,taskLogsMapper);
         }
-
         if (quartzJobInfo.getLast_time() == null) {
             //第一次执行,下次执行时间为起始时间+1
             quartzJobInfo.setNext_time(quartzJobInfo.getStart_time());
         }
-
 
         //更新任务信息
         debugInfo(quartzJobInfo);

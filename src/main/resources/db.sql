@@ -395,6 +395,14 @@ CREATE TABLE `etl_drools_task_info` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--2020-08-01 更新;
+alter table quartz_job_info add column jump_dep varchar(10);
+alter table quartz_job_info add column jump_script varchar(10);
+
+alter table task_logs add column thread_id varchar(10);
+alter table task_logs modify column thread_id varchar(100);
+--2020-08-13 更新;
+alter table task_logs add column retry_time TIMESTAMP;
 
 create database if NOT EXISTS quartz;
 

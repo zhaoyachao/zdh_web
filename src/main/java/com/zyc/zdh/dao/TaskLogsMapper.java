@@ -16,6 +16,9 @@ public interface TaskLogsMapper extends BaseMapper<TaskLogs> {
     @Update(value = "update task_logs set status=#{status} where job_id=#{job_id} and etl_date=#{etl_date}")
     public int updateByTask(@Param("status") String status,@Param("job_id") String job_id,@Param("etl_date") String etl_date);
 
+    @Update(value = "update task_logs set status=#{status} where id=#{id}")
+    public int updateStatusById(@Param("status") String status,@Param("id") String id);
+
     @Select(value = "select etl_date,sum(case status when 'running' then 1 else 0 end) as \"running\",\n" +
             "sum(case status when 'error' then 1 else 0 end) as \"error\",\n" +
             "sum(case status when 'finish' then 1 else 0 end) as \"finish\"\n" +
@@ -60,4 +63,12 @@ public interface TaskLogsMapper extends BaseMapper<TaskLogs> {
 
     @Select("select * from task_logs where owner=#{owner} and etl_date=#{etl_date} and job_id=#{job_id}")
     public List<TaskLogs> selectByIdEtlDate(@Param("owner") String owner,@Param("job_id") String job_id,@Param("etl_date") String etl_date);
+
+    @Select("select * from task_logs where status =#{status}")
+    public List<TaskLogs> selectThreadByStatus(@Param("status") String status);
+
+
+    @Select("select * from task_logs where status =#{status} and  current_timestamp() >= retry_time")
+    public List<TaskLogs> selectThreadByStatus2(@Param("status") String status);
+
 }

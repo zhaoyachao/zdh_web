@@ -19,12 +19,14 @@ public class TaskLogs implements Serializable {
     private String job_id;//任务id,
     private String job_context;//任务说明
     private String etl_date;// 起始时间
-    private String status;// 任务状态,finish,error,etl
+    private String status;// 任务状态,finish,error,etl,kill
     private Timestamp start_time;//任务开始时间
     private Timestamp update_time;
     private String  owner;
     private String is_notice="false";
     private String process="1";
+    private String thread_id;//myid+threadId+id,通过'_'连接
+    private Timestamp retry_time;
 
     public String getJob_id() {
         return job_id;
@@ -104,5 +106,21 @@ public class TaskLogs implements Serializable {
 
     public void setStart_time(Timestamp start_time) {
         this.start_time = start_time;
+    }
+
+    public String getThread_id() {
+        return thread_id;
+    }
+
+    public void setThread_id(String thread_id) {
+        this.thread_id = thread_id;
+    }
+
+    public Timestamp getRetry_time() {
+        return retry_time;
+    }
+
+    public void setRetry_time(Timestamp retry_time) {
+        this.retry_time = retry_time;
     }
 }

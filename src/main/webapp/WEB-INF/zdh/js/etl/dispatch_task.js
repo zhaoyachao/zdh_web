@@ -213,9 +213,16 @@
 
             },
             'click #del': function (e, value, row, index) {
-                var ids = new Array();// 声明一个数组
-                ids.push(row.job_id)
-                deleteMs(ids)
+                layer.confirm('是否删除任务', {
+                    btn: ['确定','取消'] //按钮
+                }, function(index){
+                    var ids = new Array();// 声明一个数组
+                    ids.push(row.job_id)
+                    deleteMs(ids)
+                }, function(){
+
+                });
+
             },
             'click #execute': function (e, value, row, index) {
                 executeMs(row.job_id)
@@ -305,6 +312,25 @@
 
             ].join('');
 
+        }
+
+        function getMyDate(str){
+            var oDate = new Date(str),
+                oYear = oDate.getFullYear(),
+                oMonth = oDate.getMonth()+1,
+                oDay = oDate.getDate(),
+                oHour = oDate.getHours(),
+                oMin = oDate.getMinutes(),
+                oSen = oDate.getSeconds(),
+                oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay) +" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+            return oTime;
+        };
+        //补0操作
+        function getzf(num){
+            if(parseInt(num) < 10){
+                num = '0'+num;
+            }
+            return num;
         }
 
         $('#exampleTableEvents').bootstrapTable({
@@ -399,12 +425,18 @@
                 field: 'last_time',
                 title: '上次任务执行时间',
                 sortable: true,
-                visible:false
+                visible:false,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
             }, {
                 field: 'next_time',
                 title: '下次任务执行时间',
                 sortable: true,
-                visible:false
+                visible:false,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
             }, {
                 field: 'params',
                 title: '参数',

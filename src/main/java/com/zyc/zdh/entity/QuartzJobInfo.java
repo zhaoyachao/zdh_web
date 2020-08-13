@@ -32,7 +32,7 @@ public class QuartzJobInfo implements Serializable {
     private long count=0;//执行次数
     private String command;// command,
     private String params;// 参数,
-    private String last_status;// 上次任务是否执行完必,dispatch,finish,etl,error,用来记录异步采集程序的状态
+    private String last_status;// 上次任务是否执行完必,dispatch,finish,etl,error,wait_retry,retry用来记录异步采集程序的状态
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Timestamp last_time;// 上次任务执行时间,
@@ -49,6 +49,9 @@ public class QuartzJobInfo implements Serializable {
     private String  owner;
     private String is_script;
     private String job_ids;
+    private String jump_dep;
+    private String jump_script;
+
 
     public long getCount() {
         return count;
@@ -250,4 +253,22 @@ public class QuartzJobInfo implements Serializable {
     public void setJob_ids(String job_ids) {
         this.job_ids = job_ids;
     }
+
+    public String getJump_dep() {
+        return jump_dep;
+    }
+
+    public void setJump_dep(String jump_dep) {
+        this.jump_dep = jump_dep;
+    }
+
+    public String getJump_script() {
+        return jump_script;
+    }
+
+    public void setJump_script(String jump_script) {
+        this.jump_script = jump_script;
+    }
+
+
 }

@@ -65,29 +65,10 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 			if(quartzJobInfo==null){
 				logger.info("调度任务发现空的任务,任务id"+taskId);
 			}
+            //选择具体的job 执行引擎
+			JobCommon.chooseJobBean(quartzJobInfo,false);
 
-			if(quartzJobInfo.getJob_type().equals("SHELL")){
-				logger.info("调度任务[SHELL],开始调度");
-				ShellJob.run(quartzJobInfo);
-			}else if(quartzJobInfo.getJob_type().equals("JDBC")){
-				logger.info("调度任务[JDBC],开始调度");
-				JdbcJob.run(quartzJobInfo);
-			}else if(quartzJobInfo.getJob_type().equals("FTP")){
-				logger.info("调度任务[FTP],开始调度");
-				FtpJob.run(quartzJobInfo);
-			}else if(quartzJobInfo.getJob_type().equals("HDFS")){
-				logger.info("调度任务[HDFS],开始调度");
-				HdfsJob.run(quartzJobInfo);
-			}else if(quartzJobInfo.getJob_type().equals("EMAIL")){
-				logger.info("调度任务[EMAIL],开始调度");
-				EmailJob.run(quartzJobInfo);
-				EmailJob.notice_event();
-			}else{
-				ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-				JobCommon.insertLog(quartzJobInfo.getJob_id(),"ERROR",
-						"无法找到对应的任务类型,请检查调度任务配置中的任务类型");
-				logger.info("无法找到对应的任务类型,请检查调度任务配置中的任务类型");
-			}
+
 
 		} catch (Exception e) {
 			e.printStackTrace();

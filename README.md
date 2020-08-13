@@ -47,7 +47,7 @@
   + 灵活动态drools规则清理
   
 # 功能图
-![功能图](img/zdh_web.jpg)  
+![功能图](img/zdh_web.png)  
   
 # 版本更新说明
   + v1.0 支持常用数据jdbc,hive,kafka,http,flume,redis,es,kudu,mongodb,hbase,cassandra,hdfs(csv,json,orc,parquet,xml,excel...),本地上传数据(csv)

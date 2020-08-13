@@ -663,15 +663,7 @@ public class ZdhController {
 
         try {
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
-            if (dti.getJob_type().equals("SHELL")) {
-                ShellJob.run(dti);
-            } else if (dti.getJob_type().equals("FTP")) {
-
-            } else if (dti.getJob_type().equals("JDBC")) {
-                JdbcJob.run(dti);
-            } else if (dti.getJob_type().equals("HDFS")) {
-                HdfsJob.run(dti);
-            }
+            JobCommon.chooseJobBean(dti,false);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -928,6 +920,16 @@ public class ZdhController {
         List<EtlEcharts> echartsList = taskLogsMapper.slectByOwnerEtlDate(getUser().getId(), etl_date);
 
         return echartsList;
+    }
+
+    @RequestMapping("/kill")
+    @ResponseBody
+    public String killJob(String id){
+        taskLogsMapper.updateStatusById("kill",id);
+        JSONObject json2 = new JSONObject();
+        json2.put("success", "200");
+        return json2.toJSONString();
+
     }
 
     @RequestMapping("/getScheduleTask")
