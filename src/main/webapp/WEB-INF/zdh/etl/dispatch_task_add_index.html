@@ -136,7 +136,13 @@
                                 <input id="plan_count" name="plan_count" type="text" value="3"
                                        placeholder="失败重试次数,设置-1 代表无限制" class="form-control" aria-required="true"> </span>
                             </div>
-                            </br>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">重试时间间隔(s)</label>
+                            <div class="col-sm-10">
+                                <input id="interval_time" name="interval_time" type="text" value="5"
+                                       placeholder="重试时间间隔单位是秒,example: 5" class="form-control" aria-required="true"> </span>
+                            </div>
+                            <div class="form-group"></div>
                             <label class="col-sm-2 control-label">重置已执行次数</label>
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
@@ -237,6 +243,27 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">启用告警</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="alarm_enabled" name="alarm_enabled" type="checkbox"><i></i> 启用告警</label>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 control-label">告警渠道</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="email_and_sms" name="email_and_sms" type="checkbox"><i></i> 邮箱和短信</label>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 control-label">配置告警用户</label>
+                            <div class="col-sm-10">
+                                <input id="alarm_account" name="alarm_account" type="text"
+                                       placeholder="ZDH用户账号,多用户逗号分隔" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
 
                         <div class="hr-line-dashed"></div>
 
@@ -773,6 +800,9 @@
                         var plan_count=data[0].plan_count
                         $("#plan_count").val(plan_count);
 
+                        var interval_time=data[0].interval_time
+                        $("#interval_time").val(interval_time);
+
                         //调度任务依赖
                         var job_ids=data[0].job_ids
                         if(job_ids!='' && typeof(job_ids) !="undefined"){
@@ -823,6 +853,21 @@
                         var next_time=data[0].next_time
                         if(next_time!='' && typeof(next_time) !="undefined")
                         $("#next_time").val(getMyDate(next_time));
+
+                        var alarm_enabled=data[0].alarm_enabled
+                        console.info("alarm_enabled:"+alarm_enabled)
+                        if(alarm_enabled=="on"){
+                            $('#alarm_enabled').iCheck('check');
+                        }
+
+                        var email_and_sms=data[0].email_and_sms
+                        console.info("email_and_sms:"+email_and_sms)
+                        if(email_and_sms=="on"){
+                            $('#email_and_sms').iCheck('check');
+                        }
+
+                        var alarm_account=data[0].alarm_account
+                        $("#alarm_account").val(alarm_account);
 
                     },
                     error: function (data) {

@@ -23,4 +23,6 @@ public interface AccountService {
 	public int updateUser(User user);
 
 	public User selectByPrimaryKey(String id);
+
+	public List<User> findByUserName2(String[] user_names);
 }

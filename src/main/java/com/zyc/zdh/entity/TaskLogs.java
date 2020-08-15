@@ -27,6 +27,9 @@ public class TaskLogs implements Serializable {
     private String process="1";
     private String thread_id;//myid+threadId+id,通过'_'连接
     private Timestamp retry_time;
+    private String executor;
+    private String etl_info;
+    private String url;
 
     public String getJob_id() {
         return job_id;
@@ -122,5 +125,29 @@ public class TaskLogs implements Serializable {
 
     public void setRetry_time(Timestamp retry_time) {
         this.retry_time = retry_time;
+    }
+
+    public String getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(String executor) {
+        this.executor = executor;
+    }
+
+    public String getEtl_info() {
+        return etl_info;
+    }
+
+    public void setEtl_info(String etl_info) {
+        this.etl_info = etl_info;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

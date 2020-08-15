@@ -115,6 +115,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                     JobCommon.chm.remove(tl.getThread_id());
                                 }else{
                                     logger.info("调度部分已经执行完成,ETL部分正在执行,此处不支持已经提交到后端的任务进行杀死");
+                                    taskLogsMapper.updateStatusById("killed",tl.getId());
                                 }
                             }
                         }

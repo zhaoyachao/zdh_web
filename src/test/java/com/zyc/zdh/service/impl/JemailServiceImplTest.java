@@ -18,7 +18,7 @@ public class JemailServiceImplTest {
     @Test
     public void sendEmail() throws Exception {
 
-        jemailService.sendEmail("1299898281@qq.com","zhuti","nihao");
+        jemailService.sendEmail(new String[]{"1299898281@qq.com"},"zhuti","nihao");
     }
 
 }

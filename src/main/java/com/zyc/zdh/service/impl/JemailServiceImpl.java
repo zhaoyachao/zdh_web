@@ -19,7 +19,7 @@ public class JemailServiceImpl implements JemailService{
     JavaMailSender javaMailSender;
 
     @Override
-    public void sendEmail(String to,String subject, String context) {
+    public void sendEmail(String[] to,String subject, String context) {
 
         SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
         simpleMailMessage.setFrom(fromEmail);

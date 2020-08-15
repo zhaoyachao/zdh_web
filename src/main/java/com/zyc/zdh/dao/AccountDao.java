@@ -66,4 +66,25 @@ public interface AccountDao {
 	})
 	public User selectByPrimaryKey(@Param("id") String id) ;
 
+	@Select({
+			"<script>",
+			"select",
+			"*",
+			"from account_info",
+			"where user_name in",
+			"<foreach collection='user_names' item='user_name' open='(' separator=',' close=')'>",
+			"#{user_name}",
+			"</foreach>",
+			"</script>"
+	})
+	@Results({@Result(column="id",property="id"),
+			@Result(column="user_name",property="userName"),
+			@Result(column="user_password",property="password"),
+			@Result(column="email",property="email"),
+			@Result(column="is_use_email",property="is_use_email"),
+			@Result(column="phone",property="phone"),
+			@Result(column="is_use_phone",property="is_use_phone")
+	})
+	public List<User> findByUserName2(@Param("user_names")String[] user_names);
+
 }

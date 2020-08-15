@@ -59,4 +59,10 @@ public class AccountServiceImpl implements AccountService {
 		return accountDao.selectByPrimaryKey(id);
 	}
 
+	@Override
+	public List<User> findByUserName2(String[] user_names) {
+		return accountDao.findByUserName2(user_names);
+	}
+
+
 }

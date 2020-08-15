@@ -51,6 +51,10 @@ public class QuartzJobInfo implements Serializable {
     private String job_ids;
     private String jump_dep;
     private String jump_script;
+    private String interval_time;
+    private String alarm_enabled;
+    private String email_and_sms;
+    private String alarm_account;
 
 
     public long getCount() {
@@ -270,5 +274,35 @@ public class QuartzJobInfo implements Serializable {
         this.jump_script = jump_script;
     }
 
+    public String getInterval_time() {
+        return interval_time;
+    }
 
+    public void setInterval_time(String interval_time) {
+        this.interval_time = interval_time;
+    }
+
+    public String getAlarm_enabled() {
+        return alarm_enabled;
+    }
+
+    public void setAlarm_enabled(String alarm_enabled) {
+        this.alarm_enabled = alarm_enabled;
+    }
+
+    public String getEmail_and_sms() {
+        return email_and_sms;
+    }
+
+    public void setEmail_and_sms(String email_and_sms) {
+        this.email_and_sms = email_and_sms;
+    }
+
+    public String getAlarm_account() {
+        return alarm_account;
+    }
+
+    public void setAlarm_account(String alarm_account) {
+        this.alarm_account = alarm_account;
+    }
 }

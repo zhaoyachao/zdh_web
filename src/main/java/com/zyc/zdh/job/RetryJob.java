@@ -38,7 +38,8 @@ public class RetryJob {
                     quartzJobMapper.updateLastStatus(qj.getJob_id(), "error");
                     continue;
                 }
-                RetryJobInfo retryJobInfo = new RetryJobInfo(qj.getJob_context(), qj, 5, TimeUnit.SECONDS);
+                int interval_time=(qj.getInterval_time()==null || qj.getInterval_time().equals("")) ? 5:Integer.parseInt(qj.getInterval_time());
+                RetryJobInfo retryJobInfo = new RetryJobInfo(qj.getJob_context(), qj, interval_time, TimeUnit.SECONDS);
                 qj.setLast_status("retry");
                 quartzJobMapper.updateLastStatus(qj.getJob_id(), "retry");
                 taskLogsMapper.updateStatusById("retryed",tl.getId());

@@ -176,7 +176,7 @@ public class LoginController {
             json.put("value","请检查用户名是否正确");
         }else{
             System.out.println("username:"+username);
-            jemailService.sendEmail(users.get(0).getEmail(),"找回密码","你好,你正在使用大数据采集平台zdh,您的密码是:"
+            jemailService.sendEmail(new String[]{users.get(0).getEmail()},"找回密码","你好,你正在使用大数据采集平台zdh,您的密码是:"
                     +users.get(0).getPassword());
             json.put("value","密码已发送到指定邮箱");
         }

@@ -404,6 +404,17 @@ alter table task_logs modify column thread_id varchar(100);
 --2020-08-13 更新;
 alter table task_logs add column retry_time TIMESTAMP;
 
+--2020-08-14 更新;
+alter table quartz_job_info add column interval_time varchar(20);
+
+alter table quartz_job_info add column alarm_enabled varchar(10);
+alter table quartz_job_info add column email_and_sms varchar(10);
+alter table quartz_job_info add column alarm_account varchar(500);
+
+alter table task_logs add column executor varchar(100);
+alter table task_logs add column url varchar(100);
+alter table task_logs add column etl_info text;
+
 create database if NOT EXISTS quartz;
 
 use quartz;

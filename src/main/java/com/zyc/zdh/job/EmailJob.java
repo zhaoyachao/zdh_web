@@ -1,9 +1,11 @@
 package com.zyc.zdh.job;
 
 import com.alibaba.fastjson.JSON;
+import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.TaskLogsMapper;
 import com.zyc.zdh.dao.ZdhDownloadMapper;
 import com.zyc.zdh.entity.*;
+import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
@@ -27,7 +29,8 @@ public class EmailJob {
             TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
             ZdhLogsService zdhLogsService= (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
             JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
-
+            QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
+            AccountService accountService=(AccountService) SpringContext.getBean("accountService");
             //获取失败的任务
             List<EmailTaskLogs> emailTaskLogsList=taskLogsMapper.selectByStatus();
 
@@ -37,7 +40,7 @@ public class EmailJob {
                 List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(emailTaskLogs.getJob_id(),
                         emailTaskLogs.getStart_time(), emailTaskLogs.getUpdate_time(), levels);
                 Iterator<ZdhLogs> it = zhdLogs.iterator();
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder("");
                 //拼接邮件信息
                 while (it.hasNext()) {
                     ZdhLogs next = it.next();
@@ -45,12 +48,26 @@ public class EmailJob {
                     sb.append(info + "\r\n");
                 }
                 logger.info("检测失败任务:"+emailTaskLogs.getJob_id()+",对应主键:"+emailTaskLogs.getId());
+                List<String> emails=new ArrayList<>();
+                List<String> phones=new ArrayList<>();
+                QuartzJobInfo qj=quartzJobMapper.selectByPrimaryKey(emailTaskLogs.getJob_id());
+                if(qj.getAlarm_enabled()!=null && qj.getAlarm_enabled().equalsIgnoreCase("on") && qj.getAlarm_account()!=null && !qj.getAlarm_account().equalsIgnoreCase("")){
+                    List<User> users=accountService.findByUserName2(qj.getAlarm_account().split(","));
+                    for(User user:users){
+                      if(user.getEmail()!=null){
+                          emails.add(user.getEmail());
+                      }
+                      if(user.getPhone()!=null){
+                        phones.add(user.getPhone());
+                      }
+                    }
 
-                if(emailTaskLogs.getIs_use_email()!=null && emailTaskLogs.getIs_use_email().equals("on")){
-                    jemailService.sendEmail(emailTaskLogs.getEmail(),"任务监控:"+emailTaskLogs.getJob_context(),sb.toString());
-                }
-                if(emailTaskLogs.getIs_use_phone()!=null && emailTaskLogs.getIs_use_phone().equals("on")){
-                    logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
+                    if(emails.size()>0){
+                        jemailService.sendEmail(emails.toArray(new String[0]),"任务监控:"+emailTaskLogs.getJob_context(),sb.toString());
+                    }
+                    if(phones.size()>0&& qj.getEmail_and_sms()!=null && qj.getEmail_and_sms().equalsIgnoreCase("on")){
+                        logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
+                    }
                 }
 
                 TaskLogs taskLogs=new TaskLogs();

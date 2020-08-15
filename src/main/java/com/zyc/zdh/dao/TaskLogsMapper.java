@@ -58,7 +58,7 @@ public interface TaskLogsMapper extends BaseMapper<TaskLogs> {
                                            @Param("end_time") Timestamp end_time,@Param("status") String status);
 
 
-    @Select("select a.*,b.email,b.user_name as userName,b.phone,b.is_use_email,b.is_use_phone from task_logs a,account_info b where a.status='error' and a.is_notice='false' and (b.is_use_email='on' or b.is_use_phone='on') and a.owner=b.id")
+    @Select("select a.*,b.email,b.user_name as userName,b.phone,b.is_use_email,b.is_use_phone from task_logs a,account_info b where a.status='error' and a.is_notice='false' and a.owner=b.id")
     public List<EmailTaskLogs> selectByStatus();
 
     @Select("select * from task_logs where owner=#{owner} and etl_date=#{etl_date} and job_id=#{job_id}")
