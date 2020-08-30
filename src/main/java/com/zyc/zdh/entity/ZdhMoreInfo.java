@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Dsi_EtlInfo{
+
     //输入数据源
     private Dsi_Info dsi_Input;
     private EtlTaskInfo etlTaskInfo;

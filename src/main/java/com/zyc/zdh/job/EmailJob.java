@@ -25,7 +25,7 @@ public class EmailJob {
 
     public static void run(QuartzJobInfo quartzJobInfo) {
         try{
-            logger.info("开始检测失败任务...");
+            logger.debug("开始检测失败任务...");
             TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
             ZdhLogsService zdhLogsService= (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
             JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
@@ -94,7 +94,7 @@ public class EmailJob {
 
     public static void notice_event(){
 
-        logger.info("开始加载待下载的文件信息");
+        logger.debug("开始加载待下载的文件信息");
         ZdhDownloadMapper zdhDownloadMapper = (ZdhDownloadMapper) SpringContext.getBean("zdhDownloadMapper");
         RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
 
@@ -117,7 +117,7 @@ public class EmailJob {
             String key=a.getKey();
             redisUtil.set("zdhdownloadinfos_"+key,JSON.toJSONString(a.getValue()));
         }
-        logger.info("完成加载待下载的文件信息");
+        logger.debug("完成加载待下载的文件信息");
 
     }
 }

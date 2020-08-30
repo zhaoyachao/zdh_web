@@ -79,8 +79,8 @@
                             </li>
                            <li><a class="J_menuItem" href="etl_task_more_sources_index.html">多源ETL任务</a></li>
                             <li><a class="J_menuItem" href="sql_task_index.html">SQL任务</a></li>
-                            <li><a class="J_menuItem" href="etl_task_jar_index.html">外部JAR任务</a></li>
                             <li><a class="J_menuItem" href="etl_task_drools_index.html">Drools任务</a></li>
+                            <li><a class="J_menuItem" href="etl_task_ssh_index.html">SSH任务</a></li>
                             <li><a class="J_menuItem" href="dispatch_task_index.html">调度ETL
                                 <span class="label label-danger pull-right">推荐</span></a>
                             </li>
@@ -101,10 +101,6 @@
                     <li>
                         <a class="J_menuItem" href="zdh_help.html"> <i class="fa fa-hand-o-right"></i>
                             <span class="nav-label">使用技巧</span></a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0);" onclick="jump_spark_web()" id="jump_spark_web"> <i class="fa fa-star"></i>
-                            <span class="nav-label">SPARK监控</span></a>
                     </li>
                 </ul>
             </div>
@@ -544,7 +540,7 @@
                 success: function (data) {
                     console.info("success")
                     console.info(data.length)
-                    if(data.length==1){
+                    if(data.length>=1){
                         window.open("http://"+data[0].zdh_host+":"+data[0].web_port)
                     }else{
                         layer.msg("请检查zdh_server服务是否正常启动")

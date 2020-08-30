@@ -38,7 +38,7 @@ public class SessionDao extends EnterpriseCacheSessionDAO {
     @Override
     protected Serializable doCreate(Session session) {
         Serializable sessionId = super.doCreate(session);
-        System.out.println("doCreate......" + session.getId());
+        //System.out.println("doCreate......" + session.getId());
         //redisUtil.set(cacheKey+session.getId().toString(), sessionToByte(session),1*60L);
         getCacheManager().getCache("shiro-activeSessionCache1").put(session.getId().toString(), session);
         return session.getId();
@@ -62,7 +62,7 @@ public class SessionDao extends EnterpriseCacheSessionDAO {
     // 更新session的最后一次访问时间
     @Override
     protected void doUpdate(Session session) {
-        System.out.println("doUpdate......" + session.getId());
+        //System.out.println("doUpdate......" + session.getId());
         //super.doUpdate(session);
         //redisUtil.set(session.getId().toString(), sessionToByte(session),1*60L);
         if (getActiveSessionsCache().get(session.getId().toString()) != null) {
@@ -73,7 +73,7 @@ public class SessionDao extends EnterpriseCacheSessionDAO {
     // 删除session
     @Override
     protected void doDelete(Session session) {
-        System.out.println("doDelete......" + session.getId());
+        //System.out.println("doDelete......" + session.getId());
 //        super.doDelete(session);
 //        redisUtil.remove(session.getId().toString());
         getActiveSessionsCache().remove(session.getId().toString());

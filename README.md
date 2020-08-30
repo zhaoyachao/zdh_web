@@ -18,6 +18,7 @@
   + 数据采集(本地上传数据,hdfs,jdbc,http,cassandra,mongodb,redis,kafka,hbase,es,sftp,hive)
   + 数据加密
   + 数据转换,数据离线同步,实时数据同步
+  + 数据迁移
   + 质量检测
   + 元数据,指标管理
   + drools灵活动态的数据清洗
@@ -59,32 +60,31 @@
   
   + v1.3 支持drools 数据清理
   
+  + v1.4 支持greenplum-jdbc
+  
+  + v2.0 删除外部jar 任务使用ssh 任务代替,ssh任务功能新增
+  + v2.0 drools 任务增加支持多源和sql任务
+  + v2.0 clickhouse,hive spark数据源优化
+  + v2.0 spark sftp数据框架改动,增加sftp excel 和多分隔符支持
+  + v2.0 调度重试机制优化,增加节点失败重发功能(任务重启)
+  + v2.0 增加调度单独告警机制
+  + v2.0 server 模块高可用机制改动为负载高可用
+  + v2.0 hbase,drools jar冲突bug 修复
+  + v2.0 支持ssh 任务静态脚本,动态脚本
+  + v2.0 kafka,flume实时数据源删除必须使用jdbc输出源限制
+  + v2.0 修复spark 监控bug,移动spark监控到总监控
+
   
 # FAQ
-    shell 脚本格式
+   + 日志级别修改
+     修改日志文件logback 相关等级即可
     
-    window:
-    @echo off
-    ping -c 4 www.baidu.com1
-    :throw
-    if %ERRORLEVEL% EQU 1 exit 1 goto end //此处捕获不可少,异常 输出exit 1
-    :end
-    echo "success"
-    exit 0 //此处不可少 正常输出 exit 0
-    
-    linux
-    ping -c 4 www.baidu.com1
-    if [ $? -eq 0 ];then
-    exit 0
-    else
-    exit 1
-    fi
  
  # 支持的数据源
    + 本地文件
    + hive(单集群使用多个远程hive,以及内外部表)
    + hdfs(csv,txt,json,orc,parquet,avro)
-   + jdbc (所有的jdbc,包含特殊jdbc如hbase-phoenix,spark-jdbc,click-house)
+   + jdbc (所有的jdbc,包含特殊jdbc如hbase-phoenix,spark-jdbc,click-house,greenplum)
    + hbase
    + mongodb
    + es

@@ -61,6 +61,18 @@
 
                         </div>
                         <!-- 输入数据源开始-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任务模板</label>
+                            <div class="col-sm-10">
+                                <select id="more_task" name="more_task" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="单源ETL" mytype="">单源ETL</option>
+                                    <option value="多源ETL" mytype="">多源ETL</option>
+                                    <option value="SQL" mytype="">SQL</option>
+                                </select>
+                            </div>
+                        </div>
+
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">ETL任务选择</label>
@@ -314,7 +326,7 @@
             $('#header_output').chosen()
 
             //初始化数据源--把所有数据源都加载到下拉框
-            function init_data_sources(){
+            function init_etl_task_sources(){
                 $.ajax({
                     type: 'POST',
                     url: "etl_task_list",
@@ -328,6 +340,7 @@
                             str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].id + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
                         }
                         //ETL单任务下拉框
+                        $("#etl_id").chosen("destroy");
                         $('#etl_id').html(str);
                         $('#etl_id').chosen().on("change", function (evt, params) {
                             $("#etl_id").trigger("chosen:updated");
@@ -343,6 +356,110 @@
                         console.info("error: " + data.responseText);
                     }
                 });
+            }
+
+            function init_etl_task_more_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: "etl_task_more_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
+                        }
+                        $("#etl_id").chosen("destroy");
+                        $('#etl_id').html(str);
+                        $('#etl_id').chosen().on("change", function (evt, params) {
+                            $("#etl_id").trigger("chosen:updated");
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_more_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_more_error: " + data.responseText);
+                    }
+                });
+            }
+
+            //初始化数据源
+            function init_sql_task_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: "sql_task_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].sql_context + "\" hassubinfo=\"true\">" + data[i].sql_context + "</option>"
+                        }
+                        $("#etl_id").chosen("destroy");
+                        $('#etl_id').html(str);
+                        $('#etl_id').chosen().on("change", function (evt, params) {
+                            $("#etl_id").trigger("chosen:updated");
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("sql_task_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("sql_task_error: " + data.responseText);
+                    }
+                });
+            }
+
+            function init_table_name_output(id) {
+
+                var postData = {
+                    id: id,
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: "etl_task_tables",
+                    dataType: 'json',
+                    data: postData,
+                    //成功返回
+                    success: function (data) {
+
+                        var str = '<option value=\"\" hassubinfo=\"true\"></option>'
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        }
+                        $('#data_sources_table_name_output').html(str);
+                        $("#data_sources_table_name_output").trigger("chosen:updated");
+                        $('#data_sources_table_name_output').chosen().on("change", function (evt, params) {
+                            console.info("'data_sources_table_name_output' event change set text 'data_sources_file_name_output'")
+                            $('#data_sources_file_name_output').val($('#data_sources_table_name_output').val())
+
+                        });
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+
+            }
+
+            function init_data_sources() {
 
                 $.ajax({
                     type: 'POST',
@@ -386,47 +503,26 @@
                 });
             }
 
-
-            function init_table_name_output(id) {
-
-                var postData = {
-                    id: id,
-                }
-                $.ajax({
-                    type: 'POST',
-                    url: "etl_task_tables",
-                    dataType: 'json',
-                    data: postData,
-                    //成功返回
-                    success: function (data) {
-
-                        var str = '<option value=\"\" hassubinfo=\"true\"></option>'
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
-                        }
-                        $('#data_sources_table_name_output').html(str);
-                        $("#data_sources_table_name_output").trigger("chosen:updated");
-                        $('#data_sources_table_name_output').chosen().on("change", function (evt, params) {
-                            console.info("'data_sources_table_name_output' event change set text 'data_sources_file_name_output'")
-                            $('#data_sources_file_name_output').val($('#data_sources_table_name_output').val())
-
-                        });
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-                });
-
-            }
-
             // ------------------------------------------------------------------
+
+            $('#more_task').chosen().on("change", function (evt, params) {
+                if($("#more_task").val()=="多源ETL"){
+                    console.info("选中多源ETL")
+                    init_etl_task_more_sources()
+                }else if($("#more_task").val()=="单源ETL"){
+                    console.info("选中单源ETL")
+                    init_etl_task_sources()
+                }else if($("#more_task").val()=="SQL") {
+                    console.info("选中SQL")
+                    init_sql_task_sources()
+                }else{
+                    console.info("未知的任务模板")
+                }
+            });
+
             //启动数据源select 初始化函数
-            init_data_sources();
+            init_etl_task_sources();
+            init_data_sources()
             //s.id=-1 表示新增,否则表示更新
             if(s.id==-1){
                 console.info("新增按钮触发")
@@ -494,6 +590,18 @@
                             var create_time=data[0].create_time
                             $("#create_time").val(getMyDate(create_time));
 
+
+                            var more_task=data[0].more_task
+                            $("#more_task").val(more_task);
+                            $("#more_task").trigger("chosen:updated");
+
+                            //如果是多源任务 初始化多源任务下拉框
+                            if(more_task=="多源ETL"){
+                                init_etl_task_more_sources()
+                            }
+                            if(more_task=="SQL"){
+                                init_sql_task_sources()
+                            }
                             //初始化输入数据源select 组件
                             var etl_id=data[0].etl_id.split(",")
                             $("#etl_id").val(etl_id)

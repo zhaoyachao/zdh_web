@@ -59,8 +59,9 @@
                                     <option value="单源ETL" mytype="">单源ETL</option>
                                     <option value="多源ETL" mytype="">多源ETL</option>
                                     <option value="SQL" mytype="">SQL</option>
-                                    <option value="外部JAR" mytype="">外部JAR</option>
+                                    <!--<option value="外部JAR" mytype="">外部JAR</option>-->
                                     <option value="Drools" mytype="">Drools</option>
+                                    <option value="SSH" mytype="">SSH</option>
                                 </select>
                             </div>
                         </div>
@@ -521,6 +522,38 @@
                 });
             }
 
+            function init_etl_task_ssh_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: "etl_task_ssh_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].ssh_context + "\" hassubinfo=\"true\">" + data[i].ssh_context + "</option>"
+                        }
+                        $("#etl_task_id").chosen("destroy");
+                        $('#etl_task_id').html(str);
+                        $('#etl_task_id').chosen().on("change", function (evt, params) {
+                            $('#job_context').val($('#etl_task_id').find("option:selected").attr("mytype"))
+                        })
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("ssh_task_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("ssh_task_error: " + data.responseText);
+                    }
+                });
+            }
+
+
             //初始化依赖调度任务数据
             function init_job_sources(){
                 $.ajax({
@@ -608,9 +641,12 @@
                 }else if($("#more_task").val()=="外部JAR"){
                     console.info("选中外部JAR")
                     init_jar_task_sources()
-                }else {
+                }else if($("#more_task").val()=="Drools") {
                     console.info("选中Drools")
                     init_etl_task_drools_sources()
+                }else if($("#more_task").val()=="SSH"){
+                    console.info("选中SSH")
+                    init_etl_task_ssh_sources()
                 }
             });
 
@@ -757,6 +793,10 @@
                         if(more_task=="Drools") {
                             console.info("选中Drools")
                             init_etl_task_drools_sources()
+                        }
+                        if(more_task=="SSH") {
+                            console.info("选中SSH")
+                            init_etl_task_ssh_sources()
                         }
 
                         var etl_task_id=data[0].etl_task_id
@@ -926,6 +966,11 @@
             return false
         }
 
+        if($('#job_model').val()==''){
+            layer.msg("调度模式不可为空")
+            return false
+        }
+
         var oDate1 = new Date($('#start_time').val());
         var oDate2 = new Date($('#end_time').val());
         if(oDate1 > oDate2){
@@ -999,6 +1044,10 @@
 
         if($('#end_time').val()==''){
             layer.msg("调度结束时间不可为空")
+            return false
+        }
+        if($('#job_model').val()==''){
+            layer.msg("调度模式不可为空")
             return false
         }
 

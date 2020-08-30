@@ -415,6 +415,41 @@ alter table task_logs add column executor varchar(100);
 alter table task_logs add column url varchar(100);
 alter table task_logs add column etl_info text;
 
+drop table if EXISTS ssh_task_info;
+create table ssh_task_info(
+ id bigint not null AUTO_INCREMENT,
+ ssh_context VARCHAR(200),
+ host varchar(100),
+ port varchar(100),
+ user_name varchar(500),
+ password varchar(100),
+ ssh_cmd text ,
+ ssh_script_path varchar(100),
+ ssh_script_context text,
+ ssh_params_input varchar(500),
+ owner varchar(100),
+ create_time TIMESTAMP ,
+ company varchar(100),
+ section varchar(100),
+ service varchar(100),
+ update_context varchar(100),
+ PRIMARY KEY (id)
+);
+
+--2020-08-30更新;
+alter table etl_drools_task_info add column more_task varchar(100);
+
+alter table zdh_ha_info add column application_id varchar(100);
+alter table zdh_ha_info add column history_server varchar(100);
+alter table zdh_ha_info add column master varchar(100);
+
+alter table task_logs add column application_id varchar(100);
+alter table task_logs add column history_server varchar(100);
+alter table task_logs add column master varchar(100);
+
+
+
+
 create database if NOT EXISTS quartz;
 
 use quartz;

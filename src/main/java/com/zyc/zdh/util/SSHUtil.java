@@ -107,34 +107,31 @@ public class SSHUtil {
         }   
     }
 
-    public String exec(String cmd){
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ByteArrayOutputStream error = new ByteArrayOutputStream();
+    public String[] exec(String cmd) throws IOException, JSchException {
         exec.setCommand(cmd);
-        exec.setErrStream(error);
-
         try {
-            InputStream in = exec.getInputStream();
             exec.connect();
-            return IOUtils.toString(in,"GBK");
+            InputStream in=exec.getInputStream();
+            InputStream error_in=exec.getErrStream();
+            return new String[]{IOUtils.toString(error_in,"GBK"),IOUtils.toString(in,"GBK")};
         } catch (JSchException e) {
             e.printStackTrace();
-            return e.getMessage();
+           throw e;
         } catch (IOException e) {
             e.printStackTrace();
-            return e.getMessage();
+            throw e;
         }finally {
          logout();
         }
     }
        
 
-    public static void main(String[] args) throws SftpException, IOException {   
-        SSHUtil sftp = new SSHUtil("zyc", "123456", "127.0.0.1", 22);
+    public static void main(String[] args) throws SftpException, IOException, JSchException {
+        SSHUtil sftp = new SSHUtil("zyc", "123456", "localhost", 22);
         sftp.login();   
         //byte[] buff = sftp.download("/opt", "start.sh");   
         //System.out.println(Arrays.toString(buff));
-        sftp.exec("lsa");
+        System.out.println(sftp.exec("lsa")[0]);
         sftp.logout();   
     }   
 }

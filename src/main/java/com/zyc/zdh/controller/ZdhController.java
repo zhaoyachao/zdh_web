@@ -22,6 +22,7 @@ import org.apache.shiro.SecurityUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.beans.PropertyEditorSupport;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -89,6 +91,8 @@ public class ZdhController {
     JarFileMapper jarFileMapper;
     @Autowired
     EtlDroolsTaskMapper etlDroolsTaskMapper;
+    @Autowired
+    SshTaskMapper sshTaskMapper;
 
 
     @RequestMapping("/data_sources_index")
@@ -295,7 +299,7 @@ public class ZdhController {
             }
             String nginx_dir = zdhNginx.getNginx_dir();
             try {
-                up_file.transferTo(tempFile);
+                FileCopyUtils.copy(up_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
                 if (!zdhNginx.getHost().equals("")) {
                     System.out.println("通过sftp上传文件");
                     SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
@@ -736,7 +740,7 @@ public class ZdhController {
         String dataSourcesType = etlTaskInfo.getData_source_type_input().toLowerCase();
         if (dataSourcesType.equals("kafka") || dataSourcesType.equals("flume")) {
             quartzJobMapper.updateStatus(qji.getJob_id(), "finish");
-            String url = JobCommon.getZdhUrl(zdhHaInfoMapper).replace("zdh", "del");
+            String url = JobCommon.getZdhUrl(zdhHaInfoMapper).getZdh_url().replace("zdh", "del");
             try {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("job_id", qji.getJob_id());
@@ -925,7 +929,7 @@ public class ZdhController {
     @RequestMapping("/kill")
     @ResponseBody
     public String killJob(String id){
-        taskLogsMapper.updateStatusById("kill",id);
+        taskLogsMapper.updateStatusById2("kill",id);
         JSONObject json2 = new JSONObject();
         json2.put("success", "200");
         return json2.toJSONString();
@@ -1124,7 +1128,7 @@ public class ZdhController {
     @RequestMapping(value = "/notice_list", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String notice() {
-        System.out.println("加载缓存中通知事件");
+        //System.out.println("加载缓存中通知事件");
         List<NoticeInfo> noticeInfos = new ArrayList<>();
         if (!redisUtil.exists("zdhdownloadinfos_" + getUser().getId())) {
             return JSON.toJSONString(noticeInfos);
@@ -1267,7 +1271,7 @@ public class ZdhController {
     @ResponseBody
     public String load_meta_databases() {
 
-        String url = JobCommon.getZdhUrl(zdhHaInfoMapper);
+        String url = JobCommon.getZdhUrl(zdhHaInfoMapper).getZdh_url();
         try {
             String databases = HttpUtil.postJSON(url + "/show_databases", new JSONObject().toJSONString());
 
@@ -1355,7 +1359,7 @@ public class ZdhController {
     @ResponseBody
     public String show_tables() {
 
-        String url = JobCommon.getZdhUrl(zdhHaInfoMapper);
+        String url = JobCommon.getZdhUrl(zdhHaInfoMapper).getZdh_url();
         try {
             String tableNames = HttpUtil.postJSON(url + "/show_tables", "");
 
@@ -1374,7 +1378,7 @@ public class ZdhController {
     @ResponseBody
     public String desc_table(String table) {
 
-        String url = JobCommon.getZdhUrl(zdhHaInfoMapper);
+        String url = JobCommon.getZdhUrl(zdhHaInfoMapper).getZdh_url();
         try {
             JSONObject p = new JSONObject();
             p.put("table", table);
@@ -1453,7 +1457,7 @@ public class ZdhController {
                 }
                 String nginx_dir = zdhNginx.getNginx_dir();
                 try {
-                    jar_file.transferTo(tempFile);
+                    FileCopyUtils.copy(jar_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
                     if (!zdhNginx.getHost().equals("")) {
                         System.out.println("通过sftp上传文件");
                         SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
@@ -1518,7 +1522,7 @@ public class ZdhController {
                 }
                 String nginx_dir = zdhNginx.getNginx_dir();
                 try {
-                    jar_file.transferTo(tempFile);
+                    FileCopyUtils.copy(jar_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
                     if (!zdhNginx.getHost().equals("")) {
                         System.out.println("通过sftp上传文件");
                         SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
@@ -1627,6 +1631,8 @@ public class ZdhController {
     @RequestMapping("/etl_task_drools_add")
     @ResponseBody
     public String etl_task_more_sources_add(EtlDroolsTaskInfo etlDroolsTaskInfo) {
+        String id=SnowflakeIdWorker.getInstance().nextId() + "";
+        etlDroolsTaskInfo.setId(id);
         etlDroolsTaskInfo.setOwner(getUser().getId());
         etlDroolsTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
         debugInfo(etlDroolsTaskInfo);
@@ -1667,6 +1673,243 @@ public class ZdhController {
         return json.toJSONString();
     }
 
+
+    @RequestMapping(value = "/etl_task_ssh_list", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String etl_task_ssh_list(String ssh_context, String id) {
+
+        List<SshTaskInfo> sshTaskInfos = new ArrayList<>();
+
+        sshTaskInfos = sshTaskMapper.selectByParams(getUser().getId(), ssh_context, id);
+
+        return JSON.toJSONString(sshTaskInfos);
+    }
+
+    @RequestMapping("/etl_task_ssh_delete")
+    @ResponseBody
+    public String etl_task_ssh_delete(String[] ids) {
+
+        for (String id : ids)
+            sshTaskMapper.deleteByPrimaryKey(id);
+
+        JSONObject json = new JSONObject();
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+    @RequestMapping("/etl_task_ssh_add")
+    @ResponseBody
+    public String etl_task_ssh_add(SshTaskInfo sshTaskInfo,MultipartFile[] jar_files) {
+        //String json_str=JSON.toJSONString(request.getParameterMap());
+        String owner = getUser().getId();
+        sshTaskInfo.setOwner(owner);
+        debugInfo(sshTaskInfo);
+        String id=SnowflakeIdWorker.getInstance().nextId() + "";
+        sshTaskInfo.setId(id);
+        sshTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+
+
+        sshTaskMapper.insert(sshTaskInfo);
+
+
+        if (sshTaskInfo.getUpdate_context() != null && !sshTaskInfo.getUpdate_context().equals("")) {
+            //插入更新日志表
+            EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
+            etlTaskUpdateLogs.setId(sshTaskInfo.getId());
+            etlTaskUpdateLogs.setUpdate_context(sshTaskInfo.getUpdate_context());
+            etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskUpdateLogs.setOwner(getUser().getId());
+            etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+        }
+
+        if (jar_files != null && jar_files.length > 0) {
+            for (MultipartFile jar_file : jar_files) {
+                String fileName = jar_file.getOriginalFilename();
+                System.out.println("上传文件不为空");
+                JarFileInfo jarFileInfo = new JarFileInfo();
+                jarFileInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                jarFileInfo.setJar_etl_id(id);
+                jarFileInfo.setFile_name(fileName);
+                jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
+                jarFileInfo.setOwner(owner);
+                jarFileMapper.insert(jarFileInfo);
+
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+                File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
+                File fileDir = new File(zdhNginx.getTmp_dir() + "/" + owner);
+                if (!fileDir.exists()) {
+                    fileDir.mkdirs();
+                }
+                String nginx_dir = zdhNginx.getNginx_dir();
+                try {
+                    FileCopyUtils.copy(jar_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
+                    if (!zdhNginx.getHost().equals("")) {
+                        System.out.println("通过sftp上传文件");
+                        SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
+                                zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
+                        sftp.login();
+                        InputStream is = new FileInputStream(tempFile);
+                        sftp.upload(nginx_dir + "/" + owner + "/", fileName, is);
+                        sftp.logout();
+                    }
+                    jarFileInfo.setStatus("success");
+                    jarFileMapper.updateByPrimaryKey(jarFileInfo);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (SftpException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+        }
+
+
+        //dataSourcesServiceImpl.insert(dataSourcesInfo);
+
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+    @RequestMapping("/etl_task_ssh_update")
+    @ResponseBody
+    public String sql_task_update(SshTaskInfo sshTaskInfo,MultipartFile[] jar_files) {
+        //String json_str=JSON.toJSONString(request.getParameterMap());
+        String owner = getUser().getId();
+        sshTaskInfo.setOwner(owner);
+        debugInfo(sshTaskInfo);
+        String id=sshTaskInfo.getId();
+        sshTaskMapper.updateByPrimaryKey(sshTaskInfo);
+
+        SshTaskInfo sti = sshTaskMapper.selectByPrimaryKey(sshTaskInfo.getId());
+
+        if (sshTaskInfo.getUpdate_context() != null && !sshTaskInfo.getUpdate_context().equals("")
+                && !sshTaskInfo.getUpdate_context().equals(sti.getUpdate_context())) {
+            //插入更新日志表
+            EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
+            etlTaskUpdateLogs.setId(sshTaskInfo.getId());
+            etlTaskUpdateLogs.setUpdate_context(sshTaskInfo.getUpdate_context());
+            etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskUpdateLogs.setOwner(getUser().getId());
+            etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+        }
+
+        if (jar_files != null && jar_files.length > 0) {
+            for (MultipartFile jar_file : jar_files) {
+                String fileName = jar_file.getOriginalFilename();
+                if(fileName.isEmpty()){
+                    System.out.println("上传文件名称为空"+fileName);
+                    continue;
+                }
+                System.out.println("上传文件不为空"+fileName);
+                JarFileInfo jarFileInfo = new JarFileInfo();
+                jarFileInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                jarFileInfo.setJar_etl_id(id);
+                jarFileInfo.setFile_name(fileName);
+                jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
+                jarFileInfo.setOwner(owner);
+                jarFileMapper.insert(jarFileInfo);
+
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+                File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
+                File fileDir = new File(zdhNginx.getTmp_dir() + "/" + owner);
+                if (!fileDir.exists()) {
+                    fileDir.mkdirs();
+                }
+                System.out.println("=================="+tempFile.getAbsolutePath());
+                String nginx_dir = zdhNginx.getNginx_dir();
+                try {
+                    FileCopyUtils.copy(jar_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
+                    if (!zdhNginx.getHost().equals("")) {
+                        System.out.println("通过sftp上传文件");
+                        SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
+                                zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
+                        sftp.login();
+                        InputStream is = new FileInputStream(tempFile);
+                        sftp.upload(nginx_dir + "/" + owner + "/", fileName, is);
+                        sftp.logout();
+                    }
+                    jarFileInfo.setStatus("success");
+                    jarFileMapper.updateByPrimaryKey(jarFileInfo);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (SftpException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+        //dataSourcesServiceImpl.insert(dataSourcesInfo);
+
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+    @RequestMapping("/etl_task_ssh_del_file")
+    @ResponseBody
+    public String etl_task_ssh_del_file(String[] ids, HttpServletRequest request) {
+        String json_str = JSON.toJSONString(request.getParameterMap());
+        String owner = getUser().getId();
+
+        List<JarFileInfo> jarFileInfos= jarFileMapper.selectByParams(owner,ids);
+        ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+        String nginx_dir = zdhNginx.getNginx_dir();
+        for(JarFileInfo jarFileInfo:jarFileInfos){
+            String fileName=jarFileInfo.getFile_name();
+            if (!zdhNginx.getHost().equals("")) {
+                System.out.println("通过sftp删除文件");
+                SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
+                        zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
+                sftp.login();
+
+                try {
+                    sftp.delete(nginx_dir + "/" + owner + "/", fileName);
+                } catch (SftpException e) {
+                    e.printStackTrace();
+                }
+                sftp.logout();
+            }else{
+                File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
+                if(tempFile.exists()){
+                    tempFile.delete();
+                }
+            }
+            jarFileMapper.deleteByPrimaryKey(jarFileInfo.getId());
+        }
+
+
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+    @RequestMapping("/etl_task_ssh_file_list")
+    @ResponseBody
+    public List<JarFileInfo> etl_task_ssh_file_list(String id, HttpServletRequest request) {
+        String json_str = JSON.toJSONString(request.getParameterMap());
+        String owner = getUser().getId();
+        JarFileInfo jarFileInfo = new JarFileInfo();
+        jarFileInfo.setOwner(owner);
+        jarFileInfo.setJar_etl_id(id);
+        List<JarFileInfo> jarFileInfos=jarFileMapper.select(jarFileInfo);
+
+        return jarFileInfos;
+    }
+
+
+    @RequestMapping("/getSparkMonitor")
+    @ResponseBody
+    public String getSparkMonitor(String executor) {
+        ZdhHaInfo zdhHaInfo=zdhHaInfoMapper.selectByPrimaryKey(executor);
+
+        return JSON.toJSONString(zdhHaInfo);
+    }
 
 
     private void debugInfo(Object obj) {

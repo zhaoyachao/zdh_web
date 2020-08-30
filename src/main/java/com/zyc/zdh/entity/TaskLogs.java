@@ -30,6 +30,9 @@ public class TaskLogs implements Serializable {
     private String executor;
     private String etl_info;
     private String url;
+    private String application_id;
+    private String history_server;
+    private String master;
 
     public String getJob_id() {
         return job_id;
@@ -149,5 +152,29 @@ public class TaskLogs implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getApplication_id() {
+        return application_id;
+    }
+
+    public void setApplication_id(String application_id) {
+        this.application_id = application_id;
+    }
+
+    public String getHistory_server() {
+        return history_server;
+    }
+
+    public void setHistory_server(String history_server) {
+        this.history_server = history_server;
+    }
+
+    public String getMaster() {
+        return master;
+    }
+
+    public void setMaster(String master) {
+        this.master = master;
     }
 }

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH ssh任务新增</title>
+    <meta name="keywords" content="ZDH ssh任务新增">
+    <meta name="description" content="ZDH ssh任务新增">
+
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/fileinput.js" type="text/javascript"></script>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>SSH任务配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="etl_task_ssh_add_form" name="etl_task_ssh_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">SSH任务说明</label>
+                            <div class="col-sm-10">
+                                <input id="ssh_context" name="ssh_context" type="text"
+                                       placeholder="SSH任务说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">创建时间</label>
+                            <div class="col-sm-10">
+                                <input id="create_time" name="create_time" type="text" readonly
+                                       placeholder="创建时间" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输入数据源开始-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">主机</label>
+                            <div id="using_json" class="col-sm-10">
+                                <input id="host" name="host" type="text"
+                                       placeholder="主机地址" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">端口</label>
+                            <div class="col-sm-10">
+                                <input id="port" name="port" type="text"
+                                       placeholder="主机端口" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户名</label>
+                            <div class="col-sm-10">
+                                <input id="user_name" name="user_name" type="text"
+                                       placeholder="用户名" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">密码</label>
+                            <div  class="col-sm-10">
+                                <input id="password" name="password" type="password"
+                                       placeholder="密码" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">SSH命令</label>
+                            <div class="col-sm-10">
+                                <textarea id="ssh_cmd" name="ssh_cmd" class="form-control" rows="3"
+                                          placeholder="SSH命令 example ping 127.0.0.1,此任务配合python等脚本语言使用最佳,配合在线脚本使用example sh $zdh_online_file,系统会自动替换路径"></textarea>
+                            </div>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">脚本/文件路径</label>
+                            <div class="col-sm-10">
+                                <textarea id="ssh_script_path" name="ssh_script_path" class="form-control"
+                                          placeholder="SSH在线脚本全路径 example:/home/zyc/first.sh"></textarea>
+                            </div>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">脚本内容</label>
+                            <div class="col-sm-10">
+                                <textarea id="ssh_script_context" name="ssh_script_context" class="form-control" rows="5"
+                                          placeholder="SSH在线脚本"></textarea>
+                            </div>
+                            <div class="form-group"></div>
+
+                            <label class="col-sm-2 control-label">已上传文件</label>
+                            <div class="col-sm-10" id="file_list">
+
+                            </div>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">上传文件</label>
+                            <div class="col-sm-10">
+                                <div style="margin-left:2px;">
+                                    <input id="jar_files" name="jar_files" class="file" type="file" multiple data-preview-file-type="any" data-upload-url="#">
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">其他参数</label>
+                            <div class="col-sm-10" id="div_data_sources_params">
+                                <textarea id="ssh_params_input" name="ssh_params_input"
+                                          class="form-control" rows="2"
+                                          placeholder="参数使用固定格式{&#34;k&#34;:&#34;v&#34;,&#34;k1&#34;:&#34;v1&#34;}"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 元信息 业务相关-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属公司</label>
+                            <div class="col-sm-10">
+                                <input id="company" name="company"
+                                       type="text"
+                                       placeholder="填写公司" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属部门</label>
+                            <div class="col-sm-10">
+                                <input id="section" name="section"
+                                       type="text"
+                                       placeholder="填写部门" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属业务</label>
+                            <div class="col-sm-10">
+                                <input id="service" name="service"
+                                       type="text"
+                                       placeholder="填写业务" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">更新说明</label>
+                            <div class="col-sm-10">
+                                <textarea id="update_context" name="update_context" class="form-control" rows="2"
+                                          placeholder="更新说明"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输出数据源结束-->
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<div id="data_sources_params" class="ibox-content" style="display: none;">
+    <p>数据源其他参数api</p>
+    <ul>
+        <li>JDBC:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>HDFS:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sep:分割符,特殊字符需要转义,example:{"sep":"\\|"},{"sep","="}</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fileType:文件类型,可选择parquet,orc,csv,json...,example {"fileType":"csv"}
+        </li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; partitionBy:分区字段,example {"partitionBy":"ETL_DATE"}</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; model:文件写入模式 默认append,overwrite,append,errorifexists,ignore,example
+            {"model":"overwrite"}
+        </li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; encoding:文件编码 默认UTF-8,example {"encoding":"gbk"}</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; merge: 合并小文件 手动填写分区个数example {"merge":"50"}</li>
+        <li>HIVE:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;format:orc,parquet</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;partitionBy:分区字段</li>
+        <li>KAFKA:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msgType:消息类型,支持csv,json 2种格式</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep:分割符 当消息类型选择csv 时使用</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;groupId:消费者组，默认g1</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kafka的topic 在文件名输入框配置</li>
+        <li>HTTP:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>REDIS:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data_type:写入数据类型，可选，string,hash,list,set,table</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key.column:当选择写入数据类型为table 时配置此选项可以生成特定规则key</li>
+        <li>CASSANDRA:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>ES:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>SFTP:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fileType:文件类型默认csv,可选csv,orc,parquet,json</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep:文件分割符,默认逗号分割</li>
+        <li>KUDU:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;primary_key:指定表主键字段,默认会生成一个zdh_auto_md5字段作为主键</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;replicas:指定副本个数,默认1个备份</li>
+    </ul>
+</div>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<!--<script src="js/plugins/toastr/toastr.min.js"></script>-->
+
+<!--<script src="js/plugins/webuploader/webuploader.min.js"></script>-->
+
+<!--<script src="js/demo/webuploader-demo.js"></script>-->
+
+<!-- jsTree plugin javascript -->
+<script src="js/plugins/jsTree/jstree.min.js"></script>
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+
+    (function (document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+
+
+            window.operateEvents = {
+                'click #del': function (e, value, row, index) {
+                    $('#exampleTableEvents').bootstrapTable('remove', {field: 'column_md5', values: [row.column_md5]});
+                }
+            };
+
+            function operateFormatter(value, row, index) {
+                return [
+                    ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm">\n' +
+                    '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+                    '                                    </button>'
+                ].join('');
+            }
+
+
+
+
+
+            //s.id=-1 表示新增,否则表示更新
+            if (s.id == -1) {
+                console.info("新增按钮触发")
+                //$('#data_sources_table_name_input').chosen();
+                //$('#data_sources_table_name_output').chosen();
+                $('#update_etl_task').hide()
+                $('#save_etl_task').show()
+            } else {
+                file_list_m(s.id)
+                //init_table_name(s.id)
+
+                if (s.is_copy == "true") {
+                    console.info("拷贝按钮触发")
+                    $('#update_etl_task').hide()
+                    $('#save_etl_task').show()
+                } else {
+                    console.info("更新按钮触发")
+                    $('#save_etl_task').hide()
+                    $('#update_etl_task').show()
+                }
+
+                if (s.only_read == "true") {
+                    $('#update_etl_task').hide()
+                    $('#save_etl_task').hide()
+                    $('#reset').hide()
+                }
+                buildParam()
+            }
+
+            function getMyDate(str) {
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth() + 1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + " " + getzf(oHour) + ":" + getzf(oMin) + ":" + getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            //补0操作
+            function getzf(num) {
+                if (parseInt(num) < 10) {
+                    num = '0' + num;
+                }
+                return num;
+            }
+
+
+            function buildParam() {
+                $('#enable_quality').prop("checked", false)
+                if (s.id != '-1') {
+                    console.info("更新按钮触发--开始赋值对应参数")
+                    //开始赋值
+
+                    $.ajax({
+                        url: "etl_task_ssh_list",
+                        data: "ids=" + s.id,
+                        type: "post",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            console.info("success")
+                            // layer.alert(JSON.stringify(data[0]))
+
+                            //获取输入数据源id
+                            var data_sources_choose_input = data[0].data_sources_choose_input
+                            console.info("参数赋值:输入数据源id:" + data_sources_choose_input)
+
+
+                            //获取ETL 说明
+                            var ssh_context = data[0].ssh_context
+                            $("#ssh_context").val(ssh_context);
+
+                            var create_time = data[0].create_time
+                            $("#create_time").val(getMyDate(create_time));
+
+
+
+                            //获取输入数据源类型
+                            var host = data[0].host
+                            $("#host").val(host)
+
+                            var port = data[0].port
+                            $("#port").val(port)
+
+                            var user_name = data[0].user_name
+                            $("#user_name").val(user_name)
+
+                            var password = data[0].password
+                            $("#password").val(password)
+
+                            var ssh_cmd = data[0].ssh_cmd
+                            $("#ssh_cmd").val(ssh_cmd);
+
+                            var ssh_script_path = data[0].ssh_script_path
+                            $("#ssh_script_path").val(ssh_script_path);
+
+                            var ssh_script_context = data[0].ssh_script_context
+                            $("#ssh_script_context").val(ssh_script_context);
+
+
+                            //获取元数据信息
+                            var ssh_params_input = data[0].ssh_params_input;
+                            $('#ssh_params_input').val(ssh_params_input)
+
+                            //获取元数据信息
+                            var company = data[0].company;
+                            $('#company').val(company)
+
+                            var section = data[0].section;
+                            $('#section').val(section)
+
+                            var service = data[0].service;
+                            $('#service').val(service)
+
+                            var update_context = data[0].update_context;
+                            $('#update_context').val(update_context)
+
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+
+
+                }
+            }
+
+        })();
+
+
+    })(document, window, jQuery);
+
+
+    function file_list_m(id) {
+        $.ajax({
+            url : "etl_task_ssh_file_list",
+            data : "id=" + id+"&random="+new Date().getTime(),
+            type : "post",
+            async: false,
+            dataType : "json",
+            success : function(data) {
+                console.info("success")
+                //获取输入数据源id
+                $("#file_list").html("")
+                for (var i = 0; i < data.length; i++) {
+                    var id=data[i].id
+                    var fileName=data[i].file_name
+                    console.info("参数赋值:文件唯一id:"+id)
+                    var div1=' <div class="checkbox i-checks">'+
+                        '<label class="no-padding">'+
+                        ' <input type="checkbox" value="'+id+'"><i></i> '+fileName+'</label>'+
+                        '  </div>'
+                    $("#file_list").prepend(div1)
+                }
+                if(data.length>0){
+                    var div2='<div class="">'+
+                        '<button id="del_fils" name="del_fils" class="btn btn-outline btn-default" onclick="del_files()" type="button"> <i class="glyphicon glyphicon-trash" aria-hidden="true"></i> </button>'+
+                        '</div>'
+                    $("#file_list").prepend(div2)
+                }
+
+            },
+            error: function (data) {
+                console.info("error: " + data.responseText);
+            }
+
+        });
+    }
+
+    function del_files(){
+        var ids = new Array();// 声明一个数组
+        $('#file_list input:checked').each(function () {
+            ids.push($(this).attr("value"))
+            // alert($(this).attr("value"))
+        })
+        if(ids.length>0){
+            $.ajax({
+                url : "etl_task_ssh_del_file",
+                data : "ids=" + ids,
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+                    console.info("success:s.id:"+ids)
+                    file_list_m(ids)
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }else{
+            layer.msg("请选择删除的文件")
+        }
+
+    }
+
+    $('#save_etl_task').click(function () {
+
+        if ($('#ssh_context').val() == '') {
+            layer.msg("SSH任务说明不能为空！");
+            return;
+        }
+
+        var tableData = $("#exampleTableEvents").bootstrapTable('getData')
+
+
+        var formData = new FormData($("#etl_task_ssh_add_form")[0]);//获取表单中的文件
+
+        $.ajax({
+            type: 'POST',
+            url: "etl_task_ssh_add",
+            async: false,
+            data:formData,
+            processData: false,
+            contentType: false,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
+
+
+    $('#update_etl_task').click(function () {
+
+        if ($('#ssh_context').val() == '') {
+            layer.msg("SSH任务说明不能为空！");
+            return;
+        }
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var formData = new FormData($("#etl_task_ssh_add_form")[0]);//获取表单中的文件
+        formData.append('id',s.id)
+
+
+        $.ajax({
+            type: 'POST',
+            url: "etl_task_ssh_update",
+            data: formData,
+            processData: false,
+            contentType: false,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
+
+</script>
+
+</body>
+
+</html>

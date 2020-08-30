@@ -29,5 +29,4 @@ public interface ZdhHaInfoMapper extends BaseMapper<ZdhHaInfo> {
     })
     public List<ZdhHaInfo> selectByStatus(@Param("status") String status);
 
-
 }

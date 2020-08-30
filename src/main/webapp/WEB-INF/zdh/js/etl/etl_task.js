@@ -51,9 +51,10 @@
               url : "etl_task_delete",
               data : "ids=" + ids,
               type : "post",
+              async:false,
               dataType : "json",
               success : function(data) {
-                  console.info("success")
+                  console.info("success");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: "/etl_task_list2?"+$("#etl_task_form").serialize(),
                       contentType: "application/json;charset=utf-8",
@@ -117,8 +118,9 @@
                   btn: ['确定','取消'] //按钮
               }, function(index){
                   var ids = new Array();// 声明一个数组
-                  ids.push(row.id)
-                  deleteMs(ids)
+                  ids.push(row.id);
+                  deleteMs(ids);
+                  layer.close(layer.index);
               }, function(){
 
               });

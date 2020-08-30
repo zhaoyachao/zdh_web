@@ -14,6 +14,8 @@ public class EtlDroolsTaskInfo {
 
     private String etl_id;
 
+    private String more_task;
+
     private String etl_context;
 
     private String etl_drools;
@@ -181,5 +183,13 @@ public class EtlDroolsTaskInfo {
 
     public void setData_sources_filter_input(String data_sources_filter_input) {
         this.data_sources_filter_input = data_sources_filter_input;
+    }
+
+    public String getMore_task() {
+        return more_task;
+    }
+
+    public void setMore_task(String more_task) {
+        this.more_task = more_task;
     }
 }

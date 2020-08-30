@@ -47,10 +47,10 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 			throws JobExecutionException {
 		try {
 			JobDataMap jobDataMap = context.getTrigger().getJobDataMap();
-			System.out.println(jobDataMap.get(TASK_ID)
-					+ "----执行-----"
-					+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-							.format(new Date()));
+//			System.out.println(jobDataMap.get(TASK_ID)
+//					+ "----执行-----"
+//					+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+//							.format(new Date()));
 			String taskId = jobDataMap.getString(TASK_ID);
 			if (taskId == null || taskId.trim().equals("")) {
 				throw new Exception("任务id为空");

@@ -337,6 +337,13 @@
             <version>2.1-stable</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.pivotal</groupId>
+            <artifactId>greenplum-jdbc</artifactId>
+            <version>5.1.4</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/greenplum-jdbc-5.1.4.jar</systemPath>
+        </dependency>
 
     </dependencies>
 

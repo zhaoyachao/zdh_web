@@ -117,8 +117,9 @@
                   btn: ['确定','取消'] //按钮
               }, function(index){
                   var ids = new Array();// 声明一个数组
-                  ids.push(row.id)
-                  deleteMs(ids)
+                  ids.push(row.id);
+                  deleteMs(ids);
+                  layer.close(layer.index)
               }, function(){
 
               });

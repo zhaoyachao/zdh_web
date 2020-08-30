@@ -90,6 +90,7 @@
                   var ids = new Array();// 声明一个数组
                   ids.push(row.id)
                   deleteMs(ids)
+                  layer.close(layer.index)
               }, function(){
 
               });

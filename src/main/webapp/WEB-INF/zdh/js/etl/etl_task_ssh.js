@@ -8,7 +8,7 @@
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
-              title: 'Drools任务配置',
+              title: 'SSH任务配置',
               shadeClose: false,
               resize: true,
               fixed: false,
@@ -16,10 +16,14 @@
               shade: 0.1,
               area : ['45%', '60%'],
               //area: ['450px', '500px'],
-              content: "etl_task_drools_add_index?id=-1", //iframe的url
-              end:function () {
+              content: "etl_task_ssh_add_index?id=-1", //iframe的url
+              end : function () {
+                  console.info("弹框结束")
+                  $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : 'etl_task_drools_list'
+                      url: "/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize()+"&tm="+new Date(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
                   });
               }
           });
@@ -44,14 +48,16 @@
 
       function deleteMs(ids) {
           $.ajax({
-              url : "etl_task_drools_delete",
+              url : "etl_task_ssh_delete",
               data : "ids=" + ids,
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success")
+                  console.info("success");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : 'etl_task_drools_list'
+                      url: "/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
                   });
               },
               error: function (data) {
@@ -66,7 +72,7 @@
               $("#id").val(row.id)
               top.layer.open({
                   type: 2,
-                  title: 'Drools任务配置',
+                  title: 'SQL任务配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
@@ -74,10 +80,10 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: "etl_task_drools_add_index?id="+row.id, //iframe的url
+                  content: "etl_task_ssh_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : 'etl_task_drools_list'
+                          url : 'etl_task_ssh_list'
                       });
                   }
               });
@@ -87,7 +93,7 @@
               $("#id").val(row.id)
               top.layer.open({
                   type: 2,
-                  title: 'Drools任务配置',
+                  title: 'SQL任务配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
@@ -95,10 +101,12 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: "etl_task_drools_add_index?id="+row.id+"&is_copy=true", //iframe的url
+                  content: "etl_task_ssh_add_index?id="+row.id+"&is_copy=true", //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : 'etl_task_drools_list'
+                          url: "/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -115,7 +123,6 @@
               }, function(){
 
               });
-
           }
       };
 
@@ -176,11 +183,9 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: "etl_task_drools_list",
+      url: "etl_task_ssh_list",
       search: true,
       pagination: true,
-      pageSize : 10,
-      pageList: [10, 20, 50, 100],
       showRefresh: true,
       showToggle: true,
       showColumns: true,
@@ -199,43 +204,27 @@
             field: 'id',
             title: 'ID',
             sortable:false
-        },{
-            field: 'more_task',
-            title: 'etl 类 型',
-            sortable:true
         }, {
-            field: 'etl_context',
-            title: 'etl 中 文 描 述 及 说 明',
+            field: 'ssh_context',
+            title: 'ssh 中 文 描 述 及 说 明',
             sortable:false
         },{
-            field: 'etl_id',
-            title: 'ETL任务',
+            field: 'host',
+            title: '主机',
             sortable:false
-        },{
-            field: 'etl_drools',
-            title: 'Drools任务逻辑',
+        }, {
+            field: 'port',
+            title: '端口',
+            sortable:false
+        }, {
+            field: 'ssh_cmd',
+            title: 'SSH命令',
             sortable:false,
             cellStyle: formatTableUnit,
             formatter: paramsMatter
-        },{
-          field: 'data_sources_choose_output',
-          title: '输出数据源ID',
-          sortable:false
-      },{
-          field: 'data_source_type_output',
-          title: '输出数据源类型',
-          sortable:true
-      },{
-          field: 'data_sources_table_name_output',
-          title: '输出数据源表',
-          sortable:false
-      },{
-          field: 'data_sources_file_name_output',
-          title: '输出数据源文件',
-          sortable:false
-      },{
-          field: 'data_sources_params_output',
-          title: '输出数据源参数',
+        }, {
+          field: 'ssh_params_input',
+          title: '参数',
           sortable:false,
             cellStyle: formatTableUnit,
             formatter: paramsMatter
@@ -246,12 +235,6 @@
             formatter: function (value, row, index) {
                 return getMyDate(value);
             }
-        },{
-            field: 'data_sources_clear_output',
-            title: '输出数据删除条件',
-            sortable:false,
-            cellStyle: formatTableUnit,
-            formatter: paramsMatter
         },{
             field: 'operate',
             title: '常用操作按钮事件',

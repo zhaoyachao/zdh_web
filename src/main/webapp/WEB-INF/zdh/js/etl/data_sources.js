@@ -162,9 +162,16 @@ function buildTable($el, cells, rows) {
 
           },
           'click #del': function (e, value, row, index) {
-              var ids = new Array();// 声明一个数组
-              ids.push(row.id)
-              deleteMs(ids)
+              layer.confirm('是否删除数据源', {
+                  btn: ['确定','取消'] //按钮
+              }, function(index){
+                  var ids = new Array();// 声明一个数组
+                  ids.push(row.id);
+                  deleteMs(ids);
+                  layer.close(layer.index);
+              }, function(){
+
+              });
           }
       };
 

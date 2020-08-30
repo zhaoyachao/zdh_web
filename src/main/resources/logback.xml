@@ -24,10 +24,10 @@
         </encoder>  
     </appender>
     
-    <logger name="com.zyc.zdh.shiro" level="debug" />
-    <logger name="com.zyc.zdh.dao" level="debug"></logger>
-    <logger name="com.zyc.zdh.util.SpringLoadInit" level="debug"></logger>
-    <logger name="com.zyc.zdh.netty" level="debug"></logger>
+    <logger name="com.zyc.zdh.shiro" level="info" />
+    <logger name="com.zyc.zdh.dao" level="info"></logger>
+    <logger name="com.zyc.zdh.util.SpringLoadInit" level="info"></logger>
+    <logger name="com.zyc.zdh.netty" level="info"></logger>
     <root level="INFO">
         <appender-ref ref="CONSOLE"></appender-ref> 
         <appender-ref ref="FILE"></appender-ref>  

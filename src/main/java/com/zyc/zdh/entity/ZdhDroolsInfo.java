@@ -4,6 +4,7 @@ package com.zyc.zdh.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ZdhDroolsInfo {
 
     //任务记录唯一标识(注意和调度任务的标识不一样)
@@ -11,14 +12,20 @@ public class ZdhDroolsInfo {
 
     private QuartzJobInfo quartzJobInfo;
 
-    //输入数据源
-    private Dsi_EtlInfo dsi_EtlInfo=new Dsi_EtlInfo();
+    //输入数据源--单源,多源信息
+    private List<Dsi_EtlInfo> dsi_EtlInfo=new ArrayList<>();
 
     //输出数据源
     private Dsi_Info dsi_Output;
 
-    //etl 任务
+    //etl drools任务
     private EtlDroolsTaskInfo etlDroolsTaskInfo;
+
+    //etl sql 任务
+    private SqlTaskInfo sqlTaskInfo;
+
+    //etl 多源任务
+    private EtlMoreTaskInfo etlMoreTaskInfo;
 
     public String getTask_logs_id() {
         return task_logs_id;
@@ -43,14 +50,10 @@ public class ZdhDroolsInfo {
     public void setDsi_Output(Dsi_Info dsi_Output) {
         this.dsi_Output = dsi_Output;
     }
-
-    public Dsi_EtlInfo getDsi_EtlInfo() {
-        return dsi_EtlInfo;
+    public void setDsi_Output(DataSourcesInfo dataSourcesInfoOutput) {
+        this.dsi_Output = dsi_Output;
     }
 
-    public void setDsi_EtlInfo(Dsi_EtlInfo dsi_EtlInfo) {
-        this.dsi_EtlInfo = dsi_EtlInfo;
-    }
 
     public EtlDroolsTaskInfo getEtlDroolsTaskInfo() {
         return etlDroolsTaskInfo;
@@ -58,6 +61,42 @@ public class ZdhDroolsInfo {
 
     public void setEtlDroolsTaskInfo(EtlDroolsTaskInfo etlDroolsTaskInfo) {
         this.etlDroolsTaskInfo = etlDroolsTaskInfo;
+    }
+
+    public List<Dsi_EtlInfo> getDsi_EtlInfo() {
+        return dsi_EtlInfo;
+    }
+
+
+    public EtlMoreTaskInfo getEtlMoreTaskInfo() {
+        return etlMoreTaskInfo;
+    }
+
+    public void setEtlMoreTaskInfo(EtlMoreTaskInfo etlMoreTaskInfo) {
+        this.etlMoreTaskInfo = etlMoreTaskInfo;
+    }
+
+    public void setDsi_Info(DataSourcesInfo dataSourcesInfoOutput ) {
+        Dsi_Info dsi_Output=new Dsi_Info();
+        dsi_Output.setId(dataSourcesInfoOutput.getId());
+        dsi_Output.setData_source_context(dataSourcesInfoOutput.getData_source_context());
+        dsi_Output.setData_source_type(dataSourcesInfoOutput.getData_source_type());
+        dsi_Output.setDbtable(etlDroolsTaskInfo.getData_sources_table_name_output());
+        dsi_Output.setDriver(dataSourcesInfoOutput.getDriver());
+        dsi_Output.setUrl(dataSourcesInfoOutput.getUrl());
+        dsi_Output.setUser(dataSourcesInfoOutput.getUsername());
+        dsi_Output.setPassword(dataSourcesInfoOutput.getPassword());
+        dsi_Output.setPaths(etlDroolsTaskInfo.getData_sources_file_name_output());
+
+        this.dsi_Output = dsi_Output;
+    }
+
+    public SqlTaskInfo getSqlTaskInfo() {
+        return sqlTaskInfo;
+    }
+
+    public void setSqlTaskInfo(SqlTaskInfo sqlTaskInfo) {
+        this.sqlTaskInfo = sqlTaskInfo;
     }
 
     public void setZdhDroolsInfo(DataSourcesInfo dataSourcesInfoInput , EtlTaskInfo etlTaskInfo, DataSourcesInfo dataSourcesInfoOutput, QuartzJobInfo quartzJobInfo, EtlDroolsTaskInfo etlDroolsTaskInfo){
@@ -79,7 +118,7 @@ public class ZdhDroolsInfo {
         dsi_Input.setPassword(dataSourcesInfoInput.getPassword());
         dsi_Input.setPaths(etlTaskInfo.getData_sources_file_name_input());
         dsi_etlInfo.setDsi_Input(dsi_Input);
-        this.dsi_EtlInfo=dsi_etlInfo;
+        this.dsi_EtlInfo.add(dsi_etlInfo);
 
         Dsi_Info dsi_Output=new Dsi_Info();
         dsi_Output.setId(dataSourcesInfoOutput.getId());

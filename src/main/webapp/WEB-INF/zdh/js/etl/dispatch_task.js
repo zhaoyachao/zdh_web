@@ -46,9 +46,10 @@
                 url: "dispatch_task_delete",
                 data: "ids=" + ids,
                 type: "post",
+                async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success")
+                    console.info("success");
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url: 'dispatch_task_list'
                     });
@@ -217,8 +218,9 @@
                     btn: ['确定','取消'] //按钮
                 }, function(index){
                     var ids = new Array();// 声明一个数组
-                    ids.push(row.job_id)
+                    ids.push(row.job_id);
                     deleteMs(ids)
+                    layer.close(layer.index)
                 }, function(){
 
                 });
@@ -356,6 +358,10 @@
                 title: 'JOB_ID',
                 sortable: false
             }, {
+                field: 'more_task',
+                title: '任务类型',
+                sortable: true
+            },  {
                 field: 'job_context',
                 title: '调度说明',
                 sortable: false
