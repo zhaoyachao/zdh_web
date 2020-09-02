@@ -82,6 +82,7 @@ public class QuartzManager2 {
 			}
 			JobDetail jobDetail = JobBuilder
 					.newJob(MyJobBean.class)
+                    .requestRecovery(true)
 					.withDescription(quartzJobInfo.getJob_context())
 					.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).build();
 			Trigger trigger = null;
@@ -318,7 +319,8 @@ public class QuartzManager2 {
 					.withRepeatCount(count);
 		}
 		simpleScheduleBuilder = simpleScheduleBuilder
-				.withMisfireHandlingInstructionNextWithRemainingCount();
+				.withMisfireHandlingInstructionFireNow();
+				//.withMisfireHandlingInstructionNextWithRemainingCount();
 		return simpleScheduleBuilder;
 	}
 
@@ -326,7 +328,8 @@ public class QuartzManager2 {
 
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
 				.cronSchedule(expression)
-				.withMisfireHandlingInstructionDoNothing();
+				.withMisfireHandlingInstructionFireAndProceed();
+				//.withMisfireHandlingInstructionDoNothing();
 
 		return cronScheduleBuilder;
 	}

@@ -92,6 +92,7 @@ public class QuartzConfig {
 		prop.put("org.quartz.jobStore.dataSource", "quartzDataSource");
 		prop.put("org.quartz.jobStore.tablePrefix", "QRTZ_");
 		prop.put("org.quartz.jobStore.isClustered", "true");
+		prop.put("org.quartz.jobStore.clusterCheckinInterval","10000");
 		prop.put("org.quartz.threadPool.class",
 				"org.quartz.simpl.SimpleThreadPool");
 		prop.put("org.quartz.threadPool.threadCount", "5");
