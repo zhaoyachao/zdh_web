@@ -25,7 +25,7 @@
     </appender>
     
     <logger name="com.zyc.zdh.shiro" level="info" />
-    <logger name="com.zyc.zdh.dao" level="info"></logger>
+    <logger name="com.zyc.zdh.dao" level="debug"></logger>
     <logger name="com.zyc.zdh.util.SpringLoadInit" level="info"></logger>
     <logger name="com.zyc.zdh.netty" level="info"></logger>
     <root level="INFO">

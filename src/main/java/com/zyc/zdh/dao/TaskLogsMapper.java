@@ -72,7 +72,7 @@ public interface TaskLogsMapper extends BaseMapper<TaskLogs> {
     public List<TaskLogs> selectThreadByStatus(@Param("status") String status);
 
 
-    @Select("select * from task_logs where status =#{status} and  current_timestamp() >= retry_time")
+    @Select("select * from task_logs where status =#{status} and retry_time is not null and current_timestamp() >= retry_time")
     public List<TaskLogs> selectThreadByStatus2(@Param("status") String status);
 
     @Select("select * from task_logs where status =#{status}")

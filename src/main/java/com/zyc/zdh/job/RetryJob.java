@@ -40,6 +40,7 @@ public class RetryJob {
                 JobCommon.insertLog(qj.getJob_id(), "INFO", "检测到需要重试的任务,添加到重试队列,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 if (!qj.getPlan_count().equals("-1") && qj.getCount()>=Long.parseLong(qj.getPlan_count())) {
                     JobCommon.insertLog(qj.getJob_id(), "INFO", "检测到需要重试的任务,重试次数超过限制,实际重试:" + qj.getCount() + "次,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
+                    taskLogsMapper.updateStatusById("error",tl.getId());
                     quartzJobMapper.updateLastStatus(qj.getJob_id(), "error");
                     continue;
                 }
