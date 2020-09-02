@@ -1119,6 +1119,7 @@ public class JobCommon {
         taskLogs.setOwner(quartzJobInfo.getOwner());
         taskLogs.setProcess(process);
         taskLogs.setThread_id(thread_id);
+        taskLogs.setRetry_time(Timestamp.valueOf("2000-01-01 00:00:00"));
         taskLogsMapper.insert(taskLogs);
         return taskLogs;
     }
