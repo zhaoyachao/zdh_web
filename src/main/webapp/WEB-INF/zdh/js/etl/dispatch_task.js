@@ -375,9 +375,9 @@
                 sortable: false
             }, {
                 field: 'status',
-                title: '任务状态',
+                title: '调度状态',
                 sortable: false,
-                visible:false
+                visible:true
             }, {
                 field: 'last_status',
                 title: '执行状态',

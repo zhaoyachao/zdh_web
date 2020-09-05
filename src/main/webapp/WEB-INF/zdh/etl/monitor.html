@@ -541,8 +541,8 @@
                     dataType: "json",
                     success: function (data) {
                         console.info("success")
-                        if (data.length < 1) {
-                            if (typeOf(row.history_server) == "undefined"){
+                        if (!data && typeof data != "undefined" && data != 0 || data.length < 1) {
+                            if (typeof row.history_server == "undefined"){
                                 layer.msg("无法找到历史服务器并且应用程序已经死亡")
                                 return;
                             }
