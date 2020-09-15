@@ -1383,6 +1383,7 @@ public class JobCommon {
     }
 
     public static void jobFail(String jobType, String task_logs_id, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper) {
+        QuartzManager2 quartzManager2=(QuartzManager2)SpringContext.getBean("quartzManager2");
         logger.info("[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行");
         insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行");
         String msg = "[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行,重试次数已达到最大,状态设置为error";
@@ -1401,9 +1402,13 @@ public class JobCommon {
         //调度时异常
         updateTaskLogError(task_logs_id, "8", taskLogsMapper, status, interval_time);
         quartzJobInfo.setLast_status(status);
+        if(status.equalsIgnoreCase("error")){
+            quartzManager2.deleteTask(quartzJobInfo, "finish");
+        }
     }
 
     public static void setJobLastStatus(QuartzJobInfo quartzJobInfo, String task_logs_id, TaskLogsMapper taskLogsMapper) {
+        QuartzManager2 quartzManager2=(QuartzManager2)SpringContext.getBean("quartzManager2");
         String status = "error";
         String msg = "发送ETL任务到zdh处理引擎,存在问题,重试次数已达到最大,状态设置为error";
         if (quartzJobInfo.getPlan_count().equalsIgnoreCase("-1") || Long.parseLong(quartzJobInfo.getPlan_count()) > quartzJobInfo.getCount()) {
@@ -1419,6 +1424,9 @@ public class JobCommon {
         int interval_time = (quartzJobInfo.getInterval_time() == null || quartzJobInfo.getInterval_time().equals("")) ? 5 : Integer.parseInt(quartzJobInfo.getInterval_time());
         updateTaskLogError(task_logs_id, "12", taskLogsMapper, status, interval_time);
         quartzJobInfo.setLast_status(status);
+        if(status.equalsIgnoreCase("error")){
+            quartzManager2.deleteTask(quartzJobInfo, "finish");
+        }
     }
 
     public static User getUser() {

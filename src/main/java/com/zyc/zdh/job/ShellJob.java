@@ -26,7 +26,7 @@ public class ShellJob extends JobCommon {
 
     public static void run(QuartzJobInfo quartzJobInfo,Boolean is_retry) {
         Thread td=Thread.currentThread();
-        td.setName(quartzJobInfo.getJob_context());
+        //td.setName(quartzJobInfo.getJob_context());
         long threadId = td.getId();
         System.out.println("线程id:"+threadId);
         String task_logs_id = SnowflakeIdWorker.getInstance().nextId() + "";

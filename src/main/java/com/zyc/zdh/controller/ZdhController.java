@@ -692,11 +692,18 @@ public class ZdhController {
         //ZdhInfo zdhInfo = create_zhdInfo(quartzJobInfo);
         //重置次数
         dti.setCount(0);
-        quartzManager2.addTaskToQuartz(dti);
-
         JSONObject json = new JSONObject();
+        try {
+            quartzManager2.addTaskToQuartz(dti);
+            json.put("status", "200");
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("status", "-1");
+            json.put("msg",e.getMessage());
 
-        json.put("success", "200");
+        }
+
+
         return json.toJSONString();
     }
 

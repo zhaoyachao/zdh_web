@@ -447,6 +447,8 @@ alter table task_logs add column application_id varchar(100);
 alter table task_logs add column history_server varchar(100);
 alter table task_logs add column master varchar(100);
 
+--2020-09-13更新;
+insert into data_sources_type_info(sources_type) values('MEMSQL');
 
 
 

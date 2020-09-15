@@ -94,6 +94,9 @@
                 success: function (data) {
                     console.info("success")
                     layer.msg('添加成功');
+                    if(data.status='-1'){
+                        console.info('异常'+data.msg);
+                    }
                     $("#execute_quartz").removeAttr('disabled');
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url: 'dispatch_task_list'
@@ -384,6 +387,11 @@
                 sortable: true,
                 visible:true
             }, {
+                field: 'count',
+                title: '执行次数',
+                sortable: true,
+                visible:true
+            }, {
                 field: 'operate',
                 title: '测试基础操作及日志分析操作',
                 events: operateEvents,//给按钮注册事件
@@ -415,11 +423,6 @@
             }, {
                 field: 'plan_count',
                 title: '计划执行次数',
-                sortable: true,
-                visible:false
-            }, {
-                field: 'count',
-                title: '执行次数',
                 sortable: true,
                 visible:false
             }, {

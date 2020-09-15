@@ -20,6 +20,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisClusterConfiguration;
+import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
@@ -151,10 +153,21 @@ public class RedisConfig extends CachingConfigurerSupport {
 		// 如果集群使用new JedisConnectionFactory(new
 		// RedisClusterConfiguration()),集群配置在RedisClusterConfiguration,这里省略具体配置
 		JedisConnectionFactory redisConnectionFactory = new JedisConnectionFactory();
+		if(hostName.contains(",")){
+			//redis 集群模式
+			RedisClusterConfiguration rc=new RedisClusterConfiguration();
+			for(String hp:hostName.split(",")){
+				RedisNode rn=new RedisNode(hp.split(":")[0],Integer.parseInt(hp.split(":")[1]));
+				rc.addClusterNode(rn);
+			}
+			redisConnectionFactory=new JedisConnectionFactory(rc,jedisPoolConfig);
+		}else{
+			redisConnectionFactory.setHostName(hostName);
+			redisConnectionFactory.setPort(port);
+		}
+
 		redisConnectionFactory.setPoolConfig(jedisPoolConfig);
 
-		redisConnectionFactory.setHostName(hostName);
-		redisConnectionFactory.setPort(port);
 		redisConnectionFactory.setTimeout(timeOut);
 		redisConnectionFactory.setPassword(password);
 		return redisConnectionFactory;

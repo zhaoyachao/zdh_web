@@ -74,6 +74,8 @@
   + v2.0 kafka,flume实时数据源删除必须使用jdbc输出源限制
   + v2.0 修复spark 监控bug,移动spark监控到总监控
 
+  + v2.1 zdh_web 添加redis cluster 支持
+  + v2.1 增加jdbc支持presto,mariadb,memsql,华为dws,阿里AnalyticDB,kylin,gbase,kingbase,redshift
   
 # FAQ
    + 日志级别修改
@@ -84,7 +86,7 @@
    + 本地文件
    + hive(单集群使用多个远程hive,以及内外部表)
    + hdfs(csv,txt,json,orc,parquet,avro)
-   + jdbc (所有的jdbc,包含特殊jdbc如hbase-phoenix,spark-jdbc,click-house,greenplum)
+   + jdbc (所有的jdbc,包含特殊jdbc如hbase-phoenix,spark-jdbc,click-house,greenplum,presto,mariadb,memsql,华为dws,阿里AnalyticDB,kylin,gbase,kingbase,redshift)
    + hbase
    + mongodb
    + es
@@ -120,6 +122,7 @@
      1 修改服务器端口默认8081
      2 修改数据源连接(默认支持mysql8),外部数据库必须引入
      3 修改redis配置
+     4 修改application-*配置文件中myid(多个集群依次1,2,3,...)
 
     创建需要的数据库配置
      1 执行sql脚本db.sql

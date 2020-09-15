@@ -345,6 +345,75 @@
             <systemPath>${basedir}/lib/greenplum-jdbc-5.1.4.jar</systemPath>
         </dependency>
 
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>2.6.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.facebook.presto/presto-jdbc -->
+        <dependency>
+            <groupId>com.facebook.presto</groupId>
+            <artifactId>presto-jdbc</artifactId>
+            <version>0.240</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.amazon.redshift/redshift-jdbc42 -->
+        <dependency>
+            <groupId>com.amazon.redshift</groupId>
+            <artifactId>redshift-jdbc42</artifactId>
+            <version>1.2.41.1067</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/redshift-jdbc42-1.2.43.1067.jar</systemPath>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.16</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.kylin/kylin-jdbc -->
+        <dependency>
+            <groupId>org.apache.kylin</groupId>
+            <artifactId>kylin-jdbc</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.teradata.jdbc</groupId>
+            <artifactId>terajdbc4</artifactId>
+            <version>16.10.00.05</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/terajdbc4.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.teradata.tdgss</groupId>
+            <artifactId>tdgssconfig</artifactId>
+            <version>16.00.00.01</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/tdgssconfig.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.kingbase</groupId>
+            <artifactId>kingbasejdbc3</artifactId>
+            <version>7.1.2.0711</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/kingbasejdbc3.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gbase.jdbc</groupId>
+            <artifactId>gbase-connector-java-8.3.81.53-build52.8-bin</artifactId>
+            <version>8.3.81.53-build52.8</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/gbase-connector-java-8.3.81.53-build52.8-bin.jar</systemPath>
+        </dependency>
+
+
     </dependencies>
 
     <repositories>
@@ -352,6 +421,11 @@
             <id>alimaven</id>
             <name>aliyun maven</name>
             <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>maven</id>
+            <name>maven</name>
+            <url>http://repository.mulesoft.org/nexus/content/repositories/public/</url>
         </repository>
     </repositories>
 

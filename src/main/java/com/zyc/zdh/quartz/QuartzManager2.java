@@ -73,7 +73,7 @@ public class QuartzManager2 {
 	 * 
 	 * @param quartzJobInfo
 	 */
-	public void addTaskToQuartz(QuartzJobInfo quartzJobInfo) {
+	public void addTaskToQuartz(QuartzJobInfo quartzJobInfo) throws Exception {
 		try {
 			//根据调度id 和etl任务id 确定唯一的triggerkey
 			if(schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()))!=null){
@@ -108,20 +108,23 @@ public class QuartzManager2 {
 			JobDataMap jobDataMap = trigger.getJobDataMap();
 			jobDataMap.put(MyJobBean.TASK_ID, quartzJobInfo.getJob_id());
 			quartzJobInfo.setStatus("running");
-			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
 			schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
 			if (!schedulerFactoryBean.getScheduler().isStarted()) {
 				schedulerFactoryBean.getScheduler().start();
 			}
+			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
 		} catch (SecurityException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			throw e;
 		} catch (SchedulerException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			throw e;
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			throw e;
 		}
 
 	}
@@ -188,7 +191,7 @@ public class QuartzManager2 {
 	 * @param quartzJobInfo
 	 * @return
 	 */
-	public void reStartTask2(QuartzJobInfo quartzJobInfo){
+	public void reStartTask2(QuartzJobInfo quartzJobInfo) throws Exception {
 		deleteTask(quartzJobInfo,"finish");
 		addTaskToQuartz(quartzJobInfo);
 	}
