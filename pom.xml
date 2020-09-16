@@ -413,6 +413,12 @@
             <systemPath>${basedir}/lib/gbase-connector-java-8.3.81.53-build52.8-bin.jar</systemPath>
         </dependency>
 
+        <!-- jinjava 模板 https://github.com/HubSpot/jinjava -->
+        <dependency>
+            <groupId>com.hubspot.jinjava</groupId>
+            <artifactId>jinjava</artifactId>
+            <version>2.5.5</version>
+        </dependency>
 
     </dependencies>
 

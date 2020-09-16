@@ -2,6 +2,7 @@ package com.zyc.zdh.job;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.hubspot.jinjava.Jinjava;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.*;
@@ -625,60 +626,47 @@ public class JobCommon {
             String date_nodash = DateUtil.formatNodash(quartzJobInfo.getLast_time());
             String date_time = DateUtil.formatTime(quartzJobInfo.getLast_time());
             String date_dt = DateUtil.format(quartzJobInfo.getLast_time());
+            Map<String,Object> jinJavaParam=new HashMap<>();
+            jinJavaParam.put("zdh.date.nodash", date_nodash);
+            jinJavaParam.put("zdh.date.time", date_time);
+            jinJavaParam.put("zdh.date", date_dt);
+            Jinjava jj=new Jinjava();
+
+            map.forEach((k, v) -> {
+                logger.info("key:" + k + ",value:" + v);
+                jinJavaParam.put(k,v);
+            });
+
             if (etlTaskInfo != null) {
-                final String filter = etlTaskInfo.getData_sources_filter_input().replace("zdh.date.nodash", date_nodash).
-                        replace("zdh.date.time", date_time).
-                        replace("zdh.date", date_dt);
-                final String clear = etlTaskInfo.getData_sources_clear_output().replace("zdh.date.nodash", date_nodash).
-                        replace("zdh.date.time", date_time).
-                        replace("zdh.date", date_dt);
+                final String filter = jj.render(etlTaskInfo.getData_sources_filter_input(),jinJavaParam);
+                final String clear = jj.render(etlTaskInfo.getData_sources_clear_output(),jinJavaParam);
                 etlTaskInfo.setData_sources_filter_input(filter);
                 etlTaskInfo.setData_sources_clear_output(clear);
-                map.forEach((k, v) -> {
-                    logger.info("key:" + k + ",value:" + v);
-                    etlTaskInfo.setData_sources_filter_input(etlTaskInfo.getData_sources_filter_input().replace(k, v.toString()));
-                    etlTaskInfo.setData_sources_clear_output(etlTaskInfo.getData_sources_clear_output().replace(k, v.toString()));
-                });
             }
 
             if (sqlTaskInfo != null) {
-                final String etl_sql = sqlTaskInfo.getEtl_sql().replace("zdh.date.nodash", date_nodash).
-                        replace("zdh.date.time", date_time).
-                        replace("zdh.date", date_dt);
-                final String clear = sqlTaskInfo.getData_sources_clear_output().replace("zdh.date.nodash", date_nodash).
-                        replace("zdh.date.time", date_time).
-                        replace("zdh.date", date_dt);
+                final String etl_sql = jj.render(sqlTaskInfo.getEtl_sql(),jinJavaParam);
+                final String clear = jj.render(sqlTaskInfo.getData_sources_clear_output(),jinJavaParam);
                 sqlTaskInfo.setEtl_sql(etl_sql);
                 sqlTaskInfo.setData_sources_clear_output(clear);
-                map.forEach((k, v) -> {
-                    logger.info("key:" + k + ",value:" + v);
-                    sqlTaskInfo.setEtl_sql(sqlTaskInfo.getEtl_sql().replace(k, v.toString()));
-                    sqlTaskInfo.setData_sources_clear_output(sqlTaskInfo.getData_sources_clear_output().replace(k, v.toString()));
-                });
             }
 
             if (jarTaskInfo != null) {
-                final String spark_submit_params = jarTaskInfo.getSpark_submit_params().replace("zdh.date.nodash", date_nodash).
-                        replace("zdh.date.time", date_time).
-                        replace("zdh.date", date_dt);
-
+                final String spark_submit_params = jj.render(jarTaskInfo.getSpark_submit_params(),jinJavaParam);
                 jarTaskInfo.setSpark_submit_params(spark_submit_params);
-                map.forEach((k, v) -> {
-                    logger.info("key:" + k + ",value:" + v);
-                    jarTaskInfo.setSpark_submit_params(jarTaskInfo.getSpark_submit_params().replace(k, v.toString()));
-                });
             }
 
             if (sshTaskInfo != null) {
-                final String ssh_cmd = sshTaskInfo.getSsh_cmd().replace("zdh.date.nodash", date_nodash).
-                        replace("zdh.date.time", date_time).
-                        replace("zdh.date", date_dt);
+                final String script_path = jj.render(sshTaskInfo.getSsh_script_path(),jinJavaParam);
+                sshTaskInfo.setSsh_script_path(script_path);
+
+                jinJavaParam.put("zdh_online_file", sshTaskInfo.getSsh_script_path()+"/"+sshTaskInfo.getId()+"_online");
+                final String ssh_cmd = jj.render(sshTaskInfo.getSsh_cmd(),jinJavaParam);
                 sshTaskInfo.setSsh_cmd(ssh_cmd);
 
-                map.forEach((k, v) -> {
-                    logger.info("key:" + k + ",value:" + v);
-                    sshTaskInfo.setSsh_cmd(sshTaskInfo.getSsh_cmd().replace(k, v.toString()));
-                });
+                final String script_context = jj.render(sshTaskInfo.getSsh_script_context(),jinJavaParam);
+                sshTaskInfo.setSsh_script_context(script_context);
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -914,7 +902,12 @@ public class JobCommon {
                 file2.delete();
             }
             file2.createNewFile();
-            newcommand = newcommand.replace("$zdh_jar_path", "spark_submit/" + quartzJobInfo.getJob_id());
+
+            Map<String,Object> jinJavaParam=new HashMap<>();
+            jinJavaParam.put("zdh_jar_path", "spark_submit/" + quartzJobInfo.getJob_id());
+            Jinjava jj=new Jinjava();
+
+            newcommand = jj.render(newcommand,jinJavaParam);
             logger.info("[调度平台]:外部JAR,生成脚本临时文件:" + file2.getAbsolutePath());
             insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,生成脚本临时文件:" + file2.getAbsolutePath());
             logger.info("[调度平台]:外部JAR,脚本内容:" + line + newcommand);
@@ -1025,7 +1018,7 @@ public class JobCommon {
                 SFTPUtil sftpUtil = new SFTPUtil(username, password, host, Integer.parseInt(port));
                 sftpUtil.login();
                 if(!script_context.isEmpty()){
-                    insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:SSH,发现在线脚本,使用在线脚本ssh 命令 可配合$zdh_online_file 使用 example sh $zdh_online_file 即是执行在线的脚本");
+                    insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:SSH,发现在线脚本,使用在线脚本ssh 命令 可配合{{zdh_online_file}} 使用 example sh {{zdh_online_file}} 即是执行在线的脚本");
                     InputStream   inputStream   =   new   ByteArrayInputStream(script_context.getBytes());
                     sftpUtil.upload(script_path,id+"_online",inputStream);
                 }
@@ -1078,7 +1071,9 @@ public class JobCommon {
 
             SSHUtil sshUtil = new SSHUtil(username, password, host, Integer.parseInt(port));
             sshUtil.login();
-            String[] result = sshUtil.exec(ssh_cmd.replace("$zdh_online_file",script_path+"/"+id+"_online"));
+
+            insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:SSH,使用在线脚本,"+ssh_cmd);
+            String[] result = sshUtil.exec(ssh_cmd);
             String error = result[0];
             String out = result[1];
             long t2 = System.currentTimeMillis();

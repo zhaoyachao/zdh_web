@@ -43,7 +43,7 @@ public class QuartzTest {
 //	}
 
 	@Test
-	public void testQuartz2Create() {
+	public void testQuartz2Create() throws Exception {
 
 		QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("SHELL",JobModel.TIME_SEQ.getValue(),
 				new Date(),new Date(),"第一个调度任务","10s","5","command","1");
