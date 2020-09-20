@@ -37,7 +37,7 @@ public class EmailJob {
             //根据任务执行时间，主键 获取对应的日志信息
             for(EmailTaskLogs emailTaskLogs:emailTaskLogsList){
                 String levels = "'DEBUG','WARN','INFO','ERROR'";
-                List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(emailTaskLogs.getJob_id(),
+                List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(emailTaskLogs.getJob_id(),emailTaskLogs.getId(),
                         emailTaskLogs.getStart_time(), emailTaskLogs.getUpdate_time(), levels);
                 Iterator<ZdhLogs> it = zhdLogs.iterator();
                 StringBuilder sb = new StringBuilder("");

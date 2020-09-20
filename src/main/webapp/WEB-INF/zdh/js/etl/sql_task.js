@@ -208,14 +208,6 @@
             field: 'sql_context',
             title: 'sql 中 文 描 述 及 说 明',
             sortable:false
-        },{
-            field: 'data_sources_choose_input',
-            title: '输入数据源ID',
-            sortable:false
-        }, {
-            field: 'data_source_type_input',
-            title: '输入数据源类型',
-            sortable:false
         }, {
             field: 'etl_sql',
             title: 'SQL处理逻辑',

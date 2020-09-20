@@ -21,7 +21,8 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="js/codemirror/codemirror.css" />
+    <link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css" />
 </head>
 
 <body class="gray-bg">
@@ -74,18 +75,11 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">数据源类型</label>
-                            <div class="col-sm-10">
-                                <input id="data_source_type_input" name="data_source_type_input" type="text" readonly
-                                       placeholder="数据源类型" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
                             <label class="col-sm-2 control-label">SQL逻辑</label>
-                            <div class="col-sm-10" id="div_data_sources_filter_input">
-                                <textarea id="etl_sql" name="etl_sql" class="form-control" rows="10"
+                            <div class="col-sm-10">
+                              <textarea id="etl_sql" name="etl_sql" class="form-control" rows="10"
                                           placeholder="SQL逻辑,使用sql语法 example select a.* ,b.* from a,b where a.id=b.id"></textarea>
+
                             </div>
                         </div>
 
@@ -351,6 +345,13 @@
 <script src="js/plugins/jsTree/jstree.min.js"></script>
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/codemirror/codemirror.js"></script>
+<script src="js/codemirror/addon/edit/matchbrackets.js"></script>
+<script src="js/codemirror/sql.js"></script>
+
+<script src="js/codemirror/addon/hint/show-hint.js"></script>
+<script src="js/codemirror/addon/hint/sql-hint.js"></script>
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({
@@ -364,6 +365,47 @@
 
 
         (function () {
+            // var mime = 'text/x-mariadb';
+            // // get mime type
+            // if (window.location.href.indexOf('mime=') > -1) {
+            //     mime = window.location.href.substr(window.location.href.indexOf('mime=') + 5);
+            // }
+            // window.editor = CodeMirror.fromTextArea(document.getElementById('etl_sql'), {
+            //     mode: mime,
+            //     indentWithTabs: true,
+            //     smartIndent: true,
+            //     lineNumbers: true,
+            //     matchBrackets : true,
+            //     autofocus: true,
+            //     extraKeys: {"Ctrl-Space": "autocomplete"},
+            //     hintOptions: {tables: {
+            //             users: ["name", "score", "birthDate"],
+            //             countries: ["name", "population", "size"]
+            //         }}
+            // });
+
+
+            function intCodeMirror(){
+
+            }
+            var mime = 'text/x-mariadb';
+            // get mime type
+            if (window.location.href.indexOf('mime=') > -1) {
+                mime = window.location.href.substr(window.location.href.indexOf('mime=') + 5);
+            }
+            window.editor = CodeMirror.fromTextArea(document.getElementById('etl_sql'), {
+                mode: mime,
+                indentWithTabs: true,
+                smartIndent: true,
+                lineNumbers: true,
+                matchBrackets : true,
+                autofocus: true,
+                extraKeys: {"Ctrl-Space": "autocomplete"},
+                hintOptions: {tables: {
+                        users: ["name", "score", "birthDate"],
+                        countries: ["name", "population", "size"]
+                    }}
+            });
 
             var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
             var params = url.substr(1);//去掉问号
@@ -395,21 +437,10 @@
                     data: '',
                     //成功返回
                     success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
                         var str_out = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
                         for (var i = 0; i < data.length; i++) {
-                            if (data[i].data_source_type == "HIVE" || data[i].data_source_type == "SPARK_SQL")
-                                str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
                             str_out += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
                         }
-                        //输入数据源类型下拉框
-                        $('#data_sources_choose_input').html(str);
-                        $('#data_sources_choose_input').chosen().on("change", function (evt, params) {
-                            // alert($('#data_sources_choose_input').val())
-                            $('#data_source_type_input').val($('#data_sources_choose_input').find("option:selected").attr("mytype"));
-                            $("#data_sources_choose_input").trigger("chosen:updated");
-
-                        });
 
                         //输出数据源类型下拉框
                         $('#data_sources_choose_output').html(str_out);
@@ -610,7 +641,7 @@
 
                     $.ajax({
                         url: "sql_task_list",
-                        data: "ids=" + s.id,
+                        data: "id=" + s.id,
                         type: "post",
                         async: false,
                         dataType: "json",
@@ -640,8 +671,10 @@
                             $("#data_source_type_input").val(data_source_type_input)
 
                             var etl_sql = data[0].etl_sql
-                            $("#etl_sql").val(etl_sql);
-
+                            //$("#etl_sql").val(etl_sql);
+                            console.info(etl_sql)
+                            window.editor.setValue(etl_sql);
+                            window.editor.refresh();
 
                             //获取输入源数据其他参数
                             var data_sources_params_input = data[0].data_sources_params_input
@@ -884,18 +917,17 @@
             return;
         }
 
-        var tableData = $("#exampleTableEvents").bootstrapTable('getData')
-
-
-        //alert($("#etl_task_add_form").serialize()+"&"+"column_datas="+JSON.stringify(column_datas))
-
+        var formData = new FormData(document.getElementById("sql_task_add_form"));
+        formData.set("etl_sql",window.editor.getValue())
 
         $.ajax({
             type: 'POST',
             url: "sql_task_add",
             async: false,
+            processData: false,
+            contentType: false,
             dataType: 'json',
-            data: $("#sql_task_add_form").serialize(),
+            data: formData,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -936,14 +968,16 @@
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
 
-        var tableData = $("#exampleTableEvents").bootstrapTable('getData')
-
-
+        var formData = new FormData(document.getElementById("sql_task_add_form"));
+        formData.set("etl_sql",window.editor.getValue())
+        formData.set("id",s.id)
         $.ajax({
             type: 'POST',
             url: "sql_task_update",
+            processData: false,
+            contentType: false,
             dataType: 'json',
-            data: $("#sql_task_add_form").serialize() + "&" + "id=" + s.id,
+            data: formData,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交

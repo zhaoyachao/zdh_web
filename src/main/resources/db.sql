@@ -450,6 +450,11 @@ alter table task_logs add column master varchar(100);
 --2020-09-13更新;
 insert into data_sources_type_info(sources_type) values('MEMSQL');
 
+--2020-09-19更新;
+alter table zdh_logs add column task_logs_id varchar(100);
+alter table quartz_job_info add column task_log_id varchar(100);
+
+alter table task_logs add column server_ack varchar(2);
 
 
 create database if NOT EXISTS quartz;

@@ -17,6 +17,9 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
     @Update({ "update quartz_job_info set last_status = #{last_status} where job_id = #{job_id}" })
     public int updateLastStatus(@Param("job_id") String job_id,@Param("last_status") String last_status);
 
+    @Update({ "update quartz_job_info set task_log_id = #{task_log_id} where job_id = #{job_id}" })
+    public int updateTaskLogId(@Param("job_id") String job_id,@Param("task_log_id") String task_log_id);
+
 
     @Select(value="select * from quartz_job_info where owner=#{owner}")
     public List<QuartzJobInfo> selectByOwner(@Param("owner") String owner);
@@ -55,8 +58,18 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
             "<when test='job_context!=null and job_context !=\"\"'>",
             "AND job_context like '%${job_context}%'",
             "</when>",
+            "<when test='status!=null and status !=\"\" and status == \"no_use\"'>",
+            "AND status in ('create','remove')",
+            "</when>",
+            "<when test='status!=null and status !=\"\" and status != \"no_use\" '>",
+            "AND status = #{status}",
+            "</when>",
+            "<when test='last_status!=null and last_status !=\"\"'>",
+            "AND last_status = #{last_status}",
+            "</when>",
             "</script>"})
-    public List<QuartzJobInfo> selectByParams(@Param("owner") String owner,@Param("job_context") String job_context,@Param("etl_context") String etl_context);
+    public List<QuartzJobInfo> selectByParams(@Param("owner") String owner,@Param("job_context") String job_context,@Param("etl_context") String etl_context,
+                                              @Param("status") String status,@Param("last_status") String last_stauts);
 
     @Select({
             "<script>",

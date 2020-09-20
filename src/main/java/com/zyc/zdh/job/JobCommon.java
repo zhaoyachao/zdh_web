@@ -13,7 +13,6 @@ import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.service.impl.DataSourcesServiceImpl;
 import com.zyc.zdh.util.*;
 import org.apache.shiro.SecurityUtils;
-import org.apache.tomcat.Jar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +29,8 @@ public class JobCommon {
     public static Logger logger = LoggerFactory.getLogger(JobCommon.class);
 
     public static String myid = "";
+
+    public static String web_application_id="";
 
     public static LinkedBlockingDeque<ZdhLogs> linkedBlockingDeque = new LinkedBlockingDeque<ZdhLogs>();
 
@@ -69,10 +70,10 @@ public class JobCommon {
                         QuartzJobInfo qj = quartzJobMapper.selectByPrimaryKey(retryJobInfo.getQuartzJobInfo().getJob_id());
                         if (qj.getLast_status().equalsIgnoreCase("retry")) {
                             logger.info("开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
-                            insertLog(qj.getJob_id(), "INFO", "开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
+                            insertLog(qj, "INFO", "开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                             chooseJobBean(qj, true);
                         } else {
-                            insertLog(qj.getJob_id(), "INFO", "由于其他原因导致任务状态变更,无法进行重试,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
+                            insertLog(qj, "INFO", "由于其他原因导致任务状态变更,无法进行重试,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                             logger.info("由于其他原因导致任务状态变更,无法进行重试,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                         }
 
@@ -85,21 +86,28 @@ public class JobCommon {
     }
 
     /**
+     * 超过次数限制会主动杀掉调度,并设置状态为error
      * @param jobType        SHELL,JDBC,FTP,CLASS
      * @param quartzManager2
      * @param quartzJobInfo
+     *  return true 表示超过次数限制
      */
     public static boolean isCount(String jobType, QuartzManager2 quartzManager2, QuartzJobInfo quartzJobInfo) {
         QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
+        TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
         //判断次数,上次任务完成重置次数
         if (quartzJobInfo.getLast_status() == null || quartzJobInfo.getLast_status().equals("finish")) {
             quartzJobInfo.setCount(0);
         }
         quartzJobInfo.setCount(quartzJobInfo.getCount() + 1);
 
+        //设置执行的进度
+        TaskLogs taskLogs=taskLogsMapper.selectByPrimaryKey(quartzJobInfo.getTask_log_id());
+        taskLogs.setProcess("8");
+
         if (quartzJobInfo.getPlan_count().trim().equals("-1")) {
             logger.info("[" + jobType + "] JOB ,当前任务未设置执行次数限制");
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,当前任务未设置执行次数限制");
+            insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,当前任务未设置执行次数限制");
         }
 
         if (!quartzJobInfo.getPlan_count().trim().equals("") && !quartzJobInfo.getPlan_count().trim().equals("-1")) {
@@ -107,13 +115,18 @@ public class JobCommon {
             System.out.println(quartzJobInfo.getCount() + "================" + quartzJobInfo.getPlan_count().trim());
             if (quartzJobInfo.getCount() > Long.parseLong(quartzJobInfo.getPlan_count().trim())) {
                 logger.info("[" + jobType + "] JOB 检任务次测到重试数超过限制,删除任务并直接返回结束");
-                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB 检任务次测到重试数超过限制,删除任务并直接返回结束");
+                insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB 检任务次测到重试数超过限制,删除任务并直接返回结束");
                 quartzManager2.deleteTask(quartzJobInfo, "finish");
                 quartzJobMapper.updateLastStatus(quartzJobInfo.getJob_id(), "error");
 
+                insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,结束调度任务");
+                taskLogs.setStatus(InstanceStatus.ERROR.getValue());
+                updateTaskLog(taskLogs,taskLogsMapper);
                 return true;
             }
         }
+
+        updateTaskLog(taskLogs,taskLogsMapper);
         return false;
     }
 
@@ -702,15 +715,16 @@ public class JobCommon {
     /**
      * 插入日志
      *
-     * @param job_id
+     * @param quartzJobInfo
      * @param level
      * @param msg
      */
-    public static void insertLog(String job_id, String level, String msg) {
+    public static void insertLog(QuartzJobInfo quartzJobInfo ,String level, String msg) {
 
         ZdhLogs zdhLogs = new ZdhLogs();
-        zdhLogs.setJob_id(job_id);
+        zdhLogs.setJob_id(quartzJobInfo.getJob_id());
         Timestamp lon_time = new Timestamp(new Date().getTime());
+        zdhLogs.setTask_logs_id(quartzJobInfo.getTask_log_id());
         zdhLogs.setLog_time(lon_time);
         zdhLogs.setMsg(msg);
         zdhLogs.setLevel(level.toUpperCase());
@@ -791,7 +805,7 @@ public class JobCommon {
                 zdhJarInfo.setTask_logs_id(task_logs_id);
                 zdhDroolsInfo.setTask_logs_id(task_logs_id);
                 zdhSshInfo.setTask_logs_id(task_logs_id);
-                insertLog(quartzJobInfo.getJob_id(), "DEBUG", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求");
+                insertLog(quartzJobInfo, "DEBUG", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求");
                 taskLogs.setEtl_date(date);
                 taskLogs.setProcess("10");
                 taskLogs.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -810,38 +824,25 @@ public class JobCommon {
                     etl_info = JSON.toJSONString(zdhSqlInfo);
                 } else if (quartzJobInfo.getMore_task().equals("外部JAR")) {
                     logger.info("[调度平台]:外部JAR,参数:" + JSON.toJSONString(zdhJarInfo));
-                    insertLog(quartzJobInfo.getJob_id(), "DEBUG", "[调度平台]:外部JAR,参数:" + JSON.toJSONString(zdhJarInfo));
+                    insertLog(quartzJobInfo, "DEBUG", "[调度平台]:外部JAR,参数:" + JSON.toJSONString(zdhJarInfo));
                     submit_jar(quartzJobInfo, zdhJarInfo);
                 } else if (quartzJobInfo.getMore_task().equals("Drools")) {
                     url_tmp = url + "/drools";
                     etl_info = JSON.toJSONString(zdhDroolsInfo);
                 } else if (quartzJobInfo.getMore_task().equalsIgnoreCase("SSH")) {
                     logger.info("[调度平台]:SSH,参数:" + JSON.toJSONString(zdhSshInfo));
-                    insertLog(quartzJobInfo.getJob_id(), "DEBUG", "[调度平台]:SSH,参数:" + JSON.toJSONString(zdhSshInfo));
+                    insertLog(quartzJobInfo, "DEBUG", "[调度平台]:SSH,参数:" + JSON.toJSONString(zdhSshInfo));
                     quartzJobInfo.setLast_status("etl");
                     boolean rs = ssh_exec(quartzJobInfo, zdhSshInfo);
                     if (rs) {
                         quartzJobInfo.setLast_status("finish");
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
-                        taskLogs.setStatus("finish");
+                        taskLogs.setStatus(InstanceStatus.FINISH.getValue());
                         taskLogs.setProcess("100");
                         taskLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                         updateTaskLog(taskLogs, taskLogsMapper);
                     }
                     return rs;
-                }
-
-                if (!quartzJobInfo.getMore_task().equals("外部JAR") && !quartzJobInfo.getMore_task().equalsIgnoreCase("SSH") ) {
-                    logger.info("[调度平台]:" + url_tmp + " ,参数:" + etl_info);
-                    insertLog(quartzJobInfo.getJob_id(), "DEBUG", "[调度平台]:" + url_tmp + " ,参数:" + etl_info);
-                    HttpUtil.postJSON(url_tmp, etl_info);
-                    logger.info(model_log + " JOB ,更新调度任务状态为etl");
-                    quartzJobInfo.setLast_status("etl");
-
-                } else if(quartzJobInfo.getMore_task().equals("外部JAR")) {
-                    logger.info(model_log + " JOB ,外部JAR更新调度任务状态为finish,提交jar任务暂不支持状态跟踪,计划在2.x版本支持");
-                    insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", model_log + " JOB ,外部JAR更新调度任务状态为finish,提交jar任务暂不支持状态跟踪,计划在2.x版本支持");
-                    quartzJobInfo.setLast_status("finish");
                 }
 
                 taskLogs.setExecutor(executor);
@@ -853,13 +854,25 @@ public class JobCommon {
                 taskLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 updateTaskLog(taskLogs, taskLogsMapper);
 
+                if (!quartzJobInfo.getMore_task().equalsIgnoreCase("SSH") ) {
+                    logger.info("[调度平台]:" + url_tmp + " ,参数:" + etl_info);
+                    insertLog(quartzJobInfo, "DEBUG", "[调度平台]:" + url_tmp + " ,参数:" + etl_info);
+                    HttpUtil.postJSON(url_tmp, etl_info);
+                    logger.info(model_log + " JOB ,更新调度任务状态为etl");
+                    quartzJobInfo.setLast_status("etl");
+                    taskLogs.setStatus(InstanceStatus.ETL.getValue());
+                    taskLogs.setProcess("15");
+                    taskLogsMapper.updateTaskLogsById3(taskLogs);
+                    //updateTaskLog(taskLogs, taskLogsMapper);
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("[调度平台]:" + model_log + " JOB ,开始发送" + quartzJobInfo.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
-            insertLog(quartzJobInfo.getJob_id(), "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送" + quartzJobInfo.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
-            taskLogs.setStatus("error");
-            taskLogs.setProcess("15");
+            insertLog(quartzJobInfo, "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送" + quartzJobInfo.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
+            taskLogs.setStatus(InstanceStatus.ERROR.getValue());
+            taskLogs.setProcess("17");
             taskLogs.setUpdate_time(new Timestamp(new Date().getTime()));
             updateTaskLog(taskLogs, taskLogsMapper);
             //更新执行状态为error
@@ -876,7 +889,7 @@ public class JobCommon {
     public static void submit_jar(QuartzJobInfo quartzJobInfo, ZdhJarInfo zdhJarInfo) throws IOException {
         try {
             logger.info("[调度平台]:外部JAR,开始提交jar 任务");
-            insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,开始提交jar 任务");
+            insertLog(zdhJarInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:外部JAR,开始提交jar 任务");
             String system = System.getProperty("os.name");
             String[] str = zdhJarInfo.getJarTaskInfo().getSpark_submit_params().split("\r\n|\n");
             String newcommand = "";
@@ -909,9 +922,9 @@ public class JobCommon {
 
             newcommand = jj.render(newcommand,jinJavaParam);
             logger.info("[调度平台]:外部JAR,生成脚本临时文件:" + file2.getAbsolutePath());
-            insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,生成脚本临时文件:" + file2.getAbsolutePath());
+            insertLog(zdhJarInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:外部JAR,生成脚本临时文件:" + file2.getAbsolutePath());
             logger.info("[调度平台]:外部JAR,脚本内容:" + line + newcommand);
-            insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,脚本内容:" + line + newcommand);
+            insertLog(zdhJarInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:外部JAR,脚本内容:" + line + newcommand);
             BufferedWriter fileWritter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file2.getAbsolutePath(), true), "UTF-8"));
             fileWritter.write(newcommand);
             fileWritter.close();
@@ -930,7 +943,7 @@ public class JobCommon {
                 //下载文件
                 if (zdhNginx.getHost() != null && !zdhNginx.getHost().equals("")) {
                     logger.info("开始下载文件:SFTP方式" + jarFileInfo.getFile_name());
-                    insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,开始下载文件:SFTP方式" + jarFileInfo.getFile_name());
+                    insertLog(zdhJarInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:外部JAR,开始下载文件:SFTP方式" + jarFileInfo.getFile_name());
                     //连接sftp 下载
                     SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
                             zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
@@ -938,7 +951,7 @@ public class JobCommon {
                     sftp.download(zdhNginx.getNginx_dir() + "/" + zdhNginx.getOwner(), jarFileInfo.getFile_name(), "spark_submit/" + quartzJobInfo.getJob_id() + "/" + jarFileInfo.getFile_name());
                 } else {
                     logger.info("开始下载文件:本地方式" + jarFileInfo.getFile_name());
-                    insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,开始下载文件:本地方式" + jarFileInfo.getFile_name());
+                    insertLog(zdhJarInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:外部JAR,开始下载文件:本地方式" + jarFileInfo.getFile_name());
                     //本地文件
                     BufferedOutputStream bos = null;
                     FileInputStream in = null;
@@ -970,7 +983,7 @@ public class JobCommon {
 
             //执行脚本
             logger.info("当前系统为：" + system + ",运行脚本:" + file2.getAbsolutePath());
-            insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,当前系统为:" + system + ",运行脚本:" + file2.getAbsolutePath() + ",请耐心等待jar 任务开始执行....");
+            insertLog(zdhJarInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:外部JAR,当前系统为:" + system + ",运行脚本:" + file2.getAbsolutePath() + ",请耐心等待jar 任务开始执行....");
             long t1 = System.currentTimeMillis();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream error = new ByteArrayOutputStream();
@@ -982,14 +995,14 @@ public class JobCommon {
             long t2 = System.currentTimeMillis();
 
             for (String li : out.toString(CommandUtils.DEFAULT_CHARSET).split("\r\n|\n")) {
-                insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", li);
+                insertLog(zdhJarInfo.getQuartzJobInfo(), "DEBUG", li);
             }
             for (String li : error.toString(CommandUtils.DEFAULT_CHARSET).split("\r\n|\n")) {
-                insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "ERROR", li);
+                insertLog(zdhJarInfo.getQuartzJobInfo(), "ERROR", li);
             }
             out.close();
             error.close();
-            insertLog(zdhJarInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:外部JAR,jar 任务执行结束,耗时:" + (t2 - t1) / 1000 + "s");
+            insertLog(zdhJarInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:外部JAR,jar 任务执行结束,耗时:" + (t2 - t1) / 1000 + "s");
 
 
         } catch (Exception e) {
@@ -1003,7 +1016,7 @@ public class JobCommon {
         try {
             String system = System.getProperty("os.name");
             long t1 = System.currentTimeMillis();
-            insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:SSH,当前系统为:" + system + ",请耐心等待SSH任务开始执行....");
+            insertLog(zdhSshInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:SSH,当前系统为:" + system + ",请耐心等待SSH任务开始执行....");
             String host = zdhSshInfo.getSshTaskInfo().getHost();
             String port = zdhSshInfo.getSshTaskInfo().getPort();
             String username = zdhSshInfo.getSshTaskInfo().getUser_name();
@@ -1018,7 +1031,7 @@ public class JobCommon {
                 SFTPUtil sftpUtil = new SFTPUtil(username, password, host, Integer.parseInt(port));
                 sftpUtil.login();
                 if(!script_context.isEmpty()){
-                    insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:SSH,发现在线脚本,使用在线脚本ssh 命令 可配合{{zdh_online_file}} 使用 example sh {{zdh_online_file}} 即是执行在线的脚本");
+                    insertLog(zdhSshInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:SSH,发现在线脚本,使用在线脚本ssh 命令 可配合{{zdh_online_file}} 使用 example sh {{zdh_online_file}} 即是执行在线的脚本");
                     InputStream   inputStream   =   new   ByteArrayInputStream(script_context.getBytes());
                     sftpUtil.upload(script_path,id+"_online",inputStream);
                 }
@@ -1028,7 +1041,7 @@ public class JobCommon {
                        //下载文件
                        if (zdhNginx.getHost() != null && !zdhNginx.getHost().equals("")) {
                            logger.info("开始下载文件:SFTP方式" + jarFileInfo.getFile_name());
-                           insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:SSH,开始下载文件:SFTP方式" + jarFileInfo.getFile_name());
+                           insertLog(zdhSshInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:SSH,开始下载文件:SFTP方式" + jarFileInfo.getFile_name());
                            //连接sftp 下载
                            SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
                                    zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
@@ -1038,7 +1051,7 @@ public class JobCommon {
                            sftp.logout();
                        } else {
                            logger.info("开始下载文件:本地方式" + jarFileInfo.getFile_name());
-                           insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:SSH,开始下载文件:本地方式" + jarFileInfo.getFile_name());
+                           insertLog(zdhSshInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:SSH,开始下载文件:本地方式" + jarFileInfo.getFile_name());
                            //本地文件
 
                            FileInputStream in = null;
@@ -1072,7 +1085,7 @@ public class JobCommon {
             SSHUtil sshUtil = new SSHUtil(username, password, host, Integer.parseInt(port));
             sshUtil.login();
 
-            insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:SSH,使用在线脚本,"+ssh_cmd);
+            insertLog(zdhSshInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:SSH,使用在线脚本,"+ssh_cmd);
             String[] result = sshUtil.exec(ssh_cmd);
             String error = result[0];
             String out = result[1];
@@ -1080,13 +1093,13 @@ public class JobCommon {
 
             for (String li : out.split("\r\n|\n")) {
                 if (!li.trim().isEmpty())
-                    insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "DEBUG", li);
+                    insertLog(zdhSshInfo.getQuartzJobInfo(), "DEBUG", li);
             }
             for (String li : error.split("\r\n|\n")) {
                 if (!li.trim().isEmpty())
-                    insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "ERROR", li);
+                    insertLog(zdhSshInfo.getQuartzJobInfo(), "ERROR", li);
             }
-            insertLog(zdhSshInfo.getQuartzJobInfo().getJob_id(), "DEBUG", "[调度平台]:SSH,SSH任务执行结束,耗时:" + (t2 - t1) / 1000 + "s");
+            insertLog(zdhSshInfo.getQuartzJobInfo(), "DEBUG", "[调度平台]:SSH,SSH任务执行结束,耗时:" + (t2 - t1) / 1000 + "s");
 
             if (!error.isEmpty()) {
                 return false;
@@ -1115,6 +1128,7 @@ public class JobCommon {
         taskLogs.setProcess(process);
         taskLogs.setThread_id(thread_id);
         taskLogs.setRetry_time(Timestamp.valueOf("2000-01-01 00:00:00"));
+        //taskLogs.setWeb_application_id(web_application_id);
         taskLogsMapper.insert(taskLogs);
         return taskLogs;
     }
@@ -1134,6 +1148,7 @@ public class JobCommon {
         String date = DateUtil.formatTime(quartzJobInfo.getLast_time());
         taskLogs.setEtl_date(date);
         taskLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+        taskLogs.setProcess("7");
         updateTaskLog(taskLogs, taskLogsMapper);
     }
 
@@ -1141,7 +1156,7 @@ public class JobCommon {
     public static void updateTaskLog12(String task_logs_id, TaskLogsMapper taskLogsMapper) {
         TaskLogs taskLogs = taskLogsMapper.selectByPrimaryKey(task_logs_id);
         taskLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-        taskLogs.setStatus("error");
+        taskLogs.setStatus(InstanceStatus.ERROR.getValue());
         taskLogs.setProcess("12");//调度完成
         updateTaskLog(taskLogs, taskLogsMapper);
     }
@@ -1168,7 +1183,7 @@ public class JobCommon {
         if (quartzJobInfo.getJump_dep() != null && quartzJobInfo.getJump_dep().equalsIgnoreCase("on")) {
             String msg2 = "[" + jobType + "] JOB ,跳过依赖任务";
             logger.info(msg2);
-            insertLog(quartzJobInfo.getJob_id(), "INFO", msg2);
+            insertLog(quartzJobInfo, "INFO", msg2);
             return true;
         }
         String job_ids = quartzJobInfo.getJob_ids();
@@ -1179,12 +1194,12 @@ public class JobCommon {
                 if (taskLogsList == null || taskLogsList.size() <= 0) {
                     String msg = "[" + jobType + "] JOB ,依赖任务" + dep_job_id + ",ETL日期" + etl_date + ",未完成";
                     logger.info(msg);
-                    insertLog(quartzJobInfo.getJob_id(), "INFO", msg);
+                    insertLog(quartzJobInfo, "INFO", msg);
                     return false;
                 }
                 String msg2 = "[" + jobType + "] JOB ,依赖任务" + dep_job_id + ",ETL日期" + etl_date + ",已完成";
                 logger.info(msg2);
-                insertLog(quartzJobInfo.getJob_id(), "INFO", msg2);
+                insertLog(quartzJobInfo, "INFO", msg2);
             }
 
         }
@@ -1208,10 +1223,12 @@ public class JobCommon {
 
         //last_status 表示 finish,etl,error
         //finish 表示成功,etl 表示正在处理,error 表示失败,dispatch 表示在调度中,retry 表示重试中 wait_retry 表示等待重试
+        //dispatch 状态不用检查,quartz 框架限制
+        //此处需要处理调度服务死掉的情况(1 任务已发送 ,状态未改变 还是dis ，2 任务未发送，状态还是dis ,对于状态是dis 的 放行)
         if (quartzJobInfo.getLast_status() != null &&
-                (quartzJobInfo.getLast_status().equals("etl") || quartzJobInfo.getLast_status().equals("dispatch") || quartzJobInfo.getLast_status().equals("wait_retry"))) {
+                (quartzJobInfo.getLast_status().equals("etl") || quartzJobInfo.getLast_status().equals("wait_retry"))) {
             logger.info("[" + jobType + "] JOB ,当前任务正在处理中,任务状态:" + quartzJobInfo.getLast_status());
-            insertLog(quartzJobInfo.getJob_id(), "INFO", "[" + jobType + "] JOB ,当前任务正在处理中,任务状态:" + quartzJobInfo.getLast_status());
+            insertLog(quartzJobInfo, "INFO", "[" + jobType + "] JOB ,当前任务正在处理中,任务状态:" + quartzJobInfo.getLast_status());
             return false;
         }
 
@@ -1242,7 +1259,7 @@ public class JobCommon {
             //finish成功状态 判断last_time 是否超过结束日期,超过，删除任务,更新状态
             if (DateUtil.add(last, dateType, num).after(quartzJobInfo.getEnd_time())) {
                 logger.info("[" + jobType + "] JOB ,当前任务时间超过结束时间,任务结束");
-                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,当前任务时间超过结束时间,任务结束");
+                insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,当前任务时间超过结束时间,任务结束");
                 quartzJobInfo.setStatus("finish");
                 //删除quartz 任务
                 quartzManager2.deleteTask(quartzJobInfo, "finish");
@@ -1253,20 +1270,20 @@ public class JobCommon {
             if (quartzJobInfo.getStart_time().before(DateUtil.add(last, dateType, num)) ||
                     quartzJobInfo.getStart_time().equals(DateUtil.add(last, dateType, num))) {
                 logger.info("[" + jobType + "] JOB,上次执行任务成功,计数新的执行日期:" + DateUtil.add(last, dateType, num));
-                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB,上次执行任务成功,计数新的执行日期:" + DateUtil.add(last, dateType, num));
+                insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB,上次执行任务成功,计数新的执行日期:" + DateUtil.add(last, dateType, num));
                 quartzJobInfo.setLast_time(DateUtil.add(last, dateType, num));
                 quartzJobInfo.setNext_time(DateUtil.add(quartzJobInfo.getLast_time(), dateType, num));
             } else {
                 logger.info("[" + jobType + "] JOB,首次执行任务,下次执行日期为起始日期:" + quartzJobInfo.getStart_time());
-                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB,首次执行任务,下次执行日期为起始日期:" + quartzJobInfo.getStart_time());
+                insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB,首次执行任务,下次执行日期为起始日期:" + quartzJobInfo.getStart_time());
             }
         }
 
         //error 状态,retry 状态  last_time 不变继续执行
-        if (quartzJobInfo.getLast_status() != null && (quartzJobInfo.getLast_status().equals("error") || quartzJobInfo.getLast_status().equals("retry"))) {
+        if (quartzJobInfo.getLast_status() != null && (quartzJobInfo.getLast_status().equals("dispatch") || quartzJobInfo.getLast_status().equals("error") || quartzJobInfo.getLast_status().equals("retry"))) {
             logger.info("[" + jobType + "] JOB ,上次任务处理失败,将重新执行,上次日期:" + quartzJobInfo.getLast_time());
             //插入日志
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,上次任务处理失败,将重新执行,上次日期:" + quartzJobInfo.getLast_time());
+            insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,上次任务处理失败,将重新执行,上次日期:" + quartzJobInfo.getLast_time());
         }
 
         return true;
@@ -1287,16 +1304,16 @@ public class JobCommon {
      */
     public static boolean runTimeSeq(String jobType, String task_logs_id, boolean exe_status, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper, QuartzManager2 quartzManager2) {
         logger.info("[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
-        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
+        insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
         exe_status = sendZdh(task_logs_id, "[" + jobType + "]", exe_status, quartzJobInfo);
 
         if (exe_status) {
             logger.info("[" + jobType + "] JOB ,执行命令成功");
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,执行命令成功");
+            insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,执行命令成功");
 
             if (quartzJobInfo.getEnd_time() == null) {
                 logger.info("[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
-                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
+                insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
                 quartzJobInfo.setEnd_time(new Timestamp(new Date().getTime()));
             }
 
@@ -1319,16 +1336,16 @@ public class JobCommon {
      */
     public static boolean runOnce(String jobType, String task_logs_id, boolean exe_status, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper, QuartzManager2 quartzManager2) {
         logger.info("[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
-        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
+        insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
         exe_status = sendZdh(task_logs_id, "[" + jobType + "]", exe_status, quartzJobInfo);
 
         if (exe_status) {
             logger.info("[" + jobType + "] JOB ,执行命令成功");
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,执行命令成功");
+            insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,执行命令成功");
 
             if (quartzJobInfo.getEnd_time() == null) {
                 logger.info("[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
-                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
+                insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
                 quartzJobInfo.setEnd_time(new Timestamp(new Date().getTime()));
             }
 
@@ -1338,7 +1355,7 @@ public class JobCommon {
             quartzManager2.deleteTask(quartzJobInfo, "finish");
             //插入日志
             logger.info("[" + jobType + "] JOB ,结束调度任务");
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束调度任务");
+            insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,结束调度任务");
 
         } else {
             setJobLastStatus(quartzJobInfo, task_logs_id, taskLogsMapper);
@@ -1360,15 +1377,15 @@ public class JobCommon {
      */
     public static boolean runRepeat(String jobType, String task_logs_id, boolean exe_status, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper, QuartzManager2 quartzManager2) {
         logger.info("[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
-        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
+        insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,调度命令执行成功,准备发往任务到后台ETL执行");
         exe_status = sendZdh(task_logs_id, "[" + jobType + "]", exe_status, quartzJobInfo);
         if (exe_status) {
             logger.info("[" + jobType + "] JOB ,执行命令成功");
-            insertLog(quartzJobInfo.getJob_id(), "INFO", "[" + jobType + "] JOB ,执行命令成功");
+            insertLog(quartzJobInfo, "INFO", "[" + jobType + "] JOB ,执行命令成功");
 
             if (quartzJobInfo.getEnd_time() == null) {
                 logger.info("[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
-                insertLog(quartzJobInfo.getJob_id(), "INFO", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
+                insertLog(quartzJobInfo, "INFO", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
                 quartzJobInfo.setEnd_time(new Timestamp(new Date().getTime()));
             }
         } else {
@@ -1377,10 +1394,17 @@ public class JobCommon {
         return exe_status;
     }
 
+    /**
+     * 调度执行的任务命令,jdbc,失败后触发此方法
+     * @param jobType
+     * @param task_logs_id
+     * @param quartzJobInfo
+     * @param taskLogsMapper
+     */
     public static void jobFail(String jobType, String task_logs_id, QuartzJobInfo quartzJobInfo, TaskLogsMapper taskLogsMapper) {
         QuartzManager2 quartzManager2=(QuartzManager2)SpringContext.getBean("quartzManager2");
         logger.info("[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行");
-        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行");
+        insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行");
         String msg = "[" + jobType + "] JOB ,调度命令执行失败未能发往任务到后台ETL执行,重试次数已达到最大,状态设置为error";
         String status = "error";
         if (quartzJobInfo.getPlan_count().equalsIgnoreCase("-1") || Long.parseLong(quartzJobInfo.getPlan_count()) > quartzJobInfo.getCount()) {
@@ -1392,10 +1416,10 @@ public class JobCommon {
             }
         }
         logger.info(msg);
-        insertLog(quartzJobInfo.getJob_id(), "ERROR", msg);
+        insertLog(quartzJobInfo, "ERROR", msg);
         int interval_time = (quartzJobInfo.getInterval_time() == null || quartzJobInfo.getInterval_time().equals("")) ? 5 : Integer.parseInt(quartzJobInfo.getInterval_time());
         //调度时异常
-        updateTaskLogError(task_logs_id, "8", taskLogsMapper, status, interval_time);
+        updateTaskLogError(task_logs_id, "9", taskLogsMapper, status, interval_time);
         quartzJobInfo.setLast_status(status);
         if(status.equalsIgnoreCase("error")){
             quartzManager2.deleteTask(quartzJobInfo, "finish");
@@ -1415,9 +1439,9 @@ public class JobCommon {
             }
         }
         logger.info(msg);
-        insertLog(quartzJobInfo.getJob_id(), "ERROR", msg);
+        insertLog(quartzJobInfo, "ERROR", msg);
         int interval_time = (quartzJobInfo.getInterval_time() == null || quartzJobInfo.getInterval_time().equals("")) ? 5 : Integer.parseInt(quartzJobInfo.getInterval_time());
-        updateTaskLogError(task_logs_id, "12", taskLogsMapper, status, interval_time);
+        updateTaskLogError(task_logs_id, "17", taskLogsMapper, status, interval_time);
         quartzJobInfo.setLast_status(status);
         if(status.equalsIgnoreCase("error")){
             quartzManager2.deleteTask(quartzJobInfo, "finish");
@@ -1456,14 +1480,11 @@ public class JobCommon {
             RetryJob.run(quartzJobInfo);
         } else {
             ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-            JobCommon.insertLog(quartzJobInfo.getJob_id(), "ERROR",
+            quartzJobInfo.setTask_log_id("system");
+            JobCommon.insertLog(quartzJobInfo, "ERROR",
                     "无法找到对应的任务类型,请检查调度任务配置中的任务类型");
             logger.info("无法找到对应的任务类型,请检查调度任务配置中的任务类型");
         }
     }
 
-    public static void saveJob2Redis() {
-
-
-    }
 }

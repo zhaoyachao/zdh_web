@@ -29,22 +29,33 @@ public class HdfsJob extends JobCommon {
     public static void run(QuartzJobInfo quartzJobInfo, Boolean is_retry) {
 
         Thread td=Thread.currentThread();
-        td.setName(quartzJobInfo.getJob_context());
+
         long threadId = td.getId();
         System.out.println("线程id:"+threadId);
         String task_logs_id = SnowflakeIdWorker.getInstance().nextId() + "";
         String tk=myid+"_"+threadId+"_"+task_logs_id;
 
-        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
         TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
         QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
         QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
 
         try{
-            TaskLogs taskLogs = insertTaskLog(task_logs_id, quartzJobInfo, null, "dispatch", "5",td.getId()+"", taskLogsMapper);
+
+            if (quartzJobInfo.getLast_status() != null &&
+                    (quartzJobInfo.getLast_status().equals("etl") || quartzJobInfo.getLast_status().equals("wait_retry"))) {
+                logger.info("[" + jobType + "] JOB ,当前任务正在处理中,任务状态:" + quartzJobInfo.getLast_status());
+                //此处不做处理,单独的超时告警监控
+                return ;
+            }
+
+            TaskLogs taskLogs = insertTaskLog(task_logs_id, quartzJobInfo, null, InstanceStatus.DISPATCH.getValue(), "5",td.getId()+"", taskLogsMapper);
+
+            //重要标识-必不可少-查询日志时使用
+            quartzJobInfo.setTask_log_id(task_logs_id);
+            quartzJobMapper.updateTaskLogId(quartzJobInfo.getJob_id(),quartzJobInfo.getTask_log_id());
 
             logger.info("开始执行[" + jobType + "] JOB");
-            insertLog(quartzJobInfo.getJob_id(), "INFO", "开始执行[" + jobType + "] JOB");
+            insertLog(quartzJobInfo, "INFO", "开始执行[" + jobType + "] JOB");
             //debugInfo(quartzJobInfo);
 
             //检查任务状态,并初始化相应的初始值 比如执行日期
@@ -84,17 +95,17 @@ public class HdfsJob extends JobCommon {
             //日期替换zdh.date.nodash=> yyyyMMdd 模式
             logger.info("目前支持日期参数3种模式:zdh.date => yyyy-MM-dd ,zdh.date.nodash=> yyyyMMdd " +
                     ",zdh.date.time=> yyyy-MM-dd HH:mm:ss");
-            insertLog(quartzJobInfo.getJob_id(), "info", "目前支持日期参数3种模式:zdh.date => yyyy-MM-dd ,zdh.date.nodash=> yyyyMMdd " +
+            insertLog(quartzJobInfo, "info", "目前支持日期参数3种模式:zdh.date => yyyy-MM-dd ,zdh.date.nodash=> yyyyMMdd " +
                     ",zdh.date.time=> yyyy-MM-dd HH:mm:ss");
             if (quartzJobInfo.getLast_time() == null) {
                 //第一次执行,下次执行时间为起始时间+1
                 if (quartzJobInfo.getStart_time() == null) {
                     logger.info("[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
-                    insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
+                    insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
                     quartzJobInfo.setStart_time(new Timestamp(new Date().getTime()));
                 }
                 logger.info("上次执行日期,下次执行日期均为空,赋值为:" + quartzJobInfo.getStart_time());
-                insertLog(quartzJobInfo.getJob_id(), "info", "上次执行日期,下次执行日期均为空,赋值为:" + quartzJobInfo.getStart_time());
+                insertLog(quartzJobInfo, "info", "上次执行日期,下次执行日期均为空,赋值为:" + quartzJobInfo.getStart_time());
                 quartzJobInfo.setLast_time(quartzJobInfo.getStart_time());
                 quartzJobInfo.setNext_time(quartzJobInfo.getStart_time());
             }
@@ -114,7 +125,7 @@ public class HdfsJob extends JobCommon {
                 String date = DateUtil.format(quartzJobInfo.getLast_time());
 
                 logger.info("[" + jobType + "] JOB ,COMMAND:" + quartzJobInfo.getCommand());
-                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,COMMAND:" + quartzJobInfo.getCommand());
+                insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,COMMAND:" + quartzJobInfo.getCommand());
                 String result = "fail";
                 if (quartzJobInfo.getCommand().trim().equals("")) {
                     result = "success";
@@ -135,7 +146,7 @@ public class HdfsJob extends JobCommon {
                             replace("zdh.date", date));
 
                     logger.info("[" + jobType + "] JOB ,开始连接hadoop,参数url:" + fs_defaultFS + ",用户:" + hadoop_user_name);
-                    insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,开始连接hadoop,参数url:" + fs_defaultFS + ",用户:" + hadoop_user_name);
+                    insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,开始连接hadoop,参数url:" + fs_defaultFS + ",用户:" + hadoop_user_name);
 
                     FileSystem fs = FileSystem.get(new URI(fs_defaultFS), conf, hadoop_user_name);
 
@@ -153,13 +164,13 @@ public class HdfsJob extends JobCommon {
                     }
                 }
                 logger.info("[" + jobType + "] JOB ,执行结果:" + result.trim());
-                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,执行结果:" + result.trim());
+                insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,执行结果:" + result.trim());
                 if (!result.trim().contains("success")) {
                     throw new Exception("文件不存在");
                 }
             } else {
                 logger.info("[" + jobType + "] JOB ,执行命令为空,默认返回成功状态");
-                insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,执行命令为空,默认返回成功状态");
+                insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,执行命令为空,默认返回成功状态");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,7 +187,7 @@ public class HdfsJob extends JobCommon {
      */
     private static void runTimeSeq(QuartzJobInfo quartzJobInfo, String task_logs_id) {
         logger.info("[" + jobType + "] JOB,任务模式为[时间序列]");
-        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB,任务模式为[时间序列]");
+        insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB,任务模式为[时间序列]");
         QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
         QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
         ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
@@ -184,7 +195,7 @@ public class HdfsJob extends JobCommon {
 
         boolean end = isCount(jobType, quartzManager2, quartzJobInfo);
         if (end == true) {
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束调度任务");
+            insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,结束调度任务");
             return;
         }
 
@@ -219,10 +230,10 @@ public class HdfsJob extends JobCommon {
         TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
 
         logger.info("[" + jobType + "] JOB,任务模式为[ONCE]");
-        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB,任务模式为[ONCE]");
+        insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB,任务模式为[ONCE]");
         boolean end = isCount(jobType, quartzManager2, quartzJobInfo);
         if (end == true) {
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束调度任务");
+            insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,结束调度任务");
             return;
         }
 
@@ -250,7 +261,7 @@ public class HdfsJob extends JobCommon {
     private static void runRepeat(QuartzJobInfo quartzJobInfo, String task_logs_id) {
 
         logger.info("[" + jobType + "] JOB,任务模式为[重复执行模式]");
-        insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB,任务模式为[重复执行模式]");
+        insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB,任务模式为[重复执行模式]");
 
         QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
         QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
@@ -261,7 +272,7 @@ public class HdfsJob extends JobCommon {
         boolean end = isCount(jobType, quartzManager2, quartzJobInfo);
 
         if (end == true) {
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束调度任务");
+            insertLog(quartzJobInfo, "info", "[" + jobType + "] JOB ,结束调度任务");
             return;
         }
 

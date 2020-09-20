@@ -31,34 +31,8 @@
 </div>
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
-        <div class="col-sm-6">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5 id="current_status">任务状态</h5>
-                    <div class="ibox-tools">
-                        <a class="collapse-link">
-                            <i class="fa fa-chevron-up"></i>
-                        </a>
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="../html/graph_flot.html#">
-                            <i class="fa fa-wrench"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-user">
-                            <li><a href="../html/graph_flot.html#">选项1</a>
-                            </li>
-                            <li><a href="../html/graph_flot.html#">选项2</a>
-                            </li>
-                        </ul>
-                        <a class="close-link">
-                            <i class="fa fa-times"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="ibox-content">
-                    <div class="echarts" id="echarts-pie-chart"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6">
+
+        <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
                     <h5>历史任务状态</h5>
@@ -214,7 +188,6 @@
 
 <script>
     $(document).ready(function () {
-        var pieChart = echarts.init(document.getElementById("echarts-pie-chart"));
         var barChart = echarts.init(document.getElementById("echarts-bar-chart"));
 
         function requestEcharts() {
@@ -229,7 +202,7 @@
                     var running_datas = new Array();// 声明一个数组
                     var error_datas = new Array();// 声明一个数组
                     var finish_datas = new Array();// 声明一个数组
-                    for (i = 0; i < res.length; i++) {
+                    for (var i = 0; i < res.length; i++) {
                         etl_date_datas.push(res[i].etl_date)
                         running_datas.push(res[i].running)
                         error_datas.push(res[i].error)
@@ -281,10 +254,8 @@
                             }
                         ]
                     };
-                    barChart.setOption(baroption);
-                    if (etl_date_datas.length > 0) {
-                        barChart.hideLoading();
-                    }
+                    barChart.setOption(baroption,true);
+                    barChart.hideLoading();
                 },
                 error: function (errorMsg) {
                     //请求失败时执行该函数
@@ -294,61 +265,9 @@
             })
         }
 
-        function requestCurrentEcharts() {
-            pieChart.showLoading();
-            $.get('/etlEchartsCurrent', function (res) {
-
-                var etl_date_datas = new Array();// 声明一个数组
-                var running_datas = new Array();// 声明一个数组
-                var error_datas = new Array();// 声明一个数组
-                var finish_datas = new Array();// 声明一个数组
-                for (i = 0; i < res.length; i++) {
-                    etl_date_datas.push(res[i].etl_date)
-                    running_datas.push(res[i].running)
-                    error_datas.push(res[i].error)
-                    finish_datas.push(res[i].finish)
-                }
-
-                var pieoption = {
-                    title: {
-                        text: '任务状态分配',
-                        subtext: '调度任务',
-                        x: 'center'
-                    },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter: "{a} <br/>{b} : {c} ({d}%)"
-                    },
-                    legend: {
-                        orient: 'vertical',
-                        x: 'left',
-                        data: ['正在执行', '执行成功', '失败']
-                    },
-                    calculable: true,
-                    series: [
-                        {
-                            name: '任务状态',
-                            type: 'pie',
-                            radius: '55%',
-                            center: ['50%', '60%'],
-                            data: [
-                                {value: running_datas, name: '正在执行'},
-                                {value: finish_datas, name: '执行成功'},
-                                {value: error_datas, name: '失败'}
-                            ]
-                        }
-                    ]
-                };
-                pieChart.setOption(pieoption);
-                pieChart.hideLoading()
-            })
-        }
-
         requestEcharts()
-        requestCurrentEcharts()
         setInterval(function () {
             requestEcharts()
-            requestCurrentEcharts
         }, 60000)
 
 
@@ -490,6 +409,7 @@
                         contentType: "application/json;charset=utf-8",
                         dataType: "json"
                     });
+                    requestEcharts()
                 },
                 error: function (data) {
                     console.info("error: " + data.responseText);
@@ -501,7 +421,7 @@
         window.operateEvents = {
             'click #log_txt': function (e, value, row, index) {
                 row.job_context
-                openTabPage("log_txt.html?id=" + row.job_id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
+                openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
             },
             'click #kill': function (e, value, row, index) {
                 row.job_context
@@ -620,7 +540,39 @@
             }, {
                 field: 'status',
                 title: '状态',
-                sortable: true
+                sortable: true,
+                formatter: function (value, row, index) {
+                    var class_str = "btn-primary  btn-xs"
+                    var context = "未运行"
+                    var process=100
+                    if (value == "dispatch") {
+                        context = "运行中"
+                        class_str = "btn-primary  btn-xs"
+                    }
+                    if (value == "finish") {
+                        context = "完成"
+                        class_str = "btn-primary  btn-xs"
+                    }
+                    if (value == "etl") {
+                        context = "运行中"
+                        class_str = "btn-primary  btn-xs"
+                    }
+                    if (value == "error") {
+                        context = "失败"
+                        class_str = "btn-danger  btn-xs"
+                    }
+                    if (value == "retry") {
+                        context = "重试"
+                        class_str = "btn-danger  btn-xs"
+                    }
+                    if (value == "wait_retry") {
+                        context = "等待重试"
+                        class_str = "btn-danger  btn-xs"
+                    }
+                    return [
+                        '<button type="button" class="btn '+class_str+'">'+context+'</button>'
+                    ].join('');
+                }
             }, {
                 field: 'process',
                 title: '进度',

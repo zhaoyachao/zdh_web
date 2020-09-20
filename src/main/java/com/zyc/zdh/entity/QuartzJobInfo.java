@@ -55,6 +55,7 @@ public class QuartzJobInfo implements Serializable {
     private String alarm_enabled;
     private String email_and_sms;
     private String alarm_account;
+    private String task_log_id;
 
 
     public long getCount() {
@@ -304,5 +305,13 @@ public class QuartzJobInfo implements Serializable {
 
     public void setAlarm_account(String alarm_account) {
         this.alarm_account = alarm_account;
+    }
+
+    public String getTask_log_id() {
+        return task_log_id;
+    }
+
+    public void setTask_log_id(String task_log_id) {
+        this.task_log_id = task_log_id;
     }
 }

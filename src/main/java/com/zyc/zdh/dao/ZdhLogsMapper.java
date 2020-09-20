@@ -18,15 +18,26 @@ public interface ZdhLogsMapper extends BaseMapper<ZdhLogs> {
     @Delete("delete from zdh_logs where job_id = #{ids_str}")
     public int deleteBatchById(@Param("ids_str") String ids_str);
 
-    @Select(value =
-            "select * from zdh_logs where job_id=#{job_id} and log_time >=#{start_time}  and log_time <=#{end_time} and level in (${levels}) ")
-    @Results({@Result(column="job_id",property="job_id"),
-            @Result(column="log_time",property="log_time"),
-            @Result(column="msg",property="msg")
-    })
-    public List<ZdhLogs> selectByTime(@Param("job_id") String etl_task_id, @Param("start_time") Timestamp start_time, @Param("end_time") Timestamp end_time,@Param("levels") String levels);
+    @Select({"<script>",
+            "select * from zdh_logs where job_id=#{job_id}  and level in (${levels}) ",
+            "<when test='task_logs_id == null and task_logs_id == \"\"'>",
+            "and <![CDATA[ log_time >=#{start_time} ]]> and <![CDATA[ log_time <=#{end_time} ]]>",
+            "</when>",
+            "<when test='task_logs_id!=null and task_logs_id !=\"\"'>",
+            "AND task_logs_id = #{task_logs_id}",
+            "</when>",
+            "</script>"})
+    public List<ZdhLogs> selectByTime(@Param("job_id") String etl_task_id,@Param("task_logs_id") String task_logs_id,@Param("start_time") Timestamp start_time, @Param("end_time") Timestamp end_time,@Param("levels") String levels);
 
-    @Delete("delete from zdh_logs where job_id = #{job_id} and log_time >=#{start_time}  and log_time <=#{end_time}")
-    public int deleteByTime(@Param("job_id") String job_id, @Param("start_time") Timestamp start_time, @Param("end_time") Timestamp end_time);
+    @Delete({"<script>",
+            "delete from zdh_logs where job_id = #{job_id} ",
+            "<when test='task_logs_id == null and task_logs_id == \"\"'>",
+            "and <![CDATA[ log_time >=#{start_time} ]]> and <![CDATA[ log_time <=#{end_time} ]]>",
+            "</when>",
+            "<when test='task_logs_id!=null and task_logs_id !=\"\"'>",
+            "AND task_logs_id = #{task_logs_id}",
+            "</when>",
+            "</script>"})
+    public int deleteByTime(@Param("job_id") String job_id,@Param("task_logs_id") String task_logs_id ,@Param("start_time") Timestamp start_time, @Param("end_time") Timestamp end_time);
 
 }

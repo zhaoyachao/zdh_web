@@ -14,6 +14,7 @@
     <link rel="shortcut icon" href="favicon.ico"> <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     
@@ -49,7 +50,31 @@
                             <span class="add-on"><i class="icon-calendar"></i></span>
                         </div>
                     </div>
-
+                    <div class="form-group">
+                        <div class="input-group" >
+                            <select data-placeholder="调度器状态" class="chosen-select" style="width:110px;" tabindex="2"
+                                    id="status" name="status">
+                                <option value="">调度器状态</option>
+                                <option value="running" hassubinfo="true">运行中</option>
+                                <option value="no_use" hassubinfo="true">未启用</option>
+                                <option value="finish" hassubinfo="true">已完成</option>
+                                <option value="pause" hassubinfo="true">暂停中</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group" >
+                            <select data-placeholder="任务状态" class="chosen-select" style="width:110px;" tabindex="2"
+                                    id="last_status" name="last_status">
+                                <option value="">任务状态</option>
+                                <option value="dispatch" hassubinfo="true">调度中</option>
+                                <option value="etl" hassubinfo="true">ETL</option>
+                                <option value="finish" hassubinfo="true">已完成</option>
+                                <option value="retry" hassubinfo="true">重试中</option>
+                                <option value="wait_retry" hassubinfo="true">等待重试</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
                     </div>
@@ -71,6 +96,8 @@
                                 <table id="exampleTableEvents" data-height="400" data-mobile-responsive="true">
 
                                 </table>
+
+
                             </div>
                         </div>
                         <!-- End Example Events -->
@@ -94,6 +121,7 @@
     <!--iframe 标签-->
     <script type="text/javascript" src="js/contabs.js"></script>
 
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
     <!-- Bootstrap table -->
     <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
@@ -106,6 +134,8 @@
 <script>
     $(document).ready(function () {
 
+        $('#status').chosen();
+        $('#last_status').chosen();
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
                 url: "/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),

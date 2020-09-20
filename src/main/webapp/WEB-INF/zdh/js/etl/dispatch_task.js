@@ -61,21 +61,23 @@
             });
         }
 
-        function executeMs(job_id) {
+        function executeMs(job_id,reset_count) {
+            var index=top.layer.msg('手动开始执行',{time:"-1"});
             $('#execute').attr({disabled: "disabled"});
-            layer.msg('手动开始执行');
             $.ajax({
                 url: "dispatch_task_execute",
-                data: "job_id=" + job_id,
+                data: "job_id=" + job_id+"&reset_count="+reset_count,
                 type: "post",
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
+                    top.layer.close(index)
                     layer.msg('执行成功');
                     $("#execute").removeAttr('disabled');
                 },
                 error: function (data) {
                     $("#execute").removeAttr('disabled');
+                    top.layer.close(index)
                     layer.msg('执行失败');
                     console.info("error: " + data.responseText);
                 }
@@ -230,10 +232,22 @@
 
             },
             'click #execute': function (e, value, row, index) {
-                executeMs(row.job_id)
+                layer.confirm('手动执行,是否重置已执行次数', {
+                    btn: ['重置并执行','直接执行'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    title:"手动执行"
+                }, function(index){
+                    executeMs(row.job_id,"true")
+                    layer.close(layer.index)
+                }, function(index){
+                    executeMs(row.job_id,"false")
+                    layer.close(layer.index)
+                });
             },
             'click #log_txt': function (e, value, row, index) {
-                openTabPage("log_txt.html?id=" + row.job_id, "日志")
+                openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id, "日志:"+row.job_context)
             },
             'click #copy': function (e, value, row, index) {
                 $("#id").val(row.job_id)
@@ -259,14 +273,45 @@
 
         window.operateEvents2 = {
             'click #execute_quartz': function (e, value, row, index) {
-                executeQuartz(row.job_id)
+                layer.confirm('是否启用调度', {
+                    btn: ['启用','取消'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    title:"启用调度"
+                }, function(index){
+                    executeQuartz(row.job_id)
+                    layer.close(layer.index)
+                }, function(index){
+                });
             },
             'click #pause': function (e, value, row, index) {
-                $("#id").val(row.job_id)
-                pauseQuartz(row.job_id, row.status)
+                layer.confirm('是否暂停调度', {
+                    btn: ['暂停','取消'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    title:"暂停调度"
+                }, function(index){
+                    $("#id").val(row.job_id)
+                    pauseQuartz(row.job_id, row.status)
+                    layer.close(layer.index)
+                }, function(index){
+                });
             },
             'click #minus_sign': function (e, value, row, index) {
-                delQuartz(row.job_id)
+
+                layer.confirm('是否关闭调度', {
+                    btn: ['关闭','取消'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    title:"关闭调度"
+                }, function(index){
+                    delQuartz(row.job_id)
+                    layer.close(layer.index)
+                }, function(index){
+                });
             }
         };
 
@@ -274,7 +319,7 @@
         function operateFormatter(value, row, index) {
             return [
                 ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
-                ' <button id="execute" name="execute" type="button" class="btn btn-outline btn-sm" title="执行">\n' +
+                ' <button id="execute" name="execute" type="button" class="btn btn-outline btn-sm" title="手动执行">\n' +
                 '                                        <i class="glyphicon glyphicon-play" aria-hidden="true"></i>\n' +
                 '                                    </button>',
                 ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
@@ -378,14 +423,77 @@
                 sortable: false
             }, {
                 field: 'status',
-                title: '调度状态',
+                title: '调度器状态',
                 sortable: false,
-                visible:true
+                visible:true,
+                formatter: function (value, row, index) {
+                        var context = "未启用"
+                        var class_str = "btn-danger"
+                        if (value == "create") {
+                            context = "未启用"
+                            class_str = "btn-danger  btn-xs"
+                        }
+                        if (value == "finish") {
+                            context = "已完成"
+                            class_str = "btn-primary  btn-xs"
+                        }
+                        if (value == "running") {
+                            context = "运行中"
+                            class_str = "btn-primary  btn-xs"
+                        }
+                        if (value == "remove") {
+                            context = "未启用"
+                            class_str = "btn-danger  btn-xs"
+                        }
+                        if (value == "pause") {
+                            context = "暂停中"
+                            class_str = "btn-warning btn-xs"
+
+                        }
+                        return [
+                            '<button type="button" class="btn '+class_str+'">'+context+'</button>'
+                        ].join('');
+                    }
+
             }, {
                 field: 'last_status',
                 title: '执行状态',
                 sortable: true,
-                visible:true
+                visible:true,
+                formatter: function (value, row, index) {
+                    var class_str = "progress-bar progress-bar-success"
+                    var context = "未运行"
+                    var process=100
+                    if (value == "dispatch") {
+                        context = "运行中"
+                    }
+                    if (value == "finish") {
+                        context = "完成"
+                    }
+                    if (value == "etl") {
+                        context = "运行中"
+                        process=50
+                    }
+                    if (value == "error") {
+                        context = "失败"
+                        class_str = "progress-bar progress-bar-danger"
+                    }
+                    if (value == "retry") {
+                        context = "重试"
+                        process=50
+                    }
+                    if (value == "wait_retry") {
+                        context = "等待重试"
+                        process=30
+                    }
+                    return [
+                        '<small>' + context  + '</small>' +
+                        '<div class="progress progress-mini">' +
+                        '<div style="width: ' + process + '%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="35" role="progressbar" class="' + class_str + '">' +
+                        '</div>' +
+                        '</div>'
+                    ].join('');
+                }
             }, {
                 field: 'count',
                 title: '执行次数',
@@ -449,6 +557,11 @@
             }, {
                 field: 'params',
                 title: '参数',
+                sortable: true,
+                visible:false
+            }, {
+                field: 'task_log_id',
+                title: '最后的执行日志id',
                 sortable: true,
                 visible:false
             }

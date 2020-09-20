@@ -200,7 +200,7 @@
                 type: 'POST',
                 url: "zhd_logs",
                 dataType: 'json',
-                data: $("#form_log").serialize() + "&id=" + s.id,
+                data: $("#form_log").serialize() + "&job_id=" + s.job_id+"&task_log_id="+s.task_log_id,
                 //发送数据前
                 beforeSend: function () {
                     // 禁用按钮防止重复提交
@@ -241,7 +241,7 @@
                 type: 'POST',
                 url: "zhd_logs",
                 dataType: 'json',
-                data: $("#form_log").serialize() + "&id=" + s.id+"&del=1",
+                data: $("#form_log").serialize() + "&job_id=" + s.job_id+"&del=1",
                 //发送数据前
                 beforeSend: function () {
                     // 禁用按钮防止重复提交

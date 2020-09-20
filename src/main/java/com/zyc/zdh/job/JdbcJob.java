@@ -32,20 +32,31 @@ public class JdbcJob extends JobCommon {
     public static void run(QuartzJobInfo quartzJobInfo, Boolean is_retry) {
 
         Thread td = Thread.currentThread();
-        td.setName(quartzJobInfo.getJob_context());
+
         long threadId = td.getId();
         System.out.println("线程id:" + threadId);
         String task_logs_id = SnowflakeIdWorker.getInstance().nextId() + "";
         String tk = myid + "_" + threadId + "_" + task_logs_id;
 
-        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
         TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
         QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
-
+        QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
         try {
-            TaskLogs taskLogs = insertTaskLog(task_logs_id, quartzJobInfo, null, "running", "5", tk, taskLogsMapper);
+
+            if (quartzJobInfo.getLast_status() != null &&
+                    (quartzJobInfo.getLast_status().equals("etl") || quartzJobInfo.getLast_status().equals("wait_retry"))) {
+                logger.info("[" + jobType + "] JOB ,当前任务正在处理中,任务状态:" + quartzJobInfo.getLast_status());
+                //此处不做处理,单独的超时告警监控
+                return ;
+            }
+
+            TaskLogs taskLogs = insertTaskLog(task_logs_id, quartzJobInfo, null, InstanceStatus.DISPATCH.getValue(), "5", tk, taskLogsMapper);
+            //重要标识-必不可少-查询日志时使用
+            quartzJobInfo.setTask_log_id(task_logs_id);
+            quartzJobMapper.updateTaskLogId(quartzJobInfo.getJob_id(),quartzJobInfo.getTask_log_id());
+
             logger.info("开始执行[" + jobType + "] JOB");
-            insertLog(quartzJobInfo.getJob_id(), "info",
+            insertLog(quartzJobInfo, "info",
                     "开始执行[" + jobType + "] JOB");
             //debugInfo(quartzJobInfo);
 
@@ -86,7 +97,7 @@ public class JdbcJob extends JobCommon {
             if (params.equals("")) {
                 exe_status = false;
                 logger.info("参数不可为空,必须包含特定参数,zdh.jdbc.url,zdh.jdbc.driver,zdh.jdbc.username,zdh.jdbc.password");
-                insertLog(quartzJobInfo.getJob_id(), "error",
+                insertLog(quartzJobInfo, "error",
                         "参数不可为空,必须包含特定参数,zdh.jdbc.url,zdh.jdbc.driver,zdh.jdbc.username,zdh.jdbc.password");
 
                 return exe_status;
@@ -100,7 +111,7 @@ public class JdbcJob extends JobCommon {
                 exe_status = false;
                 logger.info("[" + jobType + "] JOB ,参数不可为空");
                 //插入日志
-                insertLog(quartzJobInfo.getJob_id(), "error",
+                insertLog(quartzJobInfo, "error",
                         "参数不可为空,必须包含特定参数,zdh.jdbc.url,zdh.jdbc.driver,zdh.jdbc.username,zdh.jdbc.password");
 
                 return exe_status;
@@ -136,7 +147,7 @@ public class JdbcJob extends JobCommon {
         } catch (Exception ex) {
             ex.printStackTrace();
             //插入日志
-            insertLog(quartzJobInfo.getJob_id(), "error",
+            insertLog(quartzJobInfo, "error",
                     "[调度平台]:" + ex.getMessage());
             logger.error(ex.getMessage());
             return false;
@@ -162,10 +173,7 @@ public class JdbcJob extends JobCommon {
 
 
         boolean end = isCount(jobType, quartzManager2, quartzJobInfo);
-        if (end == true) {
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束调度任务");
-            return;
-        }
+        if (end == true) return ;
 
         Boolean exe_status = runCommand(quartzJobInfo, zdhLogsService);
 
@@ -201,10 +209,7 @@ public class JdbcJob extends JobCommon {
         TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
 
         boolean end = isCount(jobType, quartzManager2, quartzJobInfo);
-        if (end == true) {
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束调度任务");
-            return;
-        }
+        if (end == true) return;
 
         Boolean exe_status = runCommand(quartzJobInfo, zdhLogsService);
 
@@ -238,10 +243,7 @@ public class JdbcJob extends JobCommon {
         TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
 
         boolean end = isCount(jobType, quartzManager2, quartzJobInfo);
-        if (end == true) {
-            insertLog(quartzJobInfo.getJob_id(), "info", "[" + jobType + "] JOB ,结束调度任务");
-            return;
-        }
+        if (end == true) return ;
 
         Boolean exe_status = false;
         exe_status = runCommand(quartzJobInfo, zdhLogsService);

@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 public class ZdhLogs  extends PageBase implements Serializable {
 
+    private String task_logs_id;
     private String job_id;
 
     private Timestamp log_time;
@@ -13,6 +14,13 @@ public class ZdhLogs  extends PageBase implements Serializable {
 
     private String level;
 
+    public String getTask_logs_id() {
+        return task_logs_id;
+    }
+
+    public void setTask_logs_id(String task_logs_id) {
+        this.task_logs_id = task_logs_id;
+    }
 
     public String getJob_id() {
         return job_id;

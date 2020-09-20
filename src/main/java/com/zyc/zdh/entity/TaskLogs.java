@@ -19,12 +19,12 @@ public class TaskLogs implements Serializable {
     private String job_id;//任务id,
     private String job_context;//任务说明
     private String etl_date;// 起始时间
-    private String status;// 任务状态,finish,error,etl,kill
+    private String status;// 任务状态,dispatch,wait_retry,finish,error,etl,kill
     private Timestamp start_time;//任务开始时间
     private Timestamp update_time;
     private String  owner;
     private String is_notice="false";
-    private String process="1";
+    private String process="1";//默认是1,开始调度是5,调整调度时间etl_date是7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行
     private String thread_id;//myid+threadId+id,通过'_'连接
     private Timestamp retry_time;
     private String executor;
@@ -33,6 +33,7 @@ public class TaskLogs implements Serializable {
     private String application_id;
     private String history_server;
     private String master;
+    private String server_ack="0";//server端ack 保证任务故障转移时不会重复发送
 
     public String getJob_id() {
         return job_id;
@@ -177,4 +178,13 @@ public class TaskLogs implements Serializable {
     public void setMaster(String master) {
         this.master = master;
     }
+
+    public String getServer_ack() {
+        return server_ack;
+    }
+
+    public void setServer_ack(String server_ack) {
+        this.server_ack = server_ack;
+    }
+
 }

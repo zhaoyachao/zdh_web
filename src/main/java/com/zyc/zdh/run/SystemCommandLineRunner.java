@@ -82,6 +82,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         String myid = ev.getProperty("myid", "0");
         JobCommon.myid=myid;
         SnowflakeIdWorker.init(Integer.parseInt(myid), 0);
+
     }
 
     public void runLogMQ(){
