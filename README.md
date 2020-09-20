@@ -77,6 +77,12 @@
   + v2.1 zdh_web 添加redis cluster 支持
   + v2.1 增加jdbc支持presto,mariadb,memsql,华为dws,阿里AnalyticDB,kylin,gbase,kingbase,redshift
   
+  + v2.2 调度机制增加ack,无感故障转移
+  + v2.2 优化所有前端界面,增加状态高亮
+  + v2.2 sql 编辑支持高亮显示
+  + v2.2 手动执行调度改为异步执行
+  + v2.2 任务日志获取方式改变（时间获取改为标识符+时间获取）
+  
 # FAQ
    + 日志级别修改
      修改日志文件logback 相关等级即可

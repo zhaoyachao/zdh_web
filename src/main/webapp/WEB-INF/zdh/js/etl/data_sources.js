@@ -111,7 +111,7 @@ function buildTable($el, cells, rows) {
 
         var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
         if (rows.length == 0) {// rows 主要是为了判断是否选中，下面的else内容才是主要
-            alert("请先选择要删除的记录!");
+            layer.msg("请先选择要删除的记录!");
             return;
         } else {
             var ids = new Array();// 声明一个数组
