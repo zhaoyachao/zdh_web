@@ -1,1 +1,1 @@
-java -Dfile.encoding=utf-8 -jar ../libs/zdh_web.jar --spring.config.location=../conf
+java -Dfile.encoding=utf-8 -jar ../libs/zdh_web.jar --spring.config.location=../conf/
