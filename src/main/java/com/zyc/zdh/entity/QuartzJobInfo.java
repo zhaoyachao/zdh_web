@@ -46,7 +46,7 @@ public class QuartzJobInfo implements Serializable {
     private String password;//密码
     private String etl_task_id;
     private String etl_context;
-    private String  owner;
+    private String owner;
     private String is_script;
     private String job_ids;
     private String jump_dep;
@@ -56,6 +56,7 @@ public class QuartzJobInfo implements Serializable {
     private String email_and_sms;
     private String alarm_account;
     private String task_log_id;
+    private String time_out="86400";
 
 
     public long getCount() {
@@ -313,5 +314,13 @@ public class QuartzJobInfo implements Serializable {
 
     public void setTask_log_id(String task_log_id) {
         this.task_log_id = task_log_id;
+    }
+
+    public String getTime_out() {
+        return time_out;
+    }
+
+    public void setTime_out(String time_out) {
+        this.time_out = time_out;
     }
 }

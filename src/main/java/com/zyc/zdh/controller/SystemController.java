@@ -31,7 +31,7 @@ public class SystemController extends BaseController{
 
     @RequestMapping(value = "/{url}", method = RequestMethod.GET)
     public String dynApiDemo2(@PathVariable("url") String url) {
-
+        System.out.println(url);
         return "etl/" + url;
     }
 

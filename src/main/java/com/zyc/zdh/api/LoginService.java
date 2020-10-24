@@ -1,8 +1,9 @@
 package com.zyc.zdh.api;
 
 import com.alibaba.fastjson.JSON;
-import com.zyc.zdh.dao.TaskLogsMapper;
 import com.zyc.zdh.entity.EtlEcharts;
+import com.zyc.zdh.entity.ResultInfo;
+import com.zyc.zdh.entity.User;
 import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.MyRealm;
 import com.zyc.zdh.shiro.SessionDao;
@@ -17,9 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.zyc.zdh.entity.ResultInfo;
-import com.zyc.zdh.entity.User;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -40,8 +38,7 @@ public class LoginService {
     SessionDao sessionDao;
     @Autowired
     MyRealm myRealm;
-    @Autowired
-    TaskLogsMapper taskLogsMapper;
+
 
     @RequestMapping("login")
     @ResponseBody
@@ -129,7 +126,7 @@ public class LoginService {
     @ResponseBody
     public String report(User user) {
 
-       List<EtlEcharts> a= taskLogsMapper.slectByOwner("1");
+       List<EtlEcharts> a= null;//taskLogsMapper.slectByOwner("1");
 
        return JSON.toJSONString(a);
     }

@@ -1,21 +1,19 @@
 package com.zyc.zdh.job;
-import java.io.Serializable;
-import java.util.Date;
 
 import com.zyc.zdh.dao.QuartzJobMapper;
-import com.zyc.zdh.dao.TaskLogsMapper;
+import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
-import com.zyc.zdh.entity.TaskLogs;
+import com.zyc.zdh.entity.TaskLogInstance;
+import com.zyc.zdh.shiro.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.quartz.DisallowConcurrentExecution;
-import org.quartz.JobDataMap;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.PersistJobDataAfterExecution;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+
+import java.io.Serializable;
+import java.util.Date;
 
 
 @DisallowConcurrentExecution
@@ -42,7 +40,10 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 	}
 
 	@Autowired
-	private TaskLogsMapper taskLogsMapper;
+	private TaskLogInstanceMapper taskLogInstanceMapper;
+
+	@Autowired
+	private RedisUtil redisUtil;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -51,6 +52,7 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 		try {
 			JobDataMap jobDataMap = context.getTrigger().getJobDataMap();
 			String taskId = jobDataMap.getString(TASK_ID);
+
 			if (taskId == null || taskId.trim().equals("")) {
 				throw new Exception("任务id为空");
 			}
@@ -63,19 +65,32 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 
 			if(quartzJobInfo==null){
 				logger.info("调度任务发现空的任务,任务id"+taskId);
+				return ;
 			}
-			if(StringUtils.isEmpty(quartzJobInfo.getTask_log_id())){
-				TaskLogs tls=taskLogsMapper.selectByPrimaryKey(quartzJobInfo.getTask_log_id());
-				if(tls!=null && !tls.getServer_ack().equalsIgnoreCase("1")){
-					//故障触发,关机触发,对tasklogs 增加日志打印
-					logger.info("任务["+tls.getJob_context()+"],ETL_DATE:"+tls.getEtl_date()+",调度执行故障,将重新触发新的任务");
-					JobCommon.insertLog(quartzJobInfo,"INFO","任务["+tls.getJob_context()+"],ETL_DATE:"+tls.getEtl_date()+",调度执行故障,将重新触发新的任务");
-					//修改task log 任务状态为error
-					tls.setStatus(InstanceStatus.ERROR.getValue());
-					JobCommon.updateTaskLog(tls,taskLogsMapper);
+			if(!StringUtils.isEmpty(quartzJobInfo.getTask_log_id())){
+				TaskLogInstance tls=taskLogInstanceMapper.selectByPrimaryKey(quartzJobInfo.getTask_log_id());
+				if(tls!=null && tls.getServer_id()!=null && tls.getStatus().equalsIgnoreCase("dispatch")){
+					String key=tls.getServer_id().split(":")[0];
+					if(!redisUtil.exists(key) || !redisUtil.get(key).equals(tls.getServer_id().split(":")[1])){
+							//故障触发
+							logger.info("任务["+tls.getJob_context()+"],ETL_DATE:"+tls.getEtl_date()+",调度执行故障,将重新触发新的任务");
+							JobCommon.insertLog(tls,"INFO","任务["+tls.getJob_context()+"],ETL_DATE:"+tls.getEtl_date()+",调度执行故障,将重新触发新的任务");
+							//修改task log 任务状态为error
+							tls.setStatus(InstanceStatus.ERROR.getValue());
+							JobCommon.updateTaskLog(tls,taskLogInstanceMapper);
+						    JobCommon.chooseJobBean(quartzJobInfo,2,tls);
+					}
+				}else{
+					//正常运行情况
+					JobCommon.chooseJobBean(quartzJobInfo,0,null);
 				}
+			}else{
+				//正常运行情况
+				JobCommon.chooseJobBean(quartzJobInfo,0,null);
 			}
-			JobCommon.chooseJobBean(quartzJobInfo,false);
+
+
+
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -113,7 +113,6 @@
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
 
-
 <script>
 
 
@@ -174,8 +173,8 @@
             return num;
         }
 
-        if(s.start_time!="" && typeof(s.start_time) != "undefined"){
-            $("#start_time").val(getMyDate(s.start_time))
+        if(s.run_time!="" && typeof(s.run_time) != "undefined"){
+            $("#start_time").val(getMyDate(s.run_time))
         }else{
             var day = new Date();
             var day_5m=day.getTime()-10*60*1000
@@ -241,7 +240,7 @@
                 type: 'POST',
                 url: "zhd_logs",
                 dataType: 'json',
-                data: $("#form_log").serialize() + "&job_id=" + s.job_id+"&del=1",
+                data: $("#form_log").serialize() + "&job_id="+s.job_id+ "&task_log_id=" + s.task_log_id+"&del=1",
                 //发送数据前
                 beforeSend: function () {
                     // 禁用按钮防止重复提交

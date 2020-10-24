@@ -1,40 +1,19 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.jcraft.jsch.SftpException;
-import com.zyc.zdh.config.DateConverter;
-import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.JobCommon;
-import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.DataSourcesService;
 import com.zyc.zdh.service.DispatchTaskService;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
-import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.DBUtil;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.HttpUtil;
-import com.zyc.zdh.util.SFTPUtil;
-import org.apache.shiro.SecurityUtils;
-import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.beans.PropertyEditorSupport;
-import java.io.*;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.sql.Timestamp;
 import java.util.*;
 
 /**

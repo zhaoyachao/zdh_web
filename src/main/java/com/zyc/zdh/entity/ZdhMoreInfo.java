@@ -32,7 +32,7 @@ public class ZdhMoreInfo {
     //任务记录唯一标识(注意和调度任务的标识不一样)
     private String task_logs_id;
 
-    private QuartzJobInfo quartzJobInfo;
+    private TaskLogInstance tli;
 
     //输入数据源
     private List<Dsi_EtlInfo> dsi_EtlInfo=new ArrayList<>();
@@ -49,14 +49,6 @@ public class ZdhMoreInfo {
 
     public void setTask_logs_id(String task_logs_id) {
         this.task_logs_id = task_logs_id;
-    }
-
-    public QuartzJobInfo getQuartzJobInfo() {
-        return quartzJobInfo;
-    }
-
-    public void setQuartzJobInfo(QuartzJobInfo quartzJobInfo) {
-        this.quartzJobInfo = quartzJobInfo;
     }
 
     public List<Dsi_EtlInfo> getDsi_EtlInfo() {
@@ -83,11 +75,18 @@ public class ZdhMoreInfo {
         this.dsi_Output = dsi_Output;
     }
 
+    public TaskLogInstance getTli() {
+        return tli;
+    }
+
+    public void setTli(TaskLogInstance tli) {
+        this.tli = tli;
+    }
+
+    public void setZdhMoreInfo(DataSourcesInfo dataSourcesInfoInput , EtlTaskInfo etlTaskInfo, DataSourcesInfo dataSourcesInfoOutput,TaskLogInstance tli,EtlMoreTaskInfo etlMoreTaskInfo){
 
 
-    public void setZdhMoreInfo(DataSourcesInfo dataSourcesInfoInput , EtlTaskInfo etlTaskInfo, DataSourcesInfo dataSourcesInfoOutput,QuartzJobInfo quartzJobInfo,EtlMoreTaskInfo etlMoreTaskInfo){
-
-        this.quartzJobInfo=quartzJobInfo;
+        this.tli = tli;
         this.etlMoreTaskInfo=etlMoreTaskInfo;
 
         Dsi_EtlInfo dsi_etlInfo=new Dsi_EtlInfo();
@@ -120,7 +119,6 @@ public class ZdhMoreInfo {
         this.dsi_Output=dsi_Output;
 
     }
-
 
 
 

@@ -230,12 +230,15 @@ public class ShiroConfig {
 		filterMap.put("/static/**", "anon");
 		filterMap.put("/js/**", "anon");
 		filterMap.put("/css/**", "anon");
+		filterMap.put("/img/**", "anon");
 		filterMap.put("/api/**", "anon");
 		filterMap.put("/logout", "anon");
 		filterMap.put("/login", "authc");
 		filterMap.put("/register**", "anon");
 		filterMap.put("/register/**", "anon");
 		filterMap.put("/retrieve_password", "anon");
+		filterMap.put("/404", "anon");
+		filterMap.put("/favicon**", "anon");
 		filterMap.put("/**", "authc");
 
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);

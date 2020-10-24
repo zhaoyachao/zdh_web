@@ -5,8 +5,8 @@ public class ZdhSqlInfo {
     //任务记录唯一标识(注意和调度任务的标识不一样)
     private String task_logs_id;
 
-    private QuartzJobInfo quartzJobInfo;
 
+    private TaskLogInstance tli;
     //输入数据源
     private Dsi_Info dsi_Input;
 
@@ -25,12 +25,12 @@ public class ZdhSqlInfo {
         this.task_logs_id = task_logs_id;
     }
 
-    public QuartzJobInfo getQuartzJobInfo() {
-        return quartzJobInfo;
+    public TaskLogInstance getTli() {
+        return tli;
     }
 
-    public void setQuartzJobInfo(QuartzJobInfo quartzJobInfo) {
-        this.quartzJobInfo = quartzJobInfo;
+    public void setTli(TaskLogInstance tli) {
+        this.tli = tli;
     }
 
     public Dsi_Info getDsi_Input() {
@@ -57,12 +57,12 @@ public class ZdhSqlInfo {
         this.sqlTaskInfo = sqlTaskInfo;
     }
 
-    public void setZdhInfo(DataSourcesInfo dataSourcesInfoInput , SqlTaskInfo sqlTaskInfo, DataSourcesInfo dataSourcesInfoOutput,QuartzJobInfo quartzJobInfo){
+    public void setZdhInfo(DataSourcesInfo dataSourcesInfoInput , SqlTaskInfo sqlTaskInfo, DataSourcesInfo dataSourcesInfoOutput,TaskLogInstance tli){
 
         // this.dataSourcesInfoInput=dataSourcesInfoInput;
 
         // this.dataSourcesInfoOutput=dataSourcesInfoOutput;
-        this.quartzJobInfo=quartzJobInfo;
+        this.tli=tli;
 
         this.sqlTaskInfo=sqlTaskInfo;
         Dsi_Info dsi_Input=new Dsi_Info();
@@ -91,6 +91,5 @@ public class ZdhSqlInfo {
         this.dsi_Output=dsi_Output;
 
     }
-
 
 }

@@ -265,6 +265,12 @@
                                 <input id="alarm_account" name="alarm_account" type="text"
                                        placeholder="ZDH用户账号,多用户逗号分隔" class="form-control" aria-required="true"> </span>
                             </div>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">超时时间</label>
+                            <div class="col-sm-10">
+                                <input id="time_out" name="time_out" type="text" value="86400"
+                                       placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
                         </div>
 
                         <div class="hr-line-dashed"></div>
@@ -909,6 +915,9 @@
 
                         var alarm_account=data[0].alarm_account
                         $("#alarm_account").val(alarm_account);
+
+                        var time_out=data[0].time_out
+                        $("#time_out").val(time_out);
 
                     },
                     error: function (data) {

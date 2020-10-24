@@ -28,7 +28,7 @@
     <logger name="com.zyc.zdh.dao" level="debug"></logger>
     <logger name="com.zyc.zdh.dao.ZdhHaInfoMapper" level="info"></logger>
     <logger name="com.zyc.zdh.dao.ZdhDownloadMapper" level="info"></logger>
-    <logger name="com.zyc.zdh.dao.TaskLogsMapper" level="info"></logger>
+    <logger name="com.zyc.zdh.dao.TaskLogInstanceMapper" level="info"></logger>
     <logger name="com.zyc.zdh.util.SpringLoadInit" level="info"></logger>
     <logger name="com.zyc.zdh.dao.QuartzJobMapper" level="info"></logger>
     <logger name="com.zyc.zdh.netty" level="info"></logger>

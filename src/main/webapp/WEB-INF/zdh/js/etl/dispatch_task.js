@@ -3,7 +3,11 @@
     // Example Bootstrap Table Events
     // ------------------------------
     (function () {
-        $('#exampleTableEvents').attr("data-height",$(document.body).height()*0.8)
+        var height=400
+        if($(document.body).height()*0.8>height){
+            height=$(document.body).height()*0.8
+        }
+        $('#exampleTableEvents').attr("data-height",height)
         $('#add').click(function () {
             parent.layer.open({
                 type: 2,
@@ -31,12 +35,22 @@
                 layer.msg("请先选择要删除的记录!");
                 return;
             } else {
-                var ids = new Array();// 声明一个数组
-                $(rows).each(function () {// 通过获得别选中的来进行遍历
-                    ids.push(this.job_id);// job_id为获得到的整条数据中的一列
+
+                layer.confirm('是否删除调度任务', {
+                    btn: ['确定','取消'] //按钮
+                }, function(index){
+                    var ids = new Array();// 声明一个数组
+                    $(rows).each(function () {// 通过获得别选中的来进行遍历
+                        ids.push(this.job_id);// job_id为获得到的整条数据中的一列
+                    });
+                    console.log(ids)
+                    deleteMs(ids)
+                    layer.close(layer.index);
+                }, function(){
+
                 });
-                console.log(ids)
-                deleteMs(ids)
+
+
             }
 
         })
@@ -61,13 +75,14 @@
             });
         }
 
-        function executeMs(job_id,reset_count) {
+        function executeMs(job_id,reset_count,concurrency) {
             var index=top.layer.msg('手动开始执行',{time:"-1"});
             $('#execute').attr({disabled: "disabled"});
             $.ajax({
                 url: "dispatch_task_execute",
-                data: "job_id=" + job_id+"&reset_count="+reset_count,
+                data: "job_id=" + job_id+"&reset_count="+reset_count+"&concurrency="+concurrency,
                 type: "post",
+                async:false,
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
@@ -85,18 +100,20 @@
             });
         }
 
-        function executeQuartz(job_id) {
+        function executeQuartz(job_id,reset) {
             $('#execute_quartz').attr({disabled: "disabled"});
             layer.msg('添加到调度器开始执行');
             $.ajax({
                 url: "dispatch_task_execute_quartz",
-                data: "job_id=" + job_id,
+                data: "job_id=" + job_id+"&reset="+reset,
                 type: "post",
+                async:false,
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
+                    console.info(data)
                     layer.msg('添加成功');
-                    if(data.status='-1'){
+                    if(data.status=='-1'){
                         console.info('异常'+data.msg);
                     }
                     $("#execute_quartz").removeAttr('disabled');
@@ -132,6 +149,7 @@
                 url: "dispatch_task_quartz_pause",
                 data: "job_id=" + job_id + "&status=" + status,
                 type: "post",
+                async:false,
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
@@ -171,6 +189,7 @@
                 url: "dispatch_task_quartz_del",
                 data: "job_id=" + job_id,
                 type: "post",
+                async:false,
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
@@ -232,22 +251,21 @@
 
             },
             'click #execute': function (e, value, row, index) {
-                layer.confirm('手动执行,是否重置已执行次数', {
-                    btn: ['重置并执行','直接执行'], //按钮
+                layer.confirm('手动执行,是否重置已执行次数(手动执行完成,需要重新配置调度)', {
+                    btn: ['重置并执行','并行执行'], //按钮
                     cancel:function(index, layero){
                         console.log('关闭x号');
                     },
-                    title:"手动执行"
-                }, function(index){
-                    executeMs(row.job_id,"true")
-                    layer.close(layer.index)
-                }, function(index){
-                    executeMs(row.job_id,"false")
-                    layer.close(layer.index)
+                    title:"手动执行",
+                    btn1:function () {
+                        executeMs(row.job_id,"true","0")
+                        layer.close(layer.index)
+                    },
+                    btn2:function () {
+                        executeMs(row.job_id,"false","1")
+                        layer.close(layer.index)
+                    }
                 });
-            },
-            'click #log_txt': function (e, value, row, index) {
-                openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id, "日志:"+row.job_context)
             },
             'click #copy': function (e, value, row, index) {
                 $("#id").val(row.job_id)
@@ -274,15 +292,19 @@
         window.operateEvents2 = {
             'click #execute_quartz': function (e, value, row, index) {
                 layer.confirm('是否启用调度', {
-                    btn: ['启用','取消'], //按钮
+                    btn: ['启用','重置并启用','取消'], //按钮
                     cancel:function(index, layero){
                         console.log('关闭x号');
                     },
-                    title:"启用调度"
-                }, function(index){
-                    executeQuartz(row.job_id)
-                    layer.close(layer.index)
-                }, function(index){
+                    title:"启用调度",
+                    btn1:function(index){
+                        executeQuartz(row.job_id,"0")
+                        layer.close(layer.index)
+                    },
+                    btn2:function(index){
+                        executeQuartz(row.job_id,"1")
+                        layer.close(layer.index)
+                    }
                 });
             },
             'click #pause': function (e, value, row, index) {
@@ -315,6 +337,11 @@
             }
         };
 
+        window.operateEvents3 = {
+            'click #task_log_instance': function (e, value, row, index) {
+                openTabPage("task_log_instance.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id, "执行记录:"+row.job_context)
+            }
+        };
 
         function operateFormatter(value, row, index) {
             return [
@@ -326,9 +353,6 @@
                 '                                    </button>',
                 ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
                 '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
-                '                                    </button>',
-                ' <button id="log_txt" name="log_txt" type="button" class="btn btn-outline btn-sm" title="日志">\n' +
-                '                                        <i class="glyphicon glyphicon-file" aria-hidden="true"></i>\n' +
                 '                                    </button>',
                 ' <button id="copy" name="copy" type="button" class="btn btn-outline btn-sm" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
                 '                                    </button>'
@@ -423,82 +447,44 @@
                 sortable: false
             }, {
                 field: 'status',
-                title: '调度器状态',
-                sortable: false,
-                visible:true,
-                formatter: function (value, row, index) {
-                        var context = "未启用"
-                        var class_str = "btn-danger"
-                        if (value == "create") {
-                            context = "未启用"
-                            class_str = "btn-danger  btn-xs"
-                        }
-                        if (value == "finish") {
-                            context = "已完成"
-                            class_str = "btn-primary  btn-xs"
-                        }
-                        if (value == "running") {
-                            context = "运行中"
-                            class_str = "btn-primary  btn-xs"
-                        }
-                        if (value == "remove") {
-                            context = "未启用"
-                            class_str = "btn-danger  btn-xs"
-                        }
-                        if (value == "pause") {
-                            context = "暂停中"
-                            class_str = "btn-warning btn-xs"
-
-                        }
-                        return [
-                            '<button type="button" class="btn '+class_str+'">'+context+'</button>'
-                        ].join('');
-                    }
-
-            }, {
-                field: 'last_status',
-                title: '执行状态',
+                title: '调度器状态及执行记录',
                 sortable: true,
-                visible:true,
+                width:150,
+                events: operateEvents3,//给按钮注册事件
                 formatter: function (value, row, index) {
-                    var class_str = "progress-bar progress-bar-success"
-                    var context = "未运行"
-                    var process=100
-                    if (value == "dispatch") {
-                        context = "运行中"
+                    var context = "未启用"
+                    var class_str = "btn-danger"
+                    if (value == "create") {
+                        context = "未启用"
+                        class_str = "btn-danger  btn-xs"
                     }
                     if (value == "finish") {
-                        context = "完成"
+                        context = "已完成"
+                        class_str = "btn-primary  btn-xs"
                     }
-                    if (value == "etl") {
+                    if (value == "running") {
                         context = "运行中"
-                        process=50
+                        class_str = "btn-primary  btn-xs"
                     }
-                    if (value == "error") {
-                        context = "失败"
-                        class_str = "progress-bar progress-bar-danger"
+                    if (value == "remove") {
+                        context = "未启用"
+                        class_str = "btn-danger  btn-xs"
                     }
-                    if (value == "retry") {
-                        context = "重试"
-                        process=50
-                    }
-                    if (value == "wait_retry") {
-                        context = "等待重试"
-                        process=30
+                    if (value == "pause") {
+                        context = "暂停中"
+                        class_str = "btn-warning btn-xs"
+
                     }
                     return [
-                        '<small>' + context  + '</small>' +
-                        '<div class="progress progress-mini">' +
-                        '<div style="width: ' + process + '%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="35" role="progressbar" class="' + class_str + '">' +
-                        '</div>' +
+                        '<div style="text-align:center" >'+
+                        '<div class="btn-group">'+
+                        '<button type="button" class="btn '+class_str+'">'+context+'</button>'+
+                        '<button type="button" id="task_log_instance" class="btn btn-warning btn-xs">执行记录</button>'+
+                        '</div>'+
                         '</div>'
                     ].join('');
                 }
-            }, {
-                field: 'count',
-                title: '执行次数',
-                sortable: true,
-                visible:true
+
             }, {
                 field: 'operate',
                 title: '测试基础操作及日志分析操作',

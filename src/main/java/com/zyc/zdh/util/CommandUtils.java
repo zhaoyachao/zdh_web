@@ -12,7 +12,7 @@ import org.apache.commons.exec.PumpStreamHandler;
 
 /**
  * 执行系统命令工具类
- * 
+ *
  * @author Storm
  *
  */
@@ -22,7 +22,7 @@ public class CommandUtils {
 
     /**
      * 执行指定命令
-     * 
+     *
      * @param command 命令
      * @return 命令执行完成返回结果
      * @throws IOException 失败时抛出异常，由调用者捕获处理
@@ -32,7 +32,7 @@ public class CommandUtils {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream error = new ByteArrayOutputStream();
             int exitCode = exeCommand(command, out,error);
-            if (exitCode == 0) {
+            if (exitCode == 0 || StringUtils.isEmpty(error.toString(DEFAULT_CHARSET))) {
                 System.out.println("命令运行成功!");
                 System.out.println("out:"+out.toString(DEFAULT_CHARSET));
                 System.out.println("error:"+error.toString(DEFAULT_CHARSET));
@@ -50,7 +50,7 @@ public class CommandUtils {
 
     /**
      * 执行指定命令，输出结果到指定输出流中
-     * 
+     *
      * @param command 命令
      * @param out 执行结果输出流
      * @return 执行结果状态码：执行成功返回0

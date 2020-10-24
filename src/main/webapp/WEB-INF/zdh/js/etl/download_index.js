@@ -89,7 +89,11 @@ function buildTable($el, cells, rows) {
   // ------------------------------
   (function() {
 
-      $('#exampleTableEvents').attr("data-height",$(document.body).height()*0.8)
+      var height=400
+      if($(document.body).height()*0.8>height){
+          height=$(document.body).height()*0.8
+      }
+      $('#exampleTableEvents').attr("data-height",height)
       $('#remove').click(function () {
 
         var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
@@ -97,12 +101,23 @@ function buildTable($el, cells, rows) {
             layer.msg("请先选择要删除的记录!");
             return;
         } else {
-            var ids = new Array();// 声明一个数组
-            $(rows).each(function() {// 通过获得别选中的来进行遍历
-                ids.push(this.id);// cid为获得到的整条数据中的一列
+
+            layer.confirm('是否删除下载记录', {
+                btn: ['确定','取消'] //按钮
+            }, function(index){
+                var ids = new Array();// 声明一个数组
+                $(rows).each(function() {// 通过获得别选中的来进行遍历
+                    ids.push(this.id);// cid为获得到的整条数据中的一列
+                });
+                console.log(ids)
+                deleteMs(ids)
+                layer.close(layer.index);
+            }, function(){
+
             });
-            console.log(ids)
-            deleteMs(ids)
+
+
+
         }
 
     })

@@ -10,7 +10,9 @@ public class ZdhDroolsInfo {
     //任务记录唯一标识(注意和调度任务的标识不一样)
     private String task_logs_id;
 
-    private QuartzJobInfo quartzJobInfo;
+
+
+    private TaskLogInstance tli;
 
     //输入数据源--单源,多源信息
     private List<Dsi_EtlInfo> dsi_EtlInfo=new ArrayList<>();
@@ -35,14 +37,6 @@ public class ZdhDroolsInfo {
         this.task_logs_id = task_logs_id;
     }
 
-    public QuartzJobInfo getQuartzJobInfo() {
-        return quartzJobInfo;
-    }
-
-    public void setQuartzJobInfo(QuartzJobInfo quartzJobInfo) {
-        this.quartzJobInfo = quartzJobInfo;
-    }
-
     public Dsi_Info getDsi_Output() {
         return dsi_Output;
     }
@@ -54,6 +48,13 @@ public class ZdhDroolsInfo {
         this.dsi_Output = dsi_Output;
     }
 
+    public TaskLogInstance getTli() {
+        return tli;
+    }
+
+    public void setTli(TaskLogInstance tli) {
+        this.tli = tli;
+    }
 
     public EtlDroolsTaskInfo getEtlDroolsTaskInfo() {
         return etlDroolsTaskInfo;
@@ -99,9 +100,9 @@ public class ZdhDroolsInfo {
         this.sqlTaskInfo = sqlTaskInfo;
     }
 
-    public void setZdhDroolsInfo(DataSourcesInfo dataSourcesInfoInput , EtlTaskInfo etlTaskInfo, DataSourcesInfo dataSourcesInfoOutput, QuartzJobInfo quartzJobInfo, EtlDroolsTaskInfo etlDroolsTaskInfo){
+    public void setZdhDroolsInfo(DataSourcesInfo dataSourcesInfoInput , EtlTaskInfo etlTaskInfo, DataSourcesInfo dataSourcesInfoOutput, TaskLogInstance tli, EtlDroolsTaskInfo etlDroolsTaskInfo){
 
-        this.quartzJobInfo=quartzJobInfo;
+        this.tli=tli;
         this.etlDroolsTaskInfo=etlDroolsTaskInfo;
 
         Dsi_EtlInfo dsi_etlInfo=new Dsi_EtlInfo();

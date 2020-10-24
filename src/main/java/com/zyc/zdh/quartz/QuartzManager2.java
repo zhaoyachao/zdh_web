@@ -2,6 +2,7 @@ package com.zyc.zdh.quartz;
 
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
+import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.job.MyJobBean;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import org.quartz.*;
@@ -211,12 +212,33 @@ public class QuartzManager2 {
 			// 在自己定义的任务表中删除任务,状态删除
 			if(status.equals("")) status="finish";
 			quartzJobInfo.setStatus(status);
-			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
+			quartzJobMapper.updateStatus(quartzJobInfo.getJob_id(),status);
 		} catch (SchedulerException e) {
 
 			e.printStackTrace();
 		}
 		return quartzJobInfo;
+	}
+
+	public QuartzJobInfo deleteTask(TaskLogInstance tli, String status,String last_status) {
+		QuartzJobInfo qji=new QuartzJobInfo();
+		try {
+			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			JobKey jobKey = new JobKey(tli.getJob_id(), tli.getEtl_task_id());
+			scheduler.pauseJob(jobKey);
+			scheduler.deleteJob(jobKey);
+
+			qji.setEtl_task_id(tli.getEtl_task_id());
+			qji.setJob_id(tli.getJob_id());
+			// 在自己定义的任务表中删除任务,状态删除
+			if(status.equals("")) status="finish";
+			qji.setStatus(status);
+			quartzJobMapper.updateStatus2(tli.getJob_id(),status,last_status);
+		} catch (SchedulerException e) {
+
+			e.printStackTrace();
+		}
+		return qji;
 	}
 
 	/**

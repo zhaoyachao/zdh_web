@@ -3,12 +3,13 @@ package com.zyc.zdh.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.QuartzJobMapper;
-import com.zyc.zdh.dao.TaskLogsMapper;
+import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.EtlEcharts;
 import com.zyc.zdh.entity.QuartzJobInfo;
-import com.zyc.zdh.entity.TaskLogs;
+import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.entity.ZdhHaInfo;
+import com.zyc.zdh.job.JobCommon;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.util.DateUtil;
 import org.quartz.SchedulerException;
@@ -32,8 +33,9 @@ public class ZdhMonitorController extends BaseController{
     QuartzManager2 quartzManager2;
     @Autowired
     ZdhHaInfoMapper zdhHaInfoMapper;
+
     @Autowired
-    TaskLogsMapper taskLogsMapper;
+    TaskLogInstanceMapper taskLogInstanceMapper;
 
 
     @RequestMapping("/monitor")
@@ -52,7 +54,7 @@ public class ZdhMonitorController extends BaseController{
 
         //    int total_task_num = quartzJobMapper.selectCountByOwner(getUser().getId());
 
-        List<EtlEcharts> echartsList = taskLogsMapper.slectByOwner(getUser().getId());
+        List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwner(getUser().getId());
 
         return echartsList;
     }
@@ -68,7 +70,7 @@ public class ZdhMonitorController extends BaseController{
         int total_task_num = quartzJobMapper.selectCountByOwner(getUser().getId());
 
         String etl_date = DateUtil.format(new Date()) + " 00:00:00";
-        List<EtlEcharts> echartsList = taskLogsMapper.slectByOwnerEtlDate(getUser().getId(), etl_date);
+        List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwnerEtlDate(getUser().getId(), etl_date);
 
         return echartsList;
     }
@@ -79,7 +81,7 @@ public class ZdhMonitorController extends BaseController{
 
         System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
 
-        List<TaskLogs> list = taskLogsMapper.selectByTaskLogs(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
+        List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
                 Timestamp.valueOf(end_time + " 23:59:59"), status);
 
         return JSON.toJSONString(list);
@@ -90,10 +92,10 @@ public class ZdhMonitorController extends BaseController{
     public String task_logs_delete(String[] ids) {
 
         System.out.println("开始删除任务日志");
-        TaskLogs taskLogs = new TaskLogs();
+        TaskLogInstance tli = new TaskLogInstance();
         for (String id : ids) {
-            taskLogs.setId(id);
-            taskLogsMapper.deleteByPrimaryKey(taskLogs);
+            tli.setId(id);
+            taskLogInstanceMapper.deleteByPrimaryKey(tli);
         }
         JSONObject json = new JSONObject();
         json.put("success", "200");
@@ -104,12 +106,47 @@ public class ZdhMonitorController extends BaseController{
     @RequestMapping("/kill")
     @ResponseBody
     public String killJob(String id){
-        taskLogsMapper.updateStatusById2("kill",id);
+        taskLogInstanceMapper.updateStatusById2("kill",id);
+        TaskLogInstance tli=taskLogInstanceMapper.selectByPrimaryKey(id);
+        JobCommon.insertLog(tli,"INFO","接受到杀死请求,开始进行杀死操作...");
         JSONObject json2 = new JSONObject();
         json2.put("success", "200");
         return json2.toJSONString();
 
     }
+
+    @RequestMapping("/retry")
+    @ResponseBody
+    public String retryJob(String id,String new_version){
+        //taskLogInstanceMapper.updateStatusById2("kill",id);
+        TaskLogInstance tli=taskLogInstanceMapper.selectByPrimaryKey(id);
+        tli.setIs_retryed("1");
+        taskLogInstanceMapper.updateByPrimaryKey(tli);
+        QuartzJobInfo qji=quartzJobMapper.selectByPrimaryKey(tli.getJob_id());
+
+        //重试最新版-拉去quartJobInfo 中的shell 及参数
+        if(new_version.equalsIgnoreCase("true")){
+            tli.setIs_script(qji.getIs_script());
+            tli.setJob_ids(qji.getJob_ids());
+            tli.setJump_script(qji.getJump_script());
+            tli.setJump_dep(qji.getJump_dep());
+            tli.setInterval_time(qji.getInterval_time());
+            tli.setEmail_and_sms(qji.getEmail_and_sms());
+            tli.setAlarm_account(qji.getAlarm_account());
+            tli.setAlarm_enabled(qji.getAlarm_enabled());
+            tli.setCommand(qji.getCommand());
+            tli.setParams(qji.getParams());
+            tli.setTime_out(qji.getTime_out());
+        }
+
+        JobCommon.chooseJobBean(qji,2,tli);
+        JSONObject json2 = new JSONObject();
+        json2.put("success", "200");
+        return json2.toJSONString();
+
+    }
+
+
 
     @RequestMapping("/getScheduleTask")
     @ResponseBody

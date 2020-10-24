@@ -2,7 +2,7 @@ package com.zyc.zdh.job;
 
 import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.QuartzJobMapper;
-import com.zyc.zdh.dao.TaskLogsMapper;
+import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.dao.ZdhDownloadMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.service.AccountService;
@@ -12,7 +12,6 @@ import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.*;
 
@@ -26,13 +25,13 @@ public class EmailJob {
     public static void run(QuartzJobInfo quartzJobInfo) {
         try{
             logger.debug("开始检测失败任务...");
-            TaskLogsMapper taskLogsMapper = (TaskLogsMapper) SpringContext.getBean("taskLogsMapper");
+            TaskLogInstanceMapper taskLogInstanceMapper = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
             ZdhLogsService zdhLogsService= (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
             JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
             QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
             AccountService accountService=(AccountService) SpringContext.getBean("accountService");
             //获取失败的任务
-            List<EmailTaskLogs> emailTaskLogsList=taskLogsMapper.selectByStatus();
+            List<EmailTaskLogs> emailTaskLogsList=taskLogInstanceMapper.selectByStatus();
 
             //根据任务执行时间，主键 获取对应的日志信息
             for(EmailTaskLogs emailTaskLogs:emailTaskLogsList){
@@ -70,19 +69,39 @@ public class EmailJob {
                     }
                 }
 
-                TaskLogs taskLogs=new TaskLogs();
-                taskLogs.setId(emailTaskLogs.getId());
-                taskLogs.setJob_id(emailTaskLogs.getJob_id());
-                taskLogs.setJob_context(emailTaskLogs.getJob_context());
-                taskLogs.setStatus(emailTaskLogs.getStatus());
-                taskLogs.setStart_time(emailTaskLogs.getStart_time());
-                taskLogs.setUpdate_time(emailTaskLogs.getUpdate_time());
-                taskLogs.setProcess(emailTaskLogs.getProcess());
-                taskLogs.setOwner(emailTaskLogs.getOwner());
-                taskLogs.setEtl_date(emailTaskLogs.getEtl_date());
-                taskLogs.setIs_notice("true");
-                taskLogsMapper.updateByPrimaryKey(taskLogs);
+
+                taskLogInstanceMapper.updateNoticeById("true",emailTaskLogs.getId());
                 logger.info("检测失败任务:"+emailTaskLogs.getJob_id()+",对应主键:"+emailTaskLogs.getId()+",并完成更新");
+            }
+
+            //获取超时任务
+            List<TaskLogInstance> taskLogInstances= taskLogInstanceMapper.selectOverTime();
+            if(taskLogInstances!=null && taskLogInstances.size()>0){
+                System.out.println("超时任务量:"+taskLogInstances.size());
+                for(TaskLogInstance tli : taskLogInstances){
+                    List<User> users=accountService.findByUserName2(tli.getAlarm_account().split(","));
+                    List<String> emails=new ArrayList<>();
+                    List<String> phones=new ArrayList<>();
+                    for(User user:users){
+                        if(user.getEmail()!=null){
+                            System.out.println("email:"+user.getEmail());
+                            emails.add(user.getEmail());
+                        }
+                        if(user.getPhone()!=null){
+                            phones.add(user.getPhone());
+                        }
+                    }
+
+                    String msg="任务id:"+tli.getId()+" ,超时,请尽快处理";
+                    if(emails.size()>0){
+                        jemailService.sendEmail(emails.toArray(new String[0]),"任务监控:"+tli.getJob_context(),msg);
+                    }
+                    if(phones.size()>0&& tli.getEmail_and_sms()!=null && tli.getEmail_and_sms().equalsIgnoreCase("on")){
+                        logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
+                    }
+
+                    taskLogInstanceMapper.updateNoticeById("alarm",tli.getId());
+                }
             }
 
         }catch (Exception e){

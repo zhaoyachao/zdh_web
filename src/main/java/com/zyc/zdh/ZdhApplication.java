@@ -2,9 +2,6 @@ package com.zyc.zdh;
 
 
 import com.zyc.zdh.annotation.MyMark;
-import com.zyc.zdh.job.JobCommon;
-import com.zyc.zdh.service.ZdhLogsService;
-import com.zyc.zdh.util.SpringContext;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

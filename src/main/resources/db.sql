@@ -457,6 +457,67 @@ alter table quartz_job_info add column task_log_id varchar(100);
 alter table task_logs add column server_ack varchar(2);
 
 
+--2020-09-22;
+create table task_log_instance(
+id bigint not null AUTO_INCREMENT,
+job_id VARCHAR(100) ,
+job_context VARCHAR(100) ,
+etl_date VARCHAR(30),
+status varchar(10),
+run_time TIMESTAMP ,
+update_time TIMESTAMP ,
+owner VARCHAR(100),
+is_notice varchar(10),
+process varchar(10),
+thread_id VARCHAR(100),
+retry_time TIMESTAMP ,
+executor VARCHAR(100),
+etl_info text,
+url VARCHAR(100),
+application_id VARCHAR(100),
+history_server VARCHAR(100),
+master VARCHAR(100),
+server_ack VARCHAR(100),
+concurrency VARCHAR(100),
+last_task_log_id VARCHAR(100),
+more_task VARCHAR(20),
+job_type VARCHAR(100),
+start_time TIMESTAMP ,
+end_time TIMESTAMP,
+step_size VARCHAR(100),
+job_model VARCHAR(2),
+plan_count VARCHAR(5),
+`count` int,
+command VARCHAR(100),
+params text,
+last_status VARCHAR(100),
+last_time TIMESTAMP,
+next_time TIMESTAMP,
+expr VARCHAR(100),
+ip VARCHAR(100),
+`user` VARCHAR(100),
+password VARCHAR(100),
+etl_task_id VARCHAR(100),
+etl_context varchar(100),
+is_script varchar(100),
+job_ids varchar(100),
+jump_dep varchar(100),
+jump_script varchar(100),
+interval_time varchar(100),
+alarm_enabled varchar(100),
+email_and_sms varchar(100),
+alarm_account varchar(200),
+PRIMARY KEY (id)
+);
+
+alter table task_log_instance add column cur_time TIMESTAMP;
+alter table task_log_instance add column is_retryed varchar(4);
+
+alter table task_log_instance add column server_id varchar(100);
+
+alter table task_log_instance add column time_out varchar(100);
+alter table quartz_job_info add column time_out varchar(100);
+
 create database if NOT EXISTS quartz;
 
 use quartz;

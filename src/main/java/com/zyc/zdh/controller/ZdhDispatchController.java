@@ -1,44 +1,28 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.jcraft.jsch.SftpException;
-import com.zyc.zdh.config.DateConverter;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
-import com.zyc.zdh.service.DataSourcesService;
 import com.zyc.zdh.service.DispatchTaskService;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
-import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.DBUtil;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.HttpUtil;
-import com.zyc.zdh.util.SFTPUtil;
-import org.apache.shiro.SecurityUtils;
-import org.quartz.SchedulerException;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.beans.PropertyEditorSupport;
-import java.io.*;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.*;
 
 @Controller
-public class ZdhDispatchController extends BaseController{
+public class ZdhDispatchController extends BaseController {
 
 
     @Autowired
@@ -53,12 +37,12 @@ public class ZdhDispatchController extends BaseController{
     ZdhHaInfoMapper zdhHaInfoMapper;
     @Autowired
     EtlTaskService etlTaskService;
-
-
-
+    @Autowired
+    TaskLogInstanceMapper taskLogInstanceMapper;
 
     /**
      * 调度任务首页
+     *
      * @return
      */
     @RequestMapping("/dispatch_task_index")
@@ -68,6 +52,7 @@ public class ZdhDispatchController extends BaseController{
 
     /**
      * 调度任务明细
+     *
      * @param ids
      * @return
      */
@@ -89,20 +74,22 @@ public class ZdhDispatchController extends BaseController{
 
     /**
      * 模糊匹配调度任务明细
+     *
      * @param job_context
      * @param etl_context
      * @return
      */
     @RequestMapping(value = "/dispatch_task_list2", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String dispatch_task_list2(String job_context, String etl_context,String status,String last_status) {
+    public String dispatch_task_list2(String job_context, String etl_context, String status, String last_status) {
         List<QuartzJobInfo> list = new ArrayList<>();
-        list = quartzJobMapper.selectByParams(getUser().getId(), job_context, etl_context,status,last_status);
+        list = quartzJobMapper.selectByParams(getUser().getId(), job_context, etl_context, status, last_status);
         return JSON.toJSONString(list);
     }
 
     /**
      * 新增调度任务首页
+     *
      * @return
      */
     @RequestMapping("/dispatch_task_add_index")
@@ -112,6 +99,7 @@ public class ZdhDispatchController extends BaseController{
 
     /**
      * 新增调度任务
+     *
      * @param quartzJobInfo
      * @return
      */
@@ -142,6 +130,7 @@ public class ZdhDispatchController extends BaseController{
 
     /**
      * 批量删除调度任务
+     *
      * @param ids
      * @return
      */
@@ -161,6 +150,7 @@ public class ZdhDispatchController extends BaseController{
 
     /**
      * 更新调度任务
+     *
      * @param quartzJobInfo
      * @return
      */
@@ -171,6 +161,8 @@ public class ZdhDispatchController extends BaseController{
         debugInfo(quartzJobInfo);
         quartzJobInfo.setOwner(getUser().getId());
         QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);
+        //每次更新都重新设置任务实例id
+        qji.setTask_log_id(null);
         quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
 
         JSONObject json = new JSONObject();
@@ -181,44 +173,121 @@ public class ZdhDispatchController extends BaseController{
 
     /**
      * 手动执行调度任务
+     *
      * @param quartzJobInfo
+     * @param reset_count true,false
+     * @param concurrency 0:串行,1:并行
      * @return
      */
     @RequestMapping("/dispatch_task_execute")
     @ResponseBody
-    public String dispatch_task_execute(QuartzJobInfo quartzJobInfo,String reset_count) {
+    public String dispatch_task_execute(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency) {
         debugInfo(quartzJobInfo);
+        JSONObject json = new JSONObject();
         try {
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
             if(reset_count.equalsIgnoreCase("true")){
+                dti.setTask_log_id(null);
                 dti.setCount(0);
+                dti.setLast_time(null);
+                dti.setNext_time(null);
                 quartzJobMapper.updateByPrimaryKey(dti);
             }
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    JobCommon.chooseJobBean(dti,false);
+            if(concurrency==null || concurrency.equalsIgnoreCase("0")){
+                //串行执行
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
+                        JobCommon.chooseJobBean(dti, 3, null);
+                    }
+                }).start();
+            }else{
+                //并行执行
+                List<Timestamp> result=a(dti.getStart_time(), dti.getEnd_time(),dti.getStep_size());
+
+                if(result.size()>100){
+                    json.put("success", "201");
+                    return json.toJSONString();
                 }
-            }).start();
+                for(Timestamp t:result){
+                        TaskLogInstance tli=new TaskLogInstance();
+                        BeanUtils.copyProperties(tli, dti);
+                        tli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                        tli.setStart_time(t);
+                        tli.setEnd_time(t);
+                        tli.setLast_time(null);
+                        tli.setLast_task_log_id(null);
+                        tli.setNext_time(null);
+                        tli.setStatus(null);
+                        tli.setConcurrency("1");
+                        System.out.println("=====");
+                        debugInfo(tli);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
+                                JobCommon.chooseJobBean(dti, 4, tli);
+                            }
+                        }).start();
+
+                }
+
+
+            }
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-        JSONObject json = new JSONObject();
+
 
         json.put("success", "200");
         return json.toJSONString();
     }
 
 
+    private List<Timestamp> a(Timestamp start,Timestamp end,String step_size){
+        int dateType = Calendar.DAY_OF_MONTH;
+        int num = 1;
+        if (step_size.endsWith("s")) {
+            dateType = Calendar.SECOND;
+            num = Integer.parseInt(step_size.split("s")[0]);
+        }
+        if (step_size.endsWith("m")) {
+            dateType = Calendar.MINUTE;
+            num = Integer.parseInt(step_size.split("m")[0]);
+        }
+        if (step_size.endsWith("h")) {
+            dateType = Calendar.HOUR;
+            num = Integer.parseInt(step_size.split("h")[0]);
+        }
+        if (step_size.endsWith("d")) {
+            dateType = Calendar.DAY_OF_MONTH;
+            num = Integer.parseInt(step_size.split("d")[0]);
+        }
+        List<Timestamp> result = new ArrayList<>();
+        Calendar tempStart = Calendar.getInstance();
+        tempStart.setTime(new Date(start.getTime()));
+        Calendar tempEnd = Calendar.getInstance();
+        tempEnd.setTime(new Date(end.getTime()));
+        while (!tempStart.after(tempEnd)) {
+            result.add(new Timestamp(tempStart.getTime().getTime()));
+            tempStart.add(dateType, num);
+        }
+        return result;
+    }
+
+
     /**
      * 自动执行调度任务
+     *
      * @param quartzJobInfo
      * @return
      */
     @RequestMapping("/dispatch_task_execute_quartz")
     @ResponseBody
-    public String dispatch_task_execute_quartz(QuartzJobInfo quartzJobInfo) {
+    public String dispatch_task_execute_quartz(QuartzJobInfo quartzJobInfo,String reset) {
 
         debugInfo(quartzJobInfo);
 
@@ -226,17 +295,25 @@ public class ZdhDispatchController extends BaseController{
         String url = "http://127.0.0.1:60001/api/v1/zdh";
         QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
 
-        //ZdhInfo zdhInfo = create_zhdInfo(quartzJobInfo);
-        //重置次数
         dti.setCount(0);
+
+        //ZdhInfo zdhInfo = create_zhdInfo(quartzJobInfo);
+        //重置次数,清除上次运行日志id
+        if(reset.equalsIgnoreCase("1")){
+            dti.setTask_log_id(null);
+            dti.setLast_time(null);
+            dti.setNext_time(null);
+        }
+
         JSONObject json = new JSONObject();
         try {
+            //添加调度器并更新quartzjobinfo
             quartzManager2.addTaskToQuartz(dti);
             json.put("status", "200");
         } catch (Exception e) {
             e.printStackTrace();
             json.put("status", "-1");
-            json.put("msg",e.getMessage());
+            json.put("msg", e.getMessage());
 
         }
 
@@ -247,6 +324,7 @@ public class ZdhDispatchController extends BaseController{
 
     /**
      * 暂停调度任务
+     *
      * @param quartzJobInfo
      * @return
      */
@@ -275,6 +353,7 @@ public class ZdhDispatchController extends BaseController{
 
     /**
      * 删除调度任务,如果是单源 ETL的流任务需要做单独处理
+     *
      * @param quartzJobInfo
      * @return
      */
@@ -311,6 +390,7 @@ public class ZdhDispatchController extends BaseController{
 
     /**
      * 调度任务日志首页
+     *
      * @return
      */
     @RequestMapping("/log_txt")
@@ -319,8 +399,23 @@ public class ZdhDispatchController extends BaseController{
         return "etl/log_txt";
     }
 
+
+    @RequestMapping(value = "/task_log_instance_list", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String task_log_instance_list(String start_time, String end_time, String status,String job_id) {
+
+        System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
+
+        List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs2(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
+                Timestamp.valueOf(end_time + " 23:59:59"), status,job_id);
+
+        return JSON.toJSONString(list);
+    }
+
+
     /**
      * 获取任务执行日志
+     *
      * @param job_id
      * @param start_time
      * @param end_time
@@ -330,8 +425,8 @@ public class ZdhDispatchController extends BaseController{
      */
     @RequestMapping(value = "/zhd_logs", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String zhd_logs(String job_id,String task_log_id, String start_time, String end_time, String del, String level) {
-        System.out.println("id:" + job_id+" ,task_log_id:"+task_log_id + " ,start_time:" + start_time + " ,end_time:" + end_time);
+    public String zhd_logs(String job_id, String task_log_id, String start_time, String end_time, String del, String level) {
+        System.out.println("id:" + job_id + " ,task_log_id:" + task_log_id + " ,start_time:" + start_time + " ,end_time:" + end_time);
 
 
         Timestamp ts_start = null;
@@ -348,7 +443,7 @@ public class ZdhDispatchController extends BaseController{
         }
 
         if (del != null && !del.equals("")) {
-            zdhLogsService.deleteByTime(job_id, task_log_id,ts_start, ts_end);
+            zdhLogsService.deleteByTime(job_id, task_log_id, ts_start, ts_end);
         }
 
         String levels = "'DEBUG','WARN','INFO','ERROR'";
@@ -363,7 +458,7 @@ public class ZdhDispatchController extends BaseController{
             levels = "'ERROR'";
         }
 
-        List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id,task_log_id, ts_start, ts_end, levels);
+        List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id, task_log_id, ts_start, ts_end, levels);
         Iterator<ZdhLogs> it = zhdLogs.iterator();
         StringBuilder sb = new StringBuilder();
         while (it.hasNext()) {

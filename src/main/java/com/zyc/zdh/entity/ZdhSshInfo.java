@@ -7,7 +7,7 @@ public class ZdhSshInfo {
     //任务记录唯一标识(注意和调度任务的标识不一样)
     private String task_logs_id;
 
-    private QuartzJobInfo quartzJobInfo;
+    private TaskLogInstance tli;
 
     //etl 任务
     private SshTaskInfo sshTaskInfo;
@@ -22,14 +22,6 @@ public class ZdhSshInfo {
 
     public void setTask_logs_id(String task_logs_id) {
         this.task_logs_id = task_logs_id;
-    }
-
-    public QuartzJobInfo getQuartzJobInfo() {
-        return quartzJobInfo;
-    }
-
-    public void setQuartzJobInfo(QuartzJobInfo quartzJobInfo) {
-        this.quartzJobInfo = quartzJobInfo;
     }
 
     public SshTaskInfo getSshTaskInfo() {
@@ -56,9 +48,17 @@ public class ZdhSshInfo {
         this.zdhNginx = zdhNginx;
     }
 
-    public void setZdhInfo(SshTaskInfo sshTaskInfo, QuartzJobInfo quartzJobInfo,ZdhNginx zdhNginx, List<JarFileInfo> jarFileInfos){
+    public TaskLogInstance getTli() {
+        return tli;
+    }
 
-        this.quartzJobInfo=quartzJobInfo;
+    public void setTli(TaskLogInstance tli) {
+        this.tli = tli;
+    }
+
+    public void setZdhInfo(SshTaskInfo sshTaskInfo, TaskLogInstance tli, ZdhNginx zdhNginx, List<JarFileInfo> jarFileInfos){
+
+        this.tli=tli;
 
         this.sshTaskInfo=sshTaskInfo;
 
@@ -66,6 +66,5 @@ public class ZdhSshInfo {
 
         this.jarFileInfos=jarFileInfos;
     }
-
 
 }

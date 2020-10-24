@@ -150,6 +150,10 @@ public class RedisUtil {
 		return redisTemplate.keys("*");
 	}
 
+	public Set<String> keys(String pattern) {
+		return redisTemplate.keys(pattern);
+	}
+
 	/**
 	 * 根据缓存数据库索引,获取所有的key
 	 * 
