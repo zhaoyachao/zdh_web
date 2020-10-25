@@ -16,7 +16,6 @@
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
 
     <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
-
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
@@ -30,6 +29,69 @@
 
 </div>
 <div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="col-sm-2">
+        <div class="widget lazur-bg no-padding">
+            <div class="p-m">
+                <h3 class="font-bold no-margins">
+                    创建总任务数
+                </h3>
+                <h1 class="m-xs" id="allTaskNum">1540</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="widget lazur-bg no-padding">
+            <div class="p-m">
+                <h3 class="font-bold no-margins">
+                    创建总调度数
+                </h3>
+                <h1 class="m-xs" id="allDispatchNum">1540</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="widget navy-bg no-padding">
+            <div class="p-m">
+                <h3 class="font-bold no-margins">
+                    开启调度数
+                </h3>
+                <h1 class="m-xs" id="allDispatchRunNum">1540</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="widget navy-bg no-padding">
+            <div class="p-m">
+                <h3 class="font-bold no-margins">
+                    今日运行成功数
+                </h3>
+                <h1 class="m-xs" id="successNum">1540</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="widget yellow-bg no-padding">
+            <div class="p-m">
+                <h3 class="font-bold no-margins">
+                    今日告警数
+                </h3>
+                <h1 class="m-xs" id="alarmNum">1540</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="widget red-bg no-padding">
+            <div class="p-m">
+                <h3 class="font-bold no-margins">
+                    今日运行失败数
+                </h3>
+                <h1 class="m-xs" id="errorNum">1540</h1>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
 
         <div class="col-sm-12">
@@ -253,8 +315,8 @@
                             }
                         ]
                     };
-                    barChart.setOption(baroption,true);
                     barChart.hideLoading();
+                    barChart.setOption(baroption,true);
                 },
                 error: function (errorMsg) {
                     //请求失败时执行该函数
@@ -264,10 +326,33 @@
             })
         }
 
-        requestEcharts()
+        function allTotalNum(){
+            $.ajax({
+                type: "post",
+                url: "/getTotalNum",
+                data: {},
+                dataType: "json",
+                success: function (data) {
+                    $('#allTaskNum').text(data.allTaskNum);
+                    $('#allDispatchNum').text(data.allDispatchNum)
+                    $('#allDispatchRunNum').text(data.allDispatchRunNum)
+                    $('#successNum').text(data.successNum)
+                    $('#errorNum').text(data.errorNum)
+                    $('#alarmNum').text(data.alarmNum)
+                },
+                error: function (errorMsg) {
+                    //请求失败时执行该函数
+                    console.info("请求总计失败!");
+                }
+            })
+
+        }
+        requestEcharts();
+        allTotalNum();
         setInterval(function () {
-            requestEcharts()
-        }, 60000)
+            requestEcharts();
+            allTotalNum();
+        }, 60000);
 
 
         var day2 = new Date();

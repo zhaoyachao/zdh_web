@@ -168,4 +168,60 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
             "</script>"
     })
     public int updateTaskLogsById3(TaskLogInstance tli);
+
+    @Select("select sum(num) as num from (" +
+            "(select count(1) as num from ssh_task_info)" +
+            "UNION ALL " +
+            "(select count(1) as num from sql_task_info)" +
+            "UNION ALL "+
+            "(select count(1) as num from etl_task_info) " +
+            "union all " +
+            "(select count(1) as num from etl_more_task_info) " +
+            "union all " +
+            "(select count(1) as num from etl_drools_task_info)" +
+            ") a")
+    //@Select("select count(1) as num from sssh_task_info ")
+    @Results({@Result(column="num",property="num")
+    })
+    public int allTaskNum();
+
+    @Select(
+            "(select count(1) as num from quartz_job_info)"
+           )
+    //@Select("select count(1) as num from sssh_task_info ")
+    @Results({@Result(column="num",property="num")
+    })
+    public int allDispatchNum();
+
+    @Select(
+            "(select count(1) as num from quartz_job_info where status in ('running','pause') and job_type not in ('email','retry'))"
+    )
+    //@Select("select count(1) as num from sssh_task_info ")
+    @Results({@Result(column="num",property="num")
+    })
+    public int allDispatchRunNum();
+
+    @Select(
+            "(select count(1) as num from task_log_instance where status='finish' and date_format(run_time,'%Y-%m-%d') = date_format(current_timestamp(),'%Y-%m-%d'))"
+    )
+    //@Select("select count(1) as num from sssh_task_info ")
+    @Results({@Result(column="num",property="num")
+    })
+    public int successNum();
+
+    @Select(
+            "(select count(1) as num from task_log_instance where status in ('error','kill','killed') and date_format(run_time,'%Y-%m-%d') = date_format(current_timestamp(),'%Y-%m-%d'))"
+    )
+    //@Select("select count(1) as num from sssh_task_info ")
+    @Results({@Result(column="num",property="num")
+    })
+    public int errorNum();
+
+    @Select(
+            "(select count(1) as num from task_log_instance where is_notice in ('alarm','true') and date_format(run_time,'%Y-%m-%d') = date_format(current_timestamp(),'%Y-%m-%d'))"
+    )
+    //@Select("select count(1) as num from sssh_task_info ")
+    @Results({@Result(column="num",property="num")
+    })
+    public int alarmNum();
 }

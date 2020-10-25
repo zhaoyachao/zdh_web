@@ -1,5 +1,6 @@
 package com.zyc.zdh;
 
+import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.Role;
 import com.zyc.zdh.service.RoleService;
 import net.sf.ehcache.CacheManager;
@@ -14,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {ZdhApplication.class})
-@ActiveProfiles(profiles = {"pro"})
+@ActiveProfiles(profiles = {"dev"})
 public class ZdhApplicationTests {
 
 	@Autowired
@@ -23,6 +24,8 @@ public class ZdhApplicationTests {
 	RoleService roleService;
 	@Autowired
 	EhCacheCacheManager ehCacheCacheManager;
+	@Autowired
+	TaskLogInstanceMapper taskLogInstanceMapper;
 
 	@Test
 	public void contextLoads() {
@@ -38,6 +41,15 @@ public class ZdhApplicationTests {
 		ec.clearAll();
 
 	}
+
+	@Test
+	public void allTaskNum() {
+
+		System.out.println(taskLogInstanceMapper.allTaskNum());
+
+	}
+
+
 
 
 }

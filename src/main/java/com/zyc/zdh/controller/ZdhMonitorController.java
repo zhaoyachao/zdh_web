@@ -169,6 +169,29 @@ public class ZdhMonitorController extends BaseController{
         return JSON.toJSONString(zdhHaInfo);
     }
 
+    @RequestMapping("/getTotalNum")
+    @ResponseBody
+    public String getTotalNum(){
+
+       int allTaskNum=taskLogInstanceMapper.allTaskNum();
+       int allDispatchNum=taskLogInstanceMapper.allDispatchNum();
+       int allDispatchRunNum=taskLogInstanceMapper.allDispatchRunNum();
+       int successNum=taskLogInstanceMapper.successNum();
+       int errorNum=taskLogInstanceMapper.errorNum();
+       int alarmNum=taskLogInstanceMapper.alarmNum();
+
+       JSONObject js=new JSONObject();
+       js.put("allTaskNum",allTaskNum);
+       js.put("allDispatchNum",allDispatchNum);
+       js.put("allDispatchRunNum",allDispatchRunNum);
+       js.put("successNum",successNum);
+       js.put("errorNum",errorNum);
+       js.put("alarmNum",alarmNum);
+
+       return js.toJSONString();
+
+    }
+
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();
