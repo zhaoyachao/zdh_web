@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Primary;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 public class DruidDataSourceConfig {
@@ -136,6 +137,12 @@ public class DruidDataSourceConfig {
 			e.printStackTrace();
 		}
 		return datasource;
+	}
+
+	@Bean(name = "jdbcTemplate")
+	public JdbcTemplate jdbcTemplate(){
+		JdbcTemplate jdbcTemplate=new JdbcTemplate(dataSource2());
+		return jdbcTemplate;
 	}
 
 	@Bean

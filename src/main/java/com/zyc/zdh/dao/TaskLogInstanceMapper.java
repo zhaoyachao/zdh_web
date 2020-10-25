@@ -88,7 +88,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
      */
     @Select({"<script>",
             "SELECT * FROM task_log_instance",
-            "WHERE alarm_enabled='on' and alarm_account is not null and alarm_account != '' and timestampdiff(second,run_time,current_timestamp()) >= time_out",
+            "WHERE alarm_enabled='on' and alarm_account is not null and alarm_account != '' and time_out != null and time_out > '0' and timestampdiff(second,run_time,current_timestamp()) >= time_out",
             " and is_notice != 'alarm' and status in ('etl','dispatch') ",
             "</script>"})
     public List<TaskLogInstance> selectOverTime();

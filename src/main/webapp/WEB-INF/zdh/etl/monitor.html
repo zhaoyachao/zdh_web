@@ -689,6 +689,16 @@
                         btn_retry_str=''
                         btn_kill_str=''
                     }
+                    if (value == "kill" ){
+                        context = "杀死中"
+                        class_str = "btn-danger btn-xs"
+                        btn_kill_str=''
+                    }
+                    if (value=="killed" ){
+                        context = "已杀死"
+                        class_str = "btn-danger btn-xs"
+                        btn_kill_str=''
+                    }
                     var url="log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time
                     var title=row.job_context + "日志"
                     return [

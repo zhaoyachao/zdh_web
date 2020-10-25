@@ -3,14 +3,17 @@ package com.zyc.zdh.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.config.DateConverter;
+import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
-import com.zyc.zdh.entity.NoticeInfo;
-import com.zyc.zdh.entity.User;
-import com.zyc.zdh.entity.ZdhDownloadInfo;
-import com.zyc.zdh.entity.ZdhNginx;
+import com.zyc.zdh.entity.*;
+import com.zyc.zdh.job.JobModel;
+import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.shiro.RedisUtil;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.beans.PropertyEditorSupport;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 @Controller
@@ -27,7 +31,14 @@ public class SystemController extends BaseController{
     ZdhNginxMapper zdhNginxMapper;
     @Autowired
     RedisUtil redisUtil;
-
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+    @Autowired
+    QuartzJobMapper quartzJobMapper;
+    @Autowired
+    QuartzManager2 quartzManager2;
+    @Autowired
+    Environment ev;
 
     @RequestMapping(value = "/{url}", method = RequestMethod.GET)
     public String dynApiDemo2(@PathVariable("url") String url) {
@@ -95,6 +106,47 @@ public class SystemController extends BaseController{
         }
 
         return JSON.toJSONString(noticeInfos);
+    }
+
+    @RequestMapping(value = "/del_system_job", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String del_system_job(){
+
+        JSONObject js=new JSONObject();
+        if(!getUser().getUserName().equalsIgnoreCase("admin")){
+            js.put("data","只有admin用户才能做此操作");
+            return js.toJSONString();
+        }
+        //1 获取所有的email,retry 任务
+        String sql="delete from qrtz_simple_triggers where TRIGGER_GROUP in ('email','retry')";
+        String sql2="delete from qrtz_triggers where TRIGGER_GROUP in ('email','retry')";
+        String sql3="delete from qrtz_job_details where  JOB_GROUP in ('email','retry')";
+        jdbcTemplate.execute(sql);
+        jdbcTemplate.execute(sql2);
+        jdbcTemplate.execute(sql3);
+
+        quartzJobMapper.deleteSystemJob();
+        //2 重新添加到调度队列
+
+        String expr = ev.getProperty("email.schedule.interval");
+        QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "email");
+        quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+        quartzManager2.addQuartzJobInfo(quartzJobInfo);
+        String expr2 = ev.getProperty("retry.schedule.interval");
+        QuartzJobInfo quartzJobInfo2 = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "retry");
+        quartzJobInfo2.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+        quartzManager2.addQuartzJobInfo(quartzJobInfo2);
+
+        try {
+            quartzManager2.addTaskToQuartz(quartzJobInfo);
+            quartzManager2.addTaskToQuartz(quartzJobInfo2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        js.put("data","success");
+        return js.toJSONString();
+
     }
 
     /**

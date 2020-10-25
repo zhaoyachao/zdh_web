@@ -2,6 +2,7 @@ package com.zyc.zdh.dao;
 
 import com.zyc.notscan.BaseMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -87,5 +88,11 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
     })
     public List<QuartzJobInfo> selectByLastStatus(@Param("last_status") String last_status );
 
+    @Delete({
+            "<script>",
+            "delete from quartz_job_info where job_type in ('email','retry')",
+            "</script>"
+    })
+    public int deleteSystemJob();
 
 }
