@@ -186,9 +186,9 @@ public class ZdhDispatchController extends BaseController {
         JSONObject json = new JSONObject();
         try {
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
+            dti.setCount(0);
             if(reset_count.equalsIgnoreCase("true")){
                 dti.setTask_log_id(null);
-                dti.setCount(0);
                 dti.setLast_time(null);
                 dti.setNext_time(null);
                 quartzJobMapper.updateByPrimaryKey(dti);

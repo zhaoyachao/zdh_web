@@ -252,7 +252,7 @@
             },
             'click #execute': function (e, value, row, index) {
                 layer.confirm('手动执行,是否重置已执行次数(手动执行完成,需要重新配置调度)', {
-                    btn: ['重置并执行','并行执行'], //按钮
+                    btn: ['重置并执行','普通执行','并行执行'], //按钮
                     cancel:function(index, layero){
                         console.log('关闭x号');
                     },
@@ -261,7 +261,11 @@
                         executeMs(row.job_id,"true","0")
                         layer.close(layer.index)
                     },
-                    btn2:function () {
+                    btn2:function(){
+                        executeMs(row.job_id,"false","0")
+                        layer.close(layer.index)
+                    },
+                    btn3:function () {
                         executeMs(row.job_id,"false","1")
                         layer.close(layer.index)
                     }
