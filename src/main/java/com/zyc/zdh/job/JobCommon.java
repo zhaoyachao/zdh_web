@@ -39,7 +39,7 @@ public class JobCommon {
 
     public static DelayQueue<RetryJobInfo> retryQueue = new DelayQueue<>();
 
-    public static ThreadPoolExecutor threadPoolExecutor=new ThreadPoolExecutor(1, 1,  500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    public static ThreadPoolExecutor threadPoolExecutor=new ThreadPoolExecutor(1, 1000,  500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 
     public static void logThread(ZdhLogsService zdhLogsService) {
         new Thread(new Runnable() {
@@ -983,6 +983,7 @@ public class JobCommon {
         logger.info("[" + jobType + "] JOB ,开始检查任务依赖");
         insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务依赖");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+
         //检查任务依赖
         if (tli.getJump_dep() != null && tli.getJump_dep().equalsIgnoreCase("on")) {
             String msg2 = "[" + jobType + "] JOB ,跳过依赖任务";
@@ -1057,6 +1058,10 @@ public class JobCommon {
         tli.setProcess("6");
         tli.setUpdate_time(new Timestamp(new Date().getTime()));
         tli.setEtl_date(DateUtil.formatTime(tli.getCur_time()));
+        process_time_info pti=tli.getProcess_time2();
+        pti.setInit_time(DateUtil.getCurrentTime());
+        tli.setProcess_time(pti);
+
         tlim.updateByPrimaryKey(tli);
         //todo 重要标识-必不可少-查询日志时使用
         qjm.updateTaskLogId(tli.getJob_id(), tli.getId());
@@ -1461,6 +1466,12 @@ public class JobCommon {
 
                 //检查任务依赖,和并行不冲突
                 boolean dep = checkDep(quartzJobInfo.getJob_type(), tli);
+                //更新任务依赖时间
+                process_time_info pti=tli.getProcess_time2();
+                pti.setCheck_dep_time(DateUtil.getCurrentTime());
+                tli.setProcess_time(pti);
+
+                updateTaskLog(tli,tlim);
                 if (dep == false) return;
 
                 if (quartzJobInfo.getJob_type().equals("SHELL")) {
@@ -1531,6 +1542,7 @@ public class JobCommon {
      * @param tli
      */
     public static void chooseCommand(String jobType, TaskLogInstance tli) {
+        TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         logger.info("开始执行[" + jobType + "] JOB");
         insertLog(tli, "INFO", "开始执行[" + jobType + "] JOB");
 
@@ -1551,6 +1563,12 @@ public class JobCommon {
             exe_status = HdfsJob.hdfsCommand(tli);
         }
 
+        //更新在线条件(shell,jdbc....)时间
+        process_time_info pti=tli.getProcess_time2();
+        pti.setCommand_time(DateUtil.getCurrentTime());
+        tli.setProcess_time(pti);
+        updateTaskLog(tli,tlim);
+
         if (!exe_status) {
             jobFail(jobType, tli);
         }
@@ -1564,6 +1582,12 @@ public class JobCommon {
             } else if (tli.getJob_model().equals(JobModel.REPEAT.getValue())) {
                 runRepeat(jobType, tli.getId(), exe_status, tli);
             }
+
+            //更新最后阶段(shell,jdbc....)时间
+            process_time_info pti2=tli.getProcess_time2();
+            pti2.setServer_time(DateUtil.getCurrentTime());
+            tli.setProcess_time(pti2);
+            updateTaskLog(tli,tlim);
 
         }
     }

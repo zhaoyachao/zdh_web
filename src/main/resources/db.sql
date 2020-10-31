@@ -518,6 +518,8 @@ alter table task_log_instance add column server_id varchar(100);
 alter table task_log_instance add column time_out varchar(100);
 alter table quartz_job_info add column time_out varchar(100);
 
+alter table task_log_instance add column process_time text;
+
 create database if NOT EXISTS quartz;
 
 use quartz;

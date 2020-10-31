@@ -3,11 +3,9 @@ package com.zyc.zdh.job;
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
-import com.zyc.zdh.entity.QuartzJobInfo;
-import com.zyc.zdh.entity.TaskLogInstance;
-import com.zyc.zdh.entity.ZdhDownloadInfo;
-import com.zyc.zdh.entity.ZdhHaInfo;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.HttpUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.beanutils.BeanUtils;
@@ -39,10 +37,22 @@ public class CheckDepJob {
                     if( tmp_status=="kill" || tmp_status =="killed" ) continue; //在检查依赖时杀死任务
                     tl.setStatus("dispatch");
                     tl.setServer_id(JobCommon.web_application_id);//重新设置调度器标识,retry任务会定期检查标识是否有效
+                    //更新任务依赖时间
+                    process_time_info pti=tl.getProcess_time2();
+                    pti.setCheck_dep_time(DateUtil.getCurrentTime());
+                    tl.setProcess_time(pti);
+
                     JobCommon.updateTaskLog(tl,taskLogInstanceMapper);
                     debugInfo(tl);
                     JobCommon.chooseJobBean(tl);
+                }else{
+                    //更新任务依赖时间
+                    process_time_info pti=tl.getProcess_time2();
+                    pti.setCheck_dep_time(DateUtil.getCurrentTime());
+                    tl.setProcess_time(pti);
+                    JobCommon.updateTaskLog(tl,taskLogInstanceMapper);
                 }
+
             }
 
         } catch (Exception e) {

@@ -64,7 +64,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         if (quartzJobInfos.size() > 0) {
             logger.info("已经存在[EMAIL]历史监控任务...");
         }else{
-            logger.info("自动生成EMAIL监控任务");
+            logger.info("自动生成监控任务");
             String expr = ev.getProperty("email.schedule.interval");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "email");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
@@ -79,7 +79,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         if (quartzJobInfos2.size() > 0) {
             logger.info("已经存在[RETRY]历史监控任务...");
         }else{
-            logger.info("自动生成RETRY监控任务");
+            logger.info("自动生成监控任务");
             String expr = ev.getProperty("retry.schedule.interval");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "retry");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
@@ -94,7 +94,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         if (quartzJobInfos3.size() > 0) {
             logger.info("已经存在[CHECK]历史监控任务...");
         }else{
-            logger.info("自动生成CHECK监控任务");
+            logger.info("自动生成监控任务");
             String expr = "30s" ;//ev.getProperty("retry.schedule.interval");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "retry");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");

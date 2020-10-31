@@ -1,5 +1,6 @@
 package com.zyc.zdh.entity;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -106,6 +107,8 @@ public class TaskLogInstance implements Serializable {
     private String alarm_account;
 
     private String time_out="86400";//超时时间 以秒为单位,默认一天
+
+    private String process_time=JSON.toJSONString(new process_time_info());//json格式,只会记录每个流程的结束时间
 
     public String getJob_id() {
         return job_id;
@@ -506,6 +509,23 @@ public class TaskLogInstance implements Serializable {
     public void setTime_out(String time_out) {
         this.time_out = time_out;
     }
+
+    public String getProcess_time() {
+        return process_time;
+    }
+
+    public process_time_info getProcess_time2() {
+        return JSON.parseObject(process_time,process_time_info.class);
+    }
+
+    public void setProcess_time(String process_time) {
+        this.process_time = process_time;
+    }
+
+    public void setProcess_time(process_time_info process_time_info) {
+        this.process_time = JSON.toJSONString(process_time_info);
+    }
+
 
     public String getProcess_msg() {
         //默认是1,开始调度是5,调整调度时间etl_date是7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行
