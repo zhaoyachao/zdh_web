@@ -16,8 +16,9 @@ public class ShellJob extends JobCommon {
 
     public static String jobType = "SHELL";
 
-    public static void run(TaskLogInstance tli,int is_retry) {
+    public static void run(TaskLogInstance tli,boolean is_retry) {
         Thread td=Thread.currentThread();
+        td.setName(tli.getId());
         long threadId = td.getId();
         System.out.println("线程id:"+threadId);
         String tk=myid+"_"+threadId+"_"+tli.getId();

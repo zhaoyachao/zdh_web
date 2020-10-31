@@ -106,9 +106,14 @@ public class ZdhMonitorController extends BaseController{
     @RequestMapping("/kill")
     @ResponseBody
     public String killJob(String id){
-        taskLogInstanceMapper.updateStatusById2("kill",id);
+        // check_dep,wait_retry 状态 直接killed
+        // dispatch,etl 状态 kill
+        taskLogInstanceMapper.updateStatusById2(id);
         TaskLogInstance tli=taskLogInstanceMapper.selectByPrimaryKey(id);
         JobCommon.insertLog(tli,"INFO","接受到杀死请求,开始进行杀死操作...");
+        if(tli.getStatus().equalsIgnoreCase("killed")){
+            JobCommon.insertLog(tli,"INFO","任务已杀死");
+        }
         JSONObject json2 = new JSONObject();
         json2.put("success", "200");
         return json2.toJSONString();

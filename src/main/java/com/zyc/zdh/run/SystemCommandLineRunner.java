@@ -64,7 +64,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         if (quartzJobInfos.size() > 0) {
             logger.info("已经存在[EMAIL]历史监控任务...");
         }else{
-            logger.info("自动生成监控任务");
+            logger.info("自动生成EMAIL监控任务");
             String expr = ev.getProperty("email.schedule.interval");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "email");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
@@ -79,9 +79,24 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         if (quartzJobInfos2.size() > 0) {
             logger.info("已经存在[RETRY]历史监控任务...");
         }else{
-            logger.info("自动生成监控任务");
+            logger.info("自动生成RETRY监控任务");
             String expr = ev.getProperty("retry.schedule.interval");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "retry");
+            quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+            quartzManager2.addQuartzJobInfo(quartzJobInfo);
+            quartzManager2.addTaskToQuartz(quartzJobInfo);
+        }
+
+        //检测是否有check_dep 任务 如果没有则添加
+        QuartzJobInfo qj_check = new QuartzJobInfo();
+        qj_retry.setJob_type("CHECK");
+        List<QuartzJobInfo> quartzJobInfos3 = quartzJobMapper.select(qj_retry);
+        if (quartzJobInfos3.size() > 0) {
+            logger.info("已经存在[CHECK]历史监控任务...");
+        }else{
+            logger.info("自动生成CHECK监控任务");
+            String expr = "30s" ;//ev.getProperty("retry.schedule.interval");
+            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "retry");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
             quartzManager2.addTaskToQuartz(quartzJobInfo);
@@ -142,7 +157,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                             if(tl.getThread_id()!=null && tl.getThread_id().startsWith(myid)){
                                 Thread td=JobCommon.chm.get(tl.getThread_id());
                                 if(td!=null){
-                                    String msg="杀死线程:"+td.getName()+","+td.getId();
+                                    String msg="杀死线程:线程名:"+td.getName()+",线程id:"+td.getId();
                                     logger.info(msg);
                                     JobCommon.insertLog(tl,"INFO",msg);
                                     try{

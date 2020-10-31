@@ -267,11 +267,10 @@
                 success: function (data) {
                     console.info("success")
                     $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: "/task_logs?" + $("#task_logs_form").serialize(),
+                        url: "/task_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
                         contentType: "application/json;charset=utf-8",
                         dataType: "json"
                     });
-                    requestEcharts()
                 },
                 error: function (data) {
                     console.info("error: " + data.responseText);
@@ -525,7 +524,7 @@
                         btn_retry_str=''
                         btn_kill_str=''
                     }
-                    if (value == "etl" || value == "dispatch" || value == "wait_retry") {
+                    if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep") {
                         context = "运行中"
                         class_str = "btn-primary  btn-xs"
                         class_str2= "btn-danger  "

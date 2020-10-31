@@ -90,7 +90,7 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
 
     @Delete({
             "<script>",
-            "delete from quartz_job_info where job_type in ('email','retry')",
+            "delete from quartz_job_info where job_type in ('email','retry','check')",
             "</script>"
     })
     public int deleteSystemJob();

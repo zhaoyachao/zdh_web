@@ -118,9 +118,9 @@ public class SystemController extends BaseController{
             return js.toJSONString();
         }
         //1 获取所有的email,retry 任务
-        String sql="delete from qrtz_simple_triggers where TRIGGER_GROUP in ('email','retry')";
-        String sql2="delete from qrtz_triggers where TRIGGER_GROUP in ('email','retry')";
-        String sql3="delete from qrtz_job_details where  JOB_GROUP in ('email','retry')";
+        String sql="delete from qrtz_simple_triggers where TRIGGER_GROUP in ('email','retry','check')";
+        String sql2="delete from qrtz_triggers where TRIGGER_GROUP in ('email','retry','check')";
+        String sql3="delete from qrtz_job_details where  JOB_GROUP in ('email','retry','check')";
         jdbcTemplate.execute(sql);
         jdbcTemplate.execute(sql2);
         jdbcTemplate.execute(sql3);
@@ -133,13 +133,19 @@ public class SystemController extends BaseController{
         quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
         quartzManager2.addQuartzJobInfo(quartzJobInfo);
         String expr2 = ev.getProperty("retry.schedule.interval");
-        QuartzJobInfo quartzJobInfo2 = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "retry");
+        QuartzJobInfo quartzJobInfo2 = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr2, "-1", "", "retry");
         quartzJobInfo2.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
         quartzManager2.addQuartzJobInfo(quartzJobInfo2);
+        String expr3 = "30s";
+        QuartzJobInfo quartzJobInfo3 = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr3, "-1", "", "retry");
+        quartzJobInfo3.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+        quartzManager2.addQuartzJobInfo(quartzJobInfo3);
+
 
         try {
             quartzManager2.addTaskToQuartz(quartzJobInfo);
             quartzManager2.addTaskToQuartz(quartzJobInfo2);
+            quartzManager2.addTaskToQuartz(quartzJobInfo3);
         } catch (Exception e) {
             e.printStackTrace();
         }

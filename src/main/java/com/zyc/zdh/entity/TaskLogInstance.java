@@ -20,12 +20,12 @@ public class TaskLogInstance implements Serializable {
     private String job_id;//任务id,
     private String job_context;//任务说明
     private String etl_date;// 起始时间
-    private String status;// 任务状态,dispatch,wait_retry,finish,error,etl,kill
+    private String status;// 任务状态,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
     private Timestamp run_time;//任务开始时间
     private Timestamp update_time;
     private String  owner;
     private String is_notice="false";
-    private String process="1";//默认是1,开始调度是5,调整调度时间etl_date是7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行
+    private String process="1";//默认是1,开始调度是5,调整调度时间etl_date是6,检查调度依赖7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行
     @Transient
     private String process_msg="未开始";
     private String thread_id;//myid+threadId+id,通过'_'连接
@@ -514,8 +514,10 @@ public class TaskLogInstance implements Serializable {
                  return "未开始";
              case "5":
                  return "开始调度";
-             case "7":
+             case "6":
                  return "调整调度时间";
+             case "7":
+                 return "检查依赖任务";
              case "8":
                  return "检查调度次数";
              case "9":

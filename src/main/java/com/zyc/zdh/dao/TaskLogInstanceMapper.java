@@ -19,8 +19,8 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Update(value = "update task_log_instance set thread_id=#{thread_id} where id=#{id}")
     public int updateThreadById(@Param("thread_id") String thread_id, @Param("id") String id);
 
-    @Update(value = "update task_log_instance set status=#{status} where id=#{id} and (status='dispatch' or status ='etl')")
-    public int updateStatusById2(@Param("status") String status,@Param("id") String id);
+    @Update(value = "update task_log_instance set status=(case status when 'check_dep' then 'killed' when 'wait_retry' then 'killed' else 'kill' ) where id=#{id} and (status='dispatch' or status ='etl' or status= 'check_dep' or status= 'wait_retry')")
+    public int updateStatusById2(@Param("id") String id);
 
     @Update(value = "update task_log_instance set is_notice=#{is_notice} where id=#{id}")
     public int updateNoticeById(@Param("is_notice") String is_notice,@Param("id") String id);
@@ -93,11 +93,18 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
             "</script>"})
     public List<TaskLogInstance> selectOverTime();
 
+    @Select({"<script>",
+            "SELECT * FROM task_log_instance",
+            "WHERE ",
+            " is_notice = 'alarm' and status ='finish'",
+            "</script>"})
+    public List<TaskLogInstance> selectOverTimeFinish();
+
     @Select("select a.*,b.email,b.user_name as userName,b.phone,b.is_use_email,b.is_use_phone from task_log_instance a,account_info b where a.status='error' and a.is_notice !='true' and a.owner=b.id")
     public List<EmailTaskLogs> selectByStatus();
 
-    @Select("select * from task_log_instance where owner=#{owner} and etl_date=#{etl_date} and job_id=#{job_id}")
-    public List<TaskLogInstance> selectByIdEtlDate(@Param("owner") String owner, @Param("job_id") String job_id, @Param("etl_date") String etl_date);
+    @Select("select * from task_log_instance where etl_date=#{etl_date} and job_id=#{job_id}")
+    public List<TaskLogInstance> selectByIdEtlDate(@Param("job_id") String job_id, @Param("etl_date") String etl_date);
 
     @Select("select * from task_log_instance where status =#{status}")
     public List<TaskLogInstance> selectThreadByStatus(@Param("status") String status);
@@ -106,8 +113,8 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Select("select * from task_log_instance where status =#{status} and retry_time is not null and current_timestamp() >= retry_time")
     public List<TaskLogInstance> selectThreadByStatus2(@Param("status") String status);
 
-    @Select("select * from task_log_instance where status =#{status}")
-    public List<TaskLogInstance> selectThreadByStatus3(@Param("status") String status);
+    @Select("select * from task_log_instance where status in ('etl','dispatch')")
+    public List<TaskLogInstance> selectThreadByStatus3();
 
     @Update(value = "update task_log_instance set status=#{status} where id=#{id} and status='running' and process > #{process}")
     public int updateStatusById3(@Param("status") String status, @Param("process") String process, @Param("id") String id);

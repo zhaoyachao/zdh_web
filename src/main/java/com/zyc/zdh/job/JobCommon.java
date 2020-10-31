@@ -23,9 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.*;
 
 public class JobCommon {
 
@@ -41,6 +39,7 @@ public class JobCommon {
 
     public static DelayQueue<RetryJobInfo> retryQueue = new DelayQueue<>();
 
+    public static ThreadPoolExecutor threadPoolExecutor=new ThreadPoolExecutor(1, 1,  500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 
     public static void logThread(ZdhLogsService zdhLogsService) {
         new Thread(new Runnable() {
@@ -961,7 +960,7 @@ public class JobCommon {
      */
     public static void updateTaskLogEtlDate(TaskLogInstance tli, TaskLogInstanceMapper tlim) {
         tli.setUpdate_time(new Timestamp(new Date().getTime()));
-        tli.setProcess("7");
+        tli.setProcess("6");
         updateTaskLog(tli, tlim);
     }
 
@@ -995,11 +994,16 @@ public class JobCommon {
         if (job_ids != null && job_ids.split(",").length > 0) {
             for (String dep_job_id : job_ids.split(",")) {
                 String etl_date = tli.getEtl_date();
-                List<TaskLogInstance> taskLogsList = tlim.selectByIdEtlDate(getUser().getId(), dep_job_id, etl_date);
+                List<TaskLogInstance> taskLogsList = tlim.selectByIdEtlDate(dep_job_id, etl_date);
                 if (taskLogsList == null || taskLogsList.size() <= 0) {
                     String msg = "[" + jobType + "] JOB ,依赖任务" + dep_job_id + ",ETL日期" + etl_date + ",未完成";
                     logger.info(msg);
                     insertLog(tli, "INFO", msg);
+                    tli.setThread_id(""); //设置为空主要是为了 在检查依赖任务期间杀死
+                    tli.setStatus("check_dep");
+                    tli.setProcess("7");
+                    tli.setUpdate_time(new Timestamp(new Date().getTime()));
+                    updateTaskLog(tli,tlim);
                     return false;
                 }
                 String msg2 = "[" + jobType + "] JOB ,依赖任务" + dep_job_id + ",ETL日期" + etl_date + ",已完成";
@@ -1050,7 +1054,7 @@ public class JobCommon {
 
 
         //更新tli
-        tli.setProcess("7");
+        tli.setProcess("6");
         tli.setUpdate_time(new Timestamp(new Date().getTime()));
         tli.setEtl_date(DateUtil.formatTime(tli.getCur_time()));
         tlim.updateByPrimaryKey(tli);
@@ -1116,7 +1120,7 @@ public class JobCommon {
                 //quartzJobInfo.setStatus("finish");
                 //删除quartz 任务
                 int interval_time = (tli.getInterval_time() == null || tli.getInterval_time().equals("")) ? 5 : Integer.parseInt(tli.getInterval_time());
-                updateTaskLogError(tli, "7", tlim, "error", interval_time);
+                updateTaskLogError(tli, "6", tlim, "error", interval_time);
                 quartzManager2.deleteTask(tli, "finish", "finish");
                 return false;
             }
@@ -1149,7 +1153,7 @@ public class JobCommon {
                 //quartzJobInfo.setStatus("finish");
                 //删除quartz 任务
                 int interval_time = (tli.getInterval_time() == null || tli.getInterval_time().equals("")) ? 5 : Integer.parseInt(tli.getInterval_time());
-                updateTaskLogError(tli, "7", tlim, "error", interval_time);
+                updateTaskLogError(tli, "6", tlim, "error", interval_time);
                 quartzManager2.deleteTask(tli, "finish", "finish");
 
                 return false;
@@ -1352,7 +1356,7 @@ public class JobCommon {
 
     /**
      * 选择具体的job执行引擎
-     *
+     *  解析创建任务实例->检查更新任务状态->检查依赖-> 执行具体任务
      * @param quartzJobInfo
      * @param is_retry      0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
      */
@@ -1370,99 +1374,158 @@ public class JobCommon {
             logger.debug("调度任务[RETRY],开始调度");
             RetryJob.run(quartzJobInfo);
             return;
+        } else if (quartzJobInfo.getJob_type().equals("CHECK")) {
+            logger.debug("调度任务[CHECK],开始调度");
+            CheckDepJob.run(quartzJobInfo);
+            return;
         }
 
-        TaskLogInstance tli = new TaskLogInstance();
-        tli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-        try {
-            //复制quartzjobinfo到tli,任务基础信息完成复制
-            BeanUtils.copyProperties(tli, quartzJobInfo);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        //逻辑发送错误代码捕获发生自动重试(retry_job) 不重新生成实例id,使用旧的实例id
-        String last_task_id="";
-        if(is_retry==0){
-            //调度触发
-            //1 获取上次执行task_id,并付给新的任务实列last_task_log_id
-            tli.setLast_task_log_id(quartzJobInfo.getTask_log_id());
-            tli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
-        }
-        if (is_retry == 1) {
-            //失败自动重试触发
-            //重试需要使用上次执行实例信息,并将上次执行失败的实例id重新付给quartjobinfo
-            tli = retry_tli;
-            last_task_id=tli.getLast_task_log_id();
-            quartzJobInfo.setTask_log_id(last_task_id);
-            quartzJobInfo.setStatus("dispatch");//此处赋值dispatch 主要是为了下方判断上次任务状态
-            tli.setStatus("dispatch");
-        }
-        if(is_retry==2){
-            //手动点击重试按钮触发
-            //手动点击重试,会生成新的实例信息,默认重置执行次数,并将上次执行失败的实例id 付给last_task_id
-            tli=retry_tli;
-            tli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
-            tli.setCount(0L);
-            tli.setIs_retryed("0");
-            tli.setLast_task_log_id(retry_tli.getId());
-            tli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            tli.setStatus("dispatch");
-        }
-        if(is_retry==3){
-            //手动点击执行触发,重置次数和上次任务实例id
-            tli.setCount(0);
-            tli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
-            tli.setLast_task_log_id(quartzJobInfo.getTask_log_id());
-            //tli.setLast_time(quartzJobInfo.getStart_time());
-        }
-        if(is_retry==4){
-            tli=retry_tli;
-            tli.setCount(0);
-            tli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
-        }
-        //公共设置
-        tli.setStatus("dispatch");//新实例状态设置为dispatch
-        //检查状态--重新组装调度实例信息,返回false 表示不运行此次任务
-        if(!checkStatus("QUARTZ", tli)) return ;
-        //设置调度器唯一标识,调度故障转移时使用,如果服务器重启会自动生成新的唯一标识
-        tli.setServer_id(JobCommon.web_application_id);
-        // todo abc
+        //线程池执行具体调度任务
+        threadPoolExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
 
-        debugInfo(tli);
-        if (is_retry == 1) {
-            tlim.updateByPrimaryKey(tli);
-        } else {
-            tlim.insert(tli);
-        }
-        //更新quartzjobinfo  上次执行task_log_id
-        qjm.updateTaskLogId(tli.getJob_id(), tli.getId());
+                TaskLogInstance tli = new TaskLogInstance();
+                tli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                try {
+                    //复制quartzjobinfo到tli,任务基础信息完成复制
+                    BeanUtils.copyProperties(tli, quartzJobInfo);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+                //逻辑发送错误代码捕获发生自动重试(retry_job) 不重新生成实例id,使用旧的实例id
+                String last_task_id="";
+                if(is_retry==0){
+                    //调度触发
+                    //1 获取上次执行task_id,并付给新的任务实列last_task_log_id
+                    tli.setLast_task_log_id(quartzJobInfo.getTask_log_id());
+                    tli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
+                }
+                if (is_retry == 1) {
+                    //失败自动重试触发
+                    //重试需要使用上次执行实例信息,并将上次执行失败的实例id重新付给quartjobinfo
+                    tli = retry_tli;
+                    last_task_id=tli.getLast_task_log_id();
+                    quartzJobInfo.setTask_log_id(last_task_id);
+                    quartzJobInfo.setStatus("dispatch");//此处赋值dispatch 主要是为了下方判断上次任务状态
+                    tli.setStatus("dispatch");
+                }
+                if(is_retry==2){
+                    //手动点击重试按钮触发
+                    //手动点击重试,会生成新的实例信息,默认重置执行次数,并将上次执行失败的实例id 付给last_task_id
+                    tli=retry_tli;
+                    tli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
+                    tli.setCount(0L);
+                    tli.setIs_retryed("0");
+                    tli.setLast_task_log_id(retry_tli.getId());
+                    tli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                    tli.setStatus("dispatch");
+                }
+                if(is_retry==3){
+                    //手动点击执行触发,重置次数和上次任务实例id
+                    tli.setCount(0);
+                    tli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
+                    tli.setLast_task_log_id(quartzJobInfo.getTask_log_id());
+                    //tli.setLast_time(quartzJobInfo.getStart_time());
+                }
+                if(is_retry==4){
+                    tli=retry_tli;
+                    tli.setCount(0);
+                    tli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
+                }
+                //此处更新主要是为了 日期超时时 也能记录下日志
+                if (is_retry == 1) {
+                    tlim.updateByPrimaryKey(tli);
+                } else {
+                    tlim.insert(tli);
+                }
+                //公共设置
+                tli.setStatus("dispatch");//新实例状态设置为dispatch
+                //检查状态--重新组装调度实例信息,返回false 表示不运行此次任务
+                if(!checkStatus("QUARTZ", tli)){
+                    tli.setStatus("error");//新实例状态设置为dispatch
+                    tlim.updateByPrimaryKey(tli);
+                    return ;
+                }
+                //设置调度器唯一标识,调度故障转移时使用,如果服务器重启会自动生成新的唯一标识
+                tli.setServer_id(JobCommon.web_application_id);
 
-        if (quartzJobInfo.getJob_type().equals("SHELL")) {
-            logger.info("调度任务[SHELL],开始调度");
-            ShellJob.run(tli, is_retry);
-        } else if (quartzJobInfo.getJob_type().equals("JDBC")) {
-            logger.info("调度任务[JDBC],开始调度");
-            JdbcJob.run(tli, false);
-        } else if (quartzJobInfo.getJob_type().equals("FTP")) {
-            logger.info("调度任务[FTP],开始调度");
-            FtpJob.run(quartzJobInfo);
-        } else if (quartzJobInfo.getJob_type().equals("HDFS")) {
-            logger.info("调度任务[HDFS],开始调度");
-            HdfsJob.run(tli, false);
-        } else {
-            ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-            quartzJobInfo.setTask_log_id("system");
-            JobCommon.insertLog(null, "ERROR",
-                    "无法找到对应的任务类型,请检查调度任务配置中的任务类型");
-            logger.info("无法找到对应的任务类型,请检查调度任务配置中的任务类型");
-        }
+                // todo abc
+                debugInfo(tli);
+                tlim.updateByPrimaryKey(tli);
+
+                //更新quartzjobinfo  上次执行task_log_id
+                qjm.updateTaskLogId(tli.getJob_id(), tli.getId());
+
+                //检查任务依赖,和并行不冲突
+                boolean dep = checkDep(quartzJobInfo.getJob_type(), tli);
+                if (dep == false) return;
+
+                if (quartzJobInfo.getJob_type().equals("SHELL")) {
+                    logger.info("调度任务[SHELL],开始调度");
+                    ShellJob.run(tli, false);
+                } else if (quartzJobInfo.getJob_type().equals("JDBC")) {
+                    logger.info("调度任务[JDBC],开始调度");
+                    JdbcJob.run(tli, false);
+                } else if (quartzJobInfo.getJob_type().equals("FTP")) {
+                    logger.info("调度任务[FTP],开始调度");
+                    FtpJob.run(quartzJobInfo);
+                } else if (quartzJobInfo.getJob_type().equals("HDFS")) {
+                    logger.info("调度任务[HDFS],开始调度");
+                    HdfsJob.run(tli, false);
+                } else {
+                    ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+                    quartzJobInfo.setTask_log_id("system");
+                    JobCommon.insertLog(null, "ERROR",
+                            "无法找到对应的任务类型,请检查调度任务配置中的任务类型");
+                    logger.info("无法找到对应的任务类型,请检查调度任务配置中的任务类型");
+                }
+
+            }
+        });
+
     }
+
+
+    /**
+     * 任务触发后,等待依赖任务完成触发
+     * @param tli
+     */
+    public static void chooseJobBean(TaskLogInstance tli) {
+        QuartzJobMapper qjm = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
+        TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+
+        //线程池执行具体调度任务
+        threadPoolExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                if (tli.getJob_type().equals("SHELL")) {
+                    logger.info("调度任务[SHELL],开始调度");
+                    ShellJob.run(tli, false);
+                } else if (tli.getJob_type().equals("JDBC")) {
+                    logger.info("调度任务[JDBC],开始调度");
+                    JdbcJob.run(tli, false);
+                } else if (tli.getJob_type().equals("FTP")) {
+                    logger.info("调度任务[FTP],开始调度");
+                } else if (tli.getJob_type().equals("HDFS")) {
+                    logger.info("调度任务[HDFS],开始调度");
+                    HdfsJob.run(tli, false);
+                } else {
+                    logger.info("无法找到对应的任务类型,请检查调度任务配置中的任务类型");
+                }
+
+            }
+        });
+
+    }
+
 
     /**
      * 公共解析任务流程入口
-     * 检查依赖->检查次数限制->匹配动态脚本并执行->解析任务明细执行
+     * 检查次数限制->匹配动态脚本并执行->解析任务明细执行
      *
      * @param jobType
      * @param tli
@@ -1471,12 +1534,6 @@ public class JobCommon {
         logger.info("开始执行[" + jobType + "] JOB");
         insertLog(tli, "INFO", "开始执行[" + jobType + "] JOB");
 
-//        //串行正在执行,超过时间限制返回false
-//        if (!checkStatus(jobType, tli)) return;
-
-        //检查任务依赖,和并行不冲突
-        boolean dep = checkDep(jobType, tli);
-        if (dep == false) return;
 
         boolean end = isCount(jobType, tli);
 

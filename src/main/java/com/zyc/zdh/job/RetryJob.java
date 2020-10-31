@@ -2,6 +2,7 @@ package com.zyc.zdh.job;
 
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
+import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.HttpUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.beanutils.BeanUtils;
@@ -27,6 +28,7 @@ public class RetryJob {
             QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
             TaskLogInstanceMapper taskLogInstanceMapper=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
             ZdhHaInfoMapper zdhHaInfoMapper=(ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
+            RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
             //获取重试的任务
             List<TaskLogInstance> taskLogInstanceList=taskLogInstanceMapper.selectThreadByStatus2("wait_retry");
             for(TaskLogInstance tl :taskLogInstanceList){
@@ -55,20 +57,33 @@ public class RetryJob {
                 logger.debug("当前没有需要重试的任务");
             }
 
-            //获取ETL处理的任务
-            List<TaskLogInstance> taskLogsList2=taskLogInstanceMapper.selectThreadByStatus3(task_log_status);
+            //获取dispatch,ETL处理的任务
+            List<TaskLogInstance> taskLogsList2=taskLogInstanceMapper.selectThreadByStatus3();
             List<ZdhHaInfo> zdhHaInfos=zdhHaInfoMapper.selectByStatus("enabled");
-            if(zdhHaInfos.size()<1){
-                logger.debug("没有可用的执行器,请启动zdh_server.....");
-                return ;
-            }
+
             Map<String,String> zdhHaMap=new HashMap<>();
             for(ZdhHaInfo zdhHaInfo:zdhHaInfos){
                 zdhHaMap.put(zdhHaInfo.getId(),"");
             }
             for(TaskLogInstance t2 :taskLogsList2){
+                if(t2.getStatus().equalsIgnoreCase("dispatch")){
+                    //如果调度标识为空则直接跳过
+                    if(t2.getServer_id()==null || t2.getServer_id().equalsIgnoreCase("")) continue;
+                    //判断标识是否有效
+                    if(!redisUtil.get(t2.getServer_id().split(":")[0]).toString().equalsIgnoreCase(t2.getServer_id())){
+                        //调度异常,进行故障转移,同自动重试
+                        logger.info("检测到执行任务的调度器意外死亡,将在本节点自动重试任务");
+                        JobCommon.insertLog(t2,"INFO","检测到执行任务的调度器意外死亡,将在本节点自动重试任务");
+                        JobCommon.chooseJobBean(quartzJobInfo,1,t2);
+                    }
+                    continue; // dispatch 状态表示 还未执行到具体采集任务 所以直接跳过不进行exector存活判断
+                }
                 if(t2.getUrl()==null||t2.getUrl().isEmpty()){
                     continue;
+                }
+                if(zdhHaInfos.size()<1){
+                    logger.debug("没有可用的执行器,请启动zdh_server.....");
+                    continue ;
                 }
                 //http://ip:port/api/v1/zdh
                 String executor=t2.getExecutor();
@@ -80,8 +95,7 @@ public class RetryJob {
                     //此处再次确认是否正在执行中执行器发生死亡
                     TaskLogInstance second_task_logs=taskLogInstanceMapper.selectByPrimaryKey(t2.getId());
                     if(second_task_logs.getStatus().equalsIgnoreCase(task_log_status))
-
-                        logger.info("检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
+                    logger.info("检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
                     JobCommon.insertLog(t2,"INFO","检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
                     ZdhHaInfo zdhHaInfo=JobCommon.getZdhUrl(zdhHaInfoMapper);
                     URI old_uri=URI.create(t2.getUrl());
