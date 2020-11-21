@@ -5,6 +5,7 @@ import com.zyc.zdh.entity.QuartzJobInfo;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.job.MyJobBean;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.StringUtils;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
@@ -95,14 +96,14 @@ public class QuartzManager2 {
 						expression, -1);
 				trigger = TriggerBuilder
 						.newTrigger()
-						.withPriority(Integer.valueOf(quartzJobInfo.getPriority())) //设置优先级
+						.withPriority(Integer.valueOf(StringUtils.isEmpty(quartzJobInfo.getPriority())?"5":quartzJobInfo.getPriority())) //设置优先级
 						.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).startNow()
 						.withSchedule(simpleScheduleBuilder).build();
 			} else {
 				CronScheduleBuilder cronScheduleBuilder = getCronScheduleBuilder(expression);
 				trigger = TriggerBuilder
 						.newTrigger()
-						.withPriority(Integer.valueOf(quartzJobInfo.getPriority())) //设置优先级
+						.withPriority(Integer.valueOf(StringUtils.isEmpty(quartzJobInfo.getPriority())?"5":quartzJobInfo.getPriority())) //设置优先级
 						.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).startNow()
 						.withSchedule(cronScheduleBuilder).build();
 			}

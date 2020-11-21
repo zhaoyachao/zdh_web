@@ -87,7 +87,7 @@ public class QuartzJobInfo implements Serializable {
     }
 
     public String getPriority() {
-        return priority;
+        return priority.equals("")?"5":priority;
     }
 
     public void setPriority(String priority) {
