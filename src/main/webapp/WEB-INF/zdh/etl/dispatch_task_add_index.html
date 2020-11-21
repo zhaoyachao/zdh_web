@@ -99,9 +99,25 @@
                                 <input id="expr" name="expr" type="text"
                                        placeholder="example:100s,100m,100h or corn 表达式" class="form-control" aria-required="true"> </span>
                             </div>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">调度时间策略</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="use_quartz_time" name="use_quartz_time"  onclick="abc()" type="checkbox"><i></i> 使用调度触发时间</label>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="div_time_diff">
+                            <label class="col-sm-2 control-label">回退时间差</label>
+                            <div class="col-sm-10">
+                                <input id="time_diff" name="time_diff" type="text"
+                                       placeholder="时间差 example:1s(1秒),1m(1分钟),1d(1天)" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="div_start_end_time">
                             <label class="col-sm-2 control-label">起始日期</label>
                             <div class="col-sm-10">
                                 <input placeholder="开始日期" class="form-control layer-date" id="start_time" name="start_time">
@@ -110,10 +126,10 @@
                         </div>
 
 
-                        <div class="form-group">
+                        <div class="form-group" id="div_step_size">
                             <label class="col-sm-2 control-label">步长</label>
                             <div class="col-sm-10">
-                                <input id="step_size" name="step_size" type="text"
+                                <input id="step_size" name="step_size" type="text" value="1d"
                                        placeholder="步长 example:1s(1秒),1m(1分钟),1d(1天)" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
@@ -257,7 +273,7 @@
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
                                     <label class="no-padding">
-                                        <input id="email_and_sms" name="email_and_sms" type="checkbox"><i></i> 邮箱和短信</label>
+                                        <input id="email_and_sms" name="email_and_sms" type="checkbox"><i></i> 短信和邮箱</label>
                                 </div>
                             </div>
                             <label class="col-sm-2 control-label">配置告警用户</label>
@@ -270,6 +286,14 @@
                             <div class="col-sm-10">
                                 <input id="time_out" name="time_out" type="text" value="86400"
                                        placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">优先级</label>
+                            <div class="col-sm-10">
+                                <input id="priority" name="priority" type="text"
+                                       placeholder="优先级 默认5,最高级100,example:25" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
 
@@ -357,6 +381,26 @@
             radioClass: 'iradio_square-green',
         });
 
+        //定义特定数据源展示的div
+        function customerTimeShow(action) {
+            $('#div_start_end_time')[0].style.display = action;
+            $('#div_step_size')[0].style.display = action;
+        }
+
+        function quartTimeShow(action) {
+            $('#div_time_diff')[0].style.display = action;
+        }
+
+        quartTimeShow("none")
+
+        $('#use_quartz_time').on('ifChecked', function (event) {
+            customerTimeShow("none")
+            quartTimeShow("block")
+        });
+        $('#use_quartz_time').on('ifUnchecked', function (event) {
+            customerTimeShow("block")
+            quartTimeShow("none")
+        });
     });
 
     (function(document, window, $) {
@@ -821,6 +865,16 @@
                         var expr=data[0].expr
                         $("#expr").val(expr);
 
+                        var use_quartz_time=data[0].use_quartz_time
+                        console.info("use_quartz_time:"+use_quartz_time)
+                        if(use_quartz_time=="on"){
+                            $('#use_quartz_time').iCheck('check');
+                        }
+
+                        var time_diff=data[0].time_diff
+                        if(time_diff!=''){
+                            $("#time_diff").val(time_diff);
+                        }
                         //开始时间
                         var start_time=data[0].start_time
                         if(start_time!='' && typeof(start_time) !="undefined"){
@@ -930,9 +984,6 @@
 
 
         })();
-
-
-
 
 
 
@@ -1115,6 +1166,9 @@
 
     })
 
+    function abc() {
+        alert("checked");
+    }
 </script>
 
 </body>

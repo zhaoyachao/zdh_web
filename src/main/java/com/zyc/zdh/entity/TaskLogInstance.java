@@ -110,6 +110,46 @@ public class TaskLogInstance implements Serializable {
 
     private String process_time=JSON.toJSONString(new process_time_info());//json格式,只会记录每个流程的结束时间
 
+    private String priority="5";//优先级
+    private Timestamp quartz_time;//调度时间
+    private String use_quartz_time;//是否使用quartz触发时间
+    private String time_diff;
+    public String getTime_diff() {
+        return time_diff;
+    }
+
+    public void setTime_diff(String time_diff) {
+        this.time_diff = time_diff;
+    }
+
+    public Timestamp getQuartz_time() {
+        return quartz_time;
+    }
+
+    public String getUse_quartz_time() {
+        return use_quartz_time;
+    }
+
+    public void setUse_quartz_time(String use_quartz_time) {
+        this.use_quartz_time = use_quartz_time;
+    }
+
+    public Timestamp getQuartTime() {
+        return quartz_time;
+    }
+    public void setQuartz_time(Timestamp quartz_time) {
+        this.quartz_time = quartz_time;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+
     public String getJob_id() {
         return job_id;
     }
@@ -479,6 +519,9 @@ public class TaskLogInstance implements Serializable {
     }
 
     public String getConcurrency() {
+//        if(use_quartz_time.equalsIgnoreCase("on")){
+//            return "1";//并行
+//        }
         return concurrency;
     }
 

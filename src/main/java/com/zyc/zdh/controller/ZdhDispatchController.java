@@ -13,12 +13,16 @@ import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.beanutils.BeanUtils;
+import org.quartz.TriggerUtils;
+import org.quartz.impl.triggers.CronTriggerImpl;
+import org.quartz.impl.triggers.SimpleTriggerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
@@ -115,7 +119,7 @@ public class ZdhDispatchController extends BaseController {
                 || end_expr.endsWith("h")) {
             //SimpleScheduleBuilder 表达式 必须指定一个次数,默认式
             if (quartzJobInfo.getPlan_count().equals("")) {
-                quartzJobInfo.setPlan_count("-1");
+                quartzJobInfo.setPlan_count("3");
             }
         }
         debugInfo(quartzJobInfo);
@@ -194,7 +198,20 @@ public class ZdhDispatchController extends BaseController {
                 quartzJobMapper.updateByPrimaryKey(dti);
             }
             if(concurrency==null || concurrency.equalsIgnoreCase("0")){
-                //串行执行
+
+                //串行,调度时间触发
+                if(dti.getUse_quartz_time().equalsIgnoreCase("on")){
+                    //获取表达式
+
+                    List<Date> dates = JobCommon.resolveQuartzExpr(dti.getExpr());
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Timestamp quartzTime=new Timestamp(dates.get(0).getTime());
+                    System.out.println("quartTime:"+quartzTime);
+                    //设置本次执行时间
+                    dti.setQuartz_time(quartzTime);
+
+                }
+                //串行自定义事件触发
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -202,7 +219,42 @@ public class ZdhDispatchController extends BaseController {
                         JobCommon.chooseJobBean(dti, 3, null);
                     }
                 }).start();
+
+
             }else{
+                //并行执行,且使用调度时间
+                if(dti.getUse_quartz_time().equalsIgnoreCase("on")){
+                    //获取表达式
+                    List<Date> dates = JobCommon.resolveQuartzExpr(dti.getExpr());
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Timestamp quartzTime=new Timestamp(dates.get(0).getTime());
+                    System.out.println("quartTime:"+quartzTime);
+                    //设置本次执行时间
+                    dti.setQuartz_time(quartzTime);
+
+                    TaskLogInstance tli=new TaskLogInstance();
+                    BeanUtils.copyProperties(tli, dti);
+                    tli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                    tli.setStart_time(null);
+                    tli.setEnd_time(null);
+                    tli.setLast_time(null);
+                    tli.setLast_task_log_id(null);
+                    tli.setNext_time(null);
+                    tli.setStatus(null);
+                    tli.setConcurrency("1");
+                    tli.setCur_time(quartzTime);
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
+                            JobCommon.chooseJobBean(dti, 4, tli);
+                        }
+                    }).start();
+                    json.put("success", "200");
+                    return json.toJSONString();
+                }
+
                 //并行执行
                 List<Timestamp> result=a(dti.getStart_time(), dti.getEnd_time(),dti.getStep_size());
 
@@ -237,6 +289,7 @@ public class ZdhDispatchController extends BaseController {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println(e.getMessage());
         }
 

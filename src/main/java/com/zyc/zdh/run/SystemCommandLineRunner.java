@@ -60,7 +60,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         //检测是否有email 任务 如果没有则添加
         QuartzJobInfo qj = new QuartzJobInfo();
         qj.setJob_type("EMAIL");
-        List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.select(qj);
+        List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.selectByJobType("EMAIL");
         if (quartzJobInfos.size() > 0) {
             logger.info("已经存在[EMAIL]历史监控任务...");
         }else{
@@ -75,7 +75,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         //检测是否有email 任务 如果没有则添加
         QuartzJobInfo qj_retry = new QuartzJobInfo();
         qj_retry.setJob_type("RETRY");
-        List<QuartzJobInfo> quartzJobInfos2 = quartzJobMapper.select(qj_retry);
+        List<QuartzJobInfo> quartzJobInfos2 = quartzJobMapper.selectByJobType("RETRY");
         if (quartzJobInfos2.size() > 0) {
             logger.info("已经存在[RETRY]历史监控任务...");
         }else{
@@ -90,7 +90,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         //检测是否有check_dep 任务 如果没有则添加
         QuartzJobInfo qj_check = new QuartzJobInfo();
         qj_retry.setJob_type("CHECK");
-        List<QuartzJobInfo> quartzJobInfos3 = quartzJobMapper.select(qj_retry);
+        List<QuartzJobInfo> quartzJobInfos3 = quartzJobMapper.selectByJobType("CHECK");
         if (quartzJobInfos3.size() > 0) {
             logger.info("已经存在[CHECK]历史监控任务...");
         }else{
@@ -113,6 +113,11 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         JobCommon.myid=myid;
         SnowflakeIdWorker.init(Integer.parseInt(myid), 0);
         JobCommon.web_application_id=instance+"_"+myid+":"+SnowflakeIdWorker.getInstance().nextId();
+        //检查基础参数是否重复
+        if(redisUtil.get(instance+"_"+myid)!=null){
+            logger.error("请检查基础参数myid 是否已被其他机器占用,如果没有请等待30s 后重新启动....");
+            System.exit(-1);
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -200,6 +205,11 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         String kill_url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getZdh_port()+"/api/v1/kill";
                                         HttpUtil.postJSON(kill_url,js.toJSONString());
                                         taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                    }else{
+                                        String msg2="无法获取具体执行器,判断任务已杀死";
+                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                        logger.info(msg2);
+                                        JobCommon.insertLog(tl,"INFO",msg2);
                                     }
 
                                 }

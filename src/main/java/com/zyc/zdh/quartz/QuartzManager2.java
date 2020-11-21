@@ -95,15 +95,18 @@ public class QuartzManager2 {
 						expression, -1);
 				trigger = TriggerBuilder
 						.newTrigger()
+						.withPriority(Integer.valueOf(quartzJobInfo.getPriority())) //设置优先级
 						.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).startNow()
 						.withSchedule(simpleScheduleBuilder).build();
 			} else {
 				CronScheduleBuilder cronScheduleBuilder = getCronScheduleBuilder(expression);
 				trigger = TriggerBuilder
 						.newTrigger()
+						.withPriority(Integer.valueOf(quartzJobInfo.getPriority())) //设置优先级
 						.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).startNow()
 						.withSchedule(cronScheduleBuilder).build();
 			}
+
 			logger.debug("任务的trigger创建完成triggerkey is {}", trigger.getKey()
 					.toString());
 			JobDataMap jobDataMap = trigger.getJobDataMap();

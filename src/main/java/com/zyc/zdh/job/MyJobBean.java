@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 
@@ -57,11 +58,12 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 				throw new Exception("任务id为空");
 			}
 			// 记录当前时间更新任务最后执行时间
-			Date currentTime = new Date();
+			Date currentTime =context.getFireTime();
 
 			QuartzJobMapper quartzJobMapper2 = this.quartzJobMapper;
 			QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
 			quartzJobInfo = quartzJobMapper2.selectByPrimaryKey(taskId);
+			quartzJobInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
 
 			if(quartzJobInfo==null){
 				logger.info("调度任务发现空的任务,任务id"+taskId);

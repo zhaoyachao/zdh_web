@@ -251,6 +251,16 @@
 
             },
             'click #execute': function (e, value, row, index) {
+
+                // if(row.use_quartz_time == 'on' ){
+                //    if(row.expr.endsWith("s") || row.expr.endsWith("h") || row.expr.endsWith("d")
+                //        || row.expr.endsWith("m") || row.expr.endsWith("y")){
+                //        layer.msg("使用quartz时间,只支持cron表达式,请修改任务表达式,或者取消使用调度触发时间")
+                //        return;
+                //    }
+                //
+                // }
+
                 layer.confirm('手动执行,是否重置已执行次数(手动执行完成,需要重新配置调度)', {
                     btn: ['重置并执行','普通执行','并行执行'], //按钮
                     cancel:function(index, layero){
@@ -437,6 +447,16 @@
                 field: 'more_task',
                 title: '任务类型',
                 sortable: true
+            },{
+                field: 'expr',
+                title: '表达式',
+                sortable: false,
+                visible:false
+            }, {
+                field: 'use_quartz_time',
+                title: '是否使用quart时间',
+                sortable: false,
+                visible:false
             },  {
                 field: 'job_context',
                 title: '调度说明',

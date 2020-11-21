@@ -95,4 +95,18 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
     })
     public int deleteSystemJob();
 
+    @Select({
+            "<script>",
+            "select",
+            "*",
+            "from quartz_job_info",
+            "where",
+            "<when test='job_type!=null and job_type!=\"\"'>",
+            " job_type=#{job_type}",
+            "</when>",
+            "</script>"
+    })
+    public List<QuartzJobInfo> selectByJobType(@Param("job_type") String job_type );
+
+
 }

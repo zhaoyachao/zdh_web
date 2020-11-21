@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 数据发布首页</title>
+    <meta name="keywords" content="ZDH 数据发布首页">
+    <meta name="description" content="ZDH 数据发布首页">
+
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <!--    <link rel="stylesheet" type="text/css" href="css/plugins/webuploader/webuploader.css">
+        <link rel="stylesheet" type="text/css" href="css/demo/webuploader-demo.css">-->
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>数据发布</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="etl_task_add_form" name="etl_task_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数据说明</label>
+                            <div class="col-sm-10">
+                                <input id="issue_context" name="issue_context" type="text"
+                                       placeholder="数据说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">创建时间</label>
+                            <div class="col-sm-10">
+                                <input id="create_time" name="create_time" type="text" readonly
+                                       placeholder="创建时间" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输入数据源开始-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">选择数据源</label>
+                            <div class="col-sm-10">
+                                <select id="data_sources_choose_input" name="data_sources_choose_input"
+                                        data-placeholder="选择数据源..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">选择数据源...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数据源类型</label>
+                            <div class="col-sm-10">
+                                <input id="data_source_type_input" name="data_source_type_input" type="text" readonly
+                                       placeholder="数据源类型" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">输入表名/文件名</label>
+                            <div class="col-sm-10" id="div_data_sources_table_name_input">
+                                <select id="data_sources_table_name_input" name="data_sources_table_name_input"
+                                        data-placeholder="选择数据表..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="">选择数据表...</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-10" id="div_data_sources_file_name_input">
+                                <input id="data_sources_file_name_input" name="data_sources_file_name_input" type="text"
+                                       placeholder="文件全路径" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">配置选择的列</label>
+                            <div class="col-sm-10" id="div_data_sources_file_columns">
+                                <div class="input-group">
+                                    <input id="data_sources_file_columns" name="data_sources_file_columns" type="text"
+                                           placeholder="配置选择的列逗号分割"
+                                           aria-required="true" class="form-control"> <span class="input-group-btn"> <button
+                                        id="btn_columns_file" type="button" class="btn btn-primary"
+                                        οnsubmit='return false'>获取
+                                   </button></span>
+                                </div>
+                                <span class="help-block m-b-none">配置JDBC数据源,选择表,之后点击[获取按钮]自动生成字段映射</span>
+                                <span class="help-block m-b-none">配置HDFS数据源,手动输入列字段,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
+                                <span class="help-block m-b-none">配置HBASE数据源,手动输入列字段格式 列族:列名,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
+                            </div>
+                            <div class="col-sm-10" id="div_data_sources_table_columns">
+                                <div class="input-group">
+                                    <input id="data_sources_table_columns" name="data_sources_table_columns" type="text"
+                                           placeholder="配置选择的列逗号分割"
+                                           aria-required="true" class="form-control"> <span class="input-group-btn"> <button
+                                        id="btn_columns" type="button" class="btn btn-primary" οnsubmit='return false'>获取
+                                        </button></span>
+                                </div>
+                                <span class="help-block m-b-none">配置JDBC数据源,选择表,之后点击[获取按钮]自动生成字段映射</span>
+                                <span class="help-block m-b-none">配置HDFS数据源,手动输入列字段,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
+                                <span class="help-block m-b-none">配置HBASE数据源,手动输入列字段格式 列族:列名,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">配置字段映射</label>
+                            <div class="col-sm-10">
+
+                                <!-- Example Events -->
+                                <div class="btn-group">
+                                    <button id="add_row" class="btn btn-primary btn-xs" type="button"
+                                            style="height: 20px" onclick='addRow("zdh_add_expr")'
+                                            οnsubmit='return false'><i class="glyphicon glyphicon-plus"
+                                                                       aria-hidden="true"></i></button>
+                                    <!--<button class="btn btn-primary" type="button">中</button>-->
+                                    <!--<button class="btn btn-white" type="button">右</button>-->
+                                    <input id="row_num" type="text"
+                                           placeholder="行号" style="width: 30px;height: 20px">
+                                </div>
+
+                                <table id="exampleTableEvents" name="exampleTableEvents" data-height="250"
+                                       data-mobile-responsive="false">
+
+                                </table>
+                                <!-- End Example Events -->
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输入数据源结束-->
+
+                        <!-- 元信息 业务相关-->
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属公司</label>
+                            <div class="col-sm-10">
+                                <input id="company" name="company"
+                                       type="text"
+                                       placeholder="填写公司" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属部门</label>
+                            <div class="col-sm-10">
+                                <input id="section" name="section"
+                                       type="text"
+                                       placeholder="填写部门" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属业务</label>
+                            <div class="col-sm-10">
+                                <input id="service" name="service"
+                                       type="text"
+                                       placeholder="填写业务" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">更新说明</label>
+                            <div class="col-sm-10">
+                                <textarea id="update_context" name="update_context" class="form-control" rows="2"
+                                          placeholder="更新说明"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输出数据源结束-->
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<div id="data_sources_params" class="ibox-content" style="display: none;">
+    <p>数据源其他参数api</p>
+    <ul>
+        <li>JDBC:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>HDFS:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sep:分割符,特殊字符需要转义,example:{"sep":"|"},{"sep","="}</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fileType:文件类型,可选择parquet,orc,csv,json...,example {"fileType":"csv"}
+        </li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; partitionBy:分区字段,example {"partitionBy":"ETL_DATE"}</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; model:文件写入模式 默认append,overwrite,append,errorifexists,ignore,example
+            {"model":"overwrite"}
+        </li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; encoding:文件编码 默认UTF-8,example {"encoding":"gbk"}</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; merge: 合并小文件 手动填写分区个数example {"merge":"50"}</li>
+        <li>HIVE:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;format:orc,parquet</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;partitionBy:分区字段</li>
+        <li>KAFKA:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msgType:消息类型,支持csv,json 2种格式</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep:分割符 当消息类型选择csv 时使用</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;groupId:消费者组，默认g1</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kafka的topic 在文件名输入框配置</li>
+        <li>HTTP:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>REDIS:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data_type:写入数据类型，可选，string,hash,list,set,table</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key.column:当选择写入数据类型为table 时配置此选项可以生成特定规则key</li>
+        <li>CASSANDRA:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>ES:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>SFTP:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fileType:文件类型默认csv,可选csv,orc,parquet,json</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep:文件分割符,默认逗号分割</li>
+        <li>KUDU:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;primary_key:指定表主键字段,默认会生成一个zdh_auto_md5字段作为主键</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;replicas:指定副本个数,默认1个备份</li>
+    </ul>
+</div>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+
+
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+
+    (function (document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            $('#file_type_input').chosen()
+            $('#encoding_input').chosen()
+            $('#header_input').chosen()
+            $('#file_type_output').chosen()
+            $('#encoding_output').chosen()
+            $('#header_output').chosen()
+
+            //定义特定数据源展示的div
+            function fileShow() {
+                console.info("fileShow")
+                $('#div_data_sources_table_name_input')[0].style.display = 'none';
+                $('#div_data_sources_file_name_input')[0].style.display = 'block';
+                //表字段
+                $('#div_data_sources_table_columns')[0].style.display = 'none';
+                $('#div_data_sources_file_columns')[0].style.display = 'block';
+
+            }
+
+            //初始化数据源--把所有数据源都加载到下拉框
+            function init_data_sources() {
+                $.ajax({
+                    type: 'POST',
+                    url: "data_sources_list",
+                    dataType: 'json',
+                    async: false,
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        }
+                        //输入数据源类型下拉框
+                        $('#data_sources_choose_input').html(str);
+                        $('#data_sources_choose_input').chosen().on("change", function (evt, params) {
+                            // alert($('#data_sources_choose_input').val())
+                            $('#data_source_type_input').val($('#data_sources_choose_input').find("option:selected").attr("mytype"));
+                            $("#data_sources_choose_input").trigger("chosen:updated");
+                            if ($('#data_sources_choose_input').find("option:selected").attr("mytype") == '外部上传') {
+                                $('#div_data_sources_upload_file_name_input').show()
+                            } else {
+                                //$('#div_data_sources_upload_file_name_input')[0].style.display = 'block';
+                                $('#div_data_sources_upload_file_name_input').hide()
+                            }
+                            if ($('#data_sources_choose_input').find("option:selected").attr("mytype") == 'JDBC') {
+                                //alert("==========="+$('#data_sources_choose_input').val())
+
+                                init_table_name($('#data_sources_choose_input').val());
+                            } else {
+                                //fileShow()
+                                //表名
+                                $('#div_data_sources_table_name_input')[0].style.display = 'none';
+                                //表字段
+                                $('#div_data_sources_table_columns')[0].style.display = 'none';
+                                $('#div_data_sources_file_name_input')[0].style.display = 'block';
+                                $('#div_data_sources_file_columns')[0].style.display = 'block';
+                            }
+                        });
+
+                        //输出数据源类型下拉框
+                        $('#data_sources_choose_output').html(str);
+
+                        $('#data_sources_choose_output').chosen().on("change", function (evt, params) {
+                            // alert($('#data_sources_choose_input').val())
+                            $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
+                            $("#data_sources_choose_output").trigger("chosen:updated");
+                            if ($('#data_sources_choose_output').find("option:selected").attr("mytype") == 'JDBC') {
+                                init_table_name_output($('#data_sources_choose_output').val());
+
+                                $('#div_data_sources_table_name_output')[0].style.display = 'block';
+                                $('#div_data_sources_file_name_output')[0].style.display = 'block';
+                            } else {
+                                $('#div_data_sources_file_name_output')[0].style.display = 'block';
+                                $('#div_data_sources_table_name_output')[0].style.display = 'none';
+
+                            }
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+
+            //获取table 中包含的字段函数
+            $("#btn_columns").click(function () {
+
+                if ($("#data_sources_table_name_input").val() == '') {
+                    layer.msg("表名/文件名不能为空!");
+                }
+
+                var postData = {
+                    id: $("#data_sources_choose_input").val(),
+                    table_name: $("#data_sources_table_name_input").val(),
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: "etl_task_schema",
+                    dataType: 'json',
+                    async: false,
+                    data: postData,
+                    //成功返回
+                    success: function (data) {
+                        $('#row_num').val('')
+                        var str = ''
+                        for (var i = 0; i < data.length; i++) {
+                            if (str == '')
+                                str = data[i]
+                            else
+                                str += "," + data[i]
+                            addRow(data[i])
+                        }
+
+                        $("#data_sources_table_columns").val(str)
+
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        layer.msg(data.responseText)
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+            })
+
+            $("#btn_columns_file").click(function () {
+                var cols = $('#data_sources_file_columns').val()
+                if (cols == '') {
+                    layer.msg("配置选择的列不能为空!");
+                }
+                var cols_ary = cols.split(',')
+                for (var i = 0; i < cols_ary.length; i++) {
+                    addRow(cols_ary[i])
+                }
+
+            })
+
+            //根据数据源id 获取对应的tables
+            function init_table_name(id) {
+
+                //alert("datasourceid:"+id)
+                var postData = {
+                    id: id,
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: "etl_task_tables",
+                    dataType: 'json',
+                    data: postData,
+                    //成功返回
+                    success: function (data) {
+
+                        var str = '<option value=\"\" hassubinfo=\"true\"></option>'
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        }
+
+                        $('#div_data_sources_file_name_input')[0].style.display = 'none';
+
+                        $('#div_data_sources_file_columns')[0].style.display = 'none';
+
+                        $('#div_data_sources_table_name_input')[0].style.display = 'block';
+                        //表字段
+                        $('#div_data_sources_table_columns')[0].style.display = 'block';
+
+                        $('#data_sources_table_name_input').html(str)
+
+                        $('#data_sources_table_name_input').trigger("chosen:updated");
+
+                        $('#data_sources_table_name_input').chosen();
+
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("init_table_name ajax complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+
+            }
+
+            //根据数据源id 获取对应的tables
+            function init_table_name_output(id) {
+
+                var postData = {
+                    id: id,
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: "etl_task_tables",
+                    dataType: 'json',
+                    data: postData,
+                    //成功返回
+                    success: function (data) {
+
+                        var str = '<option value=\"\" hassubinfo=\"true\"></option>'
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        }
+                        $('#data_sources_table_name_output').html(str);
+                        $("#data_sources_table_name_output").trigger("chosen:updated");
+                        $('#data_sources_table_name_output').chosen().on("change", function (evt, params) {
+                            console.info("'data_sources_table_name_output' event change set text 'data_sources_file_name_output'")
+                            $('#data_sources_file_name_output').val($('#data_sources_table_name_output').val())
+
+                        });
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+
+            }
+
+
+            window.operateEvents = {
+                'click #del': function (e, value, row, index) {
+                    $('#exampleTableEvents').bootstrapTable('remove', {field: 'column_md5', values: [row.column_md5]});
+                }
+            };
+
+            function operateFormatter(value, row, index) {
+                return [
+                    ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm">\n' +
+                    '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+                    '                                    </button>'
+                ].join('');
+            }
+
+            //初始化 bootstrap table
+            $('#exampleTableEvents').bootstrapTable({
+                url: "",
+                search: false,
+                clickEdit: true,
+                pagination: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
+                useRowAttrFunc: true,
+                iconSize: 'outline',
+                //toolbar: '#exampleTableEventsToolbar',
+                icons: {
+                    refresh: 'glyphicon-repeat',
+                    toggle: 'glyphicon-list-alt',
+                    columns: 'glyphicon-list'
+                },
+                columns: [
+                    {
+                        field: 'nu',
+                        title: '序号',
+                        formatter: function (value, row, index) {
+                            return index + 1;
+                        }
+                    }, {
+                        field: 'column_md5',
+                        title: '字段序列码'
+                    }, {
+                        field: 'column_name',
+                        title: '原始字段',
+                        sortable: false
+                    },{
+                        field: 'column_type',
+                        title: '数据类型',
+                        sortable: false
+                    }, {
+                        field: 'column_is_null',
+                        title: '是否可空',
+                        sortable: false
+                    }, {
+                        field: 'column_desc',
+                        title: '数据说明',
+                        sortable: false
+                    }, {
+                        field: 'operate',
+                        title: '操作',
+                        events: operateEvents,//给按钮注册事件
+                        width: 45,
+                        formatter: operateFormatter //表格中增加按钮
+                    }],
+                onDblClickCell: function (field, value, row, $element) {
+                    $element.attr('contenteditable', true);
+                    $element.blur(function () {
+                        var index = $element.parent().data('index');
+                        var tdValue = $element.html().replace("<br>", "");
+                        saveData(index, field, tdValue);
+                    })
+                }
+            });
+
+            function saveData(index, field, value) {
+                $('#exampleTableEvents').bootstrapTable('updateCell', {
+                    index: index,       //行索引
+                    field: field,       //列名
+                    value: value        //cell值
+                })
+            }
+
+            fileShow()
+            //启动数据源select 初始化函数
+            init_data_sources();
+            //s.id=-1 表示新增,否则表示更新
+            if (s.id == -1) {
+                console.info("新增按钮触发")
+                //$('#data_sources_table_name_input').chosen();
+                //$('#data_sources_table_name_output').chosen();
+                $('#save_etl_task').show()
+
+            } else {
+
+            }
+
+            function getMyDate(str) {
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth() + 1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + " " + getzf(oHour) + ":" + getzf(oMin) + ":" + getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            //补0操作
+            function getzf(num) {
+                if (parseInt(num) < 10) {
+                    num = '0' + num;
+                }
+                return num;
+            }
+
+            function openTabPage(url, title) {
+                var wpd = $(window.parent.document);
+                var mainContent = wpd.find('.J_mainContent');
+                var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
+                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+                pageTabs.find(".J_menuTab.active").removeClass("active");
+                mainContent.find("iframe").css("display", "none");
+                if (thisIframe.length > 0) {	// 选项卡已打开
+                    thisIframe.css("display", "inline");
+                    pageTabs.find(".J_menuTab[data-id='" + url + "']").addClass("active");
+                } else {
+                    var menuItem = wpd.find("a.J_menuItem[href='" + url + "']");
+                    var dataIndex = title == undefined ? menuItem.attr("data-index") : '9999';
+                    var _title = title == undefined ? menuItem.find('.nav-label').text() : title;
+                    var iframe = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + url + '" frameborder="0" data-id="' + url
+                        + '" seamless="" style="display: inline;"></iframe>';
+                    pageTabs.append(
+                        ' <a href="javascript:;" class="J_menuTab active" data-id="' + url + '">' + _title + ' <i class="fa fa-times-circle"></i></a>');
+                    mainContent.append(iframe);
+                    //显示loading提示
+                    var loading = top.layer.load();
+                    mainContent.find('iframe:visible').load(function () {
+                        //iframe加载完成后隐藏loading提示
+                        top.layer.close(loading);
+                    });
+                }
+
+            }
+
+            function closeTab() {
+               // var currentWidth = $(this).parents('.J_menuTab').width();
+                var wpd = $(window.parent.document);
+                var mainContent = wpd.find('.J_mainContent');
+                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+                var currentTab=pageTabs.find(".J_menuTab.active");
+                var closeTabId = currentTab.data('id')
+                mainContent.find('.J_iframe')
+
+                // 当前元素处于活动状态
+                if (currentTab.hasClass('active')) {
+
+                    // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
+                    if (pageTabs.next('.J_menuTab').size()) {
+
+                        var activeId = currentTab.next('.J_menuTab:eq(0)').data('id');
+                        currentTab.next('.J_menuTab:eq(0)').addClass('active');
+
+                        mainContent.find('.J_iframe').each(function (index,e) {
+                            if ($(e).data('id') == activeId) {
+                                $(e).show().siblings('.J_iframe').hide();
+                                return false;
+                            }
+                        });
+
+                        var marginLeftVal = parseInt($('.page-tabs-content').css('margin-left'));
+                        if (marginLeftVal < 0) {
+                            pageTabs.animate({
+                                marginLeft: (marginLeftVal + currentTab.width()) + 'px'
+                            }, "fast");
+                        }
+
+                        //  移除当前选项卡
+                        currentTab.remove();
+
+                        // 移除tab对应的内容区
+                        mainContent.find('.J_iframe').each(function (index,e) {
+                            alert($(e).data('id'))
+                            if ($(e).data('id') == closeTabId) {
+                                $(e).remove();
+                                return false;
+                            }
+                        });
+                    }
+
+                    // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
+                    if (currentTab.prev('.J_menuTab').size()) {
+                        var activeId = currentTab.prev('.J_menuTab:last').data('id');
+                        currentTab.prev('.J_menuTab:last').addClass('active');
+                        mainContent.find('.J_iframe').each(function (index,e) {
+                            if ($(e).data('id') == activeId) {
+                                $(e).show().siblings('.J_iframe').hide();
+                                return false;
+                            }
+                        });
+
+                        //  移除当前选项卡
+                        currentTab.remove();
+
+                        // 移除tab对应的内容区
+                        mainContent.find('.J_iframe').each(function (index,e) {
+                            if ($(e).data('id') == closeTabId) {
+                                $(e).remove();
+                                return false;
+                            }
+                        });
+
+                    }
+                }
+                // 当前元素不处于活动状态
+                else {
+
+                    //  移除当前选项卡
+                    currentTab.remove();
+
+                    // 移除相应tab对应的内容区
+                    mainContent.find('.J_iframe').each(function (index,e) {
+                        if ($(e).data('id') == closeTabId) {
+                            $(e).remove();
+                            return false;
+                        }
+                    });
+                   // scrollToTab($('.J_menuTab.active'));
+                }
+                return false;
+            }
+
+            function save() {
+
+                if ($('#issue_context').val() == '') {
+                    layer.msg("ETL任务说明不能为空！");
+                    return;
+                }
+
+                var tableData = $("#exampleTableEvents").bootstrapTable('getData')
+
+                var column_datas = new Array();// 声明一个数组
+                for (var i = 0; i < tableData.length; i++) {
+                    var column_data = {
+                        column_md5: tableData[i].column_md5,
+                        column_name: tableData[i].column_name,
+                        column_type: tableData[i].column_type,
+                        column_is_null: tableData[i].column_is_null,
+                        column_desc: tableData[i].column_desc
+                    }
+                    column_datas.push(column_data)
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: "issue_data_add",
+                    async: false,
+                    dataType: 'json',
+                    data: $("#etl_task_add_form").serialize() + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas)),
+                    //发送数据前
+                    beforeSend: function () {
+                        // 禁用按钮防止重复提交
+                        $("#save_etl_task").attr({disabled: "disabled"});
+                    },
+                    //成功返回
+                    success: function (data) {
+                        $("#save_etl_task").removeAttr('disabled');
+                        layer.msg("发布成功")
+                        closeTab()
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        $("#save_etl_task").removeAttr('disabled');
+                        layer.error(data.responseText);
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+            }
+
+            $('#save_etl_task').click(function (){
+                save()
+            })
+        })();
+
+    })(document, window, jQuery);
+
+    //初始化a 标签 弹出具体参数解析功能
+    function resovle_params() {
+
+        layer.open({
+            type: 1,
+            shade: false,
+            title: false, //不显示标题
+            area: ["30%", "40%"],
+            content: $('#data_sources_params'), //捕获的元素
+            cancel: function (index) {
+                layer.close(index);
+                //this.content.show();
+                //layer.msg('捕获就是从页面已经存在的元素上，包裹layer的结构',{time: 5000});
+            }
+        });
+    }
+
+    //bootstrap table 增加一行
+    function addRow(column) {
+        var index = $('#row_num').val();
+        if (index == '')
+            index = $('#exampleTableEvents').bootstrapTable('getData').length;
+
+        function guid() {
+            return 'xxx-4xxx-yxxx-xx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        if (column == "zdh_add_expr") {
+
+            //column=guid()
+            column = new Date().getTime()
+        }
+        var guid_str = guid()
+        // newFlag == 1的数据为新规的数据
+        $('#exampleTableEvents').bootstrapTable('insertRow', {
+            index: index,
+            row: {
+                column_md5: guid_str,
+                column_name: column,
+                column_expr: column,
+                column_type: "string",
+                column_alias: column
+            }
+        });
+    }
+
+    function check_tb_name() {
+        if ($('#data_source_type_output').val() == "JDBC") {
+
+            if ($("#data_sources_table_name_output").html().search('<option value=\"' + $('#data_sources_file_name_output').val() + '\" hassubinfo="true">') == -1) {
+                var op = '<option value=\"' + $('#data_sources_file_name_output').val() + '\" hassubinfo="true">' + $('#data_sources_file_name_output').val() + '</option>'
+
+                $("#data_sources_table_name_output").html($("#data_sources_table_name_output").html() + op)
+                $("#data_sources_table_name_output").trigger("chosen:updated");
+                $("#data_sources_table_name_output").chosen();
+                $("#data_sources_table_name_output").val($('#data_sources_file_name_output').val())
+                $("#data_sources_table_name_output").trigger("chosen:updated");
+            }
+        }
+    }
+
+    function getFileName(o) {
+        var pos = o.lastIndexOf("\\");
+        return o.substring(pos + 1);
+    }
+
+
+</script>
+
+</body>
+
+</html>

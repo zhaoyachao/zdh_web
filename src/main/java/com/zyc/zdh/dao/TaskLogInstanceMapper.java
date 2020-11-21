@@ -19,7 +19,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Update(value = "update task_log_instance set thread_id=#{thread_id} where id=#{id}")
     public int updateThreadById(@Param("thread_id") String thread_id, @Param("id") String id);
 
-    @Update(value = "update task_log_instance set status=(case status when 'check_dep' then 'killed' when 'wait_retry' then 'killed' else 'kill' ) where id=#{id} and (status='dispatch' or status ='etl' or status= 'check_dep' or status= 'wait_retry')")
+    @Update(value = "update task_log_instance set status= case `status` when 'check_dep' then 'killed' when 'wait_retry' then 'killed' else 'kill'  end where id=#{id} and (status='dispatch' or status ='etl' or status= 'check_dep' or status= 'wait_retry')")
     public int updateStatusById2(@Param("id") String id);
 
     @Update(value = "update task_log_instance set is_notice=#{is_notice} where id=#{id}")

@@ -15,6 +15,9 @@ import com.zyc.zdh.util.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.quartz.TriggerUtils;
+import org.quartz.impl.triggers.CronTriggerImpl;
+import org.quartz.impl.triggers.SimpleTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +25,8 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -593,15 +598,29 @@ public class JobCommon {
             if (etlTaskInfo != null) {
                 final String filter = jj.render(etlTaskInfo.getData_sources_filter_input(), jinJavaParam);
                 final String clear = jj.render(etlTaskInfo.getData_sources_clear_output(), jinJavaParam);
+                final String file_name=jj.render(etlTaskInfo.getData_sources_file_name_input(),jinJavaParam);
+                final String file_name2=jj.render(etlTaskInfo.getData_sources_file_name_output(),jinJavaParam);
+                final String table_name=jj.render(etlTaskInfo.getData_sources_table_name_input(),jinJavaParam);
+                final String table_name2=jj.render(etlTaskInfo.getData_sources_table_name_output(),jinJavaParam);
                 etlTaskInfo.setData_sources_filter_input(filter);
                 etlTaskInfo.setData_sources_clear_output(clear);
+                etlTaskInfo.setData_sources_file_name_input(file_name);
+                etlTaskInfo.setData_sources_file_name_output(file_name2);
+                etlTaskInfo.setData_sources_table_name_input(table_name);
+                etlTaskInfo.setData_sources_table_name_output(table_name2);
             }
 
             if (sqlTaskInfo != null) {
                 final String etl_sql = jj.render(sqlTaskInfo.getEtl_sql(), jinJavaParam);
                 final String clear = jj.render(sqlTaskInfo.getData_sources_clear_output(), jinJavaParam);
+                final String file_name=jj.render(sqlTaskInfo.getData_sources_file_name_output(),jinJavaParam);
+                final String table_name=jj.render(sqlTaskInfo.getData_sources_table_name_output(),jinJavaParam);
+
                 sqlTaskInfo.setEtl_sql(etl_sql);
                 sqlTaskInfo.setData_sources_clear_output(clear);
+                sqlTaskInfo.setData_sources_file_name_output(file_name);
+                sqlTaskInfo.setData_sources_table_name_output(table_name);
+
             }
 
             if (jarTaskInfo != null) {
@@ -1035,10 +1054,16 @@ public class JobCommon {
 
 
         //设置本次执行时间
-        if (tli.getCur_time() == null) {
+        if ( !tli.getUse_quartz_time().equalsIgnoreCase("on") && tli.getCur_time() == null) {
             tli.setCur_time(tli.getStart_time());
             logger.info("[" + jobType + "] JOB,设置执行日期为" + tli.getStart_time());
             insertLog(tli, "info", "[" + jobType + "] JOB,设置执行日期为" + tli.getStart_time());
+        }
+
+        if (tli.getUse_quartz_time().equalsIgnoreCase("on")){
+            tli.setCur_time(tli.getQuartTime());
+            logger.info("[" + jobType + "] JOB,使用调度时间,设置执行日期为" + tli.getCur_time());
+            insertLog(tli, "info", "[" + jobType + "] JOB,使用调度时间,设置执行日期为" + tli.getCur_time());
         }
 
         //判断是串行执行
@@ -1048,6 +1073,9 @@ public class JobCommon {
             if(!sio(jobType,tli)) return false;
         } else if (tli.getConcurrency().equalsIgnoreCase("1")) {
             //1并行(不检查状态),提前规划好时间
+            logger.info("[" + jobType + "] JOB,任务执行为并行模式");
+            insertLog(tli, "info", "[" + jobType + "] JOB,任务执行为并行模式");
+            if(!sio_concurrence(jobType,tli)) return false;
 
         } else {
             //跳过不检查
@@ -1058,6 +1086,9 @@ public class JobCommon {
         tli.setProcess("6");
         tli.setUpdate_time(new Timestamp(new Date().getTime()));
         tli.setEtl_date(DateUtil.formatTime(tli.getCur_time()));
+        if(tli.getUse_quartz_time().equalsIgnoreCase("on")){
+            tli.setEtl_date(DateUtil.formatTime(getEtlDate(tli.getCur_time(),tli.getTime_diff())));
+        }
         process_time_info pti=tli.getProcess_time2();
         pti.setInit_time(DateUtil.getCurrentTime());
         tli.setProcess_time(pti);
@@ -1074,10 +1105,48 @@ public class JobCommon {
 
     }
 
+    /**
+     * 串行执行,日期确定逻辑
+     * @param jobType
+     * @param tli
+     * @return
+     */
     public static Boolean sio(String jobType, TaskLogInstance tli) {
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         QuartzJobMapper qjm = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
         QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
+
+        if(tli.getUse_quartz_time().equalsIgnoreCase("on")){
+            logger.info("[" + jobType + "] JOB ,当前任务为串行模式,并使用调度触发时间");
+            insertLog(tli, "info", "[" + jobType + "] JOB ,当前任务为串行模式,并使用调度触发时间");
+            CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+            List<Date> dates=new ArrayList<>();
+            try {
+                dates = resolveQuartzExpr(tli.getExpr());
+            } catch (ParseException e) {
+                e.printStackTrace();
+                String msg="[" + jobType + "] JOB ,当前任务解析表达式异常,表达式如下:"+tli.getExpr()+",任务结束";
+                logger.info(msg);
+                insertLog(tli, "info", msg);
+                //quartzJobInfo.setStatus("finish");
+                //删除quartz 任务
+                int interval_time = (tli.getInterval_time() == null || tli.getInterval_time().equals("")) ? 5 : Integer.parseInt(tli.getInterval_time());
+                updateTaskLogError(tli, "6", tlim, "error", interval_time);
+                quartzManager2.deleteTask(tli, "finish", "finish");
+                return false;
+            }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Timestamp nextTime=new Timestamp(dates.get(1).getTime());
+
+            tli.setNext_time(nextTime);
+            String msg="[" + jobType + "] JOB ,当前任务为串行模式,并使用调度触发时间,生成调度触发时间为:"+DateUtil.formatTime(getEtlDate(tli.getCur_time(),tli.getTime_diff()));
+            logger.info(msg);
+            insertLog(tli, "info", msg);
+            tli.setEtl_date(DateUtil.formatTime(getEtlDate(tli.getCur_time(),tli.getTime_diff())));
+            tlim.updateByPrimaryKey(tli);
+            return true;
+        }
 
         String step_size = tli.getStep_size();
         int dateType = Calendar.DAY_OF_MONTH;
@@ -1189,6 +1258,136 @@ public class JobCommon {
             tli.setCur_time(Timestamp.valueOf(last_tli.getEtl_date()));
             tli.setNext_time(DateUtil.add(Timestamp.valueOf(last_tli.getEtl_date()), dateType, num));
         }
+        tlim.updateByPrimaryKey(tli);
+        return true;
+
+    }
+
+    public static Boolean sio_concurrence(String jobType, TaskLogInstance tli) {
+        TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+        QuartzJobMapper qjm = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
+        QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
+
+        //使用调度时间
+        if(tli.getUse_quartz_time().equalsIgnoreCase("on")){
+            logger.info("[" + jobType + "] JOB ,当前任务为并行模式,并使用调度触发时间");
+            insertLog(tli, "info", "[" + jobType + "] JOB ,当前任务为并行模式,并使用调度触发时间");
+
+            List<Date> dates = null;
+            try {
+                dates = JobCommon.resolveQuartzExpr(tli.getExpr());
+            } catch (ParseException e) {
+                String msg="[" + jobType + "] JOB ,当前任务解析表达式异常,表达式如下:"+tli.getExpr()+",任务结束";
+                logger.info(msg);
+                insertLog(tli, "info", msg);
+                //quartzJobInfo.setStatus("finish");
+                //删除quartz 任务
+                int interval_time = (tli.getInterval_time() == null || tli.getInterval_time().equals("")) ? 5 : Integer.parseInt(tli.getInterval_time());
+                updateTaskLogError(tli, "6", tlim, "error", interval_time);
+                quartzManager2.deleteTask(tli, "finish", "finish");
+
+                return false;
+            }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Timestamp nextTime=new Timestamp(dates.get(1).getTime());
+
+            tli.setNext_time(nextTime);
+            String msg="[" + jobType + "] JOB ,当前任务为串行模式,并使用调度触发时间,生成调度触发时间为:"+DateUtil.formatTime(getEtlDate(tli.getCur_time(),tli.getTime_diff()));
+            logger.info(msg);
+            insertLog(tli, "info", msg);
+
+            tli.setEtl_date(DateUtil.formatTime(getEtlDate(tli.getCur_time(),tli.getTime_diff())));
+            tlim.updateByPrimaryKey(tli);
+            return true;
+        }
+
+        String step_size = tli.getStep_size();
+        int dateType = Calendar.DAY_OF_MONTH;
+        int num = 1;
+        if (step_size.endsWith("s")) {
+            dateType = Calendar.SECOND;
+            num = Integer.parseInt(step_size.split("s")[0]);
+        }
+        if (step_size.endsWith("m")) {
+            dateType = Calendar.MINUTE;
+            num = Integer.parseInt(step_size.split("m")[0]);
+        }
+        if (step_size.endsWith("h")) {
+            dateType = Calendar.HOUR;
+            num = Integer.parseInt(step_size.split("h")[0]);
+        }
+        if (step_size.endsWith("d")) {
+            dateType = Calendar.DAY_OF_MONTH;
+            num = Integer.parseInt(step_size.split("d")[0]);
+        }
+        //并行
+        //获取上次的task_logs_id,判断状态
+        //时间1 先取上次任务的时间,2 如果为空 取调度原始信息的last_time,3如果为空去调度原始信息的start_time
+        //根据上步的时间和上次任务状态判断
+
+        TaskLogInstance last_tli = null;
+        if (StringUtils.isEmpty(tli.getLast_task_log_id()) || tlim.selectByPrimaryKey(tli.getLast_task_log_id()) == null) {
+
+            debugInfo(tli);
+            if(tli.getLast_time()==null){
+                tli.setCur_time(tli.getStart_time());
+            }else{
+                tli.setCur_time(DateUtil.add(tli.getLast_time(),dateType,num));
+            }
+            //tli.setNext_time(DateUtil.add(tli.getCur_time(), dateType, num));
+            tli.setNext_time(DateUtil.add(tli.getCur_time(),dateType,num));
+            debugInfo(tli);
+            String msg="[" + jobType + "] JOB,无法找到上次执行的任务实例"+tli.getLast_task_log_id()+",设置ETL_DATE日期为" + DateUtil.formatTime(tli.getCur_time()) + ",下次执行日期为" + tli.getNext_time();
+            logger.info(msg);
+            insertLog(tli, "info", msg);
+
+            if (tli.getCur_time().after(tli.getEnd_time())) {
+                logger.info("[" + jobType + "] JOB ,当前任务时间超过结束时间,任务结束");
+                insertLog(tli, "info", "[" + jobType + "] JOB ,当前任务时间超过结束时间,任务结束");
+                //quartzJobInfo.setStatus("finish");
+                //删除quartz 任务
+                int interval_time = (tli.getInterval_time() == null || tli.getInterval_time().equals("")) ? 5 : Integer.parseInt(tli.getInterval_time());
+                updateTaskLogError(tli, "6", tlim, "error", interval_time);
+                quartzManager2.deleteTask(tli, "finish", "finish");
+                return false;
+            }
+        }
+
+        last_tli = tlim.selectByPrimaryKey(tli.getLast_task_log_id());
+
+        //finish状态计算新的etl_date
+        if (last_tli != null && last_tli.getStatus() != null &&  last_tli.getCur_time() != null) {
+
+            //finish成功状态 判断last_time 是否超过结束日期,超过，删除任务,更新状态
+            if (DateUtil.add(last_tli.getCur_time(), dateType, num).after(tli.getEnd_time())) {
+                logger.info("[" + jobType + "] JOB ,当前任务时间超过结束时间,任务结束");
+                insertLog(tli, "info", "[" + jobType + "] JOB ,当前任务时间超过结束时间,任务结束");
+                //quartzJobInfo.setStatus("finish");
+                //删除quartz 任务
+                int interval_time = (tli.getInterval_time() == null || tli.getInterval_time().equals("")) ? 5 : Integer.parseInt(tli.getInterval_time());
+                updateTaskLogError(tli, "6", tlim, "error", interval_time);
+                quartzManager2.deleteTask(tli, "finish", "finish");
+
+                return false;
+            }
+
+            if (tli.getStart_time().before(DateUtil.add(last_tli.getCur_time(), dateType, num)) ||
+                    tli.getStart_time().equals(DateUtil.add(last_tli.getCur_time(), dateType, num))) {
+                logger.info("[" + jobType + "] JOB,找到上次执行任务(状态不判断),计算新的执行日期:" + DateUtil.add(Timestamp.valueOf(last_tli.getEtl_date()), dateType, num));
+                insertLog(tli, "info", "[" + jobType + "] JOB,找到上次执行任务(状态不判断),计算新的执行日期:"  + DateUtil.add(Timestamp.valueOf(last_tli.getEtl_date()), dateType, num));
+                tli.setCur_time(DateUtil.add(Timestamp.valueOf(last_tli.getEtl_date()), dateType, num));
+                tli.setNext_time(DateUtil.add(tli.getCur_time(), dateType, num));
+                tli.setEtl_date(DateUtil.formatTime(tli.getCur_time()));
+            } else {
+                logger.info("[" + jobType + "] JOB,首次执行任务,下次执行日期为起始日期:" + tli.getStart_time());
+                insertLog(tli, "info", "[" + jobType + "] JOB,首次执行任务,下次执行日期为起始日期:" + tli.getStart_time());
+                tli.setCur_time(tli.getStart_time());
+                tli.setNext_time(DateUtil.add(tli.getStart_time(), dateType, num));
+                tli.setEtl_date(DateUtil.formatTime(tli.getStart_time()));
+            }
+        }
+
         tlim.updateByPrimaryKey(tli);
         return true;
 
@@ -1592,4 +1791,74 @@ public class JobCommon {
         }
     }
 
+
+    public static List<Date> resolveQuartzExpr(String expr) throws ParseException {
+
+        List<Date> dates = new ArrayList<>();
+
+        if(expr.endsWith("s") || expr.endsWith("m") || expr.endsWith("h")){
+            long time = Integer.valueOf(expr.substring(0, expr.length() - 1));
+
+            int dateType = Calendar.DAY_OF_MONTH;
+            int num = 1;
+            if (expr.endsWith("s")) {
+                dateType = Calendar.SECOND;
+                num = Integer.parseInt(expr.split("s")[0]);
+            }
+            if (expr.endsWith("m")) {
+                dateType = Calendar.MINUTE;
+                num = Integer.parseInt(expr.split("m")[0]);
+            }
+            if (expr.endsWith("h")) {
+                dateType = Calendar.HOUR;
+                num = Integer.parseInt(expr.split("h")[0]);
+            }
+            if (expr.endsWith("d")) {
+                dateType = Calendar.DAY_OF_MONTH;
+                num = Integer.parseInt(expr.split("d")[0]);
+            }
+
+            for(int i=1;i<=10;i++){
+                dates.add(DateUtil.add(new Timestamp(new Date().getTime()),dateType,num*i));
+            }
+
+        }else{
+            CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+            cronTriggerImpl.setCronExpression(expr);//这里写要准备猜测的cron表达式
+            dates=TriggerUtils.computeFireTimes(cronTriggerImpl, null, 10);
+        }
+
+        return dates;
+
+    }
+
+
+    /**
+     * 使用quartz 触发时间时,获取指定时间差的etl_date
+     * @param cur
+     * @param step_size
+     * @return
+     */
+    public static Timestamp getEtlDate(Timestamp cur,String step_size){
+        int dateType = Calendar.SECOND;
+        int num = 0;
+        if (step_size.endsWith("s")) {
+            dateType = Calendar.SECOND;
+            num = Integer.parseInt(step_size.split("s")[0]);
+        }
+        if (step_size.endsWith("m")) {
+            dateType = Calendar.MINUTE;
+            num = Integer.parseInt(step_size.split("m")[0]);
+        }
+        if (step_size.endsWith("h")) {
+            dateType = Calendar.HOUR;
+            num = Integer.parseInt(step_size.split("h")[0]);
+        }
+        if (step_size.endsWith("d")) {
+            dateType = Calendar.DAY_OF_MONTH;
+            num = Integer.parseInt(step_size.split("d")[0]);
+        }
+
+        return DateUtil.add(cur,dateType,num);
+    }
 }

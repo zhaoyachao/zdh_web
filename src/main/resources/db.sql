@@ -520,6 +520,42 @@ alter table quartz_job_info add column time_out varchar(100);
 
 alter table task_log_instance add column process_time text;
 
+-- 2020-11-14 更新;
+alter table zdh_ha_info add column create_time timestamp null default current_timestamp;
+alter table zdh_ha_info add column update_time timestamp null default current_timestamp;
+
+drop table if EXISTS issue_data_info;
+CREATE TABLE `issue_data_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `issue_context` varchar(200) DEFAULT NULL,
+  `data_sources_choose_input` varchar(100) DEFAULT NULL,
+  `data_source_type_input` varchar(100) DEFAULT NULL,
+  `data_sources_table_name_input` varchar(100) DEFAULT NULL,
+  `data_sources_file_name_input` varchar(100) DEFAULT NULL,
+  `data_sources_file_columns` text,
+  `data_sources_table_columns` text,
+  `column_datas` text,
+  `owner` varchar(100) DEFAULT NULL,
+  `create_time` timestamp default current_timestamp,
+  `company` varchar(100) DEFAULT NULL,
+  `section` varchar(100) DEFAULT NULL,
+  `service` varchar(100) DEFAULT NULL,
+  `update_context` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+-- 2020-11-21 更新;
+alter table task_log_instance add column priority varchar(4);
+alter table task_log_instance add column quartz_time TIMESTAMP;
+alter table task_log_instance add column use_quartz_time varchar(5);
+alter table task_log_instance add column time_diff varchar(50);
+
+alter table quartz_job_info add column priority varchar(4);
+alter table quartz_job_info add column quartz_time TIMESTAMP;
+alter table quartz_job_info add column use_quartz_time varchar(5);
+alter table quartz_job_info add column time_diff varchar(50);
+
+
 create database if NOT EXISTS quartz;
 
 use quartz;

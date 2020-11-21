@@ -11,6 +11,8 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.shiro.RedisUtil;
 import org.apache.shiro.SecurityUtils;
+import org.quartz.TriggerUtils;
+import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,10 +22,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.beans.PropertyEditorSupport;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 @Controller
 public class SystemController extends BaseController{
 
@@ -44,6 +46,12 @@ public class SystemController extends BaseController{
     public String dynApiDemo2(@PathVariable("url") String url) {
         System.out.println(url);
         return "etl/" + url;
+    }
+
+    @RequestMapping(value = "/cron", method = RequestMethod.GET)
+    public String cron() {
+
+        return "cron/cron";
     }
 
     @RequestMapping(value = "/file_manager", method = RequestMethod.GET)
@@ -169,6 +177,23 @@ public class SystemController extends BaseController{
     public User getUser() {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         return user;
+    }
+
+    @RequestMapping(value = "quartz-cron", method = RequestMethod.POST)
+    @ResponseBody
+    public String cronExpression2executeDates(String crontab) throws ParseException {
+        System.out.println(crontab);
+        List<String> resultList = new ArrayList<String>() ;
+        CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+        cronTriggerImpl.setCronExpression(crontab);//这里写要准备猜测的cron表达式
+        List<Date> dates = TriggerUtils.computeFireTimes(cronTriggerImpl, null, 10);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (Date date : dates) {
+            resultList.add(dateFormat.format(date));
+        }
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("dateList",resultList);
+        return jsonObject.toJSONString();
     }
 
 
