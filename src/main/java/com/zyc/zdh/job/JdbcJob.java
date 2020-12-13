@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-public class JdbcJob extends JobCommon {
+public class JdbcJob extends JobCommon2 {
 
     public static String jobType = "JDBC";
 
@@ -19,13 +19,13 @@ public class JdbcJob extends JobCommon {
         long threadId = td.getId();
         System.out.println("线程id:"+threadId);
         String tk=myid+"_"+threadId+"_"+tli.getId();
-        JobCommon.chm.put(tk,td);
+        JobCommon2.chm.put(tk,td);
         try{
-            JobCommon.chooseCommand(jobType,tli);
+            JobCommon2.chooseCommand(jobType,tli);
         }catch (Exception e){
             e.printStackTrace();
         }finally {
-            JobCommon.chm.remove(tk);
+            JobCommon2.chm.remove(tk);
         }
 
     }

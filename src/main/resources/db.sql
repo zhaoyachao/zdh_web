@@ -79,6 +79,7 @@ insert into data_sources_type_info(sources_type) values('KUDU');
 insert into data_sources_type_info(sources_type) values('外部上传');
 insert into data_sources_type_info(sources_type) values('FLUME');
 insert into data_sources_type_info(sources_type) values('外部下载');
+insert into data_sources_type_info(sources_type) values('Greenplum');
 
 drop table if EXISTS etl_task_info;
 create table etl_task_info(
@@ -555,6 +556,80 @@ alter table quartz_job_info add column quartz_time TIMESTAMP;
 alter table quartz_job_info add column use_quartz_time varchar(5);
 alter table quartz_job_info add column time_diff varchar(50);
 
+-- 2020-12-05
+alter table quartz_job_info add column jsmind_data text;
+alter table task_log_instance add column jsmind_data text;
+
+alter table task_log_instance add column run_jsmind_data text;
+alter table task_log_instance add column next_tasks text;
+alter table task_log_instance add column pre_tasks text;
+alter table task_log_instance add column group_id varchar(100) after  job_context;
+alter table task_log_instance add column group_context varchar(500) after  group_id;
+
+
+drop table task_group_log_instance;
+CREATE TABLE `task_group_log_instance` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `job_id` varchar(100) DEFAULT NULL,
+  `job_context` varchar(100) DEFAULT NULL,
+  `etl_date` varchar(30) DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
+  `run_time` timestamp NULL DEFAULT NULL,
+  `update_time` timestamp NULL DEFAULT NULL,
+  `owner` varchar(100) DEFAULT NULL,
+  `is_notice` varchar(10) DEFAULT NULL,
+  `process` varchar(10) DEFAULT NULL,
+  `thread_id` varchar(100) DEFAULT NULL,
+  `retry_time` timestamp NULL DEFAULT NULL,
+  `executor` varchar(100) DEFAULT NULL,
+  `etl_info` text,
+  `url` varchar(100) DEFAULT NULL,
+  `application_id` varchar(100) DEFAULT NULL,
+  `history_server` varchar(100) DEFAULT NULL,
+  `master` varchar(100) DEFAULT NULL,
+  `server_ack` varchar(100) DEFAULT NULL,
+  `concurrency` varchar(100) DEFAULT NULL,
+  `last_task_log_id` varchar(100) DEFAULT NULL,
+  `more_task` varchar(20) DEFAULT NULL,
+  `job_type` varchar(100) DEFAULT NULL,
+  `start_time` timestamp NULL DEFAULT NULL,
+  `end_time` timestamp NULL DEFAULT NULL,
+  `step_size` varchar(100) DEFAULT NULL,
+  `job_model` varchar(2) DEFAULT NULL,
+  `plan_count` varchar(5) DEFAULT NULL,
+  `count` int DEFAULT NULL,
+  `command` varchar(100) DEFAULT NULL,
+  `params` text,
+  `last_status` varchar(100) DEFAULT NULL,
+  `last_time` timestamp NULL DEFAULT NULL,
+  `next_time` timestamp NULL DEFAULT NULL,
+  `expr` varchar(100) DEFAULT NULL,
+  `ip` varchar(100) DEFAULT NULL,
+  `user` varchar(100) DEFAULT NULL,
+  `password` varchar(100) DEFAULT NULL,
+  `etl_task_id` varchar(100) DEFAULT NULL,
+  `etl_context` varchar(100) DEFAULT NULL,
+  `is_script` varchar(100) DEFAULT NULL,
+  `job_ids` varchar(100) DEFAULT NULL,
+  `jump_dep` varchar(100) DEFAULT NULL,
+  `jump_script` varchar(100) DEFAULT NULL,
+  `interval_time` varchar(100) DEFAULT NULL,
+  `alarm_enabled` varchar(100) DEFAULT NULL,
+  `email_and_sms` varchar(100) DEFAULT NULL,
+  `alarm_account` varchar(200) DEFAULT NULL,
+  `cur_time` timestamp NULL DEFAULT NULL,
+  `is_retryed` varchar(4) DEFAULT NULL,
+  `server_id` varchar(100) DEFAULT NULL,
+  `time_out` varchar(100) DEFAULT NULL,
+  `process_time` text,
+  `priority` varchar(4) DEFAULT NULL,
+  `quartz_time` timestamp NULL DEFAULT NULL,
+  `use_quartz_time` varchar(5) DEFAULT NULL,
+  `time_diff` varchar(50) DEFAULT NULL,
+  `jsmind_data` text,
+  `run_jsmind_data` text,
+  PRIMARY KEY (`id`)
+);
 
 create database if NOT EXISTS quartz;
 

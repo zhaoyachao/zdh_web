@@ -61,6 +61,15 @@ public class QuartzJobInfo implements Serializable {
     private Timestamp quartz_time;
     private String use_quartz_time="off";//是否使用quartz触发时间,on,off,null
     private String time_diff;//
+    private String jsmind_data;//json 形式,作业直接的关系
+
+    public String getJsmind_data() {
+        return jsmind_data;
+    }
+
+    public void setJsmind_data(String jsmind_data) {
+        this.jsmind_data = jsmind_data;
+    }
 
     public String getTime_diff() {
         return time_diff;

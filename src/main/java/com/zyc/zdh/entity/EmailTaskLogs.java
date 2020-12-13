@@ -10,6 +10,8 @@ public class EmailTaskLogs {
     private String id;//唯一标识
     private String job_id;//任务id,
     private String job_context;//任务说明
+    private String group_id;
+    private String group_context;
     private String etl_date;// 起始时间
     private String status;// 任务状态
     private Timestamp start_time;//任务开始时间
@@ -143,5 +145,21 @@ public class EmailTaskLogs {
 
     public void setIs_use_phone(String is_use_phone) {
         this.is_use_phone = is_use_phone;
+    }
+
+    public String getGroup_id() {
+        return group_id;
+    }
+
+    public void setGroup_id(String group_id) {
+        this.group_id = group_id;
+    }
+
+    public String getGroup_context() {
+        return group_context;
+    }
+
+    public void setGroup_context(String group_context) {
+        this.group_context = group_context;
     }
 }

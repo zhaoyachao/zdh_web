@@ -13,17 +13,15 @@ import java.sql.Timestamp;
 
 
 @Table
-public class TaskLogInstance implements Serializable {
+public class TaskLogInstance2 implements Serializable {
 
     @Id
     @Column
     private String id;//唯一标识
-    private String job_id;//任务id,
-    private String job_context;//任务说明
-    private String group_id;//任务组id,
-    private String group_context;//任务组说明
+    private String group_id;//任务id,
+    private String group_context;//任务说明
     private String etl_date;// 起始时间
-    private String status;// 任务状态,create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+    private String status;// 任务状态,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
     private Timestamp run_time;//任务开始时间
     private Timestamp update_time;
     private String  owner;
@@ -117,7 +115,6 @@ public class TaskLogInstance implements Serializable {
     private String use_quartz_time;//是否使用quartz触发时间
     private String time_diff;
     private String jsmind_data;//json 形式,作业直接的关系
-    private String run_jsmind_data;//json 形式实例作业依赖关系
 
     private String next_tasks;//逗号分隔
     private String pre_tasks;//逗号分隔
@@ -136,14 +133,6 @@ public class TaskLogInstance implements Serializable {
 
     public void setPre_tasks(String pre_tasks) {
         this.pre_tasks = pre_tasks;
-    }
-
-    public String getRun_jsmind_data() {
-        return run_jsmind_data;
-    }
-
-    public void setRun_jsmind_data(String run_jsmind_data) {
-        this.run_jsmind_data = run_jsmind_data;
     }
 
     public String getJsmind_data() {
@@ -188,21 +177,20 @@ public class TaskLogInstance implements Serializable {
         this.priority = priority;
     }
 
-
-    public String getJob_id() {
-        return job_id;
+    public String getGroup_id() {
+        return group_id;
     }
 
-    public void setJob_id(String job_id) {
-        this.job_id = job_id;
+    public void setGroup_id(String group_id) {
+        this.group_id = group_id;
     }
 
-    public String getJob_context() {
-        return job_context;
+    public String getGroup_context() {
+        return group_context;
     }
 
-    public void setJob_context(String job_context) {
-        this.job_context = job_context;
+    public void setGroup_context(String group_context) {
+        this.group_context = group_context;
     }
 
     public String getEtl_date() {
@@ -608,21 +596,6 @@ public class TaskLogInstance implements Serializable {
         this.process_time = JSON.toJSONString(process_time_info);
     }
 
-    public String getGroup_id() {
-        return group_id;
-    }
-
-    public void setGroup_id(String group_id) {
-        this.group_id = group_id;
-    }
-
-    public String getGroup_context() {
-        return group_context;
-    }
-
-    public void setGroup_context(String group_context) {
-        this.group_context = group_context;
-    }
 
     public String getProcess_msg() {
         //默认是1,开始调度是5,调整调度时间etl_date是7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行

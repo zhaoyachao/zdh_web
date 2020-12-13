@@ -175,6 +175,10 @@ public final class DAG {
 		return Collections.unmodifiableSet(fOut.get(vertex));
 	}
 
+	public Set getParent(Object vertex){
+		return Collections.unmodifiableSet(fIn.get(vertex));
+	}
+
 	private boolean hasPath(Object start, Object end) {
 		// break condition
 		if (start == end)

@@ -3,13 +3,14 @@ package com.zyc.zdh.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.QuartzJobMapper;
+import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
-import com.zyc.zdh.entity.EtlEcharts;
-import com.zyc.zdh.entity.QuartzJobInfo;
-import com.zyc.zdh.entity.TaskLogInstance;
-import com.zyc.zdh.entity.ZdhHaInfo;
-import com.zyc.zdh.job.JobCommon;
+import com.zyc.zdh.entity.*;
+
+import com.zyc.zdh.job.JobCommon2;
+import com.zyc.zdh.job.JobStatus;
+import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.util.DateUtil;
 import org.quartz.SchedulerException;
@@ -36,6 +37,9 @@ public class ZdhMonitorController extends BaseController{
 
     @Autowired
     TaskLogInstanceMapper taskLogInstanceMapper;
+
+    @Autowired
+    TaskGroupLogInstanceMapper tglim;
 
 
     @RequestMapping("/monitor")
@@ -103,6 +107,26 @@ public class ZdhMonitorController extends BaseController{
     }
 
 
+    @RequestMapping(value = "/task_group_logs_delete", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String task_group_logs_delete(String[] ids) {
+
+        System.out.println("开始删除任务日志");
+        TaskLogInstance tli = new TaskLogInstance();
+        for (String id : ids) {
+            tli.setId(id);
+            tglim.deleteByPrimaryKey(tli);
+        }
+        JSONObject json = new JSONObject();
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
+    /**
+     * 杀死单个任务
+     * @param id
+     * @return
+     */
     @RequestMapping("/kill")
     @ResponseBody
     public String killJob(String id){
@@ -110,9 +134,9 @@ public class ZdhMonitorController extends BaseController{
         // dispatch,etl 状态 kill
         taskLogInstanceMapper.updateStatusById2(id);
         TaskLogInstance tli=taskLogInstanceMapper.selectByPrimaryKey(id);
-        JobCommon.insertLog(tli,"INFO","接受到杀死请求,开始进行杀死操作...");
+        JobCommon2.insertLog(tli,"INFO","接受到杀死请求,开始进行杀死操作...");
         if(tli.getStatus().equalsIgnoreCase("killed")){
-            JobCommon.insertLog(tli,"INFO","任务已杀死");
+            JobCommon2.insertLog(tli,"INFO","任务已杀死");
         }
         JSONObject json2 = new JSONObject();
         json2.put("success", "200");
@@ -120,7 +144,29 @@ public class ZdhMonitorController extends BaseController{
 
     }
 
-    @RequestMapping("/retry")
+    /**
+     * 杀死任务组
+     * @param id
+     * @return
+     */
+    @RequestMapping("/killJobGroup")
+    @ResponseBody
+    public String killJobGroup(String id){
+        // check_dep,wait_retry 状态 直接killed
+        // dispatch,etl 状态 kill
+        tglim.updateStatusById2(id);
+        TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(id);
+        JobCommon2.insertLog(tgli,"INFO","接受到杀死请求,开始进行杀死操作...");
+        if(tgli.getStatus().equalsIgnoreCase("killed")){
+            JobCommon2.insertLog(tgli,"INFO","任务已杀死");
+        }
+        JSONObject json2 = new JSONObject();
+        json2.put("success", "200");
+        return json2.toJSONString();
+
+    }
+
+    @RequestMapping("/retryJob")
     @ResponseBody
     public String retryJob(String id,String new_version){
         //taskLogInstanceMapper.updateStatusById2("kill",id);
@@ -144,7 +190,47 @@ public class ZdhMonitorController extends BaseController{
             tli.setTime_out(qji.getTime_out());
         }
 
-        JobCommon.chooseJobBean(qji,2,tli);
+        String new_id=SnowflakeIdWorker.getInstance().nextId()+"";
+        tli.setIs_retryed("0");
+        tli.setId(new_id);
+        tli.setCount(0);
+        tli.setProcess("1");
+        tli.setRun_time(new Timestamp(new Date().getTime()));
+        tli.setUpdate_time(new Timestamp(new Date().getTime()));
+        tli.setStatus(JobStatus.CREATE.getValue());
+        taskLogInstanceMapper.insert(tli);
+        //JobCommon2.chooseJobBean(tli);
+        JSONObject json2 = new JSONObject();
+        json2.put("success", "200");
+        return json2.toJSONString();
+
+    }
+
+    @RequestMapping("/retryJobGroup")
+    @ResponseBody
+    public String retryJobGroup(String id,String new_version){
+        //taskLogInstanceMapper.updateStatusById2("kill",id);
+        TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(id);
+        tgli.setIs_retryed("1");
+        tglim.updateByPrimaryKey(tgli);
+        QuartzJobInfo qji=quartzJobMapper.selectByPrimaryKey(tgli.getJob_id());
+
+        //重试最新版-拉去quartJobInfo 中的shell 及参数
+        if(new_version.equalsIgnoreCase("true")){
+            tgli.setIs_script(qji.getIs_script());
+            tgli.setJob_ids(qji.getJob_ids());
+            tgli.setJump_script(qji.getJump_script());
+            tgli.setJump_dep(qji.getJump_dep());
+            tgli.setInterval_time(qji.getInterval_time());
+            tgli.setEmail_and_sms(qji.getEmail_and_sms());
+            tgli.setAlarm_account(qji.getAlarm_account());
+            tgli.setAlarm_enabled(qji.getAlarm_enabled());
+            tgli.setCommand(qji.getCommand());
+            tgli.setParams(qji.getParams());
+            tgli.setTime_out(qji.getTime_out());
+        }
+
+        JobCommon2.chooseJobBean(qji,2,tgli);
         JSONObject json2 = new JSONObject();
         json2.put("success", "200");
         return json2.toJSONString();

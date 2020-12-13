@@ -14,12 +14,12 @@ public class DAGTest {
     public void addVertex() {
 
         DAG dag=new DAG();
-        dag.addVertex(1);
-        dag.addVertex(2);
-        dag.addVertex(3);
-        dag.addVertex(4);
-        dag.addVertex(5);
-        dag.addVertex(6);
+//        dag.addVertex(1);
+//        dag.addVertex(2);
+//        dag.addVertex(3);
+//        dag.addVertex(4);
+//        dag.addVertex(5);
+//        dag.addVertex(6);
         dag.addEdge(3,4);
         dag.addEdge(3,5);
         dag.addEdge(1,3);
@@ -29,6 +29,7 @@ public class DAGTest {
         System.out.println(dag.getChildren(3));
         System.out.println(dag.getSources());
         System.out.println(dag.getSinks());
+        System.out.println(dag.getParent(3));
     }
 
     @Test

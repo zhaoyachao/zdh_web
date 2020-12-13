@@ -24,7 +24,7 @@ public class AspectLoginConfig implements Ordered {
 	@Autowired
 	private RedisOtherDb redisOtherDb;
 	
-	@Pointcut("execution(* com.zyc.zdh.cloud.api.LoginService.*(..))")
+	@Pointcut("execution(* com.zyc.zdh.api.LoginService.*(..))")
 	public void pointLogin(){}
 	
 	public Object around(ProceedingJoinPoint join) throws Throwable{

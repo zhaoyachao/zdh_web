@@ -47,11 +47,12 @@ public class EmailJob {
                     String info = "任务ID:" + next.getJob_id() + ",任务执行时间:" + next.getLog_time().toString() + ",日志["+next.getLevel()+"]:" + next.getMsg();
                     sb.append(info + "\r\n");
                 }
-                logger.info("检测失败任务:"+emailTaskLogs.getJob_id()+",对应主键:"+emailTaskLogs.getId());
+                logger.info("检测失败任务:"+emailTaskLogs.getJob_id()+",对应主键:"+emailTaskLogs.getId()+",对应任务组id:"+emailTaskLogs.getGroup_id());
                 List<String> emails=new ArrayList<>();
                 List<String> phones=new ArrayList<>();
                 QuartzJobInfo qj=quartzJobMapper.selectByPrimaryKey(emailTaskLogs.getJob_id());
-                if(qj.getAlarm_enabled()!=null && qj.getAlarm_enabled().equalsIgnoreCase("on") && qj.getAlarm_account()!=null && !qj.getAlarm_account().equalsIgnoreCase("")){
+                if(qj.getAlarm_enabled()!=null && qj.getAlarm_enabled().equalsIgnoreCase("on") &&
+                        qj.getAlarm_account()!=null && !qj.getAlarm_account().equalsIgnoreCase("")){
                     List<User> users=accountService.findByUserName2(qj.getAlarm_account().split(","));
                     for(User user:users){
                       if(user.getEmail()!=null){

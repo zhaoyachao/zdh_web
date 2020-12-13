@@ -2,23 +2,23 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.dao.*;
+import com.zyc.zdh.dao.QuartzJobMapper;
+import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
+import com.zyc.zdh.dao.TaskLogInstanceMapper;
+import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.JobCommon;
+import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.DispatchTaskService;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
-import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.beanutils.BeanUtils;
-import org.quartz.TriggerUtils;
-import org.quartz.impl.triggers.CronTriggerImpl;
-import org.quartz.impl.triggers.SimpleTriggerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -43,6 +43,8 @@ public class ZdhDispatchController extends BaseController {
     EtlTaskService etlTaskService;
     @Autowired
     TaskLogInstanceMapper taskLogInstanceMapper;
+    @Autowired
+    TaskGroupLogInstanceMapper tglim;
 
     /**
      * 调度任务首页
@@ -131,6 +133,35 @@ public class ZdhDispatchController extends BaseController {
         return json.toJSONString();
     }
 
+    /**
+     * 新增调度任务
+     *
+     * @param quartzJobInfo
+     * @return
+     */
+    @RequestMapping("/dispatch_task_group_add")
+    @ResponseBody
+    public String dispatch_task_group_add(QuartzJobInfo quartzJobInfo) {
+
+        debugInfo(quartzJobInfo);
+        quartzJobInfo.setOwner(getUser().getId());
+        quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+        quartzJobInfo.setStatus("create");
+        String end_expr = quartzJobInfo.getExpr().toLowerCase();
+        if (end_expr.endsWith("s") || end_expr.endsWith("m")
+                || end_expr.endsWith("h")) {
+            //SimpleScheduleBuilder 表达式 必须指定一个次数,默认式
+            if (quartzJobInfo.getPlan_count().equals("")) {
+                quartzJobInfo.setPlan_count("3");
+            }
+        }
+        debugInfo(quartzJobInfo);
+        quartzJobMapper.insert(quartzJobInfo);
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
 
     /**
      * 批量删除调度任务
@@ -151,6 +182,30 @@ public class ZdhDispatchController extends BaseController {
         json.put("success", "200");
         return json.toJSONString();
     }
+
+    /**
+     * 更新调度任务
+     *
+     * @param quartzJobInfo
+     * @return
+     */
+    @RequestMapping("/dispatch_task_group_update")
+    @ResponseBody
+    public String dispatch_task_group_update(QuartzJobInfo quartzJobInfo) {
+
+        debugInfo(quartzJobInfo);
+        quartzJobInfo.setOwner(getUser().getId());
+        QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);
+        //每次更新都重新设置任务实例id
+        qji.setTask_log_id(null);
+        quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
+
+        JSONObject json = new JSONObject();
+
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
 
     /**
      * 更新调度任务
@@ -203,7 +258,7 @@ public class ZdhDispatchController extends BaseController {
                 if(dti.getUse_quartz_time().equalsIgnoreCase("on")){
                     //获取表达式
 
-                    List<Date> dates = JobCommon.resolveQuartzExpr(dti.getExpr());
+                    List<Date> dates = JobCommon2.resolveQuartzExpr(dti.getExpr());
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Timestamp quartzTime=new Timestamp(dates.get(0).getTime());
                     System.out.println("quartTime:"+quartzTime);
@@ -211,12 +266,12 @@ public class ZdhDispatchController extends BaseController {
                     dti.setQuartz_time(quartzTime);
 
                 }
-                //串行自定义事件触发
+                //串行自定义时间触发
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         //0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
-                        JobCommon.chooseJobBean(dti, 3, null);
+                        JobCommon2.chooseJobBean(dti, 3, null);
                     }
                 }).start();
 
@@ -225,30 +280,30 @@ public class ZdhDispatchController extends BaseController {
                 //并行执行,且使用调度时间
                 if(dti.getUse_quartz_time().equalsIgnoreCase("on")){
                     //获取表达式
-                    List<Date> dates = JobCommon.resolveQuartzExpr(dti.getExpr());
+                    List<Date> dates = JobCommon2.resolveQuartzExpr(dti.getExpr());
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Timestamp quartzTime=new Timestamp(dates.get(0).getTime());
                     System.out.println("quartTime:"+quartzTime);
                     //设置本次执行时间
                     dti.setQuartz_time(quartzTime);
 
-                    TaskLogInstance tli=new TaskLogInstance();
-                    BeanUtils.copyProperties(tli, dti);
-                    tli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-                    tli.setStart_time(null);
-                    tli.setEnd_time(null);
-                    tli.setLast_time(null);
-                    tli.setLast_task_log_id(null);
-                    tli.setNext_time(null);
-                    tli.setStatus(null);
-                    tli.setConcurrency("1");
-                    tli.setCur_time(quartzTime);
+                    TaskGroupLogInstance tgli=new TaskGroupLogInstance();
+                    BeanUtils.copyProperties(tgli, dti);
+                    tgli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                    tgli.setStart_time(null);
+                    tgli.setEnd_time(null);
+                    tgli.setLast_time(null);
+                    tgli.setLast_task_log_id(null);
+                    tgli.setNext_time(null);
+                    tgli.setStatus(null);
+                    tgli.setConcurrency("1");
+                    tgli.setCur_time(quartzTime);
 
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             //0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
-                            JobCommon.chooseJobBean(dti, 4, tli);
+                            JobCommon2.chooseJobBean(dti, 4, tgli);
                         }
                     }).start();
                     json.put("success", "200");
@@ -263,23 +318,23 @@ public class ZdhDispatchController extends BaseController {
                     return json.toJSONString();
                 }
                 for(Timestamp t:result){
-                        TaskLogInstance tli=new TaskLogInstance();
-                        BeanUtils.copyProperties(tli, dti);
-                        tli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-                        tli.setStart_time(t);
-                        tli.setEnd_time(t);
-                        tli.setLast_time(null);
-                        tli.setLast_task_log_id(null);
-                        tli.setNext_time(null);
-                        tli.setStatus(null);
-                        tli.setConcurrency("1");
+                        TaskGroupLogInstance tgli=new TaskGroupLogInstance();
+                        BeanUtils.copyProperties(tgli, dti);
+                        tgli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                        tgli.setStart_time(t);
+                        tgli.setEnd_time(t);
+                        tgli.setLast_time(null);
+                        tgli.setLast_task_log_id(null);
+                        tgli.setNext_time(null);
+                        tgli.setStatus(null);
+                        tgli.setConcurrency("1");
                         System.out.println("=====");
-                        debugInfo(tli);
+                        debugInfo(tgli);
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 //0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
-                                JobCommon.chooseJobBean(dti, 4, tli);
+                                JobCommon2.chooseJobBean(dti, 4, tgli);
                             }
                         }).start();
 
@@ -426,7 +481,7 @@ public class ZdhDispatchController extends BaseController {
         String dataSourcesType = etlTaskInfo.getData_source_type_input().toLowerCase();
         if (dataSourcesType.equals("kafka") || dataSourcesType.equals("flume")) {
             quartzJobMapper.updateStatus(qji.getJob_id(), "finish");
-            String url = JobCommon.getZdhUrl(zdhHaInfoMapper).getZdh_url().replace("zdh", "del");
+            String url = JobCommon2.getZdhUrl(zdhHaInfoMapper).getZdh_url().replace("zdh", "del");
             try {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("job_id", qji.getJob_id());
@@ -455,11 +510,23 @@ public class ZdhDispatchController extends BaseController {
 
     @RequestMapping(value = "/task_log_instance_list", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String task_log_instance_list(String start_time, String end_time, String status,String job_id) {
+    public String task_log_instance_list(String start_time, String end_time, String status,String group_id) {
 
         System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
 
         List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs2(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
+                Timestamp.valueOf(end_time + " 23:59:59"), status,group_id);
+
+        return JSON.toJSONString(list);
+    }
+
+    @RequestMapping(value = "/task_group_log_instance_list", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String task_group_log_instance_list(String start_time, String end_time, String status,String job_id) {
+
+        System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
+
+        List<TaskGroupLogInstance> list = tglim.selectByTaskLogs2(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
                 Timestamp.valueOf(end_time + " 23:59:59"), status,job_id);
 
         return JSON.toJSONString(list);
@@ -516,7 +583,7 @@ public class ZdhDispatchController extends BaseController {
         StringBuilder sb = new StringBuilder();
         while (it.hasNext()) {
             ZdhLogs next = it.next();
-            String info = "任务ID:" + next.getJob_id() + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
+            String info = "调度任务ID:" + next.getJob_id()+",任务实例ID:"+task_log_id + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
             sb.append(info + "\r\n");
         }
 

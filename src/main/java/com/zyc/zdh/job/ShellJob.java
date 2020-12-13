@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class ShellJob extends JobCommon {
+public class ShellJob extends JobCommon2 {
 
     public static String jobType = "SHELL";
 
@@ -22,16 +22,16 @@ public class ShellJob extends JobCommon {
         long threadId = td.getId();
         System.out.println("线程id:"+threadId);
         String tk=myid+"_"+threadId+"_"+tli.getId();
-        JobCommon.chm.put(tk,td);
+        JobCommon2.chm.put(tk,td);
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         tlim.updateThreadById(tk,tli.getId());
         tli.setThread_id(tk);
         try{
-            JobCommon.chooseCommand(jobType,tli);
+            JobCommon2.chooseCommand(jobType,tli);
         }catch (Exception e){
             e.printStackTrace();
         }finally {
-            JobCommon.chm.remove(tk);
+            JobCommon2.chm.remove(tk);
         }
 
 

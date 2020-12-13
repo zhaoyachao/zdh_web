@@ -33,7 +33,7 @@
     <div class="row">
     <div class="ibox float-e-margins">
         <div class="ibox-title">
-            <h5>任务状态查询</h5>
+            <h5>任务组实例状态查询</h5>
             <div class="ibox-tools">
                 <a class="collapse-link">
                     <i class="fa fa-chevron-up"></i>
@@ -225,7 +225,7 @@
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: "/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group_id="+s.group_id,
+                url: "/task_group_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
@@ -260,14 +260,14 @@
 
         function deleteMs(ids) {
             $.ajax({
-                url: "task_logs_delete",
+                url: "task_group_logs_delete",
                 data: "ids=" + ids,
                 type: "post",
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
                     $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: "/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group_id="+s.group_id,
+                        url: "/task_group_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
                         contentType: "application/json;charset=utf-8",
                         dataType: "json"
                     });
@@ -285,6 +285,10 @@
                 row.job_context
                 openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
             },
+            'click #sub_task_log_instance': function (e, value, row, index) {
+                row.job_context
+                openTabPage("task_log_instance.html?group_id="+row.id, "任务组:"+row.job_context + ":子任务日志")
+            },
             'click #retry': function (e, value, row, index) {
                 layer.confirm('确定重试任务吗?', {
                     btn: ['重试', '重试最新版本'], //按钮
@@ -293,7 +297,7 @@
                     },
                     btn1:function(){
                         $.ajax({
-                            url: "retryJob",
+                            url: "retry",
                             data: "id=" + row.id+"&new_version=false",
                             type: "post",
                             dataType: "json",
@@ -309,7 +313,7 @@
                     },
                     btn2:function () {
                         $.ajax({
-                            url: "retryJob",
+                            url: "retry",
                             data: "id=" + row.id+"&new_version=true",
                             type: "post",
                             dataType: "json",
@@ -404,7 +408,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
-            url: "/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group="+s.group_id,
+            url: "/task_group_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             search: true,
@@ -428,17 +432,13 @@
                 title: 'ID',
                 visible: false
             }, {
-                field: 'etl_context',
-                title: '子任务说明',
-                sortable: true
-            }, {
                 field: 'job_id',
                 title: '任务ID',
                 sortable: false,
                 visible: false
             }, {
                 field: 'job_context',
-                title: '任务组',
+                title: '任务说明',
                 sortable: true
             }, {
                 field: 'etl_date',
@@ -507,7 +507,7 @@
                 field: 'status',
                 title: '任务执行状态',
                 sortable: true,
-                width:150,
+                width:230,
                 events: operateEvents,//给按钮注册事件
                 formatter: function (value, row, index) {
                     var r1=row
@@ -568,6 +568,7 @@
                         btn_retry_str +
                         btn_kill_str +
                         '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+
+                        '<button type="button" id="sub_task_log_instance" class="btn btn-info btn-xs">子任务</button>'+
                         '</div>'+
                         '</div>'
                     ].join('');
