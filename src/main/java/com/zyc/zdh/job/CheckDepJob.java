@@ -81,22 +81,6 @@ public class CheckDepJob {
         JobCommon2.updateTaskLog(tgli,tglim);
         debugInfo(tgli);
 
-//        //获取root 节点的所有子节点
-//        JSONObject jsonObject= JSON.parseObject(tgli.getRun_jsmind_data());
-//        //run_date:[{task_log_instance_id,etl_task_id,etl_context,more_task}]
-//        JSONArray jry=jsonObject.getJSONArray("run_data");
-//        DAG dag=new DAG();
-//        for(Object job :jry) {
-//            String id = ((JSONObject) job).getString("id");
-//            String parent_id = ((JSONObject) job).getString("parentid");
-//
-//            if (id != null && !id.equalsIgnoreCase("root")) {
-//                dag.addEdge(parent_id, id);
-//            }
-//        }
-//
-//        String[] ids=(String[])dag.getChildren("root").toArray(new String[0]);
-//        tlim.updateStatusByIds(JobStatus.CHECK_DEP.getValue(),ids);
     }
 
     /**
@@ -145,7 +129,7 @@ public class CheckDepJob {
     public static void run3(){
         TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-        List<TaskGroupLogInstance> tglis=tglim.selectThreadByStatus(JobStatus.SUB_TASK_DISPATCH.getValue());
+        List<TaskGroupLogInstance> tglis=tglim.selectTaskGroupByStatus(new String[]{JobStatus.SUB_TASK_DISPATCH.getValue(),JobStatus.KILL.getValue()});
 
         for(TaskGroupLogInstance tgli:tglis){
             //run_date 结构：run_date:[{task_log_instance_id,etl_task_id,etl_context,more_task}]
@@ -181,7 +165,7 @@ public class CheckDepJob {
             System.out.println("kill_num:"+kill_num);
             System.out.println("error_num:"+error_num);
             //如果 有运行状态，创建状态，杀死状态 则表示未运行完成
-            String process=(finish_num/tlidList.size())*100+"";
+            String process=(finish_num/tlidList.size())*100 > Double.valueOf(tgli.getProcess())? ((finish_num/tlidList.size())*100)+"":tgli.getProcess();
             String msg="更新进度为:"+process;
             if(finish_num==tlidList.size()){
                 //表示全部完成
@@ -190,16 +174,16 @@ public class CheckDepJob {
                 JobCommon2.insertLog(tgli,"INFO",msg);
             }else if(kill_num==tlidList.size()){
                 //表示组杀死
-                tglim.updateStatusById3(JobStatus.FINISH.getValue(),process ,tgli.getId());
+                tglim.updateStatusById3(JobStatus.KILLED.getValue(),process ,tgli.getId());
                // tglim.updateStatusById(JobStatus.KILLED.getValue(),tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
             }else if(finish_num+error_num == tlidList.size()){
                 //存在失败
-                tglim.updateStatusById3(JobStatus.FINISH.getValue(),process ,tgli.getId());
+                tglim.updateStatusById3(JobStatus.ERROR.getValue(),process ,tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
             }else if(finish_num+error_num+kill_num == tlidList.size()){
                 //存在杀死任务
-                tglim.updateStatusById3(JobStatus.FINISH.getValue(),process ,tgli.getId());
+                tglim.updateStatusById3(JobStatus.KILLED.getValue(),process ,tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
             }
 

@@ -456,10 +456,6 @@
                 field: 'job_id',
                 title: 'JOB_ID',
                 sortable: false
-            }, {
-                field: 'more_task',
-                title: '任务类型',
-                sortable: true
             },{
                 field: 'expr',
                 title: '表达式',
@@ -474,15 +470,7 @@
                 field: 'job_context',
                 title: '调度说明',
                 sortable: false
-            }, {
-                field: 'etl_task_id',
-                title: 'ETL任务ID',
-                sortable: false
-            }, {
-                field: 'etl_context',
-                title: 'ETL任务说明',
-                sortable: false
-            }, {
+            },  {
                 field: 'status',
                 title: '调度器状态及执行记录',
                 sortable: true,
@@ -490,7 +478,7 @@
                 events: operateEvents3,//给按钮注册事件
                 formatter: function (value, row, index) {
                     var context = "未启用"
-                    var class_str = "btn-danger"
+                    var class_str = "btn-danger btn-xs"
                     if (value == "create") {
                         context = "未启用"
                         class_str = "btn-danger  btn-xs"
@@ -556,12 +544,7 @@
                 title: '计划执行次数',
                 sortable: true,
                 visible:false
-            }, {
-                field: 'command',
-                title: 'command',
-                sortable: true,
-                visible:false
-            }, {
+            },  {
                 field: 'last_time',
                 title: '上次任务执行时间',
                 sortable: true,

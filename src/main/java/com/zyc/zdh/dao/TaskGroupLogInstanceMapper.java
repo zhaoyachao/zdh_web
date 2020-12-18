@@ -20,7 +20,7 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
     @Update(value = "update task_group_log_instance set thread_id=#{thread_id} where id=#{id}")
     public int updateThreadById(@Param("thread_id") String thread_id, @Param("id") String id);
 
-    @Update(value = "update task_group_log_instance set status= case `status` when 'check_dep' then 'killed' when 'wait_retry' then 'killed' else 'kill'  end where id=#{id} and (status='dispatch' or status ='etl' or status= 'check_dep' or status= 'wait_retry')")
+    @Update(value = "update task_group_log_instance  set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end  where id=#{id} and (status != 'error' and status != 'killed')")
     public int updateStatusById2(@Param("id") String id);
 
     @Update(value = "update task_group_log_instance set is_notice=#{is_notice} where id=#{id}")
@@ -109,6 +109,18 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
 
     @Select("select * from task_group_log_instance where status =#{status}")
     public List<TaskGroupLogInstance> selectThreadByStatus(@Param("status") String status);
+
+    @Select(
+            {
+            "<script>",
+            "select * from task_group_log_instance where status in",
+            "<foreach collection='status' item='st' open='(' separator=',' close=')'>",
+            "#{st}",
+            "</foreach>",
+            "</script>"
+            }
+    )
+    public List<TaskGroupLogInstance> selectTaskGroupByStatus(@Param("status") String[] status);
 
 
     @Select("select * from task_group_log_instance where status =#{status} and retry_time is not null and current_timestamp() >= retry_time")

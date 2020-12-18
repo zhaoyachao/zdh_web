@@ -54,7 +54,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     public void run(String... strings) throws Exception {
         runSnowflakeIdWorker();
         runRetryMQ();
-        //killJobGroup();
+        killJobGroup();
         logger.info("初始化通知事件");
         EmailJob.notice_event();
         logger.info("初始化失败任务监控程序");
@@ -153,72 +153,72 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         TaskLogInstanceMapper taskLogInstanceMapper = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         ZdhHaInfoMapper zdhHaInfoMapper = (ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
         String myid = ev.getProperty("myid", "0");
+
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while(true){
                     try {
                         logger.debug("检查要杀死的任务组..");
-                        List<TaskGroupLogInstance> tglis= null;taskGroupLogInstanceMapper.selectThreadByStatus("kill");
-                        for(TaskGroupLogInstance tgli : tglis){
-                            //获取任务组下的所有的任务,进行远程杀死
-                            //taskLogInstanceMapper.selectByGroupId(tgli.getId());
+                        List<TaskLogInstance> tlis=taskLogInstanceMapper.selectThreadByStatus("kill");
+                        for(TaskLogInstance tl : tlis){
 
-//                            if(tgli.getThread_id()!=null && tgli.getThread_id().startsWith(myid)){
-//                                Thread td=JobCommon2.chm.get(tl.getThread_id());
-//                                if(td!=null){
-//                                    String msg="杀死线程:线程名:"+td.getName()+",线程id:"+td.getId();
-//                                    logger.info(msg);
-//                                    JobCommon2.insertLog(tl,"INFO",msg);
-//                                    try{
-//                                        td.interrupt();
-//                                        td.stop();
-//                                    }catch (Exception e){
-//                                        e.printStackTrace();
-//                                    }finally {
-//                                        JobCommon2.chm.remove(tl.getThread_id());
-//                                        taskGroupLogInstanceMapper.updateStatusById("killed",tl.getId());
-//                                    }
-//                                }else{
-//                                    String msg="调度部分已经执行完成,ETL部分正在执行提交到后端的任务进行杀死";
-//                                    logger.info(msg);
-//                                    JobCommon2.insertLog(tl,"INFO",msg);
-//                                    String executor=tl.getExecutor();//数据采集机器id
-//                                    ZdhHaInfo zdhHaInfo=zdhHaInfoMapper.selectByPrimaryKey(executor);
-//                                    String jobGroup="jobGroup";
-//                                    if(zdhHaInfo!=null){
-//                                        String url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getWeb_port()+"/api/v1/applications/"+zdhHaInfo.getApplication_id()+"/jobs";
-//                                        //获取杀死的任务名称
-//                                        System.out.println(url);
-//                                        List<NameValuePair> npl=new ArrayList<>();
-//                                        //npl.add(new BasicNameValuePair("status","running"));
-//                                        String restul=HttpUtil.getRequest(url,npl);
-//                                        JSONArray jsonArray= JSON.parseArray(restul);
-//                                        List<String> killJobs=new ArrayList<>();
-//                                        for(Object jo:jsonArray){
-//                                            JSONObject j=(JSONObject) jo;
-//                                            if(j.getString(jobGroup).startsWith(tl.getId())){
-//                                                killJobs.add(j.getString(jobGroup));
-//                                            }
-//                                        }
-//
-//                                        JSONObject js=new JSONObject();
-//                                        js.put("task_logs_id",tl.getId());//写日志使用
-//                                        js.put("jobGroups",killJobs);
-//                                        js.put("job_id",tl.getJob_id());
-//                                        //发送杀死请求
-//                                        String kill_url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getZdh_port()+"/api/v1/kill";
-//                                        HttpUtil.postJSON(kill_url,js.toJSONString());
-//                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
-//                                    }else{
-//                                        String msg2="无法获取具体执行器,判断任务已杀死";
-//                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
-//                                        logger.info(msg2);
-//                                        JobCommon2.insertLog(tl,"INFO",msg2);
-//                                    }
-//
-//                                }
-//                            }
+                            if(tl.getThread_id()!=null && tl.getThread_id().startsWith(myid)){
+                                Thread td=JobCommon2.chm.get(tl.getThread_id());
+                                if(td!=null){
+                                    String msg="杀死线程:线程名:"+td.getName()+",线程id:"+td.getId();
+                                    logger.info(msg);
+                                    JobCommon2.insertLog(tl,"INFO",msg);
+                                    try{
+                                        td.interrupt();
+                                        td.stop();
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }finally {
+                                        JobCommon2.chm.remove(tl.getThread_id());
+                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                    }
+                                }else{
+                                    String msg="调度部分已经执行完成,ETL部分正在执行提交到后端的任务进行杀死";
+                                    logger.info(msg);
+                                    JobCommon2.insertLog(tl,"INFO",msg);
+                                    String executor=tl.getExecutor();//数据采集机器id
+                                    ZdhHaInfo zdhHaInfo=zdhHaInfoMapper.selectByPrimaryKey(executor);
+                                    String jobGroup="jobGroup";
+                                    if(zdhHaInfo!=null){
+                                        String url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getWeb_port()+"/api/v1/applications/"+zdhHaInfo.getApplication_id()+"/jobs";
+                                        //获取杀死的任务名称
+                                        System.out.println(url);
+                                        List<NameValuePair> npl=new ArrayList<>();
+                                        //npl.add(new BasicNameValuePair("status","running"));
+                                        String restul=HttpUtil.getRequest(url,npl);
+                                        JSONArray jsonArray= JSON.parseArray(restul);
+                                        List<String> killJobs=new ArrayList<>();
+                                        for(Object jo:jsonArray){
+                                            JSONObject j=(JSONObject) jo;
+                                            if(j.getString(jobGroup).startsWith(tl.getId())){
+                                                killJobs.add(j.getString(jobGroup));
+                                            }
+                                        }
+
+                                        JSONObject js=new JSONObject();
+                                        js.put("task_logs_id",tl.getId());//写日志使用
+                                        js.put("jobGroups",killJobs);
+                                        js.put("job_id",tl.getJob_id());
+                                        //发送杀死请求
+                                        String kill_url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getZdh_port()+"/api/v1/kill";
+                                        HttpUtil.postJSON(kill_url,js.toJSONString());
+                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                    }else{
+                                        String msg2="无法获取具体执行器,判断任务已杀死";
+                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                        logger.info(msg2);
+                                        JobCommon2.insertLog(tl,"INFO",msg2);
+                                    }
+
+                                }
+                            }
                         }
                         // List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.select(qj);
                         Thread.sleep(1000*2);

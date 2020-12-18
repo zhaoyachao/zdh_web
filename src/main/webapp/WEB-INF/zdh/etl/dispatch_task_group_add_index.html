@@ -60,7 +60,8 @@
                                 <div class="container device col-sm-12">
                                     <div class="deviceLeft">
                                         <div class="deviceLeft_box">
-                                            <div class="node node1css" data-type="tasks">任务</div>
+                                            <div class="node node1css" data-type="tasks">ETL任务</div>
+                                            <div class="node node1css" data-type="shell">SHELL</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight">
@@ -79,15 +80,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">任务类型</label>
                             <div class="col-sm-10">
-                                <select id="job_type" name="job_type" data-placeholder="选择任务类型..."
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype=""></option>
-                                    <option value="SHELL" mytype="">SHELL</option>
-                                    <option value="JDBC" mytype="">JDBC</option>
-                                    <option value="FTP" mytype="">FTP</option>
-                                    <option value="CLASS" mytype="">HDFS</option>
-                                    <option value="CLASS" mytype="">CLASS</option>
-                                </select>
+                                <input id="job_type" name="job_type" type="text"
+                                       placeholder="任务状态" class="form-control" aria-required="true" readonly value="ETL"> </span>
                             </div>
                         </div>
 
@@ -465,8 +459,8 @@
             $("#" + divId).css("*display","inline")
             $("#" + divId).css("*zoom","1")
             $("#" + divId).html(jsplumb_json.tasks[i].etl_context);
-            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId}, hollowCircle);
-            jsPlumb.addEndpoint(divId, { anchors: "Bottom" ,uuid:divId}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
             jsPlumb.draggable(divId);
             jsPlumb.makeTarget(divId, {
                 anchor: "Continuous"
@@ -475,10 +469,38 @@
             doubleclick("#" + divId);
         }
 
+        for(var i=0;i< jsplumb_json.shell.length;i++){
+            var shell=jsplumb_json.shell[i]
+            var divId=shell.divId
+            var shell_context=shell.shell_context
+            var positionX=shell.positionX
+            var positionY=shell.positionY
+            $("#m1").append('<div class="node node1css shell" style="position: absolute" id="' + divId + '" data-type="shell"'+' data-id=" " >' +shell_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type","shell")
+
+            $("#" + divId).attr("command",shell.command);
+            $("#" + divId).attr("is_script",shell.is_script);
+            $("#" + divId).attr("shell_context",shell_context);
+            $("#" + divId).css("width","auto")
+            $("#" + divId).css("display","inline-block")
+            $("#" + divId).css("*display","inline")
+            $("#" + divId).css("*zoom","1")
+            $("#" + divId).html(jsplumb_json.tasks[i].etl_context);
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous"
+            })
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+            doubleclick_shell("#" + divId);
+        }
+
         for(var i=0;i< jsplumb_json.line.length;i++){
                 jsPlumb.connect({
-                    uuids:[jsplumb_json.line[i].pageSourceId,jsplumb_json.line[i].pageTargetId]
-                },hollowCircle)
+                    uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"],
+                })
         }
 
 
@@ -523,10 +545,48 @@
             });
         });
     }
+    function doubleclick_shell(id) {
+        $(id).dblclick(function () {
+            var etl_context = $(this).text();
+            var div = $(this)
+            alert(div.attr("command"))
+            var command=div.attr("command")
+            var url='shell_detail.html'
+            if( command == "" || command == undefined ){
+                url=url+"?command=-1"
+            }else{
+                var is_script=div.attr("is_script")
+                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新")
+                        return ;
+                    }
 
+                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    div.attr("command",etl_task_info.command);
+                    div.attr("is_script",etl_task_info.is_script);
+                    div.css("width","auto")
+                    div.css("display","inline-block")
+                    div.css("*display","inline")
+                    div.css("*zoom","1")
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
     function jsplumb_data(){
         var ojson={
             tasks:[],
+            shell:[],
             line:[]
         }
         //服务器
@@ -544,6 +604,22 @@
                 type:$elem.data('type')
             }
             ojson.tasks.push(param)
+        });
+
+        $("#m1 .shell").each(function (idx, elem) {
+            var $elem = $(elem);
+            var param={
+                id: $elem.attr('id'),
+                is_script: $elem.attr('is_script'),
+                shell_context:$elem.text(),
+                command:$elem.attr('command'),
+                divId:$elem.attr('id'),
+                name: $elem[0].innerText,
+                positionX: parseInt($elem.css("left"), 10),
+                positionY: parseInt($elem.css("top"), 10),
+                type:$elem.data('type')
+            }
+            ojson.shell.push(param)
         });
 
         $.each(jsPlumb.getConnections(), function (idx, connection) {
@@ -990,7 +1066,7 @@
             laydate(start);
             laydate(end);
 
-            $('#job_type').chosen();
+
             $('#job_model').chosen();
             $('#last_status').chosen();
 
@@ -1098,8 +1174,6 @@
                         var job_type=data[0].job_type
                         //初始化输入数据源select 组件
                         $("#job_type").val(job_type);
-                        $("#job_type").trigger("chosen:updated");
-
                         var jsmind_data=data[0].jsmind_data
                         alert(jsmind_data)
                         open_json(jsmind_data)

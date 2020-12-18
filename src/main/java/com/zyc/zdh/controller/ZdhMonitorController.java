@@ -152,9 +152,10 @@ public class ZdhMonitorController extends BaseController{
     @RequestMapping("/killJobGroup")
     @ResponseBody
     public String killJobGroup(String id){
-        // check_dep,wait_retry 状态 直接killed
+        // check_dep,wait_retry,create,check_dep_finish 状态 直接killed
         // dispatch,etl 状态 kill
         tglim.updateStatusById2(id);
+        taskLogInstanceMapper.updateStatusByGroupId(id);
         TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(id);
         JobCommon2.insertLog(tgli,"INFO","接受到杀死请求,开始进行杀死操作...");
         if(tgli.getStatus().equalsIgnoreCase("killed")){

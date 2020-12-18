@@ -36,6 +36,19 @@ $(document).ready(function(){
                     $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
                     doubleclick("#" + id);
                     break;
+                case "shell"://服务器
+                    var id = guid2();
+                    $(this).append('<div class="node node1css shell" style="position: absolute" id="' + id + '" data-type="shell" data-id=" " >' + $(ui.helper).html() + '</div>');
+                    $("#" + id).css("left", left).css("top", top);
+                    jsPlumb.addEndpoint(id, { anchors: "Top" }, hollowCircle);
+                    jsPlumb.addEndpoint(id, { anchors: "Bottom" }, hollowCircle);
+                    jsPlumb.draggable(id);
+                    jsPlumb.makeTarget(id, {
+                        anchor: "Continuous"
+                    })
+                    $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
+                    doubleclick_shell("#" + id);
+                    break;
             }
         }
     });
@@ -180,6 +193,44 @@ $(document).ready(function(){
         });
     }
 
+    function doubleclick_shell(id) {
+        $(id).dblclick(function () {
+            var etl_context = $(this).text();
+            var div = $(this)
+            alert(div.attr("command"))
+            var command=div.attr("command")
+            var url='shell_detail.html'
+            if( command == "" || command == undefined ){
+                url=url+"?command=-1"
+            }else{
+                var is_script=div.attr("is_script")
+                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新")
+                        return ;
+                    }
+
+                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    div.attr("command",etl_task_info.command);
+                    div.attr("is_script",etl_task_info.is_script);
+                    div.css("width","auto")
+                    div.css("display","inline-block")
+                    div.css("*display","inline")
+                    div.css("*zoom","1")
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
     
 
     // 当连线建立前
@@ -195,11 +246,8 @@ $(document).ready(function(){
     $('.btn1').click(function(){
         var ojson={
             tasks:[],
-            host:[],
-            aisle:[],
-            route:[],
-            signal:[],
-            line:[],
+            shell:[],
+            line:[]
         }
 
         //服务器
@@ -217,6 +265,22 @@ $(document).ready(function(){
                 type:$elem.data('type')
             }
             ojson.tasks.push(param)
+        });
+
+        $("#m1 .shell").each(function (idx, elem) {
+            var $elem = $(elem);
+            var param={
+                id: $elem.attr('id'),
+                is_script: $elem.attr('is_script'),
+                shell_context:$elem.text(),
+                command:$elem.attr('command'),
+                divId:$elem.attr('id'),
+                name: $elem[0].innerText,
+                positionX: parseInt($elem.css("left"), 10),
+                positionY: parseInt($elem.css("top"), 10),
+                type:$elem.data('type')
+            }
+            ojson.shell.push(param)
         });
 
         //连线

@@ -510,12 +510,10 @@ public class ZdhDispatchController extends BaseController {
 
     @RequestMapping(value = "/task_log_instance_list", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String task_log_instance_list(String start_time, String end_time, String status,String group_id) {
+    public String task_log_instance_list(String status,String group_id) {
 
-        System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
-
-        List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs2(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
-                Timestamp.valueOf(end_time + " 23:59:59"), status,group_id);
+        List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs2(getUser().getId(), null,
+                null, status,group_id);
 
         return JSON.toJSONString(list);
     }

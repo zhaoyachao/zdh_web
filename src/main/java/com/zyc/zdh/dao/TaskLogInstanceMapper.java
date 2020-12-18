@@ -37,6 +37,9 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Update(value = "update task_log_instance set status= case `status` when 'check_dep' then 'killed' when 'wait_retry' then 'killed' else 'kill'  end where id=#{id} and (status='dispatch' or status ='etl' or status= 'check_dep' or status= 'wait_retry')")
     public int updateStatusById2(@Param("id") String id);
 
+    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end where group_id=#{group_id} and (status != 'error' and status != 'killed')")
+    public int updateStatusByGroupId(@Param("group_id") String group_id);
+
     @Update(value = "update task_log_instance set is_notice=#{is_notice} where id=#{id}")
     public int updateNoticeById(@Param("is_notice") String is_notice,@Param("id") String id);
 

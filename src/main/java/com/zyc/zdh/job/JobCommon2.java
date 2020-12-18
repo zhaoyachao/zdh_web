@@ -1993,7 +1993,7 @@ public class JobCommon2 {
 
     /**
      * 选择具体的job执行引擎
-     *  解析创建任务实例->检查更新任务状态->检查依赖-> 执行具体任务
+     *  解析任务组时间->解析创建任务组实例->创建子任务实例
      * @param quartzJobInfo
      * @param is_retry      0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
      */
@@ -2142,7 +2142,7 @@ public class JobCommon2 {
 
 
     /**
-     * 任务触发后,等待依赖任务完成触发
+     * 任务触发后,等待依赖任务完成触发,其他外部均调用此方法执行子任务实例
      * @param tli
      */
     public static void chooseJobBean(TaskLogInstance tli) {
@@ -2153,22 +2153,7 @@ public class JobCommon2 {
         threadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {
-
-                if (tli.getJob_type().equals("SHELL")) {
-                    logger.info("调度任务[SHELL],开始调度");
-                    ShellJob.run(tli, false);
-                } else if (tli.getJob_type().equals("JDBC")) {
-                    logger.info("调度任务[JDBC],开始调度");
-                    JdbcJob.run(tli, false);
-                } else if (tli.getJob_type().equals("FTP")) {
-                    logger.info("调度任务[FTP],开始调度");
-                } else if (tli.getJob_type().equals("HDFS")) {
-                    logger.info("调度任务[HDFS],开始调度");
-                    HdfsJob.run(tli, false);
-                } else {
-                    logger.info("无法找到对应的任务类型,请检查调度任务配置中的任务类型");
-                }
-
+                run_sub_task_log_instance(tli.getJob_type(),tli);
             }
         });
 
@@ -2176,62 +2161,122 @@ public class JobCommon2 {
 
 
     /**
-     * 公共解析任务流程入口
-     * 检查次数限制->匹配动态脚本并执行->解析任务明细执行
-     *
+     * 公共执行子任务入口,只能由chooseJobBean 调用
      * @param jobType
      * @param tli
      */
-    public static void chooseCommand(String jobType, TaskLogInstance tli) {
+    private static void run_sub_task_log_instance(String jobType, TaskLogInstance tli) {
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         logger.info("开始执行[" + jobType + "] JOB");
         insertLog(tli, "INFO", "开始执行[" + jobType + "] JOB");
 
+        Thread td=Thread.currentThread();
+        td.setName(tli.getId());
+        long threadId = td.getId();
+        System.out.println("线程id:"+threadId);
+        String tk=myid+"_"+threadId+"_"+tli.getId();
+        JobCommon2.chm.put(tk,td);
 
-        boolean end = isCount(jobType, tli);
-
-        if (end == true) return;
-
-        Boolean exe_status = false;
-
-        logger.info("[" + jobType + "] JOB ,开始执行动态命令或者脚本");
-        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始执行动态命令或者脚本");
-        if (jobType.equalsIgnoreCase(ShellJob.jobType)) {
-            exe_status = ShellJob.shellCommand(tli);
-        } else if (jobType.equalsIgnoreCase(JdbcJob.jobType)) {
-            exe_status = JdbcJob.runCommand(tli);
-        } else if (jobType.equalsIgnoreCase(HdfsJob.jobType)) {
-            exe_status = HdfsJob.hdfsCommand(tli);
-        }
-
-        //更新在线条件(shell,jdbc....)时间
-        process_time_info pti=tli.getProcess_time2();
-        pti.setCommand_time(DateUtil.getCurrentTime());
-        tli.setProcess_time(pti);
-        updateTaskLog(tli,tlim);
-
-        if (!exe_status) {
-            jobFail(jobType, tli);
-        }
-
-        //拼接任务信息发送请求
-        if (exe_status) {
-            if (tli.getJob_model().equals(JobModel.TIME_SEQ.getValue())) {
-                runTimeSeq(jobType, tli.getId(), exe_status, tli);
-            } else if (tli.getJob_model().equals(JobModel.ONCE.getValue())) {
-                runOnce(jobType, tli.getId(), exe_status, tli);
-            } else if (tli.getJob_model().equals(JobModel.REPEAT.getValue())) {
-                runRepeat(jobType, tli.getId(), exe_status, tli);
+        tlim.updateThreadById(tk,tli.getId());
+        tli.setThread_id(tk);
+        try{
+            boolean end = isCount(jobType, tli);
+            if (end == true) return;
+            Boolean exe_status = true;
+            if(jobType.equalsIgnoreCase("ETL")){
+                //拼接任务信息发送请求
+                if (tli.getJob_model().equals(JobModel.TIME_SEQ.getValue())) {
+                    runTimeSeq(jobType, tli.getId(), exe_status, tli);
+                } else if (tli.getJob_model().equals(JobModel.ONCE.getValue())) {
+                    runOnce(jobType, tli.getId(), exe_status, tli);
+                } else if (tli.getJob_model().equals(JobModel.REPEAT.getValue())) {
+                    runRepeat(jobType, tli.getId(), exe_status, tli);
+                }
+                tli.setProcess_time("");
+                updateTaskLog(tli,tlim);
+            }else if(jobType.equalsIgnoreCase("SHELL")){
+                exe_status=ShellJob.shellCommand(tli);
+                if(exe_status){
+                    //设置任务状态为finish
+                    tli.setStatus(JobStatus.FINISH.getValue());
+                    tli.setProcess("100");
+                    updateTaskLog(tli,tlim);
+                }
             }
 
-            //更新最后阶段(shell,jdbc....)时间
-            process_time_info pti2=tli.getProcess_time2();
-            pti2.setServer_time(DateUtil.getCurrentTime());
-            tli.setProcess_time(pti2);
-            updateTaskLog(tli,tlim);
-
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            JobCommon2.chm.remove(tk);
         }
+
     }
+
+//    /**
+//     * 公共解析任务流程入口
+//     * 检查次数限制->匹配动态脚本并执行->解析任务明细执行
+//     *
+//     * @param jobType
+//     * @param tli
+//     */
+//    public static void chooseCommand(String jobType, TaskLogInstance tli) {
+//        TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+//        logger.info("开始执行[" + jobType + "] JOB");
+//        insertLog(tli, "INFO", "开始执行[" + jobType + "] JOB");
+//
+//        boolean end = isCount(jobType, tli);
+//
+//        if (end == true) return;
+//
+//        Boolean exe_status = false;
+//
+//        if(jobType.equalsIgnoreCase("ETL")){
+//            //拼接任务信息发送请求
+//            if (tli.getJob_model().equals(JobModel.TIME_SEQ.getValue())) {
+//                runTimeSeq(jobType, tli.getId(), exe_status, tli);
+//            } else if (tli.getJob_model().equals(JobModel.ONCE.getValue())) {
+//                runOnce(jobType, tli.getId(), exe_status, tli);
+//            } else if (tli.getJob_model().equals(JobModel.REPEAT.getValue())) {
+//                runRepeat(jobType, tli.getId(), exe_status, tli);
+//            }
+//            tli.setProcess_time("");
+//            updateTaskLog(tli,tlim);
+//        }else if(jobType.equalsIgnoreCase("SHELL")){
+//            exe_status=ShellJob.shellCommand(tli);
+//            if(exe_status){
+//                //设置任务状态为finish
+//                tli.setStatus(JobStatus.FINISH.getValue());
+//                tli.setProcess("100");
+//                updateTaskLog(tli,tlim);
+//            }
+//        }
+//
+//
+//
+////        logger.info("[" + jobType + "] JOB ,开始执行动态命令或者脚本");
+////        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始执行动态命令或者脚本");
+////        if (jobType.equalsIgnoreCase(ShellJob.jobType)) {
+////            exe_status = ShellJob.shellCommand(tli);
+////        } else if (jobType.equalsIgnoreCase(JdbcJob.jobType)) {
+////            exe_status = JdbcJob.runCommand(tli);
+////        } else if (jobType.equalsIgnoreCase(HdfsJob.jobType)) {
+////            exe_status = HdfsJob.hdfsCommand(tli);
+////        }
+////
+////        //更新在线条件(shell,jdbc....)时间
+////        process_time_info pti=tli.getProcess_time2();
+////        pti.setCommand_time(DateUtil.getCurrentTime());
+////        tli.setProcess_time(pti);
+////        updateTaskLog(tli,tlim);
+////
+////        if (!exe_status) {
+//            jobFail(jobType, tli);
+////        }
+//
+//
+//
+//
+//    }
 
 
     public static List<Date> resolveQuartzExpr(String expr) throws ParseException {
@@ -2316,9 +2361,10 @@ public class JobCommon2 {
             // 任务id 与具体实例id 映射
             Map<String,String> map=new HashMap<>();
             DAG dag=new DAG();
-            JSONArray jry=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("tasks");
+            JSONArray tasks=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("tasks");
+            JSONArray shell=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("shell");
             JSONArray lines=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("line");
-            for(Object job :jry){
+            for(Object job :tasks){
                 TaskLogInstance taskLogInstance=new TaskLogInstance();
                 BeanUtils.copyProperties(taskLogInstance,tgli);
                 String etl_task_id=((JSONObject) job).getString("etl_task_id");//具体任务id
@@ -2330,12 +2376,38 @@ public class JobCommon2 {
                 map.put(pageSourceId,t_id);//div标识和任务实例id 对应关系
 
                 taskLogInstance.setMore_task(more_task);
-
+                taskLogInstance.setJob_type("ETL");
                 taskLogInstance.setId(t_id);//具体执行任务实例id,每次执行都会重新生成
                 taskLogInstance.setJob_id(tgli.getJob_id());//调度任务id
                 taskLogInstance.setJob_context(tgli.getJob_context());//调度任务说明
                 taskLogInstance.setEtl_task_id(etl_task_id);//etl任务id
                 taskLogInstance.setEtl_context(etl_context);//etl任务说明
+                taskLogInstance.setStatus("check_dep");
+                taskLogInstance.setJsmind_data("");
+                taskLogInstance.setRun_jsmind_data("");
+                tliList.add(taskLogInstance);
+            }
+
+            for(Object job :shell){
+                TaskLogInstance taskLogInstance=new TaskLogInstance();
+                BeanUtils.copyProperties(taskLogInstance,tgli);
+                String command=((JSONObject) job).getString("command");//具体任务id
+                String pageSourceId=((JSONObject) job).getString("divId");//前端生成的div 标识
+                String etl_context=((JSONObject) job).getString("etl_context");
+                String is_script=((JSONObject) job).getString("is_script");//具体任务id
+
+                String t_id=SnowflakeIdWorker.getInstance().nextId()+"";
+                map.put(pageSourceId,t_id);//div标识和任务实例id 对应关系
+
+                taskLogInstance.setMore_task("");
+                taskLogInstance.setJob_type("SHELL");
+                taskLogInstance.setId(t_id);//具体执行任务实例id,每次执行都会重新生成
+                taskLogInstance.setJob_id(tgli.getJob_id());//调度任务id
+                taskLogInstance.setJob_context(tgli.getJob_context());//调度任务说明
+                taskLogInstance.setEtl_task_id("");//etl任务id
+                taskLogInstance.setEtl_context(etl_context);//etl任务说明
+                taskLogInstance.setCommand(command);
+                taskLogInstance.setIs_script(is_script);
                 taskLogInstance.setStatus("check_dep");
                 taskLogInstance.setJsmind_data("");
                 taskLogInstance.setRun_jsmind_data("");
@@ -2373,6 +2445,7 @@ public class JobCommon2 {
                 jsonObject1.put("etl_task_id",tli.getEtl_task_id());
                 jsonObject1.put("etl_context",tli.getEtl_context());
                 jsonObject1.put("more_task",tli.getMore_task());
+                jsonObject1.put("job_type",tli.getJob_type());
                 jary.add(jsonObject1);
             }
 
@@ -2386,7 +2459,6 @@ public class JobCommon2 {
 
             //生成实例
             for(TaskLogInstance tli:tliList){
-                JSONObject jsonObject1=new JSONObject();
                 String tid=tli.getId();
                 String next_tasks=StringUtils.join(dag.getChildren(tid).toArray(),",");
                 String pre_tasks=StringUtils.join(dag.getParent(tid),",");

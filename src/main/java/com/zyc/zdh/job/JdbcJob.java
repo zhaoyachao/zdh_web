@@ -13,23 +13,6 @@ public class JdbcJob extends JobCommon2 {
 
     public static String jobType = "JDBC";
 
-    public static void run(TaskLogInstance tli, Boolean is_retry) {
-
-        Thread td=Thread.currentThread();
-        long threadId = td.getId();
-        System.out.println("线程id:"+threadId);
-        String tk=myid+"_"+threadId+"_"+tli.getId();
-        JobCommon2.chm.put(tk,td);
-        try{
-            JobCommon2.chooseCommand(jobType,tli);
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            JobCommon2.chm.remove(tk);
-        }
-
-    }
-
     public static Boolean runCommand(TaskLogInstance tli) {
         try {
             logger.info("开始执行调度命令判断是否可行");

@@ -16,26 +16,6 @@ public class ShellJob extends JobCommon2 {
 
     public static String jobType = "SHELL";
 
-    public static void run(TaskLogInstance tli,boolean is_retry) {
-        Thread td=Thread.currentThread();
-        td.setName(tli.getId());
-        long threadId = td.getId();
-        System.out.println("线程id:"+threadId);
-        String tk=myid+"_"+threadId+"_"+tli.getId();
-        JobCommon2.chm.put(tk,td);
-        TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-        tlim.updateThreadById(tk,tli.getId());
-        tli.setThread_id(tk);
-        try{
-            JobCommon2.chooseCommand(jobType,tli);
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            JobCommon2.chm.remove(tk);
-        }
-
-
-    }
 
     public static Boolean shellCommand(TaskLogInstance tli) {
         Boolean exe_status = true;
@@ -128,7 +108,12 @@ public class ShellJob extends JobCommon2 {
                         //命令行执行
                         logger.info("[" + jobType + "] JOB ,以命令行方式执行");
                         insertLog(tli, "info", "[" + jobType + "] JOB ,以命令行方式执行");
-                        result = CommandUtils.exeCommand(newcommand);
+                        if (system.toLowerCase().startsWith("win")) {
+                            System.out.println("当前系统为：" + system);
+                            result = CommandUtils.exeCommand("cmd.exe /k " + newcommand);
+                        } else {
+                            result = CommandUtils.exeCommand(newcommand);
+                        }
                     }
                 }
                 logger.info("[" + jobType + "] JOB ,执行结果:" + result.trim());
@@ -143,6 +128,7 @@ public class ShellJob extends JobCommon2 {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
+            jobFail(jobType,tli);
             exe_status = false;
         }
         return exe_status;
