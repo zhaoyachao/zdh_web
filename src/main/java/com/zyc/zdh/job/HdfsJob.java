@@ -12,26 +12,10 @@ import java.net.URI;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public class HdfsJob extends JobCommon {
+public class HdfsJob extends JobCommon2 {
 
     public static String jobType = "HDFS";
 
-    public static void run(TaskLogInstance tli, Boolean is_retry) {
-
-        Thread td=Thread.currentThread();
-        long threadId = td.getId();
-        System.out.println("线程id:"+threadId);
-        String tk=myid+"_"+threadId+"_"+tli.getId();
-        JobCommon.chm.put(tk,td);
-        try{
-            JobCommon.chooseCommand(jobType,tli);
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            JobCommon.chm.remove(tk);
-        }
-
-    }
 
     public static Boolean hdfsCommand(TaskLogInstance tli) {
         Boolean exe_status = true;

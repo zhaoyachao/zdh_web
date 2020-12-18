@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 数据发布首页</title>
+    <meta name="keywords" content="ZDH 数据发布首页">
+    <meta name="description" content="ZDH 数据发布首页">
+
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="css/jsmind.css" />
+    <script type="text/javascript" src="js/jsmind.js"></script>
+    <!--    <link rel="stylesheet" type="text/css" href="css/plugins/webuploader/webuploader.css">
+        <link rel="stylesheet" type="text/css" href="css/demo/webuploader-demo.css">-->
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>数据发布</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <div id="jsmind_container"></div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+
+
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script type="text/javascript">
+    var mind = {
+        // 3 data formats were supported ...
+        // see Documents for more information
+    };
+    var options = {
+        container:'jsmind_container',
+        theme:'orange',
+        editable:true
+    };
+    var jm = new jsMind(options);
+    jm.show(mind);
+</script>
+</body>
+
+</html>

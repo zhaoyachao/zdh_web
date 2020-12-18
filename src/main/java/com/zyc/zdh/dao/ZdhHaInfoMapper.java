@@ -18,7 +18,7 @@ public interface ZdhHaInfoMapper extends BaseMapper<ZdhHaInfo> {
 
 
 
-    @Select(value="select * from zdh_ha_info where zdh_status=#{status}")
+    @Select(value="select * from zdh_ha_info where zdh_status=#{status} and timestampdiff(SECOND,current_timestamp(),update_time) <= 60")
     @Results({@Result(column="id",property="id"),
             @Result(column="zhd_instance",property="zhd_instance"),
             @Result(column="zhd_url",property="zhd_url"),

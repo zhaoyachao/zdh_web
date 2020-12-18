@@ -9,26 +9,9 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-public class JdbcJob extends JobCommon {
+public class JdbcJob extends JobCommon2 {
 
     public static String jobType = "JDBC";
-
-    public static void run(TaskLogInstance tli, Boolean is_retry) {
-
-        Thread td=Thread.currentThread();
-        long threadId = td.getId();
-        System.out.println("线程id:"+threadId);
-        String tk=myid+"_"+threadId+"_"+tli.getId();
-        JobCommon.chm.put(tk,td);
-        try{
-            JobCommon.chooseCommand(jobType,tli);
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            JobCommon.chm.remove(tk);
-        }
-
-    }
 
     public static Boolean runCommand(TaskLogInstance tli) {
         try {

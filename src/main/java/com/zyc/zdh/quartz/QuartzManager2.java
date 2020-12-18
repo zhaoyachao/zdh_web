@@ -2,9 +2,11 @@ package com.zyc.zdh.quartz;
 
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
+import com.zyc.zdh.entity.TaskGroupLogInstance;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.job.MyJobBean;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.StringUtils;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
@@ -81,9 +83,25 @@ public class QuartzManager2 {
 				logger.info("已经存在同名的triggerkey,请重新创建");
 				throw new Exception("已经存在同名的triggerkey,请重新创建");
 			}
+			boolean recovery = false;
+			switch (quartzJobInfo.getJob_type().toLowerCase()){
+				case "email":
+					recovery=true;
+					break;
+				case "retry":
+					recovery=true;
+					break;
+				case "check":
+					recovery=true;
+					break;
+				default:
+					recovery=false;
+					break;
+			}
+
 			JobDetail jobDetail = JobBuilder
 					.newJob(MyJobBean.class)
-                    .requestRecovery(true)
+                    .requestRecovery(recovery) // quartz 自动故障转移
 					.withDescription(quartzJobInfo.getJob_context())
 					.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).build();
 			Trigger trigger = null;
@@ -95,15 +113,18 @@ public class QuartzManager2 {
 						expression, -1);
 				trigger = TriggerBuilder
 						.newTrigger()
+						.withPriority(Integer.valueOf(StringUtils.isEmpty(quartzJobInfo.getPriority())?"5":quartzJobInfo.getPriority())) //设置优先级
 						.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).startNow()
 						.withSchedule(simpleScheduleBuilder).build();
 			} else {
 				CronScheduleBuilder cronScheduleBuilder = getCronScheduleBuilder(expression);
 				trigger = TriggerBuilder
 						.newTrigger()
+						.withPriority(Integer.valueOf(StringUtils.isEmpty(quartzJobInfo.getPriority())?"5":quartzJobInfo.getPriority())) //设置优先级
 						.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).startNow()
 						.withSchedule(cronScheduleBuilder).build();
 			}
+
 			logger.debug("任务的trigger创建完成triggerkey is {}", trigger.getKey()
 					.toString());
 			JobDataMap jobDataMap = trigger.getJobDataMap();
@@ -234,6 +255,27 @@ public class QuartzManager2 {
 			if(status.equals("")) status="finish";
 			qji.setStatus(status);
 			quartzJobMapper.updateStatus2(tli.getJob_id(),status,last_status);
+		} catch (SchedulerException e) {
+
+			e.printStackTrace();
+		}
+		return qji;
+	}
+
+	public QuartzJobInfo deleteTask(TaskGroupLogInstance tgli, String status, String last_status) {
+		QuartzJobInfo qji=new QuartzJobInfo();
+		try {
+			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			JobKey jobKey = new JobKey(tgli.getJob_id(), tgli.getEtl_task_id());
+			scheduler.pauseJob(jobKey);
+			scheduler.deleteJob(jobKey);
+
+			qji.setEtl_task_id(tgli.getEtl_task_id());
+			qji.setJob_id(tgli.getJob_id());
+			// 在自己定义的任务表中删除任务,状态删除
+			if(status.equals("")) status="finish";
+			qji.setStatus(status);
+			quartzJobMapper.updateStatus2(tgli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
 
 			e.printStackTrace();

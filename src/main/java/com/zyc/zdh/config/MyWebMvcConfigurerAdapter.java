@@ -76,10 +76,11 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		//registry.addResourceHandler("/**").addResourceLocations("/");
 		registry.addResourceHandler("/register**","/statics/**","/css/**","/js/**","/fonts/**","/img/**",
-				"/plugins/**","/zdh_flow/**","/favi**","/etl/js/**","etl/css/**","/statics/**","/404**")
+				"/plugins/**","/zdh_flow/**","/favi**","/etl/js/**","etl/css/**","/statics/**","/404**","cron/**")
 				.addResourceLocations(ev.getProperty("web.path"))
 				.addResourceLocations("/statics/")
 				.addResourceLocations(ev.getProperty("web.path")+"css/")
+				.addResourceLocations(ev.getProperty("web.path")+"cron/")
 				.addResourceLocations(ev.getProperty("web.path")+"js/")
 				.addResourceLocations(ev.getProperty("web.path")+"fonts/")
 				.addResourceLocations(ev.getProperty("web.path")+"img/")

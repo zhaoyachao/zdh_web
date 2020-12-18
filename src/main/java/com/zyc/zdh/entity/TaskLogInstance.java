@@ -1,5 +1,6 @@
 package com.zyc.zdh.entity;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,13 +20,15 @@ public class TaskLogInstance implements Serializable {
     private String id;//唯一标识
     private String job_id;//任务id,
     private String job_context;//任务说明
+    private String group_id;//任务组id,
+    private String group_context;//任务组说明
     private String etl_date;// 起始时间
-    private String status;// 任务状态,dispatch,wait_retry,finish,error,etl,kill
+    private String status;// 任务状态,create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
     private Timestamp run_time;//任务开始时间
     private Timestamp update_time;
     private String  owner;
     private String is_notice="false";
-    private String process="1";//默认是1,开始调度是5,调整调度时间etl_date是7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行
+    private String process="1";//默认是1,开始调度是5,调整调度时间etl_date是6,检查调度依赖7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行
     @Transient
     private String process_msg="未开始";
     private String thread_id;//myid+threadId+id,通过'_'连接
@@ -106,6 +109,85 @@ public class TaskLogInstance implements Serializable {
     private String alarm_account;
 
     private String time_out="86400";//超时时间 以秒为单位,默认一天
+
+    private String process_time=JSON.toJSONString(new process_time_info());//json格式,只会记录每个流程的结束时间
+
+    private String priority="5";//优先级
+    private Timestamp quartz_time;//调度时间
+    private String use_quartz_time;//是否使用quartz触发时间
+    private String time_diff;
+    private String jsmind_data;//json 形式,作业直接的关系
+    private String run_jsmind_data;//json 形式实例作业依赖关系
+
+    private String next_tasks;//逗号分隔
+    private String pre_tasks;//逗号分隔
+
+    public String getNext_tasks() {
+        return next_tasks;
+    }
+
+    public void setNext_tasks(String next_tasks) {
+        this.next_tasks = next_tasks;
+    }
+
+    public String getPre_tasks() {
+        return pre_tasks;
+    }
+
+    public void setPre_tasks(String pre_tasks) {
+        this.pre_tasks = pre_tasks;
+    }
+
+    public String getRun_jsmind_data() {
+        return run_jsmind_data;
+    }
+
+    public void setRun_jsmind_data(String run_jsmind_data) {
+        this.run_jsmind_data = run_jsmind_data;
+    }
+
+    public String getJsmind_data() {
+        return jsmind_data;
+    }
+
+    public void setJsmind_data(String jsmind_data) {
+        this.jsmind_data = jsmind_data;
+    }
+    public String getTime_diff() {
+        return time_diff;
+    }
+
+    public void setTime_diff(String time_diff) {
+        this.time_diff = time_diff;
+    }
+
+    public Timestamp getQuartz_time() {
+        return quartz_time;
+    }
+
+    public String getUse_quartz_time() {
+        return use_quartz_time;
+    }
+
+    public void setUse_quartz_time(String use_quartz_time) {
+        this.use_quartz_time = use_quartz_time;
+    }
+
+    public Timestamp getQuartTime() {
+        return quartz_time;
+    }
+    public void setQuartz_time(Timestamp quartz_time) {
+        this.quartz_time = quartz_time;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
 
     public String getJob_id() {
         return job_id;
@@ -476,6 +558,9 @@ public class TaskLogInstance implements Serializable {
     }
 
     public String getConcurrency() {
+//        if(use_quartz_time.equalsIgnoreCase("on")){
+//            return "1";//并行
+//        }
         return concurrency;
     }
 
@@ -507,6 +592,38 @@ public class TaskLogInstance implements Serializable {
         this.time_out = time_out;
     }
 
+    public String getProcess_time() {
+        return process_time;
+    }
+
+    public process_time_info getProcess_time2() {
+        return JSON.parseObject(process_time,process_time_info.class);
+    }
+
+    public void setProcess_time(String process_time) {
+        this.process_time = process_time;
+    }
+
+    public void setProcess_time(process_time_info process_time_info) {
+        this.process_time = JSON.toJSONString(process_time_info);
+    }
+
+    public String getGroup_id() {
+        return group_id;
+    }
+
+    public void setGroup_id(String group_id) {
+        this.group_id = group_id;
+    }
+
+    public String getGroup_context() {
+        return group_context;
+    }
+
+    public void setGroup_context(String group_context) {
+        this.group_context = group_context;
+    }
+
     public String getProcess_msg() {
         //默认是1,开始调度是5,调整调度时间etl_date是7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行
          switch (getProcess()){
@@ -514,8 +631,10 @@ public class TaskLogInstance implements Serializable {
                  return "未开始";
              case "5":
                  return "开始调度";
-             case "7":
+             case "6":
                  return "调整调度时间";
+             case "7":
+                 return "检查依赖任务";
              case "8":
                  return "检查调度次数";
              case "9":

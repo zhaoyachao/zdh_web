@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 监控首页</title>
+    <meta name="keywords" content="ZDH 监控首页">
+    <meta name="description" content="ZDH 监控首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="row  border-bottom white-bg dashboard-header">
+
+
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>任务组实例状态查询</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+
+            <form role="form" class="form-inline" id="task_logs_form">
+                <div class="form-group">
+                    <div class="input-group date form_datetime">
+                        <input id="start_time" name="start_time" class="form-control" type="text" value=""
+                               placeholder="开始时间" readonly>
+                        <span class="add-on"><i class="icon-remove"></i></span>
+                        <span class="add-on"><i class="icon-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group date form_datetime">
+                        <input id="end_time" name="end_time" class="form-control" type="text" value=""
+                               placeholder="结束时间" readonly>
+                        <span class="add-on"><i class="icon-remove"></i></span>
+                        <span class="add-on"><i class="icon-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <select data-placeholder="状态" class="chosen-select" style="width:110px;" tabindex="2"
+                                id="status" name="status">
+                            <option value="">状态</option>
+                            <option value="running" hassubinfo="true">运行中</option>
+                            <option value="finish" hassubinfo="true">成功</option>
+                            <option value="error" hassubinfo="true">失败</option>
+                        </select>
+                    </div>
+                    <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control"
+                           style="margin-bottom:0px" value="查询"/>
+                </div>
+
+            </form>
+
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <!-- Example Events -->
+                    <div class="example-wrap">
+                        <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                            <button id="remove" type="button" class="btn btn-outline btn-default">
+                                <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true">
+
+                        </table>
+                    </div>
+                </div>
+                <!-- End Example Events -->
+            </div>
+        </div>
+    </div>
+
+    </div>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();//定义一个全局变量-存储任务ID
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        function openTabPage(url, title) {
+            var wpd = $(window.parent.document);
+            var mainContent = wpd.find('.J_mainContent');
+            var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
+            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+            pageTabs.find(".J_menuTab.active").removeClass("active");
+            mainContent.find("iframe").css("display", "none");
+            if (thisIframe.length > 0) {	// 选项卡已打开
+                thisIframe.css("display", "inline");
+                pageTabs.find(".J_menuTab[data-id='" + url + "']").addClass("active");
+            } else {
+                var menuItem = wpd.find("a.J_menuItem[href='" + url + "']");
+                var dataIndex = title == undefined ? menuItem.attr("data-index") : '9999';
+                var _title = title == undefined ? menuItem.find('.nav-label').text() : title;
+                var iframe = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + url + '" frameborder="0" data-id="' + url
+                    + '" seamless="" style="display: inline;"></iframe>';
+                pageTabs.append(
+                    ' <a href="javascript:;" class="J_menuTab active" data-id="' + url + '">' + _title + ' <i class="fa fa-times-circle"></i></a>');
+                mainContent.append(iframe);
+                //显示loading提示
+                var loading = top.layer.load();
+                mainContent.find('iframe:visible').load(function () {
+                    //iframe加载完成后隐藏loading提示
+                    top.layer.close(loading);
+                });
+            }
+
+        }
+
+
+        //日期范围限制
+        var start = {
+            elem: '#start_time',
+            format: 'YYYY-MM-DD',
+            min: '2000-01-01',
+            max: '2099-06-16', //最大日期
+            istime: true,
+            istoday: false,
+            choose: function (datas) {
+                end.min = datas; //开始日选好后，重置结束日的最小日期
+                end.start = datas //将结束日的初始值设定为开始日
+            }
+        };
+        var end = {
+            elem: '#end_time',
+            format: 'YYYY-MM-DD',
+            min: '2000-01-01',
+            max: '2099-06-16',
+            istime: true,
+            istoday: false,
+            choose: function (datas) {
+                start.max = datas; //结束日选好后，重置开始日的最大日期
+            }
+        };
+        laydate(start);
+        laydate(end);
+        $("#start_time").val(getCurrentDate())
+        $("#end_time").val(getCurrentDate())
+
+
+        $('#status').chosen();
+
+        function getCurrentDate() {
+            var oDate = new Date(),
+                oYear = oDate.getFullYear(),
+                oMonth = oDate.getMonth() + 1,
+                oDay = oDate.getDate(),
+                oHour = oDate.getHours(),
+                oMin = oDate.getMinutes(),
+                oSen = oDate.getSeconds(),
+                oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay);//最后拼接时间
+            return oTime;
+        };
+
+        function getMyDate(str) {
+            var oDate = new Date(str),
+                oYear = oDate.getFullYear(),
+                oMonth = oDate.getMonth() + 1,
+                oDay = oDate.getDate(),
+                oHour = oDate.getHours(),
+                oMin = oDate.getMinutes(),
+                oSen = oDate.getSeconds(),
+                oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + " " + getzf(oHour) + ":" + getzf(oMin) + ":" + getzf(oSen);//最后拼接时间
+            return oTime;
+        };
+
+        //补0操作
+        function getzf(num) {
+            if (parseInt(num) < 10) {
+                num = '0' + num;
+            }
+            return num;
+        }
+
+        $('#search').click(function () {
+            $('#exampleTableEvents').bootstrapTable('refresh', {
+                url: "/task_group_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json"
+            });
+
+        })
+
+        $('#remove').click(function () {
+
+            var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
+            if (rows.length == 0) {// rows 主要是为了判断是否选中，下面的else内容才是主要
+                layer.msg("请先选择要删除的记录!");
+                return;
+            } else {
+                layer.confirm('是否删除执行记录', {
+                    btn: ['确定','取消'] //按钮
+                }, function(index){
+                    var ids = new Array();// 声明一个数组
+                    $(rows).each(function () {// 通过获得别选中的来进行遍历
+                        ids.push(this.id);// cid为获得到的整条数据中的一列
+                    });
+                    console.log(ids)
+                    deleteMs(ids)
+                    layer.close(layer.index);
+                }, function(){
+
+                });
+
+
+            }
+
+        })
+
+        function deleteMs(ids) {
+            $.ajax({
+                url: "task_group_logs_delete",
+                data: "ids=" + ids,
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    console.info("success")
+                    $('#exampleTableEvents').bootstrapTable('refresh', {
+                        url: "/task_group_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json"
+                    });
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+
+        window.operateEvents = {
+            'click #log_txt': function (e, value, row, index) {
+                row.job_context
+                openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
+            },
+            'click #sub_task_log_instance': function (e, value, row, index) {
+                row.job_context
+                openTabPage("task_log_instance.html?group_id="+row.id, "任务组:"+row.job_context + ":子任务日志")
+            },
+            'click #retry': function (e, value, row, index) {
+                layer.confirm('确定重试任务吗?', {
+                    btn: ['重试', '重试最新版本'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    btn1:function(){
+                        $.ajax({
+                            url: "retry",
+                            data: "id=" + row.id+"&new_version=false",
+                            type: "post",
+                            dataType: "json",
+                            success: function (data) {
+                                console.info("success")
+                                layer.close(index)
+                            },
+                            error: function (data) {
+                                console.info("error: " + data.responseText);
+                            }
+
+                        });
+                    },
+                    btn2:function () {
+                        $.ajax({
+                            url: "retry",
+                            data: "id=" + row.id+"&new_version=true",
+                            type: "post",
+                            dataType: "json",
+                            success: function (data) {
+                                console.info("success")
+                                layer.close(index)
+                            },
+                            error: function (data) {
+                                console.info("error: " + data.responseText);
+                            }
+
+                        });
+                    }
+                });
+            },
+            'click #kill': function (e, value, row, index) {
+                row.job_context
+//                if (row.status != "running") {
+//                    layer.msg("当前任务状态不支持杀死")
+//                    return
+//                }
+                layer.confirm('确定杀死任务吗?', {
+                    btn: ['确定', '取消'] //按钮
+                }, function (index) {
+
+                    $.ajax({
+                        url: "killJobGroup",
+                        data: "id=" + row.id,
+                        type: "post",
+                        dataType: "json",
+                        success: function (data) {
+                            console.info("success")
+                            layer.close(index)
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+                    layer.msg("杀死中")
+                }, function () {
+
+                });
+
+            },
+            'click #spark_monitor': function (e, value, row, index) {
+                $.ajax({
+                    url: "getSparkMonitor",
+                    data: "executor=" + row.executor,
+                    type: "post",
+                    dataType: "json",
+                    success: function (data) {
+                        console.info("success")
+                        if (!data && typeof data != "undefined" && data != 0 || data.length < 1) {
+                            if (typeof row.history_server == "undefined"){
+                                layer.msg("无法找到历史服务器并且应用程序已经死亡")
+                                return;
+                            }
+                            window.open(row.history_server + "/" + row.application_id)
+                            return;
+                        }
+                        console.info("http://" + data.zdh_host + ":" + data.web_port)
+                        window.open("http://" + data.zdh_host + ":" + data.web_port)
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+
+            },
+        };
+
+        function operateFormatter(value, row, index) {
+            return [
+                ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+                // ' <button id="log_txt" name="log_txt" type="button" class="btn btn-outline btn-sm" title="日志">日志\n' +
+                // '                                        <i class="glyphicon glyphicon-file" aria-hidden="true"></i>\n' +
+                // '                                    </button>' +
+                // ' <button id="kill" name="kill" type="button" class="btn btn-outline btn-sm" title="杀死任务">杀死\n' +
+                // '                                        <i class="glyphicon glyphicon-stop" aria-hidden="true"></i>\n' +
+                // '                                    </button>'
+                // +
+                ' <button id="spark_monitor" name="spark_monitor" type="button" class="btn btn-outline btn-sm" title="SPARK监控">监控\n' +
+                '                                        <i class="glyphicon glyphicon-stop" aria-hidden="true"></i>\n' +
+                '                                    </button>'
+                +
+                '</div>'
+
+            ].join('');
+
+        }
+
+        $('#exampleTableEvents').bootstrapTable({
+            url: "/task_group_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            search: true,
+            pagination: true,
+            showRefresh: false,
+            showToggle: true,
+            showColumns: true,
+            iconSize: 'outline',
+            toolbar: '#exampleTableEventsToolbar',
+            icons: {
+                refresh: 'glyphicon-repeat',
+                toggle: 'glyphicon-list-alt',
+                columns: 'glyphicon-list'
+            },
+            columns: [{
+                checkbox: true,
+                field: 'state',
+                sortable: true
+            }, {
+                field: 'id',
+                title: 'ID',
+                visible: false
+            }, {
+                field: 'job_id',
+                title: '任务ID',
+                sortable: false,
+                visible: false
+            }, {
+                field: 'job_context',
+                title: '任务说明',
+                sortable: true
+            }, {
+                field: 'etl_date',
+                title: '数据处理日期',
+                sortable: true
+            }, {
+                field: 'process_msg',
+                title: '进度信息',
+                sortable: true,
+                visible: false
+            }, {
+                field: 'run_time',
+                title: '任务触发时间',
+                sortable: true,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
+            }, {
+                field: 'update_time',
+                title: '任务更新时间',
+                sortable: true,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
+            }, {
+                field: 'executor',
+                title: '执行器',
+                sortable: true,
+                visible: false
+            }, {
+                field: 'application_id',
+                title: '应用id',
+                sortable: true,
+                visible: false
+            }, {
+                field: 'master',
+                title: '调度模式',
+                sortable: true,
+                visible: false
+            }, {
+                field: 'history_server',
+                title: '历史服务器',
+                sortable: true,
+                visible: false
+            }, {
+                field: 'process',
+                title: '进度',
+                sortable: true,
+                formatter: function (value, row, index) {
+                    var context = row.process_msg
+
+                    var class_str = "progress-bar progress-bar-success"
+                    if (row.status == "error" || row.status == "killed") {
+                        class_str = "progress-bar progress-bar-danger"
+                        //context = "采集失败"
+                    }
+                    return [
+                        '<small>' + context + value + '%</small>' +
+                        '<div class="progress progress-mini">' +
+                        '<div style="width: ' + value + '%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="35" role="progressbar" class="' + class_str + '">' +
+                        '</div>' +
+                        '</div>'
+                    ].join('');
+                }
+            }, {
+                field: 'status',
+                title: '任务执行状态',
+                sortable: true,
+                width:230,
+                events: operateEvents,//给按钮注册事件
+                formatter: function (value, row, index) {
+                    var r1=row
+                    var class_str = "btn-primary  btn-xs"
+                    var class_str2 = "btn-primary  "
+                    var context = "未运行"
+                    var btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>'
+                    var btn_kill_str='<button id="kill" type="button" class="btn btn-danger btn-xs">杀死</button>'
+                    if(row.is_retryed==1){
+                        btn_retry_str='<button disabled="disabled" id="retry" type="button" class="btn btn-primary btn-xs">重试</button>'
+                    }
+
+                    var process=100
+
+                    if (value == "finish") {
+                        context = "完成"
+                        class_str = "btn-primary btn-xs"
+                        btn_retry_str=''
+                        btn_kill_str=''
+                    }
+                    if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
+                        context = "运行中"
+                        class_str = "btn-primary  btn-xs"
+                        class_str2= "btn-danger  "
+                        btn_retry_str=''
+                    }
+                    if (value == "error") {
+                        context = "失败"
+                        class_str = "btn-danger btn-xs"
+                        class_str2 = "btn-primary "
+                        btn_kill_str=''
+                    }
+                    if (value == "retry") {
+                        context = "重试"
+                        class_str = "btn-danger btn-xs"
+                    }
+                    if (value == "kill" ){
+                        context = "杀死中"
+                        class_str = "btn-danger btn-xs"
+                        btn_kill_str=''
+                    }
+                    if (value=="killed" ){
+                        context = "已杀死"
+                        class_str = "btn-danger btn-xs"
+                        btn_kill_str=''
+                    }
+
+                    if(context=="未运行"){
+                        btn_retry_str=''
+                        btn_kill_str=''
+                    }
+                    var url="log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time
+                    var title=row.job_context + "日志"
+                    return [
+                        '<div style="text-align:center" >'+
+                        '<div class="btn-group">'+
+                        '<button type="button" class="btn '+class_str+'" >'+context+'</button>'+
+                        btn_retry_str +
+                        btn_kill_str +
+                        '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+
+                        '<button type="button" id="sub_task_log_instance" class="btn btn-info btn-xs">子任务</button>'+
+                        '</div>'+
+                        '</div>'
+                    ].join('');
+                }
+            }, {
+                field: 'operate',
+                title: '监控',
+                events: operateEvents,//给按钮注册事件
+                align: "center",
+                valign: "middle",
+                formatter: operateFormatter //表格中增加按钮
+            }]
+        });
+
+    });
+</script>
+</body>
+
+</html>

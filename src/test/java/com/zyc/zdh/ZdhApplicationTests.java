@@ -2,6 +2,7 @@ package com.zyc.zdh;
 
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.Role;
+import com.zyc.zdh.job.CheckDepJob;
 import com.zyc.zdh.service.RoleService;
 import net.sf.ehcache.CacheManager;
 import org.junit.Test;
@@ -47,6 +48,12 @@ public class ZdhApplicationTests {
 
 		System.out.println(taskLogInstanceMapper.allTaskNum());
 
+	}
+
+	@Test
+	public void checkDepJobTest(){
+
+		CheckDepJob.run3();
 	}
 
 

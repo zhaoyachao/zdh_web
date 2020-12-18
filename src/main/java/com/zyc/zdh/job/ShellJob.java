@@ -12,29 +12,10 @@ import java.util.Date;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class ShellJob extends JobCommon {
+public class ShellJob extends JobCommon2 {
 
     public static String jobType = "SHELL";
 
-    public static void run(TaskLogInstance tli,int is_retry) {
-        Thread td=Thread.currentThread();
-        long threadId = td.getId();
-        System.out.println("线程id:"+threadId);
-        String tk=myid+"_"+threadId+"_"+tli.getId();
-        JobCommon.chm.put(tk,td);
-        TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-        tlim.updateThreadById(tk,tli.getId());
-        tli.setThread_id(tk);
-        try{
-            JobCommon.chooseCommand(jobType,tli);
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            JobCommon.chm.remove(tk);
-        }
-
-
-    }
 
     public static Boolean shellCommand(TaskLogInstance tli) {
         Boolean exe_status = true;
@@ -127,7 +108,12 @@ public class ShellJob extends JobCommon {
                         //命令行执行
                         logger.info("[" + jobType + "] JOB ,以命令行方式执行");
                         insertLog(tli, "info", "[" + jobType + "] JOB ,以命令行方式执行");
-                        result = CommandUtils.exeCommand(newcommand);
+                        if (system.toLowerCase().startsWith("win")) {
+                            System.out.println("当前系统为：" + system);
+                            result = CommandUtils.exeCommand("cmd.exe /k " + newcommand);
+                        } else {
+                            result = CommandUtils.exeCommand(newcommand);
+                        }
                     }
                 }
                 logger.info("[" + jobType + "] JOB ,执行结果:" + result.trim());
@@ -142,6 +128,7 @@ public class ShellJob extends JobCommon {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
+            jobFail(jobType,tli);
             exe_status = false;
         }
         return exe_status;

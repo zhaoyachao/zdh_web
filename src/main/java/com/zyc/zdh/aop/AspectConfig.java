@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -30,7 +31,7 @@ public class AspectConfig implements Ordered{
 	//在方法上的自定义注解使用@annotation,类上自定义注解使用@within(com.zyc.springboot.类名)
 	@Pointcut("@annotation(com.zyc.zdh.aop.Log)")
 	public void pointcutMethod2(){}
-	@Pointcut("execution(* com.zyc.zdh.service.impl.RoleServiceImpl.*(..))")
+	@Pointcut("execution(* com.zyc.zdh.controller.Zdh*.*(..))")
 	public void pointcutMethod3(){}
 
 	@Around(value = "pointcutMethod()")
@@ -45,12 +46,17 @@ public class AspectConfig implements Ordered{
 		return null;
 	}
 	
-	@Around(value = "pointcutMethod2()")
+	@Around(value = "pointcutMethod3()")
 	public Object aroundLog(ProceedingJoinPoint pjp){
 		try {
-			logger.info("aroundLog1....start...");
+			String classType = pjp.getTarget().getClass().getName();
+			Signature sig = pjp.getSignature();
+			MethodSignature msig = (MethodSignature) sig;
+			Object target = pjp.getTarget();
+			Method currentMethod = target.getClass().getMethod(msig.getName(), msig.getParameterTypes());
+			logger.info("开始执行方法:"+classType+"."+currentMethod.getName());
 			Object o=pjp.proceed();
-			logger.info("aroundLog1...end....");
+			logger.info("结束执行方法:"+classType+"."+currentMethod.getName());
 			return o;
 		} catch (Throwable e) {
 			e.printStackTrace();

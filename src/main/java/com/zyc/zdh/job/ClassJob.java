@@ -7,7 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-public class ClassJob extends JobCommon{
+public class ClassJob extends JobCommon2{
 
     private static String jobType = "CLASS";
 

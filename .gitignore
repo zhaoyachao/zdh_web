@@ -30,3 +30,5 @@ shell_script/
 release/bin/logs/
 
 spark_submit/
+
+src/main/resources/application-tmp.properties

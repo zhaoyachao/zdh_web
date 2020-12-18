@@ -64,4 +64,8 @@ public class DateUtil {
         return df_time.format(dt);
     }
 
+    public static String getCurrentTime(){
+        return df_time.format(new Timestamp(new Date().getTime()));
+    }
+
 }

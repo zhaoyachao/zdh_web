@@ -9,24 +9,36 @@
         }
         $('#exampleTableEvents').attr("data-height",height)
         $('#add').click(function () {
-            parent.layer.open({
-                type: 2,
-                title: 'ETL任务配置',
-                shadeClose: false,
-                resize: true,
-                fixed: false,
-                maxmin: true,
-                shade: 0.1,
-                area: ['45%', '60%'],
-                //area: ['450px', '500px'],
-                content: "dispatch_task_add_index?id=-1", //iframe的url
-                end: function () {
-                    $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: 'dispatch_task_list'
-                    });
-                }
+
+            layer.confirm('是否新增调度任务', {
+                btn: ['确定','取消'] //按钮
+            }, function(index){
+                openTabPage("dispatch_task_group_add_index.html?id=-1", "创建调度任务")
+                layer.close(layer.index);
+            }, function(){
+
             });
+            // $(this).removeClass("active");
+            // $(this).removeClass("hover");
+            // parent.layer.open({
+            //     type: 2,
+            //     title: 'ETL任务配置',
+            //     shadeClose: false,
+            //     resize: true,
+            //     fixed: false,
+            //     maxmin: true,
+            //     shade: 0.1,
+            //     area: ['45%', '60%'],
+            //     //area: ['450px', '500px'],
+            //     content: "dispatch_task_group_add_index?id=-1", //iframe的url
+            //     end: function () {
+            //         $('#exampleTableEvents').bootstrapTable('refresh', {
+            //             url: 'dispatch_task_list'
+            //         });
+            //     }
+            // });
         })
+
 
         $('#remove').click(function () {
 
@@ -218,23 +230,24 @@
             'click #edit': function (e, value, row, index) {
 
                 $("#id").val(row.job_id)
-                top.layer.open({
-                    type: 2,
-                    title: '调度任务配置',
-                    shadeClose: false,
-                    resize: true,
-                    fixed: false,
-                    maxmin: true,
-                    shade: 0.1,
-                    area: ['45%', '60%'],
-                    //area: ['450px', '500px'],
-                    content: "dispatch_task_add_index?id=" + row.job_id, //iframe的url
-                    end: function () {
-                        $('#exampleTableEvents').bootstrapTable('refresh', {
-                            url: 'dispatch_task_list'
-                        });
-                    }
-                });
+                openTabPage("dispatch_task_group_add_index.html?id="+ row.job_id, "修改调度任务")
+                // top.layer.open({
+                //     type: 2,
+                //     title: '调度任务配置',
+                //     shadeClose: false,
+                //     resize: true,
+                //     fixed: false,
+                //     maxmin: true,
+                //     shade: 0.1,
+                //     area: ['45%', '60%'],
+                //     //area: ['450px', '500px'],
+                //     content: "dispatch_task_group_add_index?id=" + row.job_id, //iframe的url
+                //     end: function () {
+                //         $('#exampleTableEvents').bootstrapTable('refresh', {
+                //             url: 'dispatch_task_list'
+                //         });
+                //     }
+                // });
 
             },
             'click #del': function (e, value, row, index) {
@@ -251,6 +264,16 @@
 
             },
             'click #execute': function (e, value, row, index) {
+
+                // if(row.use_quartz_time == 'on' ){
+                //    if(row.expr.endsWith("s") || row.expr.endsWith("h") || row.expr.endsWith("d")
+                //        || row.expr.endsWith("m") || row.expr.endsWith("y")){
+                //        layer.msg("使用quartz时间,只支持cron表达式,请修改任务表达式,或者取消使用调度触发时间")
+                //        return;
+                //    }
+                //
+                // }
+
                 layer.confirm('手动执行,是否重置已执行次数(手动执行完成,需要重新配置调度)', {
                     btn: ['重置并执行','普通执行','并行执行'], //按钮
                     cancel:function(index, layero){
@@ -342,8 +365,8 @@
         };
 
         window.operateEvents3 = {
-            'click #task_log_instance': function (e, value, row, index) {
-                openTabPage("task_log_instance.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id, "执行记录:"+row.job_context)
+            'click #task_group_log_instance': function (e, value, row, index) {
+                openTabPage("task_group_log_instance.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id, "任务组实例:"+row.job_context)
             }
         };
 
@@ -433,23 +456,21 @@
                 field: 'job_id',
                 title: 'JOB_ID',
                 sortable: false
+            },{
+                field: 'expr',
+                title: '表达式',
+                sortable: false,
+                visible:false
             }, {
-                field: 'more_task',
-                title: '任务类型',
-                sortable: true
+                field: 'use_quartz_time',
+                title: '是否使用quart时间',
+                sortable: false,
+                visible:false
             },  {
                 field: 'job_context',
                 title: '调度说明',
                 sortable: false
-            }, {
-                field: 'etl_task_id',
-                title: 'ETL任务ID',
-                sortable: false
-            }, {
-                field: 'etl_context',
-                title: 'ETL任务说明',
-                sortable: false
-            }, {
+            },  {
                 field: 'status',
                 title: '调度器状态及执行记录',
                 sortable: true,
@@ -457,7 +478,7 @@
                 events: operateEvents3,//给按钮注册事件
                 formatter: function (value, row, index) {
                     var context = "未启用"
-                    var class_str = "btn-danger"
+                    var class_str = "btn-danger btn-xs"
                     if (value == "create") {
                         context = "未启用"
                         class_str = "btn-danger  btn-xs"
@@ -483,7 +504,7 @@
                         '<div style="text-align:center" >'+
                         '<div class="btn-group">'+
                         '<button type="button" class="btn '+class_str+'">'+context+'</button>'+
-                        '<button type="button" id="task_log_instance" class="btn btn-warning btn-xs">执行记录</button>'+
+                        '<button type="button" id="task_group_log_instance" class="btn btn-warning btn-xs">执行记录</button>'+
                         '</div>'+
                         '</div>'
                     ].join('');
@@ -523,12 +544,7 @@
                 title: '计划执行次数',
                 sortable: true,
                 visible:false
-            }, {
-                field: 'command',
-                title: 'command',
-                sortable: true,
-                visible:false
-            }, {
+            },  {
                 field: 'last_time',
                 title: '上次任务执行时间',
                 sortable: true,

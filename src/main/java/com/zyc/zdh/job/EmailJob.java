@@ -9,6 +9,7 @@ import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +47,12 @@ public class EmailJob {
                     String info = "任务ID:" + next.getJob_id() + ",任务执行时间:" + next.getLog_time().toString() + ",日志["+next.getLevel()+"]:" + next.getMsg();
                     sb.append(info + "\r\n");
                 }
-                logger.info("检测失败任务:"+emailTaskLogs.getJob_id()+",对应主键:"+emailTaskLogs.getId());
+                logger.info("检测失败任务:"+emailTaskLogs.getJob_id()+",对应主键:"+emailTaskLogs.getId()+",对应任务组id:"+emailTaskLogs.getGroup_id());
                 List<String> emails=new ArrayList<>();
                 List<String> phones=new ArrayList<>();
                 QuartzJobInfo qj=quartzJobMapper.selectByPrimaryKey(emailTaskLogs.getJob_id());
-                if(qj.getAlarm_enabled()!=null && qj.getAlarm_enabled().equalsIgnoreCase("on") && qj.getAlarm_account()!=null && !qj.getAlarm_account().equalsIgnoreCase("")){
+                if(qj.getAlarm_enabled()!=null && qj.getAlarm_enabled().equalsIgnoreCase("on") &&
+                        qj.getAlarm_account()!=null && !qj.getAlarm_account().equalsIgnoreCase("")){
                     List<User> users=accountService.findByUserName2(qj.getAlarm_account().split(","));
                     for(User user:users){
                       if(user.getEmail()!=null){
@@ -101,6 +103,36 @@ public class EmailJob {
                     }
 
                     taskLogInstanceMapper.updateNoticeById("alarm",tli.getId());
+                }
+            }
+
+            //超时,但之后完成任务
+            List<TaskLogInstance> taskLogInstances2= taskLogInstanceMapper.selectOverTimeFinish();
+            if(taskLogInstances2!=null && taskLogInstances2.size()>0){
+                System.out.println("超时完成任务量:"+taskLogInstances2.size());
+                for(TaskLogInstance tli : taskLogInstances2){
+                    List<User> users=accountService.findByUserName2(tli.getAlarm_account().split(","));
+                    List<String> emails=new ArrayList<>();
+                    List<String> phones=new ArrayList<>();
+                    for(User user:users){
+                        if(user.getEmail()!=null){
+                            System.out.println("email:"+user.getEmail());
+                            emails.add(user.getEmail());
+                        }
+                        if(user.getPhone()!=null){
+                            phones.add(user.getPhone());
+                        }
+                    }
+
+                    String msg="超时任务id:"+tli.getId()+" ,已完成,完成时间:"+ DateUtil.formatTime(tli.getUpdate_time());
+                    if(emails.size()>0){
+                        jemailService.sendEmail(emails.toArray(new String[0]),"任务监控:"+tli.getJob_context(),msg);
+                    }
+                    if(phones.size()>0&& tli.getEmail_and_sms()!=null && tli.getEmail_and_sms().equalsIgnoreCase("on")){
+                        logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
+                    }
+
+                    taskLogInstanceMapper.updateNoticeById("true",tli.getId());
                 }
             }
 

@@ -44,22 +44,6 @@
 
             <form role="form" class="form-inline" id="task_logs_form">
                 <div class="form-group">
-                    <div class="input-group date form_datetime">
-                        <input id="start_time" name="start_time" class="form-control" type="text" value=""
-                               placeholder="开始时间" readonly>
-                        <span class="add-on"><i class="icon-remove"></i></span>
-                        <span class="add-on"><i class="icon-calendar"></i></span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="input-group date form_datetime">
-                        <input id="end_time" name="end_time" class="form-control" type="text" value=""
-                               placeholder="结束时间" readonly>
-                        <span class="add-on"><i class="icon-remove"></i></span>
-                        <span class="add-on"><i class="icon-calendar"></i></span>
-                    </div>
-                </div>
-                <div class="form-group">
                     <div class="input-group">
                         <select data-placeholder="状态" class="chosen-select" style="width:110px;" tabindex="2"
                                 id="status" name="status">
@@ -160,33 +144,33 @@
 
 
         //日期范围限制
-        var start = {
-            elem: '#start_time',
-            format: 'YYYY-MM-DD',
-            min: '2000-01-01',
-            max: '2099-06-16', //最大日期
-            istime: true,
-            istoday: false,
-            choose: function (datas) {
-                end.min = datas; //开始日选好后，重置结束日的最小日期
-                end.start = datas //将结束日的初始值设定为开始日
-            }
-        };
-        var end = {
-            elem: '#end_time',
-            format: 'YYYY-MM-DD',
-            min: '2000-01-01',
-            max: '2099-06-16',
-            istime: true,
-            istoday: false,
-            choose: function (datas) {
-                start.max = datas; //结束日选好后，重置开始日的最大日期
-            }
-        };
-        laydate(start);
-        laydate(end);
-        $("#start_time").val(getCurrentDate())
-        $("#end_time").val(getCurrentDate())
+        // var start = {
+        //     elem: '#start_time',
+        //     format: 'YYYY-MM-DD',
+        //     min: '2000-01-01',
+        //     max: '2099-06-16', //最大日期
+        //     istime: true,
+        //     istoday: false,
+        //     choose: function (datas) {
+        //         end.min = datas; //开始日选好后，重置结束日的最小日期
+        //         end.start = datas //将结束日的初始值设定为开始日
+        //     }
+        // };
+        // var end = {
+        //     elem: '#end_time',
+        //     format: 'YYYY-MM-DD',
+        //     min: '2000-01-01',
+        //     max: '2099-06-16',
+        //     istime: true,
+        //     istoday: false,
+        //     choose: function (datas) {
+        //         start.max = datas; //结束日选好后，重置开始日的最大日期
+        //     }
+        // };
+        // laydate(start);
+        // laydate(end);
+        // $("#start_time").val(getCurrentDate())
+        // $("#end_time").val(getCurrentDate())
 
 
         $('#status').chosen();
@@ -225,7 +209,7 @@
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: "/task_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
+                url: "/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group_id="+s.group_id,
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
@@ -267,11 +251,10 @@
                 success: function (data) {
                     console.info("success")
                     $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: "/task_logs?" + $("#task_logs_form").serialize(),
+                        url: "/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group_id="+s.group_id,
                         contentType: "application/json;charset=utf-8",
                         dataType: "json"
                     });
-                    requestEcharts()
                 },
                 error: function (data) {
                     console.info("error: " + data.responseText);
@@ -294,7 +277,7 @@
                     },
                     btn1:function(){
                         $.ajax({
-                            url: "retry",
+                            url: "retryJob",
                             data: "id=" + row.id+"&new_version=false",
                             type: "post",
                             dataType: "json",
@@ -310,7 +293,7 @@
                     },
                     btn2:function () {
                         $.ajax({
-                            url: "retry",
+                            url: "retryJob",
                             data: "id=" + row.id+"&new_version=true",
                             type: "post",
                             dataType: "json",
@@ -405,7 +388,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
-            url: "/task_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
+            url: "/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group="+s.group_id,
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             search: true,
@@ -429,13 +412,17 @@
                 title: 'ID',
                 visible: false
             }, {
+                field: 'etl_context',
+                title: '子任务说明',
+                sortable: true
+            }, {
                 field: 'job_id',
                 title: '任务ID',
                 sortable: false,
                 visible: false
             }, {
                 field: 'job_context',
-                title: '任务说明',
+                title: '任务组',
                 sortable: true
             }, {
                 field: 'etl_date',
@@ -525,7 +512,7 @@
                         btn_retry_str=''
                         btn_kill_str=''
                     }
-                    if (value == "etl" || value == "dispatch" || value == "wait_retry") {
+                    if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
                         context = "运行中"
                         class_str = "btn-primary  btn-xs"
                         class_str2= "btn-danger  "
@@ -562,7 +549,7 @@
                         '<div style="text-align:center" >'+
                         '<div class="btn-group">'+
                         '<button type="button" class="btn '+class_str+'" >'+context+'</button>'+
-                        btn_retry_str +
+                        // btn_retry_str +
                         btn_kill_str +
                         '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+
                         '</div>'+
@@ -579,6 +566,7 @@
             }]
         });
 
+        $('#search').click()
     });
 </script>
 </body>

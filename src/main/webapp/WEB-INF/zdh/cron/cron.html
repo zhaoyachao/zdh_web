@@ -1,0 +1,468 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>在线Cron表达式生成器 - 码工具</title>
+	<meta name="keywords" content="cron,generate Cron Expression online,Quartz Cron,cron在线生成器,计算cron执行时间,Spring定时器">
+	<meta name="description" content="可以在线生成Quartz Cron表达式,检验Cron表达式正确性，对Quartz Cron表达式的可视化双向解析和生成，并计算出未来执行实现">
+	<meta http-equiv="Cache-Control" content="no-transform">
+	<meta http-equiv="Cache-Control" content="no-siteapp">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,user-scalable=yes">
+	<link rel="shortcut icon" href="img/common/favicon.png" type="image/x-icon">
+	<link rel="bookmark" href="img/common/favicon.png">
+
+	<link rel="stylesheet" href="cron/css/bootstrap.min.css">
+	<link href="cron/css/main.css?v=377" rel="stylesheet" type="text/css">
+	<style type="text/css">
+		input[type=number] {
+			height: 25px;
+			width: 52px;
+		}
+		.zhiding .block{
+			width:50px;
+			margin-right:10px;
+			display: inline-block;
+		}
+		input.col{
+			width:95px;
+			margin-right: 2px;
+		}
+	</style>
+</head>
+<body>
+<div id="mainContent" class="wrapper">
+	<div class="row"><div class="col-lg-9">
+		<div>
+
+			<ul class="nav nav-tabs" role="tablist">
+				<li role="presentation" class="active">
+					<a href="#second" aria-controls="second" role="tab" data-toggle="tab">秒</a>
+				</li>
+				<li role="presentation">
+					<a href="#minute" aria-controls="minute" role="tab" data-toggle="tab">分钟</a></li>
+				<li role="presentation">
+					<a href="#hour" aria-controls="hour" role="tab" data-toggle="tab">小时</a>
+				</li>
+				<li role="presentation">
+					<a href="#day" aria-controls="day" role="tab" data-toggle="tab">日</a>
+				</li>
+				<li role="presentation">
+					<a href="#month" aria-controls="month" role="tab" data-toggle="tab">月</a>
+				</li>
+				<li role="presentation">
+					<a href="#week" aria-controls="week" role="tab" data-toggle="tab">周</a>
+				</li>
+				<li role="presentation">
+					<a href="#year" aria-controls="year" role="tab" data-toggle="tab">年</a>
+				</li>
+			</ul>
+
+			<div class="tab-content">
+
+				<div role="tabpanel" class="tab-pane active" id="second">
+					<div class="radio">
+						<label>
+							<input type="radio" name="secondType" value="All" checked="checked">
+							每秒 允许的通配符[, - * /]
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="secondType" value="Cyclic">
+							周期从
+							<input type="number" maxlength="2" max="59" min="0" value="0" id="secondTypeCyclic_1">
+							-
+							<input type="number" maxlength="2" max="59" min="1" value="1" id="secondTypeCyclic_2">
+							秒
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="secondType" value="Interval">
+							从
+							<input type="number" maxlength="2" max="59" min="0" value="0" id="secondTypeInterval_1" value="">
+							秒开始,每
+							<input type="number" maxlength="2" max="59" min="1" value="1" id="secondTypeInterval_2" value="">
+							秒执行一次
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="secondType" value="Assigned">
+							指定
+						</label>
+					</div>
+					<div style="margin-left: 20px;">
+						<div id="secondTypeAssigned_1" class="zhiding"></div>
+
+					</div>
+				</div>
+
+				<div role="tabpanel" class="tab-pane" id="minute">
+					<div class="radio">
+						<label>
+							<input type="radio" name="minuteType" value="All" checked="checked">
+							每分钟 允许的通配符[, - * /]
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="minuteType" value="Cyclic">
+							周期从
+							<input type="number" maxlength="2" max="59" min="0" value="0" id="minuteTypeCyclic_1" value="">
+							-
+							<input type="number" maxlength="2" max="59" min="1" value="1" id="minuteTypeCyclic_2" value="">
+							分钟
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="minuteType" value="Interval">
+							从
+							<input type="number" maxlength="2" max="59" min="0" value="0" id="minuteTypeInterval_1" value="">
+							分钟开始,每
+							<input type="number" maxlength="2" max="59" min="1" value="1" id="minuteTypeInterval_2" value="">
+							分钟执行一次
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="minuteType" value="Assigned">
+							指定
+						</label>
+					</div>
+					<div style="margin-left: 20px;">
+						<div id="minuteTypeAssigned_1" class="zhiding"></div>
+
+					</div>
+				</div>
+
+				<div role="tabpanel" class="tab-pane" id="hour">
+					<div class="radio">
+						<label>
+							<input type="radio" name="hourType" value="All" checked="checked">
+							每小时 允许的通配符[, - * /]
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="hourType" value="Cyclic">
+							周期从
+							<input type="number" maxlength="2" max="23" min="0" value="0" id="hourTypeCyclic_1" value="">
+							-
+							<input type="number" maxlength="2" max="23" min="1" value="1" id="hourTypeCyclic_2" value="">
+							小时
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="hourType" value="Interval">
+							从
+							<input type="number" maxlength="2" max="23" min="0" value="0" id="hourTypeInterval_1" value="">
+							时开始,每
+							<input type="number" maxlength="2" max="23" min="1" value="1" id="hourTypeInterval_2" value="">
+							小时执行一次
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="hourType" value="Assigned">
+							指定
+						</label>
+					</div>
+					<div style="margin-left: 20px;">
+
+						<div id="hourTypeAssigned_1" class="zhiding"></div>
+					</div>
+				</div>
+
+				<div role="tabpanel" class="tab-pane" id="day">
+					<div class="radio">
+						<label>
+							<input type="radio" name="dayType" value="All" checked="checked">
+							每日 允许的通配符[, - * / L W]
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="dayType" value="Cyclic">
+							周期从
+							<input type="number" maxlength="2" max="31" min="1" value="1" id="dayTypeCyclic_1" value="">
+							-
+							<input type="number" maxlength="2" max="31" min="2" value="2" id="dayTypeCyclic_2" value="">
+							日
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="dayType" value="Interval">
+							从
+							<input type="number" maxlength="2" max="31" min="1" value="1" id="dayTypeInterval_1" value="">
+							日开始,每
+							<input type="number" maxlength="2" max="31" min="1" value="1" id="dayTypeInterval_2" value="">
+							日执行一次
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="dayType" value="Assigned">
+							指定
+						</label>
+					</div>
+					<div style="margin-left: 20px;">
+						<div id="dayTypeAssigned_1" class="zhiding"></div>
+
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="dayType" value="NotAssigned">
+							不指定
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="dayType" value="RecentDays">
+							每月
+							<input type="number" id="dayTypeRecentDays_1" value="">
+							号最近的那个工作日
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="dayType" value="LastDayOfMonth">
+							本月最后一天
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="dayType" value="LastDayOfMonthRecentDays">
+							本月最后一个工作日
+						</label>
+					</div>
+				</div>
+
+				<div role="tabpanel" class="tab-pane" id="month">
+					<div class="radio">
+						<label>
+							<input type="radio" name="monthType" value="All" checked="checked">
+							每月 允许的通配符[, - * /]
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="monthType" value="Cyclic">
+							周期从
+							<input type="number" maxlength="2" max="12" min="1" value="1" id="monthTypeCyclic_1" value="">
+							-
+							<input type="number" maxlength="2" max="12" min="1" value="2" id="monthTypeCyclic_2" value="">
+							月
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="monthType" value="Interval">
+							从
+							<input type="number" maxlength="2" max="12" min="1" value="1" id="monthTypeInterval_1" value="">
+							月开始,每
+							<input type="number" maxlength="2" max="12" min="1" value="1" id="monthTypeInterval_2" value="">
+							月执行一次
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="monthType" value="Assigned">
+							指定
+						</label>
+					</div>
+					<div style="margin-left: 20px;">
+						<div id="monthTypeAssigned_1" class="zhiding"></div>
+
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="monthType" value="NotAssigned">
+							不指定
+						</label>
+					</div>
+				</div>
+
+				<div role="tabpanel" class="tab-pane" id="week">
+					<div class="radio">
+						<label>
+							<input type="radio" name="weekType" value="All" checked="checked">
+							每周 允许的通配符[, - * / L #]
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="weekType" value="Cyclic">
+							周期从
+							<input type="number" maxlength="2" max="7" min="1" value="1" id="weekTypeCyclic_1" value="">
+							-
+							<input type="number" maxlength="2" max="7" min="1" value="1" id="weekTypeCyclic_2" value="">
+							周
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="weekType" value="WeeksOfWeek">
+							第
+							<input type="number" maxlength="2" max="7" min="1" value="1" id="weekTypeWeeksOfWeek_1" value="">
+							周 的星期
+							<input type="number" maxlength="2" max="7" min="1" value="1" id="weekTypeWeeksOfWeek_2" value="">
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="weekType" value="Assigned">
+							指定
+						</label>
+					</div>
+					<div style="margin-left: 20px;">
+						<div id="weekTypeAssigned_1" class="zhiding"></div>
+
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="weekType" value="NotAssigned">
+							不指定
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="weekType" value="LastWeekOfMonth">
+							本月最后一个星期
+							<input type="number" id="weekTypeLastWeekOfMonth_1" value="1">
+						</label>
+					</div>
+				</div>
+
+				<div role="tabpanel" class="tab-pane" id="year">
+					<div class="radio">
+						<label>
+							<input type="radio" name="yearType" value="All" checked="checked">
+							每年 允许的通配符[, - * /]
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="yearType" value="NotAssigned">
+							不指定
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="yearType" value="Cyclic">
+							周期从
+							<input type="number" id="yearTypeCyclic_1" value="2015">
+							-
+							<input type="number" id="yearTypeCyclic_2" value="2299">
+							年
+						</label>
+					</div>
+					<div class="radio">
+						<label>
+							<input type="radio" name="yearType" value="Assigned">
+							指定
+						</label>
+					</div>
+					<div style="margin-left: 20px;">
+						<div id="yearTypeAssigned_1" class="zhiding"></div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<hr>
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				<h3 class="panel-title">结果</h3>
+			</div>
+			<div class="panel-body">
+				<form class="form-inline">
+					<div class="form-group">
+						<label for="result" class="sr-only">Password</label>
+						<table style="height: 100px;">
+							<tbody>
+							<tr>
+								<td>
+								</td>
+								<td align="center">
+									秒
+								</td>
+								<td align="center">
+									分钟
+								</td>
+								<td align="center">
+									小时
+								</td>
+								<td align="center">
+									日
+								</td>
+								<td align="center">
+									月
+									<br>
+								</td>
+								<td align="center">
+									星期
+								</td>
+								<td align="center">
+									年
+								</td>
+							</tr>
+							<tr>
+								<td>
+									表达式字段:
+								</td>
+								<td>
+									<input type="text" disabled name="v_secondType" class="col" value="*" readonly="readonly">
+								</td>
+								<td>
+									<input type="text" disabled name="v_minuteType" class="col" value="*" readonly="readonly">
+								</td>
+								<td>
+									<input type="text" disabled name="v_hourType" class="col" value="*" readonly="readonly">
+								</td>
+								<td>
+									<input type="text" disabled name="v_dayType" class="col" value="*" readonly="readonly">
+								</td>
+								<td>
+									<input type="text" disabled name="v_monthType" class="col" value="*" readonly="readonly">
+								</td>
+								<td>
+									<input type="text" disabled name="v_weekType" class="col" value="?" readonly="readonly">
+								</td>
+								<td>
+									<input type="text" disabled name="v_yearType" class="col" readonly="readonly">
+								</td>
+							</tr>
+							<tr>
+								<td>Cron 表达式:</td>
+								<td colspan="6">
+									<input type="text" name="cron" id="result" style="width:98%;">
+								</td>
+								<td>
+									<input type="button" class="btn btn-info btn-sm" value="反解析到UI" id="analysis">
+								</td>
+							</tr>
+							<tr>
+								<td colspan="8">最近10次运行时间:</td>
+							</tr>
+							<tr>
+								<td colspan="8" id="runTime">
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div></div>
+</div>
+
+<script type="text/javascript" src="cron/common/common.js"></script>
+<script type="text/javascript" src="cron/common/main.js?v=499" charset="utf-8"></script>
+<script src="cron/common/quartz-cron.js?v=0.11"></script>
+</body>
+</html>

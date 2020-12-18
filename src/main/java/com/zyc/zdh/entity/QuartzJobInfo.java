@@ -57,7 +57,51 @@ public class QuartzJobInfo implements Serializable {
     private String alarm_account;
     private String task_log_id;
     private String time_out="86400";
+    private String priority="5";//优先级
+    private Timestamp quartz_time;
+    private String use_quartz_time="off";//是否使用quartz触发时间,on,off,null
+    private String time_diff;//
+    private String jsmind_data;//json 形式,作业直接的关系
 
+    public String getJsmind_data() {
+        return jsmind_data;
+    }
+
+    public void setJsmind_data(String jsmind_data) {
+        this.jsmind_data = jsmind_data;
+    }
+
+    public String getTime_diff() {
+        return time_diff;
+    }
+
+    public void setTime_diff(String time_diff) {
+        this.time_diff = time_diff;
+    }
+
+    public Timestamp getQuartz_time() {
+        return quartz_time;
+    }
+
+    public void setQuartz_time(Timestamp quartz_time) {
+        this.quartz_time = quartz_time;
+    }
+
+    public String getUse_quartz_time() {
+        return use_quartz_time;
+    }
+
+    public void setUse_quartz_time(String use_quartz_time) {
+        this.use_quartz_time = use_quartz_time;
+    }
+
+    public String getPriority() {
+        return priority.equals("")?"5":priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
 
     public long getCount() {
         return count;

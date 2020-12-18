@@ -4,10 +4,12 @@ import com.zyc.notscan.BaseMapper;
 import com.zyc.zdh.entity.EmailTaskLogs;
 import com.zyc.zdh.entity.EtlEcharts;
 import com.zyc.zdh.entity.TaskLogInstance;
+import com.zyc.zdh.entity.task_num_info;
 import org.apache.ibatis.annotations.*;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 
 public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
@@ -16,11 +18,27 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Update(value = "update task_log_instance set status=#{status} where id=#{id}")
     public int updateStatusById(@Param("status") String status, @Param("id") String id);
 
+    @Update(
+            {
+            "<script>",
+            "update task_log_instance set status=#{status} ",
+            "where id in",
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"
+            }
+    )
+    public int updateStatusByIds(@Param("status") String status, @Param("ids") String[] ids);
+
     @Update(value = "update task_log_instance set thread_id=#{thread_id} where id=#{id}")
     public int updateThreadById(@Param("thread_id") String thread_id, @Param("id") String id);
 
-    @Update(value = "update task_log_instance set status=#{status} where id=#{id} and (status='dispatch' or status ='etl')")
-    public int updateStatusById2(@Param("status") String status,@Param("id") String id);
+    @Update(value = "update task_log_instance set status= case `status` when 'check_dep' then 'killed' when 'wait_retry' then 'killed' else 'kill'  end where id=#{id} and (status='dispatch' or status ='etl' or status= 'check_dep' or status= 'wait_retry')")
+    public int updateStatusById2(@Param("id") String id);
+
+    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end where group_id=#{group_id} and (status != 'error' and status != 'killed')")
+    public int updateStatusByGroupId(@Param("group_id") String group_id);
 
     @Update(value = "update task_log_instance set is_notice=#{is_notice} where id=#{id}")
     public int updateNoticeById(@Param("is_notice") String is_notice,@Param("id") String id);
@@ -66,7 +84,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
 
     @Select({"<script>",
             "SELECT * FROM task_log_instance",
-            "WHERE owner=#{owner} and job_id=#{job_id}",
+            "WHERE owner=#{owner} and group_id=#{group_id}",
             "<when test='start_time!=null'>",
             "<![CDATA[ AND update_time >= #{start_time} ]]>",
             "</when>",
@@ -79,7 +97,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
             "order by run_time desc",
             "</script>"})
     public List<TaskLogInstance> selectByTaskLogs2(@Param("owner") String owner, @Param("start_time") Timestamp start_time,
-                                                   @Param("end_time") Timestamp end_time, @Param("status") String status,@Param("job_id") String job_id);
+                                                   @Param("end_time") Timestamp end_time, @Param("status") String status,@Param("group_id") String group_id);
 
 
     /**
@@ -93,21 +111,53 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
             "</script>"})
     public List<TaskLogInstance> selectOverTime();
 
+    @Select({"<script>",
+            "SELECT * FROM task_log_instance",
+            "WHERE ",
+            " is_notice = 'alarm' and status ='finish'",
+            "</script>"})
+    public List<TaskLogInstance> selectOverTimeFinish();
+
     @Select("select a.*,b.email,b.user_name as userName,b.phone,b.is_use_email,b.is_use_phone from task_log_instance a,account_info b where a.status='error' and a.is_notice !='true' and a.owner=b.id")
     public List<EmailTaskLogs> selectByStatus();
 
-    @Select("select * from task_log_instance where owner=#{owner} and etl_date=#{etl_date} and job_id=#{job_id}")
-    public List<TaskLogInstance> selectByIdEtlDate(@Param("owner") String owner, @Param("job_id") String job_id, @Param("etl_date") String etl_date);
+    @Select("select * from task_log_instance where etl_date=#{etl_date} and job_id=#{job_id}")
+    public List<TaskLogInstance> selectByIdEtlDate(@Param("job_id") String job_id, @Param("etl_date") String etl_date);
 
     @Select("select * from task_log_instance where status =#{status}")
     public List<TaskLogInstance> selectThreadByStatus(@Param("status") String status);
+
+    /**
+     * 获取所有可以执行的子任务
+     * @param status
+     * @return
+     */
+    @Select(
+            {
+            "<script>",
+            "select tli.* from task_log_instance tli,task_group_log_instance tgli where tli.status in",
+            "<foreach collection='status' item='st' open='(' separator=',' close=')'>",
+            "#{st}",
+            "</foreach>",
+            " and tgli.status = 'sub_task_dispatch'",
+            " and tli.group_id=tgli.id",
+            "</script>"
+            }
+    )
+    public List<TaskLogInstance> selectThreadByStatus1(@Param("status") String[] status);
 
 
     @Select("select * from task_log_instance where status =#{status} and retry_time is not null and current_timestamp() >= retry_time")
     public List<TaskLogInstance> selectThreadByStatus2(@Param("status") String status);
 
-    @Select("select * from task_log_instance where status =#{status}")
-    public List<TaskLogInstance> selectThreadByStatus3(@Param("status") String status);
+    @Select("select * from task_log_instance where status in ('etl','dispatch')")
+    public List<TaskLogInstance> selectThreadByStatus3();
+
+    @Select("select * from task_log_instance where group_id = ${group_id}")
+    public List<TaskLogInstance> selectByGroupId(@Param("group_id") String group_id);
+
+    @Select("select * from task_log_instance where status='finish' and id=#{id}")
+    public TaskLogInstance selectByIdStatus(@Param("id") String id);
 
     @Update(value = "update task_log_instance set status=#{status} where id=#{id} and status='running' and process > #{process}")
     public int updateStatusById3(@Param("status") String status, @Param("process") String process, @Param("id") String id);
@@ -224,4 +274,20 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Results({@Result(column="num",property="num")
     })
     public int alarmNum();
+
+    @Results({@Result(column="num",property="num"),
+            @Result(column="status",property="status"),
+    })
+    @Select(
+            {
+                    "<script>",
+                    "select status,count(1) as num from task_log_instance tli where tli.id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    " group by status",
+                    "</script>"
+            }
+    )
+    public List<task_num_info> selectByIds(@Param("ids") String[] ids);
 }

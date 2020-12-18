@@ -235,6 +235,7 @@ public class ShiroConfig {
 		filterMap.put("/logout", "anon");
 		filterMap.put("/login", "authc");
 		filterMap.put("/register**", "anon");
+		filterMap.put("/cron/**", "anon");
 		filterMap.put("/register/**", "anon");
 		filterMap.put("/retrieve_password", "anon");
 		filterMap.put("/404", "anon");

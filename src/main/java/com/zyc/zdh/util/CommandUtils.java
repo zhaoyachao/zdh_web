@@ -86,7 +86,7 @@ public class CommandUtils {
 //                    "    )");
 //            System.out.println(result);
 
-            String result = exeCommand("cmd.exe /k D:/ping.bat");
+            String result = exeCommand("cmd.exe /k hostname");
             System.out.println(result);
 
         } catch (IOException e) {
