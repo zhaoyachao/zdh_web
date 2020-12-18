@@ -376,9 +376,6 @@
 <script type="text/javascript">
 
     function add_node_zdh(more_task,etl_id,etl_context){
-
-        alert(etl_context);
-
         var id = "div"+etl_id;
     }
 
@@ -430,14 +427,6 @@
     };
 
     function open_json(json) {
-        alert(json)
-        // jsPlumb.ready(function () {
-        //
-        //
-        //
-        //
-        //
-        // })
         var jsplumb_json=JSON.parse(json)
         //添加div 数据
 
@@ -472,21 +461,21 @@
         for(var i=0;i< jsplumb_json.shell.length;i++){
             var shell=jsplumb_json.shell[i]
             var divId=shell.divId
-            var shell_context=shell.shell_context
+            var etl_context=shell.etl_context
             var positionX=shell.positionX
             var positionY=shell.positionY
-            $("#m1").append('<div class="node node1css shell" style="position: absolute" id="' + divId + '" data-type="shell"'+' data-id=" " >' +shell_context+ '</div>');
+            $("#m1").append('<div class="node node1css shell" style="position: absolute" id="' + divId + '" data-type="shell"'+' data-id=" " >' +etl_context+ '</div>');
             $("#" + divId).css("left", positionX).css("top", positionY);
             $("#" + divId).attr("type","shell")
 
             $("#" + divId).attr("command",shell.command);
             $("#" + divId).attr("is_script",shell.is_script);
-            $("#" + divId).attr("shell_context",shell_context);
+            $("#" + divId).attr("etl_context",etl_context);
             $("#" + divId).css("width","auto")
             $("#" + divId).css("display","inline-block")
             $("#" + divId).css("*display","inline")
             $("#" + divId).css("*zoom","1")
-            $("#" + divId).html(jsplumb_json.tasks[i].etl_context);
+            $("#" + divId).html(shell.etl_context);
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
             jsPlumb.draggable(divId);
@@ -511,7 +500,6 @@
         $(id).dblclick(function () {
             var text = $(this).text();
             var div = $(this)
-            alert(div.attr("etl_task_id"))
             var etl_task_id=div.attr("etl_task_id")
             var url='job_detail.html'
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
@@ -549,7 +537,6 @@
         $(id).dblclick(function () {
             var etl_context = $(this).text();
             var div = $(this)
-            alert(div.attr("command"))
             var command=div.attr("command")
             var url='shell_detail.html'
             if( command == "" || command == undefined ){
@@ -611,7 +598,7 @@
             var param={
                 id: $elem.attr('id'),
                 is_script: $elem.attr('is_script'),
-                shell_context:$elem.text(),
+                etl_context:$elem.text(),
                 command:$elem.attr('command'),
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,
@@ -702,7 +689,6 @@
 
                 // 移除tab对应的内容区
                 mainContent.find('.J_iframe').each(function (index,e) {
-                    alert($(e).data('id'))
                     if ($(e).data('id') == closeTabId) {
                         $(e).remove();
                         return false;
@@ -1175,7 +1161,6 @@
                         //初始化输入数据源select 组件
                         $("#job_type").val(job_type);
                         var jsmind_data=data[0].jsmind_data
-                        alert(jsmind_data)
                         open_json(jsmind_data)
 
                         //表达式expr
@@ -1557,7 +1542,6 @@
     });
 
     function addRow(more_task,etl_id,etl_context) {
-        alert(more_task+","+etl_id+","+etl_context)
 
         var index = $('#exampleTableEvents').bootstrapTable('getData').length;
 

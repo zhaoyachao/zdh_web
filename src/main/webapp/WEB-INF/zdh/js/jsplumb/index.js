@@ -156,7 +156,6 @@ $(document).ready(function(){
         $(id).dblclick(function () {
             var text = $(this).text();
             var div = $(this)
-            alert(div.attr("etl_task_id"))
             var etl_task_id=div.attr("etl_task_id")
             var url='job_detail.html'
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
@@ -197,7 +196,6 @@ $(document).ready(function(){
         $(id).dblclick(function () {
             var etl_context = $(this).text();
             var div = $(this)
-            alert(div.attr("command"))
             var command=div.attr("command")
             var url='shell_detail.html'
             if( command == "" || command == undefined ){
@@ -272,7 +270,7 @@ $(document).ready(function(){
             var param={
                 id: $elem.attr('id'),
                 is_script: $elem.attr('is_script'),
-                shell_context:$elem.text(),
+                etl_context:$elem.text(),
                 command:$elem.attr('command'),
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,

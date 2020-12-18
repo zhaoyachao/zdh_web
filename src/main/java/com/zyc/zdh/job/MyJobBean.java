@@ -63,12 +63,11 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 			QuartzJobMapper quartzJobMapper2 = this.quartzJobMapper;
 			QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
 			quartzJobInfo = quartzJobMapper2.selectByPrimaryKey(taskId);
-			quartzJobInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
-
 			if(quartzJobInfo==null){
 				logger.info("调度任务发现空的任务,任务id"+taskId);
 				return ;
 			}
+			quartzJobInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
 
 			JobCommon2.chooseJobBean(quartzJobInfo,0,null);
 

@@ -126,9 +126,9 @@ public class SystemController extends BaseController{
             return js.toJSONString();
         }
         //1 获取所有的email,retry 任务
-        String sql="delete from qrtz_simple_triggers where TRIGGER_GROUP in ('email','retry','check')";
-        String sql2="delete from qrtz_triggers where TRIGGER_GROUP in ('email','retry','check')";
-        String sql3="delete from qrtz_job_details where  JOB_GROUP in ('email','retry','check')";
+        String sql="delete from QRTZ_SIMPLE_TRIGGERS where TRIGGER_GROUP in ('email','retry','check')";
+        String sql2="delete from QRTZ_TRIGGERS where TRIGGER_GROUP in ('email','retry','check')";
+        String sql3="delete from QRTZ_JOB_DETAILS where  JOB_GROUP in ('email','retry','check')";
         jdbcTemplate.execute(sql);
         jdbcTemplate.execute(sql2);
         jdbcTemplate.execute(sql3);
