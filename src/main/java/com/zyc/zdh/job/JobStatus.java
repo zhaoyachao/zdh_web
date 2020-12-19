@@ -2,6 +2,7 @@ package com.zyc.zdh.job;
 
 public enum JobStatus {
 
+    NON("-1","non","无状态"),//为了异步数据一致性
     CREATE("1","create","实例创建"),
     DISPATCH("2","dispatch","调度程序调度中"),
     CHECK_DEP("3","check_dep","检查依赖中"),

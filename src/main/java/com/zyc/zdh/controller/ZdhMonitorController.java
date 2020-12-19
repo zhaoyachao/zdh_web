@@ -7,11 +7,11 @@ import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.*;
-
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.JobStatus;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
+import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.util.DateUtil;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @Controller
@@ -35,6 +36,8 @@ public class ZdhMonitorController extends BaseController{
     @Autowired
     ZdhHaInfoMapper zdhHaInfoMapper;
 
+    @Autowired
+    ZdhLogsService zdhLogsService;
     @Autowired
     TaskLogInstanceMapper taskLogInstanceMapper;
 
@@ -229,7 +232,13 @@ public class ZdhMonitorController extends BaseController{
             tgli.setCommand(qji.getCommand());
             tgli.setParams(qji.getParams());
             tgli.setTime_out(qji.getTime_out());
+            tgli.setOwner(getUser().getId());
         }
+//        tgli.setStatus(JobStatus.NON.getValue());
+//        tgli.setRun_time(new Timestamp(new Date().getTime()));
+//        tgli.setUpdate_time(new Timestamp(new Date().getTime()));
+//        tglim.insert(tgli);
+//        JobCommon2.sub_task_log_instance(tgli);
 
         JobCommon2.chooseJobBean(qji,2,tgli);
         JSONObject json2 = new JSONObject();
@@ -284,6 +293,110 @@ public class ZdhMonitorController extends BaseController{
 
     }
 
+
+    @RequestMapping(value = "/task_log_instance_list", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String task_log_instance_list(String status,String group_id) {
+
+        List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs2(getUser().getId(), null,
+                null, status,group_id);
+
+        return JSON.toJSONString(list);
+    }
+
+    @RequestMapping(value = "/task_group_log_instance_list", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String task_group_log_instance_list(String start_time, String end_time, String status,String job_id) {
+
+        System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
+
+        List<TaskGroupLogInstance> list = tglim.selectByTaskLogs2(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
+                Timestamp.valueOf(end_time + " 23:59:59"), status,job_id);
+
+        return JSON.toJSONString(list);
+    }
+
+    @RequestMapping(value = "/task_group_log_instance_list2", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String task_group_log_instance_list2(String start_time, String end_time, String status) {
+
+        System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
+
+        List<TaskGroupLogInstance> list = tglim.selectByTaskLogs3(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
+                Timestamp.valueOf(end_time + " 23:59:59"), status);
+
+        return JSON.toJSONString(list);
+    }
+
+    /**
+     * 获取任务执行日志
+     *
+     * @param job_id
+     * @param start_time
+     * @param end_time
+     * @param del
+     * @param level
+     * @return
+     */
+    @RequestMapping(value = "/zhd_logs", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String zhd_logs(String job_id, String task_log_id, String start_time, String end_time, String del, String level) {
+        System.out.println("id:" + job_id + " ,task_log_id:" + task_log_id + " ,start_time:" + start_time + " ,end_time:" + end_time);
+
+
+        Timestamp ts_start = null;
+        Timestamp ts_end = null;
+        if (!start_time.equals("")) {
+            ts_start = Timestamp.valueOf(start_time);
+        } else {
+            ts_start = Timestamp.valueOf("1970-01-01 00:00:00");
+        }
+        if (!end_time.equals("")) {
+            ts_end = Timestamp.valueOf(end_time);
+        } else {
+            ts_end = Timestamp.valueOf("2999-01-01 00:00:00");
+        }
+
+        if (del != null && !del.equals("")) {
+            zdhLogsService.deleteByTime(job_id, task_log_id, ts_start, ts_end);
+        }
+
+        String levels = "'DEBUG','WARN','INFO','ERROR'";
+
+        if (level != null && level.equals("INFO")) {
+            levels = "'WARN','INFO','ERROR'";
+        }
+        if (level != null && level.equals("WARN")) {
+            levels = "'WARN','ERROR'";
+        }
+        if (level != null && level.equals("ERROR")) {
+            levels = "'ERROR'";
+        }
+
+        List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id, task_log_id, ts_start, ts_end, levels);
+        Iterator<ZdhLogs> it = zhdLogs.iterator();
+        StringBuilder sb = new StringBuilder();
+        while (it.hasNext()) {
+            ZdhLogs next = it.next();
+            String info = "调度任务ID:" + next.getJob_id()+",任务实例ID:"+task_log_id + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
+            sb.append(info + "\r\n");
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("logs", sb.toString());
+        return jsonObject.toJSONString();
+    }
+
+    /**
+     * 调度任务日志首页
+     *
+     * @return
+     */
+    @RequestMapping("/log_txt")
+    public String log_txt() {
+
+        return "etl/log_txt";
+    }
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

@@ -117,6 +117,25 @@ public class TaskGroupLogInstance implements Serializable {
     private String jsmind_data;//json 形式,作业直接的关系
     private String run_jsmind_data;//json 形式实例作业依赖关系
 
+    private String next_tasks;//逗号分隔
+    private String pre_tasks;//逗号分隔
+
+    public String getNext_tasks() {
+        return next_tasks;
+    }
+
+    public void setNext_tasks(String next_tasks) {
+        this.next_tasks = next_tasks;
+    }
+
+    public String getPre_tasks() {
+        return pre_tasks;
+    }
+
+    public void setPre_tasks(String pre_tasks) {
+        this.pre_tasks = pre_tasks;
+    }
+
     public void setRun_jsmind_data(String run_jsmind_data) {
         this.run_jsmind_data = run_jsmind_data;
     }

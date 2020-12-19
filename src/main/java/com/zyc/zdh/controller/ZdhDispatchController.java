@@ -6,13 +6,16 @@ import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
-import com.zyc.zdh.entity.*;
+import com.zyc.zdh.entity.EtlTaskInfo;
+import com.zyc.zdh.entity.QuartzJobInfo;
+import com.zyc.zdh.entity.TaskGroupLogInstance;
 import com.zyc.zdh.job.JobCommon2;
+import com.zyc.zdh.job.JobStatus;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.DispatchTaskService;
 import com.zyc.zdh.service.EtlTaskService;
-import com.zyc.zdh.service.ZdhLogsService;
+import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 public class ZdhDispatchController extends BaseController {
@@ -31,8 +37,7 @@ public class ZdhDispatchController extends BaseController {
 
     @Autowired
     DispatchTaskService dispatchTaskService;
-    @Autowired
-    ZdhLogsService zdhLogsService;
+
     @Autowired
     QuartzJobMapper quartzJobMapper;
     @Autowired
@@ -232,7 +237,9 @@ public class ZdhDispatchController extends BaseController {
 
     /**
      * 手动执行调度任务
-     *
+     * 手动执行都会提前生成实例信息,串行会生成组依赖关系
+     * 串行并行都需要提前选择时间,调度本身时间和手动执行时间分开处理,手动执行不能影响调度时间,
+     * 手动重试一定会确定好时间
      * @param quartzJobInfo
      * @param reset_count true,false
      * @param concurrency 0:串行,1:并行
@@ -240,115 +247,58 @@ public class ZdhDispatchController extends BaseController {
      */
     @RequestMapping("/dispatch_task_execute")
     @ResponseBody
-    public String dispatch_task_execute(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency) {
+    public String dispatch_task_execute(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time) {
         debugInfo(quartzJobInfo);
+        System.out.println(concurrency);
         JSONObject json = new JSONObject();
+
         try {
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
+            List<Date> dates = JobCommon2.resolveQuartzExpr(quartzJobInfo.getUse_quartz_time(),dti.getStep_size(),dti.getExpr(),start_time,end_time);
+            List<String> tgli_ids=new ArrayList<>();
+            for(Date dt:dates){
+                tgli_ids.add(SnowflakeIdWorker.getInstance().nextId() + "");
+            }
             dti.setCount(0);
-            if(reset_count.equalsIgnoreCase("true")){
-                dti.setTask_log_id(null);
-                dti.setLast_time(null);
-                dti.setNext_time(null);
-                quartzJobMapper.updateByPrimaryKey(dti);
-            }
-            if(concurrency==null || concurrency.equalsIgnoreCase("0")){
-
-                //串行,调度时间触发
-                if(dti.getUse_quartz_time().equalsIgnoreCase("on")){
-                    //获取表达式
-
-                    List<Date> dates = JobCommon2.resolveQuartzExpr(dti.getExpr());
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Timestamp quartzTime=new Timestamp(dates.get(0).getTime());
-                    System.out.println("quartTime:"+quartzTime);
-                    //设置本次执行时间
-                    dti.setQuartz_time(quartzTime);
-
-                }
-                //串行自定义时间触发
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
-                        JobCommon2.chooseJobBean(dti, 3, null);
+            dti.setTask_log_id(null);
+            dti.setLast_time(null);
+            dti.setNext_time(null);
+            quartzJobMapper.updateByPrimaryKey(dti);
+            for(int i=0;i<dates.size();i++){
+                TaskGroupLogInstance tgli=new TaskGroupLogInstance();
+                BeanUtils.copyProperties(tgli, dti);
+                tgli.setId(tgli_ids.get(i));
+                tgli.setStart_time(null);
+                tgli.setEnd_time(null);
+                tgli.setLast_time(null);
+                tgli.setLast_task_log_id(null);
+                tgli.setNext_time(null);
+                tgli.setStatus(JobStatus.NON.getValue());//单独的线程扫描状态时创建并且pre_tasks 不为空的任务
+                tgli.setConcurrency("0");
+                tgli.setRun_time(new Timestamp(new Date().getTime()));
+                tgli.setUpdate_time(new Timestamp(new Date().getTime()));
+                tgli.setCur_time(new Timestamp(dates.get(i).getTime()));
+                tgli.setEtl_date(DateUtil.formatTime(new Timestamp(dates.get(i).getTime())));
+                tgli.setOwner(getUser().getId());
+                //串行生成依赖关系,并行跳过
+                if(concurrency==null || concurrency.equalsIgnoreCase("0")){
+                    if(i>0){
+                        tgli.setPre_tasks(tgli_ids.get(i-1));
                     }
-                }).start();
-
-
-            }else{
-                //并行执行,且使用调度时间
-                if(dti.getUse_quartz_time().equalsIgnoreCase("on")){
-                    //获取表达式
-                    List<Date> dates = JobCommon2.resolveQuartzExpr(dti.getExpr());
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Timestamp quartzTime=new Timestamp(dates.get(0).getTime());
-                    System.out.println("quartTime:"+quartzTime);
-                    //设置本次执行时间
-                    dti.setQuartz_time(quartzTime);
-
-                    TaskGroupLogInstance tgli=new TaskGroupLogInstance();
-                    BeanUtils.copyProperties(tgli, dti);
-                    tgli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-                    tgli.setStart_time(null);
-                    tgli.setEnd_time(null);
-                    tgli.setLast_time(null);
-                    tgli.setLast_task_log_id(null);
-                    tgli.setNext_time(null);
-                    tgli.setStatus(null);
-                    tgli.setConcurrency("1");
-                    tgli.setCur_time(quartzTime);
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
-                            JobCommon2.chooseJobBean(dti, 4, tgli);
-                        }
-                    }).start();
-                    json.put("success", "200");
-                    return json.toJSONString();
+                    if(i<dates.size()-1){
+                        tgli.setNext_tasks(tgli_ids.get(i+1));
+                    }
                 }
-
-                //并行执行
-                List<Timestamp> result=a(dti.getStart_time(), dti.getEnd_time(),dti.getStep_size());
-
-                if(result.size()>100){
-                    json.put("success", "201");
-                    return json.toJSONString();
-                }
-                for(Timestamp t:result){
-                        TaskGroupLogInstance tgli=new TaskGroupLogInstance();
-                        BeanUtils.copyProperties(tgli, dti);
-                        tgli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-                        tgli.setStart_time(t);
-                        tgli.setEnd_time(t);
-                        tgli.setLast_time(null);
-                        tgli.setLast_task_log_id(null);
-                        tgli.setNext_time(null);
-                        tgli.setStatus(null);
-                        tgli.setConcurrency("1");
-                        System.out.println("=====");
-                        debugInfo(tgli);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                //0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
-                                JobCommon2.chooseJobBean(dti, 4, tgli);
-                            }
-                        }).start();
-
-                }
-
-
+                tglim.insert(tgli);
+                JobCommon2.sub_task_log_instance(tgli);
             }
+
+            tglim.updateStatus2Create(tgli_ids.toArray(new String[]{}));
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
-
-
 
         json.put("success", "200");
         return json.toJSONString();
@@ -496,99 +446,6 @@ public class ZdhDispatchController extends BaseController {
     }
 
 
-    /**
-     * 调度任务日志首页
-     *
-     * @return
-     */
-    @RequestMapping("/log_txt")
-    public String log_txt() {
-
-        return "etl/log_txt";
-    }
-
-
-    @RequestMapping(value = "/task_log_instance_list", produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String task_log_instance_list(String status,String group_id) {
-
-        List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs2(getUser().getId(), null,
-                null, status,group_id);
-
-        return JSON.toJSONString(list);
-    }
-
-    @RequestMapping(value = "/task_group_log_instance_list", produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String task_group_log_instance_list(String start_time, String end_time, String status,String job_id) {
-
-        System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
-
-        List<TaskGroupLogInstance> list = tglim.selectByTaskLogs2(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
-                Timestamp.valueOf(end_time + " 23:59:59"), status,job_id);
-
-        return JSON.toJSONString(list);
-    }
-
-
-    /**
-     * 获取任务执行日志
-     *
-     * @param job_id
-     * @param start_time
-     * @param end_time
-     * @param del
-     * @param level
-     * @return
-     */
-    @RequestMapping(value = "/zhd_logs", produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String zhd_logs(String job_id, String task_log_id, String start_time, String end_time, String del, String level) {
-        System.out.println("id:" + job_id + " ,task_log_id:" + task_log_id + " ,start_time:" + start_time + " ,end_time:" + end_time);
-
-
-        Timestamp ts_start = null;
-        Timestamp ts_end = null;
-        if (!start_time.equals("")) {
-            ts_start = Timestamp.valueOf(start_time);
-        } else {
-            ts_start = Timestamp.valueOf("1970-01-01 00:00:00");
-        }
-        if (!end_time.equals("")) {
-            ts_end = Timestamp.valueOf(end_time);
-        } else {
-            ts_end = Timestamp.valueOf("2999-01-01 00:00:00");
-        }
-
-        if (del != null && !del.equals("")) {
-            zdhLogsService.deleteByTime(job_id, task_log_id, ts_start, ts_end);
-        }
-
-        String levels = "'DEBUG','WARN','INFO','ERROR'";
-
-        if (level != null && level.equals("INFO")) {
-            levels = "'WARN','INFO','ERROR'";
-        }
-        if (level != null && level.equals("WARN")) {
-            levels = "'WARN','ERROR'";
-        }
-        if (level != null && level.equals("ERROR")) {
-            levels = "'ERROR'";
-        }
-
-        List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id, task_log_id, ts_start, ts_end, levels);
-        Iterator<ZdhLogs> it = zhdLogs.iterator();
-        StringBuilder sb = new StringBuilder();
-        while (it.hasNext()) {
-            ZdhLogs next = it.next();
-            String info = "调度任务ID:" + next.getJob_id()+",任务实例ID:"+task_log_id + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
-            sb.append(info + "\r\n");
-        }
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("logs", sb.toString());
-        return jsonObject.toJSONString();
-    }
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

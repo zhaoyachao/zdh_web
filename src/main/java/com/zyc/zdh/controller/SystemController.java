@@ -144,8 +144,8 @@ public class SystemController extends BaseController{
         QuartzJobInfo quartzJobInfo2 = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr2, "-1", "", "retry");
         quartzJobInfo2.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
         quartzManager2.addQuartzJobInfo(quartzJobInfo2);
-        String expr3 = "30s";
-        QuartzJobInfo quartzJobInfo3 = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr3, "-1", "", "retry");
+        String expr3 = "5s";
+        QuartzJobInfo quartzJobInfo3 = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr3, "-1", "", "check");
         quartzJobInfo3.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
         quartzManager2.addQuartzJobInfo(quartzJobInfo3);
 

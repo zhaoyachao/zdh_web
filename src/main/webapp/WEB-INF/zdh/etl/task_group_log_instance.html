@@ -129,6 +129,12 @@
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
 
+        var height=400
+        if($(document.body).height()*0.8>height){
+            height=$(document.body).height()*0.8
+        }
+        $('#exampleTableEvents').attr("data-height",height)
+
         function openTabPage(url, title) {
             var wpd = $(window.parent.document);
             var mainContent = wpd.find('.J_mainContent');
@@ -297,7 +303,7 @@
                     },
                     btn1:function(){
                         $.ajax({
-                            url: "retry",
+                            url: "retryJobGroup",
                             data: "id=" + row.id+"&new_version=false",
                             type: "post",
                             dataType: "json",
@@ -433,12 +439,12 @@
                 visible: false
             }, {
                 field: 'job_id',
-                title: '任务ID',
+                title: '任务组ID',
                 sortable: false,
                 visible: false
             }, {
                 field: 'job_context',
-                title: '任务说明',
+                title: '任务组说明',
                 sortable: true
             }, {
                 field: 'etl_date',
@@ -531,13 +537,11 @@
                     if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
                         context = "运行中"
                         class_str = "btn-primary  btn-xs"
-                        class_str2= "btn-danger  "
                         btn_retry_str=''
                     }
                     if (value == "error") {
                         context = "失败"
                         class_str = "btn-danger btn-xs"
-                        class_str2 = "btn-primary "
                         btn_kill_str=''
                     }
                     if (value == "retry") {
@@ -553,6 +557,11 @@
                         context = "已杀死"
                         class_str = "btn-danger btn-xs"
                         btn_kill_str=''
+                    }
+                    if (value == "create") {
+                        context = "创建成功"
+                        class_str = "btn-primary  btn-xs"
+                        btn_retry_str=''
                     }
 
                     if(context=="未运行"){
@@ -573,13 +582,6 @@
                         '</div>'
                     ].join('');
                 }
-            }, {
-                field: 'operate',
-                title: '监控',
-                events: operateEvents,//给按钮注册事件
-                align: "center",
-                valign: "middle",
-                formatter: operateFormatter //表格中增加按钮
             }]
         });
 

@@ -1257,6 +1257,72 @@ public class JobCommon2 {
 
     }
 
+    public static boolean checkStatus2(String jobType, TaskGroupLogInstance tgli) {
+        logger.info("[" + jobType + "] JOB,根据上次执行任务状态,修改执行日期");
+        insertLog(tgli, "info", "[" + jobType + "] JOB,根据上次执行任务状态,修改执行日期");
+
+        TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
+        QuartzJobMapper qjm = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
+        QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
+
+        if (tgli.getUse_quartz_time().equalsIgnoreCase("on")){
+            tgli.setCur_time(tgli.getQuartTime());
+            logger.info("[" + jobType + "] JOB,使用调度时间,设置执行日期为" + tgli.getCur_time());
+            insertLog(tgli, "info", "[" + jobType + "] JOB,使用调度时间,设置执行日期为" + tgli.getCur_time());
+        }
+
+        //设置本次执行时间
+        if ( !tgli.getUse_quartz_time().equalsIgnoreCase("on") && tgli.getCur_time() == null) {
+            tgli.setCur_time(tgli.getStart_time());
+            logger.info("[" + jobType + "] JOB,设置执行日期为" + tgli.getStart_time());
+            insertLog(tgli, "info", "[" + jobType + "] JOB,设置执行日期为" + tgli.getStart_time());
+        }else if(!tgli.getUse_quartz_time().equalsIgnoreCase("on") && tgli.getCur_time() != null){
+            logger.info("[" + jobType + "] JOB,设置执行日期为" + tgli.getStart_time());
+            insertLog(tgli, "info", "[" + jobType + "] JOB,设置执行日期为" + tgli.getStart_time());
+
+
+        }
+
+
+
+        //判断是串行执行
+        if (tgli.getConcurrency().equalsIgnoreCase("0")) {
+            logger.info("[" + jobType + "] JOB,任务执行为串行模式");
+            insertLog(tgli, "info", "[" + jobType + "] JOB,任务执行为串行模式");
+            if(!sio(jobType,tgli)) return false;
+        } else if (tgli.getConcurrency().equalsIgnoreCase("1")) {
+            //1并行(不检查状态),提前规划好时间
+            logger.info("[" + jobType + "] JOB,任务执行为并行模式");
+            insertLog(tgli, "info", "[" + jobType + "] JOB,任务执行为并行模式");
+            if(!sio_concurrence(jobType,tgli)) return false;
+
+        } else {
+            //跳过不检查
+        }
+
+
+        //更新tli
+        tgli.setProcess("6");
+        tgli.setUpdate_time(new Timestamp(new Date().getTime()));
+        tgli.setEtl_date(DateUtil.formatTime(tgli.getCur_time()));
+        if(tgli.getUse_quartz_time().equalsIgnoreCase("on")){
+            tgli.setEtl_date(DateUtil.formatTime(getEtlDate(tgli.getCur_time(),tgli.getTime_diff())));
+        }
+        process_time_info pti=tgli.getProcess_time2();
+        pti.setInit_time(DateUtil.getCurrentTime());
+        tgli.setProcess_time(pti);
+
+        tglim.updateByPrimaryKey(tgli);
+        //todo 重要标识-必不可少-查询日志时使用
+        qjm.updateTaskLogId(tgli.getJob_id(), tgli.getId());
+        QuartzJobInfo qj = qjm.selectByPrimaryKey(tgli.getJob_id());
+        qj.setLast_time(tgli.getCur_time());
+        qj.setNext_time(tgli.getNext_time());
+        qjm.updateByPrimaryKey(qj);
+        debugInfo(tgli);
+        return true;
+
+    }
     /**
      * 串行执行,日期确定逻辑
      * @param jobType
@@ -1992,10 +2058,10 @@ public class JobCommon2 {
     }
 
     /**
-     * 选择具体的job执行引擎
+     *  选择具体的job执行引擎,只有调度和手动重试触发(手动执行部分请参见其他方法)
      *  解析任务组时间->解析创建任务组实例->创建子任务实例
      * @param quartzJobInfo
-     * @param is_retry      0:调度,1:自动重试,2:手动重试,3:手动执行,4:并行手动执行
+     * @param is_retry      0:调度,2:手动重试
      */
     public static void chooseJobBean(QuartzJobInfo quartzJobInfo, int is_retry, TaskGroupLogInstance retry_tgli) {
         QuartzJobMapper qjm = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
@@ -2036,42 +2102,22 @@ public class JobCommon2 {
                 //逻辑发送错误代码捕获发生自动重试(retry_job) 不重新生成实例id,使用旧的实例id
                 String last_task_id="";
                 if(is_retry==0){
-                    //调度触发
-                    //1 获取上次执行task_id,并付给新的任务实列last_task_log_id
-                    tgli.setLast_task_log_id(quartzJobInfo.getTask_log_id());
+                    //调度触发,直接获取执行时间
+                    Timestamp cur=getCurTime(quartzJobInfo);
+                    tgli.setCur_time(cur);
                     tgli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
                 }
-                if (is_retry == 1) {
-                    //失败自动重试触发
-                    //重试需要使用上次执行实例信息,并将上次执行失败的实例id重新付给quartjobinfo
-                    tgli = retry_tgli;
-                    last_task_id=tgli.getLast_task_log_id();
-                    quartzJobInfo.setTask_log_id(last_task_id);
-                    quartzJobInfo.setStatus("dispatch");//此处赋值dispatch 主要是为了下方判断上次任务状态
-                    tgli.setStatus("dispatch");
-                }
+
                 if(is_retry==2){
                     //手动点击重试按钮触发
                     //手动点击重试,会生成新的实例信息,默认重置执行次数,并将上次执行失败的实例id 付给last_task_id
                     tgli=retry_tgli;
                     tgli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
+                    tgli.setUpdate_time(new Timestamp(new Date().getTime()));
                     tgli.setCount(0L);
                     tgli.setIs_retryed("0");
-                    tgli.setLast_task_log_id(retry_tgli.getId());
                     tgli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-                    tgli.setStatus("dispatch");
-                }
-                if(is_retry==3){
-                    //手动点击执行触发,重置次数和上次任务实例id
-                    tgli.setCount(0);
-                    tgli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
-                    tgli.setLast_task_log_id(quartzJobInfo.getTask_log_id());
-                    //tli.setLast_time(quartzJobInfo.getStart_time());
-                }
-                if(is_retry==4){
-                    tgli=retry_tgli;
-                    tgli.setCount(0);
-                    tgli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
+                    tgli.setStatus(JobStatus.NON.getValue());
                 }
                 //此处更新主要是为了 日期超时时 也能记录下日志
                 if (is_retry == 1) {
@@ -2079,26 +2125,17 @@ public class JobCommon2 {
                 } else {
                     tglim.insert(tgli);
                 }
+                qjm.updateByPrimaryKey(quartzJobInfo);
                 //公共设置
-                tgli.setStatus("dispatch");//新实例状态设置为dispatch
-                //todo 检查状态--重新组装调度实例信息,返回false 表示不运行此次任务
-                if(!checkStatus("QUARTZ", tgli)){
-                    tgli.setStatus("error");//新实例状态设置为dispatch
-                    tglim.updateByPrimaryKey(tgli);
-                    return ;
-                }
+                tgli.setStatus(JobStatus.NON.getValue());//新实例状态设置为dispatch
                 //设置调度器唯一标识,调度故障转移时使用,如果服务器重启会自动生成新的唯一标识
-                tgli.setServer_id(JobCommon2.web_application_id);
+                //tgli.setServer_id(JobCommon2.web_application_id);
 
                 //todo 生成具体任务组下任务实例
                 sub_task_log_instance(tgli);
-
-                // todo abc
+                tglim.updateStatus2Create(new String[]{tgli.getId()});
                 debugInfo(tgli);
                 tglim.updateByPrimaryKey(tgli);
-
-                //更新quartzjobinfo  上次执行task_log_id
-                qjm.updateTaskLogId(tgli.getJob_id(), tgli.getId());
 
                 //检查任务依赖,和并行不冲突
                 boolean dep = checkDep(quartzJobInfo.getJob_type(), tgli);
@@ -2109,34 +2146,58 @@ public class JobCommon2 {
                 if(dep){
                     //修改组任务状态,及修改子任务状态为检查依赖中
                     CheckDepJob.updateTaskGroupLogInstanceStatus(tgli);
-                }else
+                }else{
                     updateTaskLog(tgli,tglim);
                     return ;
-
-
-
-//                if (quartzJobInfo.getJob_type().equals("SHELL")) {
-//                    logger.info("调度任务[SHELL],开始调度");
-//                    ShellJob.run(tli, false);
-//                } else if (quartzJobInfo.getJob_type().equals("JDBC")) {
-//                    logger.info("调度任务[JDBC],开始调度");
-//                    JdbcJob.run(tli, false);
-//                } else if (quartzJobInfo.getJob_type().equals("FTP")) {
-//                    logger.info("调度任务[FTP],开始调度");
-//                    FtpJob.run(quartzJobInfo);
-//                } else if (quartzJobInfo.getJob_type().equals("HDFS")) {
-//                    logger.info("调度任务[HDFS],开始调度");
-//                    HdfsJob.run(tli, false);
-//                } else {
-//                    ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-//                    quartzJobInfo.setTask_log_id("system");
-//                    JobCommon2.insertLog(null, "ERROR",
-//                            "无法找到对应的任务类型,请检查调度任务配置中的任务类型");
-//                    logger.info("无法找到对应的任务类型,请检查调度任务配置中的任务类型");
-//                }
-
+                }
             }
         });
+
+    }
+
+    /** 只管调度触发,手动触发另算
+     * 如果使用调度时间,直接赋值即可
+     * 如果使用自定义时间,获取上次时间和本次做diff
+     */
+    public static Timestamp getCurTime(QuartzJobInfo quartzJobInfo){
+
+        if(quartzJobInfo.getUse_quartz_time() != null && quartzJobInfo.getUse_quartz_time().equalsIgnoreCase("on")){
+            return quartzJobInfo.getQuartz_time();
+        }
+
+        Timestamp cur=null;
+        String step_size = quartzJobInfo.getStep_size();
+        int dateType = Calendar.DAY_OF_MONTH;
+        int num = 1;
+        if (step_size.endsWith("s")) {
+            dateType = Calendar.SECOND;
+            num = Integer.parseInt(step_size.split("s")[0]);
+        }
+        if (step_size.endsWith("m")) {
+            dateType = Calendar.MINUTE;
+            num = Integer.parseInt(step_size.split("m")[0]);
+        }
+        if (step_size.endsWith("h")) {
+            dateType = Calendar.HOUR;
+            num = Integer.parseInt(step_size.split("h")[0]);
+        }
+        if (step_size.endsWith("d")) {
+            dateType = Calendar.DAY_OF_MONTH;
+            num = Integer.parseInt(step_size.split("d")[0]);
+        }
+
+        if(quartzJobInfo.getLast_time()==null){
+           quartzJobInfo.setLast_time(quartzJobInfo.getStart_time());
+           cur=quartzJobInfo.getStart_time();
+        }else{
+            //此处不适用月因时间无法正常确定,调度中时间按照秒做单位
+
+            cur=DateUtil.add(quartzJobInfo.getLast_time(),dateType,num);
+            quartzJobInfo.setLast_time(cur);
+        }
+
+        return cur;
+
 
     }
 
@@ -2319,6 +2380,89 @@ public class JobCommon2 {
 
     }
 
+    public static List<Date> resolveQuartzExpr(String use_quartz_time,String step_size,String expr,String start_time,String end_time) throws ParseException {
+
+        List<Date> dates1 = new ArrayList<>();
+        List<Date> dates = new ArrayList<>();
+        //对于自定义时间
+        if(expr.endsWith("s") || expr.endsWith("m") || expr.endsWith("h")|| expr.endsWith("d")){
+            long time = Integer.valueOf(expr.substring(0, expr.length() - 1));
+
+            int dateType = Calendar.DAY_OF_MONTH;
+            int num = 1;
+            if (expr.endsWith("s")) {
+                dateType = Calendar.SECOND;
+                num = Integer.parseInt(expr.split("s")[0]);
+            }
+            if (expr.endsWith("m")) {
+                dateType = Calendar.MINUTE;
+                num = Integer.parseInt(expr.split("m")[0]);
+            }
+            if (expr.endsWith("h")) {
+                dateType = Calendar.HOUR;
+                num = Integer.parseInt(expr.split("h")[0]);
+            }
+            if (expr.endsWith("d")) {
+                dateType = Calendar.DAY_OF_MONTH;
+                num = Integer.parseInt(expr.split("d")[0]);
+            }
+
+            boolean if_end=true;
+            Timestamp st=new Timestamp(DateUtil.pase(start_time,"yyyy-MM-dd HH:mm:ss").getTime());
+            Timestamp end=new Timestamp(DateUtil.pase(end_time,"yyyy-MM-dd HH:mm:ss").getTime());
+            dates.add(st);
+            while(if_end){
+                st=DateUtil.add(st,dateType,num);
+                if(st.getTime()<=end.getTime()){
+                    dates.add(st);
+                }else{
+                    if_end=false;
+                }
+            }
+        }else{
+            CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+            cronTriggerImpl.setCronExpression(expr);//这里写要准备猜测的cron表达式
+            dates=TriggerUtils.computeFireTimesBetween(cronTriggerImpl,null, DateUtil.pase(start_time,"yyyy-MM-dd HH:mm:ss"),DateUtil.pase(end_time,"yyyy-MM-dd HH:mm:ss"));
+        }
+
+        if(use_quartz_time.equalsIgnoreCase("on")){
+            return dates;
+        }
+
+
+        int num = 0;
+        int dateType=Calendar.DAY_OF_MONTH;
+        if (step_size.endsWith("s")) {
+            dateType = Calendar.SECOND;
+            num = Integer.parseInt(step_size.split("s")[0]);
+        }
+        if (step_size.endsWith("m")) {
+            dateType = Calendar.MINUTE;
+            num = Integer.parseInt(step_size.split("m")[0]);
+        }
+        if (step_size.endsWith("h")) {
+            dateType = Calendar.HOUR;
+            num = Integer.parseInt(step_size.split("h")[0]);
+        }
+        if (step_size.endsWith("d")) {
+            dateType = Calendar.DAY_OF_MONTH;
+            num = Integer.parseInt(step_size.split("d")[0]);
+        }
+
+        Timestamp tmp=Timestamp.valueOf(start_time);
+        dates1.add(tmp);
+        for(int i=0;i<dates.size();i++){
+            tmp=DateUtil.add(tmp,dateType,num);
+            if(tmp.getTime()<=Timestamp.valueOf(end_time).getTime()){
+                dates1.add(tmp);
+            }else{
+                break;
+            }
+        }
+
+        return dates1;
+
+    }
 
     /**
      * 使用quartz 触发时间时,获取指定时间差的etl_date
@@ -2382,10 +2526,11 @@ public class JobCommon2 {
                 taskLogInstance.setJob_context(tgli.getJob_context());//调度任务说明
                 taskLogInstance.setEtl_task_id(etl_task_id);//etl任务id
                 taskLogInstance.setEtl_context(etl_context);//etl任务说明
-                taskLogInstance.setStatus("check_dep");
+                taskLogInstance.setStatus(JobStatus.NON.getValue());
                 taskLogInstance.setJsmind_data("");
                 taskLogInstance.setRun_jsmind_data("");
                 taskLogInstance.setCount(0);
+                taskLogInstance.setOwner(getUser().getId());
                 tliList.add(taskLogInstance);
             }
 
@@ -2409,10 +2554,11 @@ public class JobCommon2 {
                 taskLogInstance.setEtl_context(etl_context);//etl任务说明
                 taskLogInstance.setCommand(command);
                 taskLogInstance.setIs_script(is_script);
-                taskLogInstance.setStatus("check_dep");
+                taskLogInstance.setStatus(JobStatus.NON.getValue());
                 taskLogInstance.setJsmind_data("");
                 taskLogInstance.setRun_jsmind_data("");
                 taskLogInstance.setCount(0);
+                taskLogInstance.setOwner(getUser().getId());
                 tliList.add(taskLogInstance);
             }
 
@@ -2468,12 +2614,11 @@ public class JobCommon2 {
                 tli.setGroup_context(tgli.getJob_context());
                 tli.setNext_tasks(next_tasks);
                 tli.setPre_tasks(pre_tasks);
-                tli.setStatus(JobStatus.CREATE.getValue());
+                tli.setStatus(JobStatus.NON.getValue());
                 tlim.insert(tli);
                // debugInfo(tli);
                 System.out.println("=======================");
             }
-
         }catch (Exception e){
             e.printStackTrace();
         }

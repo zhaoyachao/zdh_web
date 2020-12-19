@@ -456,7 +456,7 @@
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: "/task_logs?" + $("#task_logs_form").serialize(),
+                url: "/task_group_log_instance_list2?" + $("#task_logs_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
@@ -515,6 +515,12 @@
                 row.job_context
                 openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
             },
+
+            'click #sub_task_log_instance': function (e, value, row, index) {
+                row.job_context
+                openTabPage("task_log_instance.html?group_id="+row.id, "任务组:"+row.job_context + ":子任务日志")
+            },
+
             'click #retry': function (e, value, row, index) {
                 layer.confirm('确定重试任务吗?', {
                     btn: ['重试', '重试最新版本'], //按钮
@@ -523,7 +529,7 @@
                     },
                     btn1:function(){
                         $.ajax({
-                            url: "retry",
+                            url: "retryJobGroup",
                             data: "id=" + row.id+"&new_version=false",
                             type: "post",
                             dataType: "json",
@@ -634,7 +640,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
-            url: "/task_logs?" + $("#task_logs_form").serialize(),
+            url: "/task_group_log_instance_list2?" + $("#task_logs_form").serialize(),
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             search: true,
@@ -659,12 +665,12 @@
                 visible: false
             }, {
                 field: 'job_id',
-                title: '任务ID',
+                title: '任务组ID',
                 sortable: false,
                 visible: false
             }, {
                 field: 'job_context',
-                title: '任务说明',
+                title: '任务组说明',
                 sortable: true
             }, {
                 field: 'etl_date',
@@ -733,7 +739,7 @@
                 field: 'status',
                 title: '任务执行状态',
                 sortable: true,
-                width:150,
+                width:230,
                 events: operateEvents,//给按钮注册事件
                 formatter: function (value, row, index) {
                     var r1=row
@@ -754,25 +760,19 @@
                         btn_retry_str=''
                         btn_kill_str=''
                     }
-                    if (value == "etl" || value == "dispatch" || value == "wait_retry") {
+                    if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
                         context = "运行中"
                         class_str = "btn-primary  btn-xs"
-                        class_str2= "btn-danger  "
                         btn_retry_str=''
                     }
                     if (value == "error") {
                         context = "失败"
                         class_str = "btn-danger btn-xs"
-                        class_str2 = "btn-primary "
                         btn_kill_str=''
                     }
                     if (value == "retry") {
                         context = "重试"
                         class_str = "btn-danger btn-xs"
-                    }
-                    if(context=="未运行"){
-                        btn_retry_str=''
-                        btn_kill_str=''
                     }
                     if (value == "kill" ){
                         context = "杀死中"
@@ -784,6 +784,16 @@
                         class_str = "btn-danger btn-xs"
                         btn_kill_str=''
                     }
+                    if (value == "create") {
+                        context = "创建成功"
+                        class_str = "btn-primary  btn-xs"
+                        btn_retry_str=''
+                    }
+
+                    if(context=="未运行"){
+                        btn_retry_str=''
+                        btn_kill_str=''
+                    }
                     var url="log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time
                     var title=row.job_context + "日志"
                     return [
@@ -793,17 +803,11 @@
                         btn_retry_str +
                         btn_kill_str +
                         '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+
+                        '<button type="button" id="sub_task_log_instance" class="btn btn-info btn-xs">子任务</button>'+
                         '</div>'+
                         '</div>'
                     ].join('');
                 }
-            }, {
-                field: 'operate',
-                title: '监控',
-                events: operateEvents,//给按钮注册事件
-                align: "center",
-                valign: "middle",
-                formatter: operateFormatter //表格中增加按钮
             }]
         });
 

@@ -3,6 +3,7 @@ package com.zyc.zdh.util;
 import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -68,4 +69,12 @@ public class DateUtil {
         return df_time.format(new Timestamp(new Date().getTime()));
     }
 
+    public static Date pase(String date,String format){
+        try {
+            return FastDateFormat.getInstance(format).parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

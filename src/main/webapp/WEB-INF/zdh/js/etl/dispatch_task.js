@@ -274,25 +274,42 @@
                 //
                 // }
 
-                layer.confirm('手动执行,是否重置已执行次数(手动执行完成,需要重新配置调度)', {
-                    btn: ['重置并执行','普通执行','并行执行'], //按钮
-                    cancel:function(index, layero){
-                        console.log('关闭x号');
-                    },
-                    title:"手动执行",
-                    btn1:function () {
-                        executeMs(row.job_id,"true","0")
-                        layer.close(layer.index)
-                    },
-                    btn2:function(){
-                        executeMs(row.job_id,"false","0")
-                        layer.close(layer.index)
-                    },
-                    btn3:function () {
-                        executeMs(row.job_id,"false","1")
-                        layer.close(layer.index)
+                parent.layer.open({
+                    type: 2,
+                    title: '手动执行配置',
+                    shadeClose: false,
+                    resize: true,
+                    fixed: false,
+                    maxmin: true,
+                    shade: 0.1,
+                    area : ['45%', '60%'],
+                    //area: ['450px', '500px'],
+                    content: "task_group_exe_detail?id="+row.job_id, //iframe的url
+                    end : function () {
+                        console.info("弹框结束")
                     }
                 });
+
+
+                // layer.confirm('手动执行,是否重置已执行次数(手动执行完成,需要重新配置调度)', {
+                //     btn: ['重置并执行','普通执行','并行执行'], //按钮
+                //     cancel:function(index, layero){
+                //         console.log('关闭x号');
+                //     },
+                //     title:"手动执行",
+                //     btn1:function () {
+                //         executeMs(row.job_id,"true","0")
+                //         layer.close(layer.index)
+                //     },
+                //     btn2:function(){
+                //         executeMs(row.job_id,"false","0")
+                //         layer.close(layer.index)
+                //     },
+                //     btn3:function () {
+                //         executeMs(row.job_id,"false","1")
+                //         layer.close(layer.index)
+                //     }
+                // });
             },
             'click #copy': function (e, value, row, index) {
                 $("#id").val(row.job_id)

@@ -34,8 +34,15 @@ public class CheckDepJob {
             TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
             //获取重试的任务
-            List<TaskGroupLogInstance> tglims=tglim.selectThreadByStatus(JobStatus.CHECK_DEP.getValue());
+            List<TaskGroupLogInstance> tglims=tglim.selectTaskGroupByStatus(new String[]{JobStatus.CHECK_DEP.getValue(),JobStatus.CREATE.getValue()});
             for(TaskGroupLogInstance tgli :tglims){
+
+                if(!StringUtils.isEmpty(tgli.getPre_tasks())){
+                    int tmp_size=tglim.selectByIds(tgli.getPre_tasks().split(",")).size();
+                    if(tgli.getPre_tasks().split(",").length!=tmp_size){
+                        continue;
+                    }
+                }
                 if(JobCommon2.checkDep(tgli.getJob_type(),tgli)){
                     String tmp_status=tglim.selectByPrimaryKey(tgli.getId()).getStatus();
                     if( tmp_status=="kill" || tmp_status =="killed" ) continue; //在检查依赖时杀死任务
@@ -69,7 +76,7 @@ public class CheckDepJob {
         TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         tgli.setStatus(JobStatus.SUB_TASK_DISPATCH.getValue());
         tgli.setProcess("7.5");
-        tgli.setServer_id(JobCommon2.web_application_id);//重新设置调度器标识,retry任务会定期检查标识是否有效
+        tgli.setServer_id(JobCommon2.web_application_id);//重新设置调度器标识,retry任务会定期检查标识是否有效,对于组任务只有只有CREATE 状态检查此标识才有用
         //更新任务依赖时间
         process_time_info pti=tgli.getProcess_time2();
         pti.setCheck_dep_time(DateUtil.getCurrentTime());
@@ -144,6 +151,9 @@ public class CheckDepJob {
         for(TaskGroupLogInstance tgli:tglis){
             //run_date 结构：run_date:[{task_log_instance_id,etl_task_id,etl_context,more_task}]
             System.out.println(tgli.getRun_jsmind_data());
+            if(StringUtils.isEmpty(tgli.getRun_jsmind_data())){
+                continue;
+            }
             JSONArray jary=JSON.parseObject(tgli.getRun_jsmind_data()).getJSONArray("run_data");
             List<String> tlidList=new ArrayList<>();
             for(Object obj:jary){

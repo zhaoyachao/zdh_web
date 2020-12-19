@@ -82,6 +82,23 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
     public List<TaskGroupLogInstance> selectByTaskLogs2(@Param("owner") String owner, @Param("start_time") Timestamp start_time,
                                                    @Param("end_time") Timestamp end_time, @Param("status") String status, @Param("job_id") String job_id);
 
+    @Select({"<script>",
+            "SELECT * FROM task_group_log_instance",
+            "WHERE owner=#{owner} ",
+            "<when test='start_time!=null'>",
+            "<![CDATA[ AND update_time >= #{start_time} ]]>",
+            "</when>",
+            "<when test='end_time!=null'>",
+            "<![CDATA[ AND update_time <= #{end_time} ]]>",
+            "</when>",
+            "<when test='status!=null and status !=\"\"'>",
+            "AND status = #{status}",
+            "</when>",
+            "order by run_time desc",
+            "</script>"})
+    public List<TaskGroupLogInstance> selectByTaskLogs3(@Param("owner") String owner, @Param("start_time") Timestamp start_time,
+                                                        @Param("end_time") Timestamp end_time, @Param("status") String status);
+
 
     /**
      * 获取超时任务
@@ -251,4 +268,35 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
             )
     public List<TaskGroupLogInstance> selectSubTaskStatus(@Param("status") String status);
 
+
+    /**
+     * 任务组及子任务创建完成改变状态为create
+     * @param ids
+     * @return
+     */
+    @Update(
+            {
+                    "<script>",
+                    "update task_group_log_instance tgli inner join task_log_instance tli on tgli.id in " ,
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "and tgli.status='non' and tli.status='non' and tgli.id=tli.group_id  set tgli.status='create',tli.status='create'",
+                    "</script>"
+            }
+    )
+    public int updateStatus2Create(@Param("ids") String[] ids);
+
+    @Select(
+            {
+                    "<script>",
+                    "select * from task_group_log_instance where id in ",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "and status='finish'",
+                    "</script>"
+            }
+    )
+    public List<TaskGroupLogInstance> selectByIds(@Param("ids") String[] ids);
 }

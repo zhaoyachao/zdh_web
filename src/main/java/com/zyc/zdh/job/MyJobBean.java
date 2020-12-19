@@ -69,6 +69,7 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 			}
 			quartzJobInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
 
+
 			JobCommon2.chooseJobBean(quartzJobInfo,0,null);
 
 //下方故障转移删除

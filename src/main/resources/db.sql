@@ -631,6 +631,10 @@ CREATE TABLE `task_group_log_instance` (
   PRIMARY KEY (`id`)
 );
 
+-- 2020-12-19 ;
+alter table task_group_log_instance add column next_tasks text;
+alter table task_group_log_instance add column pre_tasks text;
+
 create database if NOT EXISTS quartz;
 
 use quartz;
