@@ -9,10 +9,7 @@ import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.DAG;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.HttpUtil;
-import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.*;
 import jdk.nashorn.internal.scripts.JO;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
@@ -93,6 +90,19 @@ public class CheckDepJob {
             //获取所有可执行的子任务
             List<TaskLogInstance> taskLogInstanceList=taskLogInstanceMapper.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()});
             for(TaskLogInstance tl :taskLogInstanceList){
+                //如果上游任务kill,killed 设置本实例为killed
+                String pre_tasks=tl.getPre_tasks();
+                if(!StringUtils.isEmpty(pre_tasks)){
+                    String[] task_ids=pre_tasks.split(",");
+                    List<TaskLogInstance> tlis=taskLogInstanceMapper.selectTliByIds(task_ids);
+                    if(tlis!=null && tlis.size()>0){
+                        tl.setStatus(JobStatus.KILLED.getValue());
+                        JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
+                        JobCommon2.insertLog(tl,"INFO","检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为killed");
+                        continue;
+                    }
+
+                }
                 if(JobCommon2.checkDep(tl.getJob_type(),tl)){
                     String tmp_status=taskLogInstanceMapper.selectByPrimaryKey(tl.getId()).getStatus();
                     if( tmp_status=="kill" || tmp_status =="killed" ) continue; //在检查依赖时杀死任务

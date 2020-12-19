@@ -290,4 +290,18 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
             }
     )
     public List<task_num_info> selectByIds(@Param("ids") String[] ids);
+
+    @Select(
+            {
+                    "<script>",
+                    "select * from task_log_instance tli where tli.id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "and status in ('kill','killed','error')",
+                    "</script>"
+            }
+    )
+    public List<TaskLogInstance> selectTliByIds(@Param("ids") String[] ids);
+
 }

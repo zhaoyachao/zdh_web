@@ -70,6 +70,7 @@ public class ShellJob extends JobCommon2 {
                     String line = System.getProperty("line.separator");
                     for (String s : str) {
                         newcommand = newcommand + s + line;
+                        newcommand=newcommand.trim();
                     }
 
                     //脚本执行
@@ -97,9 +98,8 @@ public class ShellJob extends JobCommon2 {
                         BufferedWriter fileWritter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file2.getAbsolutePath(), true), "UTF-8"));
                         fileWritter.write(newcommand);
                         fileWritter.close();
-
+                        logger.info("当前系统为:" + system+",command:"+newcommand);
                         if (system.toLowerCase().startsWith("win")) {
-                            System.out.println("当前系统为：" + system);
                             result = CommandUtils.exeCommand("cmd.exe /k " + file2.getAbsolutePath());
                         } else {
                             result = CommandUtils.exeCommand("sh " + file2.getAbsolutePath());
@@ -108,8 +108,9 @@ public class ShellJob extends JobCommon2 {
                         //命令行执行
                         logger.info("[" + jobType + "] JOB ,以命令行方式执行");
                         insertLog(tli, "info", "[" + jobType + "] JOB ,以命令行方式执行");
+                        logger.info("当前系统为:" + system+",command:"+newcommand+",命令行方式执行;");
+                        insertLog(tli, "info", "[" + jobType + "] JOB ,当前系统为:" + system+",command:"+newcommand+",命令行方式执行;");
                         if (system.toLowerCase().startsWith("win")) {
-                            System.out.println("当前系统为：" + system);
                             result = CommandUtils.exeCommand("cmd.exe /k " + newcommand);
                         } else {
                             result = CommandUtils.exeCommand(newcommand);

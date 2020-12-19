@@ -7,16 +7,15 @@
             <charset>UTF-8</charset>  
         </encoder>  
     </appender>  
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">  
-        <file>logs/stdout.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->  
-          <fileNamePattern>logs/stdout.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+          <fileNamePattern>logs/stdout.%d{yyyyMMdd}.log</fileNamePattern>
           <!-- keep 30 days' worth of history -->  
           <maxHistory>30</maxHistory>  
       </rollingPolicy>  
       <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">  
-          <maxFileSize>10MB</maxFileSize>  
+          <maxFileSize>100MB</maxFileSize>
       </triggeringPolicy>  
       <encoder>  
           <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
@@ -25,10 +24,10 @@
     </appender>
     
     <logger name="com.zyc.zdh.shiro" level="info" />
-    <logger name="com.zyc.zdh.dao" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao" level="info"></logger>
     <logger name="com.zyc.zdh.dao.ZdhHaInfoMapper" level="info"></logger>
     <logger name="com.zyc.zdh.dao.ZdhDownloadMapper" level="info"></logger>
-    <logger name="com.zyc.zdh.dao.TaskLogInstanceMapper" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao.TaskLogInstanceMapper" level="info"></logger>
     <logger name="com.zyc.zdh.util.SpringLoadInit" level="info"></logger>
     <logger name="com.zyc.zdh.dao.QuartzJobMapper" level="info"></logger>
     <logger name="com.zyc.zdh.netty" level="info"></logger>

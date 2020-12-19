@@ -386,7 +386,7 @@ public class QuartzManager2 {
 					.withRepeatCount(count);
 		}
 		simpleScheduleBuilder = simpleScheduleBuilder
-				.withMisfireHandlingInstructionFireNow();
+				.withMisfireHandlingInstructionNextWithRemainingCount();//故障转移由程序自己实现不依赖quartz故障转移
 				//.withMisfireHandlingInstructionNextWithRemainingCount();
 		return simpleScheduleBuilder;
 	}
@@ -395,7 +395,7 @@ public class QuartzManager2 {
 
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
 				.cronSchedule(expression)
-				.withMisfireHandlingInstructionFireAndProceed();
+				.withMisfireHandlingInstructionDoNothing();//故障转移由程序自己实现不依赖quartz故障转移
 				//.withMisfireHandlingInstructionDoNothing();
 
 		return cronScheduleBuilder;

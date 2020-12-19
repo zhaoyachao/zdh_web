@@ -1960,9 +1960,9 @@ public class JobCommon2 {
         //调度时异常
         updateTaskLogError(tli, "9", tlim, status, interval_time);
 
-        if (status.equalsIgnoreCase("error")) {
-            quartzManager2.deleteTask(tli, "finish", status);
-        }
+//        if (status.equalsIgnoreCase("error")) {
+//            quartzManager2.deleteTask(tli, "finish", status);
+//        }
     }
 
     public static void setJobLastStatus(TaskLogInstance tli, String task_logs_id, TaskLogInstanceMapper tlim) {
@@ -1981,9 +1981,9 @@ public class JobCommon2 {
         insertLog(tli, "ERROR", msg);
         int interval_time = (tli.getInterval_time() == null || tli.getInterval_time().equals("")) ? 5 : Integer.parseInt(tli.getInterval_time());
         updateTaskLogError(tli, "17", tlim, status, interval_time);
-        if (status.equalsIgnoreCase("error")) {
-            quartzManager2.deleteTask(tli, "finish", status);
-        }
+//        if (status.equalsIgnoreCase("error")) {
+//            quartzManager2.deleteTask(tli, "finish", status);
+//        }
     }
 
     public static User getUser() {
@@ -2385,6 +2385,7 @@ public class JobCommon2 {
                 taskLogInstance.setStatus("check_dep");
                 taskLogInstance.setJsmind_data("");
                 taskLogInstance.setRun_jsmind_data("");
+                taskLogInstance.setCount(0);
                 tliList.add(taskLogInstance);
             }
 
@@ -2411,6 +2412,7 @@ public class JobCommon2 {
                 taskLogInstance.setStatus("check_dep");
                 taskLogInstance.setJsmind_data("");
                 taskLogInstance.setRun_jsmind_data("");
+                taskLogInstance.setCount(0);
                 tliList.add(taskLogInstance);
             }
 
