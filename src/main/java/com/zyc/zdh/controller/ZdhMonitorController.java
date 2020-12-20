@@ -234,6 +234,7 @@ public class ZdhMonitorController extends BaseController{
             tgli.setTime_out(qji.getTime_out());
             tgli.setOwner(getUser().getId());
         }
+        tgli.setOwner(getUser().getId());
 //        tgli.setStatus(JobStatus.NON.getValue());
 //        tgli.setRun_time(new Timestamp(new Date().getTime()));
 //        tgli.setUpdate_time(new Timestamp(new Date().getTime()));

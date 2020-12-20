@@ -2112,6 +2112,7 @@ public class JobCommon2 {
                     //手动点击重试按钮触发
                     //手动点击重试,会生成新的实例信息,默认重置执行次数,并将上次执行失败的实例id 付给last_task_id
                     tgli=retry_tgli;
+                    tgli.setProcess("1");
                     tgli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
                     tgli.setUpdate_time(new Timestamp(new Date().getTime()));
                     tgli.setCount(0L);
@@ -2530,7 +2531,7 @@ public class JobCommon2 {
                 taskLogInstance.setJsmind_data("");
                 taskLogInstance.setRun_jsmind_data("");
                 taskLogInstance.setCount(0);
-                taskLogInstance.setOwner(getUser().getId());
+                taskLogInstance.setOwner(tgli.getOwner());
                 tliList.add(taskLogInstance);
             }
 
@@ -2558,7 +2559,7 @@ public class JobCommon2 {
                 taskLogInstance.setJsmind_data("");
                 taskLogInstance.setRun_jsmind_data("");
                 taskLogInstance.setCount(0);
-                taskLogInstance.setOwner(getUser().getId());
+                taskLogInstance.setOwner(tgli.getOwner());
                 tliList.add(taskLogInstance);
             }
 
