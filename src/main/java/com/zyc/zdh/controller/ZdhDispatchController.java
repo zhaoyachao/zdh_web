@@ -424,23 +424,6 @@ public class ZdhDispatchController extends BaseController {
         JSONObject json = new JSONObject();
 
         json.put("success", "200");
-        if (!qji.getMore_task().equals("单源ETL")) {
-            return json.toJSONString();
-        }
-        EtlTaskInfo etlTaskInfo = etlTaskService.selectById(qji.getEtl_task_id());
-        String dataSourcesType = etlTaskInfo.getData_source_type_input().toLowerCase();
-        if (dataSourcesType.equals("kafka") || dataSourcesType.equals("flume")) {
-            quartzJobMapper.updateStatus(qji.getJob_id(), "finish");
-            String url = JobCommon2.getZdhUrl(zdhHaInfoMapper).getZdh_url().replace("zdh", "del");
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("job_id", qji.getJob_id());
-                jsonObject.put("del_type", dataSourcesType);
-                HttpUtil.postJSON(url, jsonObject.toJSONString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
         return json.toJSONString();
     }

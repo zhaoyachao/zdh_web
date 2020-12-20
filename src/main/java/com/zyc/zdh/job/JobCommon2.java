@@ -2344,7 +2344,7 @@ public class JobCommon2 {
 
         List<Date> dates = new ArrayList<>();
 
-        if(expr.endsWith("s") || expr.endsWith("m") || expr.endsWith("h")){
+        if(expr.endsWith("s") || expr.endsWith("m") || expr.endsWith("h") || expr.endsWith("d")){
             long time = Integer.valueOf(expr.substring(0, expr.length() - 1));
 
             int dateType = Calendar.DAY_OF_MONTH;
