@@ -2106,6 +2106,7 @@ public class JobCommon2 {
                     Timestamp cur=getCurTime(quartzJobInfo);
                     tgli.setCur_time(cur);
                     tgli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
+                    tgli.setUpdate_time(new Timestamp(new Date().getTime()));
                 }
 
                 if(is_retry==2){
