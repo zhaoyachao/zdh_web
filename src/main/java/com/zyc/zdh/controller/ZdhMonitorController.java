@@ -99,11 +99,7 @@ public class ZdhMonitorController extends BaseController{
     public String task_logs_delete(String[] ids) {
 
         System.out.println("开始删除任务日志");
-        TaskLogInstance tli = new TaskLogInstance();
-        for (String id : ids) {
-            tli.setId(id);
-            taskLogInstanceMapper.deleteByPrimaryKey(tli);
-        }
+        taskLogInstanceMapper.deleteByIds(ids);
         JSONObject json = new JSONObject();
         json.put("success", "200");
         return json.toJSONString();
@@ -114,12 +110,8 @@ public class ZdhMonitorController extends BaseController{
     @ResponseBody
     public String task_group_logs_delete(String[] ids) {
 
-        System.out.println("开始删除任务日志");
-        TaskLogInstance tli = new TaskLogInstance();
-        for (String id : ids) {
-            tli.setId(id);
-            tglim.deleteByPrimaryKey(tli);
-        }
+        System.out.println("开始删除任务组日志");
+        tglim.deleteByIds(ids);
         JSONObject json = new JSONObject();
         json.put("success", "200");
         return json.toJSONString();

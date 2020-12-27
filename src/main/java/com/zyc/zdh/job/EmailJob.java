@@ -33,7 +33,7 @@ public class EmailJob {
             AccountService accountService=(AccountService) SpringContext.getBean("accountService");
             //获取失败的任务
             List<EmailTaskLogs> emailTaskLogsList=taskLogInstanceMapper.selectByStatus();
-
+            String line = System.getProperty("line.separator");
             //根据任务执行时间，主键 获取对应的日志信息
             for(EmailTaskLogs emailTaskLogs:emailTaskLogsList){
                 String levels = "'DEBUG','WARN','INFO','ERROR'";
@@ -41,11 +41,15 @@ public class EmailJob {
                         emailTaskLogs.getStart_time(), emailTaskLogs.getUpdate_time(), levels);
                 Iterator<ZdhLogs> it = zhdLogs.iterator();
                 StringBuilder sb = new StringBuilder("");
+                sb.append("调度任务ID:"+emailTaskLogs.getJob_id()+",调度任务名:"+emailTaskLogs.getJob_context()+line);
+                sb.append("任务组实例ID:"+emailTaskLogs.getGroup_id()+",任务组名:"+emailTaskLogs.getJob_context()+line);
+                sb.append("子任务ID:"+emailTaskLogs.getEtl_task_id()+",子任务名:"+emailTaskLogs.getEtl_context()+line);
+                sb.append("本次子任务实例ID:"+emailTaskLogs.getId()+",本次任务时间:"+emailTaskLogs.getEtl_date()+line);
                 //拼接邮件信息
                 while (it.hasNext()) {
                     ZdhLogs next = it.next();
                     String info = "任务ID:" + next.getJob_id() + ",任务执行时间:" + next.getLog_time().toString() + ",日志["+next.getLevel()+"]:" + next.getMsg();
-                    sb.append(info + "\r\n");
+                    sb.append(info + line);
                 }
                 logger.info("检测失败任务:"+emailTaskLogs.getJob_id()+",对应主键:"+emailTaskLogs.getId()+",对应任务组id:"+emailTaskLogs.getGroup_id());
                 List<String> emails=new ArrayList<>();

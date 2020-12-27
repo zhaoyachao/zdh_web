@@ -260,9 +260,9 @@ public class ZdhDispatchController extends BaseController {
                 tgli_ids.add(SnowflakeIdWorker.getInstance().nextId() + "");
             }
             dti.setCount(0);
-            dti.setTask_log_id(null);
-            dti.setLast_time(null);
-            dti.setNext_time(null);
+            //dti.setTask_log_id(null);
+            //dti.setLast_time(null);
+            //dti.setNext_time(null);
             quartzJobMapper.updateByPrimaryKey(dti);
             for(int i=0;i<dates.size();i++){
                 TaskGroupLogInstance tgli=new TaskGroupLogInstance();

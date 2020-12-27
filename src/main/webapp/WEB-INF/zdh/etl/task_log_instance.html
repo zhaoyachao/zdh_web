@@ -213,12 +213,16 @@
             return num;
         }
 
-        $('#search').click(function () {
+        function get_task_log(){
             $('#exampleTableEvents').bootstrapTable('refresh', {
                 url: "/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group_id="+s.group_id,
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
+        }
+
+        $('#search').click(function () {
+            get_task_log()
 
         })
 
@@ -572,7 +576,7 @@
             }]
         });
 
-        $('#search').click()
+        get_task_log()
     });
 </script>
 </body>

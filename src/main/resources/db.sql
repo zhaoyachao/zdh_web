@@ -19,9 +19,9 @@ use mydb;
 drop table if EXISTS zdh_ha_info;
 create table zdh_ha_info(
 id int not null AUTO_INCREMENT,
-zdh_instance VARCHAR(100),
-zdh_url VARCHAR(100),
-zdh_host VARCHAR(15),
+zdh_instance VARCHAR(128),
+zdh_url VARCHAR(500),
+zdh_host VARCHAR(128),
 zdh_port varchar(5),
 zdh_status varchar(10),
 PRIMARY KEY (id)
@@ -440,9 +440,9 @@ create table ssh_task_info(
 --2020-08-30更新;
 alter table etl_drools_task_info add column more_task varchar(100);
 
-alter table zdh_ha_info add column application_id varchar(100);
-alter table zdh_ha_info add column history_server varchar(100);
-alter table zdh_ha_info add column master varchar(100);
+alter table zdh_ha_info add column application_id varchar(500);
+alter table zdh_ha_info add column history_server varchar(500);
+alter table zdh_ha_info add column master varchar(500);
 
 alter table task_logs add column application_id varchar(100);
 alter table task_logs add column history_server varchar(100);

@@ -25,6 +25,8 @@ public class EmailTaskLogs {
     private String phone;
     private String is_use_email="";
     private String is_use_phone="";
+    private String etl_context;
+    private String etl_task_id;
 
 
     public String getJob_id() {
@@ -161,5 +163,21 @@ public class EmailTaskLogs {
 
     public void setGroup_context(String group_context) {
         this.group_context = group_context;
+    }
+
+    public String getEtl_context() {
+        return etl_context;
+    }
+
+    public void setEtl_context(String etl_context) {
+        this.etl_context = etl_context;
+    }
+
+    public String getEtl_task_id() {
+        return etl_task_id;
+    }
+
+    public void setEtl_task_id(String etl_task_id) {
+        this.etl_task_id = etl_task_id;
     }
 }

@@ -304,4 +304,16 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     )
     public List<TaskLogInstance> selectTliByIds(@Param("ids") String[] ids);
 
+    @Delete(
+            {
+                    "<script>",
+                    "delete from task_log_instance where id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public int deleteByIds(@Param("ids") String[] ids);
+
 }

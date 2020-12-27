@@ -489,14 +489,14 @@
 
         function deleteMs(ids) {
             $.ajax({
-                url: "task_logs_delete",
+                url: "task_group_logs_delete",
                 data: "ids=" + ids,
                 type: "post",
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
                     $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: "/task_logs?" + $("#task_logs_form").serialize(),
+                        url: "/task_group_log_instance_list2?" + $("#task_logs_form").serialize(),
                         contentType: "application/json;charset=utf-8",
                         dataType: "json"
                     });

@@ -299,4 +299,17 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
             }
     )
     public List<TaskGroupLogInstance> selectByIds(@Param("ids") String[] ids);
+
+    @Delete(
+            {
+                    "<script>",
+                    "delete from task_group_log_instance where id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public int deleteByIds(@Param("ids") String[] ids);
+
 }
