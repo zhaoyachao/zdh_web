@@ -635,6 +635,15 @@ CREATE TABLE `task_group_log_instance` (
 alter table task_group_log_instance add column next_tasks text;
 alter table task_group_log_instance add column pre_tasks text;
 
+-- 2020-12-27
+drop TABLE if EXISTS every_day_notice;
+create table every_day_notice(
+id bigint NOT NULL AUTO_INCREMENT,
+msg text comment '通知消息',
+is_delete varchar(10) comment '是否删除消息',
+primary key (id)
+);
+
 create database if NOT EXISTS quartz;
 
 use quartz;

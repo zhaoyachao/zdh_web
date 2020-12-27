@@ -3,6 +3,7 @@ package com.zyc.zdh.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.config.DateConverter;
+import com.zyc.zdh.dao.EveryDayNoticeMapper;
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
@@ -41,6 +42,8 @@ public class SystemController extends BaseController{
     QuartzManager2 quartzManager2;
     @Autowired
     Environment ev;
+    @Autowired
+    EveryDayNoticeMapper everyDayNoticeMapper;
 
     @RequestMapping(value = "/{url}", method = RequestMethod.GET)
     public String dynApiDemo2(@PathVariable("url") String url) {
@@ -194,6 +197,17 @@ public class SystemController extends BaseController{
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("dateList",resultList);
         return jsonObject.toJSONString();
+    }
+
+    @RequestMapping(value = "/every_day_notice", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String every_day_notice() {
+
+        EveryDayNotice everyDayNotice=new EveryDayNotice();
+        everyDayNotice.setIs_delete("false");
+        List<EveryDayNotice> list=everyDayNoticeMapper.select(everyDayNotice);
+
+        return JSON.toJSONString(list.get(0));
     }
 
 
