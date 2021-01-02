@@ -19,23 +19,26 @@ public interface ZdhLogsMapper extends BaseMapper<ZdhLogs> {
     public int deleteBatchById(@Param("ids_str") String ids_str);
 
     @Select({"<script>",
-            "select * from zdh_logs where job_id=#{job_id}  and level in (${levels}) ",
+            "select * from zdh_logs where level in (${levels}) ",
             "<when test='task_logs_id == null and task_logs_id == \"\"'>",
             "and <![CDATA[ log_time >=#{start_time} ]]> and <![CDATA[ log_time <=#{end_time} ]]>",
             "</when>",
             "<when test='task_logs_id!=null and task_logs_id !=\"\"'>",
             "AND task_logs_id = #{task_logs_id}",
+            "</when>",
+            "<when test='job_id!=null and job_id !=\"\"'>",
+            " and job_id=#{job_id}",
             "</when>",
             "</script>"})
     public List<ZdhLogs> selectByTime(@Param("job_id") String etl_task_id,@Param("task_logs_id") String task_logs_id,@Param("start_time") Timestamp start_time, @Param("end_time") Timestamp end_time,@Param("levels") String levels);
 
     @Delete({"<script>",
-            "delete from zdh_logs where job_id = #{job_id} ",
+            "delete from zdh_logs where task_logs_id = '#{task_logs_id}'",
             "<when test='task_logs_id == null and task_logs_id == \"\"'>",
             "and <![CDATA[ log_time >=#{start_time} ]]> and <![CDATA[ log_time <=#{end_time} ]]>",
             "</when>",
-            "<when test='task_logs_id!=null and task_logs_id !=\"\"'>",
-            "AND task_logs_id = #{task_logs_id}",
+            "<when test='job_id!=null and job_id !=\"\"'>",
+            " and job_id=#{job_id}",
             "</when>",
             "</script>"})
     public int deleteByTime(@Param("job_id") String job_id,@Param("task_logs_id") String task_logs_id ,@Param("start_time") Timestamp start_time, @Param("end_time") Timestamp end_time);

@@ -156,7 +156,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Select("select * from task_log_instance where group_id = ${group_id}")
     public List<TaskLogInstance> selectByGroupId(@Param("group_id") String group_id);
 
-    @Select("select * from task_log_instance where status='finish' and id=#{id}")
+    @Select("select * from task_log_instance where status in ('finish','skip') and id=#{id}")
     public TaskLogInstance selectByIdStatus(@Param("id") String id);
 
     @Update(value = "update task_log_instance set status=#{status} where id=#{id} and status='running' and process > #{process}")
@@ -244,7 +244,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     public int allDispatchNum();
 
     @Select(
-            "(select count(1) as num from quartz_job_info where status in ('running','pause') and job_type not in ('email','retry'))"
+            "(select count(1) as num from quartz_job_info where status in ('running','pause') and job_type not in ('email','retry','check'))"
     )
     //@Select("select count(1) as num from sssh_task_info ")
     @Results({@Result(column="num",property="num")

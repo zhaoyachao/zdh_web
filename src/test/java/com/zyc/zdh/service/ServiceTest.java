@@ -26,8 +26,6 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 public class ServiceTest {
 
-	@Autowired
-	private MsgService msgService;
 	
 	@Autowired
 	private TaskInfoMapper taskInfoMapper;
@@ -41,7 +39,7 @@ public class ServiceTest {
 		PlatformTransactionManager b=(PlatformTransactionManager) SpringContext.getBean("txManager2");
 		System.out.println(a.getClass());
 		System.out.println(b.getClass());
-		msgService.delete(396380350361632768L);
+
 	}
 	
 	@Test

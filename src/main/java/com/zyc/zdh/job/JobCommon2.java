@@ -1297,9 +1297,11 @@ public class JobCommon2 {
      *  解析任务组时间->解析创建任务组实例->创建子任务实例
      * @param quartzJobInfo
      * @param is_retry      0:调度,2:手动重试
+     * @param sub_tasks     重试的子任务divId,如果全部重试可传null,或者所有的divId
      */
-    public static void chooseJobBean(QuartzJobInfo quartzJobInfo, int is_retry, TaskGroupLogInstance retry_tgli) {
+    public static void chooseJobBean(QuartzJobInfo quartzJobInfo, int is_retry, TaskGroupLogInstance retry_tgli,String[] sub_tasks) {
         QuartzJobMapper qjm = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
+        QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
         TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         //手动重试增加重试实例,自动重试在原来的基础上
@@ -1370,7 +1372,7 @@ public class JobCommon2 {
                 //tgli.setServer_id(JobCommon2.web_application_id);
 
                 //todo 生成具体任务组下任务实例
-                sub_task_log_instance(tgli);
+                sub_task_log_instance(tgli,sub_tasks);
                 tglim.updateStatus2Create(new String[]{tgli.getId()});
                 debugInfo(tgli);
                 tglim.updateByPrimaryKey(tgli);
@@ -1391,6 +1393,10 @@ public class JobCommon2 {
             }
         });
 
+        //如果调度任务类型是一次性则删除调度
+        if(quartzJobInfo.getJob_model().equalsIgnoreCase(JobModel.ONCE.getValue())){
+            quartzManager2.deleteTask(quartzJobInfo,JobStatus.FINISH.getValue());
+        }
     }
 
     /** 只管QUARTZ调度触发,手动执行另算
@@ -1398,7 +1404,7 @@ public class JobCommon2 {
      * 如果使用自定义时间,获取上次时间和本次做diff
      */
     public static Timestamp getCurTime(QuartzJobInfo quartzJobInfo){
-
+        QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
         if(quartzJobInfo.getUse_quartz_time() != null && quartzJobInfo.getUse_quartz_time().equalsIgnoreCase("on")){
             return quartzJobInfo.getQuartz_time();
         }
@@ -1429,9 +1435,14 @@ public class JobCommon2 {
            cur=quartzJobInfo.getStart_time();
         }else{
             //此处不适用月因时间无法正常确定,调度中时间按照秒做单位
-
             cur=DateUtil.add(quartzJobInfo.getLast_time(),dateType,num);
             quartzJobInfo.setLast_time(cur);
+        }
+
+        //判断自定义时间是否超过,超过删除删除调度
+        Timestamp second=DateUtil.add(quartzJobInfo.getLast_time(),dateType,num);
+        if(cur.getTime() > quartzJobInfo.getEnd_time().getTime() || second.getTime() > quartzJobInfo.getEnd_time().getTime()){
+            quartzManager2.deleteTask(quartzJobInfo,"finish");
         }
 
         return cur;
@@ -1668,14 +1679,16 @@ public class JobCommon2 {
     /**
      * 根据tli 任务组生成具体的子任务实例
      * @param tgli
+     * @param sub_tasks 具体执行的子任务divId
      */
-    public static List<TaskLogInstance> sub_task_log_instance(TaskGroupLogInstance tgli){
+    public static List<TaskLogInstance> sub_task_log_instance(TaskGroupLogInstance tgli,String[] sub_tasks){
         List<TaskLogInstance> tliList=new ArrayList<>();
         try{
             TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-            // 任务id 与具体实例id 映射
-            Map<String,String> map=new HashMap<>();
+            // divId和实例id映射
+            Map<String,String> map=new HashMap<>(); //divId->id
+            Map<String,String> map2=new HashMap<>();//id->divId
             DAG dag=new DAG();
             JSONArray tasks=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("tasks");
             JSONArray shell=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("shell");
@@ -1690,6 +1703,7 @@ public class JobCommon2 {
                 String etl_context=((JSONObject) job).getString("etl_context");
                 String t_id=SnowflakeIdWorker.getInstance().nextId()+"";
                 map.put(pageSourceId,t_id);//div标识和任务实例id 对应关系
+                map2.put(t_id,pageSourceId);
 
                 taskLogInstance.setMore_task(more_task);
                 taskLogInstance.setJob_type("ETL");
@@ -1716,7 +1730,7 @@ public class JobCommon2 {
 
                 String t_id=SnowflakeIdWorker.getInstance().nextId()+"";
                 map.put(pageSourceId,t_id);//div标识和任务实例id 对应关系
-
+                map2.put(t_id,pageSourceId);
                 taskLogInstance.setMore_task("");
                 taskLogInstance.setJob_type("SHELL");
                 taskLogInstance.setId(t_id);//具体执行任务实例id,每次执行都会重新生成
@@ -1766,6 +1780,7 @@ public class JobCommon2 {
                 jsonObject1.put("etl_context",tli.getEtl_context());
                 jsonObject1.put("more_task",tli.getMore_task());
                 jsonObject1.put("job_type",tli.getJob_type());
+                jsonObject1.put("divId",map2.get(tid));
                 jary.add(jsonObject1);
             }
 
@@ -1786,85 +1801,24 @@ public class JobCommon2 {
                 tli.setGroup_context(tgli.getJob_context());
                 tli.setNext_tasks(next_tasks);
                 tli.setPre_tasks(pre_tasks);
-                tli.setStatus(JobStatus.NON.getValue());
+                if(sub_tasks==null){
+                    tli.setStatus(JobStatus.NON.getValue());
+                }else{
+                    //不再sub_tasks 中的div 状态设置为跳过状态
+                    if(Arrays.asList(sub_tasks).contains(map2.get(tid))){
+                        //设置为初始态
+                        tli.setStatus(JobStatus.NON.getValue());
+                    }else{
+                        tli.setStatus(JobStatus.SKIP.getValue());
+                        tli.setProcess("100");
+                    }
+                }
+
+
                 tlim.insert(tli);
                // debugInfo(tli);
                 System.out.println("=======================");
             }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return tliList;
-    }
-
-    /**
-     * 根据tli 任务组生成具体的子任务实例
-     * @param tgli
-     */
-    public static List<TaskLogInstance> sub_task_log_instance2(TaskGroupLogInstance tgli){
-        List<TaskLogInstance> tliList=new ArrayList<>();
-        try{
-            TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
-            TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-            // 任务id 与具体实例id 映射
-            Map<String,String> map=new HashMap<>();
-            DAG dag=new DAG();
-            JSONArray jry=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("data");
-            for(Object job :jry){
-                TaskLogInstance taskLogInstance=new TaskLogInstance();
-                BeanUtils.copyProperties(taskLogInstance,tgli);
-                String id=((JSONObject) job).getString("id");
-                String isroot=((JSONObject) job).getString("isroot");
-                String more_task=((JSONObject) job).getString("more_task");
-                String parent_id=((JSONObject) job).getString("parentid");
-                String topic=((JSONObject) job).getString("topic");
-                String t_id=SnowflakeIdWorker.getInstance().nextId()+"";
-                map.put(id,t_id);
-                if(isroot!=null && isroot.equalsIgnoreCase("true")){
-                    map.put("root","root");
-                }else{
-                    taskLogInstance.setId(t_id);
-                    taskLogInstance.setJob_id(tgli.getJob_id());
-                    taskLogInstance.setJob_context(topic);
-                    taskLogInstance.setStatus("check_dep");
-                    tliList.add(taskLogInstance);
-                }
-
-            }
-
-            // 生成实例依赖关系
-            for(Object job :jry){
-                String id=((JSONObject) job).getString("id");
-                String parent_id=((JSONObject) job).getString("parentid");
-                ((JSONObject) job).put("id",map.get(id));
-                ((JSONObject) job).put("parentid",map.get(parent_id));
-                if(id !=null && !id.equalsIgnoreCase("root")){
-                    dag.addEdge(map.get(parent_id),map.get(id));
-                }
-            }
-
-            JSONObject jsonObject=JSON.parseObject(tgli.getJsmind_data());
-            jsonObject.put("run_data",jry);
-            tgli.setRun_jsmind_data(jsonObject.toJSONString());
-            tgli.setProcess("6.5");
-            tglim.updateByPrimaryKey(tgli);
-            //debugInfo(tgli);
-
-            //生成实例
-            for(TaskLogInstance tli:tliList){
-                String tid=tli.getId();
-                String next_tasks=StringUtils.join(dag.getChildren(tid).toArray(),",");
-                String pre_tasks=StringUtils.join(dag.getParent(tid),",");
-                tli.setGroup_id(tgli.getId());
-                tli.setGroup_context(tgli.getJob_context());
-                tli.setNext_tasks(next_tasks);
-                tli.setPre_tasks(pre_tasks);
-                tli.setStatus(JobStatus.CREATE.getValue());
-                tlim.insert(tli);
-                // debugInfo(tli);
-                System.out.println("=======================");
-            }
-
         }catch (Exception e){
             e.printStackTrace();
         }

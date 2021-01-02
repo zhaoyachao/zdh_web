@@ -199,7 +199,7 @@
                 type: 'POST',
                 url: "zhd_logs",
                 dataType: 'json',
-                data: $("#form_log").serialize() + "&job_id=" + s.job_id+"&task_log_id="+s.task_log_id,
+                data: $("#form_log").serialize() +"&task_log_id="+s.task_log_id,
                 //发送数据前
                 beforeSend: function () {
                     // 禁用按钮防止重复提交

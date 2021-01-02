@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 监控首页</title>
-    <meta name="keywords" content="ZDH 监控首页">
-    <meta name="description" content="ZDH 监控首页">
+    <title>ZDH 子任务监控</title>
+    <meta name="keywords" content="ZDH 子任务监控">
+    <meta name="description" content="ZDH 子任务监控">
 
     <link rel="shortcut icon" href="img/favicon.ico">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
@@ -21,16 +21,66 @@
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
 </head>
 
 <body class="gray-bg">
-<div class="row  border-bottom white-bg dashboard-header">
 
-
-</div>
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
+    <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>任务流程图</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content col-sm-12">
+                <div class="form-group">
+                    <div class="text-center">
+                        <button  class="btn btn-primary" οnsubmit='return false'
+                                type="button" style="background-color: #00E8D7">初始化
+                        </button>
+                        <button  class="btn btn-primary" οnsubmit='return false'
+                                type="button" style="background-color: #00bb00">运行中
+                        </button>
+                        <button  class="btn btn-primary" οnsubmit='return false'
+                                type="button" style="background-color: #0044cc">完成
+                        </button>
+                        <button  class="btn btn-primary" οnsubmit='return false'
+                                 type="button" style="background-color: red">失败
+                        </button>
+                        <button  class="btn btn-primary" οnsubmit='return false'
+                                 type="button" style="background-color: LightGrey">跳过
+                        </button>
+                        <button  class="btn btn-primary" οnsubmit='return false'
+                                 type="button" style="background-color: #E68A00">未知
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div  class="col-sm-12">
+                        <div class="container device col-sm-12">
+                            <div class="deviceLeft">
+<!--                                <div class="deviceLeft_box">-->
+<!--                                    <div class="node node1css" data-type="tasks">ETL任务</div>-->
+<!--                                    <div class="node node1css" data-type="shell">SHELL</div>-->
+<!--                                </div>-->
+                                <input id="refash" οnsubmit='return false' type="button" class="btn btn-primary form-control"
+                                       style="margin-bottom:0px" value="刷新"/>
+                            </div>
+                            <div id="deviceRight">
+                                <div id="m1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     <div class="ibox float-e-margins">
         <div class="ibox-title">
             <h5>任务状态查询</h5>
@@ -79,8 +129,11 @@
     </div>
 
     </div>
+</div>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
 
 
@@ -101,7 +154,402 @@
 <script src="js/plugins/layer/laydate/laydate.js"></script>
 <!-- layer javascript -->
 <script src="js/plugins/layer/layer.min.js"></script>
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
+<script type="text/javascript" src="js/jsplumb/index2.js"></script>
+<script type="text/javascript">
 
+    function openTabPage(url, title) {
+        var wpd = $(window.parent.document);
+        var mainContent = wpd.find('.J_mainContent');
+        var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
+        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+        pageTabs.find(".J_menuTab.active").removeClass("active");
+        mainContent.find("iframe").css("display", "none");
+        if (thisIframe.length > 0) {	// 选项卡已打开
+            thisIframe.css("display", "inline");
+            pageTabs.find(".J_menuTab[data-id='" + url + "']").addClass("active");
+        } else {
+            var menuItem = wpd.find("a.J_menuItem[href='" + url + "']");
+            var dataIndex = title == undefined ? menuItem.attr("data-index") : '9999';
+            var _title = title == undefined ? menuItem.find('.nav-label').text() : title;
+            var iframe = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + url + '" frameborder="0" data-id="' + url
+                + '" seamless="" style="display: inline;"></iframe>';
+            pageTabs.append(
+                ' <a href="javascript:;" class="J_menuTab active" data-id="' + url + '">' + _title + ' <i class="fa fa-times-circle"></i></a>');
+            mainContent.append(iframe);
+            //显示loading提示
+            var loading = top.layer.load();
+            mainContent.find('iframe:visible').load(function () {
+                //iframe加载完成后隐藏loading提示
+                top.layer.close(loading);
+            });
+        }
+
+    }
+
+    function add_node_zdh(more_task,etl_id,etl_context){
+        var id = "div"+etl_id;
+    }
+
+    //基本连接线样式
+    var connectorPaintStyle = {
+        lineWidth: 2,
+        strokeStyle: "#61b8d0",
+    };
+
+    // 鼠标悬浮在连接线上的样式
+    var connectorHoverStyle = {
+        lineWidth: 2,
+        strokeStyle: "green",
+    };
+
+    //端点的颜色样式
+    var paintStyle = {
+        fillStyle: "#ccc",
+        radius: 10,
+        lineWidth:6 ,
+    }
+
+    // 鼠标悬浮在端点上的样式
+    var hoverPaintStyle = {
+         fillStyle: "#aaa",
+    }
+
+
+    var hollowCircle = {
+        endpoint: ["Dot", { radius: 3 }],  //端点的形状
+        connectorStyle: connectorPaintStyle,
+        connectorHoverStyle: connectorHoverStyle,
+        paintStyle: paintStyle,
+        hoverPaintStyle: hoverPaintStyle ,
+        isSource: true,    //是否可以拖动（作为连线起点）
+        connector: ["StateMachine", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],  //连接线的样式种类有[Bezier],[Flowchart],[StateMachine ],[Straight ]
+        isTarget: true,    //是否可以放置（连线终点）
+        maxConnections: -1,    // 设置连接点最多可以连接几条线
+        connectorOverlays:[
+            [ "Arrow", { width:10, length:20, location:1, id:"arrow" } ],
+            ["Custom", {
+                create:function(component) {
+                    return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
+                },
+                location:0.5,
+                id:"customOverlay",
+            }],
+        ],
+    };
+
+    function get_color_by_status(status){
+        //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+        if(status=='create' || status=="dispatch"){
+            return "#00E8D7"
+        }
+        if(status=="check_dep" || status=="wait_retry" || status=="etl"|| status=="kill" || status=="sub_task_dispatch"){
+            return "#00bb00"
+        }
+        if(status=="finish"){
+            return "#0044cc"
+        }
+
+        if(status=="error" || status=="killed"){
+            return "red"
+        }
+        if(status == "skip"){
+            return "LightGrey"
+        }
+
+        return "#E68A00"
+
+
+    }
+
+    function open_json(json,group_id) {
+        var jsplumb_json=JSON.parse(json)
+        var ids = new Array();// 声明一个数组
+        var map = new Map();
+        var map2 = new Map();
+        var map3 = new Map();
+        //获取任务运行状态
+        var run_data=jsplumb_json.run_data
+        if (run_data.length >= 1 ){
+            console.info("run_data is not null")
+            for(var i=0;i<run_data.length;i++){
+                var id=run_data[i].task_log_instance_id
+                var divId=run_data[i].divId
+                map.set(divId,id);
+                map2.set(id,divId);
+            }
+            //请求状态
+            $.ajax({
+                url : "task_log_instance_list",
+                data : "group_id=" +group_id,
+                type : "post",
+                dataType : "json",
+                async: false,
+                success : function(data) {
+                    console.info("task_log_instance_list success")
+                    for(var j=0;j<data.length;j++){
+                        //divId->status
+                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id))
+                        map3.set(map2.get(data[j].id),data[j].status)
+                    }
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+
+        //添加div 数据
+
+        for(var i=0;i< jsplumb_json.tasks.length;i++){
+            var divId=jsplumb_json.tasks[i].divId
+            var etl_context=jsplumb_json.tasks[i].etl_context
+            var positionX=jsplumb_json.tasks[i].positionX
+            var positionY=jsplumb_json.tasks[i].positionY
+            var task_log_instance_id=map.get(divId)
+
+            var color=get_color_by_status(map3.get(divId))
+            console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color)
+            $("#m1").append('<div class="node node1css tasks" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="tasks"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type","tasks")
+
+            $("#" + divId).attr("etl_task_id",jsplumb_json.tasks[i].etl_task_id);
+            $("#" + divId).attr("etl_context",jsplumb_json.tasks[i].etl_context);
+            $("#" + divId).attr("more_task",jsplumb_json.tasks[i].more_task);
+            //div.width(etl_task_info.etl_context.length*16)
+            $("#" + divId).css("width","auto")
+            $("#" + divId).css("display","inline-block")
+            $("#" + divId).css("*display","inline")
+            $("#" + divId).css("*zoom","1")
+            $("#" + divId).html(jsplumb_json.tasks[i].etl_context);
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous"
+            })
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+            doubleclick("#" + divId,task_log_instance_id,etl_context);
+        }
+
+        for(var i=0;i< jsplumb_json.shell.length;i++){
+            var shell=jsplumb_json.shell[i]
+            var divId=shell.divId
+            var etl_context=shell.etl_context
+            var positionX=shell.positionX
+            var positionY=shell.positionY
+            var color=get_color_by_status(map3.get(divId))
+            var task_log_instance_id=map.get(divId)
+            $("#m1").append('<div class="node node1css shell" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="shell"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type","shell")
+
+            $("#" + divId).attr("command",shell.command);
+            $("#" + divId).attr("is_script",shell.is_script);
+            $("#" + divId).attr("etl_context",etl_context);
+            $("#" + divId).css("width","auto")
+            $("#" + divId).css("display","inline-block")
+            $("#" + divId).css("*display","inline")
+            $("#" + divId).css("*zoom","1")
+            $("#" + divId).html(shell.etl_context);
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous"
+            })
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+            doubleclick("#" + divId,task_log_instance_id,etl_context);
+        }
+
+        for(var i=0;i< jsplumb_json.line.length;i++){
+            jsPlumb.connect({
+                uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"],
+            })
+        }
+
+    }
+
+    function refash(json,group_id){
+        var jsplumb_json=JSON.parse(json)
+        var ids = new Array();// 声明一个数组
+        var map = new Map();
+        var map2 = new Map();
+        var map3 = new Map();
+        //获取任务运行状态
+        var run_data=jsplumb_json.run_data
+        if (run_data.length >= 1 ){
+            console.info("run_data is not null")
+            for(var i=0;i<run_data.length;i++){
+                var id=run_data[i].task_log_instance_id
+                var divId=run_data[i].divId
+                map.set(divId,id);
+                map2.set(id,divId);
+            }
+            //请求状态
+            $.ajax({
+                url : "task_log_instance_list",
+                data : "group_id=" +group_id,
+                type : "post",
+                dataType : "json",
+                async: false,
+                success : function(data) {
+                    console.info("task_log_instance_list success")
+                    for(var j=0;j<data.length;j++){
+                        //divId->status
+                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id))
+                        map3.set(map2.get(data[j].id),data[j].status)
+                    }
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+        map3.forEach(function(value,key){
+            console.log(value,key);
+            var color=get_color_by_status(value)
+            $('#'+key).css("background-color",color);
+        });
+
+
+    }
+
+    //双击节点内容区域时的事件
+    function doubleclick(divId,task_log_instance_id,etl_context) {
+        $(divId).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this)
+            var etl_task_id=div.attr("etl_task_id")
+
+
+            openTabPage("log_txt.html?task_log_id="+task_log_instance_id, etl_context + "日志")
+            // if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
+            //     url=url+"?etl_task_id=-1"
+            // }else{
+            //     var more_task=div.attr("more_task")
+            //     url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task
+            // }
+            // layer.open({
+            //     type: 2,
+            //     area: ['700px', '450px'],
+            //     fixed: false, //不固定
+            //     maxmin: true,
+            //     content: encodeURI(url),
+            //     end: function () {
+            //         if($("#etl_task_text").val()==""){
+            //             console.info("无修改-不更新")
+            //             return ;
+            //         }
+            //         var etl_task_info=JSON.parse($("#etl_task_text").val())
+            //         div.attr("etl_task_id",etl_task_info.etl_task_id);
+            //         div.attr("etl_context",etl_task_info.etl_context);
+            //         div.attr("more_task",etl_task_info.more_task);
+            //         //div.width(etl_task_info.etl_context.length*16)
+            //         div.css("width","auto")
+            //         div.css("display","inline-block")
+            //         div.css("*display","inline")
+            //         div.css("*zoom","1")
+            //         div.html(etl_task_info.etl_context);
+            //     }
+            // });
+        });
+    }
+    function doubleclick_shell(id) {
+        $(id).dblclick(function () {
+            var etl_context = $(this).text();
+            var div = $(this)
+            var command=div.attr("command")
+            var url='shell_detail.html'
+            if( command == "" || command == undefined ){
+                url=url+"?command=-1"
+            }else{
+                var is_script=div.attr("is_script")
+                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新")
+                        return ;
+                    }
+
+                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    div.attr("command",etl_task_info.command);
+                    div.attr("is_script",etl_task_info.is_script);
+                    div.css("width","auto")
+                    div.css("display","inline-block")
+                    div.css("*display","inline")
+                    div.css("*zoom","1")
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
+    function jsplumb_data(){
+        var ojson={
+            tasks:[],
+            shell:[],
+            line:[]
+        }
+        //服务器
+        $("#m1 .tasks").each(function (idx, elem) {
+            var $elem = $(elem);
+            var param={
+                id: $elem.attr('etl_task_id'),
+                etl_task_id: $elem.attr('etl_task_id'),
+                etl_context:$elem.attr('etl_context'),
+                more_task:$elem.attr('more_task'),
+                divId:$elem.attr('id'),
+                name: $elem[0].innerText,
+                positionX: parseInt($elem.css("left"), 10),
+                positionY: parseInt($elem.css("top"), 10),
+                type:$elem.data('type')
+            }
+            ojson.tasks.push(param)
+        });
+
+        $("#m1 .shell").each(function (idx, elem) {
+            var $elem = $(elem);
+            var param={
+                id: $elem.attr('id'),
+                is_script: $elem.attr('is_script'),
+                etl_context:$elem.text(),
+                command:$elem.attr('command'),
+                divId:$elem.attr('id'),
+                name: $elem[0].innerText,
+                positionX: parseInt($elem.css("left"), 10),
+                positionY: parseInt($elem.css("top"), 10),
+                type:$elem.data('type')
+            }
+            ojson.shell.push(param)
+        });
+
+        $.each(jsPlumb.getConnections(), function (idx, connection) {
+            var param={
+                connectionId: connection.id,
+                pageSourceId: connection.sourceId,
+                pageTargetId: connection.targetId
+            }
+            ojson.line.push(param)
+        });
+
+        return ojson
+    }
+
+
+</script>
 <script>
     $(document).ready(function () {
 
@@ -148,50 +596,7 @@
 
         }
 
-
-        //日期范围限制
-        // var start = {
-        //     elem: '#start_time',
-        //     format: 'YYYY-MM-DD',
-        //     min: '2000-01-01',
-        //     max: '2099-06-16', //最大日期
-        //     istime: true,
-        //     istoday: false,
-        //     choose: function (datas) {
-        //         end.min = datas; //开始日选好后，重置结束日的最小日期
-        //         end.start = datas //将结束日的初始值设定为开始日
-        //     }
-        // };
-        // var end = {
-        //     elem: '#end_time',
-        //     format: 'YYYY-MM-DD',
-        //     min: '2000-01-01',
-        //     max: '2099-06-16',
-        //     istime: true,
-        //     istoday: false,
-        //     choose: function (datas) {
-        //         start.max = datas; //结束日选好后，重置开始日的最大日期
-        //     }
-        // };
-        // laydate(start);
-        // laydate(end);
-        // $("#start_time").val(getCurrentDate())
-        // $("#end_time").val(getCurrentDate())
-
-
         $('#status').chosen();
-
-        function getCurrentDate() {
-            var oDate = new Date(),
-                oYear = oDate.getFullYear(),
-                oMonth = oDate.getMonth() + 1,
-                oDay = oDate.getDate(),
-                oHour = oDate.getHours(),
-                oMin = oDate.getMinutes(),
-                oSen = oDate.getSeconds(),
-                oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay);//最后拼接时间
-            return oTime;
-        };
 
         function getMyDate(str) {
             var oDate = new Date(str),
@@ -426,12 +831,12 @@
                 title: '子任务说明',
                 sortable: true
             }, {
-                field: 'job_id',
-                title: '任务ID',
+                field: 'group_id',
+                title: '任务组ID',
                 sortable: false,
                 visible: false
             }, {
-                field: 'job_context',
+                field: 'group_context',
                 title: '任务组',
                 sortable: true
             }, {
@@ -549,10 +954,19 @@
                         btn_kill_str=''
                     }
 
+
+                    if(value=="skip"){
+                        btn_retry_str=''
+                        btn_kill_str=''
+                        process= '100'
+                        context= '跳过'
+                    }
+
                     if(context=="未运行"){
                         btn_retry_str=''
                         btn_kill_str=''
                     }
+
                     var url="log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time
                     var title=row.job_context + "日志"
                     return [
@@ -577,6 +991,48 @@
         });
 
         get_task_log()
+
+        function init(){
+            $.ajax({
+                url : "task_group_log_instance_list3",
+                data : "ids=" + s.group_id,
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+                    console.info("success")
+                    //初始化输入数据源select 组件
+                    var run_jsmind_data=data[0].run_jsmind_data
+                    open_json(run_jsmind_data,s.group_id)
+
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+        init()
+
+        $('#refash').click(function () {
+            $.ajax({
+                url : "task_group_log_instance_list3",
+                data : "ids=" + s.group_id,
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+                    console.info("success")
+                    //初始化输入数据源select 组件
+                    var run_jsmind_data=data[0].run_jsmind_data
+                    refash(run_jsmind_data,s.group_id)
+
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+
+        })
     });
 </script>
 </body>

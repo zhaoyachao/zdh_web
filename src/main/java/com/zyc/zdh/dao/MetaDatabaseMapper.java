@@ -2,7 +2,6 @@ package com.zyc.zdh.dao;
 
 import com.zyc.notscan.BaseMapper;
 import com.zyc.zdh.entity.meta_database_info;
-import com.zyc.zdh.netty.MsgInfo;
 
 /**
  * ClassName: MetaDatabaseMapper

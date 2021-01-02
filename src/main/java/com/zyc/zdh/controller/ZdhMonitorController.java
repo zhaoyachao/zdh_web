@@ -204,7 +204,7 @@ public class ZdhMonitorController extends BaseController{
 
     @RequestMapping("/retryJobGroup")
     @ResponseBody
-    public String retryJobGroup(String id,String new_version){
+    public String retryJobGroup(String id,String new_version,String[] sub_tasks){
         //taskLogInstanceMapper.updateStatusById2("kill",id);
         TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(id);
         tgli.setIs_retryed("1");
@@ -233,13 +233,12 @@ public class ZdhMonitorController extends BaseController{
 //        tglim.insert(tgli);
 //        JobCommon2.sub_task_log_instance(tgli);
 
-        JobCommon2.chooseJobBean(qji,2,tgli);
+        JobCommon2.chooseJobBean(qji,2,tgli,sub_tasks);
         JSONObject json2 = new JSONObject();
         json2.put("success", "200");
         return json2.toJSONString();
 
     }
-
 
 
     @RequestMapping("/getScheduleTask")
@@ -318,6 +317,13 @@ public class ZdhMonitorController extends BaseController{
         List<TaskGroupLogInstance> list = tglim.selectByTaskLogs3(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
                 Timestamp.valueOf(end_time + " 23:59:59"), status);
 
+        return JSON.toJSONString(list);
+    }
+
+    @RequestMapping(value = "/task_group_log_instance_list3", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String task_group_log_instance_list3(String[] ids) {
+        List<TaskGroupLogInstance> list = tglim.selectByIds(ids,null);
         return JSON.toJSONString(list);
     }
 

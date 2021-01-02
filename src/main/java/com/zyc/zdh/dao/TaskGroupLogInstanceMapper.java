@@ -294,11 +294,13 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
                     "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
                     "#{id}",
                     "</foreach>",
-                    "and status='finish'",
+                    "<when test='status!=null and status !=\"\"'>",
+                    "and status='#{status}'",
+                    "</when>",
                     "</script>"
             }
     )
-    public List<TaskGroupLogInstance> selectByIds(@Param("ids") String[] ids);
+    public List<TaskGroupLogInstance> selectByIds(@Param("ids") String[] ids,@Param("status") String status);
 
     @Delete(
             {

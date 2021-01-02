@@ -26,10 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class ZdhDispatchController extends BaseController {
@@ -247,9 +244,10 @@ public class ZdhDispatchController extends BaseController {
      */
     @RequestMapping("/dispatch_task_execute")
     @ResponseBody
-    public String dispatch_task_execute(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time) {
+    public String dispatch_task_execute(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time,String[] sub_tasks) {
         debugInfo(quartzJobInfo);
         System.out.println(concurrency);
+        System.out.println(Arrays.toString(sub_tasks));
         JSONObject json = new JSONObject();
 
         try {
@@ -290,7 +288,7 @@ public class ZdhDispatchController extends BaseController {
                     }
                 }
                 tglim.insert(tgli);
-                JobCommon2.sub_task_log_instance(tgli);
+                JobCommon2.sub_task_log_instance(tgli,sub_tasks);
             }
 
             tglim.updateStatus2Create(tgli_ids.toArray(new String[]{}));

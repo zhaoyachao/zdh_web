@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import com.zyc.zdh.netty.MsgInfo;
+
 
 /**
  * ClassName: MySqlUtil   
@@ -31,20 +31,6 @@ public class MySqlUtil {
 			e.printStackTrace();
 		}
 	
-		
-	}
-	
-	public void update(MsgInfo msgInfo){
-		connect();
-		try {
-			PreparedStatement prepareStatement = connection.prepareStatement("update msg_info set state=? where msg_id=?");
-			prepareStatement.setInt(1, msgInfo.getState());
-			prepareStatement.setLong(2, msgInfo.getMsgId());
-			prepareStatement.execute();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 	}
 }

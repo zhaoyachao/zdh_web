@@ -13,7 +13,8 @@ public enum JobStatus {
     KILL("8","kill","杀死中"),
     KILLED("9","killed","以杀死"),
     FINISH("10","finish","完成数据采集"),
-    SUB_TASK_DISPATCH("11","sub_task_dispatch","子任务调度中");
+    SUB_TASK_DISPATCH("11","sub_task_dispatch","子任务调度中"),
+    SKIP("12","skip","跳过");
 
     private String value;
     private String code;

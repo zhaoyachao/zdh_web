@@ -1,5 +1,6 @@
 package com.zyc.zdh.util;
 
+import com.zyc.zdh.annotation.MyMark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -7,10 +8,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
-
-import com.zyc.zdh.annotation.MyMark;
-import com.zyc.zdh.netty.tcp.NettyServer;
-import com.zyc.zdh.netty.udp.NettyUdpServer;
 
 /**
  * ClassName: SpringLoadInit
@@ -38,25 +35,6 @@ public class SpringLoadInit implements
 	}
 	
 	private void initSocket(){
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO tcp服务
-				((NettyServer) applicationContext.getBean("nettyServer"))
-						.startServer();
-			}
-		}).start();
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO udp服务
-				((NettyUdpServer) applicationContext.getBean("nettyUdpServer"))
-						.startServer();
-			}
-		}).start();
-
 		logger.debug("加载初始化程序完成");
 	}
 

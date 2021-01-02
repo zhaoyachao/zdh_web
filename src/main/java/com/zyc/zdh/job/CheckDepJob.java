@@ -38,7 +38,7 @@ public class CheckDepJob {
             for(TaskGroupLogInstance tgli :tglims){
 
                 if(!StringUtils.isEmpty(tgli.getPre_tasks())){
-                    int tmp_size=tglim.selectByIds(tgli.getPre_tasks().split(",")).size();
+                    int tmp_size=tglim.selectByIds(tgli.getPre_tasks().split(","),JobStatus.FINISH.getValue()).size();
                     if(tgli.getPre_tasks().split(",").length!=tmp_size){
                         continue;
                     }
@@ -170,7 +170,7 @@ public class CheckDepJob {
             int error_num=0;
             int kill_num=0;
             for(task_num_info tni:lm){
-                if(tni.getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue())){
+                if(tni.getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue()) || tni.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                     finish_num=tni.getNum();
                 }
                 if(tni.getStatus().equalsIgnoreCase(JobStatus.ERROR.getValue())){

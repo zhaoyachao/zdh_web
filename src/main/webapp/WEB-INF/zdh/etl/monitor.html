@@ -522,42 +522,19 @@
             },
 
             'click #retry': function (e, value, row, index) {
-                layer.confirm('确定重试任务吗?', {
-                    btn: ['重试', '重试最新版本'], //按钮
-                    cancel:function(index, layero){
-                        console.log('关闭x号');
-                    },
-                    btn1:function(){
-                        $.ajax({
-                            url: "retryJobGroup",
-                            data: "id=" + row.id+"&new_version=false",
-                            type: "post",
-                            dataType: "json",
-                            success: function (data) {
-                                console.info("success")
-                                layer.close(index)
-                            },
-                            error: function (data) {
-                                console.info("error: " + data.responseText);
-                            }
-
-                        });
-                    },
-                    btn2:function () {
-                        $.ajax({
-                            url: "retry",
-                            data: "id=" + row.id+"&new_version=true",
-                            type: "post",
-                            dataType: "json",
-                            success: function (data) {
-                                console.info("success")
-                                layer.close(index)
-                            },
-                            error: function (data) {
-                                console.info("error: " + data.responseText);
-                            }
-
-                        });
+                parent.layer.open({
+                    type: 2,
+                    title: '重试任务组',
+                    shadeClose: false,
+                    resize: true,
+                    fixed: false,
+                    maxmin: true,
+                    shade: 0.1,
+                    area : ['45%', '60%'],
+                    //area: ['450px', '500px'],
+                    content: "task_group_retry_detail?id="+row.id+"&job_id="+row.job_id, //iframe的url
+                    end : function () {
+                        console.info("弹框结束")
                     }
                 });
             },

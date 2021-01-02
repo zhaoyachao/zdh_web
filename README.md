@@ -1,3 +1,7 @@
+
+# READ MORE
+[English description](README_en.md)
+
 # 数据采集,处理,监控,调度,管理一体化平台
 
 # 提示
@@ -122,6 +126,19 @@
   + v4.1 重新实现时间选取机制,调度性能提高
   + v4.1 修改监控界面去除组任务监控按钮添加子任务监控界面
   
+  + v4.2 修复4.1bug
+  + v4.2 sql脚本增加中文说明
+  
+  + v4.3 增加部分子任务重试机制
+  + v4.3 增加手动执行部分子任务机制
+  + v4.3 增加子任务运行时依赖图展示
+  + v4.3 任务状态增加跳过状态
+  + v4.3 优化logback日志配置
+  + v4.3 修复手动重试新版bug
+  + v4.3 删除zookeeper工具包
+  + v4.3 删除[重复执行]调度任务模式
+  + v4.3 删除mq配置信息
+  + v4.3 删除netty工具包
   
 # FAQ
    + 日志级别修改
@@ -159,7 +176,6 @@
 # 支持的调度器模式
    + 时间序列(时间限制,次数限制)
    + 单次执行
-   + 重复执行(次数限制,时间限制)
    
 # 支持调度动态日期参数   
    详见说明文档
@@ -196,14 +212,15 @@
     打包命令 mvn package -Dmaven.test.skip=true
 
 # 运行
-    在target 目录下找到zdh.jar
-    执行 java  -Dfile.encoding=utf-8 -jar zdh.jar
+    在target 目录下找到zdh_web.jar
+    执行 java  -Dfile.encoding=utf-8 -jar zdh_web.jar
    
 # 版本计划
   + 1.1 计划支持FTP 调度
   + 1.1 计划支持HFILE 直接读取功能
   + 1.1 docker 部署
   + 2.X 单任务多数据源处理
+  + 5.X 计划支持kerberos 认证
     
 
  
