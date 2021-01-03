@@ -46,7 +46,7 @@ public class RetryJob {
                 tl.setStatus("dispatch");
                 taskLogInstanceMapper.updateStatusById("dispatch",tl.getId());//error表示任务已置为失败
                 logger.info("开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
-                debugInfo(tl);
+                //debugInfo(tl);
                 //JobCommon.insertLog(tl, "INFO", "开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 //tl.setRetry_type("auth");
                 BeanUtils.copyProperties(qj,tl);
@@ -88,7 +88,7 @@ public class RetryJob {
                 }
                 //http://ip:port/api/v1/zdh
                 String executor=t2.getExecutor();
-                if(!zdhHaMap.containsKey(executor)){
+                if(executor!=null && !executor.trim() .equalsIgnoreCase("") && !zdhHaMap.containsKey(executor)){
                     //executor 意外死亡需要重新发送任务
                     QuartzJobInfo q2=new QuartzJobInfo();
                     q2.setTask_log_id(t2.getId());

@@ -240,10 +240,10 @@
 
     function get_color_by_status(status){
         //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
-        if(status=='create' || status=="dispatch"){
+        if(status=='create' || status=="dispatch" || status=="check_dep" || status=="wait_retry" ){
             return "#00E8D7"
         }
-        if(status=="check_dep" || status=="wait_retry" || status=="etl"|| status=="kill" || status=="sub_task_dispatch"){
+        if(status=="etl"|| status=="kill" || status=="sub_task_dispatch"){
             return "#00bb00"
         }
         if(status=="finish"){
@@ -427,37 +427,8 @@
             var div = $(this)
             var etl_task_id=div.attr("etl_task_id")
 
-
-            openTabPage("log_txt.html?task_log_id="+task_log_instance_id, etl_context + "日志")
-            // if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
-            //     url=url+"?etl_task_id=-1"
-            // }else{
-            //     var more_task=div.attr("more_task")
-            //     url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task
-            // }
-            // layer.open({
-            //     type: 2,
-            //     area: ['700px', '450px'],
-            //     fixed: false, //不固定
-            //     maxmin: true,
-            //     content: encodeURI(url),
-            //     end: function () {
-            //         if($("#etl_task_text").val()==""){
-            //             console.info("无修改-不更新")
-            //             return ;
-            //         }
-            //         var etl_task_info=JSON.parse($("#etl_task_text").val())
-            //         div.attr("etl_task_id",etl_task_info.etl_task_id);
-            //         div.attr("etl_context",etl_task_info.etl_context);
-            //         div.attr("more_task",etl_task_info.more_task);
-            //         //div.width(etl_task_info.etl_context.length*16)
-            //         div.css("width","auto")
-            //         div.css("display","inline-block")
-            //         div.css("*display","inline")
-            //         div.css("*zoom","1")
-            //         div.html(etl_task_info.etl_context);
-            //     }
-            // });
+            window.open("log_txt.html?task_log_id="+task_log_instance_id)
+            //openTabPage("log_txt.html?task_log_id="+task_log_instance_id, etl_context + "日志")
         });
     }
     function doubleclick_shell(id) {
@@ -682,7 +653,8 @@
         window.operateEvents = {
             'click #log_txt': function (e, value, row, index) {
                 row.job_context
-                openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
+                window.open("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time)
+                //openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
             },
             'click #retry': function (e, value, row, index) {
                 layer.confirm('确定重试任务吗?', {

@@ -18,25 +18,6 @@
             }, function(){
 
             });
-            // $(this).removeClass("active");
-            // $(this).removeClass("hover");
-            // parent.layer.open({
-            //     type: 2,
-            //     title: 'ETL任务配置',
-            //     shadeClose: false,
-            //     resize: true,
-            //     fixed: false,
-            //     maxmin: true,
-            //     shade: 0.1,
-            //     area: ['45%', '60%'],
-            //     //area: ['450px', '500px'],
-            //     content: "dispatch_task_group_add_index?id=-1", //iframe的url
-            //     end: function () {
-            //         $('#exampleTableEvents').bootstrapTable('refresh', {
-            //             url: 'dispatch_task_list'
-            //         });
-            //     }
-            // });
         })
 
 
@@ -231,23 +212,7 @@
 
                 $("#id").val(row.job_id)
                 openTabPage("dispatch_task_group_add_index.html?id="+ row.job_id, "修改调度任务")
-                // top.layer.open({
-                //     type: 2,
-                //     title: '调度任务配置',
-                //     shadeClose: false,
-                //     resize: true,
-                //     fixed: false,
-                //     maxmin: true,
-                //     shade: 0.1,
-                //     area: ['45%', '60%'],
-                //     //area: ['450px', '500px'],
-                //     content: "dispatch_task_group_add_index?id=" + row.job_id, //iframe的url
-                //     end: function () {
-                //         $('#exampleTableEvents').bootstrapTable('refresh', {
-                //             url: 'dispatch_task_list'
-                //         });
-                //     }
-                // });
+
 
             },
             'click #del': function (e, value, row, index) {
@@ -265,15 +230,6 @@
             },
             'click #execute': function (e, value, row, index) {
 
-                // if(row.use_quartz_time == 'on' ){
-                //    if(row.expr.endsWith("s") || row.expr.endsWith("h") || row.expr.endsWith("d")
-                //        || row.expr.endsWith("m") || row.expr.endsWith("y")){
-                //        layer.msg("使用quartz时间,只支持cron表达式,请修改任务表达式,或者取消使用调度触发时间")
-                //        return;
-                //    }
-                //
-                // }
-
                 parent.layer.open({
                     type: 2,
                     title: '手动执行配置',
@@ -290,26 +246,6 @@
                     }
                 });
 
-
-                // layer.confirm('手动执行,是否重置已执行次数(手动执行完成,需要重新配置调度)', {
-                //     btn: ['重置并执行','普通执行','并行执行'], //按钮
-                //     cancel:function(index, layero){
-                //         console.log('关闭x号');
-                //     },
-                //     title:"手动执行",
-                //     btn1:function () {
-                //         executeMs(row.job_id,"true","0")
-                //         layer.close(layer.index)
-                //     },
-                //     btn2:function(){
-                //         executeMs(row.job_id,"false","0")
-                //         layer.close(layer.index)
-                //     },
-                //     btn3:function () {
-                //         executeMs(row.job_id,"false","1")
-                //         layer.close(layer.index)
-                //     }
-                // });
             },
             'click #copy': function (e, value, row, index) {
                 $("#id").val(row.job_id)
@@ -383,7 +319,9 @@
 
         window.operateEvents3 = {
             'click #task_group_log_instance': function (e, value, row, index) {
-                openTabPage("task_group_log_instance.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id, "任务组实例:"+row.job_context)
+                window.location.protocol+"://"+window.location.host
+                window.open("/task_group_log_instance.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id);
+                //openTabPage("task_group_log_instance.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id, "任务组实例:"+row.job_context)
             }
         };
 

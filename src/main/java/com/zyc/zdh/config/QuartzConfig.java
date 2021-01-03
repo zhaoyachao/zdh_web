@@ -58,7 +58,7 @@ public class QuartzConfig {
 		// schedulerFactoryBean.setConfigLocation(res);
 		schedulerFactoryBean.setQuartzProperties(quartzProperties());
 		// 延迟60s启动quartz
-		schedulerFactoryBean.setStartupDelay(60);
+		schedulerFactoryBean.setStartupDelay(25);
 
 		return schedulerFactoryBean;
 	}

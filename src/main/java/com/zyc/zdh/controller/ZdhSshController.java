@@ -292,7 +292,10 @@ public class ZdhSshController extends BaseController{
         if (jar_files != null && jar_files.length > 0) {
             for (MultipartFile jar_file : jar_files) {
                 String fileName = jar_file.getOriginalFilename();
-                System.out.println("上传文件不为空");
+                if(fileName==null||fileName.trim().equalsIgnoreCase("")){
+                    continue;
+                }
+                System.out.println("上传文件不为空:"+fileName);
                 JarFileInfo jarFileInfo = new JarFileInfo();
                 jarFileInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                 jarFileInfo.setJar_etl_id(id);

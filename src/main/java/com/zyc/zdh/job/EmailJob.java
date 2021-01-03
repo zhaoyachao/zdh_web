@@ -98,7 +98,11 @@ public class EmailJob {
                         }
                     }
 
-                    String msg="任务id:"+tli.getId()+" ,超时,请尽快处理";
+                    String msg="超时任务:\r\n" +
+                    "调度任务:"+tli.getJob_id()+","+tli.getJob_context()+"\r\n"+
+                    "任务组:"+tli.getGroup_id()+","+tli.getGroup_context()+"\r\n"+
+                    "ETL任务:"+tli.getEtl_task_id()+","+tli.getEtl_context()+"\r\n"+
+                    "任务实例id:"+tli.getId()+","+tli.getEtl_context();
                     if(emails.size()>0){
                         jemailService.sendEmail(emails.toArray(new String[0]),"任务监控:"+tli.getJob_context(),msg);
                     }

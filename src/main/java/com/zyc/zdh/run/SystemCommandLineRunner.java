@@ -20,6 +20,8 @@ import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.HttpUtil;
 import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.SshUtils;
+import com.zyc.zdh.util.StringUtils;
 import org.apache.http.NameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,9 +172,25 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                     String msg="杀死线程:线程名:"+td.getName()+",线程id:"+td.getId();
                                     logger.info(msg);
                                     JobCommon2.insertLog(tl,"INFO",msg);
+                                    if(tl.getMore_task().equalsIgnoreCase("ssh")){
+                                        String[] connectUri=JobCommon2.chm_ssh.get(tl.getId()).createUri();
+                                        JobCommon2.chm_ssh.get(tl.getId()).logout();
+                                        JobCommon2.chm_ssh.remove(tl.getId());
+                                        if(connectUri.length==2 && !StringUtils.isEmpty(connectUri[1])){
+                                            try{
+                                                String kill_cmd=String.format("kill -9 `ps -ef |grep '%s' |awk -F \" \" '{print $2}'`",connectUri[1]);
+                                                SshUtils.kill(connectUri[0],kill_cmd);
+                                            }catch (Exception e){
+                                                System.out.println("=========================");
+                                                e.printStackTrace();
+                                            }
+
+                                        }
+                                    }
                                     try{
                                         td.interrupt();
                                         td.stop();
+
                                     }catch (Exception e){
                                         e.printStackTrace();
                                     }finally {

@@ -15,22 +15,22 @@ import java.util.Map;
 public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
 
 
+    /**
+     * 根据id更新子任务状态
+     * @param status
+     * @param id
+     * @return
+     */
     @Update(value = "update task_log_instance set status=#{status} where id=#{id}")
     public int updateStatusById(@Param("status") String status, @Param("id") String id);
 
-    @Update(
-            {
-            "<script>",
-            "update task_log_instance set status=#{status} ",
-            "where id in",
-            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
-            "#{id}",
-            "</foreach>",
-            "</script>"
-            }
-    )
-    public int updateStatusByIds(@Param("status") String status, @Param("ids") String[] ids);
 
+    /**
+     * 根据id更新子任务的线程id
+     * @param thread_id
+     * @param id
+     * @return
+     */
     @Update(value = "update task_log_instance set thread_id=#{thread_id} where id=#{id}")
     public int updateThreadById(@Param("thread_id") String thread_id, @Param("id") String id);
 
@@ -106,7 +106,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
      */
     @Select({"<script>",
             "SELECT * FROM task_log_instance",
-            "WHERE alarm_enabled='on' and alarm_account is not null and alarm_account != '' and time_out != null and time_out > '0' and timestampdiff(second,run_time,current_timestamp()) >= time_out",
+            "WHERE alarm_enabled='on' and alarm_account is not null and alarm_account != '' and time_out is not null and time_out > '0' and timestampdiff(second,run_time,current_timestamp()) >= time_out",
             " and is_notice != 'alarm' and status in ('etl','dispatch') ",
             "</script>"})
     public List<TaskLogInstance> selectOverTime();
@@ -162,62 +162,6 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Update(value = "update task_log_instance set status=#{status} where id=#{id} and status='running' and process > #{process}")
     public int updateStatusById3(@Param("status") String status, @Param("process") String process, @Param("id") String id);
 
-    @Update({
-            "<script>",
-            "update task_logs ",
-            "set job_id = #{job_id}",
-            "<when test='job_context!=null and job_context !=\"\"'>",
-            ", job_context = #{job_context}",
-            "</when>",
-            "<when test='etl_date!=null and etl_date !=\"\"'>",
-            ", etl_date = #{etl_date}",
-            "</when>",
-            "<when test='status!=null and status !=\"\"'>",
-            ", status = #{status}",
-            "</when>",
-            "<when test='start_time!=null'>",
-            ", start_time = #{start_time}",
-            "</when>",
-            "<when test='update_time!=null'>",
-            ", update_time = #{update_time}",
-            "</when>",
-            "<when test='owner!=null and owner !=\"\"'>",
-            ", owner = #{owner}",
-            "</when>",
-            "<when test='is_notice!=null and is_notice !=\"\"'>",
-            ", is_notice = #{is_notice}",
-            "</when>",
-            "<when test='process!=null and process !=\"\"'>",
-            ", process = #{process}",
-            "</when>",
-            "<when test='thread_id!=null and thread_id !=\"\"'>",
-            ", thread_id = #{thread_id}",
-            "</when>",
-            "<when test='retry_time!=null'>",
-            ", retry_time = #{retry_time}",
-            "</when>",
-            "<when test='executor!=null and executor !=\"\"'>",
-            ", executor = #{executor}",
-            "</when>",
-            "<when test='etl_info!=null and etl_info !=\"\"'>",
-            ", etl_info = #{etl_info}",
-            "</when>",
-            "<when test='url!=null and url !=\"\"'>",
-            ", url = #{url}",
-            "</when>",
-            "<when test='application_id!=null and application_id !=\"\"'>",
-            ", application_id = #{application_id}",
-            "</when>",
-            "<when test='history_server!=null and history_server !=\"\"'>",
-            ", history_server = #{history_server}",
-            "</when>",
-            "<when test='master!=null and master !=\"\"'>",
-            ", master = #{master}",
-            "</when>",
-            "where id= #{id} <![CDATA[ AND process <= #{process} ]]> and server_ack='0'",
-            "</script>"
-    })
-    public int updateTaskLogsById3(TaskLogInstance tli);
 
     @Select("select sum(num) as num from (" +
             "(select count(1) as num from ssh_task_info)" +

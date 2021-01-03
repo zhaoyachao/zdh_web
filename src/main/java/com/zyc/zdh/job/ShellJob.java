@@ -9,6 +9,8 @@ import com.zyc.zdh.util.SpringContext;
 import java.io.*;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -55,9 +57,9 @@ public class ShellJob extends JobCommon2 {
 
                 logger.info("[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
                 insertLog(tli, "info", "[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
-                String result = "fail";
+                Map result = new HashMap<String,String>();
                 if (tli.getCommand().trim().equals("")) {
-                    result = "success";
+                    result.put("result", "success");
                 } else {
                     String system = System.getProperty("os.name");
                     String command = tli.getCommand().
@@ -100,7 +102,7 @@ public class ShellJob extends JobCommon2 {
                         fileWritter.close();
                         logger.info("当前系统为:" + system+",command:"+newcommand);
                         if (system.toLowerCase().startsWith("win")) {
-                            result = CommandUtils.exeCommand("cmd.exe /k " + file2.getAbsolutePath());
+                            result = CommandUtils.exeCommand("cmd.exe " + file2.getAbsolutePath());
                         } else {
                             result = CommandUtils.exeCommand("sh " + file2.getAbsolutePath());
                         }
@@ -117,9 +119,13 @@ public class ShellJob extends JobCommon2 {
                         }
                     }
                 }
-                logger.info("[" + jobType + "] JOB ,执行结果:" + result.trim());
-                insertLog(tli, "info", "[" + jobType + "] JOB ,执行结果:" + result.trim());
-                if (!result.trim().contains("success")) {
+                logger.info("[" + jobType + "] JOB ,执行结果:" + result.get("result").toString().trim());
+                logger.info("[" + jobType + "] JOB ,正常输出:" + result.get("out").toString().trim());
+                logger.info("[" + jobType + "] JOB ,error输出:" + result.get("error").toString().trim());
+                insertLog(tli, "info", "[" + jobType + "] JOB ,执行结果:" + result.get("result").toString().trim());
+                insertLog(tli, "info", "[" + jobType + "] JOB ,正常输出:" + result.get("out").toString().trim());
+                insertLog(tli, "info", "[" + jobType + "] JOB ,error输出:" + result.get("error").toString().trim());
+                if (!result.get("result").toString().trim().contains("success")) {
                     throw new Exception("shell 命令/脚本执行失败");
                 }
             } else {

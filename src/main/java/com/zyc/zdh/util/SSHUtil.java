@@ -26,6 +26,12 @@ public class SSHUtil {
     /** FTP 端口*/
     private int port;
 
+    private String cmd;
+
+    public String[] createUri(){
+        String connectUri=String.format("ssh://%s:%s@%s",username,password,host);
+        return new String[]{connectUri,cmd};
+    }
     /**
      * 构造基于密码认证的sftp对象
      * @param username
@@ -108,6 +114,7 @@ public class SSHUtil {
     }
 
     public String[] exec(String cmd) throws IOException, JSchException {
+        this.cmd=cmd;
         exec.setCommand(cmd);
         try {
             exec.connect();

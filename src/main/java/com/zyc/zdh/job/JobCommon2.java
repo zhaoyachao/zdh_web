@@ -41,6 +41,7 @@ public class JobCommon2 {
     public static LinkedBlockingDeque<ZdhLogs> linkedBlockingDeque = new LinkedBlockingDeque<ZdhLogs>();
 
     public static ConcurrentHashMap<String, Thread> chm = new ConcurrentHashMap<String, Thread>();
+    public static ConcurrentHashMap<String, SSHUtil> chm_ssh = new ConcurrentHashMap<String, SSHUtil>();
 
     public static DelayQueue<RetryJobInfo> retryQueue = new DelayQueue<>();
 
@@ -632,7 +633,7 @@ public class JobCommon2 {
                 final String script_path = jj.render(sshTaskInfo.getSsh_script_path(), jinJavaParam);
                 sshTaskInfo.setSsh_script_path(script_path);
 
-                jinJavaParam.put("zdh_online_file", sshTaskInfo.getSsh_script_path() + "/" + sshTaskInfo.getId() + "_online");
+                jinJavaParam.put("zdh_online_file", sshTaskInfo.getSsh_script_path() + "/" + tli.getId() + "_online");
                 final String ssh_cmd = jj.render(sshTaskInfo.getSsh_cmd(), jinJavaParam);
                 sshTaskInfo.setSsh_cmd(ssh_cmd);
 
@@ -810,9 +811,12 @@ public class JobCommon2 {
                     url_tmp = url + "/drools";
                     etl_info = JSON.toJSONString(zdhDroolsInfo);
                 } else if (tli.getMore_task().equalsIgnoreCase("SSH")) {
+                    etl_info = JSON.toJSONString(zdhSshInfo);
                     logger.info("[调度平台]:SSH,参数:" + JSON.toJSONString(zdhSshInfo));
                     insertLog(tli, "DEBUG", "[调度平台]:SSH,参数:" + JSON.toJSONString(zdhSshInfo));
-                    tli.setLast_status("etl");
+                    tli.setEtl_info(etl_info);
+                    tli.setStatus(JobStatus.ETL.getValue());
+                    updateTaskLog(tli, tlim);
                     boolean rs = ssh_exec(tli, zdhSshInfo);
                     if (rs) {
                         tli.setLast_status("finish");
@@ -882,6 +886,7 @@ public class JobCommon2 {
             String password = zdhSshInfo.getSshTaskInfo().getPassword();
             String ssh_cmd = zdhSshInfo.getSshTaskInfo().getSsh_cmd();
             String id = zdhSshInfo.getSshTaskInfo().getId();
+            String t_id=zdhSshInfo.getTask_logs_id();
             String script_path = zdhSshInfo.getSshTaskInfo().getSsh_script_path();
             String script_context = zdhSshInfo.getSshTaskInfo().getSsh_script_context();
             List<JarFileInfo> jarFileInfos = zdhSshInfo.getJarFileInfos();
@@ -891,8 +896,8 @@ public class JobCommon2 {
                 sftpUtil.login();
                 if (!script_context.isEmpty()) {
                     insertLog(tli, "DEBUG", "[调度平台]:SSH,发现在线脚本,使用在线脚本ssh 命令 可配合{{zdh_online_file}} 使用 example sh {{zdh_online_file}} 即是执行在线的脚本");
-                    InputStream inputStream = new ByteArrayInputStream(script_context.getBytes());
-                    sftpUtil.upload(script_path, id + "_online", inputStream);
+                    InputStream inputStream = new ByteArrayInputStream(script_context.replaceAll("\r\n","\n").getBytes());
+                    sftpUtil.upload(script_path, t_id + "_online", inputStream);
                 }
 
                 if (!jarFileInfos.isEmpty()) {
@@ -943,11 +948,13 @@ public class JobCommon2 {
 
             SSHUtil sshUtil = new SSHUtil(username, password, host, Integer.parseInt(port));
             sshUtil.login();
-
+            chm_ssh.put(tli.getId(),sshUtil);
             insertLog(tli, "DEBUG", "[调度平台]:SSH,使用在线脚本," + ssh_cmd);
             String[] result = sshUtil.exec(ssh_cmd);
             String error = result[0];
             String out = result[1];
+            chm_ssh.get(tli.getId()).logout();
+            chm_ssh.remove(tli.getId());
             long t2 = System.currentTimeMillis();
 
             for (String li : out.split("\r\n|\n")) {
@@ -981,7 +988,7 @@ public class JobCommon2 {
                 tli.setLast_time(tli.getCur_time());
             }
         }
-        debugInfo(tli);
+        //debugInfo(tli);
         tlim.updateByPrimaryKey(tli);
     }
 
@@ -994,7 +1001,7 @@ public class JobCommon2 {
                 tgli.setLast_time(tgli.getCur_time());
             }
         }
-        debugInfo(tgli);
+       // debugInfo(tgli);
         tglim.updateByPrimaryKey(tgli);
     }
 
@@ -1460,13 +1467,13 @@ public class JobCommon2 {
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
         //线程池执行具体调度任务
-        threadPoolExecutor.execute(new Runnable() {
+        //threadPoolExecutor.execute();
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 run_sub_task_log_instance(tli.getJob_type(),tli);
             }
-        });
-
+        }).start();
     }
 
 

@@ -16,6 +16,8 @@ public class User extends PageBase implements Serializable {
 	private String phone;
 	private String is_use_phone;
 
+	private String user_group;
+
 	public String getId() {
 		return id;
 	}

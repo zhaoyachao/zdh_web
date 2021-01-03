@@ -121,7 +121,7 @@ public class CheckDepJob {
                     tl.setProcess_time(pti);
 
                     JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
-                    debugInfo(tl);
+                    //debugInfo(tl);
                     JobCommon2.chooseJobBean(tl);
                 }else{
                     //更新任务依赖时间

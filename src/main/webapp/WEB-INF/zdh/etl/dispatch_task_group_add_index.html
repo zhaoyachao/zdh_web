@@ -176,29 +176,10 @@
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
                                     <label class="no-padding">
-                                        <input id="jump_dep" name="jump_dep" type="checkbox"><i></i> 跳过任务依赖</label>
+                                        <input id="jump_dep" name="jump_dep" type="checkbox"><i></i> 跳过任务组依赖</label>
                                 </div>
-<!--                                <div class="checkbox i-checks">-->
-<!--                                    <label class="no-padding">-->
-<!--                                        <input id="jump_script" name="jump_script" type="checkbox"><i></i> 跳过脚本检查</label>-->
-<!--                                </div>-->
                             </div>
                         </div>
-
-<!--                        <div class="form-group">-->
-<!--                            <label class="col-sm-2 control-label">是否脚本</label>-->
-<!--                            <div class="col-sm-10">-->
-<!--                                <div class="checkbox i-checks">-->
-<!--                                    <label class="no-padding">-->
-<!--                                        <input id="is_script" type="checkbox"><i></i> 脚本方式</label>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <label class="col-sm-2 control-label">任务命令</label>-->
-<!--                            <div class="col-sm-10">-->
-<!--                                <textarea id="command" name="command" rows="3"-->
-<!--                                       placeholder="SHELL命令,JDBC命令" class="form-control" aria-required="true" ></textarea>-->
-<!--                            </div>-->
-<!--                        </div>-->
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">任务状态</label>
@@ -229,43 +210,43 @@
                         </div>
 
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">下次执行时间</label>
-                            <div class="col-sm-10">
-                                <input placeholder="下次执行时间" class="form-control layer-date" id="next_time" name="next_time">
-                            </div>
-                        </div>
+<!--                        <div class="form-group">-->
+<!--                            <label class="col-sm-2 control-label">下次执行时间</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <input placeholder="下次执行时间" class="form-control layer-date" id="next_time" name="next_time">-->
+<!--                            </div>-->
+<!--                        </div>-->
 
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">数据处理状态</label>
-                            <div class="col-sm-10">
-                                <select id="last_status" name="last_status" data-placeholder="默认不选择"
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">空</option>
-                                    <option value="dispatch" mytype="">dispatch</option>
-                                    <option value="finish" mytype="">finish</option>
-                                    <option value="etl" mytype="">etl</option>
-                                    <option value="error" mytype="">error</option>
-                                    <option value="retry" mytype="">retry</option>
-                                    <option value="wait_retry" mytype="">wait_retry</option>
-                                </select>
-                            </div>
-                        </div>
+<!--                        <div class="form-group">-->
+<!--                            <label class="col-sm-2 control-label">数据处理状态</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <select id="last_status" name="last_status" data-placeholder="默认不选择"-->
+<!--                                        class="chosen-select form-control m-b" tabindex="2">-->
+<!--                                    <option value="" mytype="">空</option>-->
+<!--                                    <option value="dispatch" mytype="">dispatch</option>-->
+<!--                                    <option value="finish" mytype="">finish</option>-->
+<!--                                    <option value="etl" mytype="">etl</option>-->
+<!--                                    <option value="error" mytype="">error</option>-->
+<!--                                    <option value="retry" mytype="">retry</option>-->
+<!--                                    <option value="wait_retry" mytype="">wait_retry</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+<!--                        </div>-->
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">启用告警</label>
+                            <label class="col-sm-2 control-label">启用告警机制</label>
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
                                     <label class="no-padding">
                                         <input id="alarm_enabled" name="alarm_enabled" type="checkbox"><i></i> 启用告警</label>
                                 </div>
                             </div>
-                            <label class="col-sm-2 control-label">告警渠道</label>
+                            <label class="col-sm-2 control-label">启用短信告警</label>
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
                                     <label class="no-padding">
-                                        <input id="email_and_sms" name="email_and_sms" type="checkbox"><i></i> 短信和邮箱</label>
+                                        <input id="email_and_sms" name="email_and_sms" type="checkbox"><i></i> 启用短信告警</label>
                                 </div>
                             </div>
                             <label class="col-sm-2 control-label">配置告警用户</label>
@@ -987,7 +968,6 @@
                     init_sql_task_sources()
                 }else if($("#more_task").val()=="外部JAR"){
                     console.info("选中外部JAR")
-                    init_jar_task_sources()
                 }else if($("#more_task").val()=="Drools") {
                     console.info("选中Drools")
                     init_etl_task_drools_sources()
@@ -1068,19 +1048,9 @@
                     end.start = datas //将结束日的初始值设定为开始日
                 }
             };
-            var next_time = {
-                elem: '#next_time',
-                format: 'YYYY-MM-DD hh:mm:ss',
-                min: '2000-01-01 00:00:00',
-                max: '2099-06-16 23:59:59',
-                istime: true,
-                istoday: false,
-                choose: function (datas) {
-                    start.max = datas; //结束日选好后，重置开始日的最大日期
-                }
-            };
+
             laydate(last_time);
-            laydate(next_time);
+
 
             function getCurrentDate(){
                 var oDate = new Date(),
@@ -1219,21 +1189,6 @@
                         if(jump_dep=="on"){
                             $('#jump_dep').iCheck('check');
                         }
-                        var jump_script=data[0].jump_script
-                        console.info("jump_script:"+jump_script)
-                        if(jump_script=="on"){
-                            $('#jump_script').iCheck('check');
-                        }
-
-                        //是否脚本选择
-                        var is_script=data[0].is_script
-                        console.info("is_script:"+is_script)
-                        if(is_script=="true"){
-                            $('#is_script').iCheck('check');
-                        }
-
-                        var command=data[0].command
-                        $("#command").val(command);
 
                         //status
                         var status=data[0].status
@@ -1252,10 +1207,6 @@
 
                         if(last_time!='' && typeof(last_time) !="undefined")
                         $("#last_time").val(getMyDate(last_time));
-
-                        var next_time=data[0].next_time
-                        if(next_time!='' && typeof(next_time) !="undefined")
-                        $("#next_time").val(getMyDate(next_time));
 
                         var alarm_enabled=data[0].alarm_enabled
                         console.info("alarm_enabled:"+alarm_enabled)

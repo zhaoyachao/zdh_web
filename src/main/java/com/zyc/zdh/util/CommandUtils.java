@@ -3,6 +3,8 @@ package com.zyc.zdh.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -27,22 +29,32 @@ public class CommandUtils {
      * @return 命令执行完成返回结果
      * @throws IOException 失败时抛出异常，由调用者捕获处理
      */
-    public static String exeCommand(String command) throws IOException {
+    public static Map<String,String> exeCommand(String command) throws IOException {
         try{
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream error = new ByteArrayOutputStream();
             int exitCode = exeCommand(command, out,error);
-            if (exitCode == 0 || StringUtils.isEmpty(error.toString(DEFAULT_CHARSET))) {
+            Map map=new HashMap<String,String>();
+            if (exitCode == 0 && StringUtils.isEmpty(error.toString(DEFAULT_CHARSET))) {
+                String out_str=out.toString(DEFAULT_CHARSET);
+                String err_str=error.toString(DEFAULT_CHARSET);
                 System.out.println("命令运行成功!");
-                System.out.println("out:"+out.toString(DEFAULT_CHARSET));
-                System.out.println("error:"+error.toString(DEFAULT_CHARSET));
-                return "success";
+                System.out.println("out:"+out_str);
+                System.out.println("error:"+err_str);
+
+                map.put("result","success");
+                map.put("out",out_str);
+                map.put("error",err_str);
+                return map;
             } else {
                 System.out.println("命令运行失败!");
                 System.out.println("out:"+out.toString(DEFAULT_CHARSET));
                 System.out.println("error:"+error.toString(DEFAULT_CHARSET));
             }
-            return "out:"+out.toString(DEFAULT_CHARSET)+",error:"+error.toString(DEFAULT_CHARSET);
+            map.put("out",out.toString(DEFAULT_CHARSET));
+            map.put("error",error.toString(DEFAULT_CHARSET));
+            map.put("result","fail");
+            return map;
         }catch (Exception e){
             throw e;
         }
@@ -86,8 +98,8 @@ public class CommandUtils {
 //                    "    )");
 //            System.out.println(result);
 
-            String result = exeCommand("cmd.exe /k hostname");
-            System.out.println(result);
+            Map result = exeCommand("cmd.exe /k hostname");
+            System.out.println(result.get("result"));
 
         } catch (IOException e) {
             e.printStackTrace();
