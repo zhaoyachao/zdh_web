@@ -122,7 +122,7 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
                     "#{id}",
                     "</foreach>",
                     "<when test='status!=null and status !=\"\"'>",
-                    "and status='#{status}'",
+                    "and status=#{status}",
                     "</when>",
                     "</script>"
             }
