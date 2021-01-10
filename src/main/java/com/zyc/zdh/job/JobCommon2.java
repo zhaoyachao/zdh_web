@@ -586,9 +586,9 @@ public class JobCommon2 {
             String date_time = DateUtil.formatTime(tli.getCur_time());
             String date_dt = DateUtil.format(tli.getCur_time());
             Map<String, Object> jinJavaParam = new HashMap<>();
-            jinJavaParam.put("zdh.date.nodash", date_nodash);
-            jinJavaParam.put("zdh.date.time", date_time);
-            jinJavaParam.put("zdh.date", date_dt);
+            jinJavaParam.put("zdh_date_nodash", date_nodash);
+            jinJavaParam.put("zdh_date_time", date_time);
+            jinJavaParam.put("zdh_date", date_dt);
             Jinjava jj = new Jinjava();
 
             map.forEach((k, v) -> {

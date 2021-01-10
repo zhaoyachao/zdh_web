@@ -40,22 +40,22 @@
             <div class="ibox-content col-sm-12">
                 <div class="form-group">
                     <div class="text-center">
-                        <button  class="btn btn-primary" οnsubmit='return false'
-                                type="button" style="background-color: #00E8D7">初始化
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                type="button" style="background-color: #C2DFFF">初始化
                         </button>
-                        <button  class="btn btn-primary" οnsubmit='return false'
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
                                 type="button" style="background-color: #00bb00">运行中
                         </button>
-                        <button  class="btn btn-primary" οnsubmit='return false'
-                                type="button" style="background-color: #0044cc">完成
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                type="button" style="background-color: #2B65EC">完成
                         </button>
-                        <button  class="btn btn-primary" οnsubmit='return false'
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
                                  type="button" style="background-color: red">失败
                         </button>
-                        <button  class="btn btn-primary" οnsubmit='return false'
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
                                  type="button" style="background-color: LightGrey">跳过
                         </button>
-                        <button  class="btn btn-primary" οnsubmit='return false'
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
                                  type="button" style="background-color: #E68A00">未知
                         </button>
                     </div>
@@ -241,13 +241,13 @@
     function get_color_by_status(status){
         //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
         if(status=='create' || status=="dispatch" || status=="check_dep" || status=="wait_retry" ){
-            return "#00E8D7"
+            return "#C2DFFF"
         }
         if(status=="etl"|| status=="kill" || status=="sub_task_dispatch"){
             return "#00bb00"
         }
         if(status=="finish"){
-            return "#0044cc"
+            return "#2B65EC"
         }
 
         if(status=="error" || status=="killed"){

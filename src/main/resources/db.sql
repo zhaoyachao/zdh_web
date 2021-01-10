@@ -80,6 +80,7 @@ insert into data_sources_type_info(sources_type) values('外部上传');
 insert into data_sources_type_info(sources_type) values('FLUME');
 insert into data_sources_type_info(sources_type) values('外部下载');
 insert into data_sources_type_info(sources_type) values('Greenplum');
+insert into data_sources_type_info(sources_type) values('TIDB');
 
 drop table if EXISTS etl_task_info;
 create table etl_task_info(
