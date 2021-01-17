@@ -50,7 +50,7 @@
                             <label class="col-sm-2 control-label">调度说明</label>
                             <div class="col-sm-10">
                                 <input id="job_context" name="job_context" type="text"
-                                       placeholder="调度说明,选择ETL任务自动填充" class="form-control" aria-required="true"> </span>
+                                       placeholder="调度说明,不可为空" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
 
@@ -60,8 +60,9 @@
                                 <div class="container device col-sm-12">
                                     <div class="deviceLeft">
                                         <div class="deviceLeft_box">
-                                            <div class="node node1css" data-type="tasks">ETL任务</div>
-                                            <div class="node node1css" data-type="shell">SHELL</div>
+                                            <div class="node nodetaskscss" data-type="tasks">ETL任务</div>
+                                            <div class="node nodeshellcss" data-type="shell">SHELL</div>
+                                            <div class="node nodegroupcss" data-type="group">任务组</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight">
@@ -161,25 +162,25 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">依赖调度任务</label>
-                            <div class="col-sm-10">
-                                <select id="job_ids" name="job_ids" data-placeholder="选择调度任务"
-                                        multiple class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">选择调度任务</option>
-                                </select>
-                            </div>
-                        </div>
+<!--                        <div class="form-group">-->
+<!--                            <label class="col-sm-2 control-label">依赖调度任务</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <select id="job_ids" name="job_ids" data-placeholder="选择调度任务"-->
+<!--                                        multiple class="chosen-select form-control m-b" tabindex="2">-->
+<!--                                    <option value="" mytype="">选择调度任务</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+<!--                        </div>-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">跳过检查</label>
-                            <div class="col-sm-10">
-                                <div class="checkbox i-checks">
-                                    <label class="no-padding">
-                                        <input id="jump_dep" name="jump_dep" type="checkbox"><i></i> 跳过任务组依赖</label>
-                                </div>
-                            </div>
-                        </div>
+<!--                        <div class="form-group">-->
+<!--                            <label class="col-sm-2 control-label">跳过检查</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <div class="checkbox i-checks">-->
+<!--                                    <label class="no-padding">-->
+<!--                                        <input id="jump_dep" name="jump_dep" type="checkbox"><i></i> 跳过任务组依赖</label>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">任务状态</label>
@@ -208,31 +209,6 @@
                                 <input placeholder="上次执行时间" class="form-control layer-date" id="last_time" name="last_time">
                             </div>
                         </div>
-
-
-<!--                        <div class="form-group">-->
-<!--                            <label class="col-sm-2 control-label">下次执行时间</label>-->
-<!--                            <div class="col-sm-10">-->
-<!--                                <input placeholder="下次执行时间" class="form-control layer-date" id="next_time" name="next_time">-->
-<!--                            </div>-->
-<!--                        </div>-->
-
-
-<!--                        <div class="form-group">-->
-<!--                            <label class="col-sm-2 control-label">数据处理状态</label>-->
-<!--                            <div class="col-sm-10">-->
-<!--                                <select id="last_status" name="last_status" data-placeholder="默认不选择"-->
-<!--                                        class="chosen-select form-control m-b" tabindex="2">-->
-<!--                                    <option value="" mytype="">空</option>-->
-<!--                                    <option value="dispatch" mytype="">dispatch</option>-->
-<!--                                    <option value="finish" mytype="">finish</option>-->
-<!--                                    <option value="etl" mytype="">etl</option>-->
-<!--                                    <option value="error" mytype="">error</option>-->
-<!--                                    <option value="retry" mytype="">retry</option>-->
-<!--                                    <option value="wait_retry" mytype="">wait_retry</option>-->
-<!--                                </select>-->
-<!--                            </div>-->
-<!--                        </div>-->
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">启用告警机制</label>
@@ -418,7 +394,8 @@
             var etl_context=rs.etl_context
             var positionX=rs.positionX
             var positionY=rs.positionY
-            $("#m1").append('<div class="node node1css tasks" style="position: absolute" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+            cls_str="node node"+tp+"css tasks"
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
             $("#" + divId).css("left", positionX).css("top", positionY);
             $("#" + divId).attr("type",tp)
             $("#" + divId).attr("etl_context",rs.etl_context);
@@ -431,6 +408,10 @@
             if(tp == "shell"){
                 $("#" + divId).attr("command",rs.command);
                 $("#" + divId).attr("is_script",rs.is_script);
+            }
+
+            if(tp == "group"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
             }
 
             //div.width(etl_task_info.etl_context.length*16)
@@ -446,11 +427,9 @@
                 anchor: "Continuous"
             })
             $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
-            if(tp == "tasks")
-               doubleclick("#" + divId);
-            else if (tp == "shell"){
-                doubleclick_shell("#" + divId);
-            }
+
+            doubleclick("#" + divId,tp);
+
         }
 
         for(var i=0;i< jsplumb_json.line.length;i++){
@@ -463,7 +442,97 @@
     }
 
     //双击节点内容区域时的事件
-    function doubleclick(id) {
+    // function doubleclick(id) {
+    //     $(id).dblclick(function () {
+    //         var text = $(this).text();
+    //         var div = $(this)
+    //         var etl_task_id=div.attr("etl_task_id")
+    //         var url='job_detail.html'
+    //         if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
+    //             url=url+"?etl_task_id=-1"
+    //         }else{
+    //             var more_task=div.attr("more_task")
+    //             url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新")
+    //                     return ;
+    //                 }
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val())
+    //                 div.attr("etl_task_id",etl_task_info.etl_task_id);
+    //                 div.attr("etl_context",etl_task_info.etl_context);
+    //                 div.attr("more_task",etl_task_info.more_task);
+    //                 //div.width(etl_task_info.etl_context.length*16)
+    //                 div.css("width","auto")
+    //                 div.css("display","inline-block")
+    //                 div.css("*display","inline")
+    //                 div.css("*zoom","1")
+    //                 div.html(etl_task_info.etl_context);
+    //             }
+    //         });
+    //     });
+    // }
+    // function doubleclick_shell(id) {
+    //     $(id).dblclick(function () {
+    //         var etl_context = $(this).text();
+    //         var div = $(this)
+    //         var command=div.attr("command")
+    //         var url='shell_detail.html'
+    //         if( command == "" || command == undefined ){
+    //             url=url+"?command=-1"
+    //         }else{
+    //             var is_script=div.attr("is_script")
+    //             url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 console.info("index:doubleclick:"+$("#etl_task_text").val())
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新")
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val())
+    //                 div.attr("command",etl_task_info.command);
+    //                 div.attr("is_script",etl_task_info.is_script);
+    //                 div.css("width","auto")
+    //                 div.css("display","inline-block")
+    //                 div.css("*display","inline")
+    //                 div.css("*zoom","1")
+    //                 div.html(etl_task_info.etl_context);
+    //             }
+    //         });
+    //     });
+    // }
+
+    //双击节点内容区域时的事件
+    function doubleclick(id,tp) {
+        switch (tp) {
+            case "tasks"://服务器
+                doubleclick_tasks(id)
+                break;
+            case "shell":
+                doubleclick_shell(id)
+                break;
+            case "group":
+                doubleclick_group(id)
+                break;
+        }
+    }
+
+    function doubleclick_tasks(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
             var div = $(this)
@@ -482,10 +551,12 @@
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val())
                     if($("#etl_task_text").val()==""){
                         console.info("无修改-不更新")
                         return ;
                     }
+
                     var etl_task_info=JSON.parse($("#etl_task_text").val())
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
@@ -500,6 +571,7 @@
             });
         });
     }
+
     function doubleclick_shell(id) {
         $(id).dblclick(function () {
             var etl_context = $(this).text();
@@ -528,6 +600,7 @@
                     var etl_task_info=JSON.parse($("#etl_task_text").val())
                     div.attr("command",etl_task_info.command);
                     div.attr("is_script",etl_task_info.is_script);
+                    div.attr("etl_context",etl_task_info.etl_context)
                     div.css("width","auto")
                     div.css("display","inline-block")
                     div.css("*display","inline")
@@ -537,6 +610,46 @@
             });
         });
     }
+
+    function doubleclick_group(id) {
+        $(id).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this)
+            var etl_task_id=div.attr("etl_task_id")
+            var url='group_detail.html'
+            if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
+                url=url+"?etl_task_id=-1"
+            }else{
+                url=url+"?etl_task_id="+etl_task_id
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新")
+                        return ;
+                    }
+
+                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    div.attr("etl_task_id",etl_task_info.etl_task_id);
+                    div.attr("etl_context",etl_task_info.etl_context);
+                    //div.width(etl_task_info.etl_context.length*16)
+                    div.css("width","auto")
+                    div.css("display","inline-block")
+                    div.css("*display","inline")
+                    div.css("*zoom","1")
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
+
+
     function jsplumb_data(){
         var ojson={
             tasks:[],

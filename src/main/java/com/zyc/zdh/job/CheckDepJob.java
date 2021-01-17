@@ -59,7 +59,9 @@ public class CheckDepJob {
 
             }
 
+            //检查子任务是否可以运行
             run2();
+            //检测任务组是否已经完成
             run3();
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,19 +112,40 @@ public class CheckDepJob {
                     }
 
                 }
-                if(JobCommon2.checkDep(tl.getJob_type(),tl)){
+                boolean check=false;
+                //检查组任务依赖
+                if(tl.getJob_type().equalsIgnoreCase("group")){
+                    //etl_task_id 代表任务的id(quartz_job_info的job_id)
+                    String job_id=tl.getEtl_task_id();
+                    String etl_date=tl.getEtl_date();
+                    check=JobCommon2.checkDep2(tl.getJob_type(),tl);
+                }else{
+                    // 检查子任务依赖
+                    check=JobCommon2.checkDep(tl.getJob_type(),tl);
+                }
+
+                if(check){
                     String tmp_status=taskLogInstanceMapper.selectByPrimaryKey(tl.getId()).getStatus();
                     if( tmp_status=="kill" || tmp_status =="killed" ) continue; //在检查依赖时杀死任务
-                    tl.setStatus("dispatch");
+                    tl.setStatus(JobStatus.DISPATCH.getValue());
                     tl.setServer_id(JobCommon2.web_application_id);//重新设置调度器标识,retry任务会定期检查标识是否有效
                     //更新任务依赖时间
                     process_time_info pti=tl.getProcess_time2();
                     pti.setCheck_dep_time(DateUtil.getCurrentTime());
                     tl.setProcess_time(pti);
 
-                    JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
+
                     //debugInfo(tl);
-                    JobCommon2.chooseJobBean(tl);
+                    if(!tl.getJob_type().equalsIgnoreCase("group")){
+                        JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
+                        JobCommon2.chooseJobBean(tl);
+                    }else{
+                        //任务组依赖检查直接设置为已完成
+                        tl.setStatus(JobStatus.FINISH.getValue());
+                        tl.setProcess("100");
+                        JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
+                    }
+
                 }else{
                     //更新任务依赖时间
                     process_time_info pti=tl.getProcess_time2();
@@ -130,6 +153,7 @@ public class CheckDepJob {
                     tl.setProcess_time(pti);
                     JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
                 }
+
 
             }
 
@@ -171,7 +195,7 @@ public class CheckDepJob {
             int kill_num=0;
             for(task_num_info tni:lm){
                 if(tni.getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue()) || tni.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
-                    finish_num=tni.getNum();
+                    finish_num=finish_num+tni.getNum();
                 }
                 if(tni.getStatus().equalsIgnoreCase(JobStatus.ERROR.getValue())){
                     error_num=tni.getNum();

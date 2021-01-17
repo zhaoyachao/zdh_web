@@ -20,36 +20,21 @@ $(document).ready(function(){
         drop:function (event , ui) {
             var left = parseInt(ui.offset.left - $(this).offset().left);
             var top = parseInt(ui.offset.top - $(this).offset().top);
-            var type=ui.draggable[0].dataset.type;
-            switch (type) {
-                case "tasks"://服务器
-                    i++;
-                    var id = guid2();
-                    $(this).append('<div class="node node1css tasks" style="position: absolute" id="' + id + '" data-type="tasks" data-id=" " >' + $(ui.helper).html() + '</div>');
-                    $("#" + id).css("left", left).css("top", top);
-                    jsPlumb.addEndpoint(id, { anchors: "Top" }, hollowCircle);
-                    jsPlumb.addEndpoint(id, { anchors: "Bottom" }, hollowCircle);
-                    jsPlumb.draggable(id);
-                    jsPlumb.makeTarget(id, {
-                        anchor: "Continuous"
-                    })
-                    $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
-                    doubleclick("#" + id);
-                    break;
-                case "shell"://服务器
-                    var id = guid2();
-                    $(this).append('<div class="node node1css shell" style="position: absolute" id="' + id + '" data-type="shell" data-id=" " >' + $(ui.helper).html() + '</div>');
-                    $("#" + id).css("left", left).css("top", top);
-                    jsPlumb.addEndpoint(id, { anchors: "Top" }, hollowCircle);
-                    jsPlumb.addEndpoint(id, { anchors: "Bottom" }, hollowCircle);
-                    jsPlumb.draggable(id);
-                    jsPlumb.makeTarget(id, {
-                        anchor: "Continuous"
-                    })
-                    $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
-                    doubleclick_shell("#" + id);
-                    break;
-            }
+            var tp=ui.draggable[0].dataset.type;
+
+            i++;
+            cls_str="node node"+tp+"css tasks"
+            var id = guid2();
+            $(this).append('<div class="'+cls_str+'" style="position: absolute" id="' + id + '" data-type="'+tp+'" data-id=" " >' + $(ui.helper).html() + '</div>');
+            $("#" + id).css("left", left).css("top", top);
+            jsPlumb.addEndpoint(id, { anchors: "Top" }, hollowCircle);
+            jsPlumb.addEndpoint(id, { anchors: "Bottom" }, hollowCircle);
+            jsPlumb.draggable(id);
+            jsPlumb.makeTarget(id, {
+                anchor: "Continuous"
+            })
+            $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
+            doubleclick("#" + id,tp);
         }
     });
 
@@ -152,7 +137,101 @@ $(document).ready(function(){
     });
 
     //双击节点内容区域时的事件
-    function doubleclick(id) {
+    // function doubleclick(id) {
+    //     $(id).dblclick(function () {
+    //         var text = $(this).text();
+    //         var div = $(this)
+    //         var etl_task_id=div.attr("etl_task_id")
+    //         var url='job_detail.html'
+    //         if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
+    //             url=url+"?etl_task_id=-1"
+    //         }else{
+    //             var more_task=div.attr("more_task")
+    //             url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 console.info("index:doubleclick:"+$("#etl_task_text").val())
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新")
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val())
+    //                 div.attr("etl_task_id",etl_task_info.etl_task_id);
+    //                 div.attr("etl_context",etl_task_info.etl_context);
+    //                 div.attr("more_task",etl_task_info.more_task);
+    //                 //div.width(etl_task_info.etl_context.length*16)
+    //                 div.css("width","auto")
+    //                 div.css("display","inline-block")
+    //                 div.css("*display","inline")
+    //                 div.css("*zoom","1")
+    //                 div.html(etl_task_info.etl_context);
+    //             }
+    //         });
+    //     });
+    // }
+    //
+    // function doubleclick_shell(id) {
+    //     $(id).dblclick(function () {
+    //         var etl_context = $(this).text();
+    //         var div = $(this)
+    //         var command=div.attr("command")
+    //         var url='shell_detail.html'
+    //         if( command == "" || command == undefined ){
+    //             url=url+"?command=-1"
+    //         }else{
+    //             var is_script=div.attr("is_script")
+    //             url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 console.info("index:doubleclick:"+$("#etl_task_text").val())
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新")
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val())
+    //                 div.attr("command",etl_task_info.command);
+    //                 div.attr("is_script",etl_task_info.is_script);
+    //                 div.css("width","auto")
+    //                 div.css("display","inline-block")
+    //                 div.css("*display","inline")
+    //                 div.css("*zoom","1")
+    //                 div.html(etl_task_info.etl_context);
+    //             }
+    //         });
+    //     });
+    // }
+
+
+    //双击节点内容区域时的事件
+    function doubleclick(id,tp) {
+        switch (tp) {
+            case "tasks"://服务器
+                doubleclick_tasks(id)
+                break;
+            case "shell":
+                doubleclick_shell(id)
+                break;
+            case "group":
+                doubleclick_group(id)
+                break;
+        }
+    }
+
+    function doubleclick_tasks(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
             var div = $(this)
@@ -220,6 +299,7 @@ $(document).ready(function(){
                     var etl_task_info=JSON.parse($("#etl_task_text").val())
                     div.attr("command",etl_task_info.command);
                     div.attr("is_script",etl_task_info.is_script);
+                    div.attr("etl_context",etl_task_info.etl_context)
                     div.css("width","auto")
                     div.css("display","inline-block")
                     div.css("*display","inline")
@@ -229,7 +309,47 @@ $(document).ready(function(){
             });
         });
     }
-    
+
+    function doubleclick_group(id) {
+        $(id).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this)
+            var etl_task_id=div.attr("etl_task_id")
+            var url='group_detail.html'
+            if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
+                url=url+"?etl_task_id=-1"
+            }else{
+                var more_task=div.attr("more_task")
+                url=url+"?etl_task_id="+etl_task_id
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新")
+                        return ;
+                    }
+
+                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    div.attr("etl_task_id",etl_task_info.etl_task_id);
+                    div.attr("etl_context",etl_task_info.etl_context);
+                    //div.width(etl_task_info.etl_context.length*16)
+                    div.css("width","auto")
+                    div.css("display","inline-block")
+                    div.css("*display","inline")
+                    div.css("*zoom","1")
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
+
+
 
     // 当连线建立前
     jsPlumb.bind('beforeDrop', function (info) {

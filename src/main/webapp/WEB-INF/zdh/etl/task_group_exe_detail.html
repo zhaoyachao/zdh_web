@@ -193,7 +193,8 @@
             laydate(start);
             laydate(end);
 
-
+            $("#start_time").val(getCurrentDate())
+            $("#end_time").val(getCurrentDate())
 
             function getCurrentDate(){
                 var oDate = new Date(),
@@ -321,6 +322,9 @@
             use_quartz_time="&use_quartz_time=on"
         }
 
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
         $.ajax({
             type: 'POST',
             url: "dispatch_task_execute",
@@ -334,6 +338,7 @@
             //成功返回
             success: function (data) {
                 $("#save_dispatch_task").removeAttr('disabled');
+                layer.close(index1)
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },
@@ -345,6 +350,7 @@
             //报错
             error: function (data) {
                 $("#save_dispatch_task").removeAttr('disabled');
+                layer.close(index1)
                 layer.msg(data.responseText);
                 console.info("error: " + data.responseText);
             }

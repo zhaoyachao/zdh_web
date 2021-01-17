@@ -311,10 +311,11 @@
             var positionY=rs.positionY
             var tp=rs.type
             var task_log_instance_id=map.get(divId)
-
+            cls_str="node node"+tp+"css tasks"
             var color=get_color_by_status(map3.get(divId))
             console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color)
-            $("#m1").append('<div class="node node1css tasks" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="'+tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="'+tp+'"'+' data-id=" " >' +etl_context+ '</div>');
             $("#" + divId).css("left", positionX).css("top", positionY);
             $("#" + divId).attr("type",tp)
             $("#" + divId).attr("etl_context",rs.etl_context);
@@ -330,6 +331,9 @@
                 $("#" + divId).attr("is_script",rs.is_script);
             }
 
+            if(tp == "group"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+            }
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto")
             $("#" + divId).css("display","inline-block")
@@ -412,94 +416,6 @@
             //openTabPage("log_txt.html?task_log_id="+task_log_instance_id, etl_context + "日志")
         });
     }
-    function doubleclick_shell(id) {
-        $(id).dblclick(function () {
-            var etl_context = $(this).text();
-            var div = $(this)
-            var command=div.attr("command")
-            var url='shell_detail.html'
-            if( command == "" || command == undefined ){
-                url=url+"?command=-1"
-            }else{
-                var is_script=div.attr("is_script")
-                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
-            }
-            layer.open({
-                type: 2,
-                area: ['700px', '450px'],
-                fixed: false, //不固定
-                maxmin: true,
-                content: encodeURI(url),
-                end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
-                    if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
-                        return ;
-                    }
-
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
-                    div.attr("command",etl_task_info.command);
-                    div.attr("is_script",etl_task_info.is_script);
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
-                    div.html(etl_task_info.etl_context);
-                }
-            });
-        });
-    }
-    function jsplumb_data(){
-        var ojson={
-            tasks:[],
-            shell:[],
-            line:[]
-        }
-        //服务器
-        $("#m1 .tasks").each(function (idx, elem) {
-            var $elem = $(elem);
-            var param={
-                id: $elem.attr('etl_task_id'),
-                etl_task_id: $elem.attr('etl_task_id'),
-                etl_context:$elem.attr('etl_context'),
-                more_task:$elem.attr('more_task'),
-                divId:$elem.attr('id'),
-                name: $elem[0].innerText,
-                positionX: parseInt($elem.css("left"), 10),
-                positionY: parseInt($elem.css("top"), 10),
-                type:$elem.data('type')
-            }
-            ojson.tasks.push(param)
-        });
-
-        $("#m1 .shell").each(function (idx, elem) {
-            var $elem = $(elem);
-            var param={
-                id: $elem.attr('id'),
-                is_script: $elem.attr('is_script'),
-                etl_context:$elem.text(),
-                command:$elem.attr('command'),
-                divId:$elem.attr('id'),
-                name: $elem[0].innerText,
-                positionX: parseInt($elem.css("left"), 10),
-                positionY: parseInt($elem.css("top"), 10),
-                type:$elem.data('type')
-            }
-            ojson.shell.push(param)
-        });
-
-        $.each(jsPlumb.getConnections(), function (idx, connection) {
-            var param={
-                connectionId: connection.id,
-                pageSourceId: connection.sourceId,
-                pageTargetId: connection.targetId
-            }
-            ojson.line.push(param)
-        });
-
-        return ojson
-    }
-
 
 </script>
 <script>

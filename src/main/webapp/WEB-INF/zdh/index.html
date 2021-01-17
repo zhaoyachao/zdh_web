@@ -444,6 +444,11 @@
         })(document, window, jQuery);
 
         function load_meta_databases() {
+
+            var index1 = layer.load(1, {
+                shade: [0.1,'#fff'] //0.1透明度的白色背景
+            });
+
             $.ajax({
                 type: 'POST',
                 url: "load_meta_databases",
@@ -457,6 +462,7 @@
                 //处理完成
                 complete: function () {
                     console.info("complete")
+                    layer.close(index1)
                 },
                 //报错
                 error: function (data) {

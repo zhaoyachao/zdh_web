@@ -1142,6 +1142,31 @@ public class JobCommon2 {
         return true;
     }
 
+    public static boolean checkDep2(String jobType,TaskLogInstance tli){
+        logger.info("[" + jobType + "] JOB ,开始检查任务依赖");
+        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务依赖");
+        TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+        TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
+        String dep_job_id=tli.getEtl_task_id();
+        String etl_date=tli.getEtl_date();
+        List<TaskGroupLogInstance> taskLogsList = tglim.selectByIdEtlDate(dep_job_id, etl_date);
+        if (taskLogsList == null || taskLogsList.size() <= 0) {
+            String msg = "[" + jobType + "] JOB ,依赖任务组:" + dep_job_id + ",ETL日期:" + etl_date + ",未完成";
+            logger.info(msg);
+            insertLog(tli, "INFO", msg);
+            tli.setThread_id(""); //设置为空主要是为了 在检查依赖任务期间杀死
+            tli.setStatus(JobStatus.CHECK_DEP.getValue());
+            tli.setProcess("7");
+            tli.setUpdate_time(new Timestamp(new Date().getTime()));
+            updateTaskLog(tli,tlim);
+            return false;
+        }
+        String msg2 = "[" + jobType + "] JOB ,依赖任务组:" + dep_job_id + ",ETL日期:" + etl_date + ",已完成";
+        logger.info(msg2);
+        insertLog(tli, "INFO", msg2);
+        return true;
+    }
+
     /**
      * 时间序列发送etl任务到后台执行
      *
@@ -1728,7 +1753,10 @@ public class JobCommon2 {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type("SHELL");
                 }
-
+                if(((JSONObject) job).getString("type").equalsIgnoreCase("group")){
+                    taskLogInstance.setMore_task("");
+                    taskLogInstance.setJob_type("GROUP");
+                }
 
 
 

@@ -58,7 +58,7 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
                                                         @Param("end_time") Timestamp end_time, @Param("status") String status);
 
 
-    @Select("select * from task_group_log_instance where etl_date=#{etl_date} and job_id=#{job_id}")
+    @Select("select * from task_group_log_instance where etl_date=#{etl_date} and job_id=#{job_id} and status in ('finish','skip')")
     public List<TaskGroupLogInstance> selectByIdEtlDate(@Param("job_id") String job_id, @Param("etl_date") String etl_date);
 
     @Select(

@@ -157,16 +157,23 @@
                            $('#sub_task_div').addClass("checkbox")
                            $('#sub_task_div').addClass("i-checks")
                            var jsplumb_json=JSON.parse(data[0].jsmind_data)
+
                            for(var i=0;i<jsplumb_json.tasks.length;i++){
                                var divId=jsplumb_json.tasks[i].divId
                                $('#sub_task_div').append('<label class="no-padding">')
                                $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' checked=""><i></i>'+jsplumb_json.tasks[i].etl_context+'</label>')
                            }
-                           for(var i=0;i<jsplumb_json.shell.length;i++){
-                               var divId=jsplumb_json.shell[i].divId
-                               $('#sub_task_div').append('<label class="no-padding">')
-                               $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' checked=""><i></i>'+jsplumb_json.shell[i].etl_context+'</label>')
-                           }
+
+                           // for(var i=0;i<jsplumb_json.tasks.length;i++){
+                           //     var divId=jsplumb_json.tasks[i].divId
+                           //     $('#sub_task_div').append('<label class="no-padding">')
+                           //     $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' checked=""><i></i>'+jsplumb_json.tasks[i].etl_context+'</label>')
+                           // }
+                           // for(var i=0;i<jsplumb_json.shell.length;i++){
+                           //     var divId=jsplumb_json.shell[i].divId
+                           //     $('#sub_task_div').append('<label class="no-padding">')
+                           //     $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' checked=""><i></i>'+jsplumb_json.shell[i].etl_context+'</label>')
+                           // }
 
                            $('.i-checks').iCheck({
                                checkboxClass: 'icheckbox_square-green',
