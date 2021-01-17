@@ -38,7 +38,7 @@ $(document).ready(function(){
                     break;
                 case "shell"://服务器
                     var id = guid2();
-                    $(this).append('<div class="node node1css shell" style="position: absolute" id="' + id + '" data-type="shell" data-id=" " >' + $(ui.helper).html() + '</div>');
+                    $(this).append('<div class="node node1css tasks" style="position: absolute" id="' + id + '" data-type="shell" data-id=" " >' + $(ui.helper).html() + '</div>');
                     $("#" + id).css("left", left).css("top", top);
                     jsPlumb.addEndpoint(id, { anchors: "Top" }, hollowCircle);
                     jsPlumb.addEndpoint(id, { anchors: "Bottom" }, hollowCircle);
@@ -220,6 +220,7 @@ $(document).ready(function(){
                     var etl_task_info=JSON.parse($("#etl_task_text").val())
                     div.attr("command",etl_task_info.command);
                     div.attr("is_script",etl_task_info.is_script);
+                    div.attr("etl_context",etl_task_info.etl_context)
                     div.css("width","auto")
                     div.css("display","inline-block")
                     div.css("*display","inline")
@@ -244,18 +245,20 @@ $(document).ready(function(){
     $('.btn1').click(function(){
         var ojson={
             tasks:[],
-            shell:[],
             line:[]
         }
 
         //服务器
         $("#m1 .tasks").each(function (idx, elem) {
             var $elem = $(elem);
+
             var param={
-                id: $elem.attr('etl_task_id'),
+                id: $elem.attr('id'),
                 etl_task_id: $elem.attr('etl_task_id'),
                 etl_context:$elem.attr('etl_context'),
                 more_task:$elem.attr('more_task'),
+                is_script: $elem.attr('is_script'),
+                command:$elem.attr('command'),
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,
                 positionX: parseInt($elem.css("left"), 10),
@@ -265,21 +268,21 @@ $(document).ready(function(){
             ojson.tasks.push(param)
         });
 
-        $("#m1 .shell").each(function (idx, elem) {
-            var $elem = $(elem);
-            var param={
-                id: $elem.attr('id'),
-                is_script: $elem.attr('is_script'),
-                etl_context:$elem.text(),
-                command:$elem.attr('command'),
-                divId:$elem.attr('id'),
-                name: $elem[0].innerText,
-                positionX: parseInt($elem.css("left"), 10),
-                positionY: parseInt($elem.css("top"), 10),
-                type:$elem.data('type')
-            }
-            ojson.shell.push(param)
-        });
+        // $("#m1 .shell").each(function (idx, elem) {
+        //     var $elem = $(elem);
+        //     var param={
+        //         id: $elem.attr('id'),
+        //         is_script: $elem.attr('is_script'),
+        //         etl_context:$elem.text(),
+        //         command:$elem.attr('command'),
+        //         divId:$elem.attr('id'),
+        //         name: $elem[0].innerText,
+        //         positionX: parseInt($elem.css("left"), 10),
+        //         positionY: parseInt($elem.css("top"), 10),
+        //         type:$elem.data('type')
+        //     }
+        //     ojson.shell.push(param)
+        // });
 
         //连线
         $.each(jsPlumb.getConnections(), function (idx, connection) {

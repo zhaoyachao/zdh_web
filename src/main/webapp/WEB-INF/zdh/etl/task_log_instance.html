@@ -304,57 +304,38 @@
         //添加div 数据
 
         for(var i=0;i< jsplumb_json.tasks.length;i++){
-            var divId=jsplumb_json.tasks[i].divId
-            var etl_context=jsplumb_json.tasks[i].etl_context
-            var positionX=jsplumb_json.tasks[i].positionX
-            var positionY=jsplumb_json.tasks[i].positionY
+            var rs=jsplumb_json.tasks[i]
+            var divId=rs.divId
+            var etl_context=rs.etl_context
+            var positionX=rs.positionX
+            var positionY=rs.positionY
+            var tp=rs.type
             var task_log_instance_id=map.get(divId)
 
             var color=get_color_by_status(map3.get(divId))
             console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color)
-            $("#m1").append('<div class="node node1css tasks" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="tasks"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#m1").append('<div class="node node1css tasks" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="'+tp+'"'+' data-id=" " >' +etl_context+ '</div>');
             $("#" + divId).css("left", positionX).css("top", positionY);
-            $("#" + divId).attr("type","tasks")
+            $("#" + divId).attr("type",tp)
+            $("#" + divId).attr("etl_context",rs.etl_context);
 
-            $("#" + divId).attr("etl_task_id",jsplumb_json.tasks[i].etl_task_id);
-            $("#" + divId).attr("etl_context",jsplumb_json.tasks[i].etl_context);
-            $("#" + divId).attr("more_task",jsplumb_json.tasks[i].more_task);
+
+            if(tp == "tasks"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("more_task",rs.more_task);
+            }
+
+            if(tp == "shell"){
+                $("#" + divId).attr("command",rs.command);
+                $("#" + divId).attr("is_script",rs.is_script);
+            }
+
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto")
             $("#" + divId).css("display","inline-block")
             $("#" + divId).css("*display","inline")
             $("#" + divId).css("*zoom","1")
-            $("#" + divId).html(jsplumb_json.tasks[i].etl_context);
-            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
-            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
-            jsPlumb.draggable(divId);
-            jsPlumb.makeTarget(divId, {
-                anchor: "Continuous"
-            })
-            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
-            doubleclick("#" + divId,task_log_instance_id,etl_context);
-        }
-
-        for(var i=0;i< jsplumb_json.shell.length;i++){
-            var shell=jsplumb_json.shell[i]
-            var divId=shell.divId
-            var etl_context=shell.etl_context
-            var positionX=shell.positionX
-            var positionY=shell.positionY
-            var color=get_color_by_status(map3.get(divId))
-            var task_log_instance_id=map.get(divId)
-            $("#m1").append('<div class="node node1css shell" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="shell"'+' data-id=" " >' +etl_context+ '</div>');
-            $("#" + divId).css("left", positionX).css("top", positionY);
-            $("#" + divId).attr("type","shell")
-
-            $("#" + divId).attr("command",shell.command);
-            $("#" + divId).attr("is_script",shell.is_script);
-            $("#" + divId).attr("etl_context",etl_context);
-            $("#" + divId).css("width","auto")
-            $("#" + divId).css("display","inline-block")
-            $("#" + divId).css("*display","inline")
-            $("#" + divId).css("*zoom","1")
-            $("#" + divId).html(shell.etl_context);
+            $("#" + divId).html(rs.etl_context);
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
             jsPlumb.draggable(divId);

@@ -77,4 +77,40 @@ public class DateUtil {
             return null;
         }
     }
+
+    public static String year(Date date) {
+        return format(date).substring(0, 4);
+    }
+
+    public static int month(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.MONTH) + 1;
+    }
+
+    public static int day(Timestamp date){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(date.getTime());
+        return beginDate.get(Calendar.DAY_OF_MONTH);
+    }
+
+    public static int hour(Timestamp date){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(date.getTime());
+        return beginDate.get(Calendar.HOUR_OF_DAY);
+    }
+
+    public static int minute(Timestamp date){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(date.getTime());
+        return beginDate.get(Calendar.MINUTE);
+    }
+
+    public static int second(Timestamp date){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(date.getTime());
+        return beginDate.get(Calendar.SECOND);
+    }
+
+
 }

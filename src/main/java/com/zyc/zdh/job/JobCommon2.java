@@ -589,6 +589,14 @@ public class JobCommon2 {
             jinJavaParam.put("zdh_date_nodash", date_nodash);
             jinJavaParam.put("zdh_date_time", date_time);
             jinJavaParam.put("zdh_date", date_dt);
+            jinJavaParam.put("zdh_year",DateUtil.year(tli.getCur_time()));
+            jinJavaParam.put("zdh_month",DateUtil.month(tli.getCur_time()));
+            jinJavaParam.put("zdh_day",DateUtil.day(tli.getCur_time()));
+            jinJavaParam.put("zdh_hour",DateUtil.hour(tli.getCur_time()));
+            jinJavaParam.put("zdh_minute",DateUtil.minute(tli.getCur_time()));
+            jinJavaParam.put("zdh_second",DateUtil.second(tli.getCur_time()));
+
+
             Jinjava jj = new Jinjava();
 
             map.forEach((k, v) -> {
@@ -1698,52 +1706,40 @@ public class JobCommon2 {
             Map<String,String> map2=new HashMap<>();//id->divId
             DAG dag=new DAG();
             JSONArray tasks=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("tasks");
-            JSONArray shell=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("shell");
+           //JSONArray shell=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("shell");
             JSONArray lines=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("line");
             for(Object job :tasks){
                 TaskLogInstance taskLogInstance=new TaskLogInstance();
                 BeanUtils.copyProperties(taskLogInstance,tgli);
+
                 String etl_task_id=((JSONObject) job).getString("etl_task_id");//具体任务id
                 String pageSourceId=((JSONObject) job).getString("divId");//前端生成的div 标识
                 String more_task=((JSONObject) job).getString("more_task");
 
                 String etl_context=((JSONObject) job).getString("etl_context");
+                String command=((JSONObject) job).getString("command");//具体任务id
+                String is_script=((JSONObject) job).getString("is_script");//具体任务id
+
+                if(((JSONObject) job).getString("type").equalsIgnoreCase("tasks")){
+                    taskLogInstance.setMore_task(more_task);
+                    taskLogInstance.setJob_type("ETL");
+                }
+                if(((JSONObject) job).getString("type").equalsIgnoreCase("shell")){
+                    taskLogInstance.setMore_task("");
+                    taskLogInstance.setJob_type("SHELL");
+                }
+
+
+
+
                 String t_id=SnowflakeIdWorker.getInstance().nextId()+"";
                 map.put(pageSourceId,t_id);//div标识和任务实例id 对应关系
                 map2.put(t_id,pageSourceId);
 
-                taskLogInstance.setMore_task(more_task);
-                taskLogInstance.setJob_type("ETL");
                 taskLogInstance.setId(t_id);//具体执行任务实例id,每次执行都会重新生成
                 taskLogInstance.setJob_id(tgli.getJob_id());//调度任务id
                 taskLogInstance.setJob_context(tgli.getJob_context());//调度任务说明
                 taskLogInstance.setEtl_task_id(etl_task_id);//etl任务id
-                taskLogInstance.setEtl_context(etl_context);//etl任务说明
-                taskLogInstance.setStatus(JobStatus.NON.getValue());
-                taskLogInstance.setJsmind_data("");
-                taskLogInstance.setRun_jsmind_data("");
-                taskLogInstance.setCount(0);
-                taskLogInstance.setOwner(tgli.getOwner());
-                tliList.add(taskLogInstance);
-            }
-
-            for(Object job :shell){
-                TaskLogInstance taskLogInstance=new TaskLogInstance();
-                BeanUtils.copyProperties(taskLogInstance,tgli);
-                String command=((JSONObject) job).getString("command");//具体任务id
-                String pageSourceId=((JSONObject) job).getString("divId");//前端生成的div 标识
-                String etl_context=((JSONObject) job).getString("etl_context");
-                String is_script=((JSONObject) job).getString("is_script");//具体任务id
-
-                String t_id=SnowflakeIdWorker.getInstance().nextId()+"";
-                map.put(pageSourceId,t_id);//div标识和任务实例id 对应关系
-                map2.put(t_id,pageSourceId);
-                taskLogInstance.setMore_task("");
-                taskLogInstance.setJob_type("SHELL");
-                taskLogInstance.setId(t_id);//具体执行任务实例id,每次执行都会重新生成
-                taskLogInstance.setJob_id(tgli.getJob_id());//调度任务id
-                taskLogInstance.setJob_context(tgli.getJob_context());//调度任务说明
-                taskLogInstance.setEtl_task_id("");//etl任务id
                 taskLogInstance.setEtl_context(etl_context);//etl任务说明
                 taskLogInstance.setCommand(command);
                 taskLogInstance.setIs_script(is_script);
@@ -1754,6 +1750,36 @@ public class JobCommon2 {
                 taskLogInstance.setOwner(tgli.getOwner());
                 tliList.add(taskLogInstance);
             }
+
+//            for(Object job :tasks){
+//                if(!((JSONObject) job).getString("type").equalsIgnoreCase("shell"))
+//                    continue;
+//                TaskLogInstance taskLogInstance=new TaskLogInstance();
+//                BeanUtils.copyProperties(taskLogInstance,tgli);
+//                String command=((JSONObject) job).getString("command");//具体任务id
+//                String pageSourceId=((JSONObject) job).getString("divId");//前端生成的div 标识
+//                String etl_context=((JSONObject) job).getString("etl_context");
+//                String is_script=((JSONObject) job).getString("is_script");//具体任务id
+//
+//                String t_id=SnowflakeIdWorker.getInstance().nextId()+"";
+//                map.put(pageSourceId,t_id);//div标识和任务实例id 对应关系
+//                map2.put(t_id,pageSourceId);
+//                taskLogInstance.setMore_task("");
+//                taskLogInstance.setJob_type("SHELL");
+//                taskLogInstance.setId(t_id);//具体执行任务实例id,每次执行都会重新生成
+//                taskLogInstance.setJob_id(tgli.getJob_id());//调度任务id
+//                taskLogInstance.setJob_context(tgli.getJob_context());//调度任务说明
+//                taskLogInstance.setEtl_task_id("");//etl任务id
+//                taskLogInstance.setEtl_context(etl_context);//etl任务说明
+//                taskLogInstance.setCommand(command);
+//                taskLogInstance.setIs_script(is_script);
+//                taskLogInstance.setStatus(JobStatus.NON.getValue());
+//                taskLogInstance.setJsmind_data("");
+//                taskLogInstance.setRun_jsmind_data("");
+//                taskLogInstance.setCount(0);
+//                taskLogInstance.setOwner(tgli.getOwner());
+//                tliList.add(taskLogInstance);
+//            }
 
             // 生成实例依赖关系
             //"line": [{

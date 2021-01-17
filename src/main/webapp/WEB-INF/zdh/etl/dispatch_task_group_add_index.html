@@ -89,7 +89,7 @@
                             <label class="col-sm-2 control-label">表达式</label>
                             <div class="col-sm-10">
                                 <input id="expr" name="expr" type="text"
-                                       placeholder="example:100s,100m,100h or corn 表达式" class="form-control" aria-required="true"> </span>
+                                       placeholder="example:100s,100m,100h,1d or corn 表达式,默认1d" class="form-control" aria-required="true"> </span>
                             </div>
                             <div class="form-group"></div>
                             <label class="col-sm-2 control-label">调度时间策略</label>
@@ -410,25 +410,35 @@
     function open_json(json) {
         var jsplumb_json=JSON.parse(json)
         //添加div 数据
-
+        console.info(json)
         for(var i=0;i< jsplumb_json.tasks.length;i++){
-            var divId=jsplumb_json.tasks[i].divId
-            var etl_context=jsplumb_json.tasks[i].etl_context
-            var positionX=jsplumb_json.tasks[i].positionX
-            var positionY=jsplumb_json.tasks[i].positionY
-            $("#m1").append('<div class="node node1css tasks" style="position: absolute" id="' + divId + '" data-type="tasks"'+' data-id=" " >' +etl_context+ '</div>');
+            var rs=jsplumb_json.tasks[i]
+            var tp=rs.type
+            var divId=rs.divId
+            var etl_context=rs.etl_context
+            var positionX=rs.positionX
+            var positionY=rs.positionY
+            $("#m1").append('<div class="node node1css tasks" style="position: absolute" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
             $("#" + divId).css("left", positionX).css("top", positionY);
-            $("#" + divId).attr("type","tasks")
+            $("#" + divId).attr("type",tp)
+            $("#" + divId).attr("etl_context",rs.etl_context);
 
-            $("#" + divId).attr("etl_task_id",jsplumb_json.tasks[i].etl_task_id);
-            $("#" + divId).attr("etl_context",jsplumb_json.tasks[i].etl_context);
-            $("#" + divId).attr("more_task",jsplumb_json.tasks[i].more_task);
+            if(tp == "tasks"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("more_task",rs.more_task);
+            }
+
+            if(tp == "shell"){
+                $("#" + divId).attr("command",rs.command);
+                $("#" + divId).attr("is_script",rs.is_script);
+            }
+
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto")
             $("#" + divId).css("display","inline-block")
             $("#" + divId).css("*display","inline")
             $("#" + divId).css("*zoom","1")
-            $("#" + divId).html(jsplumb_json.tasks[i].etl_context);
+            $("#" + divId).html(rs.etl_context);
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
             jsPlumb.draggable(divId);
@@ -436,35 +446,11 @@
                 anchor: "Continuous"
             })
             $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
-            doubleclick("#" + divId);
-        }
-
-        for(var i=0;i< jsplumb_json.shell.length;i++){
-            var shell=jsplumb_json.shell[i]
-            var divId=shell.divId
-            var etl_context=shell.etl_context
-            var positionX=shell.positionX
-            var positionY=shell.positionY
-            $("#m1").append('<div class="node node1css shell" style="position: absolute" id="' + divId + '" data-type="shell"'+' data-id=" " >' +etl_context+ '</div>');
-            $("#" + divId).css("left", positionX).css("top", positionY);
-            $("#" + divId).attr("type","shell")
-
-            $("#" + divId).attr("command",shell.command);
-            $("#" + divId).attr("is_script",shell.is_script);
-            $("#" + divId).attr("etl_context",etl_context);
-            $("#" + divId).css("width","auto")
-            $("#" + divId).css("display","inline-block")
-            $("#" + divId).css("*display","inline")
-            $("#" + divId).css("*zoom","1")
-            $("#" + divId).html(shell.etl_context);
-            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
-            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
-            jsPlumb.draggable(divId);
-            jsPlumb.makeTarget(divId, {
-                anchor: "Continuous"
-            })
-            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
-            doubleclick_shell("#" + divId);
+            if(tp == "tasks")
+               doubleclick("#" + divId);
+            else if (tp == "shell"){
+                doubleclick_shell("#" + divId);
+            }
         }
 
         for(var i=0;i< jsplumb_json.line.length;i++){
@@ -554,17 +540,18 @@
     function jsplumb_data(){
         var ojson={
             tasks:[],
-            shell:[],
             line:[]
         }
         //服务器
         $("#m1 .tasks").each(function (idx, elem) {
             var $elem = $(elem);
             var param={
-                id: $elem.attr('etl_task_id'),
+                id: $elem.attr('id'),
                 etl_task_id: $elem.attr('etl_task_id'),
                 etl_context:$elem.attr('etl_context'),
                 more_task:$elem.attr('more_task'),
+                is_script: $elem.attr('is_script'),
+                command:$elem.attr('command'),
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,
                 positionX: parseInt($elem.css("left"), 10),
@@ -574,21 +561,21 @@
             ojson.tasks.push(param)
         });
 
-        $("#m1 .shell").each(function (idx, elem) {
-            var $elem = $(elem);
-            var param={
-                id: $elem.attr('id'),
-                is_script: $elem.attr('is_script'),
-                etl_context:$elem.text(),
-                command:$elem.attr('command'),
-                divId:$elem.attr('id'),
-                name: $elem[0].innerText,
-                positionX: parseInt($elem.css("left"), 10),
-                positionY: parseInt($elem.css("top"), 10),
-                type:$elem.data('type')
-            }
-            ojson.shell.push(param)
-        });
+        // $("#m1 .shell").each(function (idx, elem) {
+        //     var $elem = $(elem);
+        //     var param={
+        //         id: $elem.attr('id'),
+        //         is_script: $elem.attr('is_script'),
+        //         etl_context:$elem.text(),
+        //         command:$elem.attr('command'),
+        //         divId:$elem.attr('id'),
+        //         name: $elem[0].innerText,
+        //         positionX: parseInt($elem.css("left"), 10),
+        //         positionY: parseInt($elem.css("top"), 10),
+        //         type:$elem.data('type')
+        //     }
+        //     ojson.shell.push(param)
+        // });
 
         $.each(jsPlumb.getConnections(), function (idx, connection) {
             var param={
@@ -1032,6 +1019,9 @@
             laydate(start);
             laydate(end);
 
+            $("#start_time").val(getCurrentDate())
+            $("#end_time").val(getCurrentDate())
+
 
             $('#job_model').chosen();
             $('#last_status').chosen();
@@ -1266,8 +1256,7 @@
         var etl_context=$('#etl_task_id').find("option:selected").text();
 
         if($('#expr').val()==''){
-            layer.msg("调度任务表达式不可为空")
-            return false
+            $('#expr').val("1d")
         }
 
         if($('#start_time').val()==''){
@@ -1281,8 +1270,8 @@
         }
 
         if($('#job_model').val()==''){
-            layer.msg("调度模式不可为空")
-            return false
+            $('#job_model').val("1")
+            //layer.msg("调度模式不可为空")
         }
 
         var oDate1 = new Date($('#start_time').val());

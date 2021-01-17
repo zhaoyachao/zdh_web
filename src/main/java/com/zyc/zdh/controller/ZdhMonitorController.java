@@ -19,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -372,6 +374,8 @@ public class ZdhMonitorController extends BaseController{
             levels = "'ERROR'";
         }
 
+        taskLogInstanceMapper.selectByIdStatus(task_log_id);
+
         List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id, task_log_id, ts_start, ts_end, levels);
         Iterator<ZdhLogs> it = zhdLogs.iterator();
         StringBuilder sb = new StringBuilder();
@@ -395,6 +399,56 @@ public class ZdhMonitorController extends BaseController{
     public String log_txt() {
 
         return "etl/log_txt";
+    }
+
+
+    @RequestMapping(value = "/download_log", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public void download_log(HttpServletResponse response, String job_id, String task_log_id){
+        String levels = "'DEBUG','WARN','INFO','ERROR'";
+        File path = null;
+        response.setHeader("content-type", "text/html;charset=UTF-8");
+
+        response.setContentType("text/html;charset=UTF-8");
+        OutputStream os = null;
+        ByteArrayInputStream bis = null;
+        try {
+            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("日志"+task_log_id+".log", "UTF-8"));
+            byte[] buff = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+
+            List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id, task_log_id, null, null, levels);
+            Iterator<ZdhLogs> it = zhdLogs.iterator();
+            StringBuilder sb = new StringBuilder();
+            while (it.hasNext()) {
+                ZdhLogs next = it.next();
+                String info = "调度任务ID:" + next.getJob_id()+",任务实例ID:"+task_log_id + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
+                sb.append(info + "\r\n");
+            }
+            os = response.getOutputStream();
+            bis = new ByteArrayInputStream(sb.toString().getBytes());
+            int i = bis.read(buff);
+            while (i != -1) {
+                os.write(buff, 0, buff.length);
+                os.flush();
+                i = bis.read(buff);
+            }
+
+
+
+        } catch (UnsupportedEncodingException e2) {
+            e2.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                bis.close();
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 
     private void debugInfo(Object obj) {
