@@ -96,7 +96,7 @@ public class JobCommon2 {
         if (!tli.getPlan_count().trim().equals("") && !tli.getPlan_count().trim().equals("-1")) {
             //任务有次数限制,重试多次后仍失败会删除任务
             System.out.println(tli.getCount() + "================" + tli.getPlan_count().trim());
-            if (tli.getCount() > Long.parseLong(tli.getPlan_count().trim())) {
+            if (tli.getCount()-1 > Long.parseLong(tli.getPlan_count().trim())) {
                 logger.info("[" + jobType + "] JOB 检任务次测到重试数超过限制,删除任务并直接返回结束");
                 insertLog(tli, "info", "[" + jobType + "] JOB 检任务次测到重试数超过限制,删除任务并直接返回结束");
                 QuartzJobInfo qji = new QuartzJobInfo();
@@ -658,6 +658,43 @@ public class JobCommon2 {
     }
 
 
+    public static String DynamicParams(Map<String, Object> map, TaskLogInstance tli, String old_str) {
+        try {
+            String date_nodash = DateUtil.formatNodash(tli.getCur_time());
+            String date_time = DateUtil.formatTime(tli.getCur_time());
+            String date_dt = DateUtil.format(tli.getCur_time());
+            Map<String, Object> jinJavaParam = new HashMap<>();
+            jinJavaParam.put("zdh_date_nodash", date_nodash);
+            jinJavaParam.put("zdh_date_time", date_time);
+            jinJavaParam.put("zdh_date", date_dt);
+            jinJavaParam.put("zdh_year",DateUtil.year(tli.getCur_time()));
+            jinJavaParam.put("zdh_month",DateUtil.month(tli.getCur_time()));
+            jinJavaParam.put("zdh_day",DateUtil.day(tli.getCur_time()));
+            jinJavaParam.put("zdh_hour",DateUtil.hour(tli.getCur_time()));
+            jinJavaParam.put("zdh_minute",DateUtil.minute(tli.getCur_time()));
+            jinJavaParam.put("zdh_second",DateUtil.second(tli.getCur_time()));
+
+
+            Jinjava jj = new Jinjava();
+
+            if(map!=null){
+                map.forEach((k, v) -> {
+                    logger.info("key:" + k + ",value:" + v);
+                    jinJavaParam.put(k, v);
+                });
+            }
+
+            String new_str=jj.render(old_str, jinJavaParam);
+
+            return new_str;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+
+    }
+
     /**
      * 获取后台url
      *
@@ -1097,10 +1134,12 @@ public class JobCommon2 {
 
     /**
      * 检查任务组依赖
+     * 2021-01-31废弃此逻辑(对应版本4.6正式弃用)
      * @param jobType
      * @param tgli
      * @return
      */
+    @Deprecated
     public static boolean checkDep(String jobType, TaskGroupLogInstance tgli) {
         logger.info("[" + jobType + "] JOB ,开始检查任务依赖");
         insertLog(tgli, "INFO", "[" + jobType + "] JOB ,开始检查任务依赖");
@@ -1142,6 +1181,12 @@ public class JobCommon2 {
         return true;
     }
 
+    /**
+     * 检查子任务中的任务组依赖
+     * @param jobType
+     * @param tli
+     * @return
+     */
     public static boolean checkDep2(String jobType,TaskLogInstance tli){
         logger.info("[" + jobType + "] JOB ,开始检查任务依赖");
         insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务依赖");
@@ -1162,6 +1207,63 @@ public class JobCommon2 {
             return false;
         }
         String msg2 = "[" + jobType + "] JOB ,依赖任务组:" + dep_job_id + ",ETL日期:" + etl_date + ",已完成";
+        logger.info(msg2);
+        insertLog(tli, "INFO", msg2);
+        return true;
+    }
+
+    /**
+     * 检查子任务中的jdbc依赖
+     * @param jobType
+     * @param tli
+     * @return
+     */
+    public static boolean checkDep3(String jobType,TaskLogInstance tli){
+        logger.info("[" + jobType + "] JOB ,开始检查任务中的JDBC依赖");
+        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务中的JDBC依赖");
+        TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+        TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
+        String dep_job_id=tli.getEtl_task_id();
+        String etl_date=tli.getEtl_date();
+
+        DBUtil dbUtil=new DBUtil();
+
+        System.out.println("checkDep3:"+tli.getRun_jsmind_data());
+        if(!com.zyc.zdh.util.StringUtils.isEmpty(tli.getRun_jsmind_data())){
+            JSONObject jdbc=JSON.parseObject(tli.getRun_jsmind_data());
+            String driver= jdbc.getString("driver");
+            String url= jdbc.getString("url");
+            String username= jdbc.getString("username");
+            String password= jdbc.getString("password");
+            String jdbc_sql= jdbc.getString("jdbc_sql");
+            Map<String, Object> map = (Map<String, Object>) JSON.parseObject(tli.getParams());
+
+            //jdbc_sql 动态参数替换
+            String new_jdbc_sql=DynamicParams(map,tli,jdbc_sql);
+
+            insertLog(tli,"INFO","JDBC依赖检查SQL: "+new_jdbc_sql);
+
+            try {
+               List<Map<String,Object>> result= dbUtil.R5(driver,url,username,password,new_jdbc_sql);
+               if(result.size()<1){
+                   String msg = "[" + jobType + "] JOB ,依赖JDBC任务检查" + ",ETL日期:" + etl_date + ",未完成";
+                   insertLog(tli,"INFO",msg);
+                   return false;
+               }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                insertLog(tli,"error","JDBC依赖检查异常,"+e.getMessage());
+                jobFail(tli.getJob_type(),tli);
+                return false;
+            }
+
+        }else{
+            insertLog(tli,"error","请检查jdbc链接需要的基础参数是否缺少");
+            jobFail(tli.getJob_type(),tli);
+        }
+
+        String msg2 = "[" + jobType + "] JOB ,依赖JDBC任务检查" + ",ETL日期:" + etl_date + ",已完成";
         logger.info(msg2);
         insertLog(tli, "INFO", msg2);
         return true;
@@ -1417,19 +1519,20 @@ public class JobCommon2 {
                 debugInfo(tgli);
                 tglim.updateByPrimaryKey(tgli);
 
-                //检查任务依赖,和并行不冲突
-                boolean dep = checkDep(quartzJobInfo.getJob_type(), tgli);
+                //检查任务依赖,和并行不冲突--此逻辑删除,目前任务组之间的依赖以子任务检查逻辑实现
+                //boolean dep = checkDep(quartzJobInfo.getJob_type(), tgli);
                 //更新任务依赖时间
                 process_time_info pti=tgli.getProcess_time2();
                 pti.setCheck_dep_time(DateUtil.getCurrentTime());
                 tgli.setProcess_time(pti);
-                if(dep){
-                    //修改组任务状态,及修改子任务状态为检查依赖中
-                    CheckDepJob.updateTaskGroupLogInstanceStatus(tgli);
-                }else{
-                    updateTaskLog(tgli,tglim);
-                    return ;
-                }
+                //修改组任务状态,及修改子任务状态为检查依赖中
+                CheckDepJob.updateTaskGroupLogInstanceStatus(tgli);
+//                if(dep){
+//
+//                }else{
+//                    updateTaskLog(tgli,tglim);
+//                    return ;
+//                }
             }
         });
 
@@ -1740,6 +1843,10 @@ public class JobCommon2 {
                 String etl_task_id=((JSONObject) job).getString("etl_task_id");//具体任务id
                 String pageSourceId=((JSONObject) job).getString("divId");//前端生成的div 标识
                 String more_task=((JSONObject) job).getString("more_task");
+                String is_disenable=((JSONObject) job).getString("is_disenable");
+                if(com.zyc.zdh.util.StringUtils.isEmpty(is_disenable)){
+                    is_disenable="false";
+                }
 
                 String etl_context=((JSONObject) job).getString("etl_context");
                 String command=((JSONObject) job).getString("command");//具体任务id
@@ -1758,6 +1865,16 @@ public class JobCommon2 {
                     taskLogInstance.setJob_type("GROUP");
                 }
 
+                taskLogInstance.setJsmind_data("");
+                taskLogInstance.setRun_jsmind_data("");
+                if(((JSONObject) job).getString("type").equalsIgnoreCase("jdbc")){
+                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setMore_task("");
+                    taskLogInstance.setJob_type("JDBC");
+                }
+
+
 
 
                 String t_id=SnowflakeIdWorker.getInstance().nextId()+"";
@@ -1771,54 +1888,17 @@ public class JobCommon2 {
                 taskLogInstance.setEtl_context(etl_context);//etl任务说明
                 taskLogInstance.setCommand(command);
                 taskLogInstance.setIs_script(is_script);
+
                 taskLogInstance.setStatus(JobStatus.NON.getValue());
-                taskLogInstance.setJsmind_data("");
-                taskLogInstance.setRun_jsmind_data("");
+
+
                 taskLogInstance.setCount(0);
                 taskLogInstance.setOwner(tgli.getOwner());
+                taskLogInstance.setIs_disenable(is_disenable);
                 tliList.add(taskLogInstance);
             }
 
-//            for(Object job :tasks){
-//                if(!((JSONObject) job).getString("type").equalsIgnoreCase("shell"))
-//                    continue;
-//                TaskLogInstance taskLogInstance=new TaskLogInstance();
-//                BeanUtils.copyProperties(taskLogInstance,tgli);
-//                String command=((JSONObject) job).getString("command");//具体任务id
-//                String pageSourceId=((JSONObject) job).getString("divId");//前端生成的div 标识
-//                String etl_context=((JSONObject) job).getString("etl_context");
-//                String is_script=((JSONObject) job).getString("is_script");//具体任务id
-//
-//                String t_id=SnowflakeIdWorker.getInstance().nextId()+"";
-//                map.put(pageSourceId,t_id);//div标识和任务实例id 对应关系
-//                map2.put(t_id,pageSourceId);
-//                taskLogInstance.setMore_task("");
-//                taskLogInstance.setJob_type("SHELL");
-//                taskLogInstance.setId(t_id);//具体执行任务实例id,每次执行都会重新生成
-//                taskLogInstance.setJob_id(tgli.getJob_id());//调度任务id
-//                taskLogInstance.setJob_context(tgli.getJob_context());//调度任务说明
-//                taskLogInstance.setEtl_task_id("");//etl任务id
-//                taskLogInstance.setEtl_context(etl_context);//etl任务说明
-//                taskLogInstance.setCommand(command);
-//                taskLogInstance.setIs_script(is_script);
-//                taskLogInstance.setStatus(JobStatus.NON.getValue());
-//                taskLogInstance.setJsmind_data("");
-//                taskLogInstance.setRun_jsmind_data("");
-//                taskLogInstance.setCount(0);
-//                taskLogInstance.setOwner(tgli.getOwner());
-//                tliList.add(taskLogInstance);
-//            }
 
-            // 生成实例依赖关系
-            //"line": [{
-            //		"connectionId": "con_16",
-            //		"pageSourceId": "chart-servere28-4ee7-ac89-b6",
-            //		"pageTargetId": "chart-servere18-45ab-9864-cd"
-            //	}, {
-            //		"connectionId": "con_23",
-            //		"pageSourceId": "chart-servere28-4ee7-ac89-b6",
-            //		"pageTargetId": "chart-serverad6-4f2a-a07a-9c"
-            //	}]
             for(Object job :lines){
                 String pageSourceId=((JSONObject) job).getString("pageSourceId");
                 String pageTargetId=((JSONObject) job).getString("pageTargetId");
@@ -1866,7 +1946,7 @@ public class JobCommon2 {
                     tli.setStatus(JobStatus.NON.getValue());
                 }else{
                     //不再sub_tasks 中的div 状态设置为跳过状态
-                    if(Arrays.asList(sub_tasks).contains(map2.get(tid))){
+                    if(Arrays.asList(sub_tasks).contains(map2.get(tid)) && !tli.getIs_disenable().equalsIgnoreCase("true")){
                         //设置为初始态
                         tli.setStatus(JobStatus.NON.getValue());
                     }else{

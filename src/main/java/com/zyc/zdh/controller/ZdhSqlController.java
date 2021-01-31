@@ -13,6 +13,7 @@ import com.zyc.zdh.entity.meta_database_info;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.HttpUtil;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -147,10 +148,14 @@ public class ZdhSqlController extends BaseController{
      * 加载元数据信息
      * @return
      */
-    @RequestMapping("/load_meta_databases")
+    @RequestMapping(value="/load_meta_databases", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String load_meta_databases() {
-
+        JSONObject js=new JSONObject();
+        if(!SecurityUtils.getSubject().isPermitted("function:load_meta_databases()")){
+            js.put("data","您没有权限访问,请联系管理员添加权限");
+            return js.toJSONString();
+        }
         String url = JobCommon2.getZdhUrl(zdhHaInfoMapper).getZdh_url();
         try {
             String databases = HttpUtil.postJSON(url + "/show_databases", new JSONObject().toJSONString());
@@ -192,8 +197,8 @@ public class ZdhSqlController extends BaseController{
 
         }
 
-
-        return "{}";
+        js.put("data","同步完成");
+        return js.toJSONString();
     }
 
     /**

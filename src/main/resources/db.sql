@@ -645,6 +645,40 @@ is_delete varchar(10) comment '是否删除消息',
 primary key (id)
 );
 
+
+-- 2021-01-24
+drop TABLE if EXISTS resource_tree_info;
+create table resource_tree_info(
+id bigint NOT NULL AUTO_INCREMENT,
+parent varchar(100) comment '父节点',
+`text` varchar(200) comment '节点名称',
+level varchar(10) comment '层级',
+`owner` varchar(100) comment '拥有者',
+icon varchar(200) comment '资源图标',
+resource_desc varchar(200) comment '资源说明',
+`order` varchar(10) comment '顺序',
+is_enable varchar(100) comment '是否启用',
+`create_time` timestamp NULL DEFAULT current_timestamp ,
+`update_time` timestamp NULL DEFAULT current_timestamp,
+url text comment 'url链接',
+primary key (id)
+);
+
+drop TABLE if EXISTS user_resource_info;
+create table user_resource_info(
+id bigint NOT NULL AUTO_INCREMENT,
+user_id varchar(100) comment '用户id',
+resource_id varchar(100) comment '资源id',
+`create_time` timestamp NULL DEFAULT NULL,
+`update_time` timestamp NULL DEFAULT NULL,
+primary key (id)
+);
+
+-- 2021-01-32;
+alter table task_log_instance add column is_disenable varchar(10) comment '是否禁用true:禁用,false:启用';
+
+
+
 create database if NOT EXISTS quartz;
 
 use quartz;

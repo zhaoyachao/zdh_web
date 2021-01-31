@@ -7,6 +7,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
 import java.beans.PropertyEditorSupport;
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
 
 public class BaseController {
@@ -27,6 +28,5 @@ public class BaseController {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         return user;
     }
-
 
 }

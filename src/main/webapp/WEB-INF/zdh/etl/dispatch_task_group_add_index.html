@@ -43,9 +43,12 @@
                 </div>
                 <div class="ibox-content">
                     <input type="hidden" id="etl_task_text" name="etl_task_text" value="">
+                    <input type="hidden" id="jdbc_url_text" name="jdbc_url_text" value="">
+                    <input type="hidden" id="jdbc_sql_text" name="jdbc_sql_text" value="">
+
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
-
+                        <input type="hidden" id="jsmind_data" name="jsmind_data" value="">
                         <div class="form-group">
                             <label class="col-sm-2 control-label">调度说明</label>
                             <div class="col-sm-10">
@@ -63,6 +66,7 @@
                                             <div class="node nodetaskscss" data-type="tasks">ETL任务</div>
                                             <div class="node nodeshellcss" data-type="shell">SHELL</div>
                                             <div class="node nodegroupcss" data-type="group">任务组</div>
+                                            <div class="node nodejdbccss" data-type="jdbc">JDBC</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight">
@@ -161,26 +165,6 @@
                                 </div>
                             </div>
                         </div>
-
-<!--                        <div class="form-group">-->
-<!--                            <label class="col-sm-2 control-label">依赖调度任务</label>-->
-<!--                            <div class="col-sm-10">-->
-<!--                                <select id="job_ids" name="job_ids" data-placeholder="选择调度任务"-->
-<!--                                        multiple class="chosen-select form-control m-b" tabindex="2">-->
-<!--                                    <option value="" mytype="">选择调度任务</option>-->
-<!--                                </select>-->
-<!--                            </div>-->
-<!--                        </div>-->
-
-<!--                        <div class="form-group">-->
-<!--                            <label class="col-sm-2 control-label">跳过检查</label>-->
-<!--                            <div class="col-sm-10">-->
-<!--                                <div class="checkbox i-checks">-->
-<!--                                    <label class="no-padding">-->
-<!--                                        <input id="jump_dep" name="jump_dep" type="checkbox"><i></i> 跳过任务组依赖</label>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">任务状态</label>
@@ -383,6 +367,17 @@
         ],
     };
 
+    function get_color_by_status(is_disenable){
+        //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+        if(is_disenable=='true'){
+            return "LightGrey"
+        }
+
+        return ""
+
+
+    }
+
     function open_json(json) {
         var jsplumb_json=JSON.parse(json)
         //添加div 数据
@@ -395,11 +390,13 @@
             var positionX=rs.positionX
             var positionY=rs.positionY
             cls_str="node node"+tp+"css tasks"
-            $("#m1").append('<div class="'+cls_str+'" style="position: absolute" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+            var color=get_color_by_status(rs.is_disenable)
+            console.info("color:"+color)
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background: '+color+'" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
             $("#" + divId).css("left", positionX).css("top", positionY);
             $("#" + divId).attr("type",tp)
             $("#" + divId).attr("etl_context",rs.etl_context);
-
+            $("#" + divId).attr("is_disenable",rs.is_disenable);
             if(tp == "tasks"){
                 $("#" + divId).attr("etl_task_id",rs.etl_task_id);
                 $("#" + divId).attr("more_task",rs.more_task);
@@ -412,6 +409,14 @@
 
             if(tp == "group"){
                 $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+            }
+            if(tp == "jdbc"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("url",rs.url);
+                $("#" + divId).attr("driver",rs.driver);
+                $("#" + divId).attr("username",rs.username);
+                $("#" + divId).attr("password",rs.password);
+                $("#" + divId).attr("jdbc_sql",rs.jdbc_sql);
             }
 
             //div.width(etl_task_info.etl_context.length*16)
@@ -442,82 +447,6 @@
     }
 
     //双击节点内容区域时的事件
-    // function doubleclick(id) {
-    //     $(id).dblclick(function () {
-    //         var text = $(this).text();
-    //         var div = $(this)
-    //         var etl_task_id=div.attr("etl_task_id")
-    //         var url='job_detail.html'
-    //         if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
-    //             url=url+"?etl_task_id=-1"
-    //         }else{
-    //             var more_task=div.attr("more_task")
-    //             url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task
-    //         }
-    //         layer.open({
-    //             type: 2,
-    //             area: ['700px', '450px'],
-    //             fixed: false, //不固定
-    //             maxmin: true,
-    //             content: encodeURI(url),
-    //             end: function () {
-    //                 if($("#etl_task_text").val()==""){
-    //                     console.info("无修改-不更新")
-    //                     return ;
-    //                 }
-    //                 var etl_task_info=JSON.parse($("#etl_task_text").val())
-    //                 div.attr("etl_task_id",etl_task_info.etl_task_id);
-    //                 div.attr("etl_context",etl_task_info.etl_context);
-    //                 div.attr("more_task",etl_task_info.more_task);
-    //                 //div.width(etl_task_info.etl_context.length*16)
-    //                 div.css("width","auto")
-    //                 div.css("display","inline-block")
-    //                 div.css("*display","inline")
-    //                 div.css("*zoom","1")
-    //                 div.html(etl_task_info.etl_context);
-    //             }
-    //         });
-    //     });
-    // }
-    // function doubleclick_shell(id) {
-    //     $(id).dblclick(function () {
-    //         var etl_context = $(this).text();
-    //         var div = $(this)
-    //         var command=div.attr("command")
-    //         var url='shell_detail.html'
-    //         if( command == "" || command == undefined ){
-    //             url=url+"?command=-1"
-    //         }else{
-    //             var is_script=div.attr("is_script")
-    //             url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
-    //         }
-    //         layer.open({
-    //             type: 2,
-    //             area: ['700px', '450px'],
-    //             fixed: false, //不固定
-    //             maxmin: true,
-    //             content: encodeURI(url),
-    //             end: function () {
-    //                 console.info("index:doubleclick:"+$("#etl_task_text").val())
-    //                 if($("#etl_task_text").val()==""){
-    //                     console.info("无修改-不更新")
-    //                     return ;
-    //                 }
-    //
-    //                 var etl_task_info=JSON.parse($("#etl_task_text").val())
-    //                 div.attr("command",etl_task_info.command);
-    //                 div.attr("is_script",etl_task_info.is_script);
-    //                 div.css("width","auto")
-    //                 div.css("display","inline-block")
-    //                 div.css("*display","inline")
-    //                 div.css("*zoom","1")
-    //                 div.html(etl_task_info.etl_context);
-    //             }
-    //         });
-    //     });
-    // }
-
-    //双击节点内容区域时的事件
     function doubleclick(id,tp) {
         switch (tp) {
             case "tasks"://服务器
@@ -528,6 +457,9 @@
                 break;
             case "group":
                 doubleclick_group(id)
+                break;
+            case "jdbc":
+                doubleclick_jdbc(id)
                 break;
         }
     }
@@ -542,7 +474,8 @@
                 url=url+"?etl_task_id=-1"
             }else{
                 var more_task=div.attr("more_task")
-                url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task
+                var is_disenable = div.attr("is_disenable")
+                url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&is_disenable="+is_disenable
             }
             layer.open({
                 type: 2,
@@ -561,6 +494,7 @@
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("more_task",etl_task_info.more_task);
+                    div.attr("is_disenable",etl_task_info.is_disenable);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -582,7 +516,8 @@
                 url=url+"?command=-1"
             }else{
                 var is_script=div.attr("is_script")
-                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
+                var is_disenable = div.attr("is_disenable")
+                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&is_disenable="+is_disenable
             }
             layer.open({
                 type: 2,
@@ -601,6 +536,7 @@
                     div.attr("command",etl_task_info.command);
                     div.attr("is_script",etl_task_info.is_script);
                     div.attr("etl_context",etl_task_info.etl_context)
+                    div.attr("is_disenable",etl_task_info.is_disenable);
                     div.css("width","auto")
                     div.css("display","inline-block")
                     div.css("*display","inline")
@@ -620,7 +556,8 @@
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{
-                url=url+"?etl_task_id="+etl_task_id
+                var is_disenable = div.attr("is_disenable")
+                url=url+"?etl_task_id="+etl_task_id+"&is_disenable="+is_disenable
             }
             layer.open({
                 type: 2,
@@ -638,6 +575,7 @@
                     var etl_task_info=JSON.parse($("#etl_task_text").val())
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
+                    div.attr("is_disenable",etl_task_info.is_disenable);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -649,6 +587,55 @@
         });
     }
 
+    function doubleclick_jdbc(id) {
+        $(id).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this)
+            var etl_context=div.attr("etl_context")
+            var url='jdbc_detail.html'
+            if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
+                url=url+"?etl_context=-1"
+            }else{
+
+                var jdbc_url=div.attr("url")
+                var driver=div.attr("driver")
+                var username=div.attr("username")
+                var password=div.attr("password")
+                var jdbc_sql=div.attr("jdbc_sql")
+                $("#jdbc_url_text").val(jdbc_url)
+                $("#jdbc_sql_text").val(jdbc_sql)
+                url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新")
+                        return ;
+                    }
+
+                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    div.attr("url",etl_task_info.url);
+                    div.attr("driver",etl_task_info.driver);
+                    div.attr("username",etl_task_info.username);
+                    div.attr("password",etl_task_info.password);
+                    div.attr("jdbc_sql",etl_task_info.jdbc_sql);
+                    div.attr("etl_context",etl_task_info.etl_context);
+                    //div.width(etl_task_info.etl_context.length*16)
+                    div.css("width","auto")
+                    div.css("display","inline-block")
+                    div.css("*display","inline")
+                    div.css("*zoom","1")
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
 
     function jsplumb_data(){
         var ojson={
@@ -664,7 +651,13 @@
                 etl_context:$elem.attr('etl_context'),
                 more_task:$elem.attr('more_task'),
                 is_script: $elem.attr('is_script'),
+                is_disenable: $elem.attr('is_disenable'),
                 command:$elem.attr('command'),
+                url: $elem.attr('url'),
+                driver: $elem.attr('driver'),
+                username: $elem.attr('username'),
+                password: $elem.attr('password'),
+                jdbc_sql: $elem.attr('jdbc_sql'),
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,
                 positionX: parseInt($elem.css("left"), 10),
@@ -698,7 +691,7 @@
             }
             ojson.line.push(param)
         });
-
+        console.info(ojson)
         return ojson
     }
 
@@ -1405,13 +1398,12 @@
         $("#dispatch_task_add_form").attr("etl_context",etl_context)
 
         var ojson=jsplumb_data()
-
-        jsmind_data="&jsmind_data="+JSON.stringify(ojson)
+        $('#jsmind_data').val(JSON.stringify(ojson))
         $.ajax({
             type: 'POST',
             url: "dispatch_task_group_add",
             dataType: 'json',
-            data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+count_str+script_str+jsmind_data,
+            data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+count_str+script_str,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -1488,14 +1480,13 @@
         }
 
         var ojson=jsplumb_data()
-
-        jsmind_data="&jsmind_data="+JSON.stringify(ojson)
+        $('#jsmind_data').val(JSON.stringify(ojson))
         console.info($("#dispatch_task_add_form").serialize())
         $.ajax({
             type: 'POST',
             url: "dispatch_task_group_update",
             dataType: 'json',
-            data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+"&job_id="+s.id+count_str+script_str+jsmind_data,
+            data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+"&job_id="+s.id+count_str+script_str,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交

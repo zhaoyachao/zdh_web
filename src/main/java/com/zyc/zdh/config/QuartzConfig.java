@@ -38,6 +38,9 @@ public class QuartzConfig {
 	@Value("${spring.datasource.driver-class-name2}")
 	private String driverClassName;
 
+	@Value("${quartz.instancename}")
+	private String quartzInstance;
+
 	@Autowired
 	Environment ev;
 
@@ -77,7 +80,7 @@ public class QuartzConfig {
 
 	public Properties quartzProperties() {
 		Properties prop = new Properties();
-		prop.put("quartz.scheduler.instanceName", "schedulerFactoryBean");
+		prop.put("quartz.scheduler.instanceName", quartzInstance);
 		prop.put("org.quartz.scheduler.instanceId", "AUTO");
 		prop.put("org.quartz.scheduler.skipUpdateCheck", "true");
 		// prop.put("org.quartz.scheduler.jobFactory.class",

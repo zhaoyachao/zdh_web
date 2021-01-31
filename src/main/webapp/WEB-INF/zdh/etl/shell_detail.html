@@ -63,6 +63,15 @@
                                           placeholder="SHELL命令,JDBC命令" class="form-control" aria-required="true" ></textarea>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否禁用</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="is_disenable" name='is_disenable'  type="checkbox"><i></i> 禁用</label>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <div class="text-center">
@@ -148,6 +157,10 @@
                 }
                 $("#command").val(s.command);
                 $("#etl_context").val(s.etl_context);
+                var is_disenable=s['is_disenable']
+                if(is_disenable=="true"){
+                    $('#is_disenable').iCheck('check');
+                }
 
             }
         })();
@@ -164,11 +177,17 @@
         if($('#is_script').is(':checked')){
             is_script="true"
         }
+        var is_disenable = "false"
+        if($('#is_disenable').is(':checked')){
+            is_disenable="true"
+        }
+
         var etl_context=$('#etl_context').val();
         data={
             "command":command,
             "is_script":is_script,
-            "etl_context":etl_context
+            "etl_context":etl_context,
+            "is_disenable":is_disenable
         }
         console.info("shell_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

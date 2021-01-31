@@ -122,6 +122,16 @@ public class TaskLogInstance implements Serializable {
     private String next_tasks;//逗号分隔
     private String pre_tasks;//逗号分隔
 
+    private String is_disenable;//0:禁用,1启用
+
+    public String getIs_disenable() {
+        return is_disenable;
+    }
+
+    public void setIs_disenable(String is_disenable) {
+        this.is_disenable = is_disenable;
+    }
+
     public String getNext_tasks() {
         return next_tasks;
     }

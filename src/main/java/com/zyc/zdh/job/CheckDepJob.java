@@ -33,7 +33,7 @@ public class CheckDepJob {
             logger.info("开始检测任务组任务...");
             TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-            //获取重试的任务
+            //获取可执行的任务组
             List<TaskGroupLogInstance> tglims=tglim.selectTaskGroupByStatus(new String[]{JobStatus.CHECK_DEP.getValue(),JobStatus.CREATE.getValue()});
             for(TaskGroupLogInstance tgli :tglims){
 
@@ -43,20 +43,25 @@ public class CheckDepJob {
                         continue;
                     }
                 }
-                if(JobCommon2.checkDep(tgli.getJob_type(),tgli)){
-                    String tmp_status=tglim.selectByPrimaryKey(tgli.getId()).getStatus();
-                    if( tmp_status=="kill" || tmp_status =="killed" ) continue; //在检查依赖时杀死任务
 
+                String tmp_status=tglim.selectByPrimaryKey(tgli.getId()).getStatus();
+                if( !tmp_status.equalsIgnoreCase("kill") && !tmp_status.equalsIgnoreCase("killed") ){
+                    //在检查依赖时杀死任务--则不修改状态
                     updateTaskGroupLogInstanceStatus(tgli);
-
-                }else{
-                    //更新任务依赖时间
-                    process_time_info pti=tgli.getProcess_time2();
-                    pti.setCheck_dep_time(DateUtil.getCurrentTime());
-                    tgli.setProcess_time(pti);
-                    JobCommon2.updateTaskLog(tgli,tglim);
                 }
-
+//                if(JobCommon2.checkDep(tgli.getJob_type(),tgli)){
+//                    String tmp_status=tglim.selectByPrimaryKey(tgli.getId()).getStatus();
+//                    if( tmp_status=="kill" || tmp_status =="killed" ) continue; //在检查依赖时杀死任务
+//
+//                    updateTaskGroupLogInstanceStatus(tgli);
+//
+//                }else{
+//                    //更新任务依赖时间
+//                    process_time_info pti=tgli.getProcess_time2();
+//                    pti.setCheck_dep_time(DateUtil.getCurrentTime());
+//                    tgli.setProcess_time(pti);
+//                    JobCommon2.updateTaskLog(tgli,tglim);
+//                }
             }
 
             //检查子任务是否可以运行
@@ -119,9 +124,18 @@ public class CheckDepJob {
                     String job_id=tl.getEtl_task_id();
                     String etl_date=tl.getEtl_date();
                     check=JobCommon2.checkDep2(tl.getJob_type(),tl);
+                }else if(tl.getJob_type().equalsIgnoreCase("jdbc")){
+                    // 检查jdbc 依赖
+                    check=JobCommon2.checkDep3(tl.getJob_type(),tl);
                 }else{
                     // 检查子任务依赖
                     check=JobCommon2.checkDep(tl.getJob_type(),tl);
+                }
+
+                if(tl.getStatus().equalsIgnoreCase(JobStatus.ERROR.getValue()) || tl.getStatus().equalsIgnoreCase(JobStatus.WAIT_RETRY.getValue())){
+                    logger.info("检查依赖时发生异常,退出本次检查");
+                    JobCommon2.insertLog(tl,"ERROR","检查依赖时发生异常,退出本次检查");
+                    continue;
                 }
 
                 if(check){
@@ -134,9 +148,8 @@ public class CheckDepJob {
                     pti.setCheck_dep_time(DateUtil.getCurrentTime());
                     tl.setProcess_time(pti);
 
-
                     //debugInfo(tl);
-                    if(!tl.getJob_type().equalsIgnoreCase("group")){
+                    if(!tl.getJob_type().equalsIgnoreCase("group") && !tl.getJob_type().equalsIgnoreCase("jdbc")){
                         JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
                         JobCommon2.chooseJobBean(tl);
                     }else{

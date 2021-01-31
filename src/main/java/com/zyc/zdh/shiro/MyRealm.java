@@ -3,6 +3,10 @@ package com.zyc.zdh.shiro;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.zyc.zdh.dao.ResourceTreeMapper;
+import com.zyc.zdh.entity.UserResourceInfo;
+import com.zyc.zdh.entity.UserResourceInfo2;
+import com.zyc.zdh.util.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -34,11 +38,17 @@ public class MyRealm extends AuthorizingRealm {
 		System.out.println("授权=====");
 		// 获取登录用户的信息,在认证时存储的是ShiroUser 所以得到的就是ShiroUser
 		// 在其他地方也可通过SecurityUtils.getSubject().getPrincipals()获取用户信息
-		String userName = principals.getPrimaryPrincipal().toString();
+		User user = (User)principals.getPrimaryPrincipal();
 		// 权限字符串
 		List<String> permissions = new ArrayList<>();
 		// 从数据库中获取对应权限字符串并存储permissions
-		permissions.add("111");
+		System.out.println(user.getUserName());
+		List<UserResourceInfo2> uris=new ArrayList<>();
+		uris=( (ResourceTreeMapper)SpringContext.getBean("resourceTreeMapper")).selectResourceByUserId(user.getId());
+        for(UserResourceInfo2 uri2:uris){
+        	if(!StringUtils.isEmpty(uri2.getUrl()))
+				permissions.add(uri2.getUrl());
+		}
 		// 角色字符串
 		List<String> roles = new ArrayList<>();
 		// 从数据库中获取对应角色字符串并存储roles

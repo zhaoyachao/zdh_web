@@ -21,8 +21,6 @@ $(document).ready(function(){
             var left = parseInt(ui.offset.left - $(this).offset().left);
             var top = parseInt(ui.offset.top - $(this).offset().top);
             var tp=ui.draggable[0].dataset.type;
-            // switch (tp) {
-            //     case "tasks"://服务器
                     i++;
                     cls_str="node node"+tp+"css tasks"
                     var id = guid2();
@@ -36,34 +34,6 @@ $(document).ready(function(){
                     })
                     $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
                     doubleclick("#" + id,tp);
-                //    break;
-                // case "shell"://服务器
-                //     var id = guid2();
-                //     $(this).append('<div class="node node1css tasks" style="position: absolute" id="' + id + '" data-type="shell" data-id=" " >' + $(ui.helper).html() + '</div>');
-                //     $("#" + id).css("left", left).css("top", top);
-                //     jsPlumb.addEndpoint(id, { anchors: "Top" }, hollowCircle);
-                //     jsPlumb.addEndpoint(id, { anchors: "Bottom" }, hollowCircle);
-                //     jsPlumb.draggable(id);
-                //     jsPlumb.makeTarget(id, {
-                //         anchor: "Continuous"
-                //     })
-                //     $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
-                //     doubleclick_shell("#" + id);
-                //     break;
-                // case "group"://服务器
-                //     var id = guid2();
-                //     $(this).append('<div class="node node1css tasks" style="position: absolute" id="' + id + '" data-type="group" data-id=" " >' + $(ui.helper).html() + '</div>');
-                //     $("#" + id).css("left", left).css("top", top);
-                //     jsPlumb.addEndpoint(id, { anchors: "Top" }, hollowCircle);
-                //     jsPlumb.addEndpoint(id, { anchors: "Bottom" }, hollowCircle);
-                //     jsPlumb.draggable(id);
-                //     jsPlumb.makeTarget(id, {
-                //         anchor: "Continuous"
-                //     })
-                //     $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
-                //     doubleclick_shell("#" + id);
-                //     break;
-            //}
         }
     });
 
@@ -176,6 +146,9 @@ $(document).ready(function(){
                 break;
             case "group":
                 doubleclick_group(id)
+                break;
+            case "jdbc":
+                doubleclick_jdbc(id)
                 break;
         }
     }
@@ -298,7 +271,56 @@ $(document).ready(function(){
         });
     }
 
+    function doubleclick_jdbc(id) {
+        $(id).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this)
+            var etl_context=div.attr("etl_context");
+            alert(etl_context)
+            var url='jdbc_detail.html';
+            if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
+                url=url+"?etl_context=-1"
+            }else{
+                var jdbc_url=div.attr("url")
+                var driver=div.attr("driver")
+                var username=div.attr("username")
+                var password=div.attr("password")
+                var jdbc_sql=div.attr("jdbc_sql")
+                $("#jdbc_url_text").val(jdbc_url)
+                $("#jdbc_sql_text").val(jdbc_sql)
+                url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新")
+                        return ;
+                    }
 
+                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    alert(etl_task_info.jdbc_sql)
+                    div.attr("url",etl_task_info.url);
+                    div.attr("driver",etl_task_info.driver);
+                    div.attr("username",etl_task_info.username);
+                    div.attr("password",etl_task_info.password);
+                    div.attr("jdbc_sql",etl_task_info.jdbc_sql);
+                    div.attr("etl_context",etl_task_info.etl_context);
+                    //div.width(etl_task_info.etl_context.length*16)
+                    div.css("width","auto")
+                    div.css("display","inline-block")
+                    div.css("*display","inline")
+                    div.css("*zoom","1")
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
     // 当连线建立前
     jsPlumb.bind('beforeDrop', function (info) {
         if(info.sourceId==info.targetId){//判断当开始和终点为一个节点时，不连线。
@@ -306,65 +328,6 @@ $(document).ready(function(){
         }
         console.info("链接自动建立")
         return true // 链接会自动建立
-    })
-
-    //导出json
-    $('.btn1').click(function(){
-        var ojson={
-            tasks:[],
-            line:[]
-        }
-
-        //服务器
-        $("#m1 .tasks").each(function (idx, elem) {
-            var $elem = $(elem);
-
-            var param={
-                id: $elem.attr('id'),
-                etl_task_id: $elem.attr('etl_task_id'),
-                etl_context:$elem.attr('etl_context'),
-                more_task:$elem.attr('more_task'),
-                is_script: $elem.attr('is_script'),
-                command:$elem.attr('command'),
-                divId:$elem.attr('id'),
-                name: $elem[0].innerText,
-                positionX: parseInt($elem.css("left"), 10),
-                positionY: parseInt($elem.css("top"), 10),
-                type:$elem.data('type')
-            }
-            ojson.tasks.push(param)
-        });
-
-        // $("#m1 .shell").each(function (idx, elem) {
-        //     var $elem = $(elem);
-        //     var param={
-        //         id: $elem.attr('id'),
-        //         is_script: $elem.attr('is_script'),
-        //         etl_context:$elem.text(),
-        //         command:$elem.attr('command'),
-        //         divId:$elem.attr('id'),
-        //         name: $elem[0].innerText,
-        //         positionX: parseInt($elem.css("left"), 10),
-        //         positionY: parseInt($elem.css("top"), 10),
-        //         type:$elem.data('type')
-        //     }
-        //     ojson.shell.push(param)
-        // });
-
-        //连线
-        $.each(jsPlumb.getConnections(), function (idx, connection) {
-            var param={
-                connectionId: connection.id,
-                pageSourceId: connection.sourceId,
-                pageTargetId: connection.targetId
-            }
-            ojson.line.push(param)
-        });
-
-        //打印json
-        ojson=JSON.stringify(ojson)
-        console.log(ojson)
-
     })
 
 })

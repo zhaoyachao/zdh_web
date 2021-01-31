@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 功能节点新增页面</title>
+    <meta name="keywords" content="ZDH 功能节点新增页面">
+    <meta name="description" content="ZDH 功能节点新增页面">
+
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>功能节点</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="tabs-container">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">新增子节点</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">更新本节点</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="#tab-3" aria-expanded="false">删除本节点</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="#tab-4" aria-expanded="false">更换父节点</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div id="tab-1" class="tab-pane active">
+                                        <div class="panel-body">
+                                            <form id="jstree_add_node_from" name="jstree_add_node_from" method="post" class="form-horizontal"
+                                                  action="">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">父节点名称</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="parent" name="parent" class="form-control" type="text" value="" readonly placeholder="父节点名称">
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">节点名称</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="child" name="child" class="form-control" type="text" value="" placeholder="节点名称">
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">图标设置</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="icon" name="icon" class="form-control" type="text" value="" placeholder="图标 fa fa-hourglass-half">
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="url" name="url" class="form-control" type="text" value="" placeholder="跳转链接 index.html">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">顺序号</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="order" name="order" class="form-control" type="text" value="" placeholder="序号自定义">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="hr-line-dashed"></div>
+
+                                                <div class="form-group">
+                                                    <div class="text-center">
+                                                        <button id="execute" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                                                type="button">执行
+                                                        </button>
+                                                        <button id="cancel" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                                                type="button">取消
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div id="tab-2" class="tab-pane">
+                                        <div class="panel-body">
+                                            <form id="jstree_update_node_from" name="jstree_update_node_from" method="post" class="form-horizontal"
+                                                  action="">
+
+                                                <input type="hidden" name="parent" value="" id="parent2">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">本节点名称</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="text" name="text" class="form-control" type="text" value="" placeholder="本节点名称">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">图标设置</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="icon2" name="icon" class="form-control" type="text" value="" placeholder="图标 fa fa-hourglass-half">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="url2" name="url" class="form-control" type="text" value="" placeholder="跳转链接 index.html">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">顺序号</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="order2" name="order" class="form-control" type="text" value="" placeholder="序号自定义">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="hr-line-dashed"></div>
+
+                                                <div class="form-group">
+                                                    <div class="text-center">
+                                                        <button id="execute2" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                                                type="button">执行
+                                                        </button>
+                                                        <button id="cancel2" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                                                type="button">取消
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div id="tab-3" class="tab-pane">
+                                        <div class="panel-body">
+                                            <form id="jstree_del_node_from" name="jstree_del_node_from" method="post" class="form-horizontal"
+                                                  action="">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">本节点名称</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="text3" name="text" class="form-control" type="text" value="" readonly placeholder="本节点名称">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="hr-line-dashed"></div>
+
+                                                <div class="form-group">
+                                                    <div class="text-center">
+                                                        <button id="execute3" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                                                type="button">执行
+                                                        </button>
+                                                        <button id="cancel3" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                                                type="button">取消
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div id="tab-4" class="tab-pane">
+                                        <div class="panel-body">
+                                            <form id="jstree_up_parent_from" name="jstree_up_parent_from" method="post" class="form-horizontal"
+                                                  action="">
+                                            <div id="using_json2"></div>
+                                            <div class="hr-line-dashed"></div>
+
+                                            <div class="form-group">
+                                                <div class="text-center">
+                                                    <button id="execute4" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                                            type="button">执行
+                                                    </button>
+                                                    <button id="cancel4" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                                            type="button">取消
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+
+<script src="js/plugins/jsTree/jstree.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            var node_text=s.text;
+            $('#parent').attr('node_id',s.id);
+            $('#parent').val(node_text);
+            //设置删除节点
+            $('#text3').val(node_text);
+
+            //更新模块设置
+            $.ajax({
+                type: 'get',
+                url: "jstree_get_node",
+                dataType: 'json',
+                async:'false',
+                data: "id="+s.id,
+                //成功返回
+                success: function (data) {
+                    $('#text').attr('node_id',s.id);
+                    $('#text').val(data.text);
+                    $('#parent2').val(data.parent);
+                    $('#icon2').val(data.icon);
+                    $('#url2').val(data.url);
+                    $('#order2').val(data.order);
+                },
+                //处理完成
+                complete: function () {
+                    $("#execute").removeAttr('disabled');
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    $("#execute").removeAttr('disabled');
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+
+
+            $('#using_json2').jstree({
+                "plugins" : [ "types",'checkbox' ],
+                'checkbox': { cascade: "", three_state: false }, //不级联
+                'core' : {
+                    "check_callback": true,
+                    'data' :  function (obj, callback){
+                        $.ajax({
+                            type : "post",
+                            url : "/jstree_node",//getAreaBuild=getTreeArea
+                            dataType : "json",
+                            async:'false',
+                            success : function(data) {
+                                console.info(data);
+                                if(data) {
+                                    callback.call(this, data);
+                                }else{
+                                    //$("#using_json").html("暂无数据！");
+                                }
+                            }
+                        });
+                    }
+
+
+                } });
+
+
+
+
+        })();
+
+
+
+    })(document, window, jQuery);
+
+    $('#execute').click(function () {
+
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+
+        //增加子节点,返回子节点id
+        $.ajax({
+            type: 'POST',
+            url: "jstree_add_node",
+            dataType: 'json',
+            async:'false',
+            data: $("#jstree_add_node_from").serialize()+"&parent_id="+s.id+"&text="+$("#child").val()+"&level="+(parseInt(s.level)+1),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#execute").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#execute").removeAttr('disabled');
+
+                var node={
+                    "id":data.id,
+                    "text":data.text,
+                    "level":data.level
+                }
+                layer.close(index1)
+                //window.parent.create_node(s.id,node);
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+
+            },
+            //处理完成
+            complete: function () {
+                $("#execute").removeAttr('disabled');
+                layer.close(index1)
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#execute").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+
+    })
+
+    function cancel(){
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+    }
+
+    $('#cancel').click(function (){
+        cancel ()
+    })
+    $('#cancel2').click(function (){
+        cancel ()
+    })
+    $('#cancel3').click(function (){
+        cancel ()
+    })
+    $('#cancel4').click(function (){
+        cancel ()
+    })
+
+    $('#execute2').click(function () {
+
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+
+        //增加子节点,返回子节点id
+        $.ajax({
+            type: 'POST',
+            url: "jstree_update_node",
+            dataType: 'json',
+            async:'false',
+            data: $("#jstree_update_node_from").serialize()+"&id="+s.id+"&level="+s.level,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#execute2").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#execute2").removeAttr('disabled');
+
+                var node={
+                    "id":data.id,
+                    "text":data.text
+                }
+                layer.close(index1)
+                //window.parent.create_node(s.id,node);
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+
+            },
+            //处理完成
+            complete: function () {
+                $("#execute2").removeAttr('disabled');
+                layer.close(index1)
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#execute2").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+
+    })
+
+    $('#execute3').click(function () {
+
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+
+        //增加子节点,返回子节点id
+        $.ajax({
+            type: 'POST',
+            url: "jstree_del_node",
+            dataType: 'json',
+            async:'false',
+            data: $("#jstree_del_node_from").serialize()+"&id="+s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#execute3").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#execute3").removeAttr('disabled');
+                layer.close(index1)
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+
+            },
+            //处理完成
+            complete: function () {
+                $("#execute3").removeAttr('disabled');
+                layer.close(index1)
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#execute3").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+
+    })
+
+    $('#execute4').click(function () {
+
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+
+        var parent_id = $('#using_json2').jstree("get_checked");
+
+        if(parent_id.length != 1){
+            layer.msg("请选中一个父节点")
+            layer.close(index1)
+            return ;
+        }
+
+        var parent_ary = $('#using_json').jstree("get_path", parent_id);
+        console.info("level:"+parent_ary.length)
+        var level=parent_ary.length;
+        //增加子节点,返回子节点id
+        $.ajax({
+            type: 'POST',
+            url: "jstree_update_parent",
+            dataType: 'json',
+            async:'false',
+            data: "id="+s.id+"&parent_id="+parent_id+"&level="+level,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#execute4").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#execute4").removeAttr('disabled');
+                layer.close(index1)
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+
+            },
+            //处理完成
+            complete: function () {
+                $("#execute4").removeAttr('disabled');
+                layer.close(index1)
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#execute4").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+
+    })
+
+</script>
+
+</body>
+
+</html>

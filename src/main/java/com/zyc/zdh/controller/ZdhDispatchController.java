@@ -195,6 +195,7 @@ public class ZdhDispatchController extends BaseController {
     @ResponseBody
     public String dispatch_task_group_update(QuartzJobInfo quartzJobInfo) {
 
+        System.out.println(quartzJobInfo.getJsmind_data());
         debugInfo(quartzJobInfo);
         quartzJobInfo.setOwner(getUser().getId());
         QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);

@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 依赖任务组首页</title>
-    <meta name="keywords" content="ZDH 依赖任务组首页">
-    <meta name="description" content="ZDH 依赖任务组首页">
+    <title>ZDH JDBC依赖检查首页</title>
+    <meta name="keywords" content="ZDH JDBC依赖检查首页">
+    <meta name="description" content="ZDH JDBC依赖检查首页">
 
     <link rel="shortcut icon" href="favicon.ico">
 
@@ -22,6 +22,8 @@
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link rel="stylesheet" href="js/codemirror/codemirror.css" />
+    <link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css" />
 
 </head>
 
@@ -32,7 +34,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>调度任务组配置</h5>
+                    <h5>检查JDBC依赖配置</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -45,14 +47,51 @@
                           action="">
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">任务组</label>
+                            <label class="col-sm-2 control-label">JDBC说明</label>
                             <div class="col-sm-10">
-                                <select id="group_job" name="group_job" data-placeholder="选择任务组..."
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">任务组...</option>
-                                </select>
+                                <input id="etl_context" name="etl_context" type="text"
+                                       placeholder="JDBC说明" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">驱动类</label>
+                            <div class="col-sm-10">
+                                <input id="driver" name="driver" type="text" class="form-control"> <span
+                                    class="help-block m-b-none">选择JDBC数据源时填写</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">连接串</label>
+                            <div class="col-sm-10">
+                                <input id="url" name="url" type="text" class="form-control"> <span
+                                    class="help-block m-b-none">jdbc连接串</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户名</label>
+                            <div class="col-sm-10">
+                                <input id="username" name="username" type="text" placeholder="用户名" class="form-control"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">密码</label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="password" name="password">
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">SQL检查</label>
+                            <div class="col-sm-10">
+                              <textarea id="jdbc_sql" name="jdbc_sql" class="form-control" rows="10"
+                                        placeholder="SQL逻辑,使用sql语法 example select a.* ,b.* from a,b where a.id=b.id"></textarea>
+
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">是否禁用</label>
                             <div class="col-sm-10">
@@ -112,11 +151,15 @@
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
-<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
-
-<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script src="js/codemirror/codemirror.js"></script>
+<script src="js/codemirror/addon/edit/matchbrackets.js"></script>
+<script src="js/codemirror/sql.js"></script>
+
+<script src="js/codemirror/addon/hint/show-hint.js"></script>
+<script src="js/codemirror/addon/hint/sql-hint.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -132,6 +175,26 @@
 
         (function () {
 
+
+            var mime = 'text/x-mariadb';
+            // get mime type
+            if (window.location.href.indexOf('mime=') > -1) {
+                mime = window.location.href.substr(window.location.href.indexOf('mime=') + 5);
+            }
+            window.editor = CodeMirror.fromTextArea(document.getElementById('jdbc_sql'), {
+                mode: mime,
+                indentWithTabs: true,
+                smartIndent: true,
+                lineNumbers: true,
+                matchBrackets : true,
+                autofocus: true,
+                extraKeys: {"Ctrl-Space": "autocomplete"},
+                hintOptions: {tables: {
+                        users: ["name", "score", "birthDate"],
+                        countries: ["name", "population", "size"]
+                    }}
+            });
+
             var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
             var params = url.substr(1);//去掉问号
             var pa = params.split("&");
@@ -141,47 +204,15 @@
             }
 
 
-            //初始化依赖调度任务数据
-            function init_job_sources(){
-                $.ajax({
-                    type: 'POST',
-                    url: "dispatch_task_list2",
-                    dataType: 'json',
-                    async: false,
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].job_id + "\" mytype=\"" +  data[i].job_id + "\" hassubinfo=\"true\">" + data[i].job_context + "</option>"
-                        }
-                        $('#group_job').empty()
-                        $("#group_job").chosen("destroy");
-                        $('#group_job').html(str);
-                        $('#group_job').chosen()
-
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-                });
-
-
-            }
-
-            $('#group_job').chosen()
-            init_job_sources();
-
-            if(s["etl_task_id"] != '-1'){
+            if(s["etl_context"] != '-1'){
                 console.info("更新触发")
-                $("#group_job").val(s["etl_task_id"]);
-                $("#group_job").trigger("chosen:updated");
+                $('#url').val($("#jdbc_url_text",window.parent.document).val());
+                $('#driver').val(s.driver);
+                $('#username').val(s.username);
+                $('#password').val(s.password);
+                $('#etl_context').val(s.etl_context);
+                window.editor.setValue($("#jdbc_sql_text",window.parent.document).val());
+                window.editor.refresh();
                 var is_disenable=s['is_disenable']
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
@@ -196,16 +227,24 @@
     $('#save_etl_info').click(function () {
 
         //自定义实现
-        var etl_context=$('#group_job').find("option:selected").text();
-        var etl_task_id=$('#group_job').find("option:selected").val();
+        var url=$('#url').val();
+        var driver=$('#driver').val();
+        var username=$('#username').val();
+        var password=$('#password').val();
+        var etl_context=$('#etl_context').val();
+        var jdbc_sql=window.editor.getValue();
         var is_disenable = "false"
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
         }
         data={
             "etl_context":etl_context,
-            "etl_task_id":etl_task_id,
-            "is_disenable":is_disenable
+            "url":url,
+            "driver":driver,
+            "username":username,
+            "password":password,
+            "is_disenable":is_disenable,
+            "jdbc_sql":jdbc_sql
         }
         console.info("job_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

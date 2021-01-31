@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.config.DateConverter;
 import com.zyc.zdh.dao.EveryDayNoticeMapper;
 import com.zyc.zdh.dao.QuartzJobMapper;
+import com.zyc.zdh.dao.ResourceTreeMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobModel;
@@ -44,6 +45,8 @@ public class SystemController extends BaseController{
     Environment ev;
     @Autowired
     EveryDayNoticeMapper everyDayNoticeMapper;
+    @Autowired
+    ResourceTreeMapper resourceTreeMapper;
 
     @RequestMapping(value = "/{url}", method = RequestMethod.GET)
     public String dynApiDemo2(@PathVariable("url") String url) {
@@ -124,8 +127,8 @@ public class SystemController extends BaseController{
     public String del_system_job(){
 
         JSONObject js=new JSONObject();
-        if(!getUser().getUserName().equalsIgnoreCase("admin")){
-            js.put("data","只有admin用户才能做此操作");
+        if(! SecurityUtils.getSubject().isPermitted("function:del_system_job()")){
+            js.put("data","您没有权限访问,请联系管理员添加权限");
             return js.toJSONString();
         }
         //1 获取所有的email,retry 任务

@@ -7,7 +7,7 @@
             <charset>UTF-8</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>info</level>
+            <level>INFO</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
@@ -33,6 +33,27 @@
         </filter>
     </appender>
 
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
+            <fileNamePattern>logs/stderr.%d{yyyyMMdd}.log</fileNamePattern>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <charset>UTF-8</charset> <!-- 此处设置字符集 -->
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
     <logger name="com.zyc.zdh.shiro" level="info" />
     <logger name="com.zyc.zdh.dao" level="debug"></logger>
     <logger name="com.zyc.zdh.dao.ZdhHaInfoMapper" level="info"></logger>
@@ -40,9 +61,11 @@
     <logger name="com.zyc.zdh.dao.TaskLogsMapper" level="info"></logger>
     <logger name="com.zyc.zdh.util.SpringLoadInit" level="info"></logger>
     <logger name="com.zyc.zdh.dao.QuartzJobMapper" level="info"></logger>
+    <logger name="com.zyc.zdh.dao.PermissionMapper" level="debug"></logger>
     <logger name="com.zyc.zdh.netty" level="info"></logger>
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"></appender-ref>
         <appender-ref ref="FILE"></appender-ref>
+        <appender-ref ref="FILE_ERROR"></appender-ref>
     </root>
 </configuration>  

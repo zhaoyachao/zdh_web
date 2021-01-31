@@ -3,7 +3,9 @@ package com.zyc.zdh.util;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class DBUtil{
@@ -210,6 +212,37 @@ public class DBUtil{
     }
 
 
+    public List<Map<String,Object>> R5(String driver,String url,String username,String password,String sql, Object ...args) throws Exception{
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = getConnection(driver,url,username,password);
+            preparedStatement = connection.prepareStatement(sql);
+
+            resultSet = preparedStatement.executeQuery();
+
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+            int columnCount = resultSetMetaData.getColumnCount();
+            List<Map<String,Object>> result=new ArrayList<>();
+            while(resultSet.next()!=false){
+                //这里可以执行一些其他的操作
+                Map<String,Object> rmap=new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    rmap.put(resultSetMetaData.getColumnName(i),resultSet.getString(i));
+                }
+                result.add(rmap);
+            }
+
+            return result;
+
+        } catch (Exception ex) {
+            //ex.printStackTrace();
+            throw ex;
+        }finally {
+            release(connection, preparedStatement, resultSet);
+        }
+    }
 
     /**
      * 数据库记录增删改的方法
