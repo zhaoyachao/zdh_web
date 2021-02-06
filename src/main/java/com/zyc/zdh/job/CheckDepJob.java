@@ -101,6 +101,28 @@ public class CheckDepJob {
         try {
             logger.info("开始检测子任务依赖...");
             TaskLogInstanceMapper taskLogInstanceMapper=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+
+            //检查JDBC依赖任务
+            List<TaskLogInstance> dep_tlis=taskLogInstanceMapper.selectTaskByJobType(new String[] {JobStatus.DISPATCH.getValue()},new String[]{"JDBC","GROUP"});
+            for(TaskLogInstance t1i :dep_tlis) {
+                boolean check = false;
+                if (t1i.getJob_type().equalsIgnoreCase("group")) {
+                    //etl_task_id 代表任务的id(quartz_job_info的job_id)
+                    String job_id = t1i.getEtl_task_id();
+                    String etl_date = t1i.getEtl_date();
+                    check = JobCommon2.checkDep2(t1i.getJob_type(), t1i);
+                } else if (t1i.getJob_type().equalsIgnoreCase("jdbc")) {
+                    // 检查jdbc 依赖
+                    check = JobCommon2.checkDep3(t1i.getJob_type(), t1i);
+                }
+                if (check) {
+                    t1i.setStatus(JobStatus.FINISH.getValue());
+                    t1i.setProcess("100");
+                    JobCommon2.updateTaskLog(t1i, taskLogInstanceMapper);
+                }
+            }
+
+
             //获取所有可执行的子任务
             List<TaskLogInstance> taskLogInstanceList=taskLogInstanceMapper.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()});
             for(TaskLogInstance tl :taskLogInstanceList){
@@ -124,9 +146,11 @@ public class CheckDepJob {
                     String job_id=tl.getEtl_task_id();
                     String etl_date=tl.getEtl_date();
                     check=JobCommon2.checkDep2(tl.getJob_type(),tl);
+                    tl.setStatus(JobStatus.DISPATCH.getValue());
                 }else if(tl.getJob_type().equalsIgnoreCase("jdbc")){
                     // 检查jdbc 依赖
                     check=JobCommon2.checkDep3(tl.getJob_type(),tl);
+                    tl.setStatus(JobStatus.DISPATCH.getValue());
                 }else{
                     // 检查子任务依赖
                     check=JobCommon2.checkDep(tl.getJob_type(),tl);
@@ -222,26 +246,30 @@ public class CheckDepJob {
             System.out.println("kill_num:"+kill_num);
             System.out.println("error_num:"+error_num);
             //如果 有运行状态，创建状态，杀死状态 则表示未运行完成
-            String process=(finish_num/tlidList.size())*100 > Double.valueOf(tgli.getProcess())? ((finish_num/tlidList.size())*100)+"":tgli.getProcess();
+            String process=((finish_num+error_num+kill_num)/tlidList.size())*100 > Double.valueOf(tgli.getProcess())? (((finish_num+error_num+kill_num)/tlidList.size())*100)+"":tgli.getProcess();
             String msg="更新进度为:"+process;
             if(finish_num==tlidList.size()){
                 //表示全部完成
                 tglim.updateStatusById3(JobStatus.FINISH.getValue(),process ,tgli.getId());
                 //tglim.updateStatusById(JobStatus.FINISH.getValue(),tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
+                JobCommon2.insertLog(tgli,"INFO","任务组已完成");
             }else if(kill_num==tlidList.size()){
                 //表示组杀死
                 tglim.updateStatusById3(JobStatus.KILLED.getValue(),process ,tgli.getId());
                // tglim.updateStatusById(JobStatus.KILLED.getValue(),tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
+                JobCommon2.insertLog(tgli,"INFO","任务组已杀死");
             }else if(finish_num+error_num == tlidList.size()){
                 //存在失败
                 tglim.updateStatusById3(JobStatus.ERROR.getValue(),process ,tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
+                JobCommon2.insertLog(tgli,"INFO","任务组以失败");
             }else if(finish_num+error_num+kill_num == tlidList.size()){
                 //存在杀死任务
                 tglim.updateStatusById3(JobStatus.KILLED.getValue(),process ,tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
+                JobCommon2.insertLog(tgli,"INFO","任务组以完成,存在杀死任务");
             }
 
 

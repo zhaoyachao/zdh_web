@@ -50,13 +50,13 @@
                                 type="button" style="background-color: #2B65EC">完成
                         </button>
                         <button  class="btn btn-primary btn-sm" οnsubmit='return false'
-                                 type="button" style="background-color: red">失败
+                                 type="button" style="background-color: #ec4758">失败
                         </button>
                         <button  class="btn btn-primary btn-sm" οnsubmit='return false'
                                  type="button" style="background-color: LightGrey">跳过
                         </button>
                         <button  class="btn btn-primary btn-sm" οnsubmit='return false'
-                                 type="button" style="background-color: #E68A00">未知
+                                 type="button" style="background-color: #f7a54a">未知
                         </button>
                     </div>
                 </div>
@@ -251,13 +251,13 @@
         }
 
         if(status=="error" || status=="killed"){
-            return "red"
+            return "#ec4758"
         }
         if(status == "skip"){
             return "LightGrey"
         }
 
-        return "#E68A00"
+        return "#f7a54a"
 
 
     }

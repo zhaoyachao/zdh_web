@@ -34,7 +34,13 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Update(value = "update task_log_instance set thread_id=#{thread_id} where id=#{id}")
     public int updateThreadById(@Param("thread_id") String thread_id, @Param("id") String id);
 
-    @Update(value = "update task_log_instance set status= case `status` when 'check_dep' then 'killed' when 'wait_retry' then 'killed' else 'kill'  end where id=#{id} and (status='dispatch' or status ='etl' or status= 'check_dep' or status= 'wait_retry')")
+    @Update({
+            "<script>",
+            "update task_log_instance ",
+            " set status= case when `status`='check_dep' or `status`='waite_retry' or (`status`='dispatch' and job_type in ('JDBC','GROUP')) then 'killed' else 'kill' end",
+            " where id=#{id} and (status='dispatch' or status ='etl' or status= 'check_dep' or status= 'wait_retry')",
+            "</script>",
+    })
     public int updateStatusById2(@Param("id") String id);
 
     @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end where group_id=#{group_id} and (status != 'error' and status != 'killed')")
@@ -145,6 +151,29 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
             }
     )
     public List<TaskLogInstance> selectThreadByStatus1(@Param("status") String[] status);
+
+    /**
+     * 获取所有可以执行的JDBC子任务
+     * @param status
+     * @return
+     */
+    @Select(
+            {
+                    "<script>",
+                    "select tli.* from task_log_instance tli,task_group_log_instance tgli where tli.status in",
+                    "<foreach collection='status' item='st' open='(' separator=',' close=')'>",
+                    "#{st}",
+                    "</foreach>",
+                    " and tgli.status = 'sub_task_dispatch'",
+                    " and tli.group_id=tgli.id",
+                    " and tli.job_type in ",
+                    "<foreach collection='job_types' item='job_type' open='(' separator=',' close=')'>",
+                    "#{job_type}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public List<TaskLogInstance> selectTaskByJobType(@Param("status") String[] status,@Param("job_types") String[] job_types);
 
 
     @Select("select * from task_log_instance where status =#{status} and retry_time is not null and current_timestamp() >= retry_time")
