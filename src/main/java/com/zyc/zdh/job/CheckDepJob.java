@@ -211,7 +211,7 @@ public class CheckDepJob {
 
         for(TaskGroupLogInstance tgli:tglis){
             //run_date 结构：run_date:[{task_log_instance_id,etl_task_id,etl_context,more_task}]
-            System.out.println(tgli.getRun_jsmind_data());
+            //System.out.println(tgli.getRun_jsmind_data());
             if(StringUtils.isEmpty(tgli.getRun_jsmind_data())){
                 continue;
             }

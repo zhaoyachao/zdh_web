@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 新增节点</title>
+    <meta name="keywords" content="ZDH 新增节点">
+    <meta name="description" content="ZDH 新增节点">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>节点配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form id="data_sources" name="data_sources" method="post" class="form-horizontal" action="">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任务名</label>
+                            <div class="col-sm-10">
+                                <input id="build_task" name="build_task" type="text"
+                                       placeholder="任务名" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">构建服务器IP</label>
+                            <div class="col-sm-10">
+                                <input id="build_ip" name="build_ip" type="text"
+                                       placeholder="构建服务器IP" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">GIT地址</label>
+                            <div class="col-sm-10">
+                                <input id="git_url" name="git_url" type="text"
+                                       placeholder="GIT地址" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">构建工具</label>
+                            <div class="col-sm-10">
+                                <select class="form-control m-b" data-live-search="true" name="build_type" id="build_type">
+                                    <option>GRADLE</option>
+                                    <option>MAVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">构建命令</label>
+                            <div class="col-sm-10">
+                                <input id="build_command" name="build_command" type="text" class="form-control" placeholder="构建命令">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">部署服务器</label>
+                            <div class="col-sm-10">
+                                <input id="remote_ip" name="remote_ip" type="text" class="form-control" placeholder="部署服务器">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">部署路径</label>
+                            <div class="col-sm-10">
+                                <input id="remote_path" name="remote_path" type="text" placeholder="部署路径" class="form-control"> </span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">动态参数</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="param" name="param">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_zdh" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_zdh" name="update_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+<script>
+    function closeTab() {
+        // var currentWidth = $(this).parents('.J_menuTab').width();
+        var wpd = $(window.parent.document);
+        var mainContent = wpd.find('.J_mainContent');
+        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+        var currentTab=pageTabs.find(".J_menuTab.active");
+        var closeTabId = currentTab.data('id')
+        mainContent.find('.J_iframe')
+
+        // 当前元素处于活动状态
+        if (currentTab.hasClass('active')) {
+
+            // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
+            if (pageTabs.next('.J_menuTab').size()) {
+
+                var activeId = currentTab.next('.J_menuTab:eq(0)').data('id');
+                currentTab.next('.J_menuTab:eq(0)').addClass('active');
+
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == activeId) {
+                        $(e).show().siblings('.J_iframe').hide();
+                        return false;
+                    }
+                });
+
+                var marginLeftVal = parseInt($('.page-tabs-content').css('margin-left'));
+                if (marginLeftVal < 0) {
+                    pageTabs.animate({
+                        marginLeft: (marginLeftVal + currentTab.width()) + 'px'
+                    }, "fast");
+                }
+
+                //  移除当前选项卡
+                currentTab.remove();
+
+                // 移除tab对应的内容区
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == closeTabId) {
+                        $(e).remove();
+                        return false;
+                    }
+                });
+            }
+
+            // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
+            if (currentTab.prev('.J_menuTab').size()) {
+                var activeId = currentTab.prev('.J_menuTab:last').data('id');
+                currentTab.prev('.J_menuTab:last').addClass('active');
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == activeId) {
+                        $(e).show().siblings('.J_iframe').hide();
+                        return false;
+                    }
+                });
+
+                //  移除当前选项卡
+                currentTab.remove();
+
+                // 移除tab对应的内容区
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == closeTabId) {
+                        $(e).remove();
+                        return false;
+                    }
+                });
+
+            }
+        }
+        // 当前元素不处于活动状态
+        else {
+
+            //  移除当前选项卡
+            currentTab.remove();
+
+            // 移除相应tab对应的内容区
+            mainContent.find('.J_iframe').each(function (index,e) {
+                if ($(e).data('id') == closeTabId) {
+                    $(e).remove();
+                    return false;
+                }
+            });
+            // scrollToTab($('.J_menuTab.active'));
+        }
+        return false;
+    }
+    $(document).ready(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();//定义一个全局变量-存储任务ID
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+
+        if (s.id == -1) {
+            console.info("新增按钮触发")
+            $('#save_zdh').show()
+            $('#update_zdh').hide()
+        }else{
+            console.info("更新按钮触发")
+            $('#save_zdh').hide()
+            $('#update_zdh').show()
+
+        }
+
+
+        $('#save_zdh').click(function () {
+
+            if ( $('#build_task').val() == '') {
+                layer.msg("任务名不能为空！");
+                return ;
+            }
+            $.ajax({
+                type: 'POST',
+                url: "server_add",
+                dataType: 'json',
+                data: $("#data_sources").serialize(),
+                //发送数据前
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#save_zdh").attr({disabled: "disabled"});
+                },
+                //成功返回
+                success: function (data) {
+                    $("#save_zdh").removeAttr('disabled');
+                    closeTab()
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+
+        })
+
+        $('#update_zdh').click(function () {
+
+            if ( $('#data_source_context').val() == '') {
+                layer.msg("数据源说明不能为空！");
+                return ;
+            }
+            if ( $('#data_source_type').val() == '') {
+                layer.msg("数据源类型不能为空！");
+                return ;
+            }
+            if ($('#data_source_type').val() == 'JDBC' && $('#driver').val() == '') {
+                layer.msg("数据源为JDBC时,驱动不能为空！");
+                return ;
+            }
+            if ($('#data_source_type').val() == 'JDBC' && $('#url').val() == '') {
+                layer.msg("数据源为JDBC时,连接串不能为空！");
+                return ;
+            }
+            if ($('#data_source_type').val() == 'JDBC' && $('#username').val() == '') {
+               // layer.msg("数据源为JDBC时,用户不能为空！");
+              //  return ;
+            }
+            if ($('#data_source_type').val() == 'JDBC' && $('#password').val() == '') {
+               // layer.msg("数据源为JDBC时,密码不能为空！");
+               // return ;
+            }
+            $.ajax({
+                type: 'POST',
+                url: "data_sources_update",
+                dataType: 'json',
+                data: $("#data_sources").serialize()+"&id="+s.id,
+                //发送数据前
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#update_zdh").attr({disabled: "disabled"});
+                },
+                //成功返回
+                success: function (data) {
+                    $("#update_zdh").removeAttr('disabled');
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index); //再执行关闭
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+
+        })
+
+    });
+</script>
+
+</body>
+
+</html>

@@ -21,6 +21,7 @@ public class ZdhHaInfo extends PageBase implements Serializable {
     private String application_id;
     private String history_server;
     private String master;
+    private String online;//0下线,1在线,2下线并退出
 
 
     public String getId() {
@@ -101,5 +102,13 @@ public class ZdhHaInfo extends PageBase implements Serializable {
 
     public void setMaster(String master) {
         this.master = master;
+    }
+
+    public String getOnline() {
+        return online;
+    }
+
+    public void setOnline(String online) {
+        this.online = online;
     }
 }

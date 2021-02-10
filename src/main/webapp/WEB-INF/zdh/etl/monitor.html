@@ -547,7 +547,7 @@
                 }, function (index) {
 
                     $.ajax({
-                        url: "kill",
+                        url: "killJobGroup",
                         data: "id=" + row.id,
                         type: "post",
                         dataType: "json",
@@ -698,7 +698,7 @@
                     var context = row.process_msg
 
                     var class_str = "progress-bar progress-bar-success"
-                    if (row.status == "error") {
+                    if (row.status == "error" || row.status == "kill"|| row.status == "killed") {
                         class_str = "progress-bar progress-bar-danger"
                         //context = "采集失败"
                     }

@@ -677,6 +677,25 @@ primary key (id)
 -- 2021-01-32;
 alter table task_log_instance add column is_disenable varchar(10) comment '是否禁用true:禁用,false:启用';
 
+--201-02-08;
+alter table zdh_ha_info add column online varchar(10) comment '是否上线1:上线,0:逻辑下线2:物理下线';
+
+--2021-02-10
+drop TABLE if EXISTS server_task_info;
+create table server_task_info(
+id bigint NOT NULL AUTO_INCREMENT,
+build_task varchar(200) comment '构建任务说明',
+build_ip varchar(200) comment '构建服务器',
+git_url varchar(500) comment 'git地址',
+build_type varchar(10) comment '构建工具类型,GRADLE/MAVEN',
+build_command text comment '构建命令',
+remote_ip varchar(200) comment '部署服务器',
+remote_path varchar(200) comment '部署路径',
+create_time timestamp NULL DEFAULT current_timestamp ,
+update_time timestamp NULL DEFAULT current_timestamp,
+owner varchar(100) comment '拥有者',
+primary key (id)
+);
 
 
 create database if NOT EXISTS quartz;

@@ -43,7 +43,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     })
     public int updateStatusById2(@Param("id") String id);
 
-    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end where group_id=#{group_id} and (status != 'error' and status != 'killed')")
+    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`='dispatch' and job_type in ('JDBC','GROUP')) then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end where group_id=#{group_id} and (status != 'error' and status != 'killed')")
     public int updateStatusByGroupId(@Param("group_id") String group_id);
 
     @Update(value = "update task_log_instance set is_notice=#{is_notice} where id=#{id}")
@@ -264,6 +264,11 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     )
     public List<task_num_info> selectByIds(@Param("ids") String[] ids);
 
+    /**
+     * 获取上游任务并且状态是kill,error,killed
+     * @param ids
+     * @return
+     */
     @Select(
             {
                     "<script>",

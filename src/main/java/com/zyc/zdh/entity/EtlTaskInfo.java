@@ -100,6 +100,9 @@ public class EtlTaskInfo {
 
     private String duplicate_columns;//去重字段
 
+    @Transient
+    private String merge;
+
     public String getOwner() {
         return owner;
     }
