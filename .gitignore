@@ -28,6 +28,7 @@ logs/
 shell_script/
 
 release/bin/logs/
+release/libs
 
 spark_submit/
 

@@ -11,7 +11,8 @@
     <meta name="keywords" content="ZDH 新增节点">
     <meta name="description" content="ZDH 新增节点">
 
-    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
@@ -34,7 +35,7 @@
                     </div>
                 </div>
                 <div class="ibox-content">
-                    <form id="data_sources" name="data_sources" method="post" class="form-horizontal" action="">
+                    <form id="server_form" name="server_form" method="post" class="form-horizontal" action="">
                         <div class="form-group">
                             <label class="col-sm-2 control-label">任务名</label>
                             <div class="col-sm-10">
@@ -47,6 +48,27 @@
                             <div class="col-sm-10">
                                 <input id="build_ip" name="build_ip" type="text"
                                        placeholder="构建服务器IP" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">构建目录</label>
+                            <div class="col-sm-10">
+                                <input id="build_path" name="build_path" type="text"
+                                       placeholder="构建目录" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                        <label class="col-sm-2 control-label">构建用户名</label>
+                        <div class="col-sm-10">
+                            <input id="build_username" name="build_username" type="text"
+                                   placeholder="构建用户名" class="form-control" aria-required="true"> </span>
+                        </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">密钥路径</label>
+                            <div class="col-sm-10">
+                                <input id="build_privatekey" name="build_privatekey" type="text"
+                                       placeholder="密钥路径" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -68,6 +90,15 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">默认分支</label>
+                            <div class="col-sm-10">
+                                <input id="build_branch" name="build_branch" type="text" class="form-control" placeholder="选择分支,默认master" value="master">
+                            </div>
+                        </div>
+
                         <div class="hr-line-dashed"></div>
 
                         <div class="form-group">
@@ -133,6 +164,8 @@
 
 <!-- Toastr script -->
 <script src="js/plugins/toastr/toastr.min.js"></script>
+
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
 
 <!-- Bootstrap table -->
 <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
@@ -243,7 +276,7 @@
             radioClass: 'iradio_square-green',
         });
 
-
+        $("#build_type").chosen()
         if (s.id == -1) {
             console.info("新增按钮触发")
             $('#save_zdh').show()
@@ -252,9 +285,72 @@
             console.info("更新按钮触发")
             $('#save_zdh').hide()
             $('#update_zdh').show()
-
+            buildParam()
         }
 
+        function buildParam() {
+            if (s.id != '-1') {
+                console.info("更新按钮触发--开始赋值对应参数")
+                //开始赋值
+                $.ajax({
+                    url: "server_manager_list",
+                    data: "id=" + s.id,
+                    type: "get",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        console.info("success")
+                        // layer.alert(JSON.stringify(data[0]))
+
+                        //获取输入数据源id
+                        var id = data[0].id
+                        console.info("参数赋值:输入数据源id:" + id)
+
+
+                        //获取ETL 说明
+                        var build_task = data[0].build_task
+                        $("#build_task").val(build_task);
+
+                        var build_ip = data[0].build_ip
+                        $("#build_ip").val(build_ip)
+
+
+                        var build_type = data[0].build_type
+                        $("#build_type").val(build_type)
+                        $("#build_type").trigger("chosen:updated");
+
+
+                        var build_username = data[0].build_username
+                        $("#build_username").val(build_username)
+
+                        var build_privatekey = data[0].build_privatekey
+                        $("#build_privatekey").val(build_privatekey)
+
+                        var build_path = data[0].build_path
+                        $("#build_path").val(build_path)
+
+                        var git_url = data[0].git_url
+                        $("#git_url").val(git_url)
+
+                        var build_command = data[0].build_command
+                        $("#build_command").val(build_command)
+
+                        var remote_ip = data[0].remote_ip
+                        $("#remote_ip").val(remote_ip)
+
+                        var remote_path = data[0].remote_path
+                        $("#remote_path").val(remote_path)
+
+                        var build_branch = data[0].build_branch
+                        $("#build_branch").val(build_branch)
+
+                        var param = data[0].param
+                        $("#param").val(param)
+
+                    }
+                });
+            }
+        }
 
         $('#save_zdh').click(function () {
 
@@ -266,7 +362,7 @@
                 type: 'POST',
                 url: "server_add",
                 dataType: 'json',
-                data: $("#data_sources").serialize(),
+                data: $("#server_form").serialize(),
                 //发送数据前
                 beforeSend: function () {
                     // 禁用按钮防止重复提交
@@ -292,35 +388,16 @@
 
         $('#update_zdh').click(function () {
 
-            if ( $('#data_source_context').val() == '') {
-                layer.msg("数据源说明不能为空！");
+            if ( $('#build_task').val() == '') {
+                layer.msg("任务名不能为空！");
                 return ;
             }
-            if ( $('#data_source_type').val() == '') {
-                layer.msg("数据源类型不能为空！");
-                return ;
-            }
-            if ($('#data_source_type').val() == 'JDBC' && $('#driver').val() == '') {
-                layer.msg("数据源为JDBC时,驱动不能为空！");
-                return ;
-            }
-            if ($('#data_source_type').val() == 'JDBC' && $('#url').val() == '') {
-                layer.msg("数据源为JDBC时,连接串不能为空！");
-                return ;
-            }
-            if ($('#data_source_type').val() == 'JDBC' && $('#username').val() == '') {
-               // layer.msg("数据源为JDBC时,用户不能为空！");
-              //  return ;
-            }
-            if ($('#data_source_type').val() == 'JDBC' && $('#password').val() == '') {
-               // layer.msg("数据源为JDBC时,密码不能为空！");
-               // return ;
-            }
+
             $.ajax({
                 type: 'POST',
-                url: "data_sources_update",
+                url: "server_update",
                 dataType: 'json',
-                data: $("#data_sources").serialize()+"&id="+s.id,
+                data: $("#server_form").serialize()+"&id="+s.id,
                 //发送数据前
                 beforeSend: function () {
                     // 禁用按钮防止重复提交
@@ -329,8 +406,8 @@
                 //成功返回
                 success: function (data) {
                     $("#update_zdh").removeAttr('disabled');
-                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                    parent.layer.close(index); //再执行关闭
+                    layer.msg("更新完成")
+                    closeTab()
                 },
                 //处理完成
                 complete: function () {

@@ -269,7 +269,7 @@
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.53</version>
+            <version>0.1.55</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
@@ -454,6 +454,7 @@
                     <!-- spring-boot:run 中文乱码解决 -->
                     <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
                     <mainClass>com.zyc.zdh.ZdhApplication</mainClass>
+                    <outputDirectory>release/libs</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>

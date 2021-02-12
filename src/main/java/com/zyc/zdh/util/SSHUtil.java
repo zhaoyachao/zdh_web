@@ -1,11 +1,15 @@
 package com.zyc.zdh.util;
 
 import com.jcraft.jsch.*;
+import com.zyc.zdh.job.JobCommon2;
+import com.zyc.zdh.job.SetUpJob;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -131,14 +135,90 @@ public class SSHUtil {
          logout();
         }
     }
-       
+
+    public String[] exec2(String cmd,String task_logs_id,String job_id) throws IOException, JSchException {
+        this.cmd=cmd;
+        exec.setCommand(cmd);
+        String line = System.getProperty("line.separator");
+        try {
+            InputStream in=exec.getInputStream();
+            InputStream error_in=exec.getErrStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(error_in, StandardCharsets.UTF_8));
+            exec.connect();
+            String buf;
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sb2 = new StringBuilder();
+            while ((buf = reader.readLine()) != null) {
+                System.out.println(buf);
+                sb.append(buf);
+                sb.append(line);
+                JobCommon2.insertLog(job_id,task_logs_id,"INFO",buf);
+            }
+            SetUpJob.setStatus(task_logs_id,"1");
+            String errbuf;
+
+            while ((errbuf = errorReader.readLine()) != null) {
+                System.out.println(errbuf);
+                sb2.append(errbuf);
+                sb2.append(line);
+                JobCommon2.insertLog(job_id,task_logs_id,"ERROR",errbuf);
+                SetUpJob.setStatus(task_logs_id,"2");
+            }
+            return new String[]{sb2.toString(),sb.toString()};
+        } catch (JSchException e) {
+            e.printStackTrace();
+            throw e;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }finally {
+        }
+    }
+
+    public String[] exec3(String cmd,String task_logs_id,String job_id) throws IOException, JSchException {
+        this.cmd=cmd;
+        exec.setCommand(cmd);
+        String line = System.getProperty("line.separator");
+        try {
+            InputStream in=exec.getInputStream();
+            InputStream error_in=exec.getErrStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(error_in, StandardCharsets.UTF_8));
+            exec.connect();
+            String buf;
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sb2 = new StringBuilder();
+            while ((buf = reader.readLine()) != null) {
+                System.out.println(buf);
+                sb.append(buf);
+                sb.append(line);
+
+            }
+            String errbuf;
+            while ((errbuf = errorReader.readLine()) != null) {
+                System.out.println(errbuf);
+                sb2.append(errbuf);
+                sb2.append(line);
+
+            }
+            return new String[]{sb2.toString(),sb.toString()};
+        } catch (JSchException e) {
+            e.printStackTrace();
+            throw e;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }finally {
+        }
+    }
 
     public static void main(String[] args) throws SftpException, IOException, JSchException {
-        SSHUtil sftp = new SSHUtil("zyc", "123456", "localhost", 22);
+        SSHUtil sftp = new SSHUtil("zyc", "123456", "192.168.110.10", 22);
         sftp.login();   
         //byte[] buff = sftp.download("/opt", "start.sh");   
         //System.out.println(Arrays.toString(buff));
-        System.out.println(sftp.exec("lsa")[0]);
+        System.out.println(sftp.exec3("script -q -c \"scp -r /home/zyc/zdh_server/release/* zyc@127.0.0.1:/home/zyc/zdh_server_build\"","1","1")[1]);
         sftp.logout();   
     }   
 }

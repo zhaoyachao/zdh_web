@@ -16,9 +16,9 @@
             <property name="suppressAllComments" value="true" />
         </commentGenerator>
         <!--数据库链接地址账号密码 -->
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="${spring.datasource.url}" userId="${spring.datasource.username}"
-                        password="${spring.datasource.password}">
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/mydb?serverTimezone=GMT%2B8" userId="zyc"
+                        password="123456">
         </jdbcConnection>
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false" />
@@ -37,6 +37,6 @@
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
         <!--生成对应表及类名 -->
-        <table tableName="SERVER_TASK_INFO" domainObjectName="ServerTaskInfo" mapperName="ServerTaskDao"></table>
+        <table tableName="SERVER_TASK_INFO" domainObjectName="ServerTaskInfo" mapperName="ServerTaskMappeer"></table>
     </context>
 </generatorConfiguration>

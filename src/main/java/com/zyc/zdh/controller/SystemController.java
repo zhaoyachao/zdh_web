@@ -202,6 +202,13 @@ public class SystemController extends BaseController{
         return jsonObject.toJSONString();
     }
 
+
+    @RequestMapping("/notice_update_index")
+    public String notice_update_index() {
+
+        return "admin/notice_update_index";
+    }
+
     @RequestMapping(value = "/every_day_notice", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String every_day_notice() {
@@ -212,6 +219,24 @@ public class SystemController extends BaseController{
 
         return JSON.toJSONString(list.get(0));
     }
+
+    @RequestMapping(value = "/notice_update", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String notice_update(String msg) {
+
+        EveryDayNotice everyDayNotice=new EveryDayNotice();
+        everyDayNotice.setIs_delete("false");
+
+        everyDayNoticeMapper.delete(everyDayNotice);
+        everyDayNotice.setMsg(msg);
+        everyDayNotice.setId(SnowflakeIdWorker.getInstance().nextId()+"");
+        everyDayNoticeMapper.insert(everyDayNotice);
+
+        JSONObject json=new JSONObject();
+        json.put("success", "200");
+        return json.toJSONString();
+    }
+
 
 
 }

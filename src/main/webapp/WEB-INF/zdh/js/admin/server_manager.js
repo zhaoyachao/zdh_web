@@ -38,6 +38,7 @@
             height=$(document.body).height()*0.8
         }
         $('#exampleTableEvents').attr("data-height",height)
+        $('#exampleTableEvents2').attr("data-height",height)
 
         $('#add').click(function () {
 
@@ -52,19 +53,12 @@
             });
         })
 
-        function update(id,online) {
-            var context="上线"
-            if(online=="0"){
-                context="逻辑下线"
-            }else if(online == "2") {
-                context="物理下线"
-            }
-
-            layer.msg(context);
+        function setup(id) {
+            layer.msg("一键部署");
             $.ajax({
-                url: "/server_manager_update",
-                data:"id="+id+"&online="+online,
-                type: "post",
+                url: "/server_setup",
+                data:"id="+id,
+                type: "get",
                 async:false,
                 dataType: "json",
                 success: function (data) {
@@ -84,6 +78,97 @@
 
             });
         }
+
+        function update(id,online) {
+            var context="上线"
+            if(online=="0"){
+                context="逻辑下线"
+            }else if(online == "2") {
+                context="物理下线"
+            }
+
+            layer.msg(context);
+            $.ajax({
+                url: "/server_manager_online_update",
+                data:"id="+id+"&online="+online,
+                type: "post",
+                async:false,
+                dataType: "json",
+                success: function (data) {
+                    console.info("success")
+                    layer.msg(context+'成功');
+                },
+                complete: function () {
+                    $('#exampleTableEvents2').bootstrapTable('refresh', {
+                        url: 'server_manager_online_list'
+                    });
+                    console.info("complete")
+                },
+                error: function (data) {
+                    layer.msg(context+'失败');
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+        window.operateEvents = {
+            'click #edit': function (e, value, row, index) {
+                layer.confirm('更新模板', {
+                    btn: ['确定','取消'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    title:"信息"
+                }, function(index){
+                    openTabPage("server_add_index.html?id="+row.id, "更新模板")
+                    layer.close(layer.index)
+                }, function(index){
+                });
+            },
+            'click #setup': function (e, value, row, index) {
+
+
+                parent.layer.open({
+                    type: 2,
+                    title: '手动执行配置',
+                    shadeClose: false,
+                    resize: true,
+                    fixed: false,
+                    maxmin: true,
+                    shade: 0.1,
+                    area : ['30%', '36%'],
+                    //area: ['450px', '500px'],
+                    content: "server_build_exe_detail?id="+row.id, //iframe的url
+                    end : function () {
+                        console.info("弹框结束")
+                    }
+                });
+
+            }
+        };
+
+        function operateFormatter(value, row, index) {
+
+            return [
+                ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+                ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm">更新\n' +
+                '                                    </button>',
+                ' <button id="setup" name="setup" type="button" class="btn btn-outline btn-sm">一键部署\n' +
+                '                                    </button>'
+                +
+                '</div>'
+
+            ].join('');
+
+        }
+
+        window.operateEvents3 = {
+            'click #build_log': function (e, value, row, index) {
+                window.open("/server_log_instance.html?templete_id=" + row.id);
+                //openTabPage("task_group_log_instance.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id, "任务组实例:"+row.job_context)
+            }
+        };
 
         window.operateEvents2 = {
             'click #online': function (e, value, row, index) {
@@ -169,7 +254,6 @@
             }
             return num;
         }
-
         $('#exampleTableEvents').bootstrapTable({
             url: "server_manager_list",
             search: true,
@@ -179,6 +263,91 @@
             showColumns: true,
             iconSize: 'outline',
             toolbar: '#exampleTableEventsToolbar',
+            icons: {
+                refresh: 'glyphicon-repeat',
+                toggle: 'glyphicon-list-alt',
+                columns: 'glyphicon-list'
+            },
+            columns: [{
+                checkbox: true,
+                field: 'state',
+                sortable: true
+            }, {
+                field: 'id',
+                title: 'ID',
+                align : "center",
+                valign : "middle",
+                sortable: false
+            },{
+                field: 'build_task',
+                title: '构建任务名称',
+                sortable: false,
+                align : "center",
+                valign : "middle",
+                visible:true
+            }, {
+                field: 'build_ip',
+                title: '构建服务器',
+                align : "center",
+                valign : "middle",
+                sortable: false,
+                visible:false
+            },  {
+                field: 'build_type',
+                title: '构建任务类型',
+                align : "center",
+                valign : "middle",
+                sortable: false
+            }, {
+                field: 'git_url',
+                title: 'git地址',
+                align : "center",
+                valign : "middle",
+                sortable: false
+            },  {
+                field: 'remote_ip',
+                title: '部署服务器',
+                align : "center",
+                valign : "middle",
+                sortable: true,
+                width:150
+            },  {
+                field: 'operate',
+                title: '部署记录',
+                align : "center",
+                valign : "middle",
+                sortable: true,
+                width:150,
+                events: operateEvents3,//给按钮注册事件
+                formatter: function (value, row, index) {
+                    return [
+                        '<div style="text-align:center" >'+
+                        '<div class="btn-group">'+
+                        '<button type="button" id="build_log" class="btn btn-warning btn-xs">部署记录</button>'+
+                        '</div>'+
+                        '</div>'
+                    ].join('');
+                }
+
+            },{
+                field: 'operate2',
+                title: ' 上线下线操作 ',
+                events: operateEvents ,//给按钮注册事件
+                align : "center",
+                valign : "middle",
+                formatter: operateFormatter //表格中增加按钮
+            }
+            ]
+        });
+
+        $('#exampleTableEvents2').bootstrapTable({
+            url: "server_manager_online_list",
+            search: true,
+            pagination: true,
+            showRefresh: true,
+            showToggle: true,
+            showColumns: true,
+            iconSize: 'outline',
             icons: {
                 refresh: 'glyphicon-repeat',
                 toggle: 'glyphicon-list-alt',
@@ -253,6 +422,8 @@
             }
             ]
         });
+
+
 
 
     })();

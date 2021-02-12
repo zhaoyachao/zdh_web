@@ -716,6 +716,19 @@ public class JobCommon2 {
         return zdhHaInfo;
     }
 
+    public static void insertLog(String job_id,String task_logs_id, String level, String msg) {
+
+        ZdhLogs zdhLogs = new ZdhLogs();
+        zdhLogs.setJob_id(job_id);
+        Timestamp lon_time = new Timestamp(new Date().getTime());
+        zdhLogs.setTask_logs_id(task_logs_id);
+        zdhLogs.setLog_time(lon_time);
+        zdhLogs.setMsg(msg);
+        zdhLogs.setLevel(level.toUpperCase());
+        //linkedBlockingDeque.add(zdhLogs);
+        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+        zdhLogsService.insert(zdhLogs);
+    }
 
     /**
      * 插入日志

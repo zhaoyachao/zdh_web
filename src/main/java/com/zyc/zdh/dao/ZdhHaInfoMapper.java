@@ -60,7 +60,7 @@ public interface ZdhHaInfoMapper extends BaseMapper<ZdhHaInfo> {
     public List<ZdhHaInfo> selectServer(@Param("online") String status,@Param("context") String context);
 
     @Update("update zdh_ha_info set online=#{online} where id=#{id}")
-    public List<ZdhHaInfo> updateOnline(@Param("online") String online,@Param("id") String id);
+    public int updateOnline(@Param("online") String online,@Param("id") String id);
 
 
 }

@@ -691,9 +691,38 @@ build_type varchar(10) comment '构建工具类型,GRADLE/MAVEN',
 build_command text comment '构建命令',
 remote_ip varchar(200) comment '部署服务器',
 remote_path varchar(200) comment '部署路径',
-create_time timestamp NULL DEFAULT current_timestamp ,
-update_time timestamp NULL DEFAULT current_timestamp,
+create_time timestamp not NULL DEFAULT current_timestamp ,
+update_time timestamp not NULL DEFAULT current_timestamp,
 owner varchar(100) comment '拥有者',
+build_branch varchar(200) comment '分支名',
+build_username varchar(100) comment '构建用户',
+build_privatekey text comment '构建服务器密钥地址',
+build_path varchar(500) comment '构建地址',
+primary key (id)
+);
+
+-- 2021-02-11
+drop TABLE if EXISTS server_task_instance;
+create table server_task_instance(
+id bigint NOT NULL AUTO_INCREMENT,
+templete_id varchar(100) comment '',
+build_task varchar(200) comment '构建任务说明',
+build_ip varchar(200) comment '构建服务器',
+git_url varchar(500) comment 'git地址',
+build_type varchar(10) comment '构建工具类型,GRADLE/MAVEN',
+build_command text comment '构建命令',
+remote_ip varchar(200) comment '部署服务器',
+remote_path varchar(200) comment '部署路径',
+create_time timestamp NOT NULL DEFAULT current_timestamp ,
+update_time timestamp NOT NULL DEFAULT current_timestamp,
+owner varchar(100) comment '拥有者',
+version_type varchar(200) comment '部署类型BRANCH/TAG',
+version varchar(200) comment '版本',
+build_branch varchar(200) comment '分支/标签',
+status varchar(200) comment '部署状态',
+build_username varchar(100) comment '构建用户',
+build_privatekey text comment '构建服务器密钥地址',
+build_path varchar(500) comment '构建地址',
 primary key (id)
 );
 
