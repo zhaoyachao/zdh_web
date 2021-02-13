@@ -1008,21 +1008,21 @@ public class JobCommon2 {
             sshUtil.login();
             chm_ssh.put(tli.getId(),sshUtil);
             insertLog(tli, "DEBUG", "[调度平台]:SSH,使用在线脚本," + ssh_cmd);
-            String[] result = sshUtil.exec(ssh_cmd);
+            String[] result = sshUtil.exec(ssh_cmd,tli.getId(),tli.getJob_id());
             String error = result[0];
             String out = result[1];
             chm_ssh.get(tli.getId()).logout();
             chm_ssh.remove(tli.getId());
             long t2 = System.currentTimeMillis();
 
-            for (String li : out.split("\r\n|\n")) {
-                if (!li.trim().isEmpty())
-                    insertLog(tli, "DEBUG", li);
-            }
-            for (String li : error.split("\r\n|\n")) {
-                if (!li.trim().isEmpty())
-                    insertLog(tli, "ERROR", li);
-            }
+//            for (String li : out.split("\r\n|\n")) {
+//                if (!li.trim().isEmpty())
+//                    insertLog(tli, "DEBUG", li);
+//            }
+//            for (String li : error.split("\r\n|\n")) {
+//                if (!li.trim().isEmpty())
+//                    insertLog(tli, "ERROR", li);
+//            }
             insertLog(tli, "DEBUG", "[调度平台]:SSH,SSH任务执行结束,耗时:" + (t2 - t1) / 1000 + "s");
 
             if (!error.isEmpty()) {

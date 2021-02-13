@@ -102,9 +102,9 @@ public class ShellJob extends JobCommon2 {
                         fileWritter.close();
                         logger.info("当前系统为:" + system+",command:"+newcommand);
                         if (system.toLowerCase().startsWith("win")) {
-                            result = CommandUtils.exeCommand("cmd.exe " + file2.getAbsolutePath());
+                            result = CommandUtils.exeCommand2("cmd.exe", "/c", file2.getAbsolutePath());
                         } else {
-                            result = CommandUtils.exeCommand("sh " + file2.getAbsolutePath());
+                            result = CommandUtils.exeCommand2("sh", "-c", file2.getAbsolutePath());
                         }
                     } else {
                         //命令行执行
@@ -113,9 +113,9 @@ public class ShellJob extends JobCommon2 {
                         logger.info("当前系统为:" + system+",command:"+newcommand+",命令行方式执行;");
                         insertLog(tli, "info", "[" + jobType + "] JOB ,当前系统为:" + system+",command:"+newcommand+",命令行方式执行;");
                         if (system.toLowerCase().startsWith("win")) {
-                            result = CommandUtils.exeCommand("cmd.exe /k " + newcommand);
+                            result = CommandUtils.exeCommand2("cmd.exe","/c" , newcommand);
                         } else {
-                            result = CommandUtils.exeCommand(newcommand);
+                            result = CommandUtils.exeCommand2("sh","-c",newcommand);
                         }
                     }
                 }

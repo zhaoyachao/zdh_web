@@ -117,14 +117,34 @@ public class SSHUtil {
         }   
     }
 
-    public String[] exec(String cmd) throws IOException, JSchException {
+    public String[] exec(String cmd,String task_logs_id,String job_id) throws IOException, JSchException {
         this.cmd=cmd;
         exec.setCommand(cmd);
+        String line = System.getProperty("line.separator");
         try {
-            exec.connect();
             InputStream in=exec.getInputStream();
             InputStream error_in=exec.getErrStream();
-            return new String[]{IOUtils.toString(error_in,"GBK"),IOUtils.toString(in,"GBK")};
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(error_in, StandardCharsets.UTF_8));
+            exec.connect();
+            String buf;
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sb2 = new StringBuilder();
+            while ((buf = reader.readLine()) != null) {
+                System.out.println(buf);
+                sb.append(buf);
+                sb.append(line);
+                JobCommon2.insertLog(job_id,task_logs_id,"INFO",buf);
+            }
+            String errbuf;
+
+            while ((errbuf = errorReader.readLine()) != null) {
+                System.out.println(errbuf);
+                sb2.append(errbuf);
+                sb2.append(line);
+                JobCommon2.insertLog(job_id,task_logs_id,"ERROR",errbuf);
+            }
+            return new String[]{sb2.toString(),sb.toString()};
         } catch (JSchException e) {
             e.printStackTrace();
            throw e;

@@ -1,16 +1,11 @@
 package com.zyc.zdh.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.*;
 
 /**
  * 执行系统命令工具类
@@ -33,9 +28,19 @@ public class CommandUtils {
         try{
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream error = new ByteArrayOutputStream();
-            int exitCode = exeCommand(command, out,error);
+            LogOutputStream log = new LogOutputStream(){
+
+                @Override
+                protected void processLine(String s, int i) {
+
+                        System.out.println(i+"-----------"+s);
+
+                }
+            };
+            int exitCode = exeCommand(command, log,error);
+            System.out.println("exitCode:"+exitCode);
             Map map=new HashMap<String,String>();
-            if (exitCode == 0 && StringUtils.isEmpty(error.toString(DEFAULT_CHARSET))) {
+            if (exitCode == 0) {
                 String out_str=out.toString(DEFAULT_CHARSET);
                 String err_str=error.toString(DEFAULT_CHARSET);
                 System.out.println("命令运行成功!");
@@ -45,8 +50,9 @@ public class CommandUtils {
                 map.put("result","success");
                 map.put("out",out_str);
                 map.put("error",err_str);
+
                 return map;
-            } else {
+            } else if(exitCode !=0 && !StringUtils.isEmpty(error.toString(DEFAULT_CHARSET))) {
                 System.out.println("命令运行失败!");
                 System.out.println("out:"+out.toString(DEFAULT_CHARSET));
                 System.out.println("error:"+error.toString(DEFAULT_CHARSET));
@@ -60,6 +66,52 @@ public class CommandUtils {
         }
     }
 
+    public static Map<String,String> exeCommand2(String cmd,String param,String command) throws IOException {
+        Map map=new HashMap<String,String>();
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        try {
+            processBuilder.command(cmd,param ,command);
+            Process process = processBuilder.start();
+
+            StringBuilder output = new StringBuilder();
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(),"GBK"));
+            BufferedReader reader_err = new BufferedReader(
+                    new InputStreamReader(process.getErrorStream(),"GBK"));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line + "\n");
+            }
+            while ((line = reader_err.readLine()) != null) {
+                output.append(line + "\n");
+            }
+
+            int exitVal = process.waitFor();
+            if (exitVal == 0) {
+                System.out.println("Success!");
+                map.put("result","success");
+                map.put("out",output);
+                map.put("error","");
+            } else {
+                System.out.println("Error!");
+                map.put("result","fail");
+                map.put("out","");
+                map.put("error",output);
+            }
+            System.out.println(output);
+            process.destroy();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return map;
+
+    }
+
     /**
      * 执行指定命令，输出结果到指定输出流中
      *
@@ -69,20 +121,20 @@ public class CommandUtils {
      * @throws ExecuteException 失败时抛出异常，由调用者捕获处理
      * @throws IOException 失败时抛出异常，由调用者捕获处理
      */
-    public static int exeCommand(String command, OutputStream out,OutputStream error) throws ExecuteException, IOException {
+    public static int exeCommand(String command, OutputStream out, OutputStream error) throws ExecuteException, IOException {
         CommandLine commandLine = CommandLine.parse(command);
         PumpStreamHandler pumpStreamHandler = null;
         if (null == out) {
             pumpStreamHandler = new PumpStreamHandler();
         } else {
-            pumpStreamHandler = new PumpStreamHandler(out,error);
+            pumpStreamHandler = new PumpStreamHandler(out);
         }
 
         // 设置超时时间为10秒
         ExecuteWatchdog watchdog = new ExecuteWatchdog(10000);
 
         DefaultExecutor executor = new DefaultExecutor();
-        executor.setExitValues(new int[]{0,1});
+        executor.setExitValues(new int[]{0});
         executor.setStreamHandler(pumpStreamHandler);
         executor.setWatchdog(watchdog);
 
@@ -98,7 +150,7 @@ public class CommandUtils {
 //                    "    )");
 //            System.out.println(result);
 
-            Map result = exeCommand("cmd.exe /k hostname");
+            Map result = exeCommand2("cmd.exe", "/c", "java version");
             System.out.println(result.get("result"));
 
         } catch (IOException e) {
