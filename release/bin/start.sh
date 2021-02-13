@@ -1,1 +1,1 @@
-java -Dfile.encoding=utf-8 -jar ../libs/zdh_web.jar --spring.config.location=../conf/
+nohup java -Dfile.encoding=utf-8  -Xss256M -jar ../libs/zdh_web.jar --spring.config.location=../conf/ > web.log &

@@ -1,0 +1,1 @@
+kill -9 `ps -ef |grep zdh_web.jar |grep java|awk -F " " '{print $2}'`
