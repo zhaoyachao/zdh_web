@@ -45,6 +45,7 @@
                     <input type="hidden" id="etl_task_text" name="etl_task_text" value="">
                     <input type="hidden" id="jdbc_url_text" name="jdbc_url_text" value="">
                     <input type="hidden" id="jdbc_sql_text" name="jdbc_sql_text" value="">
+                    <input type="hidden" id="shell_text" name="shell_text" value="">
 
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
@@ -517,6 +518,7 @@
             }else{
                 var is_script=div.attr("is_script")
                 var is_disenable = div.attr("is_disenable")
+                $("#shell_text").val(command)
                 url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&is_disenable="+is_disenable
             }
             layer.open({

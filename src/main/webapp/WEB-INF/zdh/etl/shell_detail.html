@@ -155,7 +155,7 @@
                 if( s.is_script=="true"){
                     $('#is_script').iCheck('check');
                 }
-                $("#command").val(s.command);
+                $("#command").val($("#shell_text",window.parent.document).val());
                 $("#etl_context").val(s.etl_context);
                 var is_disenable=s['is_disenable']
                 if(is_disenable=="true"){

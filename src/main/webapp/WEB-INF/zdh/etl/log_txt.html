@@ -184,12 +184,9 @@
             var day_5m=day.getTime()-10*60*1000
             $("#start_time").val(getMyDate(day_5m))
         }
-        if(s.update_time!=""&& typeof(s.update_time) != "undefined"){
-            $("#end_time").val(getMyDate(s.update_time))
-        }else{
-            var day = new Date();
-            $("#end_time").val(getMyDate(day.getTime()))
-        }
+        var day = new Date();
+        $("#end_time").val(getMyDate(day.getTime()))
+
 
         $('#btn_search').click(function () {
             var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
