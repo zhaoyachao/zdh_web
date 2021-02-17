@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface ResourceTreeMapper extends BaseMapper<ResourceTreeInfo> {
 
-    @Update(value = "update resource_tree_info  set parent=#{parent} where id=#{id}")
-    public int updateParentById(@Param("id") String id, @Param("parent") String parent);
+    @Update(value = "update resource_tree_info  set parent=#{parent},level=#{level} where id=#{id}")
+    public int updateParentById(@Param("id") String id, @Param("parent") String parent, @Param("level") String level);
 
 
     @Delete(value = "delete from user_resource_info  where user_id=#{user_id}")

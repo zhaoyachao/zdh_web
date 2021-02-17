@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 单源ETL任务服务
+ * 数据仓库服务
  */
 @Controller
 public class ZdhIssueDataController extends BaseController{
@@ -52,7 +52,7 @@ public class ZdhIssueDataController extends BaseController{
 
 
     /**
-     * 单源ETL首页
+     * 数据查询首页
      * @return
      */
     @RequestMapping("/data_ware_house_index")

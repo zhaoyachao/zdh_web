@@ -30,8 +30,8 @@
       }
 
       window.operateEvents = {
-          'click #detail': function (e, value, row, index) {
-              openTabPage("data_ware_house_detail.html?id=" + row.id, "执行记录:"+row.job_context)
+          'click #edit': function (e, value, row, index) {
+              openTabPage("data_ware_house_detail.html?id=" + row.id, "表信息:"+row.issue_context)
           },
           'click #del': function (e, value, row, index) {
               layer.confirm('是否删除数据模型', {

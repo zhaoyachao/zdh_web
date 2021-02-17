@@ -578,9 +578,11 @@
             return ;
         }
 
-        var parent_ary = $('#using_json').jstree("get_path", parent_id);
-        console.info("level:"+parent_ary.length)
-        var level=parent_ary.length;
+        var parent_ary = $('#using_json2').jstree("get_path", parent_id);
+        console.info(parent_ary)
+        console.info("parent_id:"+parent_id)
+        console.info("level:"+parent_ary.length+1)
+        var level=parent_ary.length+1;
         //增加子节点,返回子节点id
         $.ajax({
             type: 'POST',

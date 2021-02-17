@@ -149,9 +149,9 @@ public class PermissionController extends BaseController{
 
     @RequestMapping(value = "/jstree_update_parent", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String jstree_update_parent(String id,String parent_id) {
+    public String jstree_update_parent(String id,String parent_id,String level) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        resourceTreeMapper.updateParentById(id,parent_id);
+        resourceTreeMapper.updateParentById(id,parent_id,level);
         JSONObject json = new JSONObject();
 
         json.put("success", "200");

@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 数据发布首页</title>
-    <meta name="keywords" content="ZDH 数据发布首页">
-    <meta name="description" content="ZDH 数据发布首页">
+    <title>ZDH 数据基础信息</title>
+    <meta name="keywords" content="ZDH 数据基础信息">
+    <meta name="description" content="ZDH 数据基础信息">
 
     <link rel="shortcut icon" href="img/favicon.ico">
 
@@ -32,7 +32,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>数据发布</h5>
+                    <h5>数据信息</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -41,183 +41,205 @@
                 </div>
                 <div class="ibox-content">
 
-                    <form id="etl_task_add_form" name="etl_task_add_form" method="post" class="form-horizontal"
-                          action="">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="tabs-container">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">基本信息</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="true">字段信息</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="#tab-3" aria-expanded="true">分区信息</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div id="tab-1" class="tab-pane active">
+                                        <div class="panel-body">
+                                            <form id="etl_task_add_form" name="etl_task_add_form" method="post" class="form-horizontal"
+                                                  action="">
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">数据说明</label>
-                            <div class="col-sm-10">
-                                <input id="issue_context" name="issue_context" type="text"
-                                       placeholder="数据说明" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">创建时间</label>
-                            <div class="col-sm-10">
-                                <input id="create_time" name="create_time" type="text" readonly
-                                       placeholder="创建时间" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">数据说明</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="issue_context" name="issue_context" type="text"
+                                                               placeholder="数据说明" class="form-control" aria-required="true"> </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">创建时间</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="create_time" name="create_time" type="text" readonly
+                                                               placeholder="创建时间" class="form-control" aria-required="true"> </span>
+                                                    </div>
+                                                </div>
 
-                        <div class="hr-line-dashed"></div>
-                        <!-- 输入数据源开始-->
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">选择数据源</label>
-                            <div class="col-sm-10">
-                                <select id="data_sources_choose_input" name="data_sources_choose_input"
-                                        data-placeholder="选择数据源..."
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">选择数据源...</option>
-                                </select>
-                            </div>
-                        </div>
+                                                <div class="hr-line-dashed"></div>
+                                                <!-- 输入数据源开始-->
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">选择数据源</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="data_sources_choose_input" name="data_sources_choose_input"
+                                                                data-placeholder="选择数据源..."
+                                                                class="chosen-select form-control m-b" tabindex="2">
+                                                            <option value="" mytype="">选择数据源...</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">数据源类型</label>
-                            <div class="col-sm-10">
-                                <input id="data_source_type_input" name="data_source_type_input" type="text" readonly
-                                       placeholder="数据源类型" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
-
-
-                        <div class="hr-line-dashed"></div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">输入表名/文件名</label>
-                            <div class="col-sm-10" id="div_data_sources_table_name_input">
-                                <select id="data_sources_table_name_input" name="data_sources_table_name_input"
-                                        data-placeholder="选择数据表..."
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="">选择数据表...</option>
-                                </select>
-                            </div>
-
-                            <div class="col-sm-10" id="div_data_sources_file_name_input">
-                                <input id="data_sources_file_name_input" name="data_sources_file_name_input" type="text"
-                                       placeholder="文件全路径" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">数据源类型</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="data_source_type_input" name="data_source_type_input" type="text" readonly
+                                                               placeholder="数据源类型" class="form-control" aria-required="true"> </span>
+                                                    </div>
+                                                </div>
 
 
+                                                <div class="hr-line-dashed"></div>
 
-                        <div class="hr-line-dashed"></div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">输入表名/文件名</label>
+                                                    <div class="col-sm-10" id="div_data_sources_table_name_input">
+                                                        <select id="data_sources_table_name_input" name="data_sources_table_name_input"
+                                                                data-placeholder="选择数据表..."
+                                                                class="chosen-select form-control m-b" tabindex="2">
+                                                            <option value="">选择数据表...</option>
+                                                        </select>
+                                                    </div>
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">配置选择的列</label>
-                            <div class="col-sm-10" id="div_data_sources_file_columns">
-                                <div class="input-group">
-                                    <input id="data_sources_file_columns" name="data_sources_file_columns" type="text"
-                                           placeholder="配置选择的列逗号分割"
-                                           aria-required="true" class="form-control"> <span class="input-group-btn"> <button
-                                        id="btn_columns_file" type="button" class="btn btn-primary"
-                                        οnsubmit='return false'>获取
+                                                    <div class="col-sm-10" id="div_data_sources_file_name_input">
+                                                        <input id="data_sources_file_name_input" name="data_sources_file_name_input" type="text"
+                                                               placeholder="文件全路径" class="form-control" aria-required="true"> </span>
+                                                    </div>
+                                                </div>
+
+
+
+                                                <div class="hr-line-dashed"></div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">配置选择的列</label>
+                                                    <div class="col-sm-10" id="div_data_sources_file_columns">
+                                                        <div class="input-group">
+                                                            <input id="data_sources_file_columns" name="data_sources_file_columns" type="text"
+                                                                   placeholder="配置选择的列逗号分割"
+                                                                   aria-required="true" class="form-control"> <span class="input-group-btn"> <button
+                                                                id="btn_columns_file" type="button" class="btn btn-primary"
+                                                                οnsubmit='return false'>获取
                                    </button></span>
-                                </div>
-                                <span class="help-block m-b-none">配置JDBC数据源,选择表,之后点击[获取按钮]自动生成字段映射</span>
-                                <span class="help-block m-b-none">配置HDFS数据源,手动输入列字段,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
-                                <span class="help-block m-b-none">配置HBASE数据源,手动输入列字段格式 列族:列名,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
-                            </div>
-                            <div class="col-sm-10" id="div_data_sources_table_columns">
-                                <div class="input-group">
-                                    <input id="data_sources_table_columns" name="data_sources_table_columns" type="text"
-                                           placeholder="配置选择的列逗号分割"
-                                           aria-required="true" class="form-control"> <span class="input-group-btn"> <button
-                                        id="btn_columns" type="button" class="btn btn-primary" οnsubmit='return false'>获取
+                                                        </div>
+                                                        <span class="help-block m-b-none">配置JDBC数据源,选择表,之后点击[获取按钮]自动生成字段映射</span>
+                                                        <span class="help-block m-b-none">配置HDFS数据源,手动输入列字段,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
+                                                        <span class="help-block m-b-none">配置HBASE数据源,手动输入列字段格式 列族:列名,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
+                                                    </div>
+                                                    <div class="col-sm-10" id="div_data_sources_table_columns">
+                                                        <div class="input-group">
+                                                            <input id="data_sources_table_columns" name="data_sources_table_columns" type="text"
+                                                                   placeholder="配置选择的列逗号分割"
+                                                                   aria-required="true" class="form-control"> <span class="input-group-btn"> <button
+                                                                id="btn_columns" type="button" class="btn btn-primary" οnsubmit='return false'>获取
                                         </button></span>
-                                </div>
-                                <span class="help-block m-b-none">配置JDBC数据源,选择表,之后点击[获取按钮]自动生成字段映射</span>
-                                <span class="help-block m-b-none">配置HDFS数据源,手动输入列字段,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
-                                <span class="help-block m-b-none">配置HBASE数据源,手动输入列字段格式 列族:列名,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
+                                                        </div>
+                                                        <span class="help-block m-b-none">配置JDBC数据源,选择表,之后点击[获取按钮]自动生成字段映射</span>
+                                                        <span class="help-block m-b-none">配置HDFS数据源,手动输入列字段,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
+                                                        <span class="help-block m-b-none">配置HBASE数据源,手动输入列字段格式 列族:列名,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
+                                                    </div>
+                                                </div>
+                                                <div class="hr-line-dashed"></div>
 
 
-                        <div class="form-group">
+                                                <div class="form-group">
 
-                            <label class="col-sm-2 control-label">配置字段映射</label>
-                            <div class="col-sm-10">
+                                                    <label class="col-sm-2 control-label">配置字段映射</label>
+                                                    <div class="col-sm-10">
 
-                                <!-- Example Events -->
-                                <div class="btn-group">
-                                    <button id="add_row" class="btn btn-primary btn-xs" type="button"
-                                            style="height: 20px" onclick='addRow("zdh_add_expr")'
-                                            οnsubmit='return false'><i class="glyphicon glyphicon-plus"
-                                                                       aria-hidden="true"></i></button>
-                                    <!--<button class="btn btn-primary" type="button">中</button>-->
-                                    <!--<button class="btn btn-white" type="button">右</button>-->
-                                    <input id="row_num" type="text"
-                                           placeholder="行号" style="width: 30px;height: 20px">
-                                </div>
+                                                        <!-- Example Events -->
+                                                        <div class="btn-group">
+                                                            <button id="add_row" class="btn btn-primary btn-xs" type="button"
+                                                                    style="height: 20px" onclick='addRow("zdh_add_expr")'
+                                                                    οnsubmit='return false'><i class="glyphicon glyphicon-plus"
+                                                                                               aria-hidden="true"></i></button>
+                                                            <!--<button class="btn btn-primary" type="button">中</button>-->
+                                                            <!--<button class="btn btn-white" type="button">右</button>-->
+                                                            <input id="row_num" type="text"
+                                                                   placeholder="行号" style="width: 30px;height: 20px">
+                                                        </div>
 
-                                <table id="exampleTableEvents" name="exampleTableEvents" data-height="250"
-                                       data-mobile-responsive="false">
+                                                        <table id="exampleTableEvents" name="exampleTableEvents" data-height="250"
+                                                               data-mobile-responsive="false">
 
-                                </table>
-                                <!-- End Example Events -->
+                                                        </table>
+                                                        <!-- End Example Events -->
 
-                            </div>
-
-
-                        </div>
+                                                    </div>
 
 
-                        <div class="hr-line-dashed"></div>
-                        <!-- 输入数据源结束-->
+                                                </div>
 
-                        <!-- 元信息 业务相关-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">所属公司</label>
-                            <div class="col-sm-10">
-                                <input id="company" name="company"
-                                       type="text"
-                                       placeholder="填写公司" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">所属部门</label>
-                            <div class="col-sm-10">
-                                <input id="section" name="section"
-                                       type="text"
-                                       placeholder="填写部门" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
+                                                <div class="hr-line-dashed"></div>
+                                                <!-- 输入数据源结束-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">所属业务</label>
-                            <div class="col-sm-10">
-                                <input id="service" name="service"
-                                       type="text"
-                                       placeholder="填写业务" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
+                                                <!-- 元信息 业务相关-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">更新说明</label>
-                            <div class="col-sm-10">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">所属公司</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="company" name="company"
+                                                               type="text"
+                                                               placeholder="填写公司" class="form-control" aria-required="true"> </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">所属部门</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="section" name="section"
+                                                               type="text"
+                                                               placeholder="填写部门" class="form-control" aria-required="true"> </span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">所属业务</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="service" name="service"
+                                                               type="text"
+                                                               placeholder="填写业务" class="form-control" aria-required="true"> </span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">更新说明</label>
+                                                    <div class="col-sm-10">
                                 <textarea id="update_context" name="update_context" class="form-control" rows="2"
                                           placeholder="更新说明"></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="hr-line-dashed"></div>
+                                                <!-- 输出数据源结束-->
+
+                                                <div class="form-group">
+                                                    <div class="text-center">
+                                                        <button id="save_etl_task" name="save_zdh" class="btn btn-primary"
+                                                                οnsubmit='return false'
+                                                                type="button">保存
+                                                        </button>
+                                                        <button id="reset" class="btn btn-white" type=reset>清空</button>
+                                                    </div>
+                                                </div>
+
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
                             </div>
                         </div>
-
-                        <div class="hr-line-dashed"></div>
-                        <!-- 输出数据源结束-->
-
-                        <div class="form-group">
-                            <div class="text-center">
-                                <button id="save_etl_task" name="save_zdh" class="btn btn-primary"
-                                        οnsubmit='return false'
-                                        type="button">保存
-                                </button>
-                                <button id="reset" class="btn btn-white" type=reset>清空</button>
-                            </div>
-                        </div>
-
-
-                    </form>
-
+                    </div>
 
                 </div>
             </div>

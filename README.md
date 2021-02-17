@@ -9,7 +9,6 @@
    + 统一数据管理,对数据进行高效分析及对外输出
    + 通过工具完成大部分工作,减少开发者的工作量
    + 降低使用者标准,通过拖拉拽实现数据的采集(任务依赖关系由自带调度完成-优势)
-   + 
    
    
 
@@ -68,6 +67,57 @@
   + 支持多源ETL
   + 任务监控
   + 灵活动态drools规则清理
+  
+# 用到的技术体系
+
+    前端：Bootstrap
+    后端：Springboot+shiro+redis+mybatis
+    数据ETL引擎:Spark(hadoop,hive 可选择部署)
+    
+# 下载修改基础配置
+
+    打开resources/application-dev.properties
+     1 修改服务器端口默认8081
+     2 修改数据源连接(默认支持mysql8),外部数据库必须引入
+     3 修改redis配置
+     4 修改application-*配置文件中myid(多个集群依次1,2,3,...)
+
+    创建需要的数据库配置
+     1 执行sql脚本db.sql
+     
+    依赖
+     1 必须提前安装redis 
+
+# 下载编译好的包
+
+    1 找到项目目录下的release 目录 直接将release 目录拷贝
+    2 到relase的bin 目录下执行start 脚本(启动脚本必须到bin 目录下执行)
+    3 执行编译好的包需要提前安装mysql8,redis
+
+# 源码自定义打包
+    
+    清理命令 mvn clean
+    打包命令 mvn package -Dmaven.test.skip=true
+
+# 运行
+    在target 目录下找到zdh_web.jar
+    执行 java  -Dfile.encoding=utf-8 -jar zdh_web.jar  
+
+# FAQ
+
+   + sql结构报错
+     遇到sql 结构报错,可直接在resource目录下找db.sql 文件对比是否增加了字段,db.sql 文件会使用alter 方式增加字段
+     
+   + 日志级别修改
+     修改日志文件logback 相关等级即可
+     
+   + 调度串行并行模式
+     串行模式:会判断上次任务运行状态
+     并行模式:不判断上次任务状态,时间会自动生成 
+     
+   + 数据表结构以src/main/resources/db.sql 为准
+   
+   + 暂不支持读取kerberos 认证的hadoop,hive,hbase 服务,预计在5.x 版本实现kerberos 认证
   
 # 功能图
 ![功能图](img/zdh_web.png)  
@@ -190,23 +240,7 @@
   + v4.8 计划支持血缘分析 开发中
   
   
-# FAQ
 
-   + sql结构报错
-     遇到sql 结构报错,可直接在resource目录下找db.sql 文件对比是否增加了字段,db.sql 文件会使用alter 方式增加字段
-     
-   + 日志级别修改
-     修改日志文件logback 相关等级即可
-     
-   + 调度串行并行模式
-     串行模式:会判断上次任务运行状态
-     并行模式:不判断上次任务状态,时间会自动生成 
-     
-   + 数据表结构以src/main/resources/db.sql 为准
-   
-   + 暂不支持读取kerberos 认证的hadoop,hive,hbase 服务,预计在5.x 版本实现kerberos 认证
-    
- 
  # 支持的数据源
    + 本地文件
    + hive(单集群使用多个远程hive,以及内外部表)
@@ -237,40 +271,7 @@
 # 支持调度动态日期参数   
    详见说明文档
  
-# 用到的技术体系
 
-    前端：Bootstrap
-    后端：Springboot+shiro+redis+mybatis
-    数据ETL引擎:Spark(hadoop,hive 可选择部署)
-    
-# 下载修改基础配置
-
-    打开resources/application-dev.properties
-     1 修改服务器端口默认8081
-     2 修改数据源连接(默认支持mysql8),外部数据库必须引入
-     3 修改redis配置
-     4 修改application-*配置文件中myid(多个集群依次1,2,3,...)
-
-    创建需要的数据库配置
-     1 执行sql脚本db.sql
-     
-    依赖
-     1 必须提前安装redis 
-
-# 下载编译好的包
-
-    1 找到项目目录下的release 目录 直接将release 目录拷贝
-    2 到relase的bin 目录下执行start 脚本(启动脚本必须到bin 目录下执行)
-    3 执行编译好的包需要提前安装mysql8,redis
-
-# 源码自定义打包
-    
-    清理命令 mvn clean
-    打包命令 mvn package -Dmaven.test.skip=true
-
-# 运行
-    在target 目录下找到zdh_web.jar
-    执行 java  -Dfile.encoding=utf-8 -jar zdh_web.jar
    
 # 版本计划
   + 1.1 计划支持FTP 调度
