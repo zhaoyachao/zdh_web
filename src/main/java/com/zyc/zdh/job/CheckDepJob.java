@@ -103,8 +103,25 @@ public class CheckDepJob {
             TaskLogInstanceMapper taskLogInstanceMapper=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
             //检查JDBC依赖任务
-            List<TaskLogInstance> dep_tlis=taskLogInstanceMapper.selectTaskByJobType(new String[] {JobStatus.DISPATCH.getValue()},new String[]{"JDBC","GROUP"});
+            List<TaskLogInstance> dep_tlis=taskLogInstanceMapper.selectTaskByJobType(new String[] {JobStatus.DISPATCH.getValue(),JobStatus.CREATE.getValue(),
+                    JobStatus.CHECK_DEP.getValue()},new String[]{"JDBC","GROUP"});
             for(TaskLogInstance t1i :dep_tlis) {
+                //如果上游任务kill,killed 设置本实例为killed
+                String pre_tasks=t1i.getPre_tasks();
+                if(!StringUtils.isEmpty(pre_tasks)){
+                    String[] task_ids=pre_tasks.split(",");
+                    List<TaskLogInstance> tlis=taskLogInstanceMapper.selectTliByIds(task_ids);
+                    //int level=tl.level
+                    int level=0;
+                    if(tlis!=null && tlis.size()>0 && level==0){
+                        // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
+                        t1i.setStatus(JobStatus.KILLED.getValue());
+                        JobCommon2.updateTaskLog(t1i,taskLogInstanceMapper);
+                        JobCommon2.insertLog(t1i,"INFO","检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为killed");
+                        continue;
+                    }
+                }
+
                 boolean check = false;
                 if (t1i.getJob_type().equalsIgnoreCase("group")) {
                     //etl_task_id 代表任务的id(quartz_job_info的job_id)
@@ -119,6 +136,9 @@ public class CheckDepJob {
                     t1i.setStatus(JobStatus.FINISH.getValue());
                     t1i.setProcess("100");
                     JobCommon2.updateTaskLog(t1i, taskLogInstanceMapper);
+                }else{
+                    t1i.setStatus(JobStatus.DISPATCH.getValue());
+                    JobCommon2.updateTaskLog(t1i, taskLogInstanceMapper);
                 }
             }
 
@@ -131,7 +151,10 @@ public class CheckDepJob {
                 if(!StringUtils.isEmpty(pre_tasks)){
                     String[] task_ids=pre_tasks.split(",");
                     List<TaskLogInstance> tlis=taskLogInstanceMapper.selectTliByIds(task_ids);
-                    if(tlis!=null && tlis.size()>0){
+                    //int level=tl.level
+                    int level=0;
+                    if(tlis!=null && tlis.size()>0 && level==0){
+                        // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
                         tl.setStatus(JobStatus.KILLED.getValue());
                         JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
                         JobCommon2.insertLog(tl,"INFO","检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为killed");
@@ -140,21 +163,8 @@ public class CheckDepJob {
 
                 }
                 boolean check=false;
-                //检查组任务依赖
-                if(tl.getJob_type().equalsIgnoreCase("group")){
-                    //etl_task_id 代表任务的id(quartz_job_info的job_id)
-                    String job_id=tl.getEtl_task_id();
-                    String etl_date=tl.getEtl_date();
-                    check=JobCommon2.checkDep2(tl.getJob_type(),tl);
-                    tl.setStatus(JobStatus.DISPATCH.getValue());
-                }else if(tl.getJob_type().equalsIgnoreCase("jdbc")){
-                    // 检查jdbc 依赖
-                    check=JobCommon2.checkDep3(tl.getJob_type(),tl);
-                    tl.setStatus(JobStatus.DISPATCH.getValue());
-                }else{
-                    // 检查子任务依赖
-                    check=JobCommon2.checkDep(tl.getJob_type(),tl);
-                }
+                // 检查ETL任务依赖
+                check=JobCommon2.checkDep(tl.getJob_type(),tl);
 
                 if(tl.getStatus().equalsIgnoreCase(JobStatus.ERROR.getValue()) || tl.getStatus().equalsIgnoreCase(JobStatus.WAIT_RETRY.getValue())){
                     logger.info("检查依赖时发生异常,退出本次检查");

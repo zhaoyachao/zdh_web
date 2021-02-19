@@ -62,15 +62,16 @@ public class ZdhIssueDataController extends BaseController{
     }
 
     /**
-     * 获取单源ETL任务明细
-     * @param ids
+     * 根据id获取对应的数据明细
+     * @param id
      * @return
      */
     @RequestMapping(value = "/data_ware_house_list", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_list(String[] ids) {
+    public String data_ware_house_list(String id) {
 
-        return JSON.toJSONString(null);
+        IssueDataInfo idi=issueDataMapper.selectByPrimaryKey(id);
+        return JSON.toJSONString(idi);
     }
 
     /**

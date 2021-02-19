@@ -276,7 +276,7 @@ $(document).ready(function(){
             var text = $(this).text();
             var div = $(this)
             var etl_context=div.attr("etl_context");
-            alert(etl_context)
+            //alert(etl_context)
             var url='jdbc_detail.html';
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
                 url=url+"?etl_context=-1"
@@ -304,7 +304,7 @@ $(document).ready(function(){
                     }
 
                     var etl_task_info=JSON.parse($("#etl_task_text").val())
-                    alert(etl_task_info.jdbc_sql)
+                    //alert(etl_task_info.jdbc_sql)
                     div.attr("url",etl_task_info.url);
                     div.attr("driver",etl_task_info.driver);
                     div.attr("username",etl_task_info.username);

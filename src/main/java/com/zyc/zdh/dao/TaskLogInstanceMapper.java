@@ -147,6 +147,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
             "</foreach>",
             " and tgli.status = 'sub_task_dispatch'",
             " and tli.group_id=tgli.id",
+            " and tli.job_type not in ('group','jdbc')",
             "</script>"
             }
     )
@@ -281,6 +282,25 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
             }
     )
     public List<TaskLogInstance> selectTliByIds(@Param("ids") String[] ids);
+
+
+    /**
+     * 获取上游任务信息
+     * @param ids
+     * @return
+     */
+    @Select(
+            {
+                    "<script>",
+                    "select * from task_log_instance tli where tli.id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public List<TaskLogInstance> selectByIds2(@Param("ids") String[] ids);
+
 
     @Delete(
             {

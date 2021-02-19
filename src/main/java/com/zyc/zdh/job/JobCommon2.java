@@ -1094,13 +1094,13 @@ public class JobCommon2 {
 
     /**
      * 检查子任务依赖
-     *
+     * 所有的调度之间的依赖关系均由此判断
      * @param jobType
      * @param tli
      */
     public static boolean checkDep(String jobType, TaskLogInstance tli) {
-        logger.info("[" + jobType + "] JOB ,开始检查任务依赖");
-        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务依赖");
+        logger.info("[" + jobType + "] JOB ,开始检查当前任务上游任务依赖");
+        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查当前任务上游任务依赖");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
         //检查任务依赖
@@ -1146,56 +1146,8 @@ public class JobCommon2 {
     }
 
     /**
-     * 检查任务组依赖
-     * 2021-01-31废弃此逻辑(对应版本4.6正式弃用)
-     * @param jobType
-     * @param tgli
-     * @return
-     */
-    @Deprecated
-    public static boolean checkDep(String jobType, TaskGroupLogInstance tgli) {
-        logger.info("[" + jobType + "] JOB ,开始检查任务依赖");
-        insertLog(tgli, "INFO", "[" + jobType + "] JOB ,开始检查任务依赖");
-        TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
-
-        //检查任务依赖
-        if (tgli.getJump_dep() != null && tgli.getJump_dep().equalsIgnoreCase("on")) {
-            String msg2 = "[" + jobType + "] JOB ,跳过依赖任务";
-            logger.info(msg2);
-            insertLog(tgli, "INFO", msg2);
-            return true;
-        }
-        String job_ids = tgli.getJob_ids();
-        if (job_ids != null && job_ids.split(",").length > 0) {
-            for (String dep_job_id : job_ids.split(",")) {
-                String etl_date = tgli.getEtl_date();
-                List<TaskGroupLogInstance> taskLogsList = tglim.selectByIdEtlDate(dep_job_id, etl_date);
-                if (taskLogsList == null || taskLogsList.size() <= 0) {
-                    String msg = "[" + jobType + "] JOB ,依赖任务" + dep_job_id + ",ETL日期" + etl_date + ",未完成";
-                    logger.info(msg);
-                    insertLog(tgli, "INFO", msg);
-                    tgli.setThread_id(""); //设置为空主要是为了 在检查依赖任务期间杀死
-                    tgli.setStatus(JobStatus.CHECK_DEP.getValue());
-                    tgli.setProcess("7");
-                    tgli.setUpdate_time(new Timestamp(new Date().getTime()));
-                    updateTaskLog(tgli,tglim);
-                    return false;
-                }
-                String msg2 = "[" + jobType + "] JOB ,依赖任务" + dep_job_id + ",ETL日期" + etl_date + ",已完成";
-                logger.info(msg2);
-                insertLog(tgli, "INFO", msg2);
-            }
-
-        }
-        String msg2 = "[" + jobType + "] JOB ,无依赖任务,或者所有依赖任务已完成";
-        logger.info(msg2);
-        insertLog(tgli, "INFO", msg2);
-        tgli.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
-        return true;
-    }
-
-    /**
-     * 检查子任务中的任务组依赖
+     * 检查子任务中的任务组依赖(特殊依赖-group)
+     * 可理解为类似数据采集的任务(只是这个任务只做依赖关系)
      * @param jobType
      * @param tli
      * @return
@@ -1207,6 +1159,11 @@ public class JobCommon2 {
         TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         String dep_job_id=tli.getEtl_task_id();
         String etl_date=tli.getEtl_date();
+
+        if(!checkDep(jobType,tli)){
+            return false;
+        }
+
         List<TaskGroupLogInstance> taskLogsList = tglim.selectByIdEtlDate(dep_job_id, etl_date);
         if (taskLogsList == null || taskLogsList.size() <= 0) {
             String msg = "[" + jobType + "] JOB ,依赖任务组:" + dep_job_id + ",ETL日期:" + etl_date + ",未完成";
@@ -1225,8 +1182,11 @@ public class JobCommon2 {
         return true;
     }
 
+
+
     /**
-     * 检查子任务中的jdbc依赖
+     * 检查子任务中的jdbc依赖(特殊依赖-jdbc)
+     * 可理解为类似数据采集的任务(只是这个任务只做依赖关系)
      * @param jobType
      * @param tli
      * @return
@@ -1236,8 +1196,11 @@ public class JobCommon2 {
         insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务中的JDBC依赖");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
-        String dep_job_id=tli.getEtl_task_id();
         String etl_date=tli.getEtl_date();
+
+        if(!checkDep(jobType,tli)){
+            return false;
+        }
 
         DBUtil dbUtil=new DBUtil();
 
