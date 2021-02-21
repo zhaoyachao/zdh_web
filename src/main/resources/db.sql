@@ -680,7 +680,7 @@ alter table task_log_instance add column is_disenable varchar(10) comment '是�
 --201-02-08;
 alter table zdh_ha_info add column online varchar(10) comment '是否上线1:上线,0:逻辑下线2:物理下线';
 
---2021-02-10
+--2021-02-10;
 drop TABLE if EXISTS server_task_info;
 create table server_task_info(
 id bigint NOT NULL AUTO_INCREMENT,
@@ -701,7 +701,7 @@ build_path varchar(500) comment '构建地址',
 primary key (id)
 );
 
--- 2021-02-11
+-- 2021-02-11;
 drop TABLE if EXISTS server_task_instance;
 create table server_task_instance(
 id bigint NOT NULL AUTO_INCREMENT,
@@ -725,6 +725,10 @@ build_privatekey text comment '构建服务器密钥地址',
 build_path varchar(500) comment '构建地址',
 primary key (id)
 );
+
+-- 2021-02-21;
+
+alter table task_log_instance add column depend_level varchar(10) not null default '0' comment '判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行';
 
 
 create database if NOT EXISTS quartz;

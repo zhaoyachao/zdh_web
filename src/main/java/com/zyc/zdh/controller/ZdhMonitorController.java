@@ -374,8 +374,6 @@ public class ZdhMonitorController extends BaseController{
             levels = "'ERROR'";
         }
 
-        taskLogInstanceMapper.selectByIdStatus(task_log_id);
-
         List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id, task_log_id, ts_start, ts_end, levels);
         Iterator<ZdhLogs> it = zhdLogs.iterator();
         StringBuilder sb = new StringBuilder();

@@ -64,6 +64,18 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">依赖级别</label>
+                            <div class="col-sm-10">
+                                <select id="depend_level" name="depend_level" data-placeholder="依赖级别"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="0" mytype="">成功触发</option>
+                                    <option value="1" mytype="">杀死触发</option>
+                                    <option value="2" mytype="">失败触发</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
@@ -175,6 +187,7 @@
 
             }
 
+            $('#depend_level').chosen()
             $('#group_job').chosen()
             init_job_sources();
 
@@ -182,6 +195,8 @@
                 console.info("更新触发")
                 $("#group_job").val(s["etl_task_id"]);
                 $("#group_job").trigger("chosen:updated");
+                $("#depend_level").val(s["depend_level"]);
+                $("#depend_level").trigger("chosen:updated");
                 var is_disenable=s['is_disenable']
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
@@ -198,6 +213,7 @@
         //自定义实现
         var etl_context=$('#group_job').find("option:selected").text();
         var etl_task_id=$('#group_job').find("option:selected").val();
+        var depend_level=$('#depend_level').find("option:selected").val();
         var is_disenable = "false"
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -205,7 +221,8 @@
         data={
             "etl_context":etl_context,
             "etl_task_id":etl_task_id,
-            "is_disenable":is_disenable
+            "is_disenable":is_disenable,
+            "depend_level":depend_level
         }
         console.info("job_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

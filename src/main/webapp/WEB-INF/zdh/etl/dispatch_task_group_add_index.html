@@ -398,6 +398,7 @@
             $("#" + divId).attr("type",tp)
             $("#" + divId).attr("etl_context",rs.etl_context);
             $("#" + divId).attr("is_disenable",rs.is_disenable);
+            $("#" + divId).attr("depend_level",rs.depend_level);
             if(tp == "tasks"){
                 $("#" + divId).attr("etl_task_id",rs.etl_task_id);
                 $("#" + divId).attr("more_task",rs.more_task);
@@ -476,7 +477,8 @@
             }else{
                 var more_task=div.attr("more_task")
                 var is_disenable = div.attr("is_disenable")
-                url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&is_disenable="+is_disenable
+                var depend_level = div.attr("depend_level")
+                url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&is_disenable="+is_disenable+"&depend_level="+depend_level
             }
             layer.open({
                 type: 2,
@@ -496,6 +498,7 @@
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("more_task",etl_task_info.more_task);
                     div.attr("is_disenable",etl_task_info.is_disenable);
+                    div.attr("depend_level",etl_task_info.depend_level);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -518,8 +521,9 @@
             }else{
                 var is_script=div.attr("is_script")
                 var is_disenable = div.attr("is_disenable")
+                var depend_level = div.attr("depend_level")
                 $("#shell_text").val(command)
-                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&is_disenable="+is_disenable
+                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&is_disenable="+is_disenable+"&depend_level="+depend_level
             }
             layer.open({
                 type: 2,
@@ -539,6 +543,7 @@
                     div.attr("is_script",etl_task_info.is_script);
                     div.attr("etl_context",etl_task_info.etl_context)
                     div.attr("is_disenable",etl_task_info.is_disenable);
+                    div.attr("depend_level",etl_task_info.depend_level);
                     div.css("width","auto")
                     div.css("display","inline-block")
                     div.css("*display","inline")
@@ -559,7 +564,8 @@
                 url=url+"?etl_task_id=-1"
             }else{
                 var is_disenable = div.attr("is_disenable")
-                url=url+"?etl_task_id="+etl_task_id+"&is_disenable="+is_disenable
+                var depend_level = div.attr("depend_level")
+                url=url+"?etl_task_id="+etl_task_id+"&is_disenable="+is_disenable+"&depend_level="+depend_level
             }
             layer.open({
                 type: 2,
@@ -578,6 +584,7 @@
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("is_disenable",etl_task_info.is_disenable);
+                    div.attr("depend_level",etl_task_info.depend_level);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -604,9 +611,10 @@
                 var username=div.attr("username")
                 var password=div.attr("password")
                 var jdbc_sql=div.attr("jdbc_sql")
+                var depend_level = div.attr("depend_level")
                 $("#jdbc_url_text").val(jdbc_url)
                 $("#jdbc_sql_text").val(jdbc_sql)
-                url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password
+                url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level
             }
             layer.open({
                 type: 2,
@@ -628,6 +636,8 @@
                     div.attr("password",etl_task_info.password);
                     div.attr("jdbc_sql",etl_task_info.jdbc_sql);
                     div.attr("etl_context",etl_task_info.etl_context);
+                    div.attr("is_disenable",etl_task_info.is_disenable);
+                    div.attr("depend_level",etl_task_info.depend_level);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -652,6 +662,7 @@
                 etl_task_id: $elem.attr('etl_task_id'),
                 etl_context:$elem.attr('etl_context'),
                 more_task:$elem.attr('more_task'),
+                depend_level:$elem.attr('depend_level'),
                 is_script: $elem.attr('is_script'),
                 is_disenable: $elem.attr('is_disenable'),
                 command:$elem.attr('command'),
@@ -1208,7 +1219,7 @@
                             init_sql_task_sources()
                         }
                         if(more_task=="外部JAR"){
-                        init_jar_task_sources()
+
                         }
                         if(more_task=="Drools") {
                             console.info("选中Drools")

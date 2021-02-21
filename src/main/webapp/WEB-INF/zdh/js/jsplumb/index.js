@@ -163,7 +163,8 @@ $(document).ready(function(){
                         url=url+"?etl_task_id=-1"
                     }else{
                         var more_task=div.attr("more_task")
-                        url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task
+                        var depend_level = div.attr("depend_level")
+                        url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&depend_level="+depend_level
                     }
                     layer.open({
                         type: 2,
@@ -203,7 +204,8 @@ $(document).ready(function(){
                 url=url+"?command=-1"
             }else{
                 var is_script=div.attr("is_script")
-                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
+                var depend_level = div.attr("depend_level")
+                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&depend_level="+depend_level
             }
             layer.open({
                 type: 2,
@@ -242,7 +244,8 @@ $(document).ready(function(){
                 url=url+"?etl_task_id=-1"
             }else{
                 var more_task=div.attr("more_task")
-                url=url+"?etl_task_id="+etl_task_id
+                var depend_level = div.attr("depend_level")
+                url=url+"?etl_task_id="+etl_task_id+"&depend_level="+depend_level
             }
             layer.open({
                 type: 2,
@@ -286,9 +289,10 @@ $(document).ready(function(){
                 var username=div.attr("username")
                 var password=div.attr("password")
                 var jdbc_sql=div.attr("jdbc_sql")
+                var depend_level = div.attr("depend_level")
                 $("#jdbc_url_text").val(jdbc_url)
                 $("#jdbc_sql_text").val(jdbc_sql)
-                url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password
+                url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level
             }
             layer.open({
                 type: 2,

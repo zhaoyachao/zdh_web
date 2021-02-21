@@ -2,6 +2,7 @@ package com.zyc.zdh.entity;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zyc.zdh.job.JobStatus;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -609,6 +610,12 @@ public class TaskGroupLogInstance implements Serializable {
 
     public String getProcess_msg() {
         //默认是1,开始调度是5,调整调度时间etl_date是7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行
+
+        if(status.equalsIgnoreCase(JobStatus.ERROR.getValue())){
+            return "采集失败";
+        }else if(status.equalsIgnoreCase(JobStatus.KILLED.getValue())){
+            return "已杀死";
+        }
          switch (getProcess()){
              case "1":
                  return "未开始";

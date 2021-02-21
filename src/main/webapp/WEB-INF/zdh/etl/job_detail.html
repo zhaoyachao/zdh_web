@@ -77,6 +77,18 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">依赖级别</label>
+                            <div class="col-sm-10">
+                                <select id="depend_level" name="depend_level" data-placeholder="依赖级别"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="0" mytype="">成功触发</option>
+                                    <option value="1" mytype="">杀死触发</option>
+                                    <option value="2" mytype="">失败触发</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
@@ -393,7 +405,6 @@
                     init_sql_task_sources()
                 }else if(more_task=="外部JAR"){
                     console.info("选中外部JAR")
-                    init_jar_task_sources()
                 }else if(more_task=="Drools") {
                     console.info("选中Drools")
                     init_etl_task_drools_sources()
@@ -405,6 +416,7 @@
 
             //启动数据源select 初始化函数
             $('#etl_task_id').chosen()
+            $('#depend_level').chosen()
             init_etl_task_sources();
 
             init_job_sources();
@@ -418,6 +430,8 @@
                 $("#more_task").trigger("chosen:updated");
                 $("#etl_task_id").val(s["etl_task_id"]);
                 $("#etl_task_id").trigger("chosen:updated");
+                $("#depend_level").val(s["depend_level"]);
+                $("#depend_level").trigger("chosen:updated");
                 var is_disenable=s['is_disenable']
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
@@ -435,6 +449,7 @@
         var etl_context=$('#etl_task_id').find("option:selected").text();
         var etl_task_id=$('#etl_task_id').find("option:selected").val();
         var more_task=$('#more_task').find("option:selected").val();
+        var depend_level=$('#depend_level').find("option:selected").val();
         var is_disenable = "false"
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -445,7 +460,8 @@
             "etl_context":etl_context,
             "etl_task_id":etl_task_id,
             "more_task":more_task,
-            "is_disenable":is_disenable
+            "is_disenable":is_disenable,
+            "depend_level":depend_level
         }
         console.info("job_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

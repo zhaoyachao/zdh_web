@@ -189,6 +189,9 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Select("select * from task_log_instance where status in ('finish','skip') and id=#{id}")
     public TaskLogInstance selectByIdStatus(@Param("id") String id);
 
+    @Select("select * from task_log_instance where id=#{id}")
+    public TaskLogInstance selectById(@Param("id") String id);
+
     @Update(value = "update task_log_instance set status=#{status} where id=#{id} and status='running' and process > #{process}")
     public int updateStatusById3(@Param("status") String status, @Param("process") String process, @Param("id") String id);
 
@@ -301,6 +304,24 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     )
     public List<TaskLogInstance> selectByIds2(@Param("ids") String[] ids);
 
+
+    /**
+     * 获取上游成功或者跳过状态任务信息
+     * @param ids
+     * @return
+     */
+    @Select(
+            {
+                    "<script>",
+                    "select * from task_log_instance tli where tli.id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "and status in ('finish','skip')",
+                    "</script>"
+            }
+    )
+    public List<TaskLogInstance> selectByFinishIds(@Param("ids") String[] ids);
 
     @Delete(
             {

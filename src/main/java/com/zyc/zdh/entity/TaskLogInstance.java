@@ -124,6 +124,16 @@ public class TaskLogInstance implements Serializable {
 
     private String is_disenable;//0:禁用,1启用
 
+    private String depend_level="0";//0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
+
+    public String getDepend_level() {
+        return depend_level;
+    }
+
+    public void setDepend_level(String depend_level) {
+        this.depend_level = depend_level;
+    }
+
     public String getIs_disenable() {
         return is_disenable;
     }

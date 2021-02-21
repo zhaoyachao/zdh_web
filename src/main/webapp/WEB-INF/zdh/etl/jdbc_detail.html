@@ -103,6 +103,18 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">依赖级别</label>
+                            <div class="col-sm-10">
+                                <select id="depend_level" name="depend_level" data-placeholder="依赖级别"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="0" mytype="">成功触发</option>
+                                    <option value="1" mytype="">杀死触发</option>
+                                    <option value="2" mytype="">失败触发</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
@@ -203,7 +215,7 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-
+            $('#depend_level').chosen()
             if(s["etl_context"] != '-1'){
                 console.info("更新触发")
                 $('#url').val($("#jdbc_url_text",window.parent.document).val());
@@ -211,6 +223,9 @@
                 $('#username').val(s.username);
                 $('#password').val(s.password);
                 $('#etl_context').val(s.etl_context);
+                $("#depend_level").val(s["depend_level"]);
+                $("#depend_level").trigger("chosen:updated");
+
                 window.editor.setValue($("#jdbc_sql_text",window.parent.document).val());
                 window.editor.refresh();
                 var is_disenable=s['is_disenable']
@@ -233,6 +248,7 @@
         var password=$('#password').val();
         var etl_context=$('#etl_context').val();
         var jdbc_sql=window.editor.getValue();
+        var depend_level=$('#depend_level').find("option:selected").val();
         var is_disenable = "false"
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -244,7 +260,8 @@
             "username":username,
             "password":password,
             "is_disenable":is_disenable,
-            "jdbc_sql":jdbc_sql
+            "jdbc_sql":jdbc_sql,
+            "depend_level":depend_level
         }
         console.info("job_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
