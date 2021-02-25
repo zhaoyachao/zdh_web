@@ -19,7 +19,7 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
      * @param id
      * @return
      */
-    @Update(value = "update task_group_log_instance  set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`='dispatch' and job_type in ('JDBC','GROUP')) then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end  where id=#{id} and (status != 'error' and status != 'killed')")
+    @Update(value = "update task_group_log_instance  set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create','dispatch') or (`status`='dispatch' and job_type in ('JDBC','GROUP')) then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end  where id=#{id} and (status != 'error' and status != 'killed')")
     public int updateStatusById2(@Param("id") String id);
 
 

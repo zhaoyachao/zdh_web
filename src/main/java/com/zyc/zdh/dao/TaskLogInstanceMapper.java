@@ -37,13 +37,34 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Update({
             "<script>",
             "update task_log_instance ",
-            " set status= case when `status`='check_dep' or `status`='waite_retry' or (`status`='dispatch' and job_type in ('JDBC','GROUP')) then 'killed' else 'kill' end",
-            " where id=#{id} and (status='dispatch' or status ='etl' or status= 'check_dep' or status= 'wait_retry')",
+            " set status= case when `status`='check_dep' or `status`='waite_retry' or `status`= 'create' or (`status`='dispatch' and job_type in ('JDBC','GROUP','SHELL')) then 'killed' else 'kill' end",
+            " where id=#{id} and (`status`='dispatch' or `status` ='etl' or `status`= 'check_dep' or `status`= 'wait_retry' or `status`= 'create')",
             "</script>",
     })
     public int updateStatusById2(@Param("id") String id);
 
-    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`='dispatch' and job_type in ('JDBC','GROUP')) then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end where group_id=#{group_id} and (status != 'error' and status != 'killed')")
+    // value = "update task_log_instance set status=#{status} where id=#{id} and status not in ('kill','killed')")
+    /**
+     * 更新状态避免杀死后继续更新
+     * @param status
+     * @param id
+     * @return
+     */
+    @Update(
+            {
+                    "<script>",
+                    "update task_log_instance set status=#{status}",
+                    "<when test='process!=null and process !=\"\"'>",
+                    ", process = #{process}",
+                    "</when>",
+                    ", update_time = current_timestamp()",
+                    "where id=#{id} and status not in ('kill','killed')",
+                    "</script>"
+            }
+    )
+    public int updateStatusById4(@Param("status") String status,@Param("process")String process, @Param("id") String id);
+
+    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`= 'dispatch' and job_type in ('JDBC','GROUP','SHELL')) then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end where group_id=#{group_id} and (`status` != 'error' and `status` != 'killed')")
     public int updateStatusByGroupId(@Param("group_id") String group_id);
 
     @Update(value = "update task_log_instance set is_notice=#{is_notice} where id=#{id}")

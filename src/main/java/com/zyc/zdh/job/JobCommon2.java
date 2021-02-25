@@ -1037,6 +1037,12 @@ public class JobCommon2 {
 
     }
 
+    public static void updateTaskStatus(String status,String id, String process,TaskLogInstanceMapper tlim) {
+        System.out.println("updateTaskLog===============");
+        tlim.updateStatusById4(status,process,id);
+
+    }
+
     public static void updateTaskLog(TaskLogInstance tli, TaskLogInstanceMapper tlim) {
         System.out.println("updateTaskLog===============");
         if(tli.getLast_time()==null){
@@ -1187,10 +1193,11 @@ public class JobCommon2 {
             insertLog(tli, "INFO", msg4);
             insertLog(tli, "INFO", msg5);
 
-            tli.setStatus("check_dep");
-            tli.setProcess("7");
-            tli.setUpdate_time(new Timestamp(new Date().getTime()));
-            updateTaskLog(tli,tlim);
+//            tli.setStatus("check_dep");
+//            tli.setProcess("7");
+//            tli.setUpdate_time(new Timestamp(new Date().getTime()));
+//            updateTaskLog(tli,tlim);
+            updateTaskStatus("check_dep",tli.getId(),"7",tlim);
 
             if(is_pass){
                 String msg6 = "[" + jobType + "] JOB ,依赖任务状态,满足当前任务触发条件" +",ETL日期" + etl_date ;

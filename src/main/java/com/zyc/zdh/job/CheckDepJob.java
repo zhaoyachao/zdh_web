@@ -40,6 +40,7 @@ public class CheckDepJob {
                 if(!StringUtils.isEmpty(tgli.getPre_tasks())){
                     int tmp_size=tglim.selectByIds(tgli.getPre_tasks().split(","),JobStatus.FINISH.getValue()).size();
                     if(tgli.getPre_tasks().split(",").length!=tmp_size){
+                        JobCommon2.insertLog(tgli,"INFO","上游依赖任务组未完成,稍后再次检测");
                         continue;
                     }
                 }
@@ -126,7 +127,8 @@ public class CheckDepJob {
                         List<TaskLogInstance> tlis_finish= taskLogInstanceMapper.selectByFinishIds(task_ids);
                         if(tlis_finish.size()==task_ids.length){
                             tli.setStatus(JobStatus.SKIP.getValue());
-                            JobCommon2.updateTaskLog(tli,taskLogInstanceMapper);
+                            JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tli.getId(),"",taskLogInstanceMapper);
+                            //JobCommon2.updateTaskLog(tli,taskLogInstanceMapper);
                             JobCommon2.insertLog(tli,"INFO","检测到上游任务:"+tlis.get(0).getId()+",都以完成或者跳过,更新本任务状态为SKIP");
                             continue;
                         }
@@ -149,7 +151,8 @@ public class CheckDepJob {
                     JobCommon2.updateTaskLog(tli, taskLogInstanceMapper);
                 }else{
                     tli.setStatus(JobStatus.DISPATCH.getValue());
-                    JobCommon2.updateTaskLog(tli, taskLogInstanceMapper);
+                    JobCommon2.updateTaskStatus(JobStatus.DISPATCH.getValue(),tli.getId(),"",taskLogInstanceMapper);
+                    //JobCommon2.updateTaskLog(tli, taskLogInstanceMapper);
                 }
             }
 
@@ -177,7 +180,8 @@ public class CheckDepJob {
                         List<TaskLogInstance> tlis_finish= taskLogInstanceMapper.selectByFinishIds(task_ids);
                         if(tlis_finish.size()==task_ids.length){
                             tl.setStatus(JobStatus.SKIP.getValue());
-                            JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
+                            JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tl.getId(),"",taskLogInstanceMapper);
+                            //JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
                             JobCommon2.insertLog(tl,"INFO","检测到上游任务:"+tlis.get(0).getId()+",都以完成或者跳过,更新本任务状态为SKIP");
                             continue;
                         }
