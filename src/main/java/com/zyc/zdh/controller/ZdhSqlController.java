@@ -156,7 +156,7 @@ public class ZdhSqlController extends BaseController{
             js.put("data","您没有权限访问,请联系管理员添加权限");
             return js.toJSONString();
         }
-        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper).getZdh_url();
+        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper,"").getZdh_url();
         try {
             String databases = HttpUtil.postJSON(url + "/show_databases", new JSONObject().toJSONString());
 
@@ -252,7 +252,7 @@ public class ZdhSqlController extends BaseController{
     @ResponseBody
     public String show_tables() {
 
-        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper).getZdh_url();
+        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper,"").getZdh_url();
         try {
             String tableNames = HttpUtil.postJSON(url + "/show_tables", "");
 
@@ -276,7 +276,7 @@ public class ZdhSqlController extends BaseController{
     @ResponseBody
     public String desc_table(String table) {
 
-        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper).getZdh_url();
+        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper,"").getZdh_url();
         try {
             JSONObject p = new JSONObject();
             p.put("table", table);

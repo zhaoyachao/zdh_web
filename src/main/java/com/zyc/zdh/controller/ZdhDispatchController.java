@@ -9,6 +9,7 @@ import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.EtlTaskInfo;
 import com.zyc.zdh.entity.QuartzJobInfo;
 import com.zyc.zdh.entity.TaskGroupLogInstance;
+import com.zyc.zdh.entity.ZdhHaInfo;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.JobStatus;
 import com.zyc.zdh.job.SnowflakeIdWorker;
@@ -427,6 +428,15 @@ public class ZdhDispatchController extends BaseController {
         return json.toJSONString();
     }
 
+
+    @RequestMapping("/zdh_instance_list")
+    @ResponseBody
+    public String zdh_instance_list() {
+
+        List<String> instances = zdhHaInfoMapper.selectServerInstance();
+
+        return JSON.toJSONString(instances);
+    }
 
 
     private void debugInfo(Object obj) {

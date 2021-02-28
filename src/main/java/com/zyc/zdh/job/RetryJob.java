@@ -60,7 +60,7 @@ public class RetryJob {
 
             //获取dispatch,ETL处理的任务
             List<TaskLogInstance> taskLogsList2=taskLogInstanceMapper.selectThreadByStatus3();
-            List<ZdhHaInfo> zdhHaInfos=zdhHaInfoMapper.selectByStatus("enabled");
+            List<ZdhHaInfo> zdhHaInfos=zdhHaInfoMapper.selectByStatus("enabled","");
 
             Map<String,String> zdhHaMap=new HashMap<>();
             for(ZdhHaInfo zdhHaInfo:zdhHaInfos){
@@ -98,7 +98,7 @@ public class RetryJob {
                     if(second_task_logs.getStatus().equalsIgnoreCase(task_log_status))
                     logger.info("检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
                     JobCommon2.insertLog(t2,"INFO","检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
-                    ZdhHaInfo zdhHaInfo=JobCommon2.getZdhUrl(zdhHaInfoMapper);
+                    ZdhHaInfo zdhHaInfo=JobCommon2.getZdhUrl(zdhHaInfoMapper,t2.getParams());
                     URI old_uri=URI.create(t2.getUrl());
                     String new_authori=URI.create(zdhHaInfo.getZdh_url()).getAuthority();
                     String new_url=old_uri.getScheme()+"://"+new_authori+old_uri.getPath();
@@ -157,7 +157,7 @@ public class RetryJob {
 
             //获取dispatch,ETL处理的任务
             List<TaskLogInstance> taskLogsList2=taskLogInstanceMapper.selectThreadByStatus3();
-            List<ZdhHaInfo> zdhHaInfos=zdhHaInfoMapper.selectByStatus("enabled");
+            List<ZdhHaInfo> zdhHaInfos=zdhHaInfoMapper.selectByStatus("enabled","");
 
             Map<String,String> zdhHaMap=new HashMap<>();
             for(ZdhHaInfo zdhHaInfo:zdhHaInfos){
@@ -195,7 +195,7 @@ public class RetryJob {
                     if(second_task_logs.getStatus().equalsIgnoreCase(task_log_status))
                         logger.info("检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
                     JobCommon2.insertLog(t2,"INFO","检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
-                    ZdhHaInfo zdhHaInfo=JobCommon2.getZdhUrl(zdhHaInfoMapper);
+                    ZdhHaInfo zdhHaInfo=JobCommon2.getZdhUrl(zdhHaInfoMapper,t2.getParams());
                     URI old_uri=URI.create(t2.getUrl());
                     String new_authori=URI.create(zdhHaInfo.getZdh_url()).getAuthority();
                     String new_url=old_uri.getScheme()+"://"+new_authori+old_uri.getPath();

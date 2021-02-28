@@ -18,7 +18,15 @@ public interface ZdhHaInfoMapper extends BaseMapper<ZdhHaInfo> {
 
 
 
-    @Select(value="select * from zdh_ha_info where zdh_status=#{status} and timestampdiff(SECOND,current_timestamp(),update_time) <= 60 and online='1'")
+    @Select(
+            {
+                    "<script>",
+                    "select * from zdh_ha_info where zdh_status=#{status} and timestampdiff(SECOND,current_timestamp(),update_time) &lt;= 60 and online=1 ",
+                    "<when test='zdh_instance!=null and zdh_instance !=\"\"'>",
+                    " and zdh_instance = #{zdh_instance}",
+                    "</when>",
+                    "</script>"
+            })
     @Results({@Result(column="id",property="id"),
             @Result(column="zhd_instance",property="zhd_instance"),
             @Result(column="zhd_url",property="zhd_url"),
@@ -27,7 +35,7 @@ public interface ZdhHaInfoMapper extends BaseMapper<ZdhHaInfo> {
             @Result(column="web_port",property="web_port"),
             @Result(column="zdh_status",property="zdh_status")
     })
-    public List<ZdhHaInfo> selectByStatus(@Param("status") String status);
+    public List<ZdhHaInfo> selectByStatus(@Param("status") String status,@Param("zdh_instance") String zdh_instance);
 
     @Select(
             {
@@ -62,5 +70,14 @@ public interface ZdhHaInfoMapper extends BaseMapper<ZdhHaInfo> {
     @Update("update zdh_ha_info set online=#{online} where id=#{id}")
     public int updateOnline(@Param("online") String online,@Param("id") String id);
 
+
+    @Select(
+            {
+                    "<script>",
+                    "select distinct zdh_instance from zdh_ha_info ",
+                    "</script>"
+            }
+    )
+    public List<String> selectServerInstance();
 
 }

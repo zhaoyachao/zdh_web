@@ -89,6 +89,18 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">指定计算集群</label>
+                            <div class="col-sm-10">
+                                <select id="zdh_instance" name="zdh_instance" data-placeholder="集群名"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="0" mytype="">成功触发</option>
+                                    <option value="1" mytype="">杀死触发</option>
+                                    <option value="2" mytype="">失败触发</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
@@ -388,6 +400,36 @@
                 });
             }
 
+            function init_zdh_instance(){
+                $.ajax({
+                    type: 'POST',
+                    url: "zdh_instance_list",
+                    dataType: 'json',
+                    async: false,
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i]+ "\" mytype=\"" + data[i] + "\" hassubinfo=\"true\">" + data[i] + "</option>"
+                        }
+                        //ETL单任务下拉框
+                        $('#zdh_instance').html(str);
+                        $('#zdh_instance').chosen().on("change", function (evt, params) {
+                            $("#zdh_instance").trigger("chosen:updated");
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
 
             $('#more_task').chosen().on("change", function (evt, params) {
                 choseMoreTask($("#more_task").val())
@@ -421,6 +463,8 @@
 
             init_job_sources();
 
+            init_zdh_instance()
+
             if(s["etl_task_id"] != '-1'){
                 console.info("更新触发")
                 var more_task=s["more_task"]
@@ -432,6 +476,8 @@
                 $("#etl_task_id").trigger("chosen:updated");
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
+                $("#zdh_instance").val(s["zdh_instance"]);
+                $("#zdh_instance").trigger("chosen:updated");
                 var is_disenable=s['is_disenable']
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
@@ -450,6 +496,7 @@
         var etl_task_id=$('#etl_task_id').find("option:selected").val();
         var more_task=$('#more_task').find("option:selected").val();
         var depend_level=$('#depend_level').find("option:selected").val();
+        var zdh_instance=$('#zdh_instance').find("option:selected").val();
         var is_disenable = "false"
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -461,7 +508,8 @@
             "etl_task_id":etl_task_id,
             "more_task":more_task,
             "is_disenable":is_disenable,
-            "depend_level":depend_level
+            "depend_level":depend_level,
+            "zdh_instance":zdh_instance
         }
         console.info("job_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

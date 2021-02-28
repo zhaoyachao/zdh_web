@@ -402,6 +402,7 @@
             if(tp == "tasks"){
                 $("#" + divId).attr("etl_task_id",rs.etl_task_id);
                 $("#" + divId).attr("more_task",rs.more_task);
+                $("#" + divId).attr("zdh_instance",rs.zdh_instance);
             }
 
             if(tp == "shell"){
@@ -478,7 +479,9 @@
                 var more_task=div.attr("more_task")
                 var is_disenable = div.attr("is_disenable")
                 var depend_level = div.attr("depend_level")
+                var zdh_instance = div.attr("zdh_instance")
                 url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&is_disenable="+is_disenable+"&depend_level="+depend_level
+                    +"&zdh_instance="+zdh_instance
             }
             layer.open({
                 type: 2,
@@ -499,6 +502,7 @@
                     div.attr("more_task",etl_task_info.more_task);
                     div.attr("is_disenable",etl_task_info.is_disenable);
                     div.attr("depend_level",etl_task_info.depend_level);
+                    div.attr("zdh_instance",etl_task_info.zdh_instance);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -663,6 +667,7 @@
                 etl_context:$elem.attr('etl_context'),
                 more_task:$elem.attr('more_task'),
                 depend_level:$elem.attr('depend_level'),
+                zdh_instance:$elem.attr('zdh_instance'),
                 is_script: $elem.attr('is_script'),
                 is_disenable: $elem.attr('is_disenable'),
                 command:$elem.attr('command'),

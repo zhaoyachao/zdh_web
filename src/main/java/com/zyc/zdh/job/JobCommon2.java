@@ -701,10 +701,15 @@ public class JobCommon2 {
      * @param zdhHaInfoMapper
      * @return
      */
-    public static ZdhHaInfo getZdhUrl(ZdhHaInfoMapper zdhHaInfoMapper) {
+    public static ZdhHaInfo getZdhUrl(ZdhHaInfoMapper zdhHaInfoMapper,String params) {
         logger.info("获取后台处理URL");
         String url = "http://127.0.0.1:60001/api/v1/zdh";
-        List<ZdhHaInfo> zdhHaInfoList = zdhHaInfoMapper.selectByStatus("enabled");
+        String zdh_instance=null;
+        if(!StringUtils.isEmpty(params)){
+            zdh_instance=JSON.parseObject(params).getString("zdh_instance");
+        }
+
+        List<ZdhHaInfo> zdhHaInfoList = zdhHaInfoMapper.selectByStatus("enabled",zdh_instance);
         String id = "-1";
         if (zdhHaInfoList != null && zdhHaInfoList.size() >= 1) {
             int random = new Random().nextInt(zdhHaInfoList.size());
@@ -789,7 +794,8 @@ public class JobCommon2 {
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
         String params = tli.getParams().trim();
-        ZdhHaInfo zdhHaInfo = getZdhUrl(zdhHaInfoMapper);
+        insertLog(tli,"INFO","获取服务端url,指定参数:"+params);
+        ZdhHaInfo zdhHaInfo = getZdhUrl(zdhHaInfoMapper,params);
         String url = zdhHaInfo.getZdh_url();
         JSONObject json = new JSONObject();
         if (!params.equals("")) {
@@ -1980,6 +1986,19 @@ public class JobCommon2 {
                 if(((JSONObject) job).getString("type").equalsIgnoreCase("tasks")){
                     taskLogInstance.setMore_task(more_task);
                     taskLogInstance.setJob_type("ETL");
+                    String zdh_instance=((JSONObject) job).getString("zdh_instance");
+                    if( !com.zyc.zdh.util.StringUtils.isEmpty(zdh_instance) && com.zyc.zdh.util.StringUtils.isEmpty(taskLogInstance.getParams())){
+                        JSONObject jsonObject=new JSONObject();
+                        jsonObject.put("zdh_instance",zdh_instance);
+                        taskLogInstance.setParams(jsonObject.toJSONString());
+                    }
+
+                    if( !com.zyc.zdh.util.StringUtils.isEmpty(zdh_instance) && !com.zyc.zdh.util.StringUtils.isEmpty(taskLogInstance.getParams())){
+                        JSONObject jsonObject=JSON.parseObject(taskLogInstance.getParams());
+                        jsonObject.put("zdh_instance",zdh_instance);
+                        taskLogInstance.setParams(jsonObject.toJSONString());
+                    }
+
                 }
                 if(((JSONObject) job).getString("type").equalsIgnoreCase("shell")){
                     taskLogInstance.setMore_task("");
