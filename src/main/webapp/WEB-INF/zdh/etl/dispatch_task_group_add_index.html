@@ -609,7 +609,7 @@
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
                 url=url+"?etl_context=-1"
             }else{
-
+                var is_disenable = div.attr("is_disenable")
                 var jdbc_url=div.attr("url")
                 var driver=div.attr("driver")
                 var username=div.attr("username")
@@ -619,6 +619,7 @@
                 $("#jdbc_url_text").val(jdbc_url)
                 $("#jdbc_sql_text").val(jdbc_sql)
                 url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level
+                    +"&is_disenable="+is_disenable
             }
             layer.open({
                 type: 2,

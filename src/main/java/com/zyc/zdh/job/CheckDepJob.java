@@ -150,8 +150,11 @@ public class CheckDepJob {
                     tli.setProcess("100");
                     JobCommon2.updateTaskLog(tli, taskLogInstanceMapper);
                 }else{
-                    tli.setStatus(JobStatus.DISPATCH.getValue());
-                    JobCommon2.updateTaskStatus(JobStatus.DISPATCH.getValue(),tli.getId(),"",taskLogInstanceMapper);
+                    if( !tli.getStatus().equalsIgnoreCase(JobStatus.ERROR.getValue()) && !tli.getStatus().equalsIgnoreCase(JobStatus.WAIT_RETRY.getValue())){
+                        tli.setStatus(JobStatus.DISPATCH.getValue());
+                        JobCommon2.updateTaskStatus(JobStatus.DISPATCH.getValue(),tli.getId(),"",taskLogInstanceMapper);
+                    }
+
                     //JobCommon2.updateTaskLog(tli, taskLogInstanceMapper);
                 }
             }

@@ -813,7 +813,7 @@ public class JobCommon2 {
         tli.setParams(json.toJSONString());
 
         logger.info(model_log + " JOB ,获取当前的[url]:" + url);
-
+        JobCommon2.insertLog(tli,"INFO",model_log + " JOB ,获取当前的[url]:" + url);
         ZdhMoreInfo zdhMoreInfo = new ZdhMoreInfo();
         ZdhInfo zdhInfo = new ZdhInfo();
         ZdhSqlInfo zdhSqlInfo = new ZdhSqlInfo();
@@ -1343,8 +1343,8 @@ public class JobCommon2 {
      * @return
      */
     public static boolean checkDep3(String jobType,TaskLogInstance tli){
-        logger.info("[" + jobType + "] JOB ,开始检查任务中的JDBC依赖");
-        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务中的JDBC依赖");
+        logger.info("[" + jobType + "] JOB ,开始检查任务中的JDBC依赖,目前jdbc依赖只支持单条sql语句检查");
+        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务中的JDBC依赖,目前jdbc依赖只支持单条sql语句检查");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         String etl_date=tli.getEtl_date();
@@ -1365,11 +1365,29 @@ public class JobCommon2 {
             String jdbc_sql= jdbc.getString("jdbc_sql");
             Map<String, Object> map = (Map<String, Object>) JSON.parseObject(tli.getParams());
 
+            if(StringUtils.isEmpty(jdbc_sql)){
+                insertLog(tli,"INFO","JDBC依赖检查SQL:sql语句为空,直接跳过检查");
+                return true;
+            }
             //jdbc_sql 动态参数替换
             String new_jdbc_sql=DynamicParams(map,tli,jdbc_sql);
 
+
             insertLog(tli,"INFO","JDBC依赖检查SQL: "+new_jdbc_sql);
 
+            if (new_jdbc_sql.trim().toLowerCase().startsWith("insert")){
+
+                String[] rst= dbUtil.CUD(driver,url,username,password,new_jdbc_sql,new String[]{});
+                if(rst[0].equalsIgnoreCase("true")){
+                    String msg = "[" + jobType + "] JOB ,JDBC写入成功 "+ ",ETL日期:" + etl_date;
+                    insertLog(tli,"INFO",msg);
+                    return true;
+                }
+                String msg = "[" + jobType + "] JOB ,JDBC写入异常:" +rst[1]+ ",ETL日期:" + etl_date;
+                insertLog(tli,"INFO",msg);
+                jobFail(tli.getJob_type(),tli);
+                return false;
+            }
             try {
                List<Map<String,Object>> result= dbUtil.R5(driver,url,username,password,new_jdbc_sql);
                if(result.size()<1){
@@ -2041,7 +2059,7 @@ public class JobCommon2 {
                 tliList.add(taskLogInstance);
             }
 
-
+            JSONArray jary_line=new JSONArray();
             for(Object job :lines){
                 String pageSourceId=((JSONObject) job).getString("pageSourceId");
                 String pageTargetId=((JSONObject) job).getString("pageTargetId");
@@ -2049,6 +2067,10 @@ public class JobCommon2 {
                 ((JSONObject) job).put("parentid",map.get(pageTargetId));
                 if(pageSourceId !=null && !pageSourceId.equalsIgnoreCase("root")){
                     dag.addEdge(map.get(pageSourceId),map.get(pageTargetId));//此处的依赖关系 都是生成的任务实例id
+                    JSONObject json_line=new JSONObject();
+                    json_line.put("from",map.get(pageSourceId));
+                    json_line.put("to",map.get(pageTargetId));
+                    jary_line.add(json_line);
                 }
             }
 
@@ -2070,6 +2092,7 @@ public class JobCommon2 {
 
             JSONObject jsonObject=JSON.parseObject(tgli.getJsmind_data());
             jsonObject.put("run_data",jary);
+            jsonObject.put("run_line",jary_line);
             tgli.setRun_jsmind_data(jsonObject.toJSONString());
             tgli.setProcess("6.5");
             tglim.updateByPrimaryKey(tgli);
