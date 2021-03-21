@@ -1114,7 +1114,7 @@ public class JobCommon2 {
         logger.info("[" + jobType + "] JOB ,开始检查当前任务上游任务依赖");
         insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查当前任务上游任务依赖");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-
+        TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         //检查任务依赖
         if (tli.getJump_dep() != null && tli.getJump_dep().equalsIgnoreCase("on")) {
             String msg2 = "[" + jobType + "] JOB ,跳过依赖任务";
@@ -1129,6 +1129,25 @@ public class JobCommon2 {
             insertLog(tli, "INFO", msg2);
             return true;
         }else{
+
+            String group_id = tli.getGroup_id();
+            TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(group_id);
+            String run_jsmind=tgli.getRun_jsmind_data();
+            DAG dag=new DAG();
+            if ( !StringUtils.isEmpty(run_jsmind)){
+                JSONArray json_ary = JSON.parseObject(run_jsmind).getJSONArray("run_line");
+                for(int i=0;i<json_ary.size();i++){
+                    JSONObject jsonObject=json_ary.getJSONObject(i);
+                    dag.addEdge(jsonObject.getString("from"),jsonObject.getString("to"));
+                }
+
+                Set<String> parents = dag.getAllParent(tli.getId());
+                logger.info("所有的父级,祖先级任务:"+parents);
+                insertLog(tli,"INFO","目前只判断父级任务是否完成,如果判断祖先级任务是否完成,可在此处做深度处理...");
+                insertLog(tli,"INFO","所有的父级,祖先级任务:"+parents);
+            }
+
+
             StringBuilder finish_id=new StringBuilder();
             StringBuilder error_id=new StringBuilder();
             StringBuilder kill_id=new StringBuilder();
@@ -1217,83 +1236,9 @@ public class JobCommon2 {
                 return false;
             }
 
-//            if (task_log_ids != null && task_log_ids.split(",").length > 0) {
-//                for (String pre_task_id : task_log_ids.split(",")) {
-//                    String etl_date = tli.getEtl_date();
-//                    //TaskLogInstance dep_pre_tli=tlim.selectByIdStatus(pre_task_id);
-//                    TaskLogInstance dep_pre_tli=tlim.selectById(pre_task_id);
-//                    String status="成功";
-//                    if(dep_pre_tli.getDepend_level().equalsIgnoreCase("1")){
-//                        status="杀死";
-//                    }else if(dep_pre_tli.getDepend_level().equalsIgnoreCase("2")){
-//                        status="失败";
-//                    }
-//                    String msg = "[" + jobType + "] JOB ,当前任务依赖上游任务状态:["+status+"]";
-//                    logger.info(msg);
-//                    insertLog(tli, "INFO", msg);
-//
-//                    if(dep_pre_tli.getDepend_level().equalsIgnoreCase("0")){
-//                        //只有上游成功触发
-//                        if(dep_pre_tli.getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue())){
-//                            String msg2 = "[" + jobType + "] JOB ,依赖任务" + pre_task_id + ",ETL日期" + etl_date + ",已完成";
-//                            logger.info(msg2);
-//                            insertLog(tli, "INFO", msg2);
-//                        }else{
-//                            String msg2 = "[" + jobType + "] JOB ,依赖任务" + pre_task_id + ",ETL日期" + etl_date + ",未完成";
-//                            logger.info(msg2);
-//                            insertLog(tli, "INFO", msg);
-//                            tli.setThread_id(""); //设置为空主要是为了 在检查依赖任务期间杀死
-//                            tli.setStatus("check_dep");
-//                            tli.setProcess("7");
-//                            tli.setUpdate_time(new Timestamp(new Date().getTime()));
-//                            updateTaskLog(tli,tlim);
-//                            return false;
-//                        }
-//
-//                    }
-//
-//                    if(dep_pre_tli.getDepend_level().equalsIgnoreCase("1")){
-//                        //只有上游杀死时触发
-//                        if(dep_pre_tli.getStatus().equalsIgnoreCase(JobStatus.KILLED.getValue())){
-//                            String msg2 = "[" + jobType + "] JOB ,依赖任务" + pre_task_id + ",ETL日期" + etl_date + ",已杀死,满足当前任务触发条件";
-//                            logger.info(msg2);
-//                            insertLog(tli, "INFO", msg2);
-//                            return true;
-//                        }
-//                    }
-//
-//                    if(dep_pre_tli.getDepend_level().equalsIgnoreCase("2")){
-//                        //只有上游杀死时触发
-//                        if(dep_pre_tli.getStatus().equalsIgnoreCase(JobStatus.ERROR.getValue())){
-//                            String msg2 = "[" + jobType + "] JOB ,依赖任务" + pre_task_id + ",ETL日期" + etl_date + ",已失败,满足当前任务触发条件";
-//                            logger.info(msg2);
-//                            insertLog(tli, "INFO", msg2);
-//                            return true;
-//                        }
-//                    }
-//
-//
-////                    if (dep_pre_tli.getDepend_level().equalsIgnoreCase("0") && dep_pre_tli.get == null ) {
-////                        String msg2 = "[" + jobType + "] JOB ,依赖任务" + pre_task_id + ",ETL日期" + etl_date + ",未完成";
-////                        logger.info(msg);
-////                        insertLog(tli, "INFO", msg);
-////                        tli.setThread_id(""); //设置为空主要是为了 在检查依赖任务期间杀死
-////                        tli.setStatus("check_dep");
-////                        tli.setProcess("7");
-////                        tli.setUpdate_time(new Timestamp(new Date().getTime()));
-////                        updateTaskLog(tli,tlim);
-////                        return false;
-////                    }
-////                    String msg2 = "[" + jobType + "] JOB ,依赖任务" + pre_task_id + ",ETL日期" + etl_date + ",已完成";
-////                    logger.info(msg2);
-////                    insertLog(tli, "INFO", msg2);
-//                }
-//            }
-
         }
 
 
-        //return true;
     }
 
     /**

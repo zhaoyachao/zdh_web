@@ -1,11 +1,6 @@
 package com.zyc.zdh.util;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class DAG {
 	/**
@@ -198,5 +193,27 @@ public final class DAG {
 	 */
 	public String toString() {
 		return "Out: " + fOut.toString() + " In: " + fIn.toString(); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+
+	public Set getAllParent(Object vertex){
+		Set set=new HashSet();
+		Set p1= Collections.unmodifiableSet(fIn.get(vertex));
+		set.addAll(p1);
+		Queue queue = new LinkedList<>();
+
+		queue.addAll(p1);
+		boolean is_run=true;
+		while(is_run){
+			Object p_vertex = queue.poll();
+			if(p_vertex == null)
+				return set;
+			Set p=Collections.unmodifiableSet(fIn.get(p_vertex));
+			if(p.size()>0)
+			  queue.addAll(p);
+			  set.addAll(p);
+		}
+
+        return set;
 	}
 }
