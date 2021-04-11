@@ -1639,6 +1639,15 @@ public class JobCommon2 {
     public static Timestamp getCurTime(QuartzJobInfo quartzJobInfo){
         QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
         if(quartzJobInfo.getUse_quartz_time() != null && quartzJobInfo.getUse_quartz_time().equalsIgnoreCase("on")){
+            if(!StringUtils.isEmpty(quartzJobInfo.getTime_diff())){
+                int seconds=0;
+                try {
+                     seconds = Integer.parseInt(quartzJobInfo.getTime_diff());
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                return DateUtil.add(quartzJobInfo.getQuartz_time(),Calendar.SECOND,-seconds);
+            }
             return quartzJobInfo.getQuartz_time();
         }
 

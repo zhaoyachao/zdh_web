@@ -60,7 +60,7 @@ public class QuartzJobInfo implements Serializable {
     private String priority="5";//优先级
     private Timestamp quartz_time;
     private String use_quartz_time="off";//是否使用quartz触发时间,on,off,null
-    private String time_diff;//
+    private String time_diff;//单位秒example 10 表示回退10s
     private String jsmind_data;//json 形式,作业直接的关系
 
     public String getJsmind_data() {

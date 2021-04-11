@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 联系作者</title>
+    <meta name="keywords" content="ZDH 联系作者">
+    <meta name="description" content="ZDH 联系作者">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/plugins/simditor/simditor.css" />
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-12 animated fadeInRight">
+                <div class="mail-box-header">
+                    <div class="pull-right tooltip-demo">
+<!--                        <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="存为草稿"><i class="fa fa-pencil"></i> 存为草稿</a>-->
+<!--                        <a href="mailbox.html" class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="放弃"><i class="fa fa-times"></i> 放弃</a>-->
+                    </div>
+                    <h2>
+                    写信
+                </h2>
+                </div>
+                <div class="mail-box">
+
+
+                    <div class="mail-body">
+
+                        <form class="form-horizontal" method="get" id="email_from">
+                            <input type="hidden" name="context" id="context">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">你的邮箱：</label>
+
+                                <div class="col-sm-10">
+                                    <input name="receiver" type="text" class="form-control" placeholder="xxx@qq.com" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">主题：</label>
+
+                                <div class="col-sm-10">
+                                    <input  name="subject" type="text" class="form-control" value="" placeholder="BUG,学习,商用,...">
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+
+                    <textarea id="editor" placeholder="这里输入内容" autofocus>
+
+                    </textarea>
+
+
+                    <div class="mail-body text-right tooltip-demo">
+                        <a href="javascript:void(0);" onclick="save()" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Send"><i class="fa fa-reply"></i> 发送</a>
+<!--                        <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Discard email"><i class="fa fa-times"></i> 放弃</a>-->
+<!--                        <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to draft folder"><i class="fa fa-pencil"></i> 存为草稿</a>-->
+                    </div>
+                    <div class="clearfix"></div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+
+    <!-- iCheck -->
+    <script src="js/plugins/iCheck/icheck.min.js"></script>
+
+
+    <script src="js/plugins/layer/layer.min.js"></script>
+    <!-- simditor -->
+    <script type="text/javascript" src="js/plugins/simditor/module.js"></script>
+    <script type="text/javascript" src="js/plugins/simditor/uploader.js"></script>
+    <script type="text/javascript" src="js/plugins/simditor/hotkeys.js"></script>
+    <script type="text/javascript" src="js/plugins/simditor/simditor.js"></script>
+    <script>
+        var editor ;
+        $(document).ready(function () {
+             editor = new Simditor({
+                textarea: $('#editor'),
+                defaultImage: 'img/a9.jpg'
+            });
+        });
+        
+        function save() {
+            $('#context').val(editor.getValue())
+            var index = layer.load(1, {
+                shade: [0.1,'#fff'] //0.1透明度的白色背景
+            });
+            $.ajax({
+                type: 'POST',
+                url: "send_email",
+                dataType: 'json',
+                data: $('#email_from').serialize(),
+                //发送数据前
+                beforeSend: function () {
+
+                },
+                //成功返回
+                success: function (data) {
+                  layer.msg("发送成功")
+                  layer.close(index)
+                  editor.setValue("")
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    layer.msg("发送失败")
+                    console.info("error: " + data);
+                    layer.close(index)
+                }
+            });
+        }
+    </script>
+
+
+</body>
+
+</html>
