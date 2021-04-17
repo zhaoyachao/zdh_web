@@ -9,6 +9,10 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 废弃,jdbc检查 请使用JobCommon2中check
+ */
+@Deprecated
 public class JdbcJob extends JobCommon2 {
 
     public static String jobType = "JDBC";

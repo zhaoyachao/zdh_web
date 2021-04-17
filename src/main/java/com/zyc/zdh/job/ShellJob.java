@@ -1,5 +1,6 @@
 package com.zyc.zdh.job;
 
+import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.util.CommandUtils;
@@ -26,22 +27,9 @@ public class ShellJob extends JobCommon2 {
             //当前只支持检查文件是否存在 if [ ! -f "/data/filename" ];then echo "文件不存在"; else echo "true"; fi
             //日期替换zdh.date => yyyy-MM-dd 模式
             //日期替换zdh.date.nodash=> yyyyMMdd 模式
-            logger.info("目前支持日期参数3种模式:zdh.date => yyyy-MM-dd ,zdh.date.nodash=> yyyyMMdd " +
-                    ",zdh.date.time=> yyyy-MM-dd HH:mm:ss");
-            insertLog(tli, "info", "目前支持日期参数3种模式:zdh.date => yyyy-MM-dd ,zdh.date.nodash=> yyyyMMdd " +
-                    ",zdh.date.time=> yyyy-MM-dd HH:mm:ss");
-            if (tli.getCur_time() == null) {
-                //第一次执行,下次执行时间为起始时间+1
-                if (tli.getStart_time() == null) {
-                    logger.info("[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
-                    insertLog(tli, "info", "[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
-                    tli.setStart_time(new Timestamp(new Date().getTime()));
-                }
-                logger.info("上次执行日期,下次执行日期均为空,赋值为:" + tli.getStart_time());
-                insertLog(tli, "info", "上次执行日期,下次执行日期均为空,赋值为:" + tli.getStart_time());
-                tli.setCur_time(tli.getStart_time());
-                tli.setNext_time(tli.getStart_time());
-            }
+            Map<String, Object> jinJavaParam = getJinJavaParam(tli);
+
+            Jinjava jj = new Jinjava();
 
             if(tli.getJump_script()!=null && tli.getJump_script().equalsIgnoreCase("on")){
                 logger.info("跳过脚本验证");
@@ -51,9 +39,6 @@ public class ShellJob extends JobCommon2 {
 
             if (!tli.getCommand().trim().equals("")) {
                 logger.info("========+++++" + tli.getCur_time());
-                String date_nodash = DateUtil.formatNodash(tli.getCur_time());
-                String date_time = DateUtil.formatTime(tli.getCur_time());
-                String date = DateUtil.format(tli.getCur_time());
 
                 logger.info("[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
                 insertLog(tli, "info", "[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
@@ -62,10 +47,7 @@ public class ShellJob extends JobCommon2 {
                     result.put("result", "success");
                 } else {
                     String system = System.getProperty("os.name");
-                    String command = tli.getCommand().
-                            replace("zdh.date.nodash", date_nodash).
-                            replace("zdh.date.time", date_time).
-                            replace("zdh.date", date);
+                    String command=jj.render(tli.getCommand(), jinJavaParam);
 
                     String[] str = command.split("\r\n");
                     String newcommand = "";
@@ -102,9 +84,9 @@ public class ShellJob extends JobCommon2 {
                         fileWritter.close();
                         logger.info("当前系统为:" + system+",command:"+newcommand);
                         if (system.toLowerCase().startsWith("win")) {
-                            result = CommandUtils.exeCommand2("cmd.exe", "/c", file2.getAbsolutePath());
+                            result = CommandUtils.exeCommand2(tli,"cmd.exe", "/c", file2.getAbsolutePath());
                         } else {
-                            result = CommandUtils.exeCommand2("sh", "-c", file2.getAbsolutePath());
+                            result = CommandUtils.exeCommand2(tli,"sh", "-c", file2.getAbsolutePath());
                         }
                     } else {
                         //命令行执行
@@ -113,18 +95,18 @@ public class ShellJob extends JobCommon2 {
                         logger.info("当前系统为:" + system+",command:"+newcommand+",命令行方式执行;");
                         insertLog(tli, "info", "[" + jobType + "] JOB ,当前系统为:" + system+",command:"+newcommand+",命令行方式执行;");
                         if (system.toLowerCase().startsWith("win")) {
-                            result = CommandUtils.exeCommand2("cmd.exe","/c" , newcommand);
+                            result = CommandUtils.exeCommand2(tli,"cmd.exe","/c" , newcommand);
                         } else {
-                            result = CommandUtils.exeCommand2("sh","-c",newcommand);
+                            result = CommandUtils.exeCommand2(tli,"sh","-c",newcommand);
                         }
                     }
                 }
                 logger.info("[" + jobType + "] JOB ,执行结果:" + result.get("result").toString().trim());
                 logger.info("[" + jobType + "] JOB ,正常输出:" + result.get("out").toString().trim());
-                logger.info("[" + jobType + "] JOB ,error输出:" + result.get("error").toString().trim());
+                logger.info("[" + jobType + "] JOB ,错误输出:" + result.get("error").toString().trim());
                 insertLog(tli, "info", "[" + jobType + "] JOB ,执行结果:" + result.get("result").toString().trim());
                 insertLog(tli, "info", "[" + jobType + "] JOB ,正常输出:" + result.get("out").toString().trim());
-                insertLog(tli, "info", "[" + jobType + "] JOB ,error输出:" + result.get("error").toString().trim());
+                insertLog(tli, "info", "[" + jobType + "] JOB ,错误输出:" + result.get("error").toString().trim());
                 if (!result.get("result").toString().trim().contains("success")) {
                     throw new Exception("shell 命令/脚本执行失败");
                 }

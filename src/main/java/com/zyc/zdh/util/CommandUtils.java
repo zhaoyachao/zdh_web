@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.zyc.zdh.entity.TaskLogInstance;
+import com.zyc.zdh.job.JobCommon2;
 import org.apache.commons.exec.*;
 
 /**
@@ -66,7 +68,7 @@ public class CommandUtils {
         }
     }
 
-    public static Map<String,String> exeCommand2(String cmd,String param,String command) throws IOException {
+    public static Map<String,String> exeCommand2(TaskLogInstance tli, String cmd, String param, String command) throws IOException {
         Map map=new HashMap<String,String>();
         ProcessBuilder processBuilder = new ProcessBuilder();
         try {
@@ -83,9 +85,11 @@ public class CommandUtils {
             String line;
             while ((line = reader.readLine()) != null) {
                 output.append(line + "\n");
+                JobCommon2.insertLog(tli,"INFO","实时日志:"+line);
             }
             while ((line = reader_err.readLine()) != null) {
                 output.append(line + "\n");
+                JobCommon2.insertLog(tli,"ERROR","实时日志:"+line);
             }
 
             int exitVal = process.waitFor();
@@ -149,8 +153,10 @@ public class CommandUtils {
 //                    "        echo false\n" +
 //                    "    )");
 //            System.out.println(result);
-
-            Map result = exeCommand2("cmd.exe", "/c", "java version");
+            TaskLogInstance tli=new TaskLogInstance();
+            tli.setId("1");
+            tli.setJob_id("1");
+            Map result = exeCommand2(tli,"cmd.exe", "/c", "java version");
             System.out.println(result.get("result"));
 
         } catch (IOException e) {

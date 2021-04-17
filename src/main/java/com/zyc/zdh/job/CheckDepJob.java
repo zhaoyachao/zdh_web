@@ -140,10 +140,10 @@ public class CheckDepJob {
                     //etl_task_id 代表任务的id(quartz_job_info的job_id)
                     String job_id = tli.getEtl_task_id();
                     String etl_date = tli.getEtl_date();
-                    check = JobCommon2.checkDep2(tli.getJob_type(), tli);
+                    check = JobCommon2.checkDep_group(tli.getJob_type(), tli);
                 } else if (tli.getJob_type().equalsIgnoreCase("jdbc")) {
                     // 检查jdbc 依赖
-                    check = JobCommon2.checkDep3(tli.getJob_type(), tli);
+                    check = JobCommon2.checkDep_jdbc(tli.getJob_type(), tli);
                 }
                 if (check) {
                     tli.setStatus(JobStatus.FINISH.getValue());

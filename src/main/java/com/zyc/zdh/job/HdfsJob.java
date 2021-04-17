@@ -12,6 +12,10 @@ import java.net.URI;
 import java.sql.Timestamp;
 import java.util.Date;
 
+/**
+ * 废弃,查询hdfs 文件是否存在,请使用shell,或者ssh 任务代替
+ */
+@Deprecated
 public class HdfsJob extends JobCommon2 {
 
     public static String jobType = "HDFS";

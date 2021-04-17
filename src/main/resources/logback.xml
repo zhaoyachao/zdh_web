@@ -15,7 +15,7 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
-            <fileNamePattern>logs/stdout.%d{yyyyMMddHHmm}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/stdout.%d{yyyyMMdd}.%i.log</fileNamePattern>
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
             <maxFileSize>10MB</maxFileSize>
@@ -33,7 +33,7 @@
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
-            <fileNamePattern>logs/stderr.%d{yyyyMMddHHmm}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/stderr.%d{yyyyMMdd}.%i.log</fileNamePattern>
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
             <maxFileSize>10MB</maxFileSize>

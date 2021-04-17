@@ -106,7 +106,7 @@ public class JobCommon2 {
                 quartzJobMapper.updateLastStatus(tli.getJob_id(), "error");
 
                 insertLog(tli, "info", "[" + jobType + "] JOB ,结束调度任务");
-                tli.setStatus(InstanceStatus.ERROR.getValue());
+                tli.setStatus(JobStatus.ERROR.getValue());
                 updateTaskLog(tli, taskLogInstanceMapper);
                 return true;
             }
@@ -580,22 +580,40 @@ public class JobCommon2 {
         }
     }
 
+    /**
+     * 根据时间(timestamp) 生成jinjava 模板中的时间参数
+     * @param tli
+     * @return
+     */
+    public static Map<String,Object> getJinJavaParam(TaskLogInstance tli){
+        String msg="目前支持日期参数以下模式: {{zdh_date}} => yyyy-MM-dd ,{{zdh_date_nodash}}=> yyyyMMdd " +
+                ",{{zdh_date_time}}=> yyyy-MM-dd HH:mm:ss,{{zdh_year}}=> 年,{{zdh_month}}=> 月,{{zdh_day}}=> 日," +
+                "{{zdh_hour}}=>24小时制,{{zdh_minute}}=>分钟,{{zdh_second}}=>秒,{{zdh_time}}=>时间戳";
+        logger.info(msg);
+        insertLog(tli, "info", msg);
+        Timestamp cur_time=tli.getCur_time();
+        String date_nodash = DateUtil.formatNodash(cur_time);
+        String date_time = DateUtil.formatTime(cur_time);
+        String date_dt = DateUtil.format(cur_time);
+        Map<String, Object> jinJavaParam = new HashMap<>();
+        jinJavaParam.put("zdh_date_nodash", date_nodash);
+        jinJavaParam.put("zdh_date_time", date_time);
+        jinJavaParam.put("zdh_date", date_dt);
+        jinJavaParam.put("zdh_year",DateUtil.year(cur_time));
+        jinJavaParam.put("zdh_month",DateUtil.month(cur_time));
+        jinJavaParam.put("zdh_day",DateUtil.day(cur_time));
+        jinJavaParam.put("zdh_hour",DateUtil.hour(cur_time));
+        jinJavaParam.put("zdh_minute",DateUtil.minute(cur_time));
+        jinJavaParam.put("zdh_second",DateUtil.second(cur_time));
+        jinJavaParam.put("zdh_time",cur_time.getTime());
+
+        return jinJavaParam;
+
+    }
+
     public static void DynamicParams(Map<String, Object> map, TaskLogInstance tli, EtlTaskInfo etlTaskInfo, SqlTaskInfo sqlTaskInfo, JarTaskInfo jarTaskInfo, SshTaskInfo sshTaskInfo) {
         try {
-            String date_nodash = DateUtil.formatNodash(tli.getCur_time());
-            String date_time = DateUtil.formatTime(tli.getCur_time());
-            String date_dt = DateUtil.format(tli.getCur_time());
-            Map<String, Object> jinJavaParam = new HashMap<>();
-            jinJavaParam.put("zdh_date_nodash", date_nodash);
-            jinJavaParam.put("zdh_date_time", date_time);
-            jinJavaParam.put("zdh_date", date_dt);
-            jinJavaParam.put("zdh_year",DateUtil.year(tli.getCur_time()));
-            jinJavaParam.put("zdh_month",DateUtil.month(tli.getCur_time()));
-            jinJavaParam.put("zdh_day",DateUtil.day(tli.getCur_time()));
-            jinJavaParam.put("zdh_hour",DateUtil.hour(tli.getCur_time()));
-            jinJavaParam.put("zdh_minute",DateUtil.minute(tli.getCur_time()));
-            jinJavaParam.put("zdh_second",DateUtil.second(tli.getCur_time()));
-
+            Map<String, Object> jinJavaParam = getJinJavaParam(tli);
 
             Jinjava jj = new Jinjava();
 
@@ -660,20 +678,7 @@ public class JobCommon2 {
 
     public static String DynamicParams(Map<String, Object> map, TaskLogInstance tli, String old_str) {
         try {
-            String date_nodash = DateUtil.formatNodash(tli.getCur_time());
-            String date_time = DateUtil.formatTime(tli.getCur_time());
-            String date_dt = DateUtil.format(tli.getCur_time());
-            Map<String, Object> jinJavaParam = new HashMap<>();
-            jinJavaParam.put("zdh_date_nodash", date_nodash);
-            jinJavaParam.put("zdh_date_time", date_time);
-            jinJavaParam.put("zdh_date", date_dt);
-            jinJavaParam.put("zdh_year",DateUtil.year(tli.getCur_time()));
-            jinJavaParam.put("zdh_month",DateUtil.month(tli.getCur_time()));
-            jinJavaParam.put("zdh_day",DateUtil.day(tli.getCur_time()));
-            jinJavaParam.put("zdh_hour",DateUtil.hour(tli.getCur_time()));
-            jinJavaParam.put("zdh_minute",DateUtil.minute(tli.getCur_time()));
-            jinJavaParam.put("zdh_second",DateUtil.second(tli.getCur_time()));
-
+            Map<String, Object> jinJavaParam = getJinJavaParam(tli);
 
             Jinjava jj = new Jinjava();
 
@@ -885,7 +890,7 @@ public class JobCommon2 {
                     if (rs) {
                         tli.setLast_status("finish");
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
-                        tli.setStatus(InstanceStatus.FINISH.getValue());
+                        tli.setStatus(JobStatus.FINISH.getValue());
                         tli.setProcess("100");
                         tli.setUpdate_time(new Timestamp(new Date().getTime()));
                         updateTaskLog(tli, tlim);
@@ -911,7 +916,7 @@ public class JobCommon2 {
                     HttpUtil.postJSON(url_tmp, etl_info);
                     logger.info(model_log + " JOB ,更新调度任务状态为etl");
                     tli.setLast_status("etl");
-                    tli.setStatus(InstanceStatus.ETL.getValue());
+                    tli.setStatus(JobStatus.ETL.getValue());
                     tli.setProcess("15");
                     //tlim.updateTaskLogsById3(tli);
                     //updateTaskLog(tli, tlim);
@@ -923,7 +928,7 @@ public class JobCommon2 {
             e.printStackTrace();
             logger.info("[调度平台]:" + model_log + " JOB ,开始发送" + tli.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
             insertLog(tli, "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送" + tli.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
-            tli.setStatus(InstanceStatus.ERROR.getValue());
+            tli.setStatus(JobStatus.ERROR.getValue());
             tli.setProcess("17");
             tli.setUpdate_time(new Timestamp(new Date().getTime()));
             updateTaskLog(tli, tlim);
@@ -1248,7 +1253,7 @@ public class JobCommon2 {
      * @param tli
      * @return
      */
-    public static boolean checkDep2(String jobType,TaskLogInstance tli){
+    public static boolean checkDep_group(String jobType,TaskLogInstance tli){
         logger.info("[" + jobType + "] JOB ,开始检查任务依赖");
         insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务依赖");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
@@ -1287,7 +1292,7 @@ public class JobCommon2 {
      * @param tli
      * @return
      */
-    public static boolean checkDep3(String jobType,TaskLogInstance tli){
+    public static boolean checkDep_jdbc(String jobType,TaskLogInstance tli){
         logger.info("[" + jobType + "] JOB ,开始检查任务中的JDBC依赖,目前jdbc依赖只支持单条sql语句检查");
         insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务中的JDBC依赖,目前jdbc依赖只支持单条sql语句检查");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
@@ -1300,7 +1305,7 @@ public class JobCommon2 {
 
         DBUtil dbUtil=new DBUtil();
 
-        System.out.println("checkDep3:"+tli.getRun_jsmind_data());
+        System.out.println("checkDep_jdbc:"+tli.getRun_jsmind_data());
         if(!com.zyc.zdh.util.StringUtils.isEmpty(tli.getRun_jsmind_data())){
             JSONObject jdbc=JSON.parseObject(tli.getRun_jsmind_data());
             String driver= jdbc.getString("driver");
