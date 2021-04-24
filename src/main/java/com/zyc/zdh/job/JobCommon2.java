@@ -157,8 +157,8 @@ public class JobCommon2 {
         //获取etl 任务信息
         EtlTaskInfo etlTaskInfo = etlTaskService.selectById(etl_task_id);
         if (etlTaskInfo == null) {
-            logger.info("无法找到对应的ETL任务,任务id:" + etl_task_id);
-            throw new Exception("无法找到对应的ETL任务,任务id:" + etl_task_id);
+            logger.info("无法找到对应的[单源]ETL任务,任务id:" + etl_task_id);
+            throw new Exception("无法找到对应的[单源]ETL任务,任务id:" + etl_task_id);
         }
 
         Map<String, Object> map = (Map<String, Object>) JSON.parseObject(tli.getParams());
@@ -173,14 +173,20 @@ public class JobCommon2 {
         String data_sources_choose_input = etlTaskInfo.getData_sources_choose_input();
         String data_sources_choose_output = etlTaskInfo.getData_sources_choose_output();
         DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+        if(dataSourcesInfoInput==null){
+            logger.info("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+            throw new Exception("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+        }
         DataSourcesInfo dataSourcesInfoOutput = null;
-        if (!data_sources_choose_input.equals(data_sources_choose_output)) {
+        if (data_sources_choose_output!=null && !data_sources_choose_output.equals("")) {
             dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
-        } else {
-            dataSourcesInfoOutput = dataSourcesInfoInput;
+        }
+        if(dataSourcesInfoOutput==null){
+            logger.info("[单源任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
+            throw new Exception("[单源任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
         }
 
-        if (dataSourcesInfoInput.getData_source_type().equals("外部上传")) {
+        if (dataSourcesInfoInput.getData_source_type()!=null && dataSourcesInfoInput.getData_source_type().equals("外部上传")) {
             //获取文件服务器信息 配置到数据源选项
             ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoInput.getOwner());
             if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
@@ -190,7 +196,7 @@ public class JobCommon2 {
             }
         }
 
-        if (dataSourcesInfoOutput.getData_source_type().equals("外部下载")) {
+        if (dataSourcesInfoOutput.getData_source_type()!=null && dataSourcesInfoOutput.getData_source_type().equals("外部下载")) {
             //获取文件服务器信息 配置到数据源选项
             ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoOutput.getOwner());
             if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
@@ -227,7 +233,7 @@ public class JobCommon2 {
     }
 
     public static ZdhMoreInfo create_more_task_zdhInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                                       EtlTaskService etlTaskService, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) {
+                                                       EtlTaskService etlTaskService, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
         try {
             JSONObject json = new JSONObject();
             String date = DateUtil.formatTime(tli.getCur_time());
@@ -250,8 +256,13 @@ public class JobCommon2 {
             //获取最终输出数据源
             String data_sources_choose_output = etlMoreTaskInfo.getData_sources_choose_output();
             DataSourcesInfo dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
+            if(dataSourcesInfoOutput==null){
+                logger.info("[多源任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
+                JobCommon2.insertLog(tli,"WARN","[多源任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
+                dataSourcesInfoOutput=new DataSourcesInfo();
+            }
 
-            if (dataSourcesInfoOutput.getData_source_type().equals("外部下载")) {
+            if (dataSourcesInfoOutput.getData_source_type()!=null && dataSourcesInfoOutput.getData_source_type().equals("外部下载")) {
                 //获取文件服务器信息 配置到数据源选项
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoOutput.getOwner());
                 if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
@@ -292,6 +303,11 @@ public class JobCommon2 {
                 //获取数据源信息
                 String data_sources_choose_input = etlTaskInfo.getData_sources_choose_input();
                 DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+                if(dataSourcesInfoInput==null){
+                    logger.info("[多源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+                    JobCommon2.insertLog(tli,"ERROR","[多源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+                    throw new Exception("[多源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+                }
                 if (dataSourcesInfoInput.getData_source_type().equals("外部上传")) {
                     //获取文件服务器信息 配置到数据源选项
                     ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoInput.getOwner());
@@ -315,7 +331,7 @@ public class JobCommon2 {
     }
 
     public static ZdhSqlInfo create_zhdSqlInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                               SqlTaskMapper sqlTaskMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) {
+                                               SqlTaskMapper sqlTaskMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
             JSONObject json = new JSONObject();
@@ -340,18 +356,19 @@ public class JobCommon2 {
             String data_sources_choose_input = sqlTaskInfo.getData_sources_choose_input();
             String data_sources_choose_output = sqlTaskInfo.getData_sources_choose_output();
             DataSourcesInfo dataSourcesInfoInput = new DataSourcesInfo();
-            if (data_sources_choose_input != null) {
-                dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
-            }
-            DataSourcesInfo dataSourcesInfoOutput = null;
-            if (data_sources_choose_input == null || !data_sources_choose_input.equals(data_sources_choose_output)) {
+
+            DataSourcesInfo dataSourcesInfoOutput = new DataSourcesInfo();
+            if (data_sources_choose_output != null && !data_sources_choose_output.equalsIgnoreCase("")) {
                 dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
-            } else {
-                dataSourcesInfoOutput = dataSourcesInfoInput;
             }
 
+            if(dataSourcesInfoOutput==null){
+                logger.info("[SQL]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
+                JobCommon2.insertLog(tli,"WARN","[SQL]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
+                //throw new Exception("[SQL]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
+            }
 
-            if (dataSourcesInfoOutput.getData_source_type().equals("外部下载")) {
+            if (dataSourcesInfoOutput.getData_source_type()!=null && dataSourcesInfoOutput.getData_source_type().equals("外部下载")) {
                 //获取文件服务器信息 配置到数据源选项
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoOutput.getOwner());
                 if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
@@ -451,8 +468,11 @@ public class JobCommon2 {
             //获取最终输出数据源
             String data_sources_choose_output = etlDroolsTaskInfo.getData_sources_choose_output();
             DataSourcesInfo dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
-
-            if (dataSourcesInfoOutput.getData_source_type().equals("外部下载")) {
+            if(dataSourcesInfoOutput==null){
+                logger.info("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
+                throw new Exception("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
+            }
+            if (dataSourcesInfoOutput.getData_source_type()!=null && dataSourcesInfoOutput.getData_source_type().equals("外部下载")) {
                 //获取文件服务器信息 配置到数据源选项
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoOutput.getOwner());
                 if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
@@ -501,6 +521,10 @@ public class JobCommon2 {
                 //获取数据源信息
                 String data_sources_choose_input = etlTaskInfo.getData_sources_choose_input();
                 DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+                if(dataSourcesInfoInput==null){
+                    logger.info("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+                    throw new Exception("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+                }
                 if (dataSourcesInfoInput.getData_source_type().equals("外部上传")) {
                     //获取文件服务器信息 配置到数据源选项
                     ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoInput.getOwner());
@@ -534,6 +558,12 @@ public class JobCommon2 {
                     //获取数据源信息
                     String data_sources_choose_input = etlTaskInfo.getData_sources_choose_input();
                     DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+                    if(dataSourcesInfoOutput==null){
+                        logger.info("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
+                        throw new Exception("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
+                    }
+
+
                     if (dataSourcesInfoInput.getData_source_type().equals("外部上传")) {
                         //获取文件服务器信息 配置到数据源选项
                         ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoInput.getOwner());
@@ -926,8 +956,8 @@ public class JobCommon2 {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.info("[调度平台]:" + model_log + " JOB ,开始发送" + tli.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
-            insertLog(tli, "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送" + tli.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况" + e.getMessage());
+            logger.info("[调度平台]:" + model_log + " JOB ,开始发送" + tli.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况," + e.getMessage());
+            insertLog(tli, "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送" + tli.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况," + e.getMessage());
             tli.setStatus(JobStatus.ERROR.getValue());
             tli.setProcess("17");
             tli.setUpdate_time(new Timestamp(new Date().getTime()));

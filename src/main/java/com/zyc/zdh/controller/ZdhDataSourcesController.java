@@ -126,6 +126,7 @@ public class ZdhDataSourcesController extends BaseController{
     @ResponseBody
     public String add_data_sources(DataSourcesInfo dataSourcesInfo) {
         dataSourcesInfo.setOwner(getUser().getId());
+        dataSourcesInfo.setIs_delete("0");
         dataSourcesServiceImpl.insert(dataSourcesInfo);
 
         JSONObject json = new JSONObject();

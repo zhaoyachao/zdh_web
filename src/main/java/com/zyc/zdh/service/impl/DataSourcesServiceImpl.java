@@ -6,6 +6,7 @@ import com.zyc.zdh.service.DataSourcesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -50,10 +51,11 @@ public class DataSourcesServiceImpl implements DataSourcesService {
     @Override
     public int deleteBatchById(Long[] ids) {
         String ids_str = "";
-        for (Long id : ids) {
-            dataSourcesMapper.deleteBatchById(id.toString());
+        String[] ids2 = new String[ids.length];
+        for(int i=0;i<ids.length;i++){
+            ids2[i]=ids[i].toString();
         }
-
+        dataSourcesMapper.deleteBatchById2(ids2);
         return 0;
     }
 

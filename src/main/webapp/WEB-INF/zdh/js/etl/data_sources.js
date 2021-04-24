@@ -131,8 +131,6 @@ function buildTable($el, cells, rows) {
             }, function(){
 
             });
-
-
         }
 
     })

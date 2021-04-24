@@ -731,6 +731,9 @@ primary key (id)
 alter table task_log_instance add column depend_level varchar(10) not null default '0' comment '判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行';
 
 
+-- 2021-04-24;
+alter table data_sources_info add column is_delete varchar(10) not null default '0' comment '是否删除,0:未删除,1:删除';
+
 create database if NOT EXISTS quartz;
 
 use quartz;

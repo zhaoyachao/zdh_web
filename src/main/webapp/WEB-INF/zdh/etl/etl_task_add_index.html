@@ -574,7 +574,7 @@
                     data: '',
                     //成功返回
                     success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
                         for (var i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
                         }

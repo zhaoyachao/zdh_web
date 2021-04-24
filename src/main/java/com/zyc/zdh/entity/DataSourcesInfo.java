@@ -22,6 +22,16 @@ public class DataSourcesInfo extends PageBase implements Serializable {
 
     private String  owner;
 
+    private String is_delete;
+
+    public String getIs_delete() {
+        return is_delete;
+    }
+
+    public void setIs_delete(String is_delete) {
+        this.is_delete = is_delete;
+    }
+
     public String getOwner() {
         return owner;
     }
