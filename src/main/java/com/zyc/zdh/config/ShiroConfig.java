@@ -240,6 +240,7 @@ public class ShiroConfig {
 		filterMap.put("/retrieve_password", "anon");
 		filterMap.put("/404", "anon");
 		filterMap.put("/favicon**", "anon");
+		filterMap.put("/version", "anon");
 		filterMap.put("/**", "authc");
 
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);

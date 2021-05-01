@@ -15,6 +15,9 @@ import com.zyc.zdh.service.impl.DataSourcesServiceImpl;
 import com.zyc.zdh.util.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.shiro.SecurityUtils;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -24,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -111,7 +116,7 @@ public class JobCommon2 {
                 return true;
             }
         }
-
+        insertLog(tli, "INFO", "[" + jobType + "] JOB ,完成检查任务次数限制,未超过限制次数");
         updateTaskLog(tli, taskLogInstanceMapper);
         return false;
     }
@@ -1395,6 +1400,84 @@ public class JobCommon2 {
     }
 
     /**
+     * 检查hdfs依赖
+     * @param jobType
+     * @param tli
+     * @return
+     */
+    public static boolean checkDep_hdfs(String jobType,TaskLogInstance tli){
+        logger.info("[" + jobType + "] JOB ,开始检查任务中的HDFS依赖,目前HDFS依赖支持检查单个文件和写入单个文件,不支持密码验证");
+        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务中的HDFS依赖,目前HDFS依赖支持检查单个文件和写入单个文件,不支持密码验证");
+        TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+        TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
+        String etl_date=tli.getEtl_date();
+
+        if(!checkDep(jobType,tli)){
+            return false;
+        }
+        Map<String,Object> param=getJinJavaParam(tli);
+        Jinjava jj = new Jinjava();
+        String jsmin_data=jj.render(tli.getRun_jsmind_data(),param);
+        JSONObject jsmin_json=JSON.parseObject(jsmin_data);
+
+        String fs_defaultFS=jsmin_json.getString("url");
+        String hadoop_user_name=jsmin_json.getString("username");
+        String path_str=jj.render(jsmin_json.getString("hdfs_path"),param);
+        String hdfs_mode=jsmin_json.getString("hdfs_mode");
+        Configuration conf = new Configuration();
+        boolean result=true;
+        try {
+            logger.info("[" + jobType + "] JOB ,开始连接hadoop,参数url:" + fs_defaultFS + ",用户:" + hadoop_user_name+" ,路径:"+path_str);
+            insertLog(tli, "info", "[" + jobType + "] JOB ,开始连接hadoop,参数url:" + fs_defaultFS + ",用户:" + hadoop_user_name+" ,路径:"+path_str);
+            FileSystem fs = FileSystem.getLocal(conf);
+            if(!StringUtils.isEmpty(fs_defaultFS)){
+                fs = FileSystem.get(new URI(fs_defaultFS), conf, hadoop_user_name);
+            }
+
+            if(StringUtils.isEmpty(hdfs_mode)){
+                throw new Exception("请选择正确的文件模式,检查文件/生成文件");
+            }
+
+            if(!StringUtils.isEmpty(hdfs_mode) && hdfs_mode.equalsIgnoreCase("0")){
+                insertLog(tli, "info", "[" + jobType + "] JOB , 开始检查文件:"+path_str+" ,是否存在");
+                result=fs.exists(new Path(path_str));
+
+            }else if(!StringUtils.isEmpty(hdfs_mode) && hdfs_mode.equalsIgnoreCase("1")){
+                insertLog(tli, "info", "[" + jobType + "] JOB , 开始生成文件:"+path_str);
+                result=fs.createNewFile(new Path(path_str));
+            }
+            if(result){
+                insertLog(tli, "info", "[" + jobType + "] JOB , 完成检查文件/生成文件:"+path_str);
+            }else{
+                insertLog(tli, "info", "[" + jobType + "] JOB , 检查文件/生成文件:"+path_str+", 未完成,将再次检查/生成");
+            }
+            return result;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            insertLog(tli,"ERROR",e.getMessage());
+            JobCommon2.jobFail(jobType,tli);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            insertLog(tli,"ERROR",e.getMessage());
+            JobCommon2.jobFail(jobType,tli);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            insertLog(tli,"ERROR",e.getMessage());
+        } catch (Exception e){
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            insertLog(tli,"ERROR",e.getMessage());
+        }
+
+        JobCommon2.jobFail(jobType,tli);
+        return false;
+    }
+
+    /**
      * 时间序列发送etl任务到后台执行
      *
      * @param jobType
@@ -2023,6 +2106,13 @@ public class JobCommon2 {
                     taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type("JDBC");
+                }
+
+                if(((JSONObject) job).getString("type").equalsIgnoreCase("hdfs")){
+                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setMore_task("");
+                    taskLogInstance.setJob_type("HDFS");
                 }
 
 

@@ -238,5 +238,13 @@ public class SystemController extends BaseController{
     }
 
 
+    @RequestMapping(value = "/version", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String version() {
+        String version=ev.getProperty("version","");
+
+        return "当前版本:"+version;
+    }
+
 
 }

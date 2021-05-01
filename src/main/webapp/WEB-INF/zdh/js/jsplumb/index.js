@@ -150,6 +150,9 @@ $(document).ready(function(){
             case "jdbc":
                 doubleclick_jdbc(id)
                 break;
+            case "hdfs":
+                doubleclick_hdfs(id)
+                break;
         }
     }
 
@@ -183,6 +186,7 @@ $(document).ready(function(){
                             div.attr("etl_task_id",etl_task_info.etl_task_id);
                             div.attr("etl_context",etl_task_info.etl_context);
                             div.attr("more_task",etl_task_info.more_task);
+                            div.attr("depend_level",etl_task_info.depend_level)
                             //div.width(etl_task_info.etl_context.length*16)
                             div.css("width","auto")
                             div.css("display","inline-block")
@@ -224,6 +228,7 @@ $(document).ready(function(){
                     div.attr("command",etl_task_info.command);
                     div.attr("is_script",etl_task_info.is_script);
                     div.attr("etl_context",etl_task_info.etl_context)
+                    div.attr("depend_level",etl_task_info.depend_level)
                     div.css("width","auto")
                     div.css("display","inline-block")
                     div.css("*display","inline")
@@ -263,6 +268,7 @@ $(document).ready(function(){
                     var etl_task_info=JSON.parse($("#etl_task_text").val())
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
+                    div.attr("depend_level",etl_task_info.depend_level)
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -315,6 +321,63 @@ $(document).ready(function(){
                     div.attr("password",etl_task_info.password);
                     div.attr("jdbc_sql",etl_task_info.jdbc_sql);
                     div.attr("etl_context",etl_task_info.etl_context);
+                    div.attr("depend_level",etl_task_info.depend_level)
+                    //div.width(etl_task_info.etl_context.length*16)
+                    div.css("width","auto")
+                    div.css("display","inline-block")
+                    div.css("*display","inline")
+                    div.css("*zoom","1")
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
+
+    function doubleclick_hdfs(id) {
+        $(id).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this)
+            var etl_context=div.attr("etl_context");
+            //alert(etl_context)
+            var url='hdfs_detail.html';
+            if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
+                url=url+"?etl_context=-1"
+            }else{
+                var hdfs_url=div.attr("url")
+                var url_type=div.attr("url_type")
+                var username=div.attr("username")
+                var password=div.attr("password")
+                var hdfs_path=div.attr("hdfs_path")
+                var depend_level = div.attr("depend_level")
+                var hdfs_mode=div.attr("hdfs_mode")
+                $("#hdfs_url_text").val(hdfs_url)
+                $("#hdfs_path_text").val(hdfs_path)
+                url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&username="+username+"&password="+password+"&depend_level="+depend_level
+                +"$hdfs_mode="+hdfs_mode
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新")
+                        return ;
+                    }
+
+                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    //alert(etl_task_info.jdbc_sql)
+                    div.attr("url",etl_task_info.url);
+                    div.attr("url_type",etl_task_info.url_type);
+                    div.attr("username",etl_task_info.username);
+                    div.attr("password",etl_task_info.password);
+                    div.attr("hdfs_path",etl_task_info.hdfs_path);
+                    div.attr("etl_context",etl_task_info.etl_context);
+                    div.attr("depend_level",etl_task_info.depend_level)
+                    div.attr("hdfs_mode",etl_task_info.hdfs_mode)
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")

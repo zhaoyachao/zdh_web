@@ -46,6 +46,8 @@
                     <input type="hidden" id="jdbc_url_text" name="jdbc_url_text" value="">
                     <input type="hidden" id="jdbc_sql_text" name="jdbc_sql_text" value="">
                     <input type="hidden" id="shell_text" name="shell_text" value="">
+                    <input type="hidden" id="hdfs_url_text" name="hdfs_url_text" value="">
+                    <input type="hidden" id="hdfs_path_text" name="hdfs_path_text" value="">
 
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
@@ -68,6 +70,7 @@
                                             <div class="node nodeshellcss" data-type="shell">SHELL</div>
                                             <div class="node nodegroupcss" data-type="group">任务组</div>
                                             <div class="node nodejdbccss" data-type="jdbc">JDBC</div>
+                                            <div class="node nodehdfscss" data-type="hdfs">HDFS</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight">
@@ -138,7 +141,7 @@
                                 <select id="job_model" name="job_model" data-placeholder="选择执行模式..."
                                         class="chosen-select form-control m-b" tabindex="2">
                                     <option value="" mytype=""></option>
-                                    <option value="1" mytype="">顺时间执行</option>
+                                    <option value="1" mytype="" selected = "selected">顺时间执行</option>
                                     <option value="2" mytype="">执行一次</option>
                                    <!-- <option value="3" mytype="">重复执行</option>-->
                                 </select>
@@ -421,6 +424,16 @@
                 $("#" + divId).attr("password",rs.password);
                 $("#" + divId).attr("jdbc_sql",rs.jdbc_sql);
             }
+            if(tp == "hdfs"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("url",rs.url);
+                $("#" + divId).attr("url_type",rs.url_type);
+                $("#" + divId).attr("username",rs.username);
+                $("#" + divId).attr("password",rs.password);
+                $("#" + divId).attr("hdfs_path",rs.hdfs_path);
+                $("#" + divId).attr("hdfs_mode",rs.hdfs_mode);
+
+            }
 
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto")
@@ -463,6 +476,9 @@
                 break;
             case "jdbc":
                 doubleclick_jdbc(id)
+                break;
+            case "hdfs":
+                doubleclick_hdfs(id)
                 break;
         }
     }
@@ -654,6 +670,62 @@
         });
     }
 
+    function doubleclick_hdfs(id) {
+        $(id).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this)
+            var etl_context=div.attr("etl_context")
+            var url='hdfs_detail.html'
+            if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
+                url=url+"?etl_context=-1"
+            }else{
+                var is_disenable = div.attr("is_disenable")
+                var hdfs_url=div.attr("url")
+                var url_type=div.attr("url_type")
+                var username=div.attr("username")
+                var password=div.attr("password")
+                var hdfs_path=div.attr("hdfs_path")
+                var depend_level = div.attr("depend_level")
+                var hdfs_mode=div.attr("hdfs_mode")
+                $("#hdfs_url_text").val(hdfs_url)
+                $("#hdfs_path_text").val(hdfs_path)
+                url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&username="+username+"&password="+password+"&depend_level="+depend_level
+                    +"&is_disenable="+is_disenable+"&hdfs_mode="+hdfs_mode
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新")
+                        return ;
+                    }
+
+                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    div.attr("url",etl_task_info.url);
+                    div.attr("url_type",etl_task_info.url_type);
+                    div.attr("username",etl_task_info.username);
+                    div.attr("password",etl_task_info.password);
+                    div.attr("hdfs_path",etl_task_info.hdfs_path);
+                    div.attr("etl_context",etl_task_info.etl_context);
+                    div.attr("is_disenable",etl_task_info.is_disenable);
+                    div.attr("depend_level",etl_task_info.depend_level);
+                    div.attr("hdfs_mode",etl_task_info.hdfs_mode);
+                    //div.width(etl_task_info.etl_context.length*16)
+                    div.css("width","auto")
+                    div.css("display","inline-block")
+                    div.css("*display","inline")
+                    div.css("*zoom","1")
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
+
     function jsplumb_data(){
         var ojson={
             tasks:[],
@@ -677,6 +749,9 @@
                 username: $elem.attr('username'),
                 password: $elem.attr('password'),
                 jdbc_sql: $elem.attr('jdbc_sql'),
+                url_type: $elem.attr('url_type'),
+                hdfs_path: $elem.attr('hdfs_path'),
+                hdfs_mode: $elem.attr('hdfs_mode'),
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,
                 positionX: parseInt($elem.css("left"), 10),
@@ -1380,6 +1455,11 @@
         //自定义实现
         var etl_context=$('#etl_task_id').find("option:selected").text();
 
+        if($('#job_context').val()==''){
+            layer.msg("调度说明不可为空")
+            return false
+        }
+
         if($('#expr').val()==''){
             $('#expr').val("1d")
         }
@@ -1463,6 +1543,11 @@
         }
 
         var etl_context=$('#etl_task_id').find("option:selected").text();
+
+        if($('#job_context').val()==''){
+            layer.msg("调度说明不可为空")
+            return false
+        }
 
         if($('#expr').val()==''){
             layer.msg("调度任务表达式不可为空")

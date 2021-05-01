@@ -37,7 +37,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Update({
             "<script>",
             "update task_log_instance ",
-            " set status= case when `status`='check_dep' or `status`='waite_retry' or `status`= 'create' or (`status`='dispatch' and job_type in ('JDBC','GROUP','SHELL')) then 'killed' else 'kill' end",
+            " set status= case when `status`='check_dep' or `status`='waite_retry' or `status`= 'create' or (`status`='dispatch' and job_type in ('JDBC','GROUP','SHELL','HDFS')) then 'killed' else 'kill' end",
             " where id=#{id} and (`status`='dispatch' or `status` ='etl' or `status`= 'check_dep' or `status`= 'wait_retry' or `status`= 'create')",
             "</script>",
     })
@@ -64,7 +64,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     )
     public int updateStatusById4(@Param("status") String status,@Param("process")String process, @Param("id") String id);
 
-    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`= 'dispatch' and job_type in ('JDBC','GROUP','SHELL')) then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end where group_id=#{group_id} and (`status` != 'error' and `status` != 'killed')")
+    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`= 'dispatch' and job_type in ('JDBC','GROUP','SHELL','HDFS')) then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end where group_id=#{group_id} and (`status` != 'error' and `status` != 'killed')")
     public int updateStatusByGroupId(@Param("group_id") String group_id);
 
     @Update(value = "update task_log_instance set is_notice=#{is_notice} where id=#{id}")

@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 依赖任务组首页</title>
-    <meta name="keywords" content="ZDH 依赖任务组首页">
-    <meta name="description" content="ZDH 依赖任务组首页">
+    <title>ZDH HDFS依赖检查首页</title>
+    <meta name="keywords" content="ZDH HDFS依赖检查首页">
+    <meta name="description" content="ZDH HDFS依赖检查首页">
 
     <link rel="shortcut icon" href="img/favicon.ico">
 
@@ -22,6 +22,8 @@
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link rel="stylesheet" href="js/codemirror/codemirror.css" />
+    <link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css" />
 
 </head>
 
@@ -32,7 +34,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>检查任务组依赖配置</h5>
+                    <h5>检查HDFS依赖配置</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -45,14 +47,62 @@
                           action="">
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">任务组</label>
+                            <label class="col-sm-2 control-label">HDFS说明</label>
                             <div class="col-sm-10">
-                                <select id="group_job" name="group_job" data-placeholder="选择任务组..."
+                                <input id="etl_context" name="etl_context" type="text"
+                                       placeholder="HDFS说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">连接类型</label>
+                            <div class="col-sm-10">
+                                <select id="url_type" name="url_type" data-placeholder="连接类型"
                                         class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">任务组...</option>
+                                    <option value="0" mytype="" selected="selected">HDFS</option>
+                                    <option value="1" mytype="">ZOOKEEPER</option>
                                 </select>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">连接串</label>
+                            <div class="col-sm-10">
+                                <input id="url" name="url" type="text" class="form-control"> <span
+                                    class="help-block m-b-none">hdfs/zookeeper连接</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户名</label>
+                            <div class="col-sm-10">
+                                <input id="username" name="username" type="text" placeholder="用户名" class="form-control"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">密码</label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="password" name="password">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文件模式</label>
+                            <div class="col-sm-10">
+                                <select id="hdfs_mode" name="hdfs_mode" data-placeholder="文件模式"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="0" mytype="" selected="selected">检查文件</option>
+                                    <option value="1" mytype="">生成文件</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">HDFS文件路径</label>
+                            <div class="col-sm-10">
+                                <input id="hdfs_path" name="hdfs_path" type="text" placeholder="HDFS文件路径" class="form-control"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">是否禁用</label>
                             <div class="col-sm-10">
@@ -124,11 +174,10 @@
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
-<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
-
-<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
+
+
 
 <script>
     $(document).ready(function () {
@@ -144,6 +193,7 @@
 
         (function () {
 
+
             var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
             var params = url.substr(1);//去掉问号
             var pa = params.split("&");
@@ -151,52 +201,23 @@
             for(var i = 0; i < pa.length; i ++){
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
-
-
-            //初始化依赖调度任务数据
-            function init_job_sources(){
-                $.ajax({
-                    type: 'POST',
-                    url: "dispatch_task_list2",
-                    dataType: 'json',
-                    async: false,
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].job_id + "\" mytype=\"" +  data[i].job_id + "\" hassubinfo=\"true\">" + data[i].job_context + "</option>"
-                        }
-                        $('#group_job').empty()
-                        $("#group_job").chosen("destroy");
-                        $('#group_job').html(str);
-                        $('#group_job').chosen()
-
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-                });
-
-
-            }
-
+            $('#url_type').chosen()
             $('#depend_level').chosen()
-            $('#group_job').chosen()
-            init_job_sources();
-
-            if(s["etl_task_id"] != '-1'){
+            $('#hdfs_mode').chosen()
+            if(s["etl_context"] != '-1'){
                 console.info("更新触发")
-                $("#group_job").val(s["etl_task_id"]);
-                $("#group_job").trigger("chosen:updated");
+                $('#url').val($("#hdfs_url_text",window.parent.document).val());
+                $('#url_type').val(s.url_type);
+                $("#url_type").trigger("chosen:updated");
+                $('#username').val(s.username);
+                $('#password').val(s.password);
+                $('#etl_context').val(s.etl_context);
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
+                $('#hdfs_path').val($("#hdfs_path_text",window.parent.document).val());
+                $('#hdfs_mode').val(s.hdfs_mode);
+                $("#hdfs_mode").trigger("chosen:updated");
+
                 var is_disenable=s['is_disenable']
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
@@ -211,20 +232,30 @@
     $('#save_etl_info').click(function () {
 
         //自定义实现
-        var etl_context=$('#group_job').find("option:selected").text();
-        var etl_task_id=$('#group_job').find("option:selected").val();
+        var url=$('#url').val();
+        var url_type=$('#url_type').find("option:selected").val();
+        var username=$('#username').val();
+        var password=$('#password').val();
+        var etl_context=$('#etl_context').val();
+        var hdfs_path=$('#hdfs_path').val();
         var depend_level=$('#depend_level').find("option:selected").val();
+        var hdfs_mode=$('#hdfs_mode').find("option:selected").val();
         var is_disenable = "false"
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
         }
         data={
             "etl_context":etl_context,
-            "etl_task_id":etl_task_id,
+            "url":url,
+            "url_type":url_type,
+            "username":username,
+            "password":password,
             "is_disenable":is_disenable,
-            "depend_level":depend_level
+            "hdfs_path":hdfs_path,
+            "depend_level":depend_level,
+            "hdfs_mode":hdfs_mode
         }
-        console.info("job_detail:"+JSON.stringify(data))
+        console.info("hdfs_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
         parent.layer.close(index); //再执行关闭

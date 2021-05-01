@@ -117,6 +117,7 @@ public class ShellJob extends JobCommon2 {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
+            insertLog(tli, "error","[" + jobType + "] JOB ,"+ e.getMessage());
             jobFail(jobType,tli);
             exe_status = false;
         }

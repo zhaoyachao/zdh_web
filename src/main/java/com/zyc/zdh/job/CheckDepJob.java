@@ -105,7 +105,7 @@ public class CheckDepJob {
 
             //检查JDBC依赖任务
             List<TaskLogInstance> dep_tlis=taskLogInstanceMapper.selectTaskByJobType(new String[] {JobStatus.DISPATCH.getValue(),JobStatus.CREATE.getValue(),
-                    JobStatus.CHECK_DEP.getValue()},new String[]{"JDBC","GROUP"});
+                    JobStatus.CHECK_DEP.getValue()},new String[]{"JDBC","GROUP","HDFS"});
             for(TaskLogInstance tli :dep_tlis) {
                 //如果上游任务kill,killed 设置本实例为killed
                 String pre_tasks=tli.getPre_tasks();
@@ -144,6 +144,9 @@ public class CheckDepJob {
                 } else if (tli.getJob_type().equalsIgnoreCase("jdbc")) {
                     // 检查jdbc 依赖
                     check = JobCommon2.checkDep_jdbc(tli.getJob_type(), tli);
+                } else if(tli.getJob_type().equalsIgnoreCase("hdfs")) {
+                    // 检查hdfs 依赖
+                    check = JobCommon2.checkDep_hdfs(tli.getJob_type(), tli);
                 }
                 if (check) {
                     tli.setStatus(JobStatus.FINISH.getValue());
@@ -212,7 +215,8 @@ public class CheckDepJob {
                     tl.setProcess_time(pti);
 
                     //debugInfo(tl);
-                    if(!tl.getJob_type().equalsIgnoreCase("group") && !tl.getJob_type().equalsIgnoreCase("jdbc")){
+                    if(!tl.getJob_type().equalsIgnoreCase("group") && !tl.getJob_type().equalsIgnoreCase("jdbc")
+                       && !tl.getJob_type().equalsIgnoreCase("hdfs")){
                         JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
                         JobCommon2.chooseJobBean(tl);
                     }else{
@@ -303,12 +307,12 @@ public class CheckDepJob {
                 //存在失败
                 tglim.updateStatusById3(JobStatus.ERROR.getValue(),process ,tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
-                JobCommon2.insertLog(tgli,"INFO","任务组以失败");
+                JobCommon2.insertLog(tgli,"INFO","任务组以失败,具体信息请点击子任务查看");
             }else if(finish_num+error_num+kill_num == tlidList.size()){
                 //存在杀死任务
                 tglim.updateStatusById3(JobStatus.KILLED.getValue(),process ,tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
-                JobCommon2.insertLog(tgli,"INFO","任务组以完成,存在杀死任务");
+                JobCommon2.insertLog(tgli,"INFO","任务组以完成,存在杀死任务,具体信息请点击子任务查看");
             }
 
 

@@ -20,6 +20,7 @@ html,body{height:100%;}
 .device .nodeshellcss{border:orange 1px solid;}
 .device .nodegroupcss{border:greenyellow 1px solid;}
 .device .nodejdbccss{border:green 1px solid;}
+.device .nodehdfscss{border:royalblue  1px solid;}
 .device .node5css{border:#ccc 1px solid;}
 .device #deviceRight{position:absolute;right:0;width:calc(100% - 120px);height:100%;box-sizing:border-box;background:url(../../img/jsplumb/bg.png);}
 .device #myDropDown{width:80px;margin-left:-14px;border:1px solid #ccc;text-align:center;}

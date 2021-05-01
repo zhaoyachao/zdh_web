@@ -95,6 +95,27 @@
         });
 
 
+        $.ajax({
+            type: 'POST',
+            url: "/every_day_notice",
+            dataType: 'json',
+            data: {},
+            //成功返回
+            success: function (data) {
+                console.info("success:"+data.length)
+                $('#msg').val(data.msg)
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
         $('#update_zdh').click(function () {
 
             if ( $('#msg').val() == '') {
