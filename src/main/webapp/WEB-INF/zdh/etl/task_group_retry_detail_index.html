@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 调度手动执行首页</title>
-    <meta name="keywords" content="ZDH 调度手动执行首页">
-    <meta name="description" content="ZDH 调度手动执行首页">
+    <title>ZDH 任务组重试</title>
+    <meta name="keywords" content="ZDH 任务组重试">
+    <meta name="description" content="ZDH 任务组重试">
 
     <link rel="shortcut icon" href="img/favicon.ico">
 
@@ -31,7 +31,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>调度任务配置</h5>
+                    <h5>任务组配置</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -43,39 +43,6 @@
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
 
-
-
-
-
-                        <div class="form-group" id="div_start_end_time">
-                            <label class="col-sm-2 control-label">起始日期</label>
-                            <div class="col-sm-10">
-                                <input placeholder="开始日期" class="form-control layer-date" id="start_time" name="start_time">
-                                <input placeholder="结束日期" class="form-control layer-date" id="end_time" name="end_time">
-                            </div>
-                        </div>
-
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">是否串行</label>
-                            <div class="col-sm-10">
-                                <div class="checkbox i-checks">
-                                    <label class="no-padding">
-                                        <input id="concurrency" type="checkbox"><i></i> 串行</label>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">使用调度时间</label>
-                            <div class="col-sm-10">
-                                <div class="checkbox i-checks">
-                                    <label class="no-padding">
-                                        <input id="use_quartz_time" type="checkbox"><i></i> 调度时间</label>
-                                </div>
-                            </div>
-
-                        </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">子任务</label>
                             <div class="col-sm-10">
@@ -92,6 +59,9 @@
                             <div class="text-center">
                                 <button id="execute" name="execute" class="btn btn-primary" οnsubmit='return false'
                                         type="button">执行
+                                </button>
+                                <button id="execute_newversion" name="execute" class="btn btn-default" οnsubmit='return false'
+                                        type="button">最新版执行
                                 </button>
                                 <button id="cancel" name="cancel" class="btn btn-white" οnsubmit='return false'
                                         type="button">取消
@@ -112,6 +82,7 @@
     </div>
 </div>
 
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -164,77 +135,15 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-
-
-            //日期范围限制
-            var start = {
-                elem: '#start_time',
-                format: 'YYYY-MM-DD hh:mm:ss',
-                min: '2000-01-01 00:00:00',
-                max: '2099-06-16 23:59:59', //最大日期
-                istime: true,
-                istoday: false,
-                choose: function (datas) {
-                    end.min = datas; //开始日选好后，重置结束日的最小日期
-                    end.start = datas //将结束日的初始值设定为开始日
-                }
-            };
-            var end = {
-                elem: '#end_time',
-                format: 'YYYY-MM-DD hh:mm:ss',
-                min: '2000-01-01 00:00:00',
-                max: '2099-06-16 23:59:59',
-                istime: true,
-                istoday: false,
-                choose: function (datas) {
-                    start.max = datas; //结束日选好后，重置开始日的最大日期
-                }
-            };
-            laydate(start);
-            laydate(end);
-
-            $("#start_time").val(getCurrentDate())
-            $("#end_time").val(getCurrentDate())
-
-            function getCurrentDate(){
-                var oDate = new Date(),
-                    oYear = oDate.getFullYear(),
-                    oMonth = oDate.getMonth()+1,
-                    oDay = oDate.getDate(),
-                    oHour = oDate.getHours(),
-                    oMin = oDate.getMinutes(),
-                    oSen = oDate.getSeconds(),
-                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
-                return oTime;
-            };
-
-            function getMyDate(str){
-                var oDate = new Date(str),
-                    oYear = oDate.getFullYear(),
-                    oMonth = oDate.getMonth()+1,
-                    oDay = oDate.getDate(),
-                    oHour = oDate.getHours(),
-                    oMin = oDate.getMinutes(),
-                    oSen = oDate.getSeconds(),
-                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
-                return oTime;
-            };
-            //补0操作
-            function getzf(num){
-                if(parseInt(num) < 10){
-                    num = '0'+num;
-                }
-                return num;
-            }
-
             //获取所有子任务
             function get_all_tasks(){
-                var job_id=s.id
+                var job_id=s.job_id
+                var t_id=s.id
                 $.ajax({
                     type: 'POST',
-                    url: "dispatch_task_list",
+                    url: server_context+"/task_group_log_instance_list3",
                     dataType: 'json',
-                    data: "ids="+job_id,
+                    data: "ids="+t_id,
                     //发送数据前
                     beforeSend: function () {
 
@@ -249,14 +158,23 @@
                            $('#sub_task_div').addClass("checkbox")
                            $('#sub_task_div').addClass("i-checks")
                            var jsplumb_json=JSON.parse(data[0].jsmind_data)
+
                            for(var i=0;i<jsplumb_json.tasks.length;i++){
-                               if(jsplumb_json.tasks[i].is_disenable == "true"){
-                                   continue
-                               }
                                var divId=jsplumb_json.tasks[i].divId
                                $('#sub_task_div').append('<label class="no-padding">')
                                $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' checked=""><i></i>'+jsplumb_json.tasks[i].etl_context+'</label>')
                            }
+
+                           // for(var i=0;i<jsplumb_json.tasks.length;i++){
+                           //     var divId=jsplumb_json.tasks[i].divId
+                           //     $('#sub_task_div').append('<label class="no-padding">')
+                           //     $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' checked=""><i></i>'+jsplumb_json.tasks[i].etl_context+'</label>')
+                           // }
+                           // for(var i=0;i<jsplumb_json.shell.length;i++){
+                           //     var divId=jsplumb_json.shell[i].divId
+                           //     $('#sub_task_div').append('<label class="no-padding">')
+                           //     $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' checked=""><i></i>'+jsplumb_json.shell[i].etl_context+'</label>')
+                           // }
 
                            $('.i-checks').iCheck({
                                checkboxClass: 'icheckbox_square-green',
@@ -297,66 +215,64 @@
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
 
-        if($('#start_time').val()==''){
-            layer.msg("调度开始时间不可为空")
-            return false
-        }
-
-        if($('#end_time').val()==''){
-            layer.msg("调度结束时间不可为空")
-            return false
-        }
-
-        var oDate1 = new Date($('#start_time').val());
-        var oDate2 = new Date($('#end_time').val());
-        if(oDate1 > oDate2){
-            layer.msg("结束时间大于开始时间")
-            return false
-        }
-
-        //默认并行
-        var concurrency="&concurrency=1";
-        if($('#concurrency').is(':checked')){
-            concurrency="&concurrency=0"
-        }
-        //默认不使用调度时间
-        var use_quartz_time="&use_quartz_time=off"
-        if($('#use_quartz_time').is(':checked')){
-            use_quartz_time="&use_quartz_time=on"
-        }
-
-        var index1 = layer.load(1, {
-            shade: [0.1,'#fff'] //0.1透明度的白色背景
-        });
         $.ajax({
-            type: 'POST',
-            url: "dispatch_task_execute",
-            dataType: 'json',
-            data: $("#dispatch_task_add_form").serialize()+"&job_id="+s.id+use_quartz_time+concurrency,
-            //发送数据前
-            beforeSend: function () {
-                // 禁用按钮防止重复提交
-                $("#save_dispatch_task").attr({disabled: "disabled"});
-            },
-            //成功返回
+                url: server_context+"/retryJobGroup",
+                data:  $("#dispatch_task_add_form").serialize()+"&id=" + s.id+"&new_version=false",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    console.info("success")
+                    if(data.code != "200"){
+                        layer.msg(data.msg)
+                        return
+                    }
+                    layer.msg(data.msg)
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                },
+                //处理完成
+                complete: function () {
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index); //再执行关闭
+                    console.info("complete")
+                }
+            });
+
+
+    })
+
+    $('#execute_newversion').click(function () {
+
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        $.ajax({
+            url: server_context+"/retryJobGroup",
+            data: $("#dispatch_task_add_form").serialize()+"&id=" + s.id+"&new_version=true",
+            type: "post",
+            dataType: "json",
             success: function (data) {
-                $("#save_dispatch_task").removeAttr('disabled');
-                layer.close(index1)
+                console.info("success")
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },
+            error: function (data) {
+                console.info("error: " + data.responseText);
+            },
             //处理完成
             complete: function () {
-                $("#save_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
                 console.info("complete")
-            },
-            //报错
-            error: function (data) {
-                $("#save_dispatch_task").removeAttr('disabled');
-                layer.close(index1)
-                layer.msg(data.responseText);
-                console.info("error: " + data.responseText);
             }
+
         });
 
 

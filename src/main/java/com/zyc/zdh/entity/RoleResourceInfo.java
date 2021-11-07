@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table
-public class UserResourceInfo {
+public class RoleResourceInfo {
 
  	/**
  	* 主键

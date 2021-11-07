@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
@@ -43,7 +43,15 @@
             <div class="form-group">
                 <input id="password" name="password" type="password" class="form-control" placeholder="密码" required="">
             </div>
-            <button type="submit" class="btn btn-primary block full-width m-b">登 录</button>
+            <div class="form-group">
+                <input id="captcha" name="captcha" type="text" class="form-control" placeholder="验证码" required="">
+            </div>
+
+            <div class="form-group">
+                <img id='captcha_img' alt="验证码" src="captcha" onclick="refash_captcha()" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-primary block full-width m-b" onclick="login()">登 录</button>
 
 
             <p class="text-muted text-center"><a id="retrieve_password" href="javascript:void(0);"
@@ -56,12 +64,21 @@
     </div>
 </div>
 
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
 <!-- layer javascript -->
 <script src="js/plugins/layer/layer.min.js"></script>
-<script>
+<script th:inline="javascript">
+    $(document).ready(function () {
+
+    });
+
+    
+    function refash_captcha() {
+        $("#captcha_img").attr('src','/captcha?'+Math.random());
+    }
 
     function retrieve_password() {
 
@@ -71,13 +88,13 @@
 
         $.ajax({
             type: 'POST',
-            url: "retrieve_password",
+            url: server_context+"/retrieve_password",
             dataType: 'json',
             data: $("#login").serialize(),
             //成功返回
             success: function (data) {
-                layer.close(index)
-                layer.msg(data.value)
+                //layer.close(index)
+                layer.msg(data.msg)
             },
             //处理完成
             complete: function () {
@@ -94,6 +111,9 @@
 
     }
 
+    function login() {
+        $("#login").submit()
+    }
 
 </script>
 
