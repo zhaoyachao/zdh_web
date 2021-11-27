@@ -1237,19 +1237,19 @@ INSERT INTO `resource_tree_info` VALUES (802848818109353984,'#','ZDH','1','1','f
 INSERT INTO `resource_tree_info`
 (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type)
 VALUES(913940784099627008, '802852358580080640', 'JDBC_SQL', '3', '1', 'non', '', '9', '1', '2021-11-26 23:54:23', '2021-11-27 00:20:28', 'etl_task_jdbc_index.html', '2');
-INSERT INTO mydb.resource_tree_info
+INSERT INTO resource_tree_info
 (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type)
 VALUES(913947870334291968, '913940784099627008', '查询', '4', '1', 'fa fa-coffee', '', '1', '1', '2021-11-27 00:22:33', '2021-11-27 00:22:33', 'etl_task_jdbc_list', '5');
-INSERT INTO mydb.resource_tree_info
+INSERT INTO resource_tree_info
 (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type)
 VALUES(913949817086939136, '913940784099627008', '新增页面', '4', '1', 'fa fa-coffee', '', '2', '1', '2021-11-27 00:30:17', '2021-11-27 00:32:02', 'etl_task_jdbc_add_index', '5');
-INSERT INTO mydb.resource_tree_info
+INSERT INTO resource_tree_info
 (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type)
 VALUES(913949953242435584, '913940784099627008', '删除', '4', '1', 'fa fa-coffee', '', '3', '1', '2021-11-27 00:30:49', '2021-11-27 00:30:49', 'etl_task_jdbc_delete', '5');
-INSERT INTO mydb.resource_tree_info
+INSERT INTO resource_tree_info
 (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type)
 VALUES(913950163700027392, '913940784099627008', '新增', '4', '1', 'fa fa-coffee', '', '4', '1', '2021-11-27 00:31:39', '2021-11-27 00:53:12', 'etl_task_jdbc_add', '5');
-INSERT INTO mydb.resource_tree_info
+INSERT INTO resource_tree_info
 (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type)
 VALUES(913955680715542528, '913940784099627008', '更新', '4', '1', 'fa fa-coffee', '', '5', '1', '2021-11-27 00:53:35', '2021-11-27 00:53:35', 'etl_task_jdbc_update', '5');
 

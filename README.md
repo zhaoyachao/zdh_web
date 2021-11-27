@@ -27,6 +27,10 @@
    +  [zdh_web_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_web.tar)
    +  [zdh_server_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_server.tar)
    +  [zdh_flink_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_flink.tar)
+   
+   +  [zdh_web_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_web.tar)
+   +  [zdh_server_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_server.tar)
+   +  [zdh_flink_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_flink.tar)   
     
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包
 
