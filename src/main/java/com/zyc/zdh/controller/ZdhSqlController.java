@@ -7,15 +7,17 @@ import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.MetaDatabaseMapper;
 import com.zyc.zdh.dao.SqlTaskMapper;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
-import com.zyc.zdh.entity.EtlTaskUpdateLogs;
-import com.zyc.zdh.entity.SqlTaskInfo;
-import com.zyc.zdh.entity.meta_database_info;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -26,6 +28,8 @@ import java.util.*;
 @Controller
 public class ZdhSqlController extends BaseController{
 
+    public Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     ZdhHaInfoMapper zdhHaInfoMapper;
     @Autowired
@@ -34,6 +38,19 @@ public class ZdhSqlController extends BaseController{
     SqlTaskMapper sqlTaskMapper;
     @Autowired
     MetaDatabaseMapper metaDatabaseMapper;
+
+    @RequestMapping("/sql_task_index")
+    public String etl_task_ssh_index() {
+
+        return "etl/sql_task_index";
+    }
+
+    @RequestMapping("/sql_task_add_index")
+    public String sql_task_add_index() {
+
+        return "etl/sql_task_add_index";
+    }
+
 
     /**
      * 模糊查询Sql任务
@@ -59,14 +76,18 @@ public class ZdhSqlController extends BaseController{
      */
     @RequestMapping("/sql_task_delete")
     @ResponseBody
+    @Transactional
     public String sql_task_delete(String[] ids) {
+        try{
+            for (String id : ids)
+                sqlTaskMapper.deleteByPrimaryKey(id);
 
-        for (String id : ids)
-            sqlTaskMapper.deleteByPrimaryKey(id);
-
-        JSONObject json = new JSONObject();
-        json.put("success", "200");
-        return json.toJSONString();
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e.getCause());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+        }
     }
 
     /**
@@ -76,35 +97,36 @@ public class ZdhSqlController extends BaseController{
      */
     @RequestMapping("/sql_task_add")
     @ResponseBody
+    @Transactional
     public String sql_task_add(SqlTaskInfo sqlTaskInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
-        String owner = getUser().getId();
-        sqlTaskInfo.setOwner(owner);
-        debugInfo(sqlTaskInfo);
+        try{
+            String owner = getUser().getId();
+            sqlTaskInfo.setOwner(owner);
+            debugInfo(sqlTaskInfo);
 
-        sqlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-        sqlTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-
-
-        sqlTaskMapper.insert(sqlTaskInfo);
+            sqlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+            sqlTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
 
 
-        if (sqlTaskInfo.getUpdate_context() != null && !sqlTaskInfo.getUpdate_context().equals("")) {
-            //插入更新日志表
-            EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
-            etlTaskUpdateLogs.setId(sqlTaskInfo.getId());
-            etlTaskUpdateLogs.setUpdate_context(sqlTaskInfo.getUpdate_context());
-            etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-            etlTaskUpdateLogs.setOwner(getUser().getId());
-            etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+            sqlTaskMapper.insert(sqlTaskInfo);
+
+
+            if (sqlTaskInfo.getUpdate_context() != null && !sqlTaskInfo.getUpdate_context().equals("")) {
+                //插入更新日志表
+                EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
+                etlTaskUpdateLogs.setId(sqlTaskInfo.getId());
+                etlTaskUpdateLogs.setUpdate_context(sqlTaskInfo.getUpdate_context());
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e.getCause());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
-
-        //dataSourcesServiceImpl.insert(dataSourcesInfo);
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
     /**
@@ -116,31 +138,31 @@ public class ZdhSqlController extends BaseController{
     @ResponseBody
     public String sql_task_update(SqlTaskInfo sqlTaskInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
-        String owner = getUser().getId();
-        sqlTaskInfo.setOwner(owner);
-        debugInfo(sqlTaskInfo);
+        try{
+            String owner = getUser().getId();
+            sqlTaskInfo.setOwner(owner);
+            debugInfo(sqlTaskInfo);
 
-        sqlTaskMapper.updateByPrimaryKey(sqlTaskInfo);
+            sqlTaskMapper.updateByPrimaryKey(sqlTaskInfo);
 
-        SqlTaskInfo sti = sqlTaskMapper.selectByPrimaryKey(sqlTaskInfo.getId());
+            SqlTaskInfo sti = sqlTaskMapper.selectByPrimaryKey(sqlTaskInfo.getId());
 
-        if (sqlTaskInfo.getUpdate_context() != null && !sqlTaskInfo.getUpdate_context().equals("")
-                && !sqlTaskInfo.getUpdate_context().equals(sti.getUpdate_context())) {
-            //插入更新日志表
-            EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
-            etlTaskUpdateLogs.setId(sqlTaskInfo.getId());
-            etlTaskUpdateLogs.setUpdate_context(sqlTaskInfo.getUpdate_context());
-            etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-            etlTaskUpdateLogs.setOwner(getUser().getId());
-            etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+            if (sqlTaskInfo.getUpdate_context() != null && !sqlTaskInfo.getUpdate_context().equals("")
+                    && !sqlTaskInfo.getUpdate_context().equals(sti.getUpdate_context())) {
+                //插入更新日志表
+                EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
+                etlTaskUpdateLogs.setId(sqlTaskInfo.getId());
+                etlTaskUpdateLogs.setUpdate_context(sqlTaskInfo.getUpdate_context());
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e.getCause());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
-
-        //dataSourcesServiceImpl.insert(dataSourcesInfo);
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
 
@@ -190,15 +212,12 @@ public class ZdhSqlController extends BaseController{
                     metaDatabaseMapper.insert(meta_database_info);
                 }
             }
-
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"同步成功", null);
 
         } catch (Exception e) {
             e.printStackTrace();
-
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"同步失败", e);
         }
-
-        js.put("data","同步完成");
-        return js.toJSONString();
     }
 
     /**

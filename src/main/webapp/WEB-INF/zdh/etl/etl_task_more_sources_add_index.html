@@ -145,11 +145,38 @@
                             </div>
 
                         </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">常用参数</label>
+                            <div class="col-sm-10">
+                                <select id="model_output" name="model_output"
+                                        data-placeholder="写入模式"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">写入模式</option>
+                                    <option value="append" mytype="">追加</option>
+                                    <option value="overwrite" mytype="">覆盖</option>
+                                    <option value="errorifexists" mytype="">检查存在就报错</option>
+                                    <option value="ignore" mytype="">检查存在忽略</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">分割符</label>
                             <div class="col-sm-10"><input id="sep_output" name="sep_output" type="text"
                                                           placeholder="分割符" class="form-control"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">分区字段</label>
+                            <div class="col-sm-10"><input id="partition_by_output" name="partition_by_output" type="text"
+                                                          placeholder="分区字段,example: etl_date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">合并小文件个数</label>
+                            <div class="col-sm-10"><input id="merge_output" name="merge_output" type="text" value="-1"
+                                                          placeholder="合并小文件个数,默认-1,example: 1" class="form-control">
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -259,6 +286,7 @@
     </ul>
 </div>
 
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -308,12 +336,13 @@
             $('#file_type_output').chosen()
             $('#encoding_output').chosen()
             $('#header_output').chosen()
+            $('#model_output').chosen()
 
             //初始化数据源--把所有数据源都加载到下拉框
             function init_data_sources(){
                 $.ajax({
                     type: 'POST',
-                    url: "etl_task_list",
+                    url: server_context+"/etl_task_list2",
                     dataType: 'json',
                     async: false,
                     data: '',
@@ -342,7 +371,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: "data_sources_list",
+                    url: server_context+"/data_sources_list",
                     dataType: 'json',
                     async: false,
                     data: '',
@@ -390,7 +419,7 @@
                 }
                 $.ajax({
                     type: 'POST',
-                    url: "etl_task_tables",
+                    url: server_context+"/etl_task_tables",
                     dataType: 'json',
                     data: postData,
                     //成功返回
@@ -470,8 +499,8 @@
                     console.info("更新按钮触发--开始赋值对应参数:"+s.id)
                     //开始赋值
                     $.ajax({
-                        url : "etl_task_more_list",
-                        data : "ids=" + s.id,
+                        url : server_context+"/etl_task_more_detail",
+                        data : "id=" + s.id,
                         type : "post",
                         async: false,
                         dataType : "json",
@@ -480,66 +509,76 @@
 
 
                             //获取输入数据源id
-                            var id=data[0].id
+                            var id=data.result.id
                             console.info("参数赋值:多源etl任务id:"+id)
 
                             //获取ETL 说明
-                            var etl_context=data[0].etl_context
+                            var etl_context=data.result.etl_context
                             $("#etl_context").val(etl_context);
 
-                            var create_time=data[0].create_time
+                            var create_time=data.result.create_time
                             $("#create_time").val(getMyDate(create_time));
 
                             //初始化输入数据源select 组件
-                            var etl_ids=data[0].etl_ids.split(",")
+                            var etl_ids=data.result.etl_ids.split(",")
                             $("#etl_ids").val(etl_ids)
                             $("#etl_ids").trigger("chosen:updated");
 
                             //获取输入数据源类型
-                            var data_source_type_input=data[0].data_source_type_input
+                            var data_source_type_input=data.result.data_source_type_input
                             $("#data_source_type_input").val(data_source_type_input)
 
                             //获取输入源数据其他参数
-                            var etl_sql=data[0].etl_sql
+                            var etl_sql=data.result.etl_sql
                             $("#etl_sql").val(etl_sql)
 
-                            var drop_tmp_tables=data[0].drop_tmp_tables
+                            var drop_tmp_tables=data.result.drop_tmp_tables
                             $("#drop_tmp_tables").val(drop_tmp_tables)
 
 
                             // 获取输出数据源
-                            var data_sources_choose_output=data[0].data_sources_choose_output
+                            var data_sources_choose_output=data.result.data_sources_choose_output
                             //初始化输入数据源select 组件
                             $("#data_sources_choose_output").val(data_sources_choose_output);
                             $("#data_sources_choose_output").trigger("chosen:updated");
 
                             //获取输出数据源类型
-                            var data_source_type_output=data[0].data_source_type_output
+                            var data_source_type_output=data.result.data_source_type_output
                             $("#data_source_type_output").val(data_source_type_output)
 
                             //输出文件类型参数
-                            var file_type_output = data[0].file_type_output
+                            var file_type_output = data.result.file_type_output
                             $("#file_type_output").val(file_type_output)
                             $("#file_type_output").trigger("chosen:updated");
 
-                            var encoding_output = data[0].encoding_output
+                            var encoding_output = data.result.encoding_output
                             $("#encoding_output").val(encoding_output)
                             $("#encoding_output").trigger("chosen:updated");
 
-                            var header_output = data[0].header_output
+                            var header_output = data.result.header_output
                             $("#header_output").val(header_output)
                             $("#header_output").trigger("chosen:updated");
 
-                            var sep_output = data[0].sep_output
+                            var model_output = data.result.model_output
+                            $("#model_output").val(model_output)
+                            $("#model_output").trigger("chosen:updated");
+
+                            var sep_output = data.result.sep_output
                             $("#sep_output").val(sep_output)
 
+                            var partition_by_output = data.result.partition_by_output
+                            $("#partition_by_output").val(partition_by_output)
+
+                            var merge_output = data.result.merge_output
+                            $("#merge_output").val(merge_output)
+
                             //获取输入源数据其他参数
-                            var data_sources_params_output=data[0].data_sources_params_output
+                            var data_sources_params_output=data.result.data_sources_params_output
                             $("#data_sources_params_output").val(data_sources_params_output)
 
                             //获取输出数据源表名
-                            var data_sources_table_name_output=data[0].data_sources_table_name_output;
-                            var data_sources_file_name_output=data[0].data_sources_file_name_output
+                            var data_sources_table_name_output=data.result.data_sources_table_name_output;
+                            var data_sources_file_name_output=data.result.data_sources_file_name_output
 
                             if(data_source_type_output=="JDBC"){
 
@@ -552,7 +591,7 @@
 
                                 $.ajax({
                                     type: 'POST',
-                                    url: "etl_task_tables",
+                                    url: server_context+"/etl_task_tables",
                                     dataType: 'json',
                                     data: postData,
                                     //成功返回
@@ -594,7 +633,7 @@
                             }
 
                             //获取输出删除条件
-                            var data_sources_clear_output=data[0].data_sources_clear_output;
+                            var data_sources_clear_output=data.result.data_sources_clear_output;
                             $('#data_sources_clear_output').val(data_sources_clear_output)
 
 
@@ -638,7 +677,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "etl_task_more_sources_add",
+            url: server_context+"/etl_task_more_sources_add",
             dataType: 'json',
             data: $("#etl_task_add_form").serialize(),
             //发送数据前
@@ -648,12 +687,16 @@
             },
             //成功返回
             success: function (data) {
-                $("#save_etl_task").removeAttr('disabled');
+                if(data.code != "200"){
+                    layer.msg(data.msg)
+                    return
+                }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },
             //处理完成
             complete: function () {
+                $("#save_etl_task").removeAttr('disabled');
                 console.info("complete")
             },
             //报错
@@ -698,7 +741,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "etl_task_more_update",
+            url: server_context+"/etl_task_more_update",
             dataType: 'json',
             data: $("#etl_task_add_form").serialize()+"&"+"id="+s.id,
             //发送数据前
@@ -708,12 +751,16 @@
             },
             //成功返回
             success: function (data) {
-                $("#update_etl_task").removeAttr('disabled');
+                if(data.code != "200"){
+                    layer.msg(data.msg)
+                    return
+                }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },
             //处理完成
             complete: function () {
+                $("#update_etl_task").removeAttr('disabled');
                 console.info("complete")
             },
             //报错

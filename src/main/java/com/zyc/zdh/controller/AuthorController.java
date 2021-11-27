@@ -45,21 +45,28 @@ public class AuthorController extends BaseController{
         return "admin/mail_compose";
     }
 
-    @RequestMapping(value = "/send_email", method = RequestMethod.POST)
+    @RequestMapping(value = "/send_email", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String send_email(String context,String receiver,String subject) {
 
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("data","success");
-        if(StringUtils.isEmpty(context)){
-            return jsonObject.toJSONString();
-        }
-        String to=ev.getProperty("spring.mail.username");
-        jemailService.sendHtmlEmail(new String[]{to},subject,context);
-        if(!StringUtils.isEmpty(receiver))
-            jemailService.sendEmail(new String[]{receiver},"ZDH","系统已将信息通知作者,作者会尽快查看并回复");
+        try{
+            if(StringUtils.isEmpty(context)){
+                throw new Exception("内容不可为空");
+            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String to=ev.getProperty("spring.mail.username");
+                    jemailService.sendHtmlEmail(new String[]{to},subject+":"+receiver,context);
+                    if(!StringUtils.isEmpty(receiver))
+                        jemailService.sendEmail(new String[]{receiver},"ZDH","系统已将信息通知作者,作者会尽快查看并回复");
+                }
+            }).start();
 
-        return jsonObject.toJSONString();
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "发送成功", "请检查邮箱是否收到发送成功通知,如果5分钟内没由收到邮件,则可能发送邮件失败,请尝试再次发信");
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "发送失败", e);
+        }
     }
 
 

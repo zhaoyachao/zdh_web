@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 数据以申请首页</title>
+    <meta name="keywords" content="ZDH 数据以申请首页">
+    <meta name="description" content="ZDH 数据以申请首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <!--    <link rel="stylesheet" type="text/css" href="css/plugins/webuploader/webuploader.css">
+        <link rel="stylesheet" type="text/css" href="css/demo/webuploader-demo.css">-->
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>数据申请记录</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="data_apply_form" name="data_apply_form" method="post" class="form-horizontal"
+                          action="">
+
+
+                        <div class="input-group col-sm-6">
+                            <input id="apply_context" name="apply_context" type="text"
+                                   placeholder="申请表名"
+                                   aria-required="true" class="form-control"> <span class="input-group-btn"> <button
+                                id="search" type="button" class="btn btn-primary"
+                                οnsubmit='return false'>查询
+                               </button></span>
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <div class="col-sm-12">
+
+                                <table id="exampleTableEvents" name="exampleTableEvents" data-height="250"
+                                       data-mobile-responsive="false">
+
+                                </table>
+                                <!-- End Example Events -->
+
+                            </div>
+
+
+                        </div>
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+
+    (function (document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            var height=400
+            if($(document.body).height()*0.8>height){
+                height=$(document.body).height()*0.8
+            }
+            $('#exampleTableEvents').attr("data-height",height)
+
+
+            window.operateEvents = {
+                'click #del': function (e, value, row, index) {
+
+                    if(row.status !=0 ){
+                        layer.msg("只有申请中的单子,才可撤销")
+                        return ;
+                    }
+
+                    $.ajax({
+                        url: server_context+"/data_apply_cancel",
+                        data: "id=" + row.id,
+                        type: "post",
+                        async:false,
+                        dataType: "json",
+                        success: function (data) {
+                            console.info(data.msg)
+                            layer.msg(data.msg)
+                        },
+                        complete: function(){
+                            $('#exampleTableEvents').bootstrapTable('refresh', {
+                                url: server_context+"/data_apply_list?"+$("#data_apply_form").serialize(),
+                                contentType: "application/json;charset=utf-8",
+                                dataType: "json"
+                            });
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.msg);
+                        }
+
+                    });
+
+                }
+            };
+
+            function operateFormatter(value, row, index) {
+                return [
+                    ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="撤销">\n' +
+                    '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+                    '                                    </button>'
+                ].join('');
+            }
+
+            //初始化 bootstrap table
+            $('#exampleTableEvents').bootstrapTable({
+                url: server_context+"/data_apply_list",
+                search: true,
+                clickEdit: true,
+                pagination: true,
+                showRefresh: true,
+                showToggle: true,
+                showColumns: true,
+                useRowAttrFunc: true,
+                iconSize: 'outline',
+                responseHandler:function (res) {
+                    return res.result
+                },
+                //toolbar: '#exampleTableEventsToolbar',
+                icons: {
+                    refresh: 'glyphicon-repeat',
+                    toggle: 'glyphicon-list-alt',
+                    columns: 'glyphicon-list'
+                },
+                columns: [
+                    {
+                        field: 'nu',
+                        title: '序号',
+                        formatter: function (value, row, index) {
+                            return index + 1;
+                        }
+                    }, {
+                        field: 'id',
+                        title: 'ID'
+                    }, {
+                        field: 'apply_context',
+                        title: '申请说明',
+                        sortable: false
+                    },{
+                        field: 'status',
+                        title: '状态',
+                        sortable: false,
+                        formatter: function (value, row, index) {
+                            if(value==0){
+                                return "发起申请"
+                            }else if(value==1){
+                                return "审批完成"
+                            }else if(value==2){
+                                return "审批不通过"
+                            }else if(value==3){
+                                return "撤销申请"
+                            }
+                        }
+                    }, {
+                        field: 'reason',
+                        title: '失败原因',
+                        sortable: false
+                    },{
+                        field: 'create_time',
+                        title: '申 请 创 建 时 间',
+                        sortable:true,
+                        formatter: function (value, row, index) {
+                            return getMyDate(value);
+                        }
+                    },{
+                        field: 'operate',
+                        title: '操作',
+                        events: operateEvents,//给按钮注册事件
+                        width: 45,
+                        formatter: operateFormatter //表格中增加按钮
+                    }]
+            });
+
+            function getMyDate(str){
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay) +" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+            //补0操作
+            function getzf(num){
+                if(parseInt(num) < 10){
+                    num = '0'+num;
+                }
+                return num;
+            }
+
+
+            function closeTab() {
+               // var currentWidth = $(this).parents('.J_menuTab').width();
+                var wpd = $(window.parent.document);
+                var mainContent = wpd.find('.J_mainContent');
+                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+                var currentTab=pageTabs.find(".J_menuTab.active");
+                var closeTabId = currentTab.data('id')
+                mainContent.find('.J_iframe')
+
+                // 当前元素处于活动状态
+                if (currentTab.hasClass('active')) {
+
+                    // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
+                    if (pageTabs.next('.J_menuTab').size()) {
+
+                        var activeId = currentTab.next('.J_menuTab:eq(0)').data('id');
+                        currentTab.next('.J_menuTab:eq(0)').addClass('active');
+
+                        mainContent.find('.J_iframe').each(function (index,e) {
+                            if ($(e).data('id') == activeId) {
+                                $(e).show().siblings('.J_iframe').hide();
+                                return false;
+                            }
+                        });
+
+                        var marginLeftVal = parseInt($('.page-tabs-content').css('margin-left'));
+                        if (marginLeftVal < 0) {
+                            pageTabs.animate({
+                                marginLeft: (marginLeftVal + currentTab.width()) + 'px'
+                            }, "fast");
+                        }
+
+                        //  移除当前选项卡
+                        currentTab.remove();
+
+                        // 移除tab对应的内容区
+                        mainContent.find('.J_iframe').each(function (index,e) {
+                            alert($(e).data('id'))
+                            if ($(e).data('id') == closeTabId) {
+                                $(e).remove();
+                                return false;
+                            }
+                        });
+                    }
+
+                    // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
+                    if (currentTab.prev('.J_menuTab').size()) {
+                        var activeId = currentTab.prev('.J_menuTab:last').data('id');
+                        currentTab.prev('.J_menuTab:last').addClass('active');
+                        mainContent.find('.J_iframe').each(function (index,e) {
+                            if ($(e).data('id') == activeId) {
+                                $(e).show().siblings('.J_iframe').hide();
+                                return false;
+                            }
+                        });
+
+                        //  移除当前选项卡
+                        currentTab.remove();
+
+                        // 移除tab对应的内容区
+                        mainContent.find('.J_iframe').each(function (index,e) {
+                            if ($(e).data('id') == closeTabId) {
+                                $(e).remove();
+                                return false;
+                            }
+                        });
+
+                    }
+                }
+                // 当前元素不处于活动状态
+                else {
+
+                    //  移除当前选项卡
+                    currentTab.remove();
+
+                    // 移除相应tab对应的内容区
+                    mainContent.find('.J_iframe').each(function (index,e) {
+                        if ($(e).data('id') == closeTabId) {
+                            $(e).remove();
+                            return false;
+                        }
+                    });
+                   // scrollToTab($('.J_menuTab.active'));
+                }
+                return false;
+            }
+
+            $('#search').click(function () {
+                $('#exampleTableEvents').bootstrapTable('refresh', {
+                    url: server_context+"/data_apply_list?"+$("#data_apply_form").serialize(),
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json"
+                });
+            })
+
+        })();
+
+    })(document, window, jQuery);
+
+
+</script>
+
+</body>
+
+</html>

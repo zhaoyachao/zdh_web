@@ -20,10 +20,10 @@
               shade: 0.1,
               area : ['45%', '60%'],
               //area: ['450px', '500px'],
-              content: "etl_task_drools_add_index?id=-1", //iframe的url
+              content: server_context+"/etl_task_drools_add_index?id=-1", //iframe的url
               end:function () {
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : 'etl_task_drools_list'
+                      url : 'etl_task_drools_list2'
                   });
               }
           });
@@ -58,14 +58,14 @@
 
       function deleteMs(ids) {
           $.ajax({
-              url : "etl_task_drools_delete",
+              url : server_context+"/etl_task_drools_delete",
               data : "ids=" + ids,
               type : "post",
               dataType : "json",
               success : function(data) {
                   console.info("success")
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : 'etl_task_drools_list'
+                      url : server_context+'/etl_task_drools_list2'
                   });
               },
               error: function (data) {
@@ -88,10 +88,10 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: "etl_task_drools_add_index?id="+row.id, //iframe的url
+                  content: server_context+"/etl_task_drools_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : 'etl_task_drools_list'
+                          url : server_context+'/etl_task_drools_list2'
                       });
                   }
               });
@@ -109,10 +109,10 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: "etl_task_drools_add_index?id="+row.id+"&is_copy=true", //iframe的url
+                  content: server_context+"/etl_task_drools_add_index?id="+row.id+"&is_copy=true", //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : 'etl_task_drools_list'
+                          url : server_context+'/etl_task_drools_list2'
                       });
                   }
               });
@@ -190,7 +190,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: "etl_task_drools_list",
+      url: server_context+"/etl_task_drools_list2",
       search: true,
       pagination: true,
       pageSize : 10,

@@ -2,9 +2,12 @@ package com.zyc.zdh;
 
 
 import com.zyc.zdh.annotation.MyMark;
+import com.zyc.zdh.controller.LoginController;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -21,6 +24,7 @@ public class ZdhApplication {
 	public static void main(String[] args) {
 		SpringApplication springApplication = new SpringApplication(ZdhApplication.class);
 		System.out.println("ApplicationRun......run....");
-		springApplication.run(args);
+		ApplicationContext context=springApplication.run(args);
+		LoginController.context = context;
 	}
 }

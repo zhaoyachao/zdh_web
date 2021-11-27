@@ -1,5 +1,5 @@
 
-create database if NOT EXISTS mydb;
+create database if NOT EXISTS zdh;
 
 create user 'zyc'@'%' identified by '123456';
 create user 'zyc'@'localhost' identified by '123456';
@@ -13,8 +13,8 @@ GRANT ALL PRIVILEGES on *.* to zyc@'127.0.0.1';
 
 FLUSH PRIVILEGES;
 
+use zdh;
 
-use mydb;
 
 drop table if EXISTS zdh_ha_info;
 create table zdh_ha_info(
@@ -664,6 +664,9 @@ url text comment 'url链接',
 primary key (id)
 );
 
+INSERT INTO `resource_tree_info` VALUES (802848818109353984,'#','ZDH','1','1','fa fa-folder',NULL,'1',NULL,'2021-01-23 10:34:34','2021-01-30 08:43:35',''),(802850170428461056,'802848818109353984','总监控','2','1','fa fa-bar-chart',NULL,'1',NULL,'2021-01-23 10:34:34','2021-01-29 21:56:12','monitor.html'),(802852358580080640,'802848818109353984','ETL采集','2','1','fa fa-tasks',NULL,'2',NULL,'2021-01-23 10:34:34','2021-01-30 14:31:56',''),(802876953722884096,'802848818109353984','数据质量报告','2','1','fa fa-hourglass-half',NULL,'4',NULL,'2021-01-23 10:34:34','2021-01-29 22:24:43','quality_index.html'),(802918652050411520,'802852358580080640','数据源管理','3','1','non',NULL,'1',NULL,'2021-01-23 10:34:34','2021-01-29 22:31:11','data_sources_index.html'),(802918760057933824,'802852358580080640','ETL任务','3','1','non',NULL,'2',NULL,'2021-01-23 10:34:34','2021-01-29 22:31:14','etl_task_index.html'),(802919044364636160,'802852358580080640','多源ETL任务','3','1','non',NULL,'3',NULL,'2021-01-23 10:34:34','2021-01-29 22:31:17','etl_task_more_sources_index.html'),(802919157430489088,'802852358580080640','SQL任务','3','1','non',NULL,'4',NULL,'2021-01-23 10:34:34','2021-01-29 22:31:20','sql_task_index.html'),(802930870510948352,'802852358580080640','Drools任务','3','1','non',NULL,'5',NULL,'2021-01-23 10:34:34','2021-01-29 22:31:30','etl_task_drools_index.html'),(802931116691427328,'802852358580080640','SSH任务','3','1','non',NULL,'6',NULL,'2021-01-23 10:34:34','2021-05-05 05:31:28','etl_task_ssh_index.html'),(802931308593418240,'802852358580080640','调度ETL','3','1','non',NULL,'8',NULL,'2021-01-23 10:34:34','2021-05-05 05:31:34','dispatch_task_index.html'),(802931697527033856,'802848818109353984','下载管理','2','1','fa fa-download',NULL,'3',NULL,'2021-01-23 10:34:34','2021-01-29 22:24:39','download_index.html'),(802932157390524416,'802848818109353984','指标查询','2','1','fa fa-columns',NULL,'5',NULL,'2021-01-23 10:34:34','2021-01-29 22:24:46','quota_index.html'),(802932355596554240,'802848818109353984','血缘分析','2','1','fa fa-asterisk',NULL,'6',NULL,'2021-01-23 10:34:34','2021-01-29 22:24:49','consanguin_index.html'),(802932548165439488,'802848818109353984','权限管理','2','1','fa fa-cog',NULL,'7',NULL,'2021-01-23 10:34:34','2021-01-29 22:24:52','permission_index.html'),(802932890089295872,'802848818109353984','使用技巧','2','1','fa fa-hand-o-right',NULL,'17',NULL,'2021-01-23 10:34:34','2021-02-12 19:24:01','zdh_help.index'),(802933021148712960,'802848818109353984','Cron','2','1','fa fa-glass',NULL,'9',NULL,'2021-01-23 10:34:34','2021-01-29 22:24:58','cron.html'),(802933165302747136,'802848818109353984','README','2','1','fa fa-info',NULL,'18',NULL,'2021-01-23 10:34:34','2021-02-12 19:24:11','readme.html'),(805193674668380160,'802848818109353984','设置','2','1','fa fa-user',NULL,'15',NULL,'2021-01-29 21:52:12','2021-01-30 08:39:40',''),(805357642351382528,'802848818109353984','测试2','2','1','',NULL,'',NULL,'2021-01-30 08:43:45','2021-01-30 09:26:36',''),(805369519538180096,'805193674668380160','文件服务器','3','1','fa fa-file',NULL,'1',NULL,'2021-01-30 09:30:57','2021-01-30 09:47:06','file_manager.html'),(805372907965386752,'805193674668380160','同步元数据','3','1','fa fa-circle-o',NULL,'3',NULL,'2021-01-30 09:44:24','2021-01-30 13:51:20','function:load_meta_databases()'),(805374183432261632,'805193674668380160','用户中心','3','1','','','0','1','2021-01-30 09:49:28','2021-01-30 09:49:28','user.html'),(805431924678987776,'805193674668380160','生成监控任务','3','1','fa fa-gavel',NULL,'7',NULL,'2021-01-30 13:38:55','2021-01-30 13:52:20','function:del_system_job()'),(805531084459610112,'802848818109353984','升级扩容','2','1','fa fa-cloud',NULL,'16',NULL,'2021-01-30 20:12:57','2021-02-12 19:22:22',''),(808616077255774208,'805531084459610112','部署管理','3','1','fa fa-linux',NULL,'3',NULL,'2021-02-08 08:31:36','2021-02-11 20:23:56','server_manager_index.html'),(809886572093640704,'805193674668380160','通知管理','3','1','fa fa-comments',NULL,'9',NULL,'2021-02-11 20:40:06','2021-02-11 20:40:21','notice_update_index.html'),(812083004473085952,'802848818109353984','数仓管理','2','1','fa fa-database','','16','1','2021-02-18 06:07:56','2021-02-18 06:07:56',''),(812083162921308160,'812083004473085952','数据集市','3','1','fa fa-database',NULL,'1',NULL,'2021-02-18 06:08:33','2021-05-05 05:33:45','data_ware_house_index.html'),(830752386808025088,'802848818109353984','联系作者','2','1','fa fa-pencil','','20','1','2021-04-10 18:33:23','2021-04-10 18:33:23','mail_compose.html'),(839494480422768640,'802852358580080640','发布源ETL','3','1','non','','7','1','2021-05-05 05:31:21','2021-05-05 05:31:21','etl_task_apply_index.html'),(839494660022865920,'812083004473085952','数据发布','3','1','fa fa-send','','3','1','2021-05-05 05:32:04','2021-05-05 05:32:04','data_issue_index.html'),(839494774946795520,'812083004473085952','申请明细','3','1','fa fa-truck','','3','1','2021-05-05 05:32:31','2021-05-05 05:32:31','data_apply_index.html'),(839494892357947392,'812083004473085952','数据审批','3','1','fa fa-gg','','5','1','2021-05-05 05:32:59','2021-05-05 05:32:59','data_approve_index');
+
+
 drop TABLE if EXISTS user_resource_info;
 create table user_resource_info(
 id bigint NOT NULL AUTO_INCREMENT,
@@ -673,6 +676,7 @@ resource_id varchar(100) comment '资源id',
 `update_time` timestamp NULL DEFAULT NULL,
 primary key (id)
 );
+INSERT INTO `user_resource_info` VALUES (120,'2','802850170428461056',NULL,NULL),(121,'2','802852358580080640',NULL,NULL),(122,'2','802931697527033856',NULL,NULL),(123,'2','802876953722884096',NULL,NULL),(124,'2','802932157390524416',NULL,NULL),(125,'2','802932355596554240',NULL,NULL),(126,'2','802932548165439488',NULL,NULL),(127,'2','802932890089295872',NULL,NULL),(128,'2','802933021148712960',NULL,NULL),(129,'2','802933165302747136',NULL,NULL),(130,'2','805193674668380160',NULL,NULL),(131,'2','805374183432261632',NULL,NULL),(132,'2','805369519538180096',NULL,NULL),(133,'2','805372907965386752',NULL,NULL),(134,'2','802918652050411520',NULL,NULL),(135,'2','802918760057933824',NULL,NULL),(136,'2','802919044364636160',NULL,NULL),(137,'2','802919157430489088',NULL,NULL),(138,'2','802930870510948352',NULL,NULL),(139,'2','802931116691427328',NULL,NULL),(140,'2','802931308593418240',NULL,NULL),(356,'1','805374183432261632',NULL,NULL),(357,'1','802848818109353984',NULL,NULL),(358,'1','802850170428461056',NULL,NULL),(359,'1','802918652050411520',NULL,NULL),(360,'1','805369519538180096',NULL,NULL),(361,'1','812083162921308160',NULL,NULL),(362,'1','802852358580080640',NULL,NULL),(363,'1','802918760057933824',NULL,NULL),(364,'1','802919044364636160',NULL,NULL),(365,'1','802931697527033856',NULL,NULL),(366,'1','805372907965386752',NULL,NULL),(367,'1','808616077255774208',NULL,NULL),(368,'1','802876953722884096',NULL,NULL),(369,'1','802919157430489088',NULL,NULL),(370,'1','802930870510948352',NULL,NULL),(371,'1','802932157390524416',NULL,NULL),(372,'1','802931116691427328',NULL,NULL),(373,'1','802932355596554240',NULL,NULL),(374,'1','802931308593418240',NULL,NULL),(375,'1','802932548165439488',NULL,NULL),(376,'1','805431924678987776',NULL,NULL),(377,'1','802933021148712960',NULL,NULL),(378,'1','805193674668380160',NULL,NULL),(379,'1','805531084459610112',NULL,NULL),(380,'1','812083004473085952',NULL,NULL),(381,'1','802932890089295872',NULL,NULL),(382,'1','802933165302747136',NULL,NULL),(383,'1','830752386808025088',NULL,NULL),(384,'1','839494480422768640',NULL,NULL),(385,'1','839494660022865920',NULL,NULL),(386,'1','839494774946795520',NULL,NULL),(387,'1','839494892357947392',NULL,NULL);
 
 -- 2021-01-32;
 alter table task_log_instance add column is_disenable varchar(10) comment '是否禁用true:禁用,false:启用';
@@ -734,10 +738,311 @@ alter table task_log_instance add column depend_level varchar(10) not null defau
 -- 2021-04-24;
 alter table data_sources_info add column is_delete varchar(10) not null default '0' comment '是否删除,0:未删除,1:删除';
 
-create database if NOT EXISTS quartz;
 
-use quartz;
--- quartz
+-- 2021-05-03;
+drop TABLE if EXISTS apply_info;
+create table apply_info(
+id bigint NOT NULL AUTO_INCREMENT,
+apply_context varchar(500) comment '',
+issue_id varchar(200) comment '数据发布id',
+approve_id varchar(200) comment '审批人id',
+status varchar(10) comment '状态0:初始态,1:通过,2:未通过,3:撤销申请',
+create_time timestamp NOT NULL DEFAULT current_timestamp ,
+update_time timestamp NOT NULL DEFAULT current_timestamp,
+owner varchar(100) comment '拥有者',
+reason text comment '原因',
+primary key (id)
+);
+
+-- 2021-05-05;
+DROP TABLE IF EXISTS `etl_apply_task_info`;
+CREATE TABLE `etl_apply_task_info` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `etl_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `data_sources_choose_input` varchar(100) DEFAULT NULL COMMENT '输入数据源id',
+  `data_source_type_input` varchar(100) DEFAULT NULL COMMENT '输入数据源类型',
+  `data_sources_table_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源表名',
+  `data_sources_file_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源文件名',
+  `data_sources_file_columns` text DEFAULT NULL COMMENT '输入数据源文件列名',
+  `data_sources_table_columns` text DEFAULT NULL COMMENT '输入数据源表列名',
+  `data_sources_params_input` varchar(500) DEFAULT NULL COMMENT '输入数据源参数',
+  `data_sources_filter_input` varchar(500) DEFAULT NULL COMMENT '输入数据源过滤条件',
+  `data_sources_choose_output` varchar(100) DEFAULT NULL COMMENT '输出数据源id',
+  `data_source_type_output` varchar(100) DEFAULT NULL COMMENT '输出数据源类型',
+  `data_sources_table_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源表名',
+  `data_sources_file_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源文件名',
+  `data_sources_params_output` varchar(500) DEFAULT NULL COMMENT '输出数据源参数',
+  `column_datas` text DEFAULT NULL COMMENT '输入输出自定映射关系',
+  `data_sources_clear_output` varchar(500) DEFAULT NULL COMMENT '数据源数据源删除条件',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+  `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+  `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+  `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+  `column_size` varchar(100) DEFAULT NULL COMMENT '字段个数',
+  `rows_range` varchar(100) DEFAULT NULL COMMENT '行数范围',
+  `error_rate` varchar(10) DEFAULT NULL COMMENT '错误率',
+  `enable_quality` varchar(10) DEFAULT NULL COMMENT '是否开启质量检测',
+  `duplicate_columns` varchar(200) DEFAULT NULL COMMENT '去重字段',
+  `primary_columns` varchar(100) DEFAULT NULL COMMENT '不可重复字段',
+  `file_type_input` varchar(10) DEFAULT NULL COMMENT '输入文件类型',
+  `encoding_input` varchar(10) DEFAULT NULL COMMENT '输入文件编码',
+  `sep_input` varchar(10) DEFAULT NULL COMMENT '输入分割符',
+  `file_type_output` varchar(10) DEFAULT NULL COMMENT '输出文件类型',
+  `encoding_output` varchar(10) DEFAULT NULL COMMENT '输出文件编码',
+  `sep_output` varchar(10) DEFAULT NULL COMMENT '输出文件分割符',
+  `header_input` varchar(10) DEFAULT NULL COMMENT '输入是否包含表头',
+  `header_output` varchar(10) DEFAULT NULL COMMENT '输出是否包含表头',
+   is_delete varchar(10) not null default '0' comment '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- 2021-06-11;
+alter table task_group_log_instance add column schedule_source varchar(64) not null default '1' comment '调度来源,1:例行,2:手动';
+alter table task_log_instance add column schedule_source varchar(64) not null default '1' comment '调度来源,1:例行,2:手动';
+
+-- 2021-06-14
+alter table etl_task_info add column repartition_num_input varchar(64) not null default '' comment '洗牌个数默认空';
+alter table etl_task_info add column repartition_cols_input varchar(256) not null default '' comment '洗牌字段默认空';
+alter table etl_task_info add column model_output varchar(64) not null default '' comment '写入模式默认空';
+alter table etl_task_info add column partition_by_output varchar(256) not null default '' comment '分区字段默认空';
+alter table etl_task_info add column merge_output varchar(256) not null default '-1' comment '合并小文件默认-1 不合并';
+
+
+alter table etl_more_task_info add column model_output varchar(64) not null default '' comment '写入模式默认空';
+alter table etl_more_task_info add column partition_by_output varchar(256) not null default '' comment '分区字段默认空';
+alter table etl_more_task_info add column merge_output varchar(256) not null default '-1' comment '合并小文件默认-1 不合并';
+
+alter table sql_task_info add column model_output varchar(64) not null default '' comment '写入模式默认空';
+alter table sql_task_info add column partition_by_output varchar(256) not null default '' comment '分区字段默认空';
+alter table sql_task_info add column merge_output varchar(256) not null default '-1' comment '合并小文件默认-1 不合并';
+
+alter table etl_drools_task_info add column model_output varchar(64) not null default '' comment '写入模式默认空';
+alter table etl_drools_task_info add column partition_by_output varchar(256) not null default '' comment '分区字段默认空';
+alter table etl_drools_task_info add column merge_output varchar(256) not null default '-1' comment '合并小文件默认-1 不合并';
+
+
+alter table etl_apply_task_info add column repartition_num_input varchar(64) not null default '' comment '洗牌个数默认空';
+alter table etl_apply_task_info add column repartition_cols_input varchar(256) not null default '' comment '洗牌字段默认空';
+alter table etl_apply_task_info add column model_output varchar(64) not null default '' comment '写入模式默认空';
+alter table etl_apply_task_info add column partition_by_output varchar(256) not null default '' comment '分区字段默认空';
+alter table etl_apply_task_info add column merge_output varchar(256) not null default '-1' comment '合并小文件默认-1 不合并';
+
+
+-- 2021-06-26;
+alter table resource_tree_info modify column text varchar(1024);
+
+-- 2021-09-12;
+CREATE TABLE `etl_task_flink_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `sql_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `data_sources_params_input` varchar(500) DEFAULT NULL COMMENT '输入参数',
+  `etl_sql` text COMMENT 'sql任务处理逻辑',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+  `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+  `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+  `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+  `host` varchar(100) DEFAULT NULL,
+  `port` varchar(100) DEFAULT NULL,
+  `user_name` varchar(500) DEFAULT NULL,
+  `password` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 2021-09-18;
+alter table quartz_job_info add column alarm_email varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table quartz_job_info add column alarm_sms varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table quartz_job_info add column alarm_zdh varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+
+alter table task_group_log_instance add column alarm_email varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table task_group_log_instance add column alarm_sms varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table task_group_log_instance add column alarm_zdh varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+
+alter table task_log_instance add column alarm_email varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table task_log_instance add column alarm_sms varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table task_log_instance add column alarm_zdh varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+
+-- 2021-09-19;
+alter table quartz_job_info add column notice_error varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table quartz_job_info add column notice_finish varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table quartz_job_info add column notice_timeout varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+
+alter table task_group_log_instance add column notice_error varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table task_group_log_instance add column notice_finish varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table task_group_log_instance add column notice_timeout varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+
+alter table task_log_instance add column notice_error varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table task_log_instance add column notice_finish varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+alter table task_log_instance add column notice_timeout varchar(8) not null default 'off' comment '启用邮箱告警 on:启用,off:禁用';
+
+CREATE TABLE `notice_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `msg_type` varchar(200) DEFAULT NULL COMMENT '消息类型',
+  `msg_title` varchar(500) DEFAULT NULL COMMENT '主题',
+  `msg_url` varchar(500) DEFAULT NULL COMMENT '消息连接',
+  `msg` text COMMENT '消息',
+  `is_see` varchar(100) DEFAULT NULL COMMENT '是否查看,true/false',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+alter table zdh_download_info add column is_notice varchar(8) default 'false' comment '是否已经通知true/false';
+
+alter table apply_info add column is_notice varchar(8) not null default 'false' comment '是否已经通知true/false';
+
+alter table etl_task_flink_info add column checkpoint varchar(256) not null default '' comment 'checkpoint地址';
+
+-- 2021-09-25;
+-- 审批流配置表;
+create table approval_config(
+`id` bigint NOT NULL AUTO_INCREMENT,
+code varchar(64) not null default '0' comment '审批流程code',
+code_name varchar(128) not null default '' comment '审批流程名称',
+`type` tinyint(1) not null default 0 comment '0 单人审批；1 多人审批。单人审批，意思是同一级审批只要有审批人审批后，其他人默认审批。多人审批，必须是同一级所以人审批，才进行下一步审批节点',
+`create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+employee_id varchar(64) not null default '' comment '发布人id'
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 审批人设置表;
+create table approval_auditor(
+`id` bigint NOT NULL AUTO_INCREMENT,
+code varchar(64) not null default '0' comment '审批流程code',
+level int not null default 0 comment '审批节点',
+auditor_id varchar(64) not null default '' comment '审批人id',
+auditor_group varchar(64) not null default '' comment '审批人所在组',
+`create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间'
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 审批表;
+create table approval(
+`id` varchar(64) not null default '0' comment '审批事件id',
+event varchar(64) not null default '0' comment '审批事件名称',
+code varchar(64) not null default '0' comment '审批流程code',
+level int not null default 0 comment '审批节点',
+auditor_id varchar(64) not null default '' comment '审批人id',
+auditor_group varchar(64) not null default '' comment '审批人所在组',
+status tinyint(1) not null default '0' comment '审批状态:0 无操作 1 待审批 2 通过 3 驳回'
+next_approval_id varchar(64) not null default '0' comment '下游审批事件id',
+`type` tinyint(1) not null default 0 comment '0 单人审批；1 多人审批',
+`create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 事件表, 用户因何事发起了审批流程;
+
+
+-- 2021-10-03;
+alter table account_info add column enable varchar(8) default 'false' comment '是否启用true/false';
+alter table account_info add column user_group varchar(8) default '' comment '用户所在组';
+alter table account_info add column roles text comment '角色列表';
+alter table account_info add column signature varchar(64) comment '签名';
+
+-- 2021-10-03 新增角色表;
+CREATE TABLE `role_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `code` varchar(200) DEFAULT NULL COMMENT '角色code',
+  `name` varchar(500) DEFAULT NULL COMMENT '角色名',
+  `enable` varchar(8) default 'false' comment '是否启用true/false';
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+drop TABLE if EXISTS role_resource_info;
+create table role_resource_info(
+id bigint NOT NULL AUTO_INCREMENT,
+role_id varchar(100) comment 'role id',
+resource_id varchar(100) comment '资源id',
+`create_time` timestamp NULL DEFAULT NULL,
+`update_time` timestamp NULL DEFAULT NULL,
+primary key (id)
+);
+
+
+create table user_group_info(
+id bigint NOT NULL AUTO_INCREMENT,
+name varchar(100) comment '组名',
+`enable` varchar(8) default 'false' comment '是否启用true/false',
+`create_time` timestamp NULL DEFAULT NULL,
+`update_time` timestamp NULL DEFAULT NULL,
+primary key (id)
+);
+
+create table approval_event_info(
+`id` bigint NOT NULL AUTO_INCREMENT,
+code varchar(64) not null default '0' comment '审批流程code',
+event_code varchar(64) not null default '' comment '事件code',
+event_context varchar(128) not null default '' comment '事件说明',
+`create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+PRIMARY KEY (`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+alter table resource_tree_info add column resource_type varchar(64) comment '1:目录,2:菜单,3:函数,4:接口';
+
+alter table issue_data_info add column status varchar(64) comment '1:发布,2:未发布';
+
+CREATE TABLE `process_flow_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `flow_id` varchar(64) NOT NULL DEFAULT '0' COMMENT '流程标识id',
+  `event_code` varchar(64) NOT NULL DEFAULT '' COMMENT '事件code',
+  `config_code` varchar(64) NOT NULL DEFAULT '0' COMMENT '审批流程code',
+  `context` varchar(128) NOT NULL DEFAULT '' COMMENT '事件说明',
+  `auditor_id` text COMMENT '审批人id,逗号分割',
+  `is_show` varchar(128) NOT NULL DEFAULT '0' COMMENT '1:可见,0:不可见',
+  `owner` varchar(100) not null DEFAULT '' COMMENT '拥有者',
+  `pre_id` varchar(100) not null DEFAULT '' COMMENT '流程id',
+  `create_time` timestamp NULL DEFAULT  null COMMENT '创建时间',
+  `status` varchar(10) not null default '0' comment '流程状态,0:未审批,1:审批完成,2:不通过,3:撤销',
+  `is_end` varchar(64) not null DEFAULT '0' comment '0:非最后一个节点,1:最后一个节点',
+  `level` varchar(64) not null DEFAULT '0' comment '审批节点环节',
+   event_id varchar(64) not null default '' comment '发起流程的具体事件唯一键',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+--2021-11-01;
+alter table etl_task_flink_info add column server_type varchar(64) comment '服务类型:windows/linux';
+alter table etl_task_flink_info add column command text comment '命令';
+
+--2021-11-08;
+
+
+--2021-11-27;
+CREATE TABLE etl_task_jdbc_info (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `etl_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `data_sources_choose_input` varchar(100) DEFAULT NULL COMMENT '输入数据源id',
+  `data_source_type_input` varchar(100) DEFAULT NULL COMMENT '输入数据源类型',
+  `etl_sql` text DEFAULT NULL COMMENT 'sql任务处理逻辑',
+  `data_sources_choose_output` varchar(100) DEFAULT NULL COMMENT '输出数据源id',
+  `data_source_type_output` varchar(100) DEFAULT NULL COMMENT '输出数据源类型',
+  `data_sources_table_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源表名',
+  `data_sources_file_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源文件名',
+  `data_sources_params_output` varchar(500) DEFAULT NULL COMMENT '输出数据源参数',
+  `data_sources_clear_output` varchar(500) DEFAULT NULL COMMENT '数据源数据源删除条件',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+  `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+  `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+  `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+  `file_type_output` varchar(10) DEFAULT NULL COMMENT '输出文件类型',
+  `encoding_output` varchar(10) DEFAULT NULL COMMENT '输出文件编码',
+  `sep_output` varchar(10) DEFAULT NULL COMMENT '输出文件分割符',
+  `header_output` varchar(10) DEFAULT NULL COMMENT '输出是否包含表头',
+  `model_output` varchar(64) NOT NULL DEFAULT '' COMMENT '写入模式默认空',
+  `partition_by_output` varchar(256) NOT NULL DEFAULT '' COMMENT '分区字段默认空',
+  `merge_output` varchar(256) NOT NULL DEFAULT '-1' COMMENT '合并小文件默认-1 不合并',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
 DROP TABLE IF EXISTS QRTZ_SCHEDULER_STATE;

@@ -79,6 +79,22 @@
                                                     </div>
 
                                                 </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">资源类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="resource_type" name="resource_type"
+                                                                data-placeholder="空"
+                                                                class="chosen-select form-control m-b" tabindex="2">
+                                                            <option value="1" mytype="">目录</option>
+                                                            <option value="2" mytype="">菜单</option>
+                                                            <option value="3" mytype="">页面</option>
+                                                            <option value="4" mytype="">方法</option>
+                                                            <option value="5" mytype="">接口</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">跳转链接</label>
                                                     <div class="col-sm-10">
@@ -133,6 +149,21 @@
                                                         <input id="icon2" name="icon" class="form-control" type="text" value="" placeholder="图标 fa fa-hourglass-half">
                                                     </div>
 
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">资源类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="resource_type2" name="resource_type"
+                                                                data-placeholder="空"
+                                                                class="chosen-select form-control m-b" tabindex="2">
+                                                            <option value="1" mytype="">目录</option>
+                                                            <option value="2" mytype="">菜单</option>
+                                                            <option value="3" mytype="">内置页面</option>
+                                                            <option value="4" mytype="">方法</option>
+                                                            <option value="5" mytype="">接口</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
 
                                                 <div class="form-group">
@@ -240,6 +271,7 @@
     </div>
 </div>
 
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -272,10 +304,11 @@
             radioClass: 'iradio_square-green',
         });
 
+        $('.chosen-select').chosen();
+        $(".chosen-container").css("width","100%");
     });
 
     (function(document, window, $) {
-
 
         (function () {
 
@@ -286,6 +319,8 @@
             for(var i = 0; i < pa.length; i ++){
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
+
+
 
             var node_text=s.text;
             $('#parent').attr('node_id',s.id);
@@ -308,6 +343,8 @@
                     $('#icon2').val(data.icon);
                     $('#url2').val(data.url);
                     $('#order2').val(data.order);
+                    $('#resource_type2').val(data.resource_type)
+                    $("#resource_type2").trigger("chosen:updated");
                 },
                 //处理完成
                 complete: function () {
@@ -321,8 +358,6 @@
                 }
             });
 
-
-
             $('#using_json2').jstree({
                 "plugins" : [ "types",'checkbox' ],
                 'checkbox': { cascade: "", three_state: false }, //不级联
@@ -331,7 +366,7 @@
                     'data' :  function (obj, callback){
                         $.ajax({
                             type : "post",
-                            url : "/jstree_node",//getAreaBuild=getTreeArea
+                            url : server_context+"/jstree_node",//getAreaBuild=getTreeArea
                             dataType : "json",
                             async:'false',
                             success : function(data) {
@@ -347,8 +382,6 @@
 
 
                 } });
-
-
 
 
         })();
@@ -388,13 +421,12 @@
             //成功返回
             success: function (data) {
                 $("#execute").removeAttr('disabled');
-
-                var node={
-                    "id":data.id,
-                    "text":data.text,
-                    "level":data.level
-                }
                 layer.close(index1)
+                if(data.code != '200'){
+                    console.error(data.msg)
+                    layer.msg("执行失败")
+                    return ;
+                }
                 //window.parent.create_node(s.id,node);
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
@@ -473,12 +505,13 @@
             //成功返回
             success: function (data) {
                 $("#execute2").removeAttr('disabled');
-
-                var node={
-                    "id":data.id,
-                    "text":data.text
-                }
                 layer.close(index1)
+
+                if(data.code != '200'){
+                    console.error(data.msg)
+                    layer.msg("执行失败")
+                    return ;
+                }
                 //window.parent.create_node(s.id,node);
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
@@ -488,12 +521,11 @@
             complete: function () {
                 $("#execute2").removeAttr('disabled');
                 layer.close(index1)
-                console.info("complete")
             },
             //报错
             error: function (data) {
                 $("#execute2").removeAttr('disabled');
-                console.info("error: " + data.responseText);
+                layer.msg('失败')
             }
         });
 
@@ -533,6 +565,11 @@
             success: function (data) {
                 $("#execute3").removeAttr('disabled');
                 layer.close(index1)
+                if(data.code != '200'){
+                    console.error(data.msg)
+                    layer.msg("执行失败")
+                    return ;
+                }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
 
@@ -599,6 +636,11 @@
             success: function (data) {
                 $("#execute4").removeAttr('disabled');
                 layer.close(index1)
+                if(data.code != '200'){
+                    console.error(data.msg)
+                    layer.msg("执行失败")
+                    return ;
+                }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
 

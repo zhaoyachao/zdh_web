@@ -2,6 +2,7 @@ package com.zyc.zdh.shiro;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -10,6 +11,8 @@ import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
+
+import java.io.IOException;
 
 public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 
@@ -23,7 +26,8 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 				&& !UnknownAccountException.class.getName().equals(className)
 				&& !IncorrectCredentialsException.class.getName().equals(
 						className)
-				&& !LockedAccountException.class.getName().equals(className)) { // 用户被锁定
+				&& !LockedAccountException.class.getName().equals(className)
+		        && !AuthenticationException.class.getName().equals(className)) { // 用户被锁定
 			e.printStackTrace(); // 非验证异常抛出
 		}
 		return super.onLoginFailure(token, e, request, response);
@@ -62,21 +66,26 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 //	}
 	
 	protected String getCaptcha(ServletRequest request) {
-		return WebUtils.getCleanParam(request, "passKey");
+		return WebUtils.getCleanParam(request, "captcha");
 	}
 
 	@Override
 	protected AuthenticationToken createToken(ServletRequest request,
 			ServletResponse response) {
+
+		String session_captcha = (String)((HttpServletRequest) request).getSession().getAttribute(MyAuthenticationToken.captcha_key);
+
+
 		System.out.println("create Token");
 		String username = getUsername(request);
 		String password = getPassword(request);
 		boolean remberMe = isRememberMe(request);
 		String host = "";
-		String captcha = "";
+		String captcha = getCaptcha(request);
 		String ipAddr = "";
+		System.out.println("captcha: "+captcha);
+		System.out.println("session_captcha: "+session_captcha);
 		return new MyAuthenticationToken(username, password, remberMe, host,
-				captcha, ipAddr);
+				captcha, ipAddr, session_captcha);
 	}
-
 }

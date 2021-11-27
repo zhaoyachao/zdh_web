@@ -23,6 +23,6 @@ function getHistory(size){var historyp=localStorage.getItem(historyLS);if(histor
 function haveViewed(contentId){var historyp=localStorage.getItem(historyLS);if(historyp==null||historyp==""||historyp=="null"){return false;}
     if(historyp.indexOf(contentId)>=0){return true;}
     return false;}
-(function(){var bp=document.createElement('script');var curProtocol=window.location.protocol.split(':')[0];if(curProtocol==='https'){bp.src='https://zz.bdstatic.com/linksubmit/push.js';}
-else{bp.src='http://push.zhanzhang.baidu.com/push.js';}
-    var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(bp,s);})();var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?9cc074900445f1842472986022b3fd60";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();
+// (function(){var bp=document.createElement('script');var curProtocol=window.location.protocol.split(':')[0];if(curProtocol==='https'){bp.src='https://zz.bdstatic.com/linksubmit/push.js';}
+// else{bp.src='http://push.zhanzhang.baidu.com/push.js';}
+//     var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(bp,s);})();var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?9cc074900445f1842472986022b3fd60";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();

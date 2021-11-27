@@ -2,31 +2,41 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import com.zyc.zdh.config.DateConverter;
-import com.zyc.zdh.dao.EveryDayNoticeMapper;
-import com.zyc.zdh.dao.QuartzJobMapper;
-import com.zyc.zdh.dao.ResourceTreeMapper;
-import com.zyc.zdh.dao.ZdhNginxMapper;
+import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobModel;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
+import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.RedisUtil;
 import org.apache.shiro.SecurityUtils;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Transient;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyEditorSupport;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 @Controller
 public class SystemController extends BaseController{
@@ -47,11 +57,19 @@ public class SystemController extends BaseController{
     EveryDayNoticeMapper everyDayNoticeMapper;
     @Autowired
     ResourceTreeMapper resourceTreeMapper;
+    @Autowired
+    NoticeMapper noticeMapper;
 
-    @RequestMapping(value = "/{url}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{url}", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     public String dynApiDemo2(@PathVariable("url") String url) {
         System.out.println(url);
-        return "etl/" + url;
+        return "404";
+    }
+
+    @RequestMapping(value = "/zdh_help", method = RequestMethod.GET)
+    public String zdh_help() {
+
+        return "etl/zdh_help";
     }
 
     @RequestMapping(value = "/cron", method = RequestMethod.GET)
@@ -99,27 +117,66 @@ public class SystemController extends BaseController{
     public String notice() {
         //System.out.println("加载缓存中通知事件");
         List<NoticeInfo> noticeInfos = new ArrayList<>();
-        if (!redisUtil.exists("zdhdownloadinfos_" + getUser().getId())) {
-            return JSON.toJSONString(noticeInfos);
-        }
-        String json = redisUtil.get("zdhdownloadinfos_" + getUser().getId()).toString();
-        if (json != null && !json.equals("")) {
-            List<ZdhDownloadInfo> cache = JSON.parseArray(json, ZdhDownloadInfo.class);
-            Iterator<ZdhDownloadInfo> iterator = cache.iterator();
-            while (iterator.hasNext()) {
-                ZdhDownloadInfo zdhDownloadInfo = iterator.next();
-                if (zdhDownloadInfo.getOwner().equals(getUser().getId())) {
-                    NoticeInfo noticeInfo = new NoticeInfo();
-                    noticeInfo.setMsg_type("文件下载");
-                    int last_index = zdhDownloadInfo.getFile_name().lastIndexOf("/");
-                    noticeInfo.setMsg_title(zdhDownloadInfo.getFile_name().substring(last_index + 1) + "完成下载");
-                    noticeInfo.setMsg_url("download_index");
-                    noticeInfos.add(noticeInfo);
-                }
-            }
+
+        NoticeInfo ni=new NoticeInfo();
+        ni.setIs_see("false");
+        ni.setOwner(getUser().getId());
+        noticeInfos=noticeMapper.select(ni);
+
+
+        Map map=new HashMap<String,Object>();
+        map.put("total_num", noticeInfos.size());
+        if(noticeInfos.size()>=10){
+            map.put("notices", noticeInfos.subList(0,10));
+        }else{
+            map.put("notices", noticeInfos);
         }
 
-        return JSON.toJSONString(noticeInfos);
+
+        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"查询完成", map);
+
+        //return JSON.toJSONString(noticeInfos);
+
+
+//        if (!redisUtil.exists("zdhdownloadinfos_" + getUser().getId()) && !redisUtil.exists("zdhapplyinfos_" + getUser().getId())) {
+//            //return JSON.toJSONString(noticeInfos);
+//        }
+//        if(redisUtil.exists("zdhdownloadinfos_" + getUser().getId())){
+//            String json = redisUtil.get("zdhdownloadinfos_" + getUser().getId()).toString();
+//            if (json != null && !json.equals("")) {
+//                List<ZdhDownloadInfo> cache = JSON.parseArray(json, ZdhDownloadInfo.class);
+//                Iterator<ZdhDownloadInfo> iterator = cache.iterator();
+//                while (iterator.hasNext()) {
+//                    ZdhDownloadInfo zdhDownloadInfo = iterator.next();
+//                    if (zdhDownloadInfo.getOwner().equals(getUser().getId())) {
+//                        NoticeInfo noticeInfo = new NoticeInfo();
+//                        noticeInfo.setMsg_type("文件下载");
+//                        int last_index = zdhDownloadInfo.getFile_name().lastIndexOf("/");
+//                        noticeInfo.setMsg_title(zdhDownloadInfo.getFile_name().substring(last_index + 1) + "完成下载");
+//                        noticeInfo.setMsg_url("download_index");
+//                        noticeInfos.add(noticeInfo);
+//                    }
+//                }
+//            }
+//        }
+//
+//        if(redisUtil.exists("zdhapplyinfos_" + getUser().getId())){
+//            String json2 = redisUtil.get("zdhapplyinfos_" + getUser().getId()).toString();
+//            if (json2 != null && !json2.equals("")) {
+//                List<ApplyInfo> cache = JSON.parseArray(json2, ApplyInfo.class);
+//                Iterator<ApplyInfo> iterator = cache.iterator();
+//                while (iterator.hasNext()) {
+//                    ApplyInfo applyInfo = iterator.next();
+//                    NoticeInfo noticeInfo = new NoticeInfo();
+//                    noticeInfo.setMsg_type("审批");
+//                    noticeInfo.setMsg_title(applyInfo.getApply_context()+"_数据审批单");
+//                    noticeInfo.setMsg_url("data_approve_index");
+//                    noticeInfos.add(noticeInfo);
+//                }
+//            }
+//        }
+
+       // return JSON.toJSONString(noticeInfos);
     }
 
     @RequestMapping(value = "/del_system_job", produces = "text/html;charset=UTF-8")
@@ -168,6 +225,81 @@ public class SystemController extends BaseController{
         return js.toJSONString();
 
     }
+
+    @RequestMapping(value = "/notice_detail_index", method = RequestMethod.GET)
+    public String notice_detail_index() {
+
+        return "admin/notice_detail_index";
+    }
+
+    @RequestMapping(value = "/notice_message", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional
+    public String notice_message(String id) {
+        //System.out.println("加载缓存中通知事件");
+
+        try{
+            NoticeInfo ni=new NoticeInfo();
+            ni.setId(id);
+            ni = noticeMapper.selectOne(ni);
+            if(ni!=null && ni.getIs_see().equalsIgnoreCase("false")){
+                ni.setIs_see("true");
+                ni.setUpdate_time(new Timestamp(new Date().getTime()));
+                noticeMapper.updateByPrimaryKey(ni);
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", ni);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+
+    }
+
+    @RequestMapping(value = "/notice_index", method = RequestMethod.GET)
+    public String notice_index() {
+
+        return "admin/notice_index";
+    }
+
+    @RequestMapping(value = "/notice_list2", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String notice2(String message) {
+        //System.out.println("加载缓存中通知事件");
+        List<NoticeInfo> noticeInfos = new ArrayList<>();
+
+        noticeInfos = noticeMapper.selectByMessage(message, getUser().getId());
+
+        return JSON.toJSONString(noticeInfos);
+    }
+
+    @RequestMapping(value = "/notice_delete", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional
+    public String notice_delete(String[] ids) {
+        try{
+            for (String id :ids){
+                noticeMapper.deleteByPrimaryKey(id);
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+        }
+    }
+
+    @RequestMapping(value = "/notice_update_see", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional
+    public String notice_update_see(String[] ids, String is_see) {
+        try{
+            noticeMapper.updateIsSeeByIds(ids, is_see);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
+    }
+
 
     /**
      * 使用帮助
@@ -246,5 +378,91 @@ public class SystemController extends BaseController{
         return "当前版本:"+version;
     }
 
+    @RequestMapping(value = "/captcha")
+    public void captcha(HttpServletRequest request,
+                          HttpServletResponse response) throws IOException {
 
+        response.setHeader("Pragma","No-cache");
+        response.setHeader("Cache-Control","no-cache");
+        response.setDateHeader("Expires", 0);
+        response.setContentType("image/jpeg");
+        BufferedImage image = new BufferedImage
+                (IMG_WIDTH , IMG_HEIGTH , BufferedImage.TYPE_INT_RGB);
+        Graphics g = image.getGraphics();
+        Random random = new Random();
+        g.setColor(getRandColor(200 , 250));
+        g.fillRect(1, 1, IMG_WIDTH - 1, IMG_HEIGTH - 1);
+        g.setColor(new Color(102 , 102 , 102));
+        g.drawRect(0, 0, IMG_WIDTH - 1, IMG_HEIGTH - 1);
+        g.setColor(getRandColor(160,200));
+        for (int i = 0 ; i < 30 ; i++)
+        {
+            int x = random.nextInt(IMG_WIDTH - 1);
+            int y = random.nextInt(IMG_HEIGTH - 1);
+            int xl = random.nextInt(6) + 1;
+            int yl = random.nextInt(12) + 1;
+            g.drawLine(x , y , x + xl , y + yl);
+        }
+        g.setColor(getRandColor(160,200));
+        for (int i = 0 ; i < 30 ; i++)
+        {
+            int x = random.nextInt(IMG_WIDTH - 1);
+            int y = random.nextInt(IMG_HEIGTH - 1);
+            int xl = random.nextInt(12) + 1;
+            int yl = random.nextInt(6) + 1;
+            g.drawLine(x , y , x - xl , y - yl);
+        }
+        g.setFont(mFont);
+        String sRand = "";
+        for (int i = 0 ; i < 4 ; i++)
+        {
+            String tmp = getRandomChar();
+            sRand += tmp;
+            g.setColor(new Color(20 + random.nextInt(110)
+                    ,20 + random.nextInt(110)
+                    ,20 + random.nextInt(110)));
+            g.drawString(tmp , 15 * i + 10,15);
+        }
+        HttpSession session = request.getSession(true);
+        session.setAttribute(MyAuthenticationToken.captcha_key , sRand);
+//			System.out.println("写入session"+sRand);
+        g.dispose();
+        ImageIO.write(image, "JPEG", response.getOutputStream());
+    }
+
+    private String getRandomChar()
+    {
+        int rand = (int)Math.round(Math.random() * 2);
+        long itmp = 0;
+        char ctmp = '\u0000';
+        switch (rand)
+        {
+            case 1:
+                itmp = Math.round(Math.random() * 25 + 65);
+                ctmp = (char)itmp;
+                return String.valueOf(ctmp);
+            case 2:
+                itmp = Math.round(Math.random() * 25 + 97);
+                ctmp = (char)itmp;
+                return String.valueOf(ctmp);
+            default :
+                itmp = Math.round(Math.random() * 9);
+                return  itmp + "";
+        }
+    }
+
+    private final Font mFont =
+            new Font("Arial Black", Font.PLAIN, 16);
+    private final int IMG_WIDTH = 100;
+    private final int IMG_HEIGTH = 18;
+    private Color getRandColor(int fc,int bc)
+    {
+        Random random = new Random();
+        if(fc > 255) fc = 255;
+        if(bc > 255) bc=255;
+        int r = fc + random.nextInt(bc - fc);
+        int g = fc + random.nextInt(bc - fc);
+        int b = fc + random.nextInt(bc - fc);
+        return new Color(r , g , b);
+    }
 }

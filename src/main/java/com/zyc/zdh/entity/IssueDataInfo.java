@@ -7,11 +7,12 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
 @Table
-public class IssueDataInfo {
+public class IssueDataInfo implements Serializable {
 
     @Id
     @Column
@@ -50,6 +51,11 @@ public class IssueDataInfo {
     private String service;
 
     private String update_context;
+
+    @Transient
+    private String user_name;
+
+    private String status;//状态：1：已发布, 2:未发布
 
 
     public String getIssue_context() {
@@ -188,5 +194,20 @@ public class IssueDataInfo {
         this.update_context = update_context;
     }
 
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
 

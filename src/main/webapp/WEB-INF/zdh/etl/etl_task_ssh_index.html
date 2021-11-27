@@ -76,6 +76,7 @@
         <!-- End Panel Other -->
     </div>
 
+    <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -101,7 +102,7 @@
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: "/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize(),
+                url: server_context+"/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });

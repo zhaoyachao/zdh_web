@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH flink_sql任务新增</title>
+    <meta name="keywords" content="ZDH flink_sql任务新增">
+    <meta name="description" content="ZDH flink_sql任务新增">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="js/codemirror/codemirror.css" />
+    <link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css" />
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>FLINK_SQL任务配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="etl_task_flink_add_form" name="etl_task_flink_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">SQL任务说明</label>
+                            <div class="col-sm-10">
+                                <input id="sql_context" name="sql_context" type="text"
+                                       placeholder="SQL任务说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">创建时间</label>
+                            <div class="col-sm-10">
+                                <input id="create_time" name="create_time" type="text" readonly
+                                       placeholder="创建时间" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">SQL逻辑</label>
+                            <div class="col-sm-10">
+                              <textarea id="etl_sql" name="etl_sql" class="form-control" rows="15"
+                                          placeholder="SQL逻辑,使用sql语法 example select a.* ,b.* from a,b where a.id=b.id"></textarea>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">其他参数</label>
+                            <div class="col-sm-10" id="div_data_sources_params">
+                                <textarea id="data_sources_params_input" name="data_sources_params_input"
+                                          class="form-control" rows="2"
+                                          placeholder="参数使用固定格式{&#34;k&#34;:&#34;v&#34;,&#34;k1&#34;:&#34;v1&#34;}"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输入数据源开始-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">检查点</label>
+                            <div class="col-sm-10">
+                                <input id="checkpoint" name="checkpoint" type="text"
+                                       placeholder="检查点" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">集群类型</label>
+                            <div class="col-sm-10">
+                                <select id="server_type" name="server_type" data-placeholder="集群类型"
+                                         class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="linux" mytype="">LINUX</option>
+                                    <option value="windows" mytype="">WINDOWS</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 输入数据源开始-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">主机</label>
+                            <div id="using_json" class="col-sm-10">
+                                <input id="host" name="host" type="text"
+                                       placeholder="主机地址" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">端口</label>
+                            <div class="col-sm-10">
+                                <input id="port" name="port" type="text"
+                                       placeholder="主机端口" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">命令</label>
+                            <div class="col-sm-10">
+                                <input id="command" name="command" type="text"
+                                       placeholder="命令" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户名</label>
+                            <div class="col-sm-10">
+                                <input id="user_name" name="user_name" type="text"
+                                       placeholder="用户名" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">密码</label>
+                            <div  class="col-sm-10">
+                                <input id="password" name="password" type="password"
+                                       placeholder="密码" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <!-- 元信息 业务相关-->
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属公司</label>
+                            <div class="col-sm-10">
+                                <input id="company" name="company"
+                                       type="text"
+                                       placeholder="填写公司" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属部门</label>
+                            <div class="col-sm-10">
+                                <input id="section" name="section"
+                                       type="text"
+                                       placeholder="填写部门" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属业务</label>
+                            <div class="col-sm-10">
+                                <input id="service" name="service"
+                                       type="text"
+                                       placeholder="填写业务" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">更新说明</label>
+                            <div class="col-sm-10">
+                                <textarea id="update_context" name="update_context" class="form-control" rows="2"
+                                          placeholder="更新说明"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输出数据源结束-->
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<!--<script src="js/plugins/toastr/toastr.min.js"></script>-->
+
+<!--<script src="js/plugins/webuploader/webuploader.min.js"></script>-->
+
+<!--<script src="js/demo/webuploader-demo.js"></script>-->
+
+<!-- jsTree plugin javascript -->
+<script src="js/plugins/jsTree/jstree.min.js"></script>
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/codemirror/codemirror.js"></script>
+<script src="js/codemirror/addon/edit/matchbrackets.js"></script>
+<script src="js/codemirror/sql.js"></script>
+
+<script src="js/codemirror/addon/hint/show-hint.js"></script>
+<script src="js/codemirror/addon/hint/sql-hint.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+
+    (function (document, window, $) {
+
+
+        (function () {
+
+            var mime = 'text/x-hive';
+            // get mime type
+            if (window.location.href.indexOf('mime=') > -1) {
+                mime = window.location.href.substr(window.location.href.indexOf('mime=') + 5);
+            }
+            window.editor = CodeMirror.fromTextArea(document.getElementById('etl_sql'), {
+                mode: mime,
+                indentWithTabs: true,
+                smartIndent: true,
+                lineNumbers: true,
+                matchBrackets : true,
+                autofocus: true,
+                extraKeys: {"Ctrl-Space": "autocomplete"},
+                hintOptions: {tables: {
+                        users: ["name", "score", "birthDate"],
+                        countries: ["name", "population", "size"]
+                    }}
+            });
+
+            $('#server_type').chosen();
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            //启动数据源select 初始化函数
+
+            //s.id=-1 表示新增,否则表示更新
+            if (s.id == -1) {
+                console.info("新增按钮触发")
+                //$('#data_sources_table_name_input').chosen();
+                //$('#data_sources_table_name_output').chosen();
+                $('#update_etl_task').hide()
+                $('#save_etl_task').show()
+            } else {
+
+                //init_table_name(s.id)
+
+                if (s.is_copy == "true") {
+                    console.info("拷贝按钮触发")
+                    $('#update_etl_task').hide()
+                    $('#save_etl_task').show()
+                } else {
+                    console.info("更新按钮触发")
+                    $('#save_etl_task').hide()
+                    $('#update_etl_task').show()
+                }
+
+                if (s.only_read == "true") {
+                    $('#update_etl_task').hide()
+                    $('#save_etl_task').hide()
+                    $('#reset').hide()
+                }
+                buildParam()
+            }
+
+            function getMyDate(str) {
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth() + 1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + " " + getzf(oHour) + ":" + getzf(oMin) + ":" + getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            //补0操作
+            function getzf(num) {
+                if (parseInt(num) < 10) {
+                    num = '0' + num;
+                }
+                return num;
+            }
+
+
+            function buildParam() {
+                $('#enable_quality').prop("checked", false)
+                if (s.id != '-1') {
+                    console.info("更新按钮触发--开始赋值对应参数")
+                    //开始赋值
+
+                    $.ajax({
+                        url: server_context+"/etl_task_flink_list",
+                        data: "id=" + s.id,
+                        type: "post",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            console.info("success")
+                            // layer.alert(JSON.stringify(data[0]))
+
+                            //获取ETL 说明
+                            var sql_context = data[0].sql_context
+                            $("#sql_context").val(sql_context);
+
+                            var create_time = data[0].create_time
+                            $("#create_time").val(getMyDate(create_time));
+
+
+                            var etl_sql = data[0].etl_sql
+                            //$("#etl_sql").val(etl_sql);
+                            console.info(etl_sql)
+                            window.editor.setValue(etl_sql);
+                            window.editor.refresh();
+
+                            //获取输入源数据其他参数
+                            var data_sources_params_input = data[0].data_sources_params_input;
+                            $("#data_sources_params_input").val(data_sources_params_input);
+
+                            var checkpoint = data[0].checkpoint;
+                            $("#checkpoint").val(checkpoint);
+
+                            $("#server_type").val(data[0].server_type);
+                            $("#server_type").trigger("chosen:updated");
+
+                            var host = data[0].host;
+                            $("#host").val(host);
+
+                            var port = data[0].port;
+                            $("#port").val(port);
+
+                            var user_name = data[0].user_name;
+                            $("#user_name").val(user_name);
+
+                            var password = data[0].password;
+                            $("#password").val(password);
+
+                            var command = data[0].command;
+                            $("#command").val(command);
+
+                            //获取元数据信息
+                            var company = data[0].company;
+                            $('#company').val(company);
+
+                            var section = data[0].section;
+                            $('#section').val(section);
+
+                            var service = data[0].service;
+                            $('#service').val(service);
+
+                            var update_context = data[0].update_context;
+                            $('#update_context').val(update_context);
+
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+
+
+                }
+            }
+
+        })();
+
+    })(document, window, jQuery);
+
+
+    $('#save_etl_task').click(function () {
+
+        if ($('#sql_context').val() == '') {
+            layer.msg("SQL任务说明不能为空！");
+            return;
+        }
+
+        var formData = new FormData(document.getElementById("etl_task_flink_add_form"));
+        formData.set("etl_sql",window.editor.getValue())
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/etl_task_flink_add",
+            async: false,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            data: formData,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                if(data.code != '200'){
+                    console.error(data.msg)
+                    layer.msg("执行失败")
+                    return ;
+                }
+                layer.msg("执行成功")
+
+
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
+
+
+    $('#update_etl_task').click(function () {
+
+        if ($('#sql_context').val() == '') {
+            layer.msg("SQL任务说明不能为空！");
+            return;
+        }
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var formData = new FormData(document.getElementById("etl_task_flink_add_form"));
+        formData.set("etl_sql",window.editor.getValue())
+        formData.set("id",s.id)
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/etl_task_flink_update",
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            data: formData,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                if(data.code != "200"){
+                    console.error(data.msg);
+                    layer.msg("执行失败");
+                    return ;
+                }
+                layer.msg("执行成功");
+
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
+
+</script>
+
+</body>
+
+</html>

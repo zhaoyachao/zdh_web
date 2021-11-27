@@ -7,20 +7,23 @@ import org.apache.shiro.authc.UsernamePasswordToken;
  *
  */
 public class MyAuthenticationToken extends  UsernamePasswordToken {
-
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2681757716434500100L;
-	
+
+	public static final String captcha_key = "zdh_captcha";
+
 	private String captcha;
 	private String ipAddr;
+	private String session_captcha;
 	
-	public MyAuthenticationToken(String username,String password,boolean rememberMe,String host,String captcha,String ipAddr) {        
+	public MyAuthenticationToken(String username,String password,boolean rememberMe,String host,String captcha,String ipAddr,String session_captcha) {
 		super(username, password, rememberMe, host);
 	    this.captcha = captcha;
 	    this.ipAddr=ipAddr;
+	    this.session_captcha=session_captcha;
 	}
 	
 	public String getCaptcha() {
@@ -39,4 +42,11 @@ public class MyAuthenticationToken extends  UsernamePasswordToken {
 		this.ipAddr = ipAddr;
 	}
 
+	public String getSession_captcha() {
+		return session_captcha;
+	}
+
+	public void setSession_captcha(String session_captcha) {
+		this.session_captcha = session_captcha;
+	}
 }

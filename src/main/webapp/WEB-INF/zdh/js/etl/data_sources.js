@@ -102,10 +102,10 @@ function buildTable($el, cells, rows) {
               shadeClose: false,
               shade: 0.8,
               area: ['450px', '500px'],
-              content: 'data_sources_add?id=-1', //iframe的url
+              content: server_context+'/data_sources_add_index?id=-1', //iframe的url
               end:function () {
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : 'data_sources_list'
+                      url : server_context+'/data_sources_list'
                   });
               }
           });
@@ -137,14 +137,18 @@ function buildTable($el, cells, rows) {
 
       function deleteMs(ids) {
           $.ajax({
-              url : "data_sources_delete",
+              url : server_context+"/data_sources_delete",
               data : "ids=" + ids,
               type : "post",
               dataType : "json",
               success : function(data) {
                   console.info("success")
+                  if(data.code != "200"){
+                      layer.msg(data.msg)
+                      return
+                  }
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : 'data_sources_list'
+                      url : server_context+'/data_sources_list'
                   });
               },
               error: function (data) {
@@ -163,10 +167,10 @@ function buildTable($el, cells, rows) {
                   shadeClose: false,
                   shade: 0.8,
                   area: ['450px', '500px'],
-                  content: "data_sources_add?id="+row.id,
+                  content: server_context+"/data_sources_add_index?id="+row.id,
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : 'data_sources_list'
+                          url : server_context+'/data_sources_list'
                       });
                   }
               });
@@ -203,7 +207,7 @@ function buildTable($el, cells, rows) {
 
 
     $('#exampleTableEvents').bootstrapTable({
-      url: "data_sources_list",
+      url: server_context+"/data_sources_list",
       search: true,
       pagination: true,
       showRefresh: true,

@@ -1,5 +1,7 @@
 package com.zyc.zdh.entity;
 
+import com.zyc.zdh.util.Const;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -22,7 +24,7 @@ public class DataSourcesInfo extends PageBase implements Serializable {
 
     private String  owner;
 
-    private String is_delete;
+    private String is_delete= Const.NOT_DELETE;
 
     public String getIs_delete() {
         return is_delete;

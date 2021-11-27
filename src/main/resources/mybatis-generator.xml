@@ -37,6 +37,6 @@
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
         <!--生成对应表及类名 -->
-        <table tableName="SERVER_TASK_INFO" domainObjectName="ServerTaskInfo" mapperName="ServerTaskMappeer"></table>
+        <table tableName="UserGroupInfo" domainObjectName="UserGroupInfo" mapperName="UserGroupMappeer"></table>
     </context>
 </generatorConfiguration>

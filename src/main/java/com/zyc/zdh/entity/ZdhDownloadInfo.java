@@ -1,5 +1,7 @@
 package com.zyc.zdh.entity;
 
+import com.zyc.zdh.util.Const;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -20,6 +22,7 @@ public class ZdhDownloadInfo implements Serializable {
     private String etl_date;
     private String  owner;
     private String job_context;
+    private String is_notice= Const.FALSE;
 
     public String getId() {
         return id;
@@ -83,5 +86,13 @@ public class ZdhDownloadInfo implements Serializable {
 
     public void setJob_context(String job_context) {
         this.job_context = job_context;
+    }
+
+    public String getIs_notice() {
+        return is_notice;
+    }
+
+    public void setIs_notice(String is_notice) {
+        this.is_notice = is_notice;
     }
 }

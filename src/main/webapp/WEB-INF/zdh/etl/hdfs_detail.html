@@ -124,7 +124,13 @@
                                 </select>
                             </div>
                         </div>
-
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">超时时间</label>
+                            <div class="col-sm-10">
+                                <input id="time_out" name="time_out" type="text" value="86400"
+                                       placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
@@ -146,7 +152,7 @@
 </div>
 
 
-
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -217,7 +223,9 @@
                 $('#hdfs_path').val($("#hdfs_path_text",window.parent.document).val());
                 $('#hdfs_mode').val(s.hdfs_mode);
                 $("#hdfs_mode").trigger("chosen:updated");
-
+                if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
+                    $("#time_out").val(s["time_out"]);
+                }
                 var is_disenable=s['is_disenable']
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
@@ -240,6 +248,8 @@
         var hdfs_path=$('#hdfs_path').val();
         var depend_level=$('#depend_level').find("option:selected").val();
         var hdfs_mode=$('#hdfs_mode').find("option:selected").val();
+        var time_out=$('#time_out').val();
+
         var is_disenable = "false"
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -253,7 +263,8 @@
             "is_disenable":is_disenable,
             "hdfs_path":hdfs_path,
             "depend_level":depend_level,
-            "hdfs_mode":hdfs_mode
+            "hdfs_mode":hdfs_mode,
+            "time_out": time_out
         }
         console.info("hdfs_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

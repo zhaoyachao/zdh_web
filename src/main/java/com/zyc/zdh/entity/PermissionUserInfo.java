@@ -16,6 +16,7 @@ public class PermissionUserInfo implements Serializable {
 	@Column
 	private String id;
 	private String userName;
+	@Column(name="user_password")
 	private String password;
 	private String email;
 	private String is_use_email;
@@ -23,6 +24,12 @@ public class PermissionUserInfo implements Serializable {
 	private String is_use_phone;
 
 	private String user_group;
+
+	private String enable;
+
+	private String roles;
+
+	private String signature;
 
 	public String getId() {
 		return id;
@@ -75,5 +82,37 @@ public class PermissionUserInfo implements Serializable {
 
 	public void setIs_use_phone(String is_use_phone) {
 		this.is_use_phone = is_use_phone;
+	}
+
+	public String getUser_group() {
+		return user_group;
+	}
+
+	public void setUser_group(String user_group) {
+		this.user_group = user_group;
+	}
+
+	public String getEnable() {
+		return enable;
+	}
+
+	public void setEnable(String enable) {
+		this.enable = enable;
+	}
+
+	public String getRoles() {
+		return roles;
+	}
+
+	public void setRoles(String roles) {
+		this.roles = roles;
+	}
+
+	public String getSignature() {
+		return signature;
+	}
+
+	public void setSignature(String signature) {
+		this.signature = signature;
 	}
 }

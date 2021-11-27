@@ -6,11 +6,9 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg %n</pattern>
             <charset>UTF-8</charset>
         </encoder>
-<!--        <filter class="ch.qos.logback.classic.filter.LevelFilter">-->
-<!--            <level>info</level>-->
-<!--            <onMatch>ACCEPT</onMatch>-->
-<!--            <onMismatch>DENY</onMismatch>-->
-<!--        </filter>-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
     </appender>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -24,10 +22,8 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>debug</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -49,17 +45,39 @@
         </filter>
     </appender>
 
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
+            <fileNamePattern>logs/stdinfo.%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+            <maxFileSize>10MB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <charset>UTF-8</charset> <!-- 此处设置字符集 -->
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>info</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
     <logger name="com.zyc.zdh.shiro" level="info" />
-    <logger name="com.zyc.zdh.dao" level="info"></logger>
-    <logger name="com.zyc.zdh.dao.ZdhHaInfoMapper" level="info"></logger>
-    <logger name="com.zyc.zdh.dao.ZdhDownloadMapper" level="info"></logger>
-    <logger name="com.zyc.zdh.dao.TaskLogInstanceMapper" level="info"></logger>
-    <logger name="com.zyc.zdh.dao.TaskGroupLogInstanceMapper" level="info"></logger>
-    <logger name="com.zyc.zdh.dao.PermissionMapper" level="info"></logger>
+    <logger name="com.zyc.zdh.dao" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao.ZdhHaInfoMapper" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao.ZdhDownloadMapper" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao.TaskLogInstanceMapper" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao.TaskGroupLogInstanceMapper" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao.PermissionMapper" level="debug"></logger>
     <logger name="com.zyc.zdh.util.SpringLoadInit" level="info"></logger>
-    <logger name="com.zyc.zdh.dao.QuartzJobMapper" level="info"></logger>
+    <logger name="com.zyc.zdh.dao.QuartzJobMapper" level="debug"></logger>
     <logger name="com.zyc.zdh.dao.ServerTaskMapper" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao.ApplyMapper" level="debug"></logger>
     <logger name="com.zyc.zdh.netty" level="info"></logger>
+    <logger name="com.zyc.zdh.aop" level="debug"></logger>
+
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"></appender-ref>
         <appender-ref ref="FILE"></appender-ref>

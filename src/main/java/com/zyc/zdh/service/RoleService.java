@@ -3,15 +3,16 @@ package com.zyc.zdh.service;
 import java.util.List;
 
 import com.zyc.zdh.entity.PageBase;
-import com.zyc.zdh.entity.Role;
+import com.zyc.zdh.entity.RoleInfo;
+import com.zyc.zdh.entity.RoleInfo;
 
 public interface RoleService {
 
-	public Role getRole(String id);
+	public RoleInfo getRole(String id);
 	
 	public String list(String aoData);
 	
-	public List<Role> findList(PageBase page);
+	public List<RoleInfo> findList(PageBase page);
 
 	public int delRole(String id);
 }

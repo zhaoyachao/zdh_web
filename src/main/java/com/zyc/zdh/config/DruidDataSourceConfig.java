@@ -21,25 +21,25 @@ public class DruidDataSourceConfig {
 	@Value("${spring.datasource.url}")
 	private String dbUrl;
 
-	@Value("${spring.datasource.url2}")
+	@Value("${spring.datasource.url}")
 	private String dbUrl2;
 
 	@Value("${spring.datasource.username}")
 	private String username;
 
-	@Value("${spring.datasource.username2}")
+	@Value("${spring.datasource.username}")
 	private String username2;
 
 	@Value("${spring.datasource.password}")
 	private String password;
 
-	@Value("${spring.datasource.password2}")
+	@Value("${spring.datasource.password}")
 	private String password2;
 
 	@Value("${spring.datasource.driver-class-name}")
 	private String driverClassName;
 
-	@Value("${spring.datasource.driver-class-name2}")
+	@Value("${spring.datasource.driver-class-name}")
 	private String driverClassName2;
 
 	@Value("${spring.datasource.initialSize}")

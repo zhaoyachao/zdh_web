@@ -2,6 +2,7 @@ package com.zyc.zdh.entity;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zyc.zdh.util.Const;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -65,8 +66,8 @@ public class TaskLogInstance implements Serializable {
 
     private String last_task_log_id;
 
-    private String more_task;//多源任务 值：多源ETL,单源ETL,SQL
-    private String job_type;// 任务类型,SHELL,FTP,CLASS
+    private String more_task;//多源任务 值：多源ETL,单源ETL,SQL,FLINK,APPLY,Drools
+    private String job_type;// 任务类型,ETL,SHELL,(依赖检查)JDBC,GROUP,HDFS
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Timestamp start_time;// 起始时间
@@ -125,6 +126,64 @@ public class TaskLogInstance implements Serializable {
     private String is_disenable;//0:禁用,1启用
 
     private String depend_level="0";//0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
+
+    private String schedule_source;//调度来源,1:例行,2:手动
+
+    private String alarm_email= Const.OFF;
+    private String alarm_sms=Const.OFF;
+    private String alarm_zdh=Const.OFF;
+
+    private String notice_error=Const.OFF;
+    private String notice_finish=Const.OFF;
+    private String notice_timeout=Const.OFF;
+
+    public String getNotice_error() {
+        return notice_error;
+    }
+
+    public void setNotice_error(String notice_error) {
+        this.notice_error = notice_error;
+    }
+
+    public String getNotice_finish() {
+        return notice_finish;
+    }
+
+    public void setNotice_finish(String notice_finish) {
+        this.notice_finish = notice_finish;
+    }
+
+    public String getNotice_timeout() {
+        return notice_timeout;
+    }
+
+    public void setNotice_timeout(String notice_timeout) {
+        this.notice_timeout = notice_timeout;
+    }
+
+    public String getAlarm_email() {
+        return alarm_email;
+    }
+
+    public void setAlarm_email(String alarm_email) {
+        this.alarm_email = alarm_email;
+    }
+
+    public String getAlarm_sms() {
+        return alarm_sms;
+    }
+
+    public void setAlarm_sms(String alarm_sms) {
+        this.alarm_sms = alarm_sms;
+    }
+
+    public String getAlarm_zdh() {
+        return alarm_zdh;
+    }
+
+    public void setAlarm_zdh(String alarm_zdh) {
+        this.alarm_zdh = alarm_zdh;
+    }
 
     public String getDepend_level() {
         return depend_level;
@@ -642,6 +701,14 @@ public class TaskLogInstance implements Serializable {
 
     public void setGroup_context(String group_context) {
         this.group_context = group_context;
+    }
+
+    public String getSchedule_source() {
+        return schedule_source;
+    }
+
+    public void setSchedule_source(String schedule_source) {
+        this.schedule_source = schedule_source;
     }
 
     public String getProcess_msg() {

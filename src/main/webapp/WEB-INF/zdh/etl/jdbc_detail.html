@@ -113,7 +113,13 @@
                                 </select>
                             </div>
                         </div>
-
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">超时时间</label>
+                            <div class="col-sm-10">
+                                <input id="time_out" name="time_out" type="text" value="86400"
+                                       placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
@@ -135,7 +141,7 @@
 </div>
 
 
-
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -225,7 +231,9 @@
                 $('#etl_context').val(s.etl_context);
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
-
+                if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
+                    $("#time_out").val(s["time_out"]);
+                }
                 window.editor.setValue($("#jdbc_sql_text",window.parent.document).val());
                 window.editor.refresh();
                 var is_disenable=s['is_disenable']
@@ -249,6 +257,7 @@
         var etl_context=$('#etl_context').val();
         var jdbc_sql=window.editor.getValue();
         var depend_level=$('#depend_level').find("option:selected").val();
+        var time_out=$('#time_out').val();
         var is_disenable = "false"
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -261,7 +270,8 @@
             "password":password,
             "is_disenable":is_disenable,
             "jdbc_sql":jdbc_sql,
-            "depend_level":depend_level
+            "depend_level":depend_level,
+            "time_out": time_out
         }
         console.info("job_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

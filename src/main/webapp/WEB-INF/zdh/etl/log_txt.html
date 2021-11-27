@@ -93,6 +93,7 @@
 <!-- End Panel Other -->
 </div>
 
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -198,7 +199,7 @@
             }
             $.ajax({
                 type: 'POST',
-                url: "zhd_logs",
+                url: server_context+"/zdh_logs",
                 dataType: 'json',
                 data: $("#form_log").serialize() +"&task_log_id="+s.task_log_id,
                 //发送数据前
@@ -239,7 +240,7 @@
             }
             $.ajax({
                 type: 'POST',
-                url: "zhd_logs",
+                url: server_context+"/zdh_logs",
                 dataType: 'json',
                 data: $("#form_log").serialize() + "&job_id="+s.job_id+ "&task_log_id=" + s.task_log_id+"&del=1",
                 //发送数据前
@@ -278,7 +279,7 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            window.open("download_log?job_id="+s.job_id+ "&task_log_id=" + s.task_log_id);
+            window.open(server_context+"/download_log?job_id="+s.job_id+ "&task_log_id=" + s.task_log_id);
 
         })
 

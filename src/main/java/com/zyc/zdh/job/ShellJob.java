@@ -4,6 +4,7 @@ import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.util.CommandUtils;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
 
@@ -20,10 +21,17 @@ public class ShellJob extends JobCommon2 {
     public static String jobType = "SHELL";
 
 
+    /**
+     * 当前shell实现只支持同步类型的shell
+     * @param tli
+     * @return
+     */
     public static Boolean shellCommand(TaskLogInstance tli) {
         Boolean exe_status = true;
         //执行命令
         try {
+            logger.info("shell任务当前只支持同步shell,异步shell暂不支持");
+            insertLog(tli,"info","shell任务当前只支持同步shell,异步shell暂不支持");
             //当前只支持检查文件是否存在 if [ ! -f "/data/filename" ];then echo "文件不存在"; else echo "true"; fi
             //日期替换zdh.date => yyyy-MM-dd 模式
             //日期替换zdh.date.nodash=> yyyyMMdd 模式
@@ -31,7 +39,7 @@ public class ShellJob extends JobCommon2 {
 
             Jinjava jj = new Jinjava();
 
-            if(tli.getJump_script()!=null && tli.getJump_script().equalsIgnoreCase("on")){
+            if(tli.getJump_script()!=null && tli.getJump_script().equalsIgnoreCase(Const.ON)){
                 logger.info("跳过脚本验证");
                 insertLog(tli,"info","跳过脚本验证");
                 return exe_status;
@@ -57,6 +65,9 @@ public class ShellJob extends JobCommon2 {
                         newcommand=newcommand.trim();
                     }
 
+                    if (newcommand.toLowerCase().matches("(.*rm)\\s*-[rf | r | f].*")){
+                        throw new Exception("shell命令/脚本,不允许使用rm命令");
+                    }
                     //脚本执行
                     if (tli.getIs_script() != null && tli.getIs_script().equals("true")) {
                         logger.info("[" + jobType + "] JOB ,以脚本方式执行");
@@ -102,11 +113,11 @@ public class ShellJob extends JobCommon2 {
                     }
                 }
                 logger.info("[" + jobType + "] JOB ,执行结果:" + result.get("result").toString().trim());
-                logger.info("[" + jobType + "] JOB ,正常输出:" + result.get("out").toString().trim());
-                logger.info("[" + jobType + "] JOB ,错误输出:" + result.get("error").toString().trim());
+//                logger.info("[" + jobType + "] JOB ,正常输出:" + result.get("out").toString().trim());
+//                logger.info("[" + jobType + "] JOB ,错误输出:" + result.get("error").toString().trim());
                 insertLog(tli, "info", "[" + jobType + "] JOB ,执行结果:" + result.get("result").toString().trim());
-                insertLog(tli, "info", "[" + jobType + "] JOB ,正常输出:" + result.get("out").toString().trim());
-                insertLog(tli, "info", "[" + jobType + "] JOB ,错误输出:" + result.get("error").toString().trim());
+//                insertLog(tli, "info", "[" + jobType + "] JOB ,正常输出:" + result.get("out").toString().trim());
+//                insertLog(tli, "info", "[" + jobType + "] JOB ,错误输出:" + result.get("error").toString().trim());
                 if (!result.get("result").toString().trim().contains("success")) {
                     throw new Exception("shell 命令/脚本执行失败");
                 }

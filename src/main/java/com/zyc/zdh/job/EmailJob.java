@@ -1,19 +1,21 @@
 package com.zyc.zdh.job;
 
 import com.alibaba.fastjson.JSON;
-import com.zyc.zdh.dao.QuartzJobMapper;
-import com.zyc.zdh.dao.TaskLogInstanceMapper;
-import com.zyc.zdh.dao.ZdhDownloadMapper;
+import com.zyc.zdh.controller.ZdhMonitorController;
+import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 //定期拉取失败任务并发送邮件
@@ -32,52 +34,23 @@ public class EmailJob {
             QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
             AccountService accountService=(AccountService) SpringContext.getBean("accountService");
             //获取失败的任务
-            List<EmailTaskLogs> emailTaskLogsList=taskLogInstanceMapper.selectByStatus();
+            List<TaskLogInstance> tlis=taskLogInstanceMapper.selectByStatus(JobStatus.ERROR.getValue());
             String line = System.getProperty("line.separator");
             //根据任务执行时间，主键 获取对应的日志信息
-            for(EmailTaskLogs emailTaskLogs:emailTaskLogsList){
-                String levels = "'DEBUG','WARN','INFO','ERROR'";
-                List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(emailTaskLogs.getJob_id(),emailTaskLogs.getId(),
-                        emailTaskLogs.getStart_time(), emailTaskLogs.getUpdate_time(), levels);
-                Iterator<ZdhLogs> it = zhdLogs.iterator();
-                StringBuilder sb = new StringBuilder("");
-                sb.append("调度任务ID:"+emailTaskLogs.getJob_id()+",调度任务名:"+emailTaskLogs.getJob_context()+line);
-                sb.append("任务组实例ID:"+emailTaskLogs.getGroup_id()+",任务组名:"+emailTaskLogs.getJob_context()+line);
-                sb.append("子任务ID:"+emailTaskLogs.getEtl_task_id()+",子任务名:"+emailTaskLogs.getEtl_context()+line);
-                sb.append("本次子任务实例ID:"+emailTaskLogs.getId()+",本次任务时间:"+emailTaskLogs.getEtl_date()+line);
-                //拼接邮件信息
-                while (it.hasNext()) {
-                    ZdhLogs next = it.next();
-                    String info = "任务ID:" + next.getJob_id() + ",任务执行时间:" + next.getLog_time().toString() + ",日志["+next.getLevel()+"]:" + next.getMsg();
-                    sb.append(info + line);
-                }
-                logger.info("检测失败任务:"+emailTaskLogs.getJob_id()+",对应主键:"+emailTaskLogs.getId()+",对应任务组id:"+emailTaskLogs.getGroup_id());
-                List<String> emails=new ArrayList<>();
-                List<String> phones=new ArrayList<>();
-                QuartzJobInfo qj=quartzJobMapper.selectByPrimaryKey(emailTaskLogs.getJob_id());
-                if(qj.getAlarm_enabled()!=null && qj.getAlarm_enabled().equalsIgnoreCase("on") &&
-                        qj.getAlarm_account()!=null && !qj.getAlarm_account().equalsIgnoreCase("")){
-                    List<User> users=accountService.findByUserName2(qj.getAlarm_account().split(","));
-                    for(User user:users){
-                      if(user.getEmail()!=null){
-                          emails.add(user.getEmail());
-                      }
-                      if(user.getPhone()!=null){
-                        phones.add(user.getPhone());
-                      }
-                    }
+            for(TaskLogInstance tli:tlis){
 
-                    if(emails.size()>0){
-                        jemailService.sendEmail(emails.toArray(new String[0]),"任务监控:"+emailTaskLogs.getJob_context(),sb.toString());
-                    }
-                    if(phones.size()>0&& qj.getEmail_and_sms()!=null && qj.getEmail_and_sms().equalsIgnoreCase("on")){
-                        logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
-                    }
-                }
+                logger.info("检测失败任务:"+tli.getJob_id()+",对应主键:"+tli.getId()+",对应任务组id:"+tli.getGroup_id());
 
-
-                taskLogInstanceMapper.updateNoticeById("true",emailTaskLogs.getId());
-                logger.info("检测失败任务:"+emailTaskLogs.getJob_id()+",对应主键:"+emailTaskLogs.getId()+",并完成更新");
+                String msg="失败任务:\r\n" +
+                        "调度任务:"+tli.getJob_id()+",调度名:"+tli.getJob_context()+"\r\n"+
+                        "任务组:"+tli.getGroup_id()+",任务组名:"+tli.getGroup_context()+"\r\n"+
+                        "ETL任务:"+tli.getEtl_task_id()+",ETL任务名:"+tli.getEtl_context()+"\r\n"+
+                        "ETL任务类型:"+tli.getMore_task()+"\r\n"+
+                        "任务实例id:"+tli.getId()+",任务实例名:"+tli.getEtl_context() +"\r\n"+
+                        "ETL日期:"+tli.getEtl_date()+"\r\n"+
+                        "开始时间:"+DateUtil.formatTime(tli.getRun_time())+"\r\n";
+                alarm(tli, "任务失败通知: "+tli.getJob_context(),msg);
+                logger.info("检测失败任务:"+tli.getJob_id()+",对应主键:"+tli.getId()+",并完成更新");
             }
 
             //获取超时任务
@@ -85,32 +58,21 @@ public class EmailJob {
             if(taskLogInstances!=null && taskLogInstances.size()>0){
                 System.out.println("超时任务量:"+taskLogInstances.size());
                 for(TaskLogInstance tli : taskLogInstances){
-                    List<User> users=accountService.findByUserName2(tli.getAlarm_account().split(","));
-                    List<String> emails=new ArrayList<>();
-                    List<String> phones=new ArrayList<>();
-                    for(User user:users){
-                        if(user.getEmail()!=null){
-                            System.out.println("email:"+user.getEmail());
-                            emails.add(user.getEmail());
-                        }
-                        if(user.getPhone()!=null){
-                            phones.add(user.getPhone());
-                        }
-                    }
-
                     String msg="超时任务:\r\n" +
-                    "调度任务:"+tli.getJob_id()+","+tli.getJob_context()+"\r\n"+
-                    "任务组:"+tli.getGroup_id()+","+tli.getGroup_context()+"\r\n"+
-                    "ETL任务:"+tli.getEtl_task_id()+","+tli.getEtl_context()+"\r\n"+
-                    "任务实例id:"+tli.getId()+","+tli.getEtl_context();
-                    if(emails.size()>0){
-                        jemailService.sendEmail(emails.toArray(new String[0]),"任务监控:"+tli.getJob_context(),msg);
-                    }
-                    if(phones.size()>0&& tli.getEmail_and_sms()!=null && tli.getEmail_and_sms().equalsIgnoreCase("on")){
-                        logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
-                    }
+                            "调度任务:"+tli.getJob_id()+",调度名:"+tli.getJob_context()+"\r\n"+
+                            "任务组:"+tli.getGroup_id()+",任务组名:"+tli.getGroup_context()+"\r\n"+
+                            "ETL任务:"+tli.getEtl_task_id()+",ETL任务名:"+tli.getEtl_context()+"\r\n"+
+                            "ETL任务类型:"+tli.getMore_task()+"\r\n"+
+                            "任务实例id:"+tli.getId()+",任务实例名:"+tli.getEtl_context() +"\r\n"+
+                            "ETL日期:"+tli.getEtl_date()+"\r\n"+
+                            "开始时间:"+DateUtil.formatTime(tli.getRun_time())+"\r\n";
+                    if (tli.getJob_type().equalsIgnoreCase(ShellJob.jobType)){
+                        msg = msg +"\r\nSHELL任务超时自动杀死";
+                        ZdhMonitorController zdhmc = (ZdhMonitorController) SpringContext.getBean("zdhMonitorController");
+                        zdhmc.killJob(tli.getId());
 
-                    taskLogInstanceMapper.updateNoticeById("alarm",tli.getId());
+                    }
+                    alarm(tli, "任务超时通知: "+tli.getJob_context(),msg);
                 }
             }
 
@@ -119,30 +81,29 @@ public class EmailJob {
             if(taskLogInstances2!=null && taskLogInstances2.size()>0){
                 System.out.println("超时完成任务量:"+taskLogInstances2.size());
                 for(TaskLogInstance tli : taskLogInstances2){
-                    List<User> users=accountService.findByUserName2(tli.getAlarm_account().split(","));
-                    List<String> emails=new ArrayList<>();
-                    List<String> phones=new ArrayList<>();
-                    for(User user:users){
-                        if(user.getEmail()!=null){
-                            System.out.println("email:"+user.getEmail());
-                            emails.add(user.getEmail());
-                        }
-                        if(user.getPhone()!=null){
-                            phones.add(user.getPhone());
-                        }
-                    }
-
                     String msg="超时任务id:"+tli.getId()+" ,已完成,完成时间:"+ DateUtil.formatTime(tli.getUpdate_time());
-                    if(emails.size()>0){
-                        jemailService.sendEmail(emails.toArray(new String[0]),"任务监控:"+tli.getJob_context(),msg);
-                    }
-                    if(phones.size()>0&& tli.getEmail_and_sms()!=null && tli.getEmail_and_sms().equalsIgnoreCase("on")){
-                        logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
-                    }
-
-                    taskLogInstanceMapper.updateNoticeById("true",tli.getId());
+                    alarm(tli, "超时任务完成通知: "+tli.getJob_context(),msg);
                 }
             }
+
+            //完成任务后通知
+            List<TaskLogInstance> taskLogInstances3= taskLogInstanceMapper.selectNoNoticeFinish();
+            if(taskLogInstances3!=null && taskLogInstances3.size()>0){
+                for(TaskLogInstance tli : taskLogInstances3){
+
+                    String msg="任务完成通知:\r\n" +
+                            "调度任务:"+tli.getJob_id()+",调度名:"+tli.getJob_context()+"\r\n"+
+                            "任务组:"+tli.getGroup_id()+",任务组名:"+tli.getGroup_context()+"\r\n"+
+                            "ETL任务:"+tli.getEtl_task_id()+",ETL任务名:"+tli.getEtl_context()+"\r\n"+
+                            "ETL任务类型:"+tli.getMore_task()+"\r\n"+
+                            "任务实例id:"+tli.getId()+",任务实例名:"+tli.getEtl_context() +"\r\n"+
+                            "ETL日期:"+tli.getEtl_date()+"\r\n"+
+                            "开始时间:"+DateUtil.formatTime(tli.getRun_time())+"\r\n"+
+                            "完成时间:"+ DateUtil.formatTime(tli.getUpdate_time());
+                    alarm(tli, "任务完成通知: "+tli.getJob_context(),msg);
+                }
+            }
+
 
         }catch (Exception e){
             e.printStackTrace();
@@ -151,32 +112,133 @@ public class EmailJob {
     }
 
 
+    private static void alarm(TaskLogInstance tli, String title, String msg){
+        JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
+        TaskLogInstanceMapper taskLogInstanceMapper = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+        AccountService accountService=(AccountService) SpringContext.getBean("accountService");
+        NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
+        List<User> users=accountService.findByUserName2(tli.getAlarm_account().split(","));
+        List<String> emails=new ArrayList<>();
+        List<String> phones=new ArrayList<>();
+        for(User user:users){
+            if(user.getEmail()!=null){
+                System.out.println("email:"+user.getEmail());
+                emails.add(user.getEmail());
+            }
+            if(user.getPhone()!=null){
+                phones.add(user.getPhone());
+            }
+        }
+
+        if(emails.size()>0 && tli.getAlarm_email()!=null  && tli.getAlarm_email().equalsIgnoreCase("on")){
+            jemailService.sendEmail(emails.toArray(new String[0]),title,msg);
+        }
+        if(phones.size()>0&& tli.getAlarm_sms()!=null && tli.getAlarm_sms().equalsIgnoreCase("on")){
+            logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
+        }
+
+        if( !StringUtils.isEmpty(tli.getAlarm_account()) && tli.getAlarm_zdh()!=null  && tli.getAlarm_zdh().equalsIgnoreCase("on")){
+            for(User user:users){
+                NoticeInfo ni=new NoticeInfo();
+                ni.setMsg_type("通知");
+                ni.setMsg_title(title);
+                ni.setMsg_url("log_txt.html?job_id="+tli.getJob_id()+"&task_log_id="+tli.getId());
+                ni.setMsg(msg);
+                ni.setIs_see(Const.FALSE);
+                ni.setOwner(user.getId());
+                ni.setCreate_time(new Timestamp(new Date().getTime()));
+                ni.setUpdate_time(new Timestamp(new Date().getTime()));
+                noticeMapper.insert(ni);
+            }
+        }
+        taskLogInstanceMapper.updateNoticeById(Const.TRUR,tli.getId());
+    }
+
+
     public static void notice_event(){
 
-        logger.debug("开始加载待下载的文件信息");
+        logger.debug("开始加载通知信息");
         ZdhDownloadMapper zdhDownloadMapper = (ZdhDownloadMapper) SpringContext.getBean("zdhDownloadMapper");
         RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-
+        NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
         List<ZdhDownloadInfo> zdhDownloadInfos=zdhDownloadMapper.selectNotice();
 
         Iterator<ZdhDownloadInfo> iterator=zdhDownloadInfos.iterator();
         Map<String,List<ZdhDownloadInfo>> map=new HashMap<>();
         while (iterator.hasNext()){
             ZdhDownloadInfo zdhDownloadInfo=iterator.next();
-            if(map.containsKey(zdhDownloadInfo.getOwner())){
-                map.get(zdhDownloadInfo.getOwner()).add(zdhDownloadInfo);
-            }else{
-                List<ZdhDownloadInfo> zdhDownloadInfos2=new ArrayList<>();
-                zdhDownloadInfos2.add(zdhDownloadInfo);
-                map.put(zdhDownloadInfo.getOwner(),zdhDownloadInfos2);
+            zdhDownloadInfo.setIs_notice(Const.TRUR);
+            zdhDownloadMapper.updateByPrimaryKey(zdhDownloadInfo);
+            NoticeInfo ni=new NoticeInfo();
+            ni.setMsg_type("文件下载");
+            ni.setMsg_title("文件下载:"+zdhDownloadInfo.getJob_context());
+            ni.setMsg("文件以生成,请尽快下载, 文件由任务【"+zdhDownloadInfo.getJob_context()+"】于"+zdhDownloadInfo.getCreate_time()
+                    +"产生, 文件唯一码: "+zdhDownloadInfo.getId()+", 请前往系统=>下载管理页面进行下载");
+            ni.setIs_see(Const.FALSE);
+            ni.setOwner(zdhDownloadInfo.getOwner());
+            ni.setCreate_time(new Timestamp(new Date().getTime()));
+            ni.setUpdate_time(new Timestamp(new Date().getTime()));
+            noticeMapper.insert(ni);
+
+//            if(map.containsKey(zdhDownloadInfo.getOwner())){
+//                map.get(zdhDownloadInfo.getOwner()).add(zdhDownloadInfo);
+//            }else{
+//                List<ZdhDownloadInfo> zdhDownloadInfos2=new ArrayList<>();
+//                zdhDownloadInfos2.add(zdhDownloadInfo);
+//                map.put(zdhDownloadInfo.getOwner(),zdhDownloadInfos2);
+//            }
+        }
+
+//        for(Map.Entry<String,List<ZdhDownloadInfo>> a: map.entrySet()){
+//            String key=a.getKey();
+//            redisUtil.set("zdhdownloadinfos_"+key,JSON.toJSONString(a.getValue()));
+//        }
+        apply_notice();
+        logger.debug("完成加载通知信息");
+
+    }
+
+
+
+
+    public static void apply_notice(){
+        logger.debug("加载申请通知信息");
+        ApplyMapper applyMapper = (ApplyMapper) SpringContext.getBean("applyMapper");
+        RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+        NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
+
+        List<ApplyInfo> applyInfos=applyMapper.selectNotice();
+        if(applyInfos!=null){
+            Iterator<ApplyInfo> iterator2=applyInfos.iterator();
+            Map<String,List<ApplyInfo>> map2=new HashMap<>();
+            while (iterator2.hasNext()){
+                ApplyInfo applyInfo=iterator2.next();
+                applyInfo.setIs_notice(Const.TRUR);
+                applyMapper.updateByPrimaryKey(applyInfo);
+                NoticeInfo ni=new NoticeInfo();
+                ni.setMsg_type("审批");
+                ni.setMsg_title("审批通知:"+applyInfo.getApply_context());
+                ni.setMsg("你有一个审批单,需要处理,单号: "+applyInfo.getId()+",申请原因:"+ applyInfo.getReason());
+                ni.setIs_see(Const.FALSE);
+                ni.setOwner(applyInfo.getOwner());
+                ni.setCreate_time(new Timestamp(new Date().getTime()));
+                ni.setUpdate_time(new Timestamp(new Date().getTime()));
+                noticeMapper.insert(ni);
+
+//                if(map2.containsKey(applyInfo.getApprove_id())){
+//                    map2.get(applyInfo.getApprove_id()).add(applyInfo);
+//                }else{
+//                    List<ApplyInfo> applyInfos2=new ArrayList<>();
+//                    applyInfos2.add(applyInfo);
+//                    map2.put(applyInfo.getApprove_id(),applyInfos2);
+//                }
             }
-        }
 
-        for(Map.Entry<String,List<ZdhDownloadInfo>> a: map.entrySet()){
-            String key=a.getKey();
-            redisUtil.set("zdhdownloadinfos_"+key,JSON.toJSONString(a.getValue()));
+//            for(Map.Entry<String,List<ApplyInfo>> a: map2.entrySet()){
+//                String key=a.getKey();
+//                redisUtil.set("zdhapplyinfos_"+key,JSON.toJSONString(a.getValue()));
+//            }
         }
-        logger.debug("完成加载待下载的文件信息");
-
+        logger.debug("完成加载申请通知信息");
     }
 }

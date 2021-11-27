@@ -16,12 +16,16 @@ import com.zyc.zdh.util.DateUtil;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,9 +57,9 @@ public class ZdhMonitorController extends BaseController{
     }
 
 
-    @RequestMapping("/etlEcharts")
+    @RequestMapping(value = "/etlEcharts", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public List<EtlEcharts> get1() {
+    public String get1() {
 //        调度总任务数：
 //        正在执行任务数：
 //        已完成任务数
@@ -64,11 +68,20 @@ public class ZdhMonitorController extends BaseController{
         //    int total_task_num = quartzJobMapper.selectCountByOwner(getUser().getId());
 
         List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwner(getUser().getId());
+        if(echartsList == null || echartsList.size()==0){
+            echartsList = new ArrayList<>();
+            EtlEcharts ee=new EtlEcharts();
+            ee.setError("0");
+            ee.setFinish("0");
+            ee.setRunning("0");
+            ee.setEtl_date(DateUtil.format(new Date()));
+            echartsList.add(ee);
+        }
 
-        return echartsList;
+        return JSON.toJSONString(echartsList);
     }
 
-    @RequestMapping("/etlEchartsCurrent")
+    @RequestMapping(value = "/etlEchartsCurrent", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public List<EtlEcharts> get2() {
 //        调度总任务数：
@@ -98,25 +111,33 @@ public class ZdhMonitorController extends BaseController{
 
     @RequestMapping(value = "/task_logs_delete", produces = "text/html;charset=UTF-8")
     @ResponseBody
+    @Transactional
     public String task_logs_delete(String[] ids) {
 
-        System.out.println("开始删除任务日志");
-        taskLogInstanceMapper.deleteByIds(ids);
-        JSONObject json = new JSONObject();
-        json.put("success", "200");
-        return json.toJSONString();
+        try{
+            System.out.println("开始删除任务日志");
+            taskLogInstanceMapper.deleteByIds(ids);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+        }
     }
 
 
     @RequestMapping(value = "/task_group_logs_delete", produces = "text/html;charset=UTF-8")
     @ResponseBody
+    @Transactional
     public String task_group_logs_delete(String[] ids) {
 
-        System.out.println("开始删除任务组日志");
-        tglim.deleteByIds(ids);
-        JSONObject json = new JSONObject();
-        json.put("success", "200");
-        return json.toJSONString();
+        try{
+            System.out.println("开始删除任务组日志");
+            tglim.deleteByIds(ids);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+        }
     }
 
     /**
@@ -124,20 +145,22 @@ public class ZdhMonitorController extends BaseController{
      * @param id
      * @return
      */
-    @RequestMapping("/kill")
+    @RequestMapping(value = "/kill", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String killJob(String id){
         // check_dep,wait_retry 状态 直接killed
         // dispatch,etl 状态 kill
-        taskLogInstanceMapper.updateStatusById2(id);
-        TaskLogInstance tli=taskLogInstanceMapper.selectByPrimaryKey(id);
-        JobCommon2.insertLog(tli,"INFO","接受到杀死请求,开始进行杀死操作...");
-        if(tli.getStatus().equalsIgnoreCase("killed")){
-            JobCommon2.insertLog(tli,"INFO","任务已杀死");
+        try{
+            taskLogInstanceMapper.updateStatusById2(id);
+            TaskLogInstance tli=taskLogInstanceMapper.selectByPrimaryKey(id);
+            JobCommon2.insertLog(tli,"INFO","接受到杀死请求,开始进行杀死操作...");
+            if(tli.getStatus().equalsIgnoreCase("killed")){
+                JobCommon2.insertLog(tli,"INFO","任务已杀死");
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"杀死任务成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"杀死任务失败", e);
         }
-        JSONObject json2 = new JSONObject();
-        json2.put("success", "200");
-        return json2.toJSONString();
 
     }
 
@@ -146,117 +169,145 @@ public class ZdhMonitorController extends BaseController{
      * @param id
      * @return
      */
-    @RequestMapping("/killJobGroup")
+    @RequestMapping(value = "/killJobGroup", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String killJobGroup(String id){
         // check_dep,wait_retry,create,check_dep_finish 状态 直接killed
         // dispatch,etl 状态 kill
-        tglim.updateStatusById2(id);
-        taskLogInstanceMapper.updateStatusByGroupId(id);
-        TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(id);
-        JobCommon2.insertLog(tgli,"INFO","接受到杀死请求,开始进行杀死操作...");
-        if(tgli.getStatus().equalsIgnoreCase("killed")){
-            JobCommon2.insertLog(tgli,"INFO","任务已杀死");
+        try{
+            tglim.updateStatusById2(id);
+            taskLogInstanceMapper.updateStatusByGroupId(id);
+            TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(id);
+            JobCommon2.insertLog(tgli,"INFO","接受到杀死请求,开始进行杀死操作...");
+            if(tgli.getStatus().equalsIgnoreCase("killed")){
+                JobCommon2.insertLog(tgli,"INFO","任务已杀死");
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"杀死任务组成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"杀死任务组失败", e);
         }
-        JSONObject json2 = new JSONObject();
-        json2.put("success", "200");
-        return json2.toJSONString();
-
     }
 
-    @RequestMapping("/retryJob")
+    @RequestMapping(value = "/retryJob", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String retryJob(String id,String new_version){
         //taskLogInstanceMapper.updateStatusById2("kill",id);
-        TaskLogInstance tli=taskLogInstanceMapper.selectByPrimaryKey(id);
-        tli.setIs_retryed("1");
-        taskLogInstanceMapper.updateByPrimaryKey(tli);
-        QuartzJobInfo qji=quartzJobMapper.selectByPrimaryKey(tli.getJob_id());
+        try{
+            TaskLogInstance tli=taskLogInstanceMapper.selectByPrimaryKey(id);
+            tli.setIs_retryed("1");
+            taskLogInstanceMapper.updateByPrimaryKey(tli);
+            QuartzJobInfo qji=quartzJobMapper.selectByPrimaryKey(tli.getJob_id());
 
-        //重试最新版-拉去quartJobInfo 中的shell 及参数
-        if(new_version.equalsIgnoreCase("true")){
-            tli.setIs_script(qji.getIs_script());
-            tli.setJob_ids(qji.getJob_ids());
-            tli.setJump_script(qji.getJump_script());
-            tli.setJump_dep(qji.getJump_dep());
-            tli.setInterval_time(qji.getInterval_time());
-            tli.setEmail_and_sms(qji.getEmail_and_sms());
-            tli.setAlarm_account(qji.getAlarm_account());
-            tli.setAlarm_enabled(qji.getAlarm_enabled());
-            tli.setCommand(qji.getCommand());
-            tli.setParams(qji.getParams());
-            tli.setTime_out(qji.getTime_out());
+            //重试最新版-拉去quartJobInfo 中的shell 及参数
+            if(new_version.equalsIgnoreCase("true")){
+                tli.setIs_script(qji.getIs_script());
+                tli.setJob_ids(qji.getJob_ids());
+                tli.setJump_script(qji.getJump_script());
+                tli.setJump_dep(qji.getJump_dep());
+                tli.setInterval_time(qji.getInterval_time());
+                tli.setEmail_and_sms(qji.getEmail_and_sms());
+                tli.setAlarm_account(qji.getAlarm_account());
+                tli.setAlarm_enabled(qji.getAlarm_enabled());
+                tli.setCommand(qji.getCommand());
+                tli.setParams(qji.getParams());
+                tli.setTime_out(qji.getTime_out());
+                tli.setAlarm_email(qji.getAlarm_email());
+                tli.setAlarm_sms(qji.getAlarm_sms());
+                tli.setAlarm_zdh(qji.getAlarm_zdh());
+                tli.setNotice_error(qji.getNotice_error());
+                tli.setNotice_finish(qji.getNotice_finish());
+                tli.setNotice_timeout(qji.getNotice_timeout());
+            }
+
+            String new_id=SnowflakeIdWorker.getInstance().nextId()+"";
+            tli.setIs_retryed("0");
+            tli.setId(new_id);
+            tli.setCount(0);
+            tli.setProcess("1");
+            tli.setRun_time(new Timestamp(new Date().getTime()));
+            tli.setUpdate_time(new Timestamp(new Date().getTime()));
+            tli.setStatus(JobStatus.CREATE.getValue());
+            taskLogInstanceMapper.insert(tli);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"重试任务成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"重试任务失败", e);
         }
-
-        String new_id=SnowflakeIdWorker.getInstance().nextId()+"";
-        tli.setIs_retryed("0");
-        tli.setId(new_id);
-        tli.setCount(0);
-        tli.setProcess("1");
-        tli.setRun_time(new Timestamp(new Date().getTime()));
-        tli.setUpdate_time(new Timestamp(new Date().getTime()));
-        tli.setStatus(JobStatus.CREATE.getValue());
-        taskLogInstanceMapper.insert(tli);
-        //JobCommon2.chooseJobBean(tli);
-        JSONObject json2 = new JSONObject();
-        json2.put("success", "200");
-        return json2.toJSONString();
 
     }
 
-    @RequestMapping("/retryJobGroup")
+    /**
+     *
+     * @param id
+     * @param new_version
+     * @param sub_tasks 重试的子任务,不可为空
+     * @return
+     */
+    @RequestMapping(value = "/retryJobGroup", produces = "text/html;charset=UTF-8")
     @ResponseBody
+    @Transactional
     public String retryJobGroup(String id,String new_version,String[] sub_tasks){
         //taskLogInstanceMapper.updateStatusById2("kill",id);
-        TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(id);
-        tgli.setIs_retryed("1");
-        tglim.updateByPrimaryKey(tgli);
-        QuartzJobInfo qji=quartzJobMapper.selectByPrimaryKey(tgli.getJob_id());
+        try{
+            if(sub_tasks == null || sub_tasks.length<1){
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"重试子任务不可为空", "");
+            }
+            TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(id);
+            tgli.setIs_retryed("1");
+            tglim.updateByPrimaryKey(tgli);
+            QuartzJobInfo qji=quartzJobMapper.selectByPrimaryKey(tgli.getJob_id());
 
-        //重试最新版-拉去quartJobInfo 中的shell 及参数
-        if(new_version.equalsIgnoreCase("true")){
-            tgli.setIs_script(qji.getIs_script());
-            tgli.setJob_ids(qji.getJob_ids());
-            tgli.setJump_script(qji.getJump_script());
-            tgli.setJump_dep(qji.getJump_dep());
-            tgli.setInterval_time(qji.getInterval_time());
-            tgli.setEmail_and_sms(qji.getEmail_and_sms());
-            tgli.setAlarm_account(qji.getAlarm_account());
-            tgli.setAlarm_enabled(qji.getAlarm_enabled());
-            tgli.setCommand(qji.getCommand());
-            tgli.setParams(qji.getParams());
-            tgli.setTime_out(qji.getTime_out());
+            //重试最新版-拉去quartJobInfo 中的shell 及参数
+            if(new_version.equalsIgnoreCase("true")){
+                tgli.setIs_script(qji.getIs_script());
+                tgli.setJob_ids(qji.getJob_ids());
+                tgli.setJump_script(qji.getJump_script());
+                tgli.setJump_dep(qji.getJump_dep());
+                tgli.setInterval_time(qji.getInterval_time());
+                tgli.setEmail_and_sms(qji.getEmail_and_sms());
+                tgli.setAlarm_account(qji.getAlarm_account());
+                tgli.setAlarm_enabled(qji.getAlarm_enabled());
+                tgli.setCommand(qji.getCommand());
+                tgli.setParams(qji.getParams());
+                tgli.setTime_out(qji.getTime_out());
+                tgli.setOwner(getUser().getId());
+                tgli.setAlarm_email(qji.getAlarm_email());
+                tgli.setAlarm_sms(qji.getAlarm_sms());
+                tgli.setAlarm_zdh(qji.getAlarm_zdh());
+                tgli.setNotice_error(qji.getNotice_error());
+                tgli.setNotice_finish(qji.getNotice_finish());
+                tgli.setNotice_timeout(qji.getNotice_timeout());
+            }
             tgli.setOwner(getUser().getId());
-        }
-        tgli.setOwner(getUser().getId());
 //        tgli.setStatus(JobStatus.NON.getValue());
 //        tgli.setRun_time(new Timestamp(new Date().getTime()));
 //        tgli.setUpdate_time(new Timestamp(new Date().getTime()));
 //        tglim.insert(tgli);
 //        JobCommon2.sub_task_log_instance(tgli);
 
-        JobCommon2.chooseJobBean(qji,2,tgli,sub_tasks);
-        JSONObject json2 = new JSONObject();
-        json2.put("success", "200");
-        return json2.toJSONString();
+            JobCommon2.chooseJobBean(qji,2,tgli,sub_tasks);
 
-    }
-
-
-    @RequestMapping("/getScheduleTask")
-    @ResponseBody
-    public List<QuartzJobInfo> getScheduleTask() {
-        String owner = getUser().getId();
-        try {
-            return quartzManager2.getScheduleTask(owner);
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-            return new ArrayList<QuartzJobInfo>();
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"重试任务组成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"重试任务组失败", e);
         }
     }
 
 
-    @RequestMapping("/getSparkMonitor")
+    @RequestMapping(value = "/getScheduleTask", produces = "text/html;charset=UTF-8", method = RequestMethod.GET)
+    @ResponseBody
+    public String getScheduleTask() {
+        String owner = getUser().getId();
+        try {
+            return JSON.toJSONString(quartzManager2.getScheduleTask(owner));
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            return JSON.toJSONString(new JSONObject());
+        }
+    }
+
+
+    @RequestMapping(value = "/getSparkMonitor", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getSparkMonitor(String executor) {
         ZdhHaInfo zdhHaInfo=zdhHaInfoMapper.selectByPrimaryKey(executor);
@@ -264,7 +315,7 @@ public class ZdhMonitorController extends BaseController{
         return JSON.toJSONString(zdhHaInfo);
     }
 
-    @RequestMapping("/getTotalNum")
+    @RequestMapping(value = "/getTotalNum", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getTotalNum(){
 
@@ -285,6 +336,22 @@ public class ZdhMonitorController extends BaseController{
 
        return js.toJSONString();
 
+    }
+
+
+    @RequestMapping("/task_group_log_instance_index")
+    public String task_group_log_instance_index() {
+        return "etl/task_group_log_instance_index";
+    }
+
+    @RequestMapping("/task_log_instance_index")
+    public String task_log_instance_index() {
+        return "etl/task_log_instance_index";
+    }
+
+    @RequestMapping("/task_group_retry_detail_index")
+    public String task_group_retry_detail_index() {
+        return "etl/task_group_retry_detail_index";
     }
 
 
@@ -339,9 +406,9 @@ public class ZdhMonitorController extends BaseController{
      * @param level
      * @return
      */
-    @RequestMapping(value = "/zhd_logs", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/zdh_logs", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String zhd_logs(String job_id, String task_log_id, String start_time, String end_time, String del, String level) {
+    public String zdh_logs(String job_id, String task_log_id, String start_time, String end_time, String del, String level) {
         System.out.println("id:" + job_id + " ,task_log_id:" + task_log_id + " ,start_time:" + start_time + " ,end_time:" + end_time);
 
 
@@ -359,7 +426,7 @@ public class ZdhMonitorController extends BaseController{
         }
 
         if (del != null && !del.equals("")) {
-            zdhLogsService.deleteByTime(job_id, task_log_id, ts_start, ts_end);
+            zdhLogsService.deleteByTime(null, task_log_id, ts_start, ts_end);
         }
 
         String levels = "'DEBUG','WARN','INFO','ERROR'";

@@ -4,7 +4,7 @@ public enum JobStatus {
 
     NON("-1","non","无状态"),//为了异步数据一致性
     CREATE("1","create","实例创建"),
-    DISPATCH("2","dispatch","调度程序调度中"),
+    DISPATCH("2","dispatch","调度程序调度中(依赖型检查任务)"),
     CHECK_DEP("3","check_dep","检查依赖中"),
     CHECK_DEP_FINISH("4","check_dep_finish","检查依赖完成"),
     WAIT_RETRY("5","wait_retry","等待重试中"),

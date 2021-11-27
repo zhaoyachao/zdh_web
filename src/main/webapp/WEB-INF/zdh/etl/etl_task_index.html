@@ -76,13 +76,14 @@
                             </div>
                         </div>
                         <!-- End Example Events -->
-                    </div>
                 </div>
             </div>
         </div>
-        <!-- End Panel Other -->
     </div>
+        <!-- End Panel Other -->
+<!--    </div>-->
 
+    <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -108,7 +109,7 @@
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: "/etl_task_list2?"+$("#etl_task_form").serialize(),
+                url: server_context+"/etl_task_list2?"+$("#etl_task_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
@@ -142,7 +143,7 @@
             }
             $.ajax({
                 type: 'POST',
-                url: "etl_task_update",
+                url: server_context+"/etl_task_update",
                 dataType: 'json',
                 data: $("#data_sources").serialize(),
                 //发送数据前
@@ -152,13 +153,17 @@
                 },
                 //成功返回
                 success: function (data) {
-                    $("#update_zdh").removeAttr('disabled');
+                    if(data.code != "200"){
+                        layer.msg(data.msg)
+                        return
+                    }
                     layer.close(layer.index)
 //                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
 //                parent.layer.close(index); //再执行关闭
                 },
                 //处理完成
                 complete: function () {
+                    $("#update_zdh").removeAttr('disabled');
                     console.info("complete")
                 },
                 //报错

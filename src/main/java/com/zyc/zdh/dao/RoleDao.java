@@ -1,36 +1,40 @@
 package com.zyc.zdh.dao;
 
+import com.zyc.notscan.BaseMapper;
+import com.zyc.zdh.entity.RoleInfo;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
 import java.util.List;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+public interface RoleDao extends BaseMapper<RoleInfo> {
 
-import com.zyc.zdh.entity.PageBase;
-import com.zyc.zdh.entity.Role;
+    @Select({
+            "<script>",
+            "select * from role_info where 1=1",
+            "<when test='role_context!=null and role_context !=\"\"'>",
+            "and code like '%${role_context}%'",
+            "or name like '%${role_context}%'",
+            "</when>",
+            "<when test='enable!=null and enable !=\"\"'>",
+            "and enable = #{enable}",
+            "</when>",
+            "</script>"
 
-public interface RoleDao {
+    })
+    public List<RoleInfo> selectByContext(@Param("role_context") String role_context,@Param("enable") String enable);
 
-	@Select("select * from system_role where id=#{id}")
-	@Results({
-		@Result(column="id",property="id"),
-		@Result(column="role_name",property="roleName"),
-		@Result(column="role_type",property="roleType"),
-		@Result(column="content",property="content")
-	})
-	public Role getRole(@Param("id") String id);
-	
-	@Select("select * from system_role order by ${sortColumn} ${sortDir}")
-	@Results({
-		@Result(column="id",property="id"),
-		@Result(column="role_name",property="roleName"),
-		@Result(column="role_type",property="roleType"),
-		@Result(column="content",property="content")
-	})
-	public List<Role> findList(PageBase page);
+    @Update(
+            {
+                    "<script>",
+                    "update role_info set enable=#{enable} where id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public int updateEnable(@Param("ids") String[] ids, @Param("enable") String enable);
 
-	@Delete("delete from system_role where id=#{id}")
-	public int delRole(@Param("id") String id);
 }

@@ -11,10 +11,7 @@ import com.zyc.zdh.entity.QuartzJobInfo;
 import com.zyc.zdh.entity.TaskGroupLogInstance;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.entity.ZdhHaInfo;
-import com.zyc.zdh.job.EmailJob;
-import com.zyc.zdh.job.JobCommon2;
-import com.zyc.zdh.job.JobModel;
-import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
@@ -23,6 +20,7 @@ import com.zyc.zdh.util.SpringContext;
 import com.zyc.zdh.util.SshUtils;
 import com.zyc.zdh.util.StringUtils;
 import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,6 +177,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         if(connectUri.length==2 && !StringUtils.isEmpty(connectUri[1])){
                                             try{
                                                 String kill_cmd=String.format("kill -9 `ps -ef |grep '%s' |awk -F \" \" '{print $2}'`",connectUri[1]);
+                                                JobCommon2.insertLog(tl,"INFO",kill_cmd);
                                                 SshUtils.kill(connectUri[0],kill_cmd);
                                             }catch (Exception e){
                                                 System.out.println("=========================");
@@ -196,11 +195,38 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                     }finally {
                                         JobCommon2.chm.remove(tl.getThread_id());
                                         taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                        JobCommon2.insertLog(tl,"INFO","已杀死当前任务");
                                     }
                                 }else{
                                     String msg="调度部分已经执行完成,ETL部分正在执行提交到后端的任务进行杀死";
                                     logger.info(msg);
                                     JobCommon2.insertLog(tl,"INFO",msg);
+                                    List<NameValuePair> npl=new ArrayList<>();
+
+                                    //如果是flink任务,需要调用远程地址杀死
+                                    if(tl.getMore_task().equalsIgnoreCase(MoreTask.FLINK.getValue())){
+                                        //如果找不到flink_job_id,历史服务器,则跳过
+                                        if(StringUtils.isEmpty(tl.getApplication_id()) || StringUtils.isEmpty(tl.getHistory_server())){
+                                            continue;
+                                        }
+
+                                        String cancel_url = tl.getHistory_server()+"/jobs/"+tl.getApplication_id()+"/yarn-cancel";
+                                        npl.add(new BasicNameValuePair("mode","cancel"));
+                                        JobCommon2.insertLog(tl,"INFO","杀死任务url: "+cancel_url);
+                                        try{
+                                            String restul=HttpUtil.getRequest(cancel_url,npl);
+                                        }catch (Exception e){
+                                            JobCommon2.insertLog(tl,"INFO","杀死当前任务异常,判定服务以死亡,自动更新状态为killed");
+                                            taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                            continue;
+                                        }
+                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                        JobCommon2.insertLog(tl,"INFO","已杀死当前任务");
+                                        continue;
+                                    }else{
+
+                                    }
+
                                     String executor=tl.getExecutor();//数据采集机器id
                                     ZdhHaInfo zdhHaInfo=zdhHaInfoMapper.selectByPrimaryKey(executor);
                                     String jobGroup="jobGroup";
@@ -208,9 +234,15 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         String url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getWeb_port()+"/api/v1/applications/"+zdhHaInfo.getApplication_id()+"/jobs";
                                         //获取杀死的任务名称
                                         System.out.println(url);
-                                        List<NameValuePair> npl=new ArrayList<>();
                                         //npl.add(new BasicNameValuePair("status","running"));
-                                        String restul=HttpUtil.getRequest(url,npl);
+                                        String restul="";
+                                        try{
+                                             restul=HttpUtil.getRequest(url,npl);
+                                        }catch (Exception e){
+                                            taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                            continue;
+                                        }
+
                                         JSONArray jsonArray= JSON.parseArray(restul);
                                         List<String> killJobs=new ArrayList<>();
                                         for(Object jo:jsonArray){

@@ -221,6 +221,7 @@
         </div>
     </div>
 </div>
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -255,7 +256,7 @@
             barChart.showLoading();
             $.ajax({
                 type: "post",
-                url: "/etlEcharts",
+                url: server_context+"/etlEcharts",
                 data: {},
                 dataType: "json",
                 success: function (res) {
@@ -329,7 +330,7 @@
         function allTotalNum(){
             $.ajax({
                 type: "post",
-                url: "/getTotalNum",
+                url: server_context+"/getTotalNum",
                 data: {},
                 dataType: "json",
                 success: function (data) {
@@ -456,7 +457,7 @@
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: "/task_group_log_instance_list2?" + $("#task_logs_form").serialize(),
+                url: server_context+"/task_group_log_instance_list2?" + $("#task_logs_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
@@ -489,7 +490,7 @@
 
         function deleteMs(ids) {
             $.ajax({
-                url: "task_group_logs_delete",
+                url: server_context+"/task_group_logs_delete",
                 data: "ids=" + ids,
                 type: "post",
                 dataType: "json",
@@ -513,13 +514,13 @@
         window.operateEvents = {
             'click #log_txt': function (e, value, row, index) {
                 row.job_context
-                window.open("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time)
+                window.open(server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time)
                 //openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
             },
 
             'click #sub_task_log_instance': function (e, value, row, index) {
                 row.job_context
-                window.open("task_log_instance.html?group_id="+row.id)
+                window.open(server_context+"/task_log_instance_index.html?group_id="+row.id)
                 //openTabPage("task_log_instance.html?group_id="+row.id, "任务组:"+row.job_context + ":子任务日志")
             },
 
@@ -534,7 +535,7 @@
                     shade: 0.1,
                     area : ['45%', '60%'],
                     //area: ['450px', '500px'],
-                    content: "task_group_retry_detail?id="+row.id+"&job_id="+row.job_id, //iframe的url
+                    content: server_context+"/task_group_retry_detail_index?id="+row.id+"&job_id="+row.job_id, //iframe的url
                     end : function () {
                         console.info("弹框结束")
                     }
@@ -547,12 +548,16 @@
                 }, function (index) {
 
                     $.ajax({
-                        url: "killJobGroup",
+                        url: server_context+"/killJobGroup",
                         data: "id=" + row.id,
                         type: "post",
                         dataType: "json",
                         success: function (data) {
                             console.info("success")
+                            if(data.code != "200"){
+                                layer.msg(data.msg)
+                                return
+                            }
                             layer.close(index)
                         },
                         error: function (data) {
@@ -568,7 +573,7 @@
             },
             'click #spark_monitor': function (e, value, row, index) {
                 $.ajax({
-                    url: "getSparkMonitor",
+                    url: server_context+"/getSparkMonitor",
                     data: "executor=" + row.executor,
                     type: "post",
                     dataType: "json",
@@ -615,7 +620,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
-            url: "/task_group_log_instance_list2?" + $("#task_logs_form").serialize(),
+            url: server_context+"/task_group_log_instance_list2?" + $("#task_logs_form").serialize(),
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             search: true,
@@ -651,6 +656,16 @@
                 field: 'etl_date',
                 title: '数据处理日期',
                 sortable: true
+            },{
+                field: 'schedule_source',
+                title: '调度来源',
+                sortable: true,
+                visible: true,
+                formatter: function (value, row, index) {
+                    if(value == "2")
+                        return "手动";
+                    return "例行";
+                }
             }, {
                 field: 'process_msg',
                 title: '进度信息',
@@ -769,7 +784,7 @@
                         btn_retry_str=''
                         btn_kill_str=''
                     }
-                    var url="log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time
+                    var url=server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time
                     var title=row.job_context + "日志"
                     return [
                         '<div style="text-align:center" >'+
@@ -788,7 +803,7 @@
 
 
         $('#exampleTableEvents2').bootstrapTable({
-            url: "/getScheduleTask",
+            url: server_context+"/getScheduleTask",
             search: true,
             pagination: true,
             showRefresh: true,
@@ -818,7 +833,7 @@
 
         $('#search2').click(function () {
             $('#exampleTableEvents2').bootstrapTable('refresh', {
-                url: "/getScheduleTask",
+                url: server_context+"/getScheduleTask",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });

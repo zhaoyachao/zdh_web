@@ -11,15 +11,19 @@
       $('#exampleTableEvents').attr("data-height",height)
       function deleteMs(id) {
           $.ajax({
-              url: "data_ware_house_del",
+              url: server_context+"/data_ware_house_del",
               data: "id=" + id,
               type: "post",
               async:false,
               dataType: "json",
               success: function (data) {
                   console.info("success");
+                  if(data.code != "200"){
+                      layer.msg(data.msg)
+                      return
+                  }
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: 'data_ware_house_list2'
+                      url: server_context+'/data_ware_house_list2'
                   });
               },
               error: function (data) {
@@ -31,14 +35,37 @@
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
-              openTabPage("data_ware_house_detail.html?id=" + row.id, "表信息:"+row.issue_context)
+              openTabPage(server_context+"/data_ware_house_detail_index.html?id=" + row.id, "表信息:"+row.issue_context)
           },
-          'click #del': function (e, value, row, index) {
-              layer.confirm('是否删除数据模型', {
+          // 'click #del': function (e, value, row, index) {
+          //     layer.confirm('是否删除数据模型', {
+          //         btn: ['确定','取消'] //按钮
+          //     }, function(index){
+          //         deleteMs(row.id);
+          //         layer.close(layer.index);
+          //     }, function(){
+          //
+          //     });
+          // },
+          'click #apply': function (e, value, row, index) {
+              layer.confirm('申请数据', {
                   btn: ['确定','取消'] //按钮
               }, function(index){
-                  deleteMs(row.id);
-                  layer.close(layer.index);
+                  $.ajax({
+                      url: "data_apply_add",
+                      data: "issue_id=" + row.id,
+                      type: "post",
+                      async:false,
+                      dataType: "json",
+                      success: function (data) {
+                          console.info(data.msg)
+                          layer.msg(data.msg)
+                      },
+                      error: function (data) {
+                          console.info("error: " + data.msg);
+                      }
+
+                  });
               }, function(){
 
               });
@@ -48,10 +75,13 @@
       function operateFormatter(value, row, index) {
           return [
               ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
-              ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+              ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="查看"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
-              '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+              // ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
+              // '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+              // '                                    </button>',
+              ' <button id="apply" name="apply" type="button" class="btn btn-outline btn-sm" title="申请">\n' +
+              '                                        <i class="glyphicon glyphicon-open" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +
               '</div>'
@@ -100,7 +130,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: "data_ware_house_list2",
+      url: server_context+"/data_ware_house_list2",
       search: false,
       pagination: false,
       showRefresh: false,

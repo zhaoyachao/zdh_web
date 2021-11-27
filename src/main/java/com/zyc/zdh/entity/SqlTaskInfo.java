@@ -25,6 +25,13 @@ public class SqlTaskInfo {
     private String header_output;
     //文件分割符
     private String sep_output;
+    //写入模式
+    private String model_output;
+    //分区字段
+    private String partition_by_output;
+    //合并小文件个数
+    private String merge_output;
+
     private String data_source_type_output ;
     private String data_sources_table_name_output ;
     private String data_sources_file_name_output ;
@@ -211,5 +218,29 @@ public class SqlTaskInfo {
 
     public void setSep_output(String sep_output) {
         this.sep_output = sep_output;
+    }
+
+    public String getModel_output() {
+        return model_output;
+    }
+
+    public void setModel_output(String model_output) {
+        this.model_output = model_output;
+    }
+
+    public String getPartition_by_output() {
+        return partition_by_output;
+    }
+
+    public void setPartition_by_output(String partition_by_output) {
+        this.partition_by_output = partition_by_output;
+    }
+
+    public String getMerge_output() {
+        return merge_output;
+    }
+
+    public void setMerge_output(String merge_output) {
+        this.merge_output = merge_output;
     }
 }

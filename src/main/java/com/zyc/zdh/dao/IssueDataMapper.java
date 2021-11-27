@@ -18,25 +18,27 @@ import java.util.List;
  */
 public interface IssueDataMapper extends BaseMapper<IssueDataInfo> {
 
-    @Delete("delete from etl_task_info where id = #{ids_str}")
-    public int deleteBatchById(@Param("ids_str") String ids_str);
 
-    @Select({
+    @Delete({
             "<script>",
-            "select",
-            "*",
-            "from etl_task_info",
-            "where id in",
+            "delete from issue_data_info where id in ",
             "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
             "#{id}",
             "</foreach>",
             "</script>"
-    })
-    public List<EtlTaskInfo> selectByIds(@Param("ids") String[] ids);
 
+    })
+    public int deleteBatchByIds(@Param("ids") String[] ids);
+
+
+    /**
+     * 获取以发布完成的数据
+     * @param issue_context
+     * @return
+     */
     @Select({"<script>",
             "SELECT * FROM issue_data_info",
-            "WHERE 1=1",
+            "WHERE status=1",
             "<when test='issue_context!=null and issue_context !=\"\"'>",
             "AND ( issue_context like '%${issue_context}%'",
             "OR data_sources_table_name_input like '%${issue_context}%')",
@@ -44,6 +46,23 @@ public interface IssueDataMapper extends BaseMapper<IssueDataInfo> {
             "</script>"})
     public List<IssueDataInfo> selectByParams(@Param("issue_context") String issue_context);
 
+
+    @Select({"<script>",
+            "SELECT * FROM issue_data_info",
+            "WHERE owner=#{owner}",
+            "<when test='issue_context!=null and issue_context !=\"\"'>",
+            "AND ( issue_context like '%${issue_context}%'",
+            "OR data_sources_table_name_input like '%${issue_context}%')",
+            "</when>",
+            "</script>"})
+    public List<IssueDataInfo> selectByOwner(@Param("issue_context") String issue_context,@Param("owner") String owner);
+
+
+    @Select({"<script>",
+            "SELECT issue.*,acc.user_name FROM issue_data_info issue, account_info acc",
+            "WHERE issue.owner=acc.id and issue.id=#{id}" ,
+            "</script>"})
+    public IssueDataInfo selectById(@Param("id") String id);
 
 
 

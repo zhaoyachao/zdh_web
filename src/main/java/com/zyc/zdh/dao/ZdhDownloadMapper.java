@@ -20,7 +20,7 @@ public interface ZdhDownloadMapper extends BaseMapper<ZdhDownloadInfo> {
 
 
     @Select({"<script>",
-            "select * from zdh_download_info where down_count=0",
+            "select * from zdh_download_info where is_notice='false'",
             "</script>"})
     public List<ZdhDownloadInfo> selectNotice();
 }

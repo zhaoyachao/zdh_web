@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.EtlMoreTaskInfo;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.DataSourcesService;
 import com.zyc.zdh.service.DispatchTaskService;
@@ -12,6 +14,8 @@ import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -40,22 +44,18 @@ public class ZdhMoreEtlController extends BaseController{
 
     /**
      * 根据指定任务id,或者查询当前用户下的所有多源任务
-     * @param ids
+     * @param id
      * @return
      */
-    @RequestMapping(value = "/etl_task_more_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_more_detail", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String etl_task_more_list(String[] ids) {
-        EtlMoreTaskInfo etlMoreTaskInfo = new EtlMoreTaskInfo();
-        etlMoreTaskInfo.setOwner(getUser().getId());
-        List<EtlMoreTaskInfo> etlMoreTaskInfos = new ArrayList<EtlMoreTaskInfo>();
-        if (ids == null) {
-            etlMoreTaskInfos = etlMoreTaskMapper.select(etlMoreTaskInfo);
-        } else {
-            etlMoreTaskInfos.add(etlMoreTaskMapper.selectByPrimaryKey(ids[0]));
+    public String etl_task_more_detail(String id) {
+        try{
+            EtlMoreTaskInfo etlMoreTaskInfo=etlMoreTaskMapper.selectByPrimaryKey(id);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlMoreTaskInfo);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
-
-        return JSON.toJSONString(etlMoreTaskInfos);
     }
 
     /**
@@ -91,15 +91,16 @@ public class ZdhMoreEtlController extends BaseController{
     @RequestMapping("/etl_task_more_sources_add")
     @ResponseBody
     public String etl_task_more_sources_add(EtlMoreTaskInfo etlMoreTaskInfo) {
-        etlMoreTaskInfo.setOwner(getUser().getId());
-        etlMoreTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-        debugInfo(etlMoreTaskInfo);
-        etlMoreTaskMapper.insert(etlMoreTaskInfo);
+        try{
+            etlMoreTaskInfo.setOwner(getUser().getId());
+            etlMoreTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            debugInfo(etlMoreTaskInfo);
+            etlMoreTaskMapper.insert(etlMoreTaskInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
 
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+        }
     }
 
     /**
@@ -109,16 +110,19 @@ public class ZdhMoreEtlController extends BaseController{
      */
     @RequestMapping("/etl_task_more_sources_delete")
     @ResponseBody
+    @Transactional
     public String etl_task_more_sources_delete(String[] ids) {
-        if (ids != null) {
-            for (String id : ids) {
-                etlMoreTaskMapper.deleteBatchById(id);
+        try{
+            if (ids != null) {
+                for (String id : ids) {
+                    etlMoreTaskMapper.deleteBatchById(id);
+                }
             }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
     /**
@@ -129,16 +133,16 @@ public class ZdhMoreEtlController extends BaseController{
     @RequestMapping("/etl_task_more_update")
     @ResponseBody
     public String etl_task_more_update(EtlMoreTaskInfo etlMoreTaskInfo) {
-        String owner = getUser().getId();
-        etlMoreTaskInfo.setOwner(owner);
-        debugInfo(etlMoreTaskInfo);
+        try{
+            String owner = getUser().getId();
+            etlMoreTaskInfo.setOwner(owner);
+            debugInfo(etlMoreTaskInfo);
 
-        etlMoreTaskMapper.updateByPrimaryKey(etlMoreTaskInfo);
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
+            etlMoreTaskMapper.updateByPrimaryKey(etlMoreTaskInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+        }
     }
 
 

@@ -4,9 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.EtlDroolsTaskMapper;
 import com.zyc.zdh.entity.EtlDroolsTaskInfo;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -24,25 +28,32 @@ public class ZdhDroolsController extends BaseController{
     EtlDroolsTaskMapper etlDroolsTaskMapper;
 
 
+    @RequestMapping("/etl_task_drools_index")
+    public String etl_task_drools_index() {
+
+        return "etl/etl_task_drools_index";
+    }
+
+    @RequestMapping("/etl_task_drools_add_index")
+    public String etl_task_drools_add_index() {
+
+        return "etl/etl_task_drools_add_index";
+    }
 
     /**
      * 获取drools任务明细
-     * @param ids
+     * @param id
      * @return
      */
-    @RequestMapping(value = "/etl_task_drools_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_drools_detail", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String etl_task_drools_list(String[] ids) {
-        EtlDroolsTaskInfo etlDroolsTaskInfo = new EtlDroolsTaskInfo();
-        etlDroolsTaskInfo.setOwner(getUser().getId());
-        List<EtlDroolsTaskInfo> etlDroolsTaskInfos = new ArrayList<EtlDroolsTaskInfo>();
-        if (ids == null) {
-            etlDroolsTaskInfos = etlDroolsTaskMapper.select(etlDroolsTaskInfo);
-        } else {
-            etlDroolsTaskInfos.add(etlDroolsTaskMapper.selectByPrimaryKey(ids[0]));
+    public String etl_task_drools_detail(String id) {
+        try{
+            EtlDroolsTaskInfo etlDroolsTaskInfo=etlDroolsTaskMapper.selectByPrimaryKey(id);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlDroolsTaskInfo);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
-
-        return JSON.toJSONString(etlDroolsTaskInfos);
     }
 
     /**
@@ -68,17 +79,17 @@ public class ZdhDroolsController extends BaseController{
     @RequestMapping("/etl_task_drools_add")
     @ResponseBody
     public String etl_task_drools_add(EtlDroolsTaskInfo etlDroolsTaskInfo) {
-        String id=SnowflakeIdWorker.getInstance().nextId() + "";
-        etlDroolsTaskInfo.setId(id);
-        etlDroolsTaskInfo.setOwner(getUser().getId());
-        etlDroolsTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-        debugInfo(etlDroolsTaskInfo);
-        etlDroolsTaskMapper.insert(etlDroolsTaskInfo);
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
+        try{
+            String id=SnowflakeIdWorker.getInstance().nextId() + "";
+            etlDroolsTaskInfo.setId(id);
+            etlDroolsTaskInfo.setOwner(getUser().getId());
+            etlDroolsTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            debugInfo(etlDroolsTaskInfo);
+            etlDroolsTaskMapper.insert(etlDroolsTaskInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+        }
     }
 
     /**
@@ -88,16 +99,19 @@ public class ZdhDroolsController extends BaseController{
      */
     @RequestMapping("/etl_task_drools_delete")
     @ResponseBody
+    @Transactional
     public String etl_task_drools_delete(String[] ids) {
-        if (ids != null) {
-            for (String id : ids) {
-                etlDroolsTaskMapper.deleteBatchById(id);
+        try{
+            if (ids != null) {
+                for (String id : ids) {
+                    etlDroolsTaskMapper.deleteBatchById(id);
+                }
             }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
     /**
@@ -108,16 +122,16 @@ public class ZdhDroolsController extends BaseController{
     @RequestMapping("/etl_task_drools_update")
     @ResponseBody
     public String etl_task_drools_update(EtlDroolsTaskInfo etlDroolsTaskInfo) {
-        String owner = getUser().getId();
-        etlDroolsTaskInfo.setOwner(owner);
-        debugInfo(etlDroolsTaskInfo);
+        try{
+            String owner = getUser().getId();
+            etlDroolsTaskInfo.setOwner(owner);
+            debugInfo(etlDroolsTaskInfo);
 
-        etlDroolsTaskMapper.updateByPrimaryKey(etlDroolsTaskInfo);
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
+            etlDroolsTaskMapper.updateByPrimaryKey(etlDroolsTaskInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+        }
     }
 
 

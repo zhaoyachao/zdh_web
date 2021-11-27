@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 审批节点新增</title>
+    <meta name="keywords" content="ZDH 审批节点新增">
+    <meta name="description" content="ZDH 审批节点新增">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/switchery/switchery.css" rel="stylesheet">
+
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+
+        <div class="row">
+
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>审批节点中心</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" id="signupForm">
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">节点code：</label>
+                                <div class="col-sm-8">
+                                    <select id="code" name="code"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2">
+                                        <option value="" mytype="">空</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">审批环节：</label>
+                                <div class="col-sm-8">
+                                    <select id="level" name="level"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2">
+                                        <option value="" mytype="">空</option>
+                                        <option value="1" mytype="">第一环节</option>
+                                        <option value="2" mytype="">第二环节</option>
+                                        <option value="3" mytype="">第三环节</option>
+                                        <option value="4" mytype="">第四环节</option>
+                                        <option value="5" mytype="">第五环节</option>
+                                        <option value="6" mytype="">第六环节</option>
+                                        <option value="7" mytype="">第七环节</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">审批人ID：</label>
+                                <div class="col-sm-8">
+                                    <select id="auditor_id" name="auditor_id"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2">
+                                        <option value="" mytype="">空</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">审批组：</label>
+                                <div class="col-sm-8">
+                                    <select id="auditor_group" name="auditor_group" multiple
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="4">
+                                        <option value="" mytype="">空</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">审批类型</label>
+                                <div class="col-sm-8">
+                                    <select id="type" name="type"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2">
+                                        <option value="" mytype="">空</option>
+                                        <option value="0" mytype="">单人审批</option>
+                                        <option value="1" mytype="">多人审批</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-8 col-sm-offset-3">
+                                    <button class="btn btn-primary" type="button" id="btn_up" οnsubmit='return false'>保存</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!-- jQuery Validation plugin javascript-->
+    <script src="js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="js/plugins/validate/messages_zh.min.js"></script>
+
+    <!-- Switchery -->
+    <script src="js/plugins/switchery/switchery.js"></script>
+
+    <!-- layer javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <script>
+
+        (function(document, window, $) {
+
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            $('#type').chosen();
+
+            $('#code').chosen();
+            $('#level').chosen();
+            $('#auditor_id').chosen();
+            $('#auditor_group').chosen();
+
+            $.ajax({
+                type: 'get',
+                url: "user_group_list?enable=true",
+                async:false,
+                dataType: 'json',
+                data: '',
+                //成功返回
+                success: function (data) {
+
+                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>'
+                    for (var i = 0; i < data.result.length; i++) {
+                        str += '<option value=\"' + data.result[i].id + '\" hassubinfo=\"true\">' + data.result[i].name + '</option>'
+                    }
+                    $('#auditor_group').html(str);
+                    $("#auditor_group").trigger("chosen:updated");
+                    $('#auditor_group').chosen();
+
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete getUserInfo")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: "approval_config_list",
+                async:false,
+                dataType: 'json',
+                data: "",
+                //成功返回
+                success: function (data) {
+                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>'
+                    for (var i = 0; i < data.length; i++) {
+                        str += '<option value=\"' + data[i].code + '\" hassubinfo=\"true\">' + data[i].code_name + '</option>'
+                    }
+                    $('#code').html(str);
+                    $("#code").trigger("chosen:updated");
+                    $('#code').chosen();
+                },
+                //处理完成
+                complete: function () {
+                },
+                //报错
+                error: function (data) {
+                }
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: "user_list",
+                async:false,
+                dataType: 'json',
+                data: "",
+                //成功返回
+                success: function (data) {
+                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>'
+                    for (var i = 0; i < data.length; i++) {
+                        str += '<option value=\"' + data[i].id + '\"user_group\"=\"'+data[i].user_group+'\"' + '\" hassubinfo=\"true\">' + data[i].userName + '</option>'
+                    }
+                    $('#auditor_id').html(str);
+                    $("#auditor_id").trigger("chosen:updated");
+                    $('#auditor_id').chosen().on("change", function (evt, params) {
+                        var user_group = $('#auditor_id').attr('user_group');
+                        $("#auditor_group").val(user_group);
+                        $("#auditor_group").trigger("chosen:updated");
+                    });
+                },
+                //处理完成
+                complete: function () {
+                },
+                //报错
+                error: function (data) {
+                }
+            });
+
+
+            if(s.id != '-1'){
+                $.ajax({
+                    type: 'GET',
+                    url: "approval_auditor_detail",
+                    dataType: 'json',
+                    async:false,
+                    data: "id="+s.id,
+                    //发送数据前
+                    beforeSend: function () {
+                    },
+                    //成功返回
+                    success: function (data) {
+                        if(data.code == "200"){
+
+                            $('#code').val(data.result.code);
+                            $("#code").trigger("chosen:updated");
+                            $('#level').val(data.result.level);
+                            $("#level").trigger("chosen:updated");
+                            $('#auditor_id').val(data.result.auditor_id);
+                            $("#auditor_id").trigger("chosen:updated");
+                            $('#auditor_group').val(data.result.auditor_group.split(","));
+                            $("#auditor_group").trigger("chosen:updated");
+
+                            //$('#code_name').val(data.result.code_name);
+                            $('#type').val(data.result.type);
+                            $("#type").trigger("chosen:updated");
+                            $('#type').chosen();
+
+
+
+                            layer.msg('查询成功');
+                        }else{
+                            layer.msg('查询失败,'+data.result);
+                        }
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        $("#btn_up").removeAttr('disabled');
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        $("#btn_up").removeAttr('disabled');
+                        layer.msg(data.responseText);
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+                $('#btn_up').click(function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: "approval_auditor_update",
+                        dataType: 'json',
+                        data: $("#signupForm").serialize()+"&id="+s.id,
+                        //发送数据前
+                        beforeSend: function () {
+                            // 禁用按钮防止重复提交
+                            $("#btn_up").attr({disabled: "disabled"});
+                        },
+                        //成功返回
+                        success: function (data) {
+                            $("#btn_up").removeAttr('disabled');
+                            if(data.code == "200"){
+                                layer.msg('更新成功', {
+                                    time: 5000, //20s后自动关闭
+                                    btn: ['更新成功,5s后自动关闭']
+                                },function () {
+                                    parent.layer.closeAll();
+                                });
+
+                            }else{
+                                layer.msg('更新失败,'+data.result, {
+                                    time: 5000, //20s后自动关闭
+                                    btn: ['更新失败,5s后自动关闭']
+                                },function () {
+
+                                });
+                            }
+                        },
+                        //处理完成
+                        complete: function () {
+                            $("#btn_up").removeAttr('disabled');
+                            console.info("complete")
+                        },
+                        //报错
+                        error: function (data) {
+                            $("#btn_up").removeAttr('disabled');
+                            layer.msg(data.responseText);
+                            console.info("error: " + data.responseText);
+                        }
+                    });
+                });
+
+            }else{
+                $('#btn_up').click(function () {
+
+                    if($('#user_group').val() == ""){
+                        layer.msg("组名不可为空")
+                        return ;
+                    }
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "approval_auditor_add",
+                        dataType: 'json',
+                        data: $("#signupForm").serialize(),
+                        //发送数据前
+                        beforeSend: function () {
+                            // 禁用按钮防止重复提交
+                            $("#btn_up").attr({disabled: "disabled"});
+                        },
+                        //成功返回
+                        success: function (data) {
+                            $("#btn_up").removeAttr('disabled');
+                            if(data.code == "200"){
+                                layer.msg('更新成功', {
+                                    time: 5000, //20s后自动关闭
+                                    btn: ['明白了,5s后自动关闭']
+                                },function () {
+
+                                });
+                            }else{
+                                layer.msg('更新失败,'+data.result, {
+                                    time: 5000, //20s后自动关闭
+                                    btn: ['明白了,5s后自动关闭']
+                                },function () {
+
+                                });
+                            }
+
+                        },
+                        //处理完成
+                        complete: function () {
+                            $("#btn_up").removeAttr('disabled');
+                            console.info("complete")
+                        },
+                        //报错
+                        error: function (data) {
+                            $("#btn_up").removeAttr('disabled');
+                            layer.msg(data.responseText);
+                            console.info("error: " + data.responseText);
+                        }
+                    });
+
+                })
+            }
+
+
+
+        })(document, window, jQuery);
+
+
+    </script>
+
+</body>
+
+
+
+</html>

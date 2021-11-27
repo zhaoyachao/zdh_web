@@ -96,6 +96,7 @@
 
     </div>
 </div>
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -232,7 +233,7 @@
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: "/build_server_log?" + $("#server_logs_form").serialize()+"&templete_id="+s.templete_id,
+                url: server_context+"/build_server_log?" + $("#server_logs_form").serialize()+"&templete_id="+s.templete_id,
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
@@ -267,12 +268,15 @@
 
         function deleteMs(ids) {
             $.ajax({
-                url: "server_logs_delete",
+                url: server_context+"/server_logs_delete",
                 data: "ids=" + ids,
                 type: "post",
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                    }
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url: "/build_server_log?" + $("#server_logs_form").serialize()+"&templete_id="+s.templete_id,
                         contentType: "application/json;charset=utf-8",
@@ -290,14 +294,14 @@
         window.operateEvents = {
             'click #log_txt': function (e, value, row, index) {
                 row.job_context
-                window.open("log_txt.html?job_id=" + row.templete_id+"&task_log_id="+row.id + "&start_time=" + row.create_time + "&update_time=" + row.update_time);
+                window.open(server_context+"/log_txt.html?job_id=" + row.templete_id+"&task_log_id="+row.id + "&start_time=" + row.create_time + "&update_time=" + row.update_time);
                 //openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
             }
         };
 
 
         $('#exampleTableEvents').bootstrapTable({
-            url: "/build_server_log?" + $("#server_logs_form").serialize()+"&templete_id="+s.templete_id,
+            url: server_context+"/build_server_log?" + $("#server_logs_form").serialize()+"&templete_id="+s.templete_id,
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             search: true,

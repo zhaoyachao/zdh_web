@@ -34,6 +34,12 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     @Update(value = "update task_log_instance set thread_id=#{thread_id} where id=#{id}")
     public int updateThreadById(@Param("thread_id") String thread_id, @Param("id") String id);
 
+    /**
+     * 杀死任务
+     * 1如果任务是check_dep(检查依赖),wait_retry(等待重试),create, 或者 状态=dispatch, job_type=jdbc,group,shell,hdfs这些依赖检查任务时 直接 设置状态为killed, 其他都是kill(后续会自动杀死)
+     * @param id
+     * @return
+     */
     @Update({
             "<script>",
             "update task_log_instance ",
@@ -64,7 +70,13 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     )
     public int updateStatusById4(@Param("status") String status,@Param("process")String process, @Param("id") String id);
 
-    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`= 'dispatch' and job_type in ('JDBC','GROUP','SHELL','HDFS')) then 'killed' when `status` in ('error','finish') then `status` else 'kill'  end where group_id=#{group_id} and (`status` != 'error' and `status` != 'killed')")
+    /**
+     * 杀死任务组下子任务
+     * 1如果任务是check_dep(检查依赖),wait_retry(等待重试),create, 或者 状态=dispatch, job_type=jdbc,group,shell,hdfs这些依赖检查任务时 直接 设置状态为killed, 其他都是kill(后续会自动杀死)
+     * @param group_id
+     * @return
+     */
+    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`= 'dispatch' and job_type in ('JDBC','GROUP','SHELL','HDFS')) then 'killed' when `status` in ('error','finish','skip') then `status` else 'kill'  end where group_id=#{group_id} and (`status` != 'error' and `status` != 'killed')")
     public int updateStatusByGroupId(@Param("group_id") String group_id);
 
     @Update(value = "update task_log_instance set is_notice=#{is_notice} where id=#{id}")
@@ -133,20 +145,52 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
      */
     @Select({"<script>",
             "SELECT * FROM task_log_instance",
-            "WHERE alarm_enabled='on' and alarm_account is not null and alarm_account != '' and time_out is not null and time_out > '0' and timestampdiff(second,run_time,current_timestamp()) >= time_out",
-            " and is_notice != 'alarm' and status in ('etl','dispatch') ",
+            "WHERE notice_timeout='on' and alarm_account is not null and alarm_account != '' and time_out is not null and time_out > '0' and timestampdiff(second,run_time,current_timestamp()) >= time_out",
+            " and is_notice != 'true' and status in ('etl','dispatch') and run_time != '2000-01-01 00:00:00'",
             "</script>"})
     public List<TaskLogInstance> selectOverTime();
+
+    /**
+     * 超时完成任务,未进行通知
+     * @return
+     */
+    @Select({"<script>",
+            "SELECT * FROM task_log_instance",
+            "WHERE ",
+            " is_notice != 'true' and status ='finish'",
+            "and timestampdiff(second,run_time,update_time) >= time_out",
+            "and (alarm_email='on' or alarm_sms='on' or alarm_zdh='on')",
+            "and notice_timeout='on'",
+            "</script>"})
+    public List<TaskLogInstance> selectOverTimeFinish();
+
+
+    /**
+     * 任务正常完成通知
+     * @return
+     */
+    @Select({"<script>",
+            "SELECT * FROM task_log_instance",
+            "WHERE ",
+            " is_notice != 'true' and status ='finish'",
+            "and <![CDATA[ timestampdiff(second,run_time,update_time)  < time_out ]]>  ",
+            "and (alarm_email='on' or alarm_sms='on' or alarm_zdh='on') ",
+            "and notice_finish='on'",
+            "</script>"})
+    public List<TaskLogInstance> selectNoNoticeFinish();
+
+//    @Select("select a.*,b.email,b.user_name as userName,b.phone,b.is_use_email,b.is_use_phone from task_log_instance a,account_info b where a.notice_error = 'on' and a.status='error' and a.is_notice !='true' and a.owner=b.id and  TIMESTAMPDIFF(day,a.run_time,NOW()) < 2  ")
+//    public List<EmailTaskLogs> selectByStatus();
 
     @Select({"<script>",
             "SELECT * FROM task_log_instance",
             "WHERE ",
-            " is_notice = 'alarm' and status ='finish'",
+            " is_notice != 'true' and status = #{status}",
+            "and <![CDATA[ timestampdiff(second,run_time,update_time)  < time_out ]]>  ",
+            "and (alarm_email='on' or alarm_sms='on' or alarm_zdh='on') ",
+            "and (notice_error ='on' or notice_finish='on' or notice_timeout='on') ",
             "</script>"})
-    public List<TaskLogInstance> selectOverTimeFinish();
-
-    @Select("select a.*,b.email,b.user_name as userName,b.phone,b.is_use_email,b.is_use_phone from task_log_instance a,account_info b where a.status='error' and a.is_notice !='true' and a.owner=b.id")
-    public List<EmailTaskLogs> selectByStatus();
+    public List<TaskLogInstance> selectByStatus(@Param("status")String status);
 
     @Select("select * from task_log_instance where etl_date=#{etl_date} and job_id=#{job_id}")
     public List<TaskLogInstance> selectByIdEtlDate(@Param("job_id") String job_id, @Param("etl_date") String etl_date);
@@ -168,7 +212,7 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
             "</foreach>",
             " and tgli.status = 'sub_task_dispatch'",
             " and tli.group_id=tgli.id",
-            " and tli.job_type not in ('group','jdbc')",
+            " and tli.job_type not in ('group','jdbc','hdfs')",
             "</script>"
             }
     )
@@ -355,5 +399,60 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
             }
     )
     public int deleteByIds(@Param("ids") String[] ids);
+
+    @Select(
+            {
+                    "<script>",
+                    "select * from task_log_instance tli where 1=1 ",
+                    "<when test='tli.id!=null and tli.id !=\"\"'>",
+                    "AND id = #{tli.id}",
+                    "</when>",
+                    "<when test='tli.job_id!=null and tli.job_id !=\"\"'>",
+                    "AND job_id = #{tli.job_id}",
+                    "</when>",
+                    "<when test='tli.job_context!=null and tli.job_context !=\"\"'>",
+                    "AND job_context = #{tli.job_context}",
+                    "</when>",
+                    "<when test='tli.group_id!=null and tli.group_id !=\"\"'>",
+                    "AND group_id = #{tli.group_id}",
+                    "</when>",
+                    "<when test='tli.group_context!=null and tli.group_context !=\"\"'>",
+                    "AND group_context = #{tli.group_context}",
+                    "</when>",
+                    "<when test='tli.etl_date!=null and tli.etl_date !=\"\"'>",
+                    "AND etl_date = #{tli.etl_date}",
+                    "</when>",
+                    "<when test='tli.status!=null and tli.status !=\"\"'>",
+                    "AND status = #{tli.status}",
+                    "</when>",
+                    "<when test='tli.more_task!=null and tli.more_task !=\"\"'>",
+                    "AND more_task = #{tli.more_task}",
+                    "</when>",
+                    "<when test='tli.job_type!=null and tli.job_type !=\"\"'>",
+                    "AND job_type = #{tli.job_type}",
+                    "</when>",
+                    "</script>"
+            }
+    )
+    public List<TaskLogInstance> selectByTaskLogInstance(@Param("tli") TaskLogInstance tli);
+
+    @Update(value = "update task_log_instance set end_time=#{end_time} where id=#{id}")
+    public int updateEndTimeById(@Param("end_time") Timestamp end_time, @Param("id") String id);
+
+    /**
+     * 获取正在运行的任务实例
+     * @param more_task
+     * @return
+     */
+    @Select(
+            {
+                    "<script>",
+                    "select * from task_log_instance tli where more_task=#{more_task}",
+                    "and status='etl'",
+                    "</script>"
+            }
+    )
+    public List<TaskLogInstance> selectByMoreTask(@Param("more_task") String more_task);
+
 
 }

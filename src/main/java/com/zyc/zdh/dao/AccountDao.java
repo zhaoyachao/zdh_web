@@ -21,7 +21,12 @@ public interface AccountDao {
 		@Result(column="email",property="email"),
 			@Result(column="is_use_email",property="is_use_email"),
 			@Result(column="phone",property="phone"),
-			@Result(column="is_use_phone",property="is_use_phone")
+			@Result(column="is_use_phone",property="is_use_phone"),
+			@Result(column="use_group",property="use_group"),
+			@Result(column="enable",property="enable"),
+			@Result(column="user_group",property="user_group"),
+			@Result(column="roles",property="roles"),
+			@Result(column="signature",property="signature")
 	})
 	public User findByPw(User user);
 	
@@ -36,14 +41,18 @@ public interface AccountDao {
 	})
 	public List<User> findList(User user);
 
-	@Select(value="select * from account_info where user_name=#{userName}")
+	@Select(value="select a.* from account_info a where user_name=#{userName} " )
 	@Results({@Result(column="id",property="id"),
 			@Result(column="user_name",property="userName"),
 			@Result(column="user_password",property="password"),
 			@Result(column="email",property="email"),
 			@Result(column="is_use_email",property="is_use_email"),
 			@Result(column="phone",property="phone"),
-			@Result(column="is_use_phone",property="is_use_phone")
+			@Result(column="is_use_phone",property="is_use_phone"),
+			@Result(column="enable",property="enable"),
+			@Result(column="user_group",property="user_group"),
+			@Result(column="roles",property="roles"),
+			@Result(column="signature",property="signature")
 	})
 	public List<User> findByUserName(User user);
 

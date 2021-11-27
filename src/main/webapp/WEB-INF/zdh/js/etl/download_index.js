@@ -124,14 +124,18 @@ function buildTable($el, cells, rows) {
 
       function deleteMs(ids) {
           $.ajax({
-              url : "download_delete",
+              url : server_context+"/download_delete",
               data : "ids=" + ids,
               type : "post",
               dataType : "json",
               success : function(data) {
                   console.info("success")
+                  if(data.code != "200"){
+                      layer.msg(data.msg)
+                      return
+                  }
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : 'download_list'
+                      url : server_context+'/download_list'
                   });
               },
               error: function (data) {
@@ -143,7 +147,7 @@ function buildTable($el, cells, rows) {
 
       window.operateEvents = {
           'click #download': function (e, value, row, index) {
-              window.open("download_file?id="+row.id);
+              window.open(server_context+"/download_file?id="+row.id);
           }
       };
 
@@ -161,7 +165,7 @@ function buildTable($el, cells, rows) {
 
 
     $('#exampleTableEvents').bootstrapTable({
-      url: "download_list",
+      url: server_context+"/download_list",
       search: true,
       pagination: true,
       showRefresh: true,

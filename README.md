@@ -339,7 +339,12 @@
   + v4.7.11 修复重试-显示禁用任务bug
   + v4.7.11 web支持flink增加杀死,重试机制
   + v4.7.11 重试时,至少有一个子任务,否则无法重试
-  + v4.7.11 flink端判定任务状态检查 未完成
+  + v4.7.11 flink端判定任务状态检查
+  
+  + v4.7.12 优化quartz 超大量任务引起的重复执行问题
+  + v4.7.12 增加【jdbc引擎ETL】,使用presto,clickhouse等jdbc引擎ETL时,可单独使用zdh_web完成,不集成zdh_server
+  + v4.7.12 历史【jdbc依赖】优化
+  
   
   
   

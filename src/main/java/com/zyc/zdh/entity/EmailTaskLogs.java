@@ -1,5 +1,7 @@
 package com.zyc.zdh.entity;
 
+import com.zyc.zdh.util.Const;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.sql.Timestamp;
@@ -17,8 +19,16 @@ public class EmailTaskLogs {
     private Timestamp start_time;//任务开始时间
     private Timestamp update_time;
     private String  owner;
-    private String is_notice="false";
+    private String is_notice=Const.FALSE;
     private String process="1";
+    private String alarm_email= Const.OFF;
+    private String alarm_sms=Const.OFF;
+    private String alarm_zdh=Const.OFF;
+
+    private String notice_error=Const.OFF;
+    private String notice_finish=Const.OFF;
+    private String notice_timeout=Const.OFF;
+
 
     private String userName;
     private String email;
@@ -27,6 +37,7 @@ public class EmailTaskLogs {
     private String is_use_phone="";
     private String etl_context;
     private String etl_task_id;
+
 
 
     public String getJob_id() {
@@ -179,5 +190,53 @@ public class EmailTaskLogs {
 
     public void setEtl_task_id(String etl_task_id) {
         this.etl_task_id = etl_task_id;
+    }
+
+    public String getAlarm_email() {
+        return alarm_email;
+    }
+
+    public void setAlarm_email(String alarm_email) {
+        this.alarm_email = alarm_email;
+    }
+
+    public String getAlarm_sms() {
+        return alarm_sms;
+    }
+
+    public void setAlarm_sms(String alarm_sms) {
+        this.alarm_sms = alarm_sms;
+    }
+
+    public String getAlarm_zdh() {
+        return alarm_zdh;
+    }
+
+    public void setAlarm_zdh(String alarm_zdh) {
+        this.alarm_zdh = alarm_zdh;
+    }
+
+    public String getNotice_error() {
+        return notice_error;
+    }
+
+    public void setNotice_error(String notice_error) {
+        this.notice_error = notice_error;
+    }
+
+    public String getNotice_finish() {
+        return notice_finish;
+    }
+
+    public void setNotice_finish(String notice_finish) {
+        this.notice_finish = notice_finish;
+    }
+
+    public String getNotice_timeout() {
+        return notice_timeout;
+    }
+
+    public void setNotice_timeout(String notice_timeout) {
+        this.notice_timeout = notice_timeout;
     }
 }

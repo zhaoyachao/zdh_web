@@ -16,6 +16,8 @@ import com.zyc.zdh.util.SFTPUtil;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -39,6 +41,22 @@ public class ZdhQualityController extends BaseController{
     @Autowired
     ZdhHaInfoMapper zdhHaInfoMapper;
 
+
+    /**
+     * 质量报告首页
+     * @return
+     */
+    @RequestMapping("/quality_index")
+    public String etl_task_index() {
+
+        return "etl/quality_index";
+    }
+
+    @RequestMapping("/quota_index")
+    public String quota_index() {
+
+        return "etl/quota_index";
+    }
 
     /**
      * 指标明细
@@ -85,14 +103,18 @@ public class ZdhQualityController extends BaseController{
      */
     @RequestMapping(value = "/quality_delete", produces = "text/html;charset=UTF-8")
     @ResponseBody
+    @Transactional
     public String quality_delete(String[] ids) {
 
-        for (String id : ids) {
-            qualityMapper.deleteByPrimaryKey(id);
+        try{
+            for (String id : ids) {
+                qualityMapper.deleteByPrimaryKey(id);
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
-        JSONObject json2 = new JSONObject();
-        json2.put("success", "200");
-        return json2.toJSONString();
     }
 
 

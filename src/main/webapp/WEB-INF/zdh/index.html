@@ -8,8 +8,8 @@
 
     <title>ZDH - 主页</title>
 
-    <meta name="keywords" content="ZDH,响应式后台">
-    <meta name="description" content="ZDH,响应式后台">
+    <meta name="keywords" content="ZDH,大数据平台">
+    <meta name="description" content="ZDH,大数据平台">
 
     <!--[if lt IE 9]>
     <meta http-equiv="refresh" content="0;ie.html" />
@@ -35,8 +35,8 @@
                             <span><img alt="image" class="img-circle" src="img/zdh.png" /></span>
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                                 <span class="clear">
-                                    <span class="block m-t-xs"><strong id="userName" class="font-bold">Beaut-zihan</strong></span>
-                                <span class="text-muted text-xs block">超级管理员<b class="caret"></b></span>
+                                    <span class="block m-t-xs"><strong id="userName" class="font-bold"></strong></span>
+                                <span class="text-muted text-xs block" id="signature">缺个签名<b class="caret"></b></span>
                                 </span>
                             </a>
                             <ul class="dropdown-menu animated fadeInRight m-t-xs">
@@ -54,7 +54,7 @@
         <!--左侧导航结束-->
         <!--右侧部分开始-->
         <div id="page-wrapper" class="gray-bg dashbard-1">
-            <div class="row border-bottom">
+            <div class="row border-bottom" style="z-index: 5">
                 <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
                     <div class="navbar-header"><a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
                         <p id="notice">新上线版本,bug多多,希望你能在issue中提下建议及bug</p>
@@ -64,7 +64,7 @@
                             <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
                                 <i class="fa fa-bell"></i> <span class="label label-danger" id="notice_num"></span>
                             </a>
-                            <ul class="dropdown-menu dropdown-alerts" id="msg_ul">
+                            <ul class="dropdown-menu dropdown-alerts" id="msg_ul" style="z-index: 5">
 
                             </ul>
                         </li>
@@ -84,7 +84,7 @@
                 </button>
                 <nav class="page-tabs J_menuTabs">
                    <div class="page-tabs-content">
-                     <a href="javascript:void(0);" class="active J_menuTab" data-id="monitor.html">监控</a>
+<!--                     <a href="javascript:void(0);" class="active J_menuTab" data-id="monitor.html">监控</a>-->
                     </div>
                 </nav>
                 <button class="roll-nav roll-right J_tabRight"><i class="fa fa-forward"></i>
@@ -109,7 +109,7 @@
                 <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="monitor.html" frameborder="0" data-id="monitor.html" seamless></iframe>
             </div>
             <div class="footer">
-                <div class="pull-right">&copy; 2014-2020 <a href="" target="_blank"></a>
+                <div class="pull-right">&copy; 2014-2021 <a href="" target="_blank"></a>
                 </div>
             </div>
         </div>
@@ -210,6 +210,7 @@
         </div>
     </div>
 
+    <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -233,9 +234,10 @@
                 data: '',
                 //成功返回
                 success: function (data) {
-                    if(data.userName !='' ){
-                     $('#userName').text(data.userName)
-                     if(data.userName != "admin"){
+                    if(data.result.userName !='' ){
+                     $('#userName').text(data.result.userName);
+                     $('#signature').text(data.result.signature);
+                     if(data.result.userName != "admin"){
                          $('#li_del_system_job').hide()
                      }
                     }else{
@@ -261,29 +263,40 @@
                     data: {},
                     //成功返回
                     success: function (data) {
-                        console.info("success")
-                        console.info(data.length)
-                        if(data.length>0){
-                            $('#notice_num').html(data.length)
+                        //console.info("success")
+                        //console.info(data.length)
+                        if(data.code=="200"){
+
+                            $('#notice_num').html(data.result.total_num)
                             $('#msg_ul').html("")
-                                for(var i=0;i<data.length;i++){
+                                for(var i=0;i<data.result.notices.length;i++){
                                 var html_li="<li>"+
-                                    " <a href=\""+data[i].msg_url+"\">"+
+                                    " <a href=\"notice_detail_index.html?id="+data.result.notices[i].id+"\">"+
                                     " <div>"+
-                                    " <i class=\"fa fa-file\"></i>  "+data[i].msg_title+
+                                    " <i class=\"fa fa-envelope\"></i>  "+data.result.notices[i].msg_title+
                                     "</div>"+
                                     " </a>"+
                                     " </li>"
 
-                                    console.info(html_li)
-                                    $('#msg_ul').append(html_li)
-                                    $('#msg_ul').append("<li class=\"divider\"></li>")
+                                    //console.info(html_li)
+                                    $('#msg_ul').append(html_li);
+                                    $('#msg_ul').append("<li class=\"divider\"></li>");
                                 }
+                            var end_li=
+                            " <li>\n" +
+                            "     <div class=\"text-center link-block\">\n" +
+                            "        <a class=\"J_menuItem\" href=\"notice_index.html\">\n" +
+                            "           <strong>查看所有 </strong>\n" +
+                            "           <i class=\"fa fa-angle-right\"></i>\n" +
+                            "        </a>\n" +
+                            "     </div>\n" +
+                            " </li> "
+                            $('#msg_ul').append(end_li)
 
                         }else{
                             $('#msg_ul').html("")
                             var html_li="<li>"+
-                                " <a href=\"\">"+
+                                " <a href=\"notice_index.html\">"+
                                 " <div>"+
                                 " <i class=\"fa fa-weixin\"></i>  暂无消息"+
                                 "</div>"+
@@ -322,52 +335,70 @@
                 async:'false',
                 success : function(data) {
                     console.info(data);
-
-
+                //当前最大支持层级数是5级
+                for(var j=2;j<=5;j++){
                     for(var i=0;i<data.length;i++){
-                        if(data[i].level == 2) {
-                            var li_tmplete =
-                                "<li>" +
-                                "<a class=\"J_menuItem\" href=\"" + data[i].url + "\"><i class=\""+ data[i].icon+"\"></i>" +
-                                "<span class=\"nav-label\">"+data[i].text+"</span></a>" +
-                                "</li>"
+                            //console.info(j)
+                            if(data[i].level == j) {
+                                var li_tmplete =
+                                    "<li>" +
+                                    "<a class=\"J_menuItem\" href=\"" + data[i].url + "\"><i class=\""+ data[i].icon+"\"></i>" +
+                                    "<span class=\"nav-label\">"+data[i].text+"</span></a>" +
+                                    "</li>";
 
-                            console.info(data[i].text+"==="+data[i].url+"==="+data[i].level)
-                            if(data[i].url==""){
-                                var ul_tmplate =
-                                "<li>"+
-                                "<a href=\"\#\" id='abc'><i class=\""+data[i].icon+"\"></i><span class=\"nav-label\">"+data[i].text+"</span></a>"+
-                                    "<ul class=\"nav nav-second-level\" id=\"ul_"+data[i].resource_id+"\">"+
-                                    "</ul>"+
-                                "</li>"
-                                $('#side-menu').append(ul_tmplate)
-                                $('#side-menu').metisMenu();
-                            }else if(typeof(data[i].url) != "undefined"){
-                                $('#side-menu').append(li_tmplete)
+                                console.info(data[i].text+"==="+data[i].url+"==="+data[i].level);
+                                if(data[i].resource_type == "1"){
+                                    console.info("url is ''");
+                                    var ul_tmplate =
+                                        "<li>"+
+                                        "<a href=\"\#\" id='abc'><i class=\""+data[i].icon+"\"></i><span class=\"nav-label\">"+data[i].text+"</span></a>"+
+                                        "<ul class=\"nav nav-second-level\" id=\"ul_"+data[i].resource_id+"\">"+
+                                        "</ul>"+
+                                        "</li>";
+                                    $('#side-menu').append(ul_tmplate);
+                                    $('#side-menu').metisMenu();
+                                }else if(data[i].resource_type == "4"){
+                                    console.info("url is start function");
+                                    li_tmplete =
+                                        "<li><a href=\"javascript:void(0);\" onclick=\"" +data[i].url.split("function:")[1] +"\">" + "<i class=\""+ data[i].icon+"\"></i>"+data[i].text+"</a>"
+                                    $('#ul_'+data[i].parent).append(li_tmplete);
+                                    $('#'+"ul_"+data[i].parent).metisMenu();
+                                }else if(data[i].resource_type == "2"){
+                                    if($('#ul_'+data[i].parent).length>0){
+                                        $('#ul_'+data[i].parent).append(li_tmplete);
+                                        $('#'+"ul_"+data[i].parent).metisMenu();
+                                    }else{
+                                        $('#side-menu').append(li_tmplete);
+                                    }
+
+
+                                }
+
+
                             }
-
-
-                        }
                     }
 
-                    for(var i=0;i<data.length;i++){
-                        if(data[i].level == 3) {
-                            var li_tmplete =
-                                "<li>" +
-                                "<a class=\"J_menuItem\" href=\"" + data[i].url + "\">" + data[i].text + "</a>" +
-                                "</li>"
-                            console.info("abc"+data[i].parent)
 
-                            if(data[i].url.startsWith("function:")){
-                                li_tmplete =
-                                "<li><a href=\"javascript:void(0);\" onclick=\"" +data[i].url.split("function:")[1] +"\">"+data[i].text+"</a>"
-                            }
-                            $('#ul_'+data[i].parent).append(li_tmplete)
-                            $('#'+"ul_"+data[i].parent).metisMenu()
-                        }
+                }
 
-
-                    }
+                    // for(var i=0;i<data.length;i++){
+                    //     if(data[i].level == 3) {
+                    //         var li_tmplete =
+                    //             "<li>" +
+                    //             "<a class=\"J_menuItem\" href=\"" + data[i].url + "\">" + data[i].text + "</a>" +
+                    //             "</li>"
+                    //         console.info("abc"+data[i].parent)
+                    //
+                    //         if(data[i].url.startsWith("function:")){
+                    //             li_tmplete =
+                    //             "<li><a href=\"javascript:void(0);\" onclick=\"" +data[i].url.split("function:")[1] +"\">"+data[i].text+"</a>"
+                    //         }
+                    //         $('#ul_'+data[i].parent).append(li_tmplete)
+                    //         $('#'+"ul_"+data[i].parent).metisMenu()
+                    //     }
+                    //
+                    //
+                    // }
 
 
                     //计算元素集合的总宽度
@@ -699,7 +730,7 @@
                 data: '',
                 //成功返回
                 success: function (data) {
-                    layer.msg(data.data)
+                    layer.msg(data.msg)
                 },
                 //处理完成
                 complete: function () {
@@ -747,7 +778,7 @@
         function every_day_notice(){
             $.ajax({
                 type: 'POST',
-                url: "/every_day_notice",
+                url: server_context+"/every_day_notice",
                 dataType: 'json',
                 data: {},
                 //成功返回

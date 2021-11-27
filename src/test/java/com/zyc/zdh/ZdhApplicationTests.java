@@ -1,7 +1,7 @@
 package com.zyc.zdh;
 
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
-import com.zyc.zdh.entity.Role;
+import com.zyc.zdh.entity.RoleInfo;
 import com.zyc.zdh.job.CheckDepJob;
 import com.zyc.zdh.service.RoleService;
 import net.sf.ehcache.CacheManager;
@@ -34,10 +34,10 @@ public class ZdhApplicationTests {
 		CacheManager ec = CacheManager.getCacheManager("ec");
 		ec.clearAll();
 
-		Role r=roleService.getRole("1");
-		System.out.println(r.getId()+"===="+r.getRoleName());
-		Role r1=roleService.getRole("1");
-		System.out.println(r1.getId()+"===="+r1.getRoleName());
+//		Role r=roleService.getRole("1");
+//		System.out.println(r.getId()+"===="+r.getRoleName());
+//		Role r1=roleService.getRole("1");
+//		System.out.println(r1.getId()+"===="+r1.getRoleName());
 
 		ec.clearAll();
 
@@ -53,7 +53,7 @@ public class ZdhApplicationTests {
 	@Test
 	public void checkDepJobTest(){
 
-		CheckDepJob.run3();
+		CheckDepJob.create_group_final_status();
 	}
 
 

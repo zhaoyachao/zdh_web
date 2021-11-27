@@ -9,6 +9,8 @@ import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -96,12 +98,15 @@ public class ZdhDataSourcesController extends BaseController{
      */
     @RequestMapping("/data_sources_delete")
     @ResponseBody
+    @Transactional
     public String deleteIds(Long[] ids) {
-        dataSourcesServiceImpl.deleteBatchById(ids);
-
-        JSONObject json = new JSONObject();
-        json.put("success", "200");
-        return json.toJSONString();
+        try{
+            dataSourcesServiceImpl.deleteBatchById(ids);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+        }
     }
 
     /**
@@ -111,10 +116,10 @@ public class ZdhDataSourcesController extends BaseController{
      * @param id
      * @return
      */
-    @RequestMapping("/data_sources_add")
-    public String data_sources_add(HttpServletRequest request, HttpServletResponse response, Long id) {
+    @RequestMapping("/data_sources_add_index")
+    public String data_sources_add_index(HttpServletRequest request, HttpServletResponse response, Long id) {
 
-        return "etl/data_sources_add";
+        return "etl/data_sources_add_index";
     }
 
     /**
@@ -122,17 +127,17 @@ public class ZdhDataSourcesController extends BaseController{
      * @param dataSourcesInfo
      * @return
      */
-    @RequestMapping("/add_data_sources")
+    @RequestMapping(value = "/data_sources_add", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String add_data_sources(DataSourcesInfo dataSourcesInfo) {
-        dataSourcesInfo.setOwner(getUser().getId());
-        dataSourcesInfo.setIs_delete("0");
-        dataSourcesServiceImpl.insert(dataSourcesInfo);
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
+    public String data_sources_add(DataSourcesInfo dataSourcesInfo) {
+        try{
+            dataSourcesInfo.setOwner(getUser().getId());
+            dataSourcesInfo.setIs_delete("0");
+            dataSourcesServiceImpl.insert(dataSourcesInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+        }
     }
 
     /**
@@ -143,13 +148,15 @@ public class ZdhDataSourcesController extends BaseController{
     @RequestMapping("/data_sources_update")
     @ResponseBody
     public String data_sources_update(DataSourcesInfo dataSourcesInfo) {
-        dataSourcesInfo.setOwner(getUser().getId());
-        dataSourcesServiceImpl.update(dataSourcesInfo);
+        try{
+            dataSourcesInfo.setOwner(getUser().getId());
+            dataSourcesInfo.setIs_delete("0");
+            dataSourcesServiceImpl.update(dataSourcesInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+        }
 
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
     /**

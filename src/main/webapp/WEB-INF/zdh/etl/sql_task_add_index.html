@@ -158,11 +158,38 @@
                             </div>
 
                         </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">常用参数</label>
+                            <div class="col-sm-10">
+                                <select id="model_output" name="model_output"
+                                        data-placeholder="写入模式"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">写入模式</option>
+                                    <option value="append" mytype="">追加</option>
+                                    <option value="overwrite" mytype="">覆盖</option>
+                                    <option value="errorifexists" mytype="">检查存在就报错</option>
+                                    <option value="ignore" mytype="">检查存在忽略</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">分割符</label>
                             <div class="col-sm-10"><input id="sep_output" name="sep_output" type="text"
                                                           placeholder="分割符" class="form-control"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">分区字段</label>
+                            <div class="col-sm-10"><input id="partition_by_output" name="partition_by_output" type="text"
+                                                          placeholder="分区字段,example: etl_date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">合并小文件个数</label>
+                            <div class="col-sm-10"><input id="merge_output" name="merge_output" type="text" value="-1"
+                                                          placeholder="合并小文件个数,默认-1,example: 1" class="form-control">
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -317,6 +344,8 @@
         <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;replicas:指定副本个数,默认1个备份</li>
     </ul>
 </div>
+
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -418,6 +447,7 @@
             $('#file_type_output').chosen()
             $('#encoding_output').chosen()
             $('#header_output').chosen()
+            $('#model_output').chosen()
 
             //定义特定数据源展示的div
             function fileShow() {
@@ -431,7 +461,7 @@
             function init_data_sources() {
                 $.ajax({
                     type: 'POST',
-                    url: "data_sources_list",
+                    url: server_context+"/data_sources_list",
                     dataType: 'json',
                     async: false,
                     data: '',
@@ -483,7 +513,7 @@
                 }
                 $.ajax({
                     type: 'POST',
-                    url: "etl_task_tables",
+                    url: server_context+"/etl_task_tables",
                     dataType: 'json',
                     data: postData,
                     //成功返回
@@ -533,7 +563,7 @@
                 }
                 $.ajax({
                     type: 'POST',
-                    url: "etl_task_tables",
+                    url: server_context+"/etl_task_tables",
                     dataType: 'json',
                     data: postData,
                     //成功返回
@@ -640,7 +670,7 @@
                     //开始赋值
 
                     $.ajax({
-                        url: "sql_task_list",
+                        url: server_context+"/sql_task_list",
                         data: "id=" + s.id,
                         type: "post",
                         async: false,
@@ -704,8 +734,19 @@
                             $("#header_output").val(header_output)
                             $("#header_output").trigger("chosen:updated");
 
+
+                            var model_output = data[0].model_output
+                            $("#model_output").val(model_output)
+                            $("#model_output").trigger("chosen:updated");
+
                             var sep_output = data[0].sep_output
                             $("#sep_output").val(sep_output)
+
+                            var partition_by_output = data[0].partition_by_output
+                            $("#partition_by_output").val(partition_by_output)
+
+                            var merge_output = data[0].merge_output
+                            $("#merge_output").val(merge_output)
 
                             //获取输出源数据其他参数
                             var data_sources_params_output = data[0].data_sources_params_output
@@ -726,7 +767,7 @@
 
                                 $.ajax({
                                     type: 'POST',
-                                    url: "etl_task_tables",
+                                    url: server_context+"/etl_task_tables",
                                     dataType: 'json',
                                     data: postData,
                                     //成功返回
@@ -799,7 +840,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "show_databases",
+            url: server_context+"/show_databases",
             dataType: 'json',
             async: false,
             data: '',
@@ -811,7 +852,7 @@
                     if(ids[0].indexOf(".") >= 0){
                         console.log(ids[0]);
                         $('#exampleTableEvents').bootstrapTable('refresh', {
-                            url: "/desc_table?table="+ids[0],
+                            url: server_context+"/desc_table?table="+ids[0],
                             contentType: "application/json;charset=utf-8",
                             dataType: "json"
                         });
@@ -922,7 +963,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "sql_task_add",
+            url: server_context+"/sql_task_add",
             async: false,
             processData: false,
             contentType: false,
@@ -936,6 +977,14 @@
             //成功返回
             success: function (data) {
                 $("#save_etl_task").removeAttr('disabled');
+                if(data.code != '200'){
+                    console.error(data.msg)
+                    layer.msg("执行失败")
+                    return ;
+                }
+                layer.msg("执行成功")
+
+
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },
@@ -973,7 +1022,7 @@
         formData.set("id",s.id)
         $.ajax({
             type: 'POST',
-            url: "sql_task_update",
+            url: server_context+"/sql_task_update",
             processData: false,
             contentType: false,
             dataType: 'json',
@@ -986,6 +1035,13 @@
             //成功返回
             success: function (data) {
                 $("#update_etl_task").removeAttr('disabled');
+                if(data.code != "200"){
+                    console.error(data.msg);
+                    layer.msg("执行失败");
+                    return ;
+                }
+                layer.msg("执行成功");
+
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },

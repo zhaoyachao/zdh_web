@@ -20,18 +20,18 @@
               shade: 0.1,
               area : ['45%', '60%'],
               //area: ['450px', '500px'],
-              content: "etl_task_add_index?id=-1", //iframe的url
+              content: server_context+"/etl_task_add_index?id=-1", //iframe的url
               end : function () {
                   console.info("弹框结束")
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: "/etl_task_list2?"+$("#etl_task_form").serialize()+"&tm="+new Date(),
+                      url: server_context+"/etl_task_list2?"+$("#etl_task_form").serialize()+"&tm="+new Date(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
               }
           });
-      })
+      });
 
       $('#remove').click(function () {
 
@@ -58,19 +58,25 @@
 
         }
 
-    })
+    });
 
       function deleteMs(ids) {
           $.ajax({
-              url : "etl_task_delete",
+              url : server_context+"/etl_task_delete",
               data : "ids=" + ids,
               type : "post",
               async:false,
               dataType : "json",
               success : function(data) {
-                  console.info("success");
+                  if(data.code != '200'){
+                      console.error(data.msg)
+                      layer.msg("执行失败")
+                      return ;
+                  }
+                  layer.msg("执行成功")
+
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: "/etl_task_list2?"+$("#etl_task_form").serialize(),
+                      url: server_context+"/etl_task_list2?"+$("#etl_task_form").serialize(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -95,10 +101,10 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: "etl_task_add_index?id="+row.id, //iframe的url
+                  content: server_context+"/etl_task_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : 'etl_task_list'
+                          url : server_context+'/etl_task_list2'
                       });
                   }
               });
@@ -116,10 +122,10 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: "etl_task_add_index?id="+row.id+"&is_copy=true", //iframe的url
+                  content: server_context+"/etl_task_add_index?id="+row.id+"&is_copy=true", //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: "/etl_task_list2?"+$("#etl_task_form").serialize(),
+                          url: server_context+"/etl_task_list2?"+$("#etl_task_form").serialize(),
                           contentType: "application/json;charset=utf-8",
                           dataType: "json"
                       });
@@ -198,7 +204,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: "etl_task_list",
+      url: server_context+"/etl_task_list2",
       search: true,
       pagination: true,
       showRefresh: true,

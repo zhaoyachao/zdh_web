@@ -75,7 +75,7 @@ public class CommandUtils {
             processBuilder.command(cmd,param ,command);
             Process process = processBuilder.start();
 
-            StringBuilder output = new StringBuilder();
+//            StringBuilder output = new StringBuilder();
 
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream(),"GBK"));
@@ -84,11 +84,11 @@ public class CommandUtils {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                output.append(line + "\n");
+//                output.append(line + "\n");
                 JobCommon2.insertLog(tli,"INFO","实时日志:"+line);
             }
             while ((line = reader_err.readLine()) != null) {
-                output.append(line + "\n");
+//                output.append(line + "\n");
                 JobCommon2.insertLog(tli,"ERROR","实时日志:"+line);
             }
 
@@ -96,15 +96,15 @@ public class CommandUtils {
             if (exitVal == 0) {
                 System.out.println("Success!");
                 map.put("result","success");
-                map.put("out",output);
+//                map.put("out",output);
                 map.put("error","");
             } else {
                 System.out.println("Error!");
                 map.put("result","fail");
                 map.put("out","");
-                map.put("error",output);
+//                map.put("error",output);
             }
-            System.out.println(output);
+//            System.out.println(output);
             process.destroy();
         } catch (IOException e) {
             e.printStackTrace();

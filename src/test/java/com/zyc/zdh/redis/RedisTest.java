@@ -10,7 +10,7 @@ import java.util.Set;
 
 import com.zyc.zdh.ProfilesResolver;
 import com.zyc.zdh.ZdhApplication;
-import com.zyc.zdh.entity.Role;
+import com.zyc.zdh.entity.RoleInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,8 +98,8 @@ public class RedisTest {
 	@Test
 	public void redisCacheTest() {
 		roleService.getRole("1");
-		Role role = (Role) redisUtil.get("role:id:1");
-		System.out.println(role.getId() + "===" + role.getRoleName());
+		RoleInfo role = (RoleInfo) redisUtil.get("role:id:1");
+
 		while (true) {
 
 		}

@@ -6,6 +6,7 @@ import org.apache.hadoop.fs.Path;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 
 import static org.junit.Assert.*;
 
@@ -17,6 +18,13 @@ public class JobCommon2Test {
         FileSystem fs = FileSystem.getLocal(conf);
 
         System.out.println(fs.exists(new Path("F://data/csv/h1.txt")));
+
+    }
+
+    @Test
+    public void timestamp_check() throws IOException {
+
+        System.out.println(Timestamp.valueOf("1970-01-01 00:00:00"));
 
     }
 }

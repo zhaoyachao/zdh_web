@@ -158,6 +158,7 @@
 </div>
 
 
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -260,7 +261,7 @@
                     file_list_m(s.id)
 
                     $.ajax({
-                        url : "etl_task_jar_list",
+                        url : server_context+"/etl_task_jar_list",
                         data : "ids=" + s.id,
                         type : "post",
                         async: false,
@@ -322,7 +323,7 @@
     })(document, window, jQuery);
     function file_list_m(id) {
         $.ajax({
-            url : "etl_task_jar_file_list",
+            url : server_context+"/etl_task_jar_file_list",
             data : "id=" + id+"&random="+new Date().getTime(),
             type : "post",
             async: false,
@@ -364,7 +365,7 @@
         })
         if(ids.length>0){
             $.ajax({
-                url : "etl_task_jar_del_file",
+                url : server_context+"/etl_task_jar_del_file",
                 data : "ids=" + ids,
                 type : "post",
                 dataType : "json",
@@ -395,7 +396,7 @@
        // alert(formData)
         $.ajax({
             type: 'POST',
-            url: "etl_task_jar_add_file",
+            url: server_context+"/etl_task_jar_add_file",
             data: formData,
             processData: false,
             contentType: false,
@@ -406,12 +407,16 @@
             },
             //成功返回
             success: function (data) {
-                $("#save_etl_task").removeAttr('disabled');
+                if(data.code != "200"){
+                    layer.msg(data.msg)
+                    return
+                }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },
             //处理完成
             complete: function () {
+                $("#save_etl_task").removeAttr('disabled');
                 console.info("complete")
             },
             //报错
@@ -445,7 +450,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "etl_task_jar_update",
+            url: server_context+"/etl_task_jar_update",
             data: formData,
             processData: false,
             contentType: false,
@@ -456,12 +461,16 @@
             },
             //成功返回
             success: function (data) {
-                $("#update_etl_task").removeAttr('disabled');
+                if(data.code != "200"){
+                    layer.msg(data.msg)
+                    return
+                }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },
             //处理完成
             complete: function () {
+                $("#update_etl_task").removeAttr('disabled');
                 console.info("complete")
             },
             //报错

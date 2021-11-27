@@ -3,24 +3,22 @@ package com.zyc.zdh.job;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
-import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
-import jdk.nashorn.internal.scripts.JO;
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.http.NameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.net.URI;
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-//定期拉取重试任务
+/**
+ * 检查任务及任务组,判定上下游依赖
+ */
 public class CheckDepJob {
 
     private final static String task_log_status="etl";
@@ -30,14 +28,45 @@ public class CheckDepJob {
 
     public static void run(QuartzJobInfo quartzJobInfo) {
         try {
-            logger.info("开始检测任务组任务...");
+            logger.debug("开始检测任务组任务...");
             TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+
+            // 如果当前任务组无子任务则直接设置完成
+            List<TaskGroupLogInstance> non_group=tglim.selectTaskGroupByStatus(new String[]{JobStatus.SUB_TASK_DISPATCH.getValue(),JobStatus.KILL.getValue()});
+            for(TaskGroupLogInstance group :non_group){
+                List<TaskLogInstance> sub_task=tlim.selectByGroupId(group.getId());
+                if(sub_task == null || sub_task.size() < 1){
+                    if(group.getStatus().trim().equalsIgnoreCase(JobStatus.KILL.getValue())){
+                        group.setStatus(JobStatus.KILLED.getValue());
+                    }else{
+                        group.setStatus(JobStatus.FINISH.getValue());
+                    }
+                    group.setProcess("100");
+                    JobCommon2.updateTaskLog(group,tglim);
+                    logger.info("当前任务组没有子任务可执行,当前任务组设为完成");
+                    JobCommon2.insertLog(group,"INFO","当前任务组没有子任务可执行,当前任务组设为完成");
+                }
+            }
+
+
             //获取可执行的任务组
             List<TaskGroupLogInstance> tglims=tglim.selectTaskGroupByStatus(new String[]{JobStatus.CHECK_DEP.getValue(),JobStatus.CREATE.getValue()});
+            // 此处可做任务并发限制,当前未限制并发
             for(TaskGroupLogInstance tgli :tglims){
 
                 if(!StringUtils.isEmpty(tgli.getPre_tasks())){
+                    //如果上游任务组杀死,失败,则杀死本任务组
+                    int killed_size=tglim.selectByIds(tgli.getPre_tasks().split(","),JobStatus.KILLED.getValue()).size();
+                    int error_size=tglim.selectByIds(tgli.getPre_tasks().split(","),JobStatus.ERROR.getValue()).size();
+                    if(killed_size>0 || error_size >0){
+                        JobCommon2.insertLog(tgli,"INFO","上游依赖任务组存在杀死或者失败任务,将杀死当前任务组");
+                        tgli.setStatus(JobStatus.KILLED.getValue());
+                        tglim.updateByPrimaryKey(tgli);
+                        tlim.updateStatusByGroupId(tgli.getId());
+                        JobCommon2.insertLog(tgli,"INFO","当前任务组以杀死");
+                    }
+
                     int tmp_size=tglim.selectByIds(tgli.getPre_tasks().split(","),JobStatus.FINISH.getValue()).size();
                     if(tgli.getPre_tasks().split(",").length!=tmp_size){
                         JobCommon2.insertLog(tgli,"INFO","上游依赖任务组未完成,稍后再次检测");
@@ -50,25 +79,15 @@ public class CheckDepJob {
                     //在检查依赖时杀死任务--则不修改状态
                     updateTaskGroupLogInstanceStatus(tgli);
                 }
-//                if(JobCommon2.checkDep(tgli.getJob_type(),tgli)){
-//                    String tmp_status=tglim.selectByPrimaryKey(tgli.getId()).getStatus();
-//                    if( tmp_status=="kill" || tmp_status =="killed" ) continue; //在检查依赖时杀死任务
-//
-//                    updateTaskGroupLogInstanceStatus(tgli);
-//
-//                }else{
-//                    //更新任务依赖时间
-//                    process_time_info pti=tgli.getProcess_time2();
-//                    pti.setCheck_dep_time(DateUtil.getCurrentTime());
-//                    tgli.setProcess_time(pti);
-//                    JobCommon2.updateTaskLog(tgli,tglim);
-//                }
+
             }
 
             //检查子任务是否可以运行
-            run2();
+            run_sub_task();
             //检测任务组是否已经完成
-            run3();
+            create_group_final_status();
+            //检测flink任务是否已经完成
+            check_flink_job_final_status();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,12 +117,13 @@ public class CheckDepJob {
     /**
      * 检查子任务是否可以运行
      */
-    public static void run2() {
+    public static void run_sub_task() {
         try {
-            logger.info("开始检测子任务依赖...");
+            logger.debug("开始检测子任务依赖...");
+            TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper taskLogInstanceMapper=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
-            //检查JDBC依赖任务
+            //检查JDBC等依赖类型的任务
             List<TaskLogInstance> dep_tlis=taskLogInstanceMapper.selectTaskByJobType(new String[] {JobStatus.DISPATCH.getValue(),JobStatus.CREATE.getValue(),
                     JobStatus.CHECK_DEP.getValue()},new String[]{"JDBC","GROUP","HDFS"});
             for(TaskLogInstance tli :dep_tlis) {
@@ -127,9 +147,9 @@ public class CheckDepJob {
                         List<TaskLogInstance> tlis_finish= taskLogInstanceMapper.selectByFinishIds(task_ids);
                         if(tlis_finish.size()==task_ids.length){
                             tli.setStatus(JobStatus.SKIP.getValue());
-                            JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tli.getId(),"",taskLogInstanceMapper);
+                            JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tli.getId(),"100",taskLogInstanceMapper);
                             //JobCommon2.updateTaskLog(tli,taskLogInstanceMapper);
-                            JobCommon2.insertLog(tli,"INFO","检测到上游任务:"+tlis.get(0).getId()+",都以完成或者跳过,更新本任务状态为SKIP");
+                            JobCommon2.insertLog(tli,"INFO","检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为SKIP");
                             continue;
                         }
                     }
@@ -163,7 +183,7 @@ public class CheckDepJob {
             }
 
 
-            //获取所有可执行的子任务
+            //获取所有可执行的非依赖类型子任务
             List<TaskLogInstance> taskLogInstanceList=taskLogInstanceMapper.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()});
             for(TaskLogInstance tl :taskLogInstanceList){
                 //如果上游任务kill,killed 设置本实例为killed
@@ -186,14 +206,28 @@ public class CheckDepJob {
                         List<TaskLogInstance> tlis_finish= taskLogInstanceMapper.selectByFinishIds(task_ids);
                         if(tlis_finish.size()==task_ids.length){
                             tl.setStatus(JobStatus.SKIP.getValue());
-                            JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tl.getId(),"",taskLogInstanceMapper);
+                            JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tl.getId(),"100",taskLogInstanceMapper);
                             //JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
-                            JobCommon2.insertLog(tl,"INFO","检测到上游任务:"+tlis.get(0).getId()+",都以完成或者跳过,更新本任务状态为SKIP");
+                            JobCommon2.insertLog(tl,"INFO","检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为SKIP");
                             continue;
                         }
                     }
 
                 }
+
+                //根据dag判断是否对当前任务进行
+                DAG dag=new DAG();
+                TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(tl.getGroup_id());
+                if(StringUtils.isEmpty(tgli.getRun_jsmind_data())){
+                    JSONObject run_jsmind_data=JSON.parseObject(tgli.getRun_jsmind_data());
+                    JSONArray run_lines=run_jsmind_data.getJSONArray("run_line");
+                    for(Object run_line: run_lines){
+                        String from=((JSONObject) run_line).getString("from");
+                        String to=((JSONObject) run_line).getString("to");
+                        dag.addEdge(from,to);
+                    }
+                }
+
                 boolean check=false;
                 // 检查ETL任务依赖
                 check=JobCommon2.checkDep(tl.getJob_type(),tl);
@@ -207,6 +241,12 @@ public class CheckDepJob {
                 if(check){
                     String tmp_status=taskLogInstanceMapper.selectByPrimaryKey(tl.getId()).getStatus();
                     if( tmp_status=="kill" || tmp_status =="killed" ) continue; //在检查依赖时杀死任务
+
+                    if(tl.getJob_type().equalsIgnoreCase("shell")){
+                        if(JobCommon2.check_thread_limit(tl))
+                            continue;
+                    }
+
                     tl.setStatus(JobStatus.DISPATCH.getValue());
                     tl.setServer_id(JobCommon2.web_application_id);//重新设置调度器标识,retry任务会定期检查标识是否有效
                     //更新任务依赖时间
@@ -247,7 +287,7 @@ public class CheckDepJob {
      * 检测任务组是否已经完成,
      * 运行中+完成+失败=总数
      */
-    public static void run3(){
+    public static void create_group_final_status(){
         TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         List<TaskGroupLogInstance> tglis=tglim.selectTaskGroupByStatus(new String[]{JobStatus.SUB_TASK_DISPATCH.getValue(),JobStatus.KILL.getValue()});
@@ -262,7 +302,7 @@ public class CheckDepJob {
             List<String> tlidList=new ArrayList<>();
             for(Object obj:jary){
                 String tlid=((JSONObject) obj).getString("task_log_instance_id");
-                System.out.println("task_log_instance_id:"+tlid);
+                //System.out.println("task_log_instance_id:"+tlid);
                 if(tlid!=null)
                   tlidList.add(tlid);
             }
@@ -285,9 +325,9 @@ public class CheckDepJob {
                 }
             }
 
-            System.out.println("finish:"+finish_num);
-            System.out.println("kill_num:"+kill_num);
-            System.out.println("error_num:"+error_num);
+//            System.out.println("finish:"+finish_num);
+//            System.out.println("kill_num:"+kill_num);
+//            System.out.println("error_num:"+error_num);
             //如果 有运行状态，创建状态，杀死状态 则表示未运行完成
             String process=((finish_num+error_num+kill_num)/tlidList.size())*100 > Double.valueOf(tgli.getProcess())? (((finish_num+error_num+kill_num)/tlidList.size())*100)+"":tgli.getProcess();
             String msg="更新进度为:"+process;
@@ -315,6 +355,67 @@ public class CheckDepJob {
                 JobCommon2.insertLog(tgli,"INFO","任务组以完成,存在杀死任务,具体信息请点击子任务查看");
             }
 
+
+        }
+
+    }
+
+    /**
+     * 检测flink任务是否完成
+     * flink任务不受应用控制
+     */
+    public static void check_flink_job_final_status(){
+        TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
+        TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+
+        List<TaskLogInstance> tlis = tlim.selectByMoreTask(MoreTask.FLINK.getValue());
+        for(TaskLogInstance tli : tlis){
+            //根据application_id（flink job_id）获取正在运行的状态
+            String flink_web_ui = tli.getHistory_server();
+            String flink_job_id=tli.getApplication_id();
+            List<NameValuePair> npl=new ArrayList<>();
+
+            if(StringUtils.isEmpty(flink_web_ui) || StringUtils.isEmpty(flink_job_id)){
+                continue;
+            }
+
+            //服务端未确认,不进行状态验证
+            if(tli.getServer_ack().equalsIgnoreCase("0")){
+                continue;
+            }
+            try {
+                String result = HttpUtil.getRequest(flink_web_ui+"/jobs/"+flink_job_id, npl);
+                JSONObject jsonObject= JSON.parseObject(result);
+                String state = jsonObject.getString("state").toLowerCase();
+                String status = "";
+                String process = "100";
+                switch (state){
+                    case "finished":
+                        status=JobStatus.FINISH.getValue();
+                        break;
+                    case "failed":
+                        status=JobStatus.ERROR.getValue();
+                        break;
+                    case "canceled":
+                        status=JobStatus.ERROR.getValue();
+                        break;
+                    case "running":
+                        status=JobStatus.ETL.getValue();
+                        process = "70";
+                        break;
+                    default:
+                        status="";
+                }
+                if(!status.equalsIgnoreCase("")){
+                    JobCommon2.insertLog(tli, "INFO", "更新当前状态:"+status);
+                    tlim.updateStatusById4(status,process,tli.getId());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                //判定任务是否可重试,如果无法获取flink信息 则认为flink任务以死亡,尝试自动拉起
+                JobCommon2.jobFail("ETL",tli);
+                //tlim.updateStatusById4(JobStatus.ERROR.getValue(),"100",tli.getId());
+            }
 
         }
 

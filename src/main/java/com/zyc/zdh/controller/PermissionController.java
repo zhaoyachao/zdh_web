@@ -8,14 +8,23 @@ import com.zyc.zdh.job.JobModel;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,6 +38,8 @@ import java.util.*;
 
 @Controller
 public class PermissionController extends BaseController{
+
+    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     ZdhNginxMapper zdhNginxMapper;
@@ -49,6 +60,12 @@ public class PermissionController extends BaseController{
     @Autowired
     ResourceTreeMapper resourceTreeMapper;
 
+    @Autowired
+    RoleDao roleDao;
+
+    @Autowired
+    UserGroupMapper userGroupMapper;
+
 
     @RequestMapping(value = "/permission_index", method = RequestMethod.GET)
     public String permission_index() {
@@ -63,6 +80,20 @@ public class PermissionController extends BaseController{
         List<PermissionUserInfo> users = permissionMapper.findAll(user_context);
 
         return JSONObject.toJSONString(users);
+    }
+
+    @RequestMapping(value = "/user_enable", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional
+    public String user_enable(String[] ids, String enable) {
+
+        try{
+            int result= permissionMapper.updateEnable(ids, enable);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
 
     }
 
@@ -70,6 +101,143 @@ public class PermissionController extends BaseController{
     public String permission_add_index() {
 
         return "admin/permission_add_index";
+    }
+
+    @RequestMapping(value = "/user_add_index", method = RequestMethod.GET)
+    public String user_add_index() {
+
+        return "admin/user_add_index";
+    }
+
+    @RequestMapping(value = "/user_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String user_detail(String id) {
+        try{
+            PermissionUserInfo user = permissionMapper.selectByPrimaryKey(id);
+            user.setPassword("");
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", user);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+    @RequestMapping(value = "/user_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional
+    public String user_update(PermissionUserInfo user) {
+        try{
+
+            if(user.getId().equalsIgnoreCase("-1")){
+                //新增用户
+                if(StringUtils.isEmpty(user.getPassword())){
+                    throw new Exception("新增用户密码不可为空");
+                }
+                user.setEnable("false");
+                user.setId(null);
+                permissionMapper.insert(user);
+            }else{
+                PermissionUserInfo pui=permissionMapper.selectByPrimaryKey(user.getId());
+                if(user.getPassword().equalsIgnoreCase("")){
+                    user.setPassword(pui.getPassword());
+                    user.setEnable(pui.getEnable());
+                }
+                permissionMapper.updateByPrimaryKey(user);
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            e.printStackTrace();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
+    }
+
+    @RequestMapping(value = "/user_group_add_index", method = RequestMethod.GET)
+    public String user_group_add_index() {
+
+        return "admin/user_group_add_index";
+    }
+
+    @RequestMapping(value = "/user_group_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional
+    public String user_group_add(UserGroupInfo ugi) {
+        try{
+
+            List<UserGroupInfo> ugis=userGroupMapper.select(ugi);
+            if(ugis!=null && ugis.size()>0){
+                throw new Exception("组名已经存在");
+            }
+            ugi.setEnable("true");
+            ugi.setCreate_time(new Timestamp(new Date().getTime()));
+            ugi.setUpdate_time(new Timestamp(new Date().getTime()));
+            userGroupMapper.insert(ugi);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/user_group_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional
+    public String user_group_list(String enable) {
+        try{
+            UserGroupInfo ugi=new UserGroupInfo();
+            ugi.setEnable(enable);
+            List<UserGroupInfo> ugis=userGroupMapper.select(ugi);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", ugis);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            e.printStackTrace();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+    @RequestMapping(value = "/role_index", method = RequestMethod.GET)
+    public String role_index() {
+
+        return "admin/role_index";
+    }
+
+    @RequestMapping(value = "/role_add_index", method = RequestMethod.GET)
+    public String role_add_index() {
+
+        return "admin/role_add_index";
+    }
+
+    @RequestMapping(value = "/role_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String role_list(String role_context,String enable) {
+        System.out.println(role_context);
+        List<RoleInfo> users = roleDao.selectByContext(role_context,enable);
+        return JSONObject.toJSONString(users);
+    }
+
+    @RequestMapping(value = "/role_enable", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional
+    public String role_enable(String[] ids, String enable) {
+
+        try{
+            int result= roleDao.updateEnable(ids, enable);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
+
+    }
+
+    @RequestMapping(value = "/role_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String role_detail(String id) {
+        try{
+            RoleInfo role = roleDao.selectByPrimaryKey(id);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", role);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
     }
 
     @RequestMapping(value = "/jstree_add_index", method = RequestMethod.GET)
@@ -80,26 +248,34 @@ public class PermissionController extends BaseController{
 
     @RequestMapping(value = "/jstree_add_node", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String jstree_add_node(String parent_id,String text,String icon,String url,String order,String level) {
+    public String jstree_add_node(String parent_id,String text,String icon,String url,String order,String level,String resource_type) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        String id = SnowflakeIdWorker.getInstance().nextId()+"";
+        try{
+            String id = SnowflakeIdWorker.getInstance().nextId()+"";
 
-        ResourceTreeInfo rti=new ResourceTreeInfo();
-        rti.setId(id);
-        rti.setParent(parent_id);
-        rti.setText(text);
-        rti.setCreate_time(new Timestamp(new Date().getTime()));
-        rti.setUpdate_time(new Timestamp(new Date().getTime()));
-        rti.setIs_enable("1");
-        rti.setOrder(order);
-        rti.setUrl(url);
-        rti.setOwner(getUser().getId());
-        rti.setIcon(icon);
-        rti.setResource_desc("");
-        rti.setLevel(level);
-        debugInfo(rti);
-        resourceTreeMapper.insert(rti);
-        return JSON.toJSONString(rti);
+            ResourceTreeInfo rti=new ResourceTreeInfo();
+            rti.setId(id);
+            rti.setParent(parent_id);
+            rti.setText(text);
+            rti.setCreate_time(new Timestamp(new Date().getTime()));
+            rti.setUpdate_time(new Timestamp(new Date().getTime()));
+            rti.setIs_enable("1");
+            rti.setOrder(order);
+            rti.setUrl(url);
+            rti.setOwner(getUser().getId());
+            rti.setIcon(icon);
+            rti.setResource_desc("");
+            rti.setLevel(level);
+            rti.setResource_type(resource_type);
+            debugInfo(rti);
+            resourceTreeMapper.insert(rti);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+        }
+
+
     }
 
     @RequestMapping(value = "/jstree_node", produces = "text/html;charset=UTF-8")
@@ -123,27 +299,35 @@ public class PermissionController extends BaseController{
     @ResponseBody
     public String jstree_update_node(ResourceTreeInfo rti) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        rti.setUpdate_time(new Timestamp(new Date().getTime()));
-        rti.setCreate_time(null);
-        rti.setOwner(getUser().getId());
-        debugInfo(rti);
-        resourceTreeMapper.updateByPrimaryKey(rti);
+        try{
+            rti.setUpdate_time(new Timestamp(new Date().getTime()));
+            rti.setCreate_time(null);
+            rti.setOwner(getUser().getId());
+            rti.setIs_enable("1");
+            rti.setResource_desc("");
+            debugInfo(rti);
+            resourceTreeMapper.updateByPrimaryKey(rti);
 
-        JSONObject json = new JSONObject();
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),null );
+        }
 
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
     @RequestMapping(value = "/jstree_del_node", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String jstree_del_node(String id) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        resourceTreeMapper.deleteByPrimaryKey(id);
-        JSONObject json = new JSONObject();
+        try{
+            resourceTreeMapper.deleteByPrimaryKey(id);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),null );
+        }
 
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
 
@@ -151,37 +335,49 @@ public class PermissionController extends BaseController{
     @ResponseBody
     public String jstree_update_parent(String id,String parent_id,String level) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        resourceTreeMapper.updateParentById(id,parent_id,level);
-        JSONObject json = new JSONObject();
+        try{
+            resourceTreeMapper.updateParentById(id,parent_id,level);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),null );
+        }
 
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
     @RequestMapping(value = "/jstree_add_permission")
     @ResponseBody
-    public String jstree_add_permission(String id,String[] resource_id) {
+    @Transactional
+    public String jstree_add_permission(String id,String[] resource_id,String code,String name) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        System.out.println("======================");
-        System.out.println("======================");
-        System.out.println("======================");
-        System.out.println(Arrays.toString(resource_id));
-        debugInfo(resource_id);
-        List<UserResourceInfo> uris=new ArrayList<>();
-        for(String rid:resource_id){
-            UserResourceInfo uri=new UserResourceInfo();
-            uri.setUser_id(id);
-            uri.setResource_id(rid);
-            uri.setCreate_time(new Timestamp(new Date().getTime()));
-            uri.setUpdate_time(new Timestamp(new Date().getTime()));
-            uris.add(uri);
+        try{
+            if(id.equalsIgnoreCase("-1")){
+                id=SnowflakeIdWorker.getInstance().nextId()+"";
+                //新增角色
+                RoleInfo role=new RoleInfo();
+                role.setCode(code);
+                role.setName(name);
+                role.setId(id);
+                roleDao.insert(role);
+            }
+            debugInfo(resource_id);
+            List<RoleResourceInfo> rris=new ArrayList<>();
+            for(String rid:resource_id){
+                RoleResourceInfo rri=new RoleResourceInfo();
+                rri.setRole_id(id);
+                rri.setResource_id(rid);
+                rri.setCreate_time(new Timestamp(new Date().getTime()));
+                rri.setUpdate_time(new Timestamp(new Date().getTime()));
+                rris.add(rri);
+            }
+            resourceTreeMapper.deleteById(id);
+            resourceTreeMapper.updateUserResource(rris);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e.getCause());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),null );
         }
-        resourceTreeMapper.deleteById(id);
-        resourceTreeMapper.updateUserResource(uris);
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
 
@@ -189,7 +385,7 @@ public class PermissionController extends BaseController{
     @ResponseBody
     public String jstree_permission_list(String id) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        List<UserResourceInfo> uris=new ArrayList<>();
+        List<RoleResourceInfo> uris=new ArrayList<>();
 
         uris=resourceTreeMapper.selectByUserId(id);
 
@@ -207,6 +403,12 @@ public class PermissionController extends BaseController{
         return JSON.toJSONString(uris);
     }
 
+
+    @RequestMapping(value = "/user_index", method = RequestMethod.GET)
+    public String user_index() {
+
+        return "admin/user_index";
+    }
 
 
 

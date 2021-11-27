@@ -40,6 +40,10 @@ public class EtlTaskInfo {
     private String encoding_input;
     //是否有头标题
     private String header_input;
+    //重新洗牌个数
+    private String repartition_num_input;
+    //重新洗牌字段
+    private String repartition_cols_input;
     //文件分割符
     private String sep_input;
     //输入数据源其他参数
@@ -64,6 +68,13 @@ public class EtlTaskInfo {
     private String header_output;
     //文件分割符
     private String sep_output;
+    //写入模式
+    private String model_output;
+    //分区字段
+    private String partition_by_output;
+    //合并小文件个数
+    private String merge_output;
+
     //输出数据源其他参数
     private String data_sources_params_output;
 
@@ -411,6 +422,54 @@ public class EtlTaskInfo {
 
     public void setHeader_output(String header_output) {
         this.header_output = header_output;
+    }
+
+    public String getRepartition_num_input() {
+        return repartition_num_input;
+    }
+
+    public void setRepartition_num_input(String repartition_num_input) {
+        this.repartition_num_input = repartition_num_input;
+    }
+
+    public String getRepartition_cols_input() {
+        return repartition_cols_input;
+    }
+
+    public void setRepartition_cols_input(String repartition_cols_input) {
+        this.repartition_cols_input = repartition_cols_input;
+    }
+
+    public String getModel_output() {
+        return model_output;
+    }
+
+    public void setModel_output(String model_output) {
+        this.model_output = model_output;
+    }
+
+    public String getPartition_by_output() {
+        return partition_by_output;
+    }
+
+    public void setPartition_by_output(String partition_by_output) {
+        this.partition_by_output = partition_by_output;
+    }
+
+    public String getMerge_output() {
+        return merge_output;
+    }
+
+    public void setMerge_output(String merge_output) {
+        this.merge_output = merge_output;
+    }
+
+    public String getMerge() {
+        return merge;
+    }
+
+    public void setMerge(String merge) {
+        this.merge = merge;
     }
 }
 

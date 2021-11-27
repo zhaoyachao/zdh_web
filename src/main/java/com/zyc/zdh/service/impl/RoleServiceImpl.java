@@ -14,7 +14,7 @@ import com.github.pagehelper.PageHelper;
 import com.zyc.zdh.annotation.SortMark;
 import com.zyc.zdh.dao.RoleDao;
 import com.zyc.zdh.entity.PageBase;
-import com.zyc.zdh.entity.Role;
+import com.zyc.zdh.entity.RoleInfo;
 import com.zyc.zdh.service.RoleService;
 
 @Service("roleService")
@@ -26,18 +26,18 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	@CachePut(cacheManager = "cacheManager", value = "myRedis", key = "'role:id:'+#id")
 	//@Log(value = "获取数据并存入缓存")
-	public Role getRole(String id) {
+	public RoleInfo getRole(String id) {
 		// TODO Auto-generated method stub
-		return roleDao.getRole(id);
+		return null;
 	}
 
 	@Override
-	public List<Role> findList(PageBase page) {
+	public List<RoleInfo> findList(PageBase page) {
 		System.out.println("page.getPageNum2()====" + page.getPageNum2()
 				+ "=======" + page.getPageSize());
 		Page startPage = PageHelper.startPage(page.getPageNum2(),
 				page.getPageSize());
-		List<Role> findList = roleDao.findList(page);
+		List<RoleInfo> findList =null;
 		page.setTotalResult((int) startPage.getTotal());
 		System.out.println("startPage.getTotal()====" + startPage.getTotal());
 		return findList;
@@ -46,7 +46,7 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public int delRole(String id) {
 		// TODO Auto-generated method stub
-		return roleDao.delRole(id);
+		return 0;
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class RoleServiceImpl implements RoleService {
 		PageBase page = new PageBase();
 		resolve(aoData, page);
 
-		List<Role> findList = findList(page);
+		List<RoleInfo> findList = findList(page);
 		JSONObject getObj = new JSONObject();
 
 		getObj.put("sEcho", page.getsEcho());
@@ -86,7 +86,7 @@ public class RoleServiceImpl implements RoleService {
 				iDisplayLength = obj.getIntValue("value");
 
 			if (obj.get("name").equals("iSortCol_0"))
-				t.setSortColumn(getSortColumn(Role.class,
+				t.setSortColumn(getSortColumn(RoleInfo.class,
 						obj.getIntValue("value")));
 
 			if (obj.get("name").equals("sSortDir_0"))

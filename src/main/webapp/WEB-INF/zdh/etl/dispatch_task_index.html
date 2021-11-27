@@ -108,6 +108,7 @@
         <!-- End Panel Other -->
     </div>
 
+    <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -138,7 +139,7 @@
         $('#last_status').chosen();
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: "/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),
+                url: server_context+"/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });

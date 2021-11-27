@@ -71,6 +71,8 @@ public class ResourceTreeInfo{
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
    	private Timestamp update_time;
 
+	private String resource_type;//1:目录,2:页面,3:方法,4:接口
+
 
 	public String getId() {
 		return id;
@@ -173,5 +175,13 @@ public class ResourceTreeInfo{
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getResource_type() {
+		return resource_type;
+	}
+
+	public void setResource_type(String resource_type) {
+		this.resource_type = resource_type;
 	}
 }

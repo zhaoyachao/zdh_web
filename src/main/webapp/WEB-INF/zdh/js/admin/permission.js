@@ -9,84 +9,12 @@
           height=$(document.body).height()*0.8
       }
       $('#exampleTableEvents').attr("data-height",height)
-      $('#add').click(function () {
-          parent.layer.open({
-              type: 2,
-              title: 'ETL任务配置',
-              shadeClose: false,
-              resize: true,
-              fixed: false,
-              maxmin: true,
-              shade: 0.1,
-              area : ['45%', '60%'],
-              //area: ['450px', '500px'],
-              content: "etl_task_add_index?id=-1", //iframe的url
-              end : function () {
-                  console.info("弹框结束")
-                  $('#exampleTableEvents-table').bootstrapTable('destroy');
-                  $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: "/user_list?"+$("#user_form").serialize()+"&tm="+new Date(),
-                      contentType: "application/json;charset=utf-8",
-                      dataType: "json"
-                  });
-              }
-          });
-      })
-
-      $('#remove').click(function () {
-
-        var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
-        if (rows.length == 0) {// rows 主要是为了判断是否选中，下面的else内容才是主要
-            layer.msg("请先选择要删除的记录!");
-            return;
-        } else {
-
-            layer.confirm('是否删除单源ETL任务', {
-                btn: ['确定','取消'] //按钮
-            }, function(index){
-                var ids = new Array();// 声明一个数组
-                $(rows).each(function() {// 通过获得别选中的来进行遍历
-                    ids.push(this.id);// cid为获得到的整条数据中的一列
-                });
-                console.log(ids)
-                deleteMs(ids)
-                layer.close(layer.index);
-            }, function(){
-
-            });
-
-
-        }
-
-    })
-
-      function deleteMs(ids) {
-          $.ajax({
-              url : "etl_task_delete",
-              data : "ids=" + ids,
-              type : "post",
-              async:false,
-              dataType : "json",
-              success : function(data) {
-                  console.info("success");
-                  $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: "/etl_task_list2?"+$("#etl_task_form").serialize(),
-                      contentType: "application/json;charset=utf-8",
-                      dataType: "json"
-                  });
-              },
-              error: function (data) {
-                  console.info("error: " + data.responseText);
-              }
-
-          });
-      }
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
               $("#id").val(row.id)
 
-              openTabPage("permission_add_index.html?id="+ row.id, "用户权限配置")
+              openTabPage(server_context+"/permission_add_index.html?id="+ row.id, "用户权限配置")
 
               // top.layer.open({
               //     type: 2,
@@ -106,41 +34,6 @@
               //     }
               // });
 
-          },
-          'click #copy': function (e, value, row, index) {
-              $("#id").val(row.id)
-              top.layer.open({
-                  type: 2,
-                  title: 'ETL任务配置',
-                  shadeClose: false,
-                  resize: true,
-                  fixed: false,
-                  maxmin: true,
-                  shade: 0.1,
-                  area : ['45%', '60%'],
-                  //area: ['450px', '500px'],
-                  content: "etl_task_add_index?id="+row.id+"&is_copy=true", //iframe的url
-                  end:function () {
-                      $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: "/etl_task_list2?"+$("#etl_task_form").serialize(),
-                          contentType: "application/json;charset=utf-8",
-                          dataType: "json"
-                      });
-                  }
-              });
-
-          },
-          'click #del': function (e, value, row, index) {
-              layer.confirm('是否删除任务', {
-                  btn: ['确定','取消'] //按钮
-              }, function(index){
-                  var ids = new Array();// 声明一个数组
-                  ids.push(row.id);
-                  deleteMs(ids);
-                  layer.close(layer.index);
-              }, function(){
-
-              });
           }
       };
 
@@ -201,7 +94,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: "user_list",
+      url: server_context+"/user_list",
       search: true,
       pagination: true,
       showRefresh: true,

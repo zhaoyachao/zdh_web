@@ -26,20 +26,23 @@ import com.zyc.zdh.quartz.MyJobFactory;
 public class QuartzConfig {
 
 
-	@Value("${spring.datasource.url2}")
+	@Value("${spring.datasource.url}")
 	private String dbUrl;
 
-	@Value("${spring.datasource.username2}")
+	@Value("${spring.datasource.username}")
 	private String username;
 
-	@Value("${spring.datasource.password2}")
+	@Value("${spring.datasource.password}")
 	private String password;
 
-	@Value("${spring.datasource.driver-class-name2}")
+	@Value("${spring.datasource.driver-class-name}")
 	private String driverClassName;
 
 	@Value("${quartz.instancename}")
 	private String quartzInstance;
+
+	@Value("${org.quartz.threadPool.threadCount}")
+	private String threadCount;
 
 	@Autowired
 	Environment ev;
@@ -79,6 +82,7 @@ public class QuartzConfig {
 	}
 
 	public Properties quartzProperties() {
+
 		Properties prop = new Properties();
 		prop.put("quartz.scheduler.instanceName", quartzInstance);
 		prop.put("org.quartz.scheduler.instanceId", "AUTO");
@@ -99,13 +103,15 @@ public class QuartzConfig {
 		prop.put("org.quartz.jobStore.clusterCheckinInterval","30000");
 		prop.put("org.quartz.threadPool.class",
 				"org.quartz.simpl.SimpleThreadPool");
-		prop.put("org.quartz.threadPool.threadCount", "5");
+		prop.put("org.quartz.threadPool.threadCount", threadCount);
 
 		prop.put("org.quartz.jobStore.maxMisfiresToHandleAtATime", "1");
 		prop.put("org.quartz.jobStore.misfireThreshold", "50000");
 		// org.quartz.jobStore.txIsolationLevelSerializable 如果为true 会出现无法连续事物的错误
 		prop.put("org.quartz.jobStore.txIsolationLevelSerializable", "false");
 		prop.put("org.quartz.jobStore.useProperties", "true");
+		//
+		prop.put("org.quartz.jobstore.acquireTriggerWithinLock", "true");
 
 		 prop.put("org.quartz.dataSource.quartzDataSource.driver",
 		 driverClassName);

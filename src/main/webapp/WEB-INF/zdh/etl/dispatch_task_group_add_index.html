@@ -99,6 +99,7 @@
                             <div class="col-sm-10">
                                 <input id="expr" name="expr" type="text"
                                        placeholder="example:100s,100m,100h,1d or corn 表达式,默认1d" class="form-control" aria-required="true"> </span>
+                                <span class="help-block m-b-none"><a id="" href="javascript:void(0);" onclick="cron()">生成Cron表达式</a></span>
                             </div>
                             <div class="form-group"></div>
                             <label class="col-sm-2 control-label">调度时间策略</label>
@@ -199,18 +200,26 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">启用告警机制</label>
+                            <label class="col-sm-2 control-label">通知类型</label>
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
                                     <label class="no-padding">
-                                        <input id="alarm_enabled" name="alarm_enabled" type="checkbox"><i></i> 启用告警</label>
+                                        <input id="notice_error" name="notice_error" type="checkbox"><i></i> 失败</label>
+                                    <label class="no-padding">
+                                        <input id="notice_finish" name="notice_finish" type="checkbox"><i></i> 完成</label>
+                                    <label class="no-padding">
+                                        <input id="notice_timeout" name="notice_timeout" type="checkbox"><i></i> 超时</label>
                                 </div>
                             </div>
-                            <label class="col-sm-2 control-label">启用短信告警</label>
+                            <label class="col-sm-2 control-label">通知渠道</label>
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
                                     <label class="no-padding">
-                                        <input id="email_and_sms" name="email_and_sms" type="checkbox"><i></i> 启用短信告警</label>
+                                        <input id="alarm_email" name="alarm_email" type="checkbox"><i></i> 邮箱</label>
+                                    <label class="no-padding">
+                                        <input id="alarm_sms" name="alarm_sms" type="checkbox"><i></i> 短信</label>
+                                    <label class="no-padding">
+                                        <input id="alarm_zdh" name="alarm_zdh" type="checkbox"><i></i> ZDH</label>
                                 </div>
                             </div>
                             <label class="col-sm-2 control-label">配置告警用户</label>
@@ -218,6 +227,7 @@
                                 <input id="alarm_account" name="alarm_account" type="text"
                                        placeholder="ZDH用户账号,多用户逗号分隔" class="form-control" aria-required="true"> </span>
                             </div>
+
                             <div class="form-group"></div>
                             <label class="col-sm-2 control-label">超时时间</label>
                             <div class="col-sm-10">
@@ -281,6 +291,7 @@
     </ul>
 </div>
 
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
@@ -402,6 +413,7 @@
             $("#" + divId).attr("etl_context",rs.etl_context);
             $("#" + divId).attr("is_disenable",rs.is_disenable);
             $("#" + divId).attr("depend_level",rs.depend_level);
+            $("#" + divId).attr("time_out",rs.time_out);
             if(tp == "tasks"){
                 $("#" + divId).attr("etl_task_id",rs.etl_task_id);
                 $("#" + divId).attr("more_task",rs.more_task);
@@ -488,7 +500,7 @@
             var text = $(this).text();
             var div = $(this)
             var etl_task_id=div.attr("etl_task_id")
-            var url='job_detail.html'
+            var url=server_context+'/job_detail.html'
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{
@@ -496,8 +508,9 @@
                 var is_disenable = div.attr("is_disenable")
                 var depend_level = div.attr("depend_level")
                 var zdh_instance = div.attr("zdh_instance")
+                var time_out = div.attr("time_out")
                 url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&is_disenable="+is_disenable+"&depend_level="+depend_level
-                    +"&zdh_instance="+zdh_instance
+                    +"&zdh_instance="+zdh_instance +"&time_out="+time_out
             }
             layer.open({
                 type: 2,
@@ -519,6 +532,7 @@
                     div.attr("is_disenable",etl_task_info.is_disenable);
                     div.attr("depend_level",etl_task_info.depend_level);
                     div.attr("zdh_instance",etl_task_info.zdh_instance);
+                    div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -535,15 +549,18 @@
             var etl_context = $(this).text();
             var div = $(this)
             var command=div.attr("command")
-            var url='shell_detail.html'
+            var url=server_context+'/shell_detail.html'
             if( command == "" || command == undefined ){
                 url=url+"?command=-1"
             }else{
                 var is_script=div.attr("is_script")
                 var is_disenable = div.attr("is_disenable")
                 var depend_level = div.attr("depend_level")
+                var time_out = div.attr("time_out")
                 $("#shell_text").val(command)
                 url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&is_disenable="+is_disenable+"&depend_level="+depend_level
+                    +"&time_out="+time_out
+
             }
             layer.open({
                 type: 2,
@@ -564,6 +581,7 @@
                     div.attr("etl_context",etl_task_info.etl_context)
                     div.attr("is_disenable",etl_task_info.is_disenable);
                     div.attr("depend_level",etl_task_info.depend_level);
+                    div.attr("time_out",etl_task_info.time_out);
                     div.css("width","auto")
                     div.css("display","inline-block")
                     div.css("*display","inline")
@@ -579,13 +597,15 @@
             var text = $(this).text();
             var div = $(this)
             var etl_task_id=div.attr("etl_task_id")
-            var url='group_detail.html'
+            var url=server_context+'/group_detail.html'
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{
                 var is_disenable = div.attr("is_disenable")
                 var depend_level = div.attr("depend_level")
+                var time_out = div.attr("time_out")
                 url=url+"?etl_task_id="+etl_task_id+"&is_disenable="+is_disenable+"&depend_level="+depend_level
+                    +"&time_out="+time_out
             }
             layer.open({
                 type: 2,
@@ -605,6 +625,7 @@
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("is_disenable",etl_task_info.is_disenable);
                     div.attr("depend_level",etl_task_info.depend_level);
+                    div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -621,7 +642,7 @@
             var text = $(this).text();
             var div = $(this)
             var etl_context=div.attr("etl_context")
-            var url='jdbc_detail.html'
+            var url=server_context+'/jdbc_detail.html'
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
                 url=url+"?etl_context=-1"
             }else{
@@ -632,10 +653,11 @@
                 var password=div.attr("password")
                 var jdbc_sql=div.attr("jdbc_sql")
                 var depend_level = div.attr("depend_level")
+                var time_out = div.attr("time_out")
                 $("#jdbc_url_text").val(jdbc_url)
                 $("#jdbc_sql_text").val(jdbc_sql)
                 url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level
-                    +"&is_disenable="+is_disenable
+                    +"&is_disenable="+is_disenable+"&time_out="+time_out
             }
             layer.open({
                 type: 2,
@@ -659,6 +681,7 @@
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("is_disenable",etl_task_info.is_disenable);
                     div.attr("depend_level",etl_task_info.depend_level);
+                    div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -675,7 +698,7 @@
             var text = $(this).text();
             var div = $(this)
             var etl_context=div.attr("etl_context")
-            var url='hdfs_detail.html'
+            var url=server_context+'/hdfs_detail.html'
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
                 url=url+"?etl_context=-1"
             }else{
@@ -687,10 +710,11 @@
                 var hdfs_path=div.attr("hdfs_path")
                 var depend_level = div.attr("depend_level")
                 var hdfs_mode=div.attr("hdfs_mode")
+                var time_out = div.attr("time_out")
                 $("#hdfs_url_text").val(hdfs_url)
                 $("#hdfs_path_text").val(hdfs_path)
                 url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&username="+username+"&password="+password+"&depend_level="+depend_level
-                    +"&is_disenable="+is_disenable+"&hdfs_mode="+hdfs_mode
+                    +"&is_disenable="+is_disenable+"&hdfs_mode="+hdfs_mode+"&time_out="+time_out
             }
             layer.open({
                 type: 2,
@@ -715,6 +739,7 @@
                     div.attr("is_disenable",etl_task_info.is_disenable);
                     div.attr("depend_level",etl_task_info.depend_level);
                     div.attr("hdfs_mode",etl_task_info.hdfs_mode);
+                    div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -752,6 +777,7 @@
                 url_type: $elem.attr('url_type'),
                 hdfs_path: $elem.attr('hdfs_path'),
                 hdfs_mode: $elem.attr('hdfs_mode'),
+                time_out: $elem.attr('time_out'),
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,
                 positionX: parseInt($elem.css("left"), 10),
@@ -924,7 +950,7 @@
                 $.ajax({
                     type: 'POST',
                     async: false,
-                    url: "etl_task_list",
+                    url: server_context+"/etl_task_list2",
                     dataType: 'json',
                     data: '',
                     //成功返回
@@ -954,7 +980,7 @@
                 $.ajax({
                     type: 'POST',
                     async: false,
-                    url: "etl_task_more_list",
+                    url: server_context+"/etl_task_more_list2",
                     dataType: 'json',
                     data: '',
                     //成功返回
@@ -984,7 +1010,7 @@
                 $.ajax({
                     type: 'POST',
                     async: false,
-                    url: "sql_task_list",
+                    url: server_context+"/sql_task_list",
                     dataType: 'json',
                     data: '',
                     //成功返回
@@ -1014,7 +1040,7 @@
                 $.ajax({
                     type: 'POST',
                     async: false,
-                    url: "etl_task_drools_list",
+                    url: server_context+"/etl_task_drools_list2",
                     dataType: 'json',
                     data: '',
                     //成功返回
@@ -1043,7 +1069,7 @@
                 $.ajax({
                     type: 'POST',
                     async: false,
-                    url: "etl_task_ssh_list",
+                    url: server_context+"/etl_task_ssh_list",
                     dataType: 'json',
                     data: '',
                     //成功返回
@@ -1068,12 +1094,70 @@
                 });
             }
 
+            function init_etl_task_flink_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/etl_task_flink_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].sql_context + "\" hassubinfo=\"true\">" + data[i].sql_context + "</option>"
+                        }
+                        $("#etl_task_id").chosen("destroy");
+                        $('#etl_task_id').html(str);
+                        $('#etl_task_id').chosen()
 
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_flink_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_flink_error: " + data.responseText);
+                    }
+                });
+            }
+
+            function init_etl_task_jdbc_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/etl_task_jdbc_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
+                        }
+                        $("#etl_task_id").chosen("destroy");
+                        $('#etl_task_id').html(str);
+                        $('#etl_task_id').chosen()
+
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_jdbc_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_jdbc_error: " + data.responseText);
+                    }
+                });
+            }
             //初始化依赖调度任务数据
             function init_job_sources(){
                 $.ajax({
                     type: 'POST',
-                    url: "dispatch_task_list2",
+                    url: server_context+"/dispatch_task_list2",
                     dataType: 'json',
                     async: false,
                     data: '',
@@ -1102,7 +1186,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: "data_sources_list",
+                    url: server_context+"/data_sources_list",
                     dataType: 'json',
                     async: false,
                     data: '',
@@ -1143,26 +1227,32 @@
             }
 
 
-            $('#more_task').chosen().on("change", function (evt, params) {
-                if($("#more_task").val()=="多源ETL"){
-                    console.info("选中多源ETL")
-                    init_etl_task_more_sources()
-                }else if($("#more_task").val()=="单源ETL"){
-                    console.info("选中单源ETL")
-                    init_etl_task_sources()
-                }else if($("#more_task").val()=="SQL") {
-                    console.info("选中SQL")
-                    init_sql_task_sources()
-                }else if($("#more_task").val()=="外部JAR"){
-                    console.info("选中外部JAR")
-                }else if($("#more_task").val()=="Drools") {
-                    console.info("选中Drools")
-                    init_etl_task_drools_sources()
-                }else if($("#more_task").val()=="SSH"){
-                    console.info("选中SSH")
-                    init_etl_task_ssh_sources()
-                }
-            });
+            // $('#more_task').chosen().on("change", function (evt, params) {
+            //     if($("#more_task").val()=="多源ETL"){
+            //         console.info("选中多源ETL");
+            //         init_etl_task_more_sources();
+            //     }else if($("#more_task").val()=="单源ETL"){
+            //         console.info("选中单源ETL");
+            //         init_etl_task_sources()
+            //     }else if($("#more_task").val()=="SQL") {
+            //         console.info("选中SQL");
+            //         init_sql_task_sources()
+            //     }else if($("#more_task").val()=="外部JAR"){
+            //         console.info("选中外部JAR")
+            //     }else if($("#more_task").val()=="Drools") {
+            //         console.info("选中Drools");
+            //         init_etl_task_drools_sources()
+            //     }else if($("#more_task").val()=="SSH"){
+            //         console.info("选中SSH");
+            //         init_etl_task_ssh_sources()
+            //     }else if($("#more_task").val()=="FLINK"){
+            //         console.info("选中FLINK");
+            //         init_etl_task_flink_sources()
+            //     }else if($("#more_task").val()=="JDBC"){
+            //         console.info("选中JDBC");
+            //         init_etl_task_jdbc_sources()
+            //     }
+            // });
 
             //启动数据源select 初始化函数
             $('#etl_task_id').chosen().on("change", function (evt, params) {
@@ -1277,7 +1367,7 @@
                 console.info("更新-拷贝按钮触发")
                 //开始赋值
                 $.ajax({
-                    url : "dispatch_task_list",
+                    url : server_context+"/dispatch_task_list",
                     data : "ids=" + s.id,
                     type : "post",
                     dataType : "json",
@@ -1309,6 +1399,11 @@
                         if(more_task=="SSH") {
                             console.info("选中SSH")
                             init_etl_task_ssh_sources()
+                        }
+
+                        if(more_task=="FLINK") {
+                            console.info("选中FLINK")
+                            init_etl_task_flink_sources()
                         }
 
                         var etl_task_id=data[0].etl_task_id
@@ -1398,16 +1493,38 @@
                         if(last_time!='' && typeof(last_time) !="undefined")
                         $("#last_time").val(getMyDate(last_time));
 
-                        var alarm_enabled=data[0].alarm_enabled
-                        console.info("alarm_enabled:"+alarm_enabled)
-                        if(alarm_enabled=="on"){
-                            $('#alarm_enabled').iCheck('check');
+                        var notice_error=data[0].notice_error
+                        console.info("notice_error:"+notice_error)
+                        if(notice_error=="on"){
+                            $('#notice_error').iCheck('check');
+                        }
+                        var notice_finish=data[0].notice_finish
+                        console.info("notice_finish:"+notice_finish)
+                        if(notice_finish=="on"){
+                            $('#notice_finish').iCheck('check');
+                        }
+                        var notice_timeout=data[0].notice_timeout
+                        console.info("notice_timeout:"+notice_timeout)
+                        if(notice_timeout=="on"){
+                            $('#notice_timeout').iCheck('check');
                         }
 
-                        var email_and_sms=data[0].email_and_sms
-                        console.info("email_and_sms:"+email_and_sms)
-                        if(email_and_sms=="on"){
-                            $('#email_and_sms').iCheck('check');
+                        var alarm_email=data[0].alarm_email
+                        console.info("email_alarm:"+alarm_email)
+                        if(alarm_email=="on"){
+                            $('#alarm_email').iCheck('check');
+                        }
+
+                        var alarm_sms=data[0].alarm_sms
+                        console.info("alarm_sms:"+alarm_sms)
+                        if(alarm_sms=="on"){
+                            $('#alarm_sms').iCheck('check');
+                        }
+
+                        var alarm_zdh=data[0].alarm_zdh
+                        console.info("alarm_zdh:"+alarm_zdh)
+                        if(alarm_zdh=="on"){
+                            $('#alarm_zdh').iCheck('check');
                         }
 
                         var alarm_account=data[0].alarm_account
@@ -1446,6 +1563,24 @@
                 layer.close(index);
                 //this.content.show();
                //layer.msg('捕获就是从页面已经存在的元素上，包裹layer的结构',{time: 5000});
+            }
+        });
+    }
+
+    function cron() {
+        parent.layer.open({
+            type: 2,
+            title: 'cron表达式生成',
+            shadeClose: false,
+            resize: true,
+            fixed: false,
+            maxmin: true,
+            shade: 0.1,
+            area : ['45%', '60%'],
+            //area: ['450px', '500px'],
+            content: server_context+"/cron.html", //iframe的url
+            end : function () {
+                console.info("弹框结束")
             }
         });
     }
@@ -1500,7 +1635,7 @@
         $('#jsmind_data').val(JSON.stringify(ojson))
         $.ajax({
             type: 'POST',
-            url: "dispatch_task_group_add",
+            url: server_context+"/dispatch_task_group_add",
             dataType: 'json',
             data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+count_str+script_str,
             //发送数据前
@@ -1510,6 +1645,10 @@
             },
             //成功返回
             success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg)
+                    return
+                }
                 $("#save_dispatch_task").removeAttr('disabled');
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 //parent.layer.close(index); //再执行关闭
@@ -1588,7 +1727,7 @@
         console.info($("#dispatch_task_add_form").serialize())
         $.ajax({
             type: 'POST',
-            url: "dispatch_task_group_update",
+            url: server_context+"/dispatch_task_group_update",
             dataType: 'json',
             data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+"&job_id="+s.id+count_str+script_str,
             //发送数据前

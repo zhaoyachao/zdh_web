@@ -60,7 +60,7 @@
     </div>
 </div>
 
-
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -97,7 +97,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "/every_day_notice",
+            url: server_context+"/every_day_notice",
             dataType: 'json',
             data: {},
             //成功返回
@@ -125,7 +125,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: "notice_update",
+                url: server_context+"/notice_update",
                 dataType: 'json',
                 data: $("#server_form").serialize(),
                 //发送数据前

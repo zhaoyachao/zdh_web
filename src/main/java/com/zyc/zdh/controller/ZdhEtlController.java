@@ -5,17 +5,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
-import com.zyc.zdh.entity.DataSourcesInfo;
-import com.zyc.zdh.entity.EtlTaskInfo;
-import com.zyc.zdh.entity.EtlTaskUpdateLogs;
-import com.zyc.zdh.entity.ZdhNginx;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.DataSourcesService;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.util.DBUtil;
 import com.zyc.zdh.util.SFTPUtil;
+import com.zyc.zdh.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Transient;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,7 +43,7 @@ import java.util.List;
 @Controller
 public class ZdhEtlController extends BaseController{
 
-
+    public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     DataSourcesService dataSourcesServiceImpl;
     @Autowired
@@ -63,21 +66,19 @@ public class ZdhEtlController extends BaseController{
 
     /**
      * 获取单源ETL任务明细
-     * @param ids
+     * @param id
      * @return
      */
-    @RequestMapping(value = "/etl_task_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_detail", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String etl_task_list(String[] ids) {
-        List<EtlTaskInfo> list = new ArrayList<>();
-        EtlTaskInfo etlTaskInfo = new EtlTaskInfo();
-        etlTaskInfo.setOwner(getUser().getId());
-        if (ids == null)
-            list = etlTaskService.select(etlTaskInfo);
-        else
-            list.add(etlTaskService.selectById(ids[0]));
+    public String etl_task_detail(String id) {
+        try{
+            EtlTaskInfo eti=etlTaskService.selectById(id);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
 
-        return JSON.toJSONString(list);
     }
 
     /**
@@ -99,14 +100,19 @@ public class ZdhEtlController extends BaseController{
      * @param ids
      * @return
      */
-    @RequestMapping("/etl_task_delete")
+    @RequestMapping(value = "/etl_task_delete", produces = "text/html;charset=UTF-8")
     @ResponseBody
+    @Transactional
     public String etl_task_delete(Long[] ids) {
-        etlTaskService.deleteBatchById(ids);
 
-        JSONObject json = new JSONObject();
-        json.put("success", "200");
-        return json.toJSONString();
+        try{
+            etlTaskService.deleteBatchById(ids);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+        }
     }
 
     /**
@@ -132,47 +138,45 @@ public class ZdhEtlController extends BaseController{
      * @param etlTaskInfo
      * @return
      */
-    @RequestMapping("/etl_task_add")
+    @RequestMapping(value="/etl_task_add", produces = "text/html;charset=UTF-8")
     @ResponseBody
+    @Transactional
     public String etl_task_add(EtlTaskInfo etlTaskInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
-        String owner = getUser().getId();
-        etlTaskInfo.setOwner(owner);
-        debugInfo(etlTaskInfo);
+        try{
+            String owner = getUser().getId();
+            etlTaskInfo.setOwner(owner);
+            debugInfo(etlTaskInfo);
 
-        etlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-        etlTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-        if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
-            ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
-            if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
-                etlTaskInfo.setData_sources_file_name_input(zdhNginx.getNginx_dir() + "/" + owner + "/" + etlTaskInfo.getData_sources_file_name_input());
-            } else {
-                etlTaskInfo.setData_sources_file_name_input(zdhNginx.getTmp_dir() + "/" + owner + "/" + etlTaskInfo.getData_sources_file_name_input());
+            etlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+            etlTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+                if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
+                    etlTaskInfo.setData_sources_file_name_input(zdhNginx.getNginx_dir() + "/" + owner + "/" + etlTaskInfo.getData_sources_file_name_input());
+                } else {
+                    etlTaskInfo.setData_sources_file_name_input(zdhNginx.getTmp_dir() + "/" + owner + "/" + etlTaskInfo.getData_sources_file_name_input());
+                }
+
             }
 
+            etlTaskService.insert(etlTaskInfo);
+            if (etlTaskInfo.getUpdate_context() != null && !etlTaskInfo.getUpdate_context().equals("")) {
+                //插入更新日志表
+                EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
+                etlTaskUpdateLogs.setId(etlTaskInfo.getId());
+                etlTaskUpdateLogs.setUpdate_context(etlTaskInfo.getUpdate_context());
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error(e.getMessage(),e.getCause());
+            e.printStackTrace();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
-
-//        etlTaskInfo.getColumn_data_list().forEach(column_data -> {
-//            System.out.println(column_data.getColumn_expr() + "=" + column_data.getColumn_alias());
-//        });
-
-        etlTaskService.insert(etlTaskInfo);
-        if (etlTaskInfo.getUpdate_context() != null && !etlTaskInfo.getUpdate_context().equals("")) {
-            //插入更新日志表
-            EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
-            etlTaskUpdateLogs.setId(etlTaskInfo.getId());
-            etlTaskUpdateLogs.setUpdate_context(etlTaskInfo.getUpdate_context());
-            etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-            etlTaskUpdateLogs.setOwner(getUser().getId());
-            etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
-        }
-
-        //dataSourcesServiceImpl.insert(dataSourcesInfo);
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
 
@@ -182,24 +186,25 @@ public class ZdhEtlController extends BaseController{
      * @param request 请求回话
      * @return
      */
-    @RequestMapping("/etl_task_add_file")
+    @RequestMapping(value="/etl_task_add_file", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_add_file(MultipartFile up_file, HttpServletRequest request) {
-        String json_str = JSON.toJSONString(request.getParameterMap());
-        String owner = getUser().getId();
-        System.out.println(json_str);
-        System.out.println(up_file);
-        if (up_file != null) {
-            String fileName = up_file.getOriginalFilename();
-            System.out.println("上传文件不为空");
-            ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
-            File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
-            File fileDir = new File(zdhNginx.getTmp_dir() + "/" + owner);
-            if (!fileDir.exists()) {
-                fileDir.mkdirs();
-            }
-            String nginx_dir = zdhNginx.getNginx_dir();
-            try {
+        try{
+            String json_str = JSON.toJSONString(request.getParameterMap());
+            String owner = getUser().getId();
+            System.out.println(json_str);
+            System.out.println(up_file);
+            if (up_file != null) {
+                String fileName = up_file.getOriginalFilename();
+                System.out.println("上传文件不为空");
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+                File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
+                File fileDir = new File(zdhNginx.getTmp_dir() + "/" + owner);
+                if (!fileDir.exists()) {
+                    fileDir.mkdirs();
+                }
+                String nginx_dir = zdhNginx.getNginx_dir();
+
                 FileCopyUtils.copy(up_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
                 if (!zdhNginx.getHost().equals("")) {
                     System.out.println("通过sftp上传文件");
@@ -210,21 +215,13 @@ public class ZdhEtlController extends BaseController{
                     sftp.upload(nginx_dir + "/" + owner + "/", fileName, is);
                     sftp.logout();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (SftpException e) {
-                e.printStackTrace();
             }
-
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
-
-        // etlTaskService.insert(etlTaskInfo);
-        //dataSourcesServiceImpl.insert(dataSourcesInfo);
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
     /**
@@ -233,47 +230,50 @@ public class ZdhEtlController extends BaseController{
      * @param etlTaskInfo
      * @return
      */
-    @RequestMapping("/etl_task_update")
+    @RequestMapping(value="/etl_task_update", produces = "text/html;charset=UTF-8")
     @ResponseBody
+    @Transactional
     public String etl_task_update(EtlTaskInfo etlTaskInfo) {
-        String owner = getUser().getId();
-        etlTaskInfo.setOwner(owner);
-        debugInfo(etlTaskInfo);
-        if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
-            ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
-            String[] file_name_ary = etlTaskInfo.getData_sources_file_name_input().split("/");
-            String file_name = file_name_ary[0];
-            if (file_name_ary.length > 0)
-                file_name = file_name_ary[file_name_ary.length - 1];
+        try{
+            String owner = getUser().getId();
+            etlTaskInfo.setOwner(owner);
+            debugInfo(etlTaskInfo);
+            if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+                String[] file_name_ary = etlTaskInfo.getData_sources_file_name_input().split("/");
+                String file_name = file_name_ary[0];
+                if (file_name_ary.length > 0)
+                    file_name = file_name_ary[file_name_ary.length - 1];
 
-            if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
-                etlTaskInfo.setData_sources_file_name_input(zdhNginx.getNginx_dir() + "/" + owner + "/" + file_name);
-            } else {
-                etlTaskInfo.setData_sources_file_name_input(zdhNginx.getTmp_dir() + "/" + owner + "/" + file_name);
+                if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
+                    etlTaskInfo.setData_sources_file_name_input(zdhNginx.getNginx_dir() + "/" + owner + "/" + file_name);
+                } else {
+                    etlTaskInfo.setData_sources_file_name_input(zdhNginx.getTmp_dir() + "/" + owner + "/" + file_name);
+                }
+
             }
 
+            //获取旧数据是否更新说明
+            EtlTaskInfo etlTaskInfo1 = etlTaskService.selectById(etlTaskInfo.getId());
+
+            etlTaskService.update(etlTaskInfo);
+
+            if (etlTaskInfo.getUpdate_context() != null && !etlTaskInfo.getUpdate_context().equals("")
+                    && !etlTaskInfo1.getUpdate_context().equals(etlTaskInfo.getUpdate_context())) {
+                //插入更新日志表
+                EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
+                etlTaskUpdateLogs.setId(etlTaskInfo.getId());
+                etlTaskUpdateLogs.setUpdate_context(etlTaskInfo.getUpdate_context());
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
-
-        //获取旧数据是否更新说明
-        EtlTaskInfo etlTaskInfo1 = etlTaskService.selectById(etlTaskInfo.getId());
-
-        etlTaskService.update(etlTaskInfo);
-
-        if (etlTaskInfo.getUpdate_context() != null && !etlTaskInfo.getUpdate_context().equals("")
-                && !etlTaskInfo1.getUpdate_context().equals(etlTaskInfo.getUpdate_context())) {
-            //插入更新日志表
-            EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
-            etlTaskUpdateLogs.setId(etlTaskInfo.getId());
-            etlTaskUpdateLogs.setUpdate_context(etlTaskInfo.getUpdate_context());
-            etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-            etlTaskUpdateLogs.setOwner(getUser().getId());
-            etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
-        }
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
 
@@ -282,7 +282,7 @@ public class ZdhEtlController extends BaseController{
      * @param id 数据源id
      * @return
      */
-    @RequestMapping("/etl_task_tables")
+    @RequestMapping(value = "/etl_task_tables", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_tables(String id) {
 
@@ -290,6 +290,9 @@ public class ZdhEtlController extends BaseController{
 
         String jsonArrayStr = tables(dataSourcesInfo);
 
+        if(StringUtils.isEmpty(jsonArrayStr)){
+            return JSON.toJSONString(new JSONObject());
+        }
         System.out.println(jsonArrayStr);
         return jsonArrayStr;
     }
@@ -319,7 +322,7 @@ public class ZdhEtlController extends BaseController{
      * @param table_name
      * @return
      */
-    @RequestMapping("/etl_task_schema")
+    @RequestMapping(value="/etl_task_schema", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_schema(String id, String table_name) {
 

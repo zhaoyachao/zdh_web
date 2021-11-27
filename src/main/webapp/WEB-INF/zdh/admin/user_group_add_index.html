@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 用户组</title>
+    <meta name="keywords" content="ZDH 用户组">
+    <meta name="description" content="ZDH 用户组">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/switchery/switchery.css" rel="stylesheet">
+
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+
+        <div class="row">
+
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>用户组中心</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" id="signupForm">
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">用户组名：</label>
+                                <div class="col-sm-8">
+                                    <input id="name" name="name" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-8 col-sm-offset-3">
+                                    <button class="btn btn-primary" type="button" id="btn_up" οnsubmit='return false'>更新</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!-- jQuery Validation plugin javascript-->
+    <script src="js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="js/plugins/validate/messages_zh.min.js"></script>
+
+    <!-- Switchery -->
+    <script src="js/plugins/switchery/switchery.js"></script>
+
+    <!-- layer javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <script>
+
+        (function(document, window, $) {
+
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            $('#btn_up').click(function () {
+
+                if($('#user_group').val() == ""){
+                    layer.msg("组名不可为空")
+                    return ;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: "user_group_add",
+                    dataType: 'json',
+                    data: $("#signupForm").serialize(),
+                    //发送数据前
+                    beforeSend: function () {
+                        // 禁用按钮防止重复提交
+                        $("#btn_up").attr({disabled: "disabled"});
+                    },
+                    //成功返回
+                    success: function (data) {
+                        $("#btn_up").removeAttr('disabled');
+                        if(data.code == "200"){
+                            layer.msg('更新成功', {
+                                time: 2000, //2s后自动关闭
+                                btn: ['明白了,2s后自动关闭']
+                            },function () {
+                                parent.layer.closeAll();
+                            });
+                        }else{
+                            layer.msg('更新失败');
+                        }
+                    },
+                    //处理完成
+                    complete: function () {
+                        $("#btn_up").removeAttr('disabled');
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        $("#btn_up").removeAttr('disabled');
+                        layer.msg(data.responseText);
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+
+            })
+
+        })(document, window, jQuery);
+
+
+    </script>
+
+</body>
+
+
+
+</html>

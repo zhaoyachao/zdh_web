@@ -9,6 +9,8 @@ import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -43,28 +45,24 @@ public class ZdhDownController extends BaseController{
 
     @RequestMapping(value = "/download_delete", produces = "text/html;charset=UTF-8")
     @ResponseBody
+    @Transactional
     public String download_delete(String[] ids) {
 
-        System.out.println("开始删除下载数据");
-        ZdhDownloadInfo zdhDownloadInfo = new ZdhDownloadInfo();
+        try{
+            System.out.println("开始删除下载数据");
+            ZdhDownloadInfo zdhDownloadInfo = new ZdhDownloadInfo();
 
-        List<ZdhDownloadInfo> zdhDownloadInfoList = new ArrayList<>();
-        for (String id : ids) {
-            zdhDownloadInfo.setId(id);
-            zdhDownloadMapper.deleteByPrimaryKey(zdhDownloadInfo);
+            List<ZdhDownloadInfo> zdhDownloadInfoList = new ArrayList<>();
+            for (String id : ids) {
+                zdhDownloadInfo.setId(id);
+                zdhDownloadMapper.deleteByPrimaryKey(zdhDownloadInfo);
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
 
-        zdhDownloadInfoList = zdhDownloadMapper.slectByOwner(getUser().getId(), "");
-
-        if (zdhDownloadInfoList.size() > 0) {
-            redisUtil.set("zdhdownloadinfos_" + getUser().getId(), JSON.toJSONString(zdhDownloadInfoList));
-        } else {
-            redisUtil.remove("zdhdownloadinfos_" + getUser().getId());
-        }
-
-        JSONObject json2 = new JSONObject();
-        json2.put("success", "200");
-        return json2.toJSONString();
     }
 
 
@@ -118,23 +116,8 @@ public class ZdhDownController extends BaseController{
         } catch (SftpException e) {
             e.printStackTrace();
         } finally {
-            String json = redisUtil.get("zdhdownloadinfos_" + getUser().getId()).toString();
-            List<ZdhDownloadInfo> zdhDownloadInfoList = JSON.parseArray(json, ZdhDownloadInfo.class);
-            Iterator<ZdhDownloadInfo> iterator = zdhDownloadInfoList.iterator();
-            while (iterator.hasNext()) {
-                if (iterator.next().getId().equals(id)) {
-                    iterator.remove();
-                }
-            }
-            if (zdhDownloadInfoList.size() > 0) {
-                redisUtil.set("zdhdownloadinfos_" + getUser().getId(), JSON.toJSONString(zdhDownloadInfoList));
-            } else {
-                redisUtil.remove("zdhdownloadinfos_" + getUser().getId());
-            }
-
             zdhDownloadInfo.setDown_count(zdhDownloadInfo.getDown_count() + 1);
             zdhDownloadMapper.updateByPrimaryKey(zdhDownloadInfo);
-
 
             if (bis != null) {
                 try {

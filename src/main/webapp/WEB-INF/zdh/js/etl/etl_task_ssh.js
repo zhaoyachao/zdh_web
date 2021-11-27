@@ -20,12 +20,12 @@
               shade: 0.1,
               area : ['45%', '60%'],
               //area: ['450px', '500px'],
-              content: "etl_task_ssh_add_index?id=-1", //iframe的url
+              content: server_context+"/etl_task_ssh_add_index?id=-1", //iframe的url
               end : function () {
                   console.info("弹框结束")
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: "/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize()+"&tm="+new Date(),
+                      url: server_context+"/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize()+"&tm="+new Date(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -59,14 +59,19 @@
 
       function deleteMs(ids) {
           $.ajax({
-              url : "etl_task_ssh_delete",
+              url : server_context+"/etl_task_ssh_delete",
               data : "ids=" + ids,
               type : "post",
               dataType : "json",
               success : function(data) {
                   console.info("success");
+                  if(data.code != "200"){
+                      layer.msg(data.msg)
+                      return
+                  }
+                  layer.msg(data.msg)
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: "/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize(),
+                      url: server_context+"/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -81,9 +86,9 @@
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
               $("#id").val(row.id)
-              top.layer.open({
+              parent.layer.open({
                   type: 2,
-                  title: 'SQL任务配置',
+                  title: 'SSH任务配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
@@ -91,10 +96,10 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: "etl_task_ssh_add_index?id="+row.id, //iframe的url
+                  content: server_context+"/etl_task_ssh_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : 'etl_task_ssh_list'
+                          url : server_context+'/etl_task_ssh_list'
                       });
                   }
               });
@@ -102,9 +107,9 @@
           },
           'click #copy': function (e, value, row, index) {
               $("#id").val(row.id)
-              top.layer.open({
+              parent.layer.open({
                   type: 2,
-                  title: 'SQL任务配置',
+                  title: 'SSH任务配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
@@ -112,10 +117,10 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: "etl_task_ssh_add_index?id="+row.id+"&is_copy=true", //iframe的url
+                  content: server_context+"/etl_task_ssh_add_index?id="+row.id+"&is_copy=true", //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: "/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize(),
+                          url: server_context+"/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize(),
                           contentType: "application/json;charset=utf-8",
                           dataType: "json"
                       });
@@ -194,7 +199,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: "etl_task_ssh_list",
+      url: server_context+"/etl_task_ssh_list",
       search: true,
       pagination: true,
       showRefresh: true,

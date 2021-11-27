@@ -903,7 +903,7 @@
                 _YTReady(id, container);
             } else {
                 // Load the API
-                _injectScript('https://www.youtube.com/iframe_api');
+                // _injectScript('https://www.youtube.com/iframe_api');
 
                 // Add callback to queue
                 callbacks.youtube.push(function () {

@@ -296,7 +296,7 @@
             },
             'click #sub_task_log_instance': function (e, value, row, index) {
                 row.job_context
-                window.open(server_context+"/task_log_instance.html?group_id="+row.id)
+                window.open(server_context+"/task_log_instance_index.html?group_id="+row.id)
                 //openTabPage("task_log_instance.html?group_id="+row.id, "任务组:"+row.job_context + ":子任务日志")
             },
             'click #retry': function (e, value, row, index) {
@@ -311,7 +311,7 @@
                     shade: 0.1,
                     area : ['45%', '60%'],
                     //area: ['450px', '500px'],
-                    content: server_context+"/task_group_retry_detail?id="+row.id+"&job_id="+row.job_id, //iframe的url
+                    content: server_context+"/task_group_retry_detail_index?id="+row.id+"&job_id="+row.job_id, //iframe的url
                     end : function () {
                         console.info("弹框结束")
                     }

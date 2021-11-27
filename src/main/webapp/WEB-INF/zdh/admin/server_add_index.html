@@ -151,7 +151,7 @@
     </div>
 </div>
 
-
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -293,7 +293,7 @@
                 console.info("更新按钮触发--开始赋值对应参数")
                 //开始赋值
                 $.ajax({
-                    url: "server_manager_list",
+                    url: server_context+"/server_manager_list",
                     data: "id=" + s.id,
                     type: "get",
                     async: false,
@@ -360,7 +360,7 @@
             }
             $.ajax({
                 type: 'POST',
-                url: "server_add",
+                url: server_context+"/server_add",
                 dataType: 'json',
                 data: $("#server_form").serialize(),
                 //发送数据前
@@ -395,7 +395,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: "server_update",
+                url: server_context+"/server_update",
                 dataType: 'json',
                 data: $("#server_form").serialize()+"&id="+s.id,
                 //发送数据前

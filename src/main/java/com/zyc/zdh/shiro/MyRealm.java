@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.zyc.zdh.dao.ResourceTreeMapper;
-import com.zyc.zdh.entity.UserResourceInfo;
 import com.zyc.zdh.entity.UserResourceInfo2;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -15,6 +16,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 
 import com.zyc.zdh.entity.User;
@@ -35,19 +37,23 @@ public class MyRealm extends AuthorizingRealm {
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(
 			PrincipalCollection principals) {
-		System.out.println("授权=====");
 		// 获取登录用户的信息,在认证时存储的是ShiroUser 所以得到的就是ShiroUser
 		// 在其他地方也可通过SecurityUtils.getSubject().getPrincipals()获取用户信息
 		User user = (User)principals.getPrimaryPrincipal();
 		// 权限字符串
 		List<String> permissions = new ArrayList<>();
 		// 从数据库中获取对应权限字符串并存储permissions
-		System.out.println(user.getUserName());
+		//System.out.println(user.getUserName());
 		List<UserResourceInfo2> uris=new ArrayList<>();
 		uris=( (ResourceTreeMapper)SpringContext.getBean("resourceTreeMapper")).selectResourceByUserId(user.getId());
         for(UserResourceInfo2 uri2:uris){
-        	if(!StringUtils.isEmpty(uri2.getUrl()))
-				permissions.add(uri2.getUrl());
+        	if(!StringUtils.isEmpty(uri2.getUrl())){
+				String url = uri2.getUrl();
+				if(url.startsWith("/"))
+					url = url.substring(1).replaceAll("function:","");
+				url = url.split("\\.")[0];
+				permissions.add(url);
+			}
 		}
 		// 角色字符串
 		List<String> roles = new ArrayList<>();
@@ -67,6 +73,15 @@ public class MyRealm extends AuthorizingRealm {
 	protected AuthenticationInfo doGetAuthenticationInfo(
 			AuthenticationToken arg0) throws AuthenticationException {
 		System.out.println("认证=====");
+
+		//验证码验证
+		String captcha = ((MyAuthenticationToken) arg0).getCaptcha();
+		String session_captcha = ((MyAuthenticationToken) arg0).getSession_captcha();
+
+		if(!captcha.equalsIgnoreCase(session_captcha)){
+			throw new AuthenticationException("验证码错误");
+		}
+
 		String userName = ((MyAuthenticationToken) arg0).getUsername();
 		char[] password = ((MyAuthenticationToken) arg0).getPassword();
 		User user = new User();// 根据用户名密码获取user
@@ -75,12 +90,18 @@ public class MyRealm extends AuthorizingRealm {
 		user.setUserName(userName);
 		user = ((AccountService) SpringContext.getBean("accountService"))
 				.findByPw(user);
+
+		if(user.getEnable()==null || user.getEnable().equalsIgnoreCase(Const.FALSE)){
+			throw new AuthenticationException("当前用户未启用,请联系管理员");
+		}
 		if (user == null) {
 			throw new AuthenticationException("用户名密码错误");
 		}
 
 		SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(
 				user, user.getPassword(), this.getName());
+
+
 		return simpleAuthenticationInfo;
 	}
 
@@ -111,7 +132,7 @@ public class MyRealm extends AuthorizingRealm {
 		// TODO Auto-generated method stub
 		super.clearCachedAuthorizationInfo(principals);
 		Object key = getAuthorizationCacheKey(principals);
-		getAuthorizationCache().remove(key);
+		//getAuthorizationCache().remove(key);
 	}
 
 	protected Object getAuthorizationCacheKey(PrincipalCollection principals) {

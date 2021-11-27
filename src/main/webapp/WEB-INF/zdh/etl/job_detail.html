@@ -53,6 +53,9 @@
                                     <option value="SQL" mytype="">SQL</option>
                                     <option value="Drools" mytype="">Drools</option>
                                     <option value="SSH" mytype="">SSH</option>
+                                    <option value="APPLY" mytype="">申请源</option>
+                                    <option value="FLINK" mytype="">FLINK</option>
+                                    <option value="JDBC" mytype="">JDBC</option>
                                 </select>
                             </div>
                         </div>
@@ -101,6 +104,14 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">超时时间</label>
+                            <div class="col-sm-10">
+                                <input id="time_out" name="time_out" type="text" value="86400"
+                                   placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
@@ -121,7 +132,7 @@
 </div>
 
 
-
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -182,7 +193,7 @@
                 $.ajax({
                     type: 'POST',
                     async: false,
-                    url: "etl_task_list",
+                    url: server_context+"/etl_task_list2",
                     dataType: 'json',
                     data: '',
                     //成功返回
@@ -212,7 +223,7 @@
                 $.ajax({
                     type: 'POST',
                     async: false,
-                    url: "etl_task_more_list",
+                    url: server_context+"/etl_task_more_list2",
                     dataType: 'json',
                     data: '',
                     //成功返回
@@ -242,7 +253,7 @@
                 $.ajax({
                     type: 'POST',
                     async: false,
-                    url: "sql_task_list",
+                    url: server_context+"/sql_task_list",
                     dataType: 'json',
                     data: '',
                     //成功返回
@@ -272,7 +283,7 @@
                 $.ajax({
                     type: 'POST',
                     async: false,
-                    url: "etl_task_drools_list",
+                    url: server_context+"/etl_task_drools_list2",
                     dataType: 'json',
                     data: '',
                     //成功返回
@@ -301,7 +312,7 @@
                 $.ajax({
                     type: 'POST',
                     async: false,
-                    url: "etl_task_ssh_list",
+                    url: server_context+"/etl_task_ssh_list",
                     dataType: 'json',
                     data: '',
                     //成功返回
@@ -326,12 +337,100 @@
                 });
             }
 
+            function init_etl_task_apply_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/etl_task_apply_list2",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
+                        }
+                        $('#etl_task_id').empty()
+                        $("#etl_task_id").chosen("destroy");
+                        $('#etl_task_id').html(str);
+                        $('#etl_task_id').chosen()
 
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_error: " + data.responseText);
+                    }
+                });
+            }
+
+            function init_etl_task_flink_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/etl_task_flink_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].sql_context + "\" hassubinfo=\"true\">" + data[i].sql_context + "</option>"
+                        }
+                        $("#etl_task_id").chosen("destroy");
+                        $('#etl_task_id').html(str);
+                        $('#etl_task_id').chosen()
+
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_flink_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_flink_error: " + data.responseText);
+                    }
+                });
+            }
+
+            function init_etl_task_jdbc_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/etl_task_jdbc_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
+                        }
+                        $("#etl_task_id").chosen("destroy");
+                        $('#etl_task_id').html(str);
+                        $('#etl_task_id').chosen()
+
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_jdbc_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_jdbc_error: " + data.responseText);
+                    }
+                });
+            }
             //初始化依赖调度任务数据
             function init_job_sources(){
                 $.ajax({
                     type: 'POST',
-                    url: "dispatch_task_list2",
+                    url: server_context+"/dispatch_task_list2",
                     dataType: 'json',
                     async: false,
                     data: '',
@@ -360,7 +459,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: "data_sources_list",
+                    url: server_context+"/data_sources_list",
                     dataType: 'json',
                     async: false,
                     data: '',
@@ -403,7 +502,7 @@
             function init_zdh_instance(){
                 $.ajax({
                     type: 'POST',
-                    url: "zdh_instance_list",
+                    url: server_context+"/zdh_instance_list",
                     dataType: 'json',
                     async: false,
                     data: '',
@@ -453,6 +552,15 @@
                 }else if(more_task=="SSH"){
                     console.info("选中SSH")
                     init_etl_task_ssh_sources()
+                }else if(more_task=="APPLY"){
+                    console.info("选中申请源")
+                    init_etl_task_apply_sources()
+                }else if(more_task=="FLINK"){
+                    console.info("选中FLINK")
+                    init_etl_task_flink_sources()
+                }else if(more_task=="JDBC"){
+                    console.info("选中JDBC")
+                    init_etl_task_jdbc_sources()
                 }
             }
 
@@ -478,6 +586,9 @@
                 $("#depend_level").trigger("chosen:updated");
                 $("#zdh_instance").val(s["zdh_instance"]);
                 $("#zdh_instance").trigger("chosen:updated");
+                if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
+                    $("#time_out").val(s["time_out"]);
+                }
                 var is_disenable=s['is_disenable']
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
@@ -497,6 +608,7 @@
         var more_task=$('#more_task').find("option:selected").val();
         var depend_level=$('#depend_level').find("option:selected").val();
         var zdh_instance=$('#zdh_instance').find("option:selected").val();
+        var time_out=$('#time_out').val();
         var is_disenable = "false"
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -509,7 +621,8 @@
             "more_task":more_task,
             "is_disenable":is_disenable,
             "depend_level":depend_level,
-            "zdh_instance":zdh_instance
+            "zdh_instance":zdh_instance,
+            "time_out": time_out
         }
         console.info("job_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

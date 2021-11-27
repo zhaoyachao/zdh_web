@@ -13,7 +13,7 @@
             layer.confirm('是否新增调度任务', {
                 btn: ['确定','取消'] //按钮
             }, function(index){
-                openTabPage("dispatch_task_group_add_index.html?id=-1", "创建调度任务")
+                openTabPage(server_context+"/dispatch_task_group_add_index.html?id=-1", "创建调度任务")
                 layer.close(layer.index);
             }, function(){
 
@@ -50,7 +50,7 @@
 
         function deleteMs(ids) {
             $.ajax({
-                url: "dispatch_task_delete",
+                url: server_context+"/dispatch_task_group_delete",
                 data: "ids=" + ids,
                 type: "post",
                 async:false,
@@ -58,7 +58,7 @@
                 success: function (data) {
                     console.info("success");
                     $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: 'dispatch_task_list'
+                        url: server_context+'/dispatch_task_list2'
                     });
                 },
                 error: function (data) {
@@ -72,7 +72,7 @@
             var index=top.layer.msg('手动开始执行',{time:"-1"});
             $('#execute').attr({disabled: "disabled"});
             $.ajax({
-                url: "dispatch_task_execute",
+                url: server_context+"/dispatch_task_execute",
                 data: "job_id=" + job_id+"&reset_count="+reset_count+"&concurrency="+concurrency,
                 type: "post",
                 async:false,
@@ -80,7 +80,7 @@
                 success: function (data) {
                     console.info("success")
                     top.layer.close(index)
-                    layer.msg('执行成功');
+                    layer.msg(data.msg);
                     $("#execute").removeAttr('disabled');
                 },
                 error: function (data) {
@@ -95,9 +95,11 @@
 
         function executeQuartz(job_id,reset) {
             $('#execute_quartz').attr({disabled: "disabled"});
-            layer.msg('添加到调度器开始执行');
+            var index=top.layer.msg('添加到调度器开始执行',{time:"-1"});
+
+            var msg=""
             $.ajax({
-                url: "dispatch_task_execute_quartz",
+                url: server_context+"/dispatch_task_execute_quartz",
                 data: "job_id=" + job_id+"&reset="+reset,
                 type: "post",
                 async:false,
@@ -105,14 +107,8 @@
                 success: function (data) {
                     console.info("success")
                     console.info(data)
-                    layer.msg('添加成功');
-                    if(data.status=='-1'){
-                        console.info('异常'+data.msg);
-                    }
-                    $("#execute_quartz").removeAttr('disabled');
-                    $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: 'dispatch_task_list'
-                    });
+                    top.layer.close(index)
+                    msg=data.msg
                 },
                 complete: function () {
                     $("#execute_quartz").removeAttr('disabled');
@@ -123,7 +119,11 @@
                     layer.msg('添加失败');
                     console.info("error: " + data.responseText);
                 }
-
+            });
+            top.layer.msg(msg)
+            $("#execute_quartz").removeAttr('disabled');
+            $('#exampleTableEvents').bootstrapTable('refresh', {
+                url: server_context+'/dispatch_task_list2'
             });
         }
 
@@ -139,13 +139,17 @@
             $('#pause').attr({disabled: "disabled"});
             layer.msg('暂停调度器任务');
             $.ajax({
-                url: "dispatch_task_quartz_pause",
+                url: server_context+"/dispatch_task_quartz_pause",
                 data: "job_id=" + job_id + "&status=" + status,
                 type: "post",
                 async:false,
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return
+                    }
                     if (status == 'running') {
                         layer.msg('恢复成功');
                     } else {
@@ -154,7 +158,7 @@
 
                     $("#pause").removeAttr('disabled');
                     $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: 'dispatch_task_list'
+                        url: server_context+'/dispatch_task_list2'
                     });
                 },
                 complete: function () {
@@ -179,17 +183,21 @@
             $('#minus_sign').attr({disabled: "disabled"});
             layer.msg('删除调度器任务');
             $.ajax({
-                url: "dispatch_task_quartz_del",
+                url: server_context+"/dispatch_task_quartz_del",
                 data: "job_id=" + job_id,
                 type: "post",
                 async:false,
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
-                    layer.msg('删除成功');
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return
+                    }
+                    layer.msg(data.msg);
                     $("#minus_sign").removeAttr('disabled');
                     $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: 'dispatch_task_list'
+                        url: server_context+'/dispatch_task_list2'
                     });
                 },
                 complete: function () {
@@ -211,7 +219,7 @@
             'click #edit': function (e, value, row, index) {
 
                 $("#id").val(row.job_id)
-                openTabPage("dispatch_task_group_add_index.html?id="+ row.job_id, "修改调度任务")
+                openTabPage(server_context+"/dispatch_task_group_add_index.html?id="+ row.job_id, "修改调度任务")
 
 
             },
@@ -240,7 +248,7 @@
                     shade: 0.1,
                     area : ['45%', '60%'],
                     //area: ['450px', '500px'],
-                    content: "task_group_exe_detail?id="+row.job_id, //iframe的url
+                    content: server_context+"/task_group_exe_detail_index?id="+row.job_id, //iframe的url
                     end : function () {
                         console.info("弹框结束")
                     }
@@ -259,10 +267,10 @@
                     shade: 0.1,
                     area: ['45%', '60%'],
                     //area: ['450px', '500px'],
-                    content: "dispatch_task_add_index?id=" + row.job_id+"&is_copy=true", //iframe的url
+                    content: server_context+"/dispatch_task_add_index?id=" + row.job_id+"&is_copy=true", //iframe的url
                     end: function () {
                         $('#exampleTableEvents').bootstrapTable('refresh', {
-                            url: 'dispatch_task_list'
+                            url: server_context+'/dispatch_task_list2'
                         });
                     }
                 });
@@ -288,12 +296,12 @@
                 });
             },
             'click #pause': function (e, value, row, index) {
-                layer.confirm('是否暂停调度', {
-                    btn: ['暂停','取消'], //按钮
+                layer.confirm('是否暂停/恢复调度', {
+                    btn: ['暂停/恢复','取消'], //按钮
                     cancel:function(index, layero){
                         console.log('关闭x号');
                     },
-                    title:"暂停调度"
+                    title:"暂停/恢复调度"
                 }, function(index){
                     $("#id").val(row.job_id)
                     pauseQuartz(row.job_id, row.status)
@@ -320,7 +328,7 @@
         window.operateEvents3 = {
             'click #task_group_log_instance': function (e, value, row, index) {
                 window.location.protocol+"://"+window.location.host
-                window.open("/task_group_log_instance.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id);
+                window.open(server_context+"/task_group_log_instance_index.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id);
                 //openTabPage("task_group_log_instance.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id, "任务组实例:"+row.job_context)
             }
         };
@@ -390,7 +398,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
-            url: "dispatch_task_list",
+            url: server_context+"/dispatch_task_list2",
             search: true,
             pagination: true,
             showRefresh: true,

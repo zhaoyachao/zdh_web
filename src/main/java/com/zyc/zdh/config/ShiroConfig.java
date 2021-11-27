@@ -13,6 +13,8 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 
+import com.zyc.zdh.shiro.*;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.session.SessionListener;
@@ -25,24 +27,21 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.filter.DelegatingFilterProxy;
-
-import com.zyc.zdh.shiro.MyFormAuthenticationFilter;
-import com.zyc.zdh.shiro.MyRealm;
-import com.zyc.zdh.shiro.MyShiroSessionListener;
-import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.shiro.SessionDao;
-import com.zyc.zdh.shiro.ShiroRedisCacheManager;
 
 @Configuration
 public class ShiroConfig {
 
+	@Autowired
+	Environment ev;
 
 	
 	@Bean(name="shiroRedisCacheManager")
@@ -84,6 +83,8 @@ public class ShiroConfig {
 		defaultWebSecurityManager.setCacheManager(shiroRedisCacheManager);
 		defaultWebSecurityManager.setSessionManager(defaultWebSessionManager);
 		defaultWebSecurityManager.setRememberMeManager(rememberMeManager());
+		//此处带校验--解决UnavailableSecurityManagerException: No SecurityManager accessible to the calling code
+		SecurityUtils.setSecurityManager(defaultWebSecurityManager);
 		return defaultWebSecurityManager;
 	}
 	
@@ -106,7 +107,7 @@ public class ShiroConfig {
 	public CookieRememberMeManager rememberMeManager() {
 		CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
 		cookieRememberMeManager.setCookie(rememberMeCookie());
-		 byte[] cipherKey = Base64.decode("wGiHplamyXlVB11UXWol8g==");
+		byte[] cipherKey = Base64.decode("wGiHplamyXlVB11UXWol8g==");
 		cookieRememberMeManager.setCipherKey(cipherKey);
 		return cookieRememberMeManager;
 	}
@@ -118,8 +119,8 @@ public class ShiroConfig {
 		MyRealm myRealm = new MyRealm();
 		//启用缓存
 		myRealm.setCachingEnabled(true);
-		//启用授权缓存
-		myRealm.setAuthorizationCachingEnabled(true);
+		//禁用授权缓存
+		myRealm.setAuthorizationCachingEnabled(false);
 		myRealm.setAuthorizationCacheName("shiro-AutorizationCache");
 		//启用认证信息缓存
 		myRealm.setAuthenticationCachingEnabled(true);
@@ -167,7 +168,7 @@ public class ShiroConfig {
 		Collection<SessionListener> c=new ArrayList<>();
 		c.add(new MyShiroSessionListener());
 		sessionManager.setSessionListeners(c);
-		
+
 		return sessionManager;
 	}
 	
@@ -202,8 +203,10 @@ public class ShiroConfig {
 	@Bean(name = "filterRegistrationBean1")
 	public FilterRegistrationBean filterRegistrationBean() {
 		FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-		filterRegistrationBean.setFilter(new DelegatingFilterProxy(
-				"shiroFilter"));
+		DelegatingFilterProxy proxy = new DelegatingFilterProxy();
+		proxy.setTargetFilterLifecycle(true);
+		proxy.setTargetBeanName("shiroFilter");
+		filterRegistrationBean.setFilter(proxy);
 		filterRegistrationBean
 				.addInitParameter("targetFilterLifecycle", "true");
 		filterRegistrationBean.setEnabled(true);
@@ -217,38 +220,43 @@ public class ShiroConfig {
 	@Bean(name = "shiroFilter")
 	public ShiroFilterFactoryBean shiroFilterFactoryBean(
 			@Qualifier("defaultWebSecurityManager") DefaultWebSecurityManager defaultWebSecurityManager) {
+
+		String project_pre="";
 		// SecurityUtils.setSecurityManager(defaultWebSecurityManager);
 		ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
-		shiroFilterFactoryBean.setLoginUrl("/login");
-		shiroFilterFactoryBean.setSuccessUrl("/index");
-		shiroFilterFactoryBean.setUnauthorizedUrl("/login");
+		shiroFilterFactoryBean.setLoginUrl(project_pre+"/login");
+		shiroFilterFactoryBean.setSuccessUrl(project_pre+"/index");
+		shiroFilterFactoryBean.setUnauthorizedUrl(project_pre+"/login");
 		shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
 		Map<String, Filter> filterMap1 = shiroFilterFactoryBean.getFilters();
 		filterMap1.put("authc", new MyFormAuthenticationFilter());
+
 		shiroFilterFactoryBean.setFilters(filterMap1);
 		Map<String, String> filterMap = new LinkedHashMap<String, String>();
-		filterMap.put("/static/**", "anon");
-		filterMap.put("/js/**", "anon");
-		filterMap.put("/css/**", "anon");
-		filterMap.put("/img/**", "anon");
-		filterMap.put("/api/**", "anon");
-		filterMap.put("/logout", "anon");
-		filterMap.put("/login", "authc");
-		filterMap.put("/register**", "anon");
-		filterMap.put("/cron/**", "anon");
-		filterMap.put("/register/**", "anon");
-		filterMap.put("/retrieve_password", "anon");
-		filterMap.put("/404", "anon");
-		filterMap.put("/favicon**", "anon");
-		filterMap.put("/version", "anon");
-		filterMap.put("/**", "authc");
+		filterMap.put(project_pre+"/static/**", "anon");
+		filterMap.put(project_pre+"/js/**", "anon");
+		filterMap.put(project_pre+"/css/**", "anon");
+		filterMap.put(project_pre+"/img/**", "anon");
+		filterMap.put(project_pre+"/api/**", "anon");
+		filterMap.put(project_pre+"/logout", "anon");
+		filterMap.put(project_pre+"/captcha", "anon");
+		filterMap.put(project_pre+"/download/**", "anon");
+		filterMap.put(project_pre+"/login", "authc");
+		filterMap.put(project_pre+"/index", "authc");
+		filterMap.put(project_pre+"/register**", "anon");
+		filterMap.put(project_pre+"/cron/**", "anon");
+		filterMap.put(project_pre+"/register/**", "anon");
+		filterMap.put(project_pre+"/retrieve_password", "anon");
+		filterMap.put(project_pre+"/404", "anon");
+		filterMap.put(project_pre+"/img/favicon**", "anon");
+		filterMap.put(project_pre+"/version", "anon");
+		filterMap.put(project_pre+"/**", "authc");
 
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
 		return shiroFilterFactoryBean;
 
 	}
 
-	
 
 
 }

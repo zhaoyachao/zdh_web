@@ -10,6 +10,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 
@@ -83,6 +84,33 @@ public class HttpUtil {
     }
     finally {
       post.releaseConnection();
+    }
+  }
+
+
+  public static String patchRequest(String path, List<NameValuePair> parametersBody) throws Exception {
+    //logger.debug("[postRequest] resourceUrl: {}", path);
+    HttpPatch patch = new HttpPatch(path);
+    patch.addHeader("Content-Type", "application/json");
+    patch.addHeader("Accept", "application/json");
+    HttpEntity entity = new UrlEncodedFormEntity(parametersBody, Charsets.UTF_8);
+    patch.setEntity(entity);
+    try {
+      HttpClient client = HttpClientBuilder.create().build();
+      HttpResponse response = client.execute(patch);
+      int code = response.getStatusLine().getStatusCode();
+      if (code >= 400)
+        throw new Exception(EntityUtils.toString(response.getEntity()));
+      return EntityUtils.toString(response.getEntity());
+    }
+    catch (ClientProtocolException e) {
+      throw new Exception("patchRequest -- Client protocol exception!", e);
+    }
+    catch (IOException e) {
+      throw new Exception("patchRequest -- IO error!", e);
+    }
+    finally {
+      patch.releaseConnection();
     }
   }
 

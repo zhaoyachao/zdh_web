@@ -108,7 +108,7 @@ public class QuartzManager2 {
 			// CronScheduleBuilder.cronSchedule(taskInfo.getTaskExpression())
 			String expression = quartzJobInfo.getExpr();
 			if (expression.contains("s") || expression.contains("m")
-					|| expression.contains("h")) {
+					|| expression.contains("h") || expression.contains("d")) {
 				SimpleScheduleBuilder simpleScheduleBuilder = getSimpleScheduleBuilder(
 						expression, -1);
 				trigger = TriggerBuilder
@@ -162,7 +162,7 @@ public class QuartzManager2 {
 			Trigger trigger = null;
 			String expression = quartzJobInfo.getExpr();
 			if (expression.contains("s") || expression.contains("m")
-					|| expression.contains("h")) {
+					|| expression.contains("h") || expression.contains("d")) {
 				trigger = (SimpleTrigger) schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(
 						quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()));
 				trigger = ((SimpleTrigger) trigger)
@@ -372,6 +372,10 @@ public class QuartzManager2 {
 		case "h":
 			simpleScheduleBuilder = simpleScheduleBuilder
 					.withIntervalInHours(interval);
+			break;
+		case "d":
+			simpleScheduleBuilder = simpleScheduleBuilder
+					.withIntervalInHours(interval*24);
 			break;
 		default:
 

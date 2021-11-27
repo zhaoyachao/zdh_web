@@ -74,7 +74,13 @@
                                 </select>
                             </div>
                         </div>
-
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">超时时间</label>
+                            <div class="col-sm-10">
+                                <input id="time_out" name="time_out" type="text" value="86400"
+                                       placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
@@ -96,7 +102,7 @@
 </div>
 
 
-
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -157,7 +163,7 @@
             function init_job_sources(){
                 $.ajax({
                     type: 'POST',
-                    url: "dispatch_task_list2",
+                    url: server_context+"/dispatch_task_list2",
                     dataType: 'json',
                     async: false,
                     data: '',
@@ -197,6 +203,9 @@
                 $("#group_job").trigger("chosen:updated");
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
+                if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
+                    $("#time_out").val(s["time_out"]);
+                }
                 var is_disenable=s['is_disenable']
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
@@ -214,6 +223,7 @@
         var etl_context=$('#group_job').find("option:selected").text();
         var etl_task_id=$('#group_job').find("option:selected").val();
         var depend_level=$('#depend_level').find("option:selected").val();
+        var time_out=$('#time_out').val();
         var is_disenable = "false"
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -222,7 +232,8 @@
             "etl_context":etl_context,
             "etl_task_id":etl_task_id,
             "is_disenable":is_disenable,
-            "depend_level":depend_level
+            "depend_level":depend_level,
+            "time_out": time_out
         }
         console.info("job_detail:"+JSON.stringify(data))
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

@@ -236,7 +236,7 @@ $(document).ready(function(){
             var text = $(this).text();
             var div = $(this)
             var etl_task_id=div.attr("etl_task_id")
-            var url='job_detail.html'
+            var url=server_context+'/job_detail.html'
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{
@@ -276,7 +276,7 @@ $(document).ready(function(){
             var etl_context = $(this).text();
             var div = $(this)
             var command=div.attr("command")
-            var url='shell_detail.html'
+            var url=server_context+'/shell_detail.html'
             if( command == "" || command == undefined ){
                 url=url+"?command=-1"
             }else{
@@ -315,7 +315,7 @@ $(document).ready(function(){
             var text = $(this).text();
             var div = $(this)
             var etl_task_id=div.attr("etl_task_id")
-            var url='group_detail.html'
+            var url=server_context+'/group_detail.html'
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{

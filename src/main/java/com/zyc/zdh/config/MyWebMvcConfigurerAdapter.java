@@ -6,21 +6,16 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import java.beans.PropertyEditorSupport;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.nio.charset.Charset;
+import java.util.List;
 
 @Configuration
 @EnableWebMvc
@@ -43,6 +38,7 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 //			}
 //		};
 //	}
+
 
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -75,10 +71,14 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		//registry.addResourceHandler("/**").addResourceLocations("/");
-		registry.addResourceHandler("/register**","/statics/**","/css/**","/js/**","/fonts/**","/img/**",
-				"/plugins/**","/zdh_flow/**","/favi**","/etl/js/**","etl/css/**","/statics/**","/404**","cron/**")
+		String project_pre="";
+		registry.addResourceHandler(project_pre+"/register**",project_pre+"/statics/**",project_pre+"/css/**",project_pre+"/js/**",project_pre+"/fonts/**",
+				project_pre+"/img/**",
+				project_pre+"/plugins/**",project_pre+"/zdh_flow/**",project_pre+"/favicon**",project_pre+"/etl/js/**",project_pre+"/etl/css/**",
+				project_pre+"/statics/**",project_pre+"/404**",project_pre+"/cron/**",project_pre+"/download/**")
 				.addResourceLocations(ev.getProperty("web.path"))
 				.addResourceLocations("/statics/")
+				.addResourceLocations(ev.getProperty("web.path")+"download/")
 				.addResourceLocations(ev.getProperty("web.path")+"css/")
 				.addResourceLocations(ev.getProperty("web.path")+"cron/")
 				.addResourceLocations(ev.getProperty("web.path")+"js/")

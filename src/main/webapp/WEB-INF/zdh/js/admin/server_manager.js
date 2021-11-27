@@ -46,24 +46,24 @@
             layer.confirm('一键部署', {
                 btn: ['确定','取消'] //按钮
             }, function(index){
-                openTabPage("server_add_index.html?id=-1", "一键部署")
+                openTabPage(server_context+"/server_add_index.html?id=-1", "一键部署")
                 layer.close(layer.index);
             }, function(){
 
             });
-        })
+        });
 
         function setup(id) {
             layer.msg("一键部署");
             $.ajax({
-                url: "/server_setup",
+                url: server_context+"/server_setup",
                 data:"id="+id,
                 type: "get",
                 async:false,
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
-                    layer.msg(context+'成功');
+                    layer.msg(data.msg);
                 },
                 complete: function () {
                     $('#exampleTableEvents').bootstrapTable('refresh', {
@@ -72,7 +72,7 @@
                     console.info("complete")
                 },
                 error: function (data) {
-                    layer.msg(context+'失败');
+                    layer.msg(data.msg);
                     console.info("error: " + data.responseText);
                 }
 
@@ -89,18 +89,18 @@
 
             layer.msg(context);
             $.ajax({
-                url: "/server_manager_online_update",
+                url: server_context+"/server_manager_online_update",
                 data:"id="+id+"&online="+online,
                 type: "post",
                 async:false,
                 dataType: "json",
                 success: function (data) {
                     console.info("success")
-                    layer.msg(context+'成功');
+                    layer.msg(context+data.msg);
                 },
                 complete: function () {
                     $('#exampleTableEvents2').bootstrapTable('refresh', {
-                        url: 'server_manager_online_list'
+                        url: server_context+'/server_manager_online_list'
                     });
                     console.info("complete")
                 },
@@ -121,7 +121,7 @@
                     },
                     title:"信息"
                 }, function(index){
-                    openTabPage("server_add_index.html?id="+row.id, "更新模板")
+                    openTabPage(server_context+"/server_add_index.html?id="+row.id, "更新模板")
                     layer.close(layer.index)
                 }, function(index){
                 });
@@ -139,7 +139,7 @@
                     shade: 0.1,
                     area : ['30%', '36%'],
                     //area: ['450px', '500px'],
-                    content: "server_build_exe_detail?id="+row.id, //iframe的url
+                    content: server_context+"/server_build_exe_detail?id="+row.id, //iframe的url
                     end : function () {
                         console.info("弹框结束")
                     }
@@ -165,7 +165,7 @@
 
         window.operateEvents3 = {
             'click #build_log': function (e, value, row, index) {
-                window.open("/server_log_instance.html?templete_id=" + row.id);
+                window.open(server_context+"/server_log_instance.html?templete_id=" + row.id);
                 //openTabPage("task_group_log_instance.html?job_id=" + row.job_id+"&task_log_id="+row.task_log_id, "任务组实例:"+row.job_context)
             }
         };
@@ -255,7 +255,7 @@
             return num;
         }
         $('#exampleTableEvents').bootstrapTable({
-            url: "server_manager_list",
+            url: server_context+"/server_manager_list",
             search: true,
             pagination: true,
             showRefresh: true,
@@ -341,7 +341,7 @@
         });
 
         $('#exampleTableEvents2').bootstrapTable({
-            url: "server_manager_online_list",
+            url: server_context+"/server_manager_online_list",
             search: true,
             pagination: true,
             showRefresh: true,
@@ -422,9 +422,6 @@
             }
             ]
         });
-
-
-
 
     })();
 })(document, window, jQuery);

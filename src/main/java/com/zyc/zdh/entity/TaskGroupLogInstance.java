@@ -121,6 +121,64 @@ public class TaskGroupLogInstance implements Serializable {
     private String next_tasks;//逗号分隔
     private String pre_tasks;//逗号分隔
 
+    private String schedule_source;//调度来源,1:例行,2:手动
+
+    private String alarm_email="off";
+    private String alarm_sms="off";
+    private String alarm_zdh="off";
+
+    private String notice_error="off";
+    private String notice_finish="off";
+    private String notice_timeout="off";
+
+    public String getNotice_error() {
+        return notice_error;
+    }
+
+    public void setNotice_error(String notice_error) {
+        this.notice_error = notice_error;
+    }
+
+    public String getNotice_finish() {
+        return notice_finish;
+    }
+
+    public void setNotice_finish(String notice_finish) {
+        this.notice_finish = notice_finish;
+    }
+
+    public String getNotice_timeout() {
+        return notice_timeout;
+    }
+
+    public void setNotice_timeout(String notice_timeout) {
+        this.notice_timeout = notice_timeout;
+    }
+
+    public String getAlarm_email() {
+        return alarm_email;
+    }
+
+    public void setAlarm_email(String alarm_email) {
+        this.alarm_email = alarm_email;
+    }
+
+    public String getAlarm_sms() {
+        return alarm_sms;
+    }
+
+    public void setAlarm_sms(String alarm_sms) {
+        this.alarm_sms = alarm_sms;
+    }
+
+    public String getAlarm_zdh() {
+        return alarm_zdh;
+    }
+
+    public void setAlarm_zdh(String alarm_zdh) {
+        this.alarm_zdh = alarm_zdh;
+    }
+
     public String getNext_tasks() {
         return next_tasks;
     }
@@ -607,6 +665,13 @@ public class TaskGroupLogInstance implements Serializable {
         this.process_time = JSON.toJSONString(process_time_info);
     }
 
+    public String getSchedule_source() {
+        return schedule_source;
+    }
+
+    public void setSchedule_source(String schedule_source) {
+        this.schedule_source = schedule_source;
+    }
 
     public String getProcess_msg() {
         //默认是1,开始调度是5,调整调度时间etl_date是7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行

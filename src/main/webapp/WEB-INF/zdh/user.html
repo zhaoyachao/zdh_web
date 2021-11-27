@@ -110,7 +110,7 @@
 
     </div>
 
-
+    <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -121,8 +121,6 @@
     <!-- jQuery Validation plugin javascript-->
     <script src="js/plugins/validate/jquery.validate.min.js"></script>
     <script src="js/plugins/validate/messages_zh.min.js"></script>
-
-    <script src="js/demo/form-validate-demo.js"></script>
 
     <!-- Switchery -->
     <script src="js/plugins/switchery/switchery.js"></script>
@@ -142,16 +140,16 @@
                 data: '',
                 //成功返回
                 success: function (data) {
-                    if(data.userName !='' ){
-                        $('#userName').val(data.userName)
-                        $('#email').val(data.email)
+                    if(data.result.userName !='' ){
+                        $('#userName').val(data.result.userName)
+                        $('#email').val(data.result.email)
                         $('#password').val("")
-                        if(data.is_use_email != "on"){
+                        if(data.result.is_use_email != "on"){
                             $('#is_use_email').prop("checked",false)
                             //$('#is_use_email').find("input[type='checkbox']").onoff();
                         }
-                        $('#phone').val(data.phone)
-                        if(data.is_use_phone != "on"){
+                        $('#phone').val(data.result.phone)
+                        if(data.result.is_use_phone != "on"){
                             $('#is_use_phone').prop("checked",false)
                             //$('#is_use_email').find("input[type='checkbox']").onoff();
                         }
@@ -188,7 +186,7 @@
                     //成功返回
                     success: function (data) {
                         $("#btn_up").removeAttr('disabled');
-                        if(data.status=="200"){
+                        if(data.code == "200"){
                             layer.msg('更新成功', {
                                 time: 5000, //20s后自动关闭
                                 btn: ['明白了,5s后自动关闭']
@@ -196,7 +194,7 @@
                                 $(".J_menuTab.active",window.top.document).find(".fa.fa-times-circle").click();
                             });
                         }else{
-                            layer.msg('更新失败,'+data.status, {
+                            layer.msg('更新失败,'+data.msg, {
                                 time: 5000, //20s后自动关闭
                                 btn: ['明白了,5s后自动关闭']
                             },function () {

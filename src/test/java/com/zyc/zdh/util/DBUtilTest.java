@@ -19,8 +19,8 @@ public class DBUtilTest {
 
         String driver="oracle.jdbc.driver.OracleDriver";
         String url = "jdbc:oracle:thin:@10.136.1.61:1521:orcl";
-        String username = "fxjk";
-        String password = "fxjk123";
+        String username = "root";
+        String password = "123";
         try {
             List<String> list=new DBUtil().R3(driver,url,username,password,"");
 
@@ -33,6 +33,28 @@ public class DBUtilTest {
         }
 
     }
+
+    @Test
+    public void dbConnection2(){
+
+        String driver="oracle.jdbc.driver.OracleDriver";
+        String url = "jdbc:oracle:thin:@192.168.110.11:1521:XE";
+        String username = "zyc";
+        String password = "123456";
+        try {
+            List<String> list=new DBUtil().R3(driver,url,username,password,"");
+
+            for(String table:list){
+                System.out.println("表名:"+table);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 
     @Test
     public void dbConnectionMysql(){
@@ -82,5 +104,11 @@ public class DBUtilTest {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void testBoolean(){
+
+        System.out.println(Boolean.valueOf("true"));
     }
 }

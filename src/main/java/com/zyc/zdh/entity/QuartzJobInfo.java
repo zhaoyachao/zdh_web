@@ -1,6 +1,7 @@
 package com.zyc.zdh.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zyc.zdh.util.Const;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -59,9 +60,65 @@ public class QuartzJobInfo implements Serializable {
     private String time_out="86400";
     private String priority="5";//优先级
     private Timestamp quartz_time;
-    private String use_quartz_time="off";//是否使用quartz触发时间,on,off,null
+    private String use_quartz_time= Const.OFF;//是否使用quartz触发时间,on,off,null
     private String time_diff;//单位秒example 10 表示回退10s
     private String jsmind_data;//json 形式,作业直接的关系
+
+    private String alarm_email=Const.OFF;
+    private String alarm_sms=Const.OFF;
+    private String alarm_zdh=Const.OFF;
+
+    private String notice_error=Const.OFF;
+    private String notice_finish=Const.OFF;
+    private String notice_timeout=Const.OFF;
+
+    public String getNotice_error() {
+        return notice_error;
+    }
+
+    public void setNotice_error(String notice_error) {
+        this.notice_error = notice_error;
+    }
+
+    public String getNotice_finish() {
+        return notice_finish;
+    }
+
+    public void setNotice_finish(String notice_finish) {
+        this.notice_finish = notice_finish;
+    }
+
+    public String getNotice_timeout() {
+        return notice_timeout;
+    }
+
+    public void setNotice_timeout(String notice_timeout) {
+        this.notice_timeout = notice_timeout;
+    }
+
+    public String getAlarm_email() {
+        return alarm_email;
+    }
+
+    public void setAlarm_email(String alarm_email) {
+        this.alarm_email = alarm_email;
+    }
+
+    public String getAlarm_sms() {
+        return alarm_sms;
+    }
+
+    public void setAlarm_sms(String alarm_sms) {
+        this.alarm_sms = alarm_sms;
+    }
+
+    public String getAlarm_zdh() {
+        return alarm_zdh;
+    }
+
+    public void setAlarm_zdh(String alarm_zdh) {
+        this.alarm_zdh = alarm_zdh;
+    }
 
     public String getJsmind_data() {
         return jsmind_data;

@@ -32,8 +32,16 @@ public class EtlMoreTaskInfo {
     private String file_type_output;
     //文件编码
     private String encoding_output;
+    //是否有标题
+    private String header_output;
     //文件分割符
     private String sep_output;
+    //写入模式
+    private String model_output;
+    //分区字段
+    private String partition_by_output;
+    //合并小文件个数
+    private String merge_output;
     //输出数据源其他参数
     private String data_sources_params_output;
     //输出数据源删除条件
@@ -170,5 +178,37 @@ public class EtlMoreTaskInfo {
 
     public void setSep_output(String sep_output) {
         this.sep_output = sep_output;
+    }
+
+    public String getModel_output() {
+        return model_output;
+    }
+
+    public void setModel_output(String model_output) {
+        this.model_output = model_output;
+    }
+
+    public String getPartition_by_output() {
+        return partition_by_output;
+    }
+
+    public void setPartition_by_output(String partition_by_output) {
+        this.partition_by_output = partition_by_output;
+    }
+
+    public String getMerge_output() {
+        return merge_output;
+    }
+
+    public void setMerge_output(String merge_output) {
+        this.merge_output = merge_output;
+    }
+
+    public String getHeader_output() {
+        return header_output;
+    }
+
+    public void setHeader_output(String header_output) {
+        this.header_output = header_output;
     }
 }

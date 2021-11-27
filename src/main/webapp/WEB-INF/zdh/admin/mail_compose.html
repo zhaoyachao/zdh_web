@@ -79,6 +79,7 @@
         </div>
     </div>
 
+    <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -115,7 +116,7 @@
             });
             $.ajax({
                 type: 'POST',
-                url: "send_email",
+                url: server_context+"/send_email",
                 dataType: 'json',
                 data: $('#email_from').serialize(),
                 //发送数据前
@@ -124,9 +125,13 @@
                 },
                 //成功返回
                 success: function (data) {
-                  layer.msg("发送成功")
-                  layer.close(index)
-                  editor.setValue("")
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    layer.msg(data.result);
+                    layer.close(index);
+                    editor.setValue("");
                 },
                 //处理完成
                 complete: function () {

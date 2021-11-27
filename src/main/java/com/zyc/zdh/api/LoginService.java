@@ -47,7 +47,7 @@ public class LoginService {
 
         //在自己登录的rest里面写，比如UserRest里面的login方法中，user为传递过来的参数
         Subject currentUser = SecurityUtils.getSubject();
-        MyAuthenticationToken token = new MyAuthenticationToken(user.getUserName(), user.getPassword(), false, "", "", "");
+        MyAuthenticationToken token = new MyAuthenticationToken(user.getUserName(), user.getPassword(), false, "", "", "", "");
         // 开始进入shiro的认证流程
         currentUser.login(token);
         ResultInfo resultInfo = new ResultInfo();

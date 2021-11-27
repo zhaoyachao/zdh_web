@@ -274,4 +274,29 @@ public class DBUtil{
         return new String[]{ret,e_msg};
     }
 
+    public String[] CUD(String driver,String url,String username,String password,String[] sqls){
+        Connection connection = null;
+        Statement preparedStatement = null;
+        int result = 0;
+        String ret="true";
+        String e_msg="";
+        try {
+            connection = getConnection(driver,url,username,password);
+            preparedStatement = connection.createStatement();
+            for(String sql : sqls){
+                preparedStatement.addBatch(sql);
+            }
+            preparedStatement.executeBatch();
+            //这里可以根据返回结果(影响记录的条数)进行判断，该语句是否执行成功
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            e_msg=e.getMessage();
+            ret="false";
+        }finally {
+            release(connection, preparedStatement, null);
+        }
+
+        return new String[]{ret,e_msg};
+    }
 }

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 流程审批进度</title>
+    <meta name="keywords" content="ZDH 流程审批进度">
+    <meta name="description" content="ZDH 流程审批进度">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row animated fadeInRight">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>进度</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="ibox-content timeline" id="div_process_flow">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- Peity -->
+    <script src="js/plugins/peity/jquery.peity.min.js"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <script>
+        function getMyDate(str){
+            var oDate = new Date(str),
+                oYear = oDate.getFullYear(),
+                oMonth = oDate.getMonth()+1,
+                oDay = oDate.getDate(),
+                oHour = oDate.getHours(),
+                oMin = oDate.getMinutes(),
+                oSen = oDate.getSeconds(),
+                oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay) +" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+            return oTime;
+        };
+        //补0操作
+        function getzf(num){
+            if(parseInt(num) < 10){
+                num = '0'+num;
+            }
+            return num;
+        }
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+        var process_str =
+                "                        <div class=\"timeline-item\">\n" +
+                "                            <div class=\"row\">\n" +
+                "                                <div class=\"col-xs-3 date\">\n" +
+                " <i class=\"fa fa-coffee\" style='background-color: my_color'></i>create_time\n" +
+                "                                    <br>\n" +
+                "                                </div>\n" +
+                "                                <div class=\"col-xs-7 content no-top-border\">\n" +
+                "                                    <p class=\"m-b-xs\"><strong>process_title</strong>\n" +
+                "                                    </p>\n" +
+                "                                    <p>process_context</p>\n" +
+                "                                </div>\n" +
+                "                            </div>\n" +
+                "                        </div>"
+
+        $.ajax({
+            url: server_context+"/process_flow_detail",
+            data: "flow_id=" + s.id,
+            type: "post",
+            async:false,
+            dataType: "json",
+            success: function (data) {
+                if(data.code == "200"){
+                    for (var i = 0; i < data.result.length; i++) {
+                        var process_title = "待审批";
+                        var my_color = "#ec4758";
+                        if(data.result[i].status==1){
+                            process_title = "审批完成";
+                            my_color = "#18a689";
+                        }else if(data.result[i].status == 2){
+                            process_title="不通过"
+                            my_color = "#ec4758";
+                        }else if(data.result[i].status == 3){
+                            process_title="撤销"
+                            my_color = "#ec4758";
+                        }
+                        var new_str = process_str.replace("my_color", my_color).replace("create_time", getMyDate(data.result[i].create_time)).replace("process_title", process_title).replace("process_context","审批人:"+data.result[i].by_person_name);
+                        $('#div_process_flow').append(new_str);
+                    }
+
+
+                }
+
+            },
+            complete: function(){
+
+            },
+            error: function (data) {
+                console.info("error: " + data.msg);
+            }
+
+        });
+
+
+    </script>
+
+</body>
+
+</html>

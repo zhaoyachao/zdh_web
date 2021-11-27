@@ -12,7 +12,7 @@
     <meta name="keywords" content="ZDH 权限设置">
     <meta name="description" content="ZDH 权限设置">
 
-    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="shortcut icon" href="img/favicon.ico">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
@@ -46,45 +46,13 @@
                 </div>
             </div>
 
-            <div class="col-sm-6">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>权限列表</h5>
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                            <a class="close-link">
-                                <i class="fa fa-times"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="ibox-content">
-
-                        <form role="form" class="form-inline" id="data_sources_form">
-                            <div class="form-group">
-                                <input id="search1" onclick="refash_resource()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="更新列表"/>
-                                <input id="search" onclick="get_auth()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="获取权限"/>
-                                <input id="search2" onclick="update_auth()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="更新权限"/>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-                            <div class="form-group">
-                            <div id="using_json3"></div>
-                            </div>
-
-                        </form>
-
-
-                    </div>
-                </div>
-            </div>
-
         </div>
 
 
     </div>
 
 
+    <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -121,7 +89,7 @@
                     'data' :  function (obj, callback){
                         $.ajax({
                             type : "post",
-                            url : "/jstree_node",//getAreaBuild=getTreeArea
+                            url : server_context+"/jstree_node",//getAreaBuild=getTreeArea
                             dataType : "json",
                             async:'false',
                             success : function(data) {
@@ -163,7 +131,7 @@
                         shade: 0.1,
                         area : ['45%', '60%'],
                         //area: ['450px', '500px'],
-                        content: encodeURI("jstree_add_index?id="+node.id+"&text="+node.text+"&level="+level), //iframe的url
+                        content: encodeURI(server_context+"/jstree_add_index?id="+node.id+"&text="+node.text+"&level="+level), //iframe的url
                         end : function () {
                             console.info("弹框结束")
                             //$('#using_json').jstree(true).destroy();
@@ -175,121 +143,7 @@
 
                 });
 
-
-
-            $('#using_json3').jstree({
-                "plugins" : [ "types","checkbox"],
-                'checkbox': { cascade: "", three_state: false }, //级联
-                'core' : {
-                    "check_callback": true,
-                    'data' :  function (obj, callback){
-                        $.ajax({
-                            type : "post",
-                            url : "/jstree_node",//getAreaBuild=getTreeArea
-                            dataType : "json",
-                            async:'false',
-                            success : function(data) {
-                                console.info(data);
-                                if(data) {
-                                    callback.call(this, data);
-                                }else{
-                                    //$("#using_json").html("暂无数据！");
-                                }
-                            }
-                        });
-                    }
-
-
-                } });
-
         });
-
-        function refash_resource() {
-            $('#using_json3').jstree(true).refresh();
-        }
-
-        function get_auth() {
-
-            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
-            var params = url.substr(1);//去掉问号
-            var pa = params.split("&");
-            var s = new Object();
-            for(var i = 0; i < pa.length; i ++){
-                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
-            }
-            //$('#using_json3').jstree(true).refresh();
-            //$('#using_json3').jstree(true).refresh();
-            $.ajax({
-                type : "POST",
-                url : "jstree_permission_list",
-                dataType : "json",
-                data : "id="+s.id,
-                async:'false',
-                success : function(data) {
-                    console.info(data);
-
-                    for(var i=0;i<data.length;i++){
-                        $('#using_json3').jstree('check_node',data[i].resource_id);
-                    }
-                    $('#using_json3').jstree('open_all')
-                }
-            });
-
-
-        }
-
-        function update_auth() {
-
-
-            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
-            var params = url.substr(1);//去掉问号
-            var pa = params.split("&");
-            var s = new Object();
-            for(var i = 0; i < pa.length; i ++){
-                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
-            }
-
-
-            var ids = $('#using_json3').jstree("get_checked");
-
-            if(ids.length < 1){
-                layer.msg("未选择权限,无法更新")
-                return ;
-            }
-
-            var level = parseInt(s.level)+1
-
-            var index1 = layer.load(1, {
-                shade: [0.1,'#fff'] //0.1透明度的白色背景
-            });
-
-            //用户id->功能id
-            $.ajax({
-                type : "POST",
-                url : "jstree_add_permission",
-                dataType : "json",
-                data : {
-                    id:s.id,
-                    resource_id:ids,
-                    level:level
-                },
-                async:'false',
-                traditional: true,
-                success : function(data) {
-                    console.info(data);
-                    layer.msg("完成更新")
-                    layer.close(index1)
-                },
-                //处理完成
-                complete: function () {
-                    layer.close(index1)
-                    console.info("complete")
-                },
-            });
-
-
-        }
-
 
     </script>
 

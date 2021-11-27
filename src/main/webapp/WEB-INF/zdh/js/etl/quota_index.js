@@ -126,7 +126,7 @@ function buildTable($el, cells, rows) {
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: "etl_task_add_index?id="+row.id+"&only_read=true", //iframe的url
+                  content: server_context+"/etl_task_add_index?id="+row.id+"&only_read=true", //iframe的url
                   end:function () {
                   }
               });
@@ -147,7 +147,7 @@ function buildTable($el, cells, rows) {
       }
 
     $('#exampleTableEvents').bootstrapTable({
-      url: "",
+      url: server_context+"/quota_list",
       search: true,
       pagination: true,
       showRefresh: true,

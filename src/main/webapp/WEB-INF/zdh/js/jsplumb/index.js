@@ -161,13 +161,14 @@ $(document).ready(function(){
                     var text = $(this).text();
                     var div = $(this)
                     var etl_task_id=div.attr("etl_task_id")
-                    var url='job_detail.html'
+                    var url=server_context+'/job_detail.html'
                     if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                         url=url+"?etl_task_id=-1"
                     }else{
                         var more_task=div.attr("more_task")
                         var depend_level = div.attr("depend_level")
-                        url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&depend_level="+depend_level
+                        var time_out = div.attr("time_out")
+                        url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out
                     }
                     layer.open({
                         type: 2,
@@ -187,6 +188,7 @@ $(document).ready(function(){
                             div.attr("etl_context",etl_task_info.etl_context);
                             div.attr("more_task",etl_task_info.more_task);
                             div.attr("depend_level",etl_task_info.depend_level)
+                            div.attr("time_out",etl_task_info.time_out);
                             //div.width(etl_task_info.etl_context.length*16)
                             div.css("width","auto")
                             div.css("display","inline-block")
@@ -203,13 +205,14 @@ $(document).ready(function(){
             var etl_context = $(this).text();
             var div = $(this)
             var command=div.attr("command")
-            var url='shell_detail.html'
+            var url=server_context+'/shell_detail.html'
             if( command == "" || command == undefined ){
                 url=url+"?command=-1"
             }else{
                 var is_script=div.attr("is_script")
                 var depend_level = div.attr("depend_level")
-                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&depend_level="+depend_level
+                var time_out = div.attr("time_out")
+                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&depend_level="+depend_level +"&time_out="+time_out
             }
             layer.open({
                 type: 2,
@@ -229,6 +232,7 @@ $(document).ready(function(){
                     div.attr("is_script",etl_task_info.is_script);
                     div.attr("etl_context",etl_task_info.etl_context)
                     div.attr("depend_level",etl_task_info.depend_level)
+                    div.attr("time_out",etl_task_info.time_out);
                     div.css("width","auto")
                     div.css("display","inline-block")
                     div.css("*display","inline")
@@ -244,13 +248,14 @@ $(document).ready(function(){
             var text = $(this).text();
             var div = $(this)
             var etl_task_id=div.attr("etl_task_id")
-            var url='group_detail.html'
+            var url=server_context+'/group_detail.html'
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{
                 var more_task=div.attr("more_task")
                 var depend_level = div.attr("depend_level")
-                url=url+"?etl_task_id="+etl_task_id+"&depend_level="+depend_level
+                var time_out = div.attr("time_out")
+                url=url+"?etl_task_id="+etl_task_id+"&depend_level="+depend_level +"&time_out="+time_out
             }
             layer.open({
                 type: 2,
@@ -269,6 +274,7 @@ $(document).ready(function(){
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("depend_level",etl_task_info.depend_level)
+                    div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -286,7 +292,7 @@ $(document).ready(function(){
             var div = $(this)
             var etl_context=div.attr("etl_context");
             //alert(etl_context)
-            var url='jdbc_detail.html';
+            var url=server_context+'/jdbc_detail.html';
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
                 url=url+"?etl_context=-1"
             }else{
@@ -296,9 +302,10 @@ $(document).ready(function(){
                 var password=div.attr("password")
                 var jdbc_sql=div.attr("jdbc_sql")
                 var depend_level = div.attr("depend_level")
+                var time_out = div.attr("time_out")
                 $("#jdbc_url_text").val(jdbc_url)
                 $("#jdbc_sql_text").val(jdbc_sql)
-                url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level
+                url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level +"&time_out="+time_out
             }
             layer.open({
                 type: 2,
@@ -322,6 +329,7 @@ $(document).ready(function(){
                     div.attr("jdbc_sql",etl_task_info.jdbc_sql);
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("depend_level",etl_task_info.depend_level)
+                    div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")
@@ -339,7 +347,7 @@ $(document).ready(function(){
             var div = $(this)
             var etl_context=div.attr("etl_context");
             //alert(etl_context)
-            var url='hdfs_detail.html';
+            var url=server_context+'/hdfs_detail.html';
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
                 url=url+"?etl_context=-1"
             }else{
@@ -350,9 +358,10 @@ $(document).ready(function(){
                 var hdfs_path=div.attr("hdfs_path")
                 var depend_level = div.attr("depend_level")
                 var hdfs_mode=div.attr("hdfs_mode")
+                var time_out = div.attr("time_out")
                 $("#hdfs_url_text").val(hdfs_url)
                 $("#hdfs_path_text").val(hdfs_path)
-                url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&username="+username+"&password="+password+"&depend_level="+depend_level
+                url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&username="+username+"&password="+password+"&depend_level="+depend_level +"&time_out="+time_out
                 +"$hdfs_mode="+hdfs_mode
             }
             layer.open({
@@ -378,6 +387,7 @@ $(document).ready(function(){
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("depend_level",etl_task_info.depend_level)
                     div.attr("hdfs_mode",etl_task_info.hdfs_mode)
+                    div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto")
                     div.css("display","inline-block")

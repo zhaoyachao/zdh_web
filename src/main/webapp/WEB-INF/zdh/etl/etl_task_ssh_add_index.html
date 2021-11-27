@@ -241,6 +241,8 @@
         <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;replicas:指定副本个数,默认1个备份</li>
     </ul>
 </div>
+
+<script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -362,7 +364,7 @@
                     //开始赋值
 
                     $.ajax({
-                        url: "etl_task_ssh_list",
+                        url: server_context+"/etl_task_ssh_list",
                         data: "id=" + s.id,
                         type: "post",
                         async: false,
@@ -444,29 +446,29 @@
 
     function file_list_m(id) {
         $.ajax({
-            url : "etl_task_ssh_file_list",
+            url : server_context+"/etl_task_ssh_file_list",
             data : "id=" + id+"&random="+new Date().getTime(),
             type : "post",
             async: false,
             dataType : "json",
             success : function(data) {
-                console.info("success")
+                console.info("success");
                 //获取输入数据源id
-                $("#file_list").html("")
+                $("#file_list").html("");
                 for (var i = 0; i < data.length; i++) {
-                    var id=data[i].id
-                    var fileName=data[i].file_name
-                    console.info("参数赋值:文件唯一id:"+id)
+                    var id=data[i].id;
+                    var fileName=data[i].file_name;
+                    console.info("参数赋值:文件唯一id:"+id);
                     var div1=' <div class="checkbox i-checks">'+
                         '<label class="no-padding">'+
                         ' <input type="checkbox" value="'+id+'"><i></i> '+fileName+'</label>'+
                         '  </div>'
-                    $("#file_list").prepend(div1)
+                    $("#file_list").prepend(div1);
                 }
                 if(data.length>0){
                     var div2='<div class="">'+
                         '<button id="del_fils" name="del_fils" class="btn btn-outline btn-default" onclick="del_files()" type="button"> <i class="glyphicon glyphicon-trash" aria-hidden="true"></i> </button>'+
-                        '</div>'
+                        '</div>';
                     $("#file_list").prepend(div2)
                 }
 
@@ -479,6 +481,14 @@
     }
 
     function del_files(){
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();//定义一个全局变量-存储任务ID
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
         var ids = new Array();// 声明一个数组
         $('#file_list input:checked').each(function () {
             ids.push($(this).attr("value"))
@@ -486,13 +496,19 @@
         })
         if(ids.length>0){
             $.ajax({
-                url : "etl_task_ssh_del_file",
+                url : server_context+"/etl_task_ssh_del_file",
                 data : "ids=" + ids,
                 type : "post",
                 dataType : "json",
                 success : function(data) {
                     console.info("success:s.id:"+ids)
-                    file_list_m(ids)
+                    if(data.code != "200"){
+                        layer.msg(data.msg)
+                        return
+                    }
+                    if(s.id != -1){
+                        file_list_m(s.id);
+                    }
                 },
                 error: function (data) {
                     console.info("error: " + data.responseText);
@@ -519,7 +535,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "etl_task_ssh_add",
+            url: server_context+"/etl_task_ssh_add",
             async: false,
             data:formData,
             processData: false,
@@ -531,12 +547,16 @@
             },
             //成功返回
             success: function (data) {
-                $("#save_etl_task").removeAttr('disabled');
+                if(data.code != "200"){
+                    layer.msg(data.msg)
+                    return
+                }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },
             //处理完成
             complete: function () {
+                $("#save_etl_task").removeAttr('disabled');
                 console.info("complete")
             },
             //报错
@@ -570,8 +590,9 @@
 
         $.ajax({
             type: 'POST',
-            url: "etl_task_ssh_update",
+            url: server_context+"/etl_task_ssh_update",
             data: formData,
+            dataType: 'JSON',
             processData: false,
             contentType: false,
             //发送数据前
@@ -581,12 +602,16 @@
             },
             //成功返回
             success: function (data) {
-                $("#update_etl_task").removeAttr('disabled');
+                if(data.code != "200"){
+                    layer.msg(data.msg)
+                    return
+                }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },
             //处理完成
             complete: function () {
+                $("#update_etl_task").removeAttr('disabled');
                 console.info("complete")
             },
             //报错

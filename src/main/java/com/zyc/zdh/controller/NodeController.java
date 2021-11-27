@@ -14,8 +14,11 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Transient;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -76,13 +79,12 @@ public class NodeController extends BaseController{
     @RequestMapping(value = "/server_manager_online_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String server_manager_online_update(String id,String online) {
-        zdhHaInfoMapper.updateOnline(online,id);
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
-
+        try{
+            zdhHaInfoMapper.updateOnline(online,id);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
     }
 
     @RequestMapping(value = "/server_add_index", method = RequestMethod.GET)
@@ -94,29 +96,30 @@ public class NodeController extends BaseController{
     @RequestMapping(value = "/server_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String server_add(ServerTaskInfo serverTaskInfo) {
-        serverTaskInfo.setOwner(getUser().getId());
-        serverTaskInfo.setCreate_time(new Date());
-        serverTaskInfo.setUpdate_time(new Date());
-        serverTaskMappeer.insert(serverTaskInfo);
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
+        try{
+            serverTaskInfo.setOwner(getUser().getId());
+            serverTaskInfo.setCreate_time(new Date());
+            serverTaskInfo.setUpdate_time(new Date());
+            serverTaskMappeer.insert(serverTaskInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
+        }
 
     }
 
     @RequestMapping(value = "/server_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String server_update(ServerTaskInfo serverTaskInfo) {
-        serverTaskInfo.setOwner(getUser().getId());
-        serverTaskInfo.setCreate_time(new Date());
-        serverTaskInfo.setUpdate_time(new Date());
-        serverTaskMappeer.updateByPrimaryKey(serverTaskInfo);
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
+        try{
+            serverTaskInfo.setOwner(getUser().getId());
+            serverTaskInfo.setCreate_time(new Date());
+            serverTaskInfo.setUpdate_time(new Date());
+            serverTaskMappeer.updateByPrimaryKey(serverTaskInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
 
     }
 
@@ -124,10 +127,10 @@ public class NodeController extends BaseController{
      * 手动构建配置
      * @return
      */
-    @RequestMapping(value = "/server_build_exe_detail", method = RequestMethod.GET)
-    public String server_build_exe_detail() {
+    @RequestMapping(value = "/server_build_exe_detail_index", method = RequestMethod.GET)
+    public String server_build_exe_detail_index() {
 
-        return "admin/server_build_exe_detail";
+        return "admin/server_build_exe_detail_index";
     }
 
     /**
@@ -135,6 +138,7 @@ public class NodeController extends BaseController{
      */
     @RequestMapping(value = "/server_setup", method = RequestMethod.GET)
     @ResponseBody
+    @Transactional
     public String server_setup(String id,String build_branch){
 
         //第一步：登陆构建服务器
@@ -161,24 +165,26 @@ public class NodeController extends BaseController{
             }
 
             serverTaskInstanceMappeer.insert(sti);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ServerTaskInstance sti2=serverTaskInstanceMappeer.selectByPrimaryKey(id2);
+                    SetUpJob.run(sti2);
+                }
+            }).start();
+
         } catch (IllegalAccessException e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             e.printStackTrace();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"一键部署失败", e);
         } catch (InvocationTargetException e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             e.printStackTrace();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"一键部署失败", e);
         }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ServerTaskInstance sti2=serverTaskInstanceMappeer.selectByPrimaryKey(id2);
-                SetUpJob.run(sti2);
-            }
-        }).start();
-
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
+        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"一键部署任务已生成", sti);
 
     }
 
@@ -209,14 +215,17 @@ public class NodeController extends BaseController{
 
     @RequestMapping(value = "/server_logs_delete", method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
     public String server_logs_delete(String[] ids){
 
-        serverTaskInstanceMappeer.deleteById(ids);
+        try{
+            serverTaskInstanceMappeer.deleteById(ids);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+        }
 
-        JSONObject json = new JSONObject();
-
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
     public User getUser() {

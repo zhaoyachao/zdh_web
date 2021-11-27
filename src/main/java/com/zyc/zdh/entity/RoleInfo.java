@@ -1,8 +1,11 @@
 package com.zyc.zdh.entity;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zyc.zdh.annotation.SortMark;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -20,9 +23,23 @@ public class RoleInfo extends PageBase implements Serializable {
 	@Column
 	private String id;
 	@SortMark(value=1,column="role_name")
-	private String cole;
+	private String code;
 	@SortMark(value=2,column = "role_type")
 	private String name;
+	private String enable;
+
+	/**
+	 * 创建时间
+	 */
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Timestamp create_time;
+	/**
+	 * 修改时间
+	 */
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Timestamp update_time;
 
 
 	public String getId() {
@@ -33,12 +50,13 @@ public class RoleInfo extends PageBase implements Serializable {
 		this.id = id;
 	}
 
-	public String getCole() {
-		return cole;
+
+	public String getCode() {
+		return code;
 	}
 
-	public void setCole(String cole) {
-		this.cole = cole;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getName() {
@@ -47,5 +65,29 @@ public class RoleInfo extends PageBase implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Timestamp getCreate_time() {
+		return create_time;
+	}
+
+	public void setCreate_time(Timestamp create_time) {
+		this.create_time = create_time;
+	}
+
+	public Timestamp getUpdate_time() {
+		return update_time;
+	}
+
+	public void setUpdate_time(Timestamp update_time) {
+		this.update_time = update_time;
+	}
+
+	public String getEnable() {
+		return enable;
+	}
+
+	public void setEnable(String enable) {
+		this.enable = enable;
 	}
 }

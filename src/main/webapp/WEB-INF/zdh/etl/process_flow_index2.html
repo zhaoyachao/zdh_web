@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 我的流程</title>
+    <meta name="keywords" content="ZDH 我的流程">
+    <meta name="description" content="ZDH 我的流程">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <!--    <link rel="stylesheet" type="text/css" href="css/plugins/webuploader/webuploader.css">
+        <link rel="stylesheet" type="text/css" href="css/demo/webuploader-demo.css">-->
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>发起流程</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="data_apply_form" name="data_apply_form" method="post" class="form-horizontal"
+                          action="">
+
+
+                        <div class="input-group col-sm-6">
+                            <input id="context" name="context" type="text"
+                                   placeholder="流程名"
+                                   aria-required="true" class="form-control"> <span class="input-group-btn"> <button
+                                id="search" type="button" class="btn btn-primary"
+                                οnsubmit='return false'>查询
+                               </button></span>
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <div class="col-sm-12">
+
+                                <table id="exampleTableEvents" name="exampleTableEvents" data-height="250"
+                                       data-mobile-responsive="false">
+
+                                </table>
+                                <!-- End Example Events -->
+
+                            </div>
+
+
+                        </div>
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+
+    (function (document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            var height=400
+            if($(document.body).height()*0.8>height){
+                height=$(document.body).height()*0.8
+            }
+            $('#exampleTableEvents').attr("data-height",height);
+
+
+            window.operateEvents = {
+                'click #approve': function (e, value, row, index) {
+
+                    if(row.status != 0 ){
+                        layer.msg("流程以结束");
+                        return ;
+                    }
+
+                    layer.confirm('撤销数据', {
+                        btn: ['撤销','取消'], //按钮
+                    }, function(index){
+                        //通过
+                        $.ajax({
+                            url: server_context+"/process_flow_status2",
+                            data: "flow_id=" + row.id+"&status=3",
+                            type: "post",
+                            async:false,
+                            dataType: "json",
+                            success: function (data) {
+                                console.info(data.msg);
+                                layer.msg(data.msg);
+                            },
+                            complete: function(){
+                                $('#exampleTableEvents').bootstrapTable('refresh', {
+                                    url: server_context+"/process_flow_list2?"+$("#data_apply_form").serialize(),
+                                    contentType: "application/json;charset=utf-8",
+                                    dataType: "json"
+                                });
+                            },
+                            error: function (data) {
+                                console.info("error: " + data.msg);
+                            }
+
+                        });
+                    }, function(){
+
+                    });
+
+
+                },
+                'click #detail': function (e, value, row, index) {
+                    parent.layer.open({
+                        type: 2,
+                        title: '进度',
+                        shadeClose: false,
+                        resize: true,
+                        fixed: false,
+                        maxmin: true,
+                        shade: 0.1,
+                        area : ['25%', '60%'],
+                        //area: ['450px', '500px'],
+                        content: server_context+"/process_flow_detail_index?id="+row.id, //iframe的url
+                        end : function () {
+                        }
+                    });
+
+                }
+            };
+
+            function operateFormatter(value, row, index) {
+                return [
+                    ' <button id="approve" name="approve" type="button" class="btn btn-outline btn-sm"  title="撤销">\n' +
+                    '                                        <i class="fa fa-gg" aria-hidden="true"></i>\n' +
+                    '                                    </button>\n'+
+                    ' <button id="detail" name="detail" type="button" class="btn btn-outline btn-sm"  title="进度">\n' +
+                    '                                        <i class="fa fa-th-list" aria-hidden="true"></i>\n' +
+                    '                                    </button>'
+                ].join('');
+            }
+
+            //初始化 bootstrap table
+            $('#exampleTableEvents').bootstrapTable({
+                url: server_context+"/process_flow_list2",
+                search: true,
+                clickEdit: true,
+                pagination: true,
+                showRefresh: false,
+                showToggle: true,
+                showColumns: false,
+                useRowAttrFunc: true,
+                iconSize: 'outline',
+                responseHandler:function (res) {
+                    return res.result
+                },
+                //toolbar: '#exampleTableEventsToolbar',
+                icons: {
+                    refresh: 'glyphicon-repeat',
+                    toggle: 'glyphicon-list-alt',
+                    columns: 'glyphicon-list'
+                },
+                columns: [
+                    {
+                        field: 'nu',
+                        title: '序号',
+                        formatter: function (value, row, index) {
+                            return index + 1;
+                        }
+                    }, {
+                        field: 'id',
+                        title: 'ID'
+                    }, {
+                        field: 'context',
+                        title: '流程说明',
+                        sortable: false
+                    },{
+                        field: 'status',
+                        title: '状态',
+                        sortable: false,
+                        formatter: function (value, row, index) {
+                            var context = "未审批";
+                            var class_str = "btn-danger btn-xs";
+                            if(value==0){
+                                class_str = "btn-warning btn-xs";
+                                context= "未审批"
+                            }else if(value==1){
+                                context= "审批完成";
+                                class_str = "btn-primary  btn-xs";
+                            }else if(value==2){
+                                class_str = "btn-danger  btn-xs";
+                                context= "审批不通过";
+                            }else if(value==3){
+                                class_str = "btn-danger  btn-xs";
+                                context= "撤销申请";
+                            }
+
+                            return [
+                                '<div style="text-align:center" >'+
+                                '<div class="btn-group">'+
+                                '<button type="button" class="btn '+class_str+'">'+context+'</button>'+
+                                '</div>'+
+                                '</div>'
+                            ].join('');
+                        }
+                    }, {
+                        field: 'reason',
+                        title: '失败原因',
+                        sortable: false
+                    },{
+                        field: 'create_time',
+                        title: '申 请 创 建 时 间',
+                        sortable:true,
+                        formatter: function (value, row, index) {
+                            return getMyDate(value);
+                        }
+                    },{
+                        field: 'operate',
+                        title: '撤销',
+                        events: operateEvents,//给按钮注册事件
+                        width: 45,
+                        formatter: operateFormatter //表格中增加按钮
+                    }]
+            });
+
+            function getMyDate(str){
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay) +" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+            //补0操作
+            function getzf(num){
+                if(parseInt(num) < 10){
+                    num = '0'+num;
+                }
+                return num;
+            }
+
+            $('#search').click(function () {
+                $('#exampleTableEvents').bootstrapTable('refresh', {
+                    url: server_context+"/process_flow_list2?"+$("#data_apply_form").serialize(),
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json"
+                });
+            })
+
+        })();
+
+    })(document, window, jQuery);
+
+
+</script>
+
+</body>
+
+</html>

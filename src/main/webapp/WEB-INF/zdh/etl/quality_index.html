@@ -95,6 +95,7 @@
     </div>
 
 
+    <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -139,12 +140,13 @@
 
         function deleteMs(ids) {
             $.ajax({
-                url : "quality_delete",
+                url : server_context+"/quality_delete",
                 data : "ids=" + ids,
                 type : "post",
                 dataType : "json",
                 success : function(data) {
                     console.info("success")
+                    layer.msg(data.msg)
                     $('#search').click()
                 },
                 error: function (data) {
@@ -158,7 +160,7 @@
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: "/quality_list?"+$("#quota_form").serialize(),
+                url: server_context+"/quality_list?"+$("#quota_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });

@@ -34,6 +34,7 @@ public class UserResourceInfo2 {
 
    	private String parent;
 
+	private String resource_type;//1:目录,2:页面,3:方法,4:接口
 
 	public int getOrderN() {
 		if(order==null || order.trim().equals("")){
@@ -104,5 +105,13 @@ public class UserResourceInfo2 {
 
 	public void setParent(String parent) {
 		this.parent = parent;
+	}
+
+	public String getResource_type() {
+		return resource_type;
+	}
+
+	public void setResource_type(String resource_type) {
+		this.resource_type = resource_type;
 	}
 }

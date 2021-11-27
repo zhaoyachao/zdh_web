@@ -1,5 +1,10 @@
 package com.zyc.zdh.config;
 
+import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zyc.zdh.cache.MyCacheManager;
 import com.zyc.zdh.cache.MyCacheTemplate;
 import com.zyc.zdh.cache.MyRedisCache;
@@ -24,9 +29,7 @@ import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.serializer.*;
 import redis.clients.jedis.JedisPoolConfig;
 import java.util.ArrayList;
 import java.util.List;
@@ -186,15 +189,6 @@ public class RedisConfig extends CachingConfigurerSupport {
 		redisTemplate.setConnectionFactory(redisConnectionFactory);
 		RedisSerializer<String> redisSerializer = new StringRedisSerializer();
 		redisTemplate.setKeySerializer(redisSerializer);
-		// Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new
-		// Jackson2JsonRedisSerializer<Object>(
-		// Object.class);
-		// ObjectMapper om = new ObjectMapper();
-		// om.setVisibility(PropertyAccessor.ALL,
-		// JsonAutoDetect.Visibility.ANY);
-		// om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-		// jackson2JsonRedisSerializer.setObjectMapper(om);
-		// redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
 		JdkSerializationRedisSerializer jdkSerializationRedisSerializer = new JdkSerializationRedisSerializer();
 		redisTemplate.setValueSerializer(jdkSerializationRedisSerializer);
 		return redisTemplate;

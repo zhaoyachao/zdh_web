@@ -28,14 +28,14 @@
     <div class="wrapper wrapper-content animated fadeInRight">
         <!-- Panel Other -->
         <div class="ibox float-e-margins">
-            <div class="ibox-title">
-                <h5>数据源配置列表</h5>
-                <div class="ibox-tools">
-                    <a class="collapse-link">
-                        <i class="fa fa-chevron-up"></i>
-                    </a>
-                </div>
-            </div>
+<!--            <div class="ibox-title">-->
+<!--                <h5>数据源配置列表</h5>-->
+<!--                <div class="ibox-tools">-->
+<!--                    <a class="collapse-link">-->
+<!--                        <i class="fa fa-chevron-up"></i>-->
+<!--                    </a>-->
+<!--                </div>-->
+<!--            </div>-->
             <div class="ibox-content">
 
                 <form role="form" class="form-inline" id="data_sources_form">
@@ -92,6 +92,7 @@
         </div>
         <!-- End Panel Other -->
     </div>
+    <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -119,7 +120,7 @@
 <script>
     $(document).ready(function () {
         $('#data_source_type').chosen();
-        $.get('/data_sources_type', function(res) {
+        $.get(server_context+'/data_sources_type', function(res) {
             $('#data_source_type').html("")
             $('#data_source_type').append("<option value=\"\">数据源类型</option>")
             for (i = 0; i < res.length; i++) {
@@ -131,7 +132,7 @@
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: "/data_sources_list2?"+$("#data_sources_form").serialize(),
+                url: server_context+"/data_sources_list2?"+$("#data_sources_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });

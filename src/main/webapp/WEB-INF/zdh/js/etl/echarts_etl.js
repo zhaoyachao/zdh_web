@@ -7,7 +7,7 @@ $(function () {
 
     function requestEcharts(){
         var barChart = echarts.init(document.getElementById("echarts-bar-chart"));
-        $.get('/etlEcharts', function(res) {
+        $.get(server_context+'/etlEcharts', function(res) {
 
             var etl_date_datas = new Array();// 声明一个数组
             var running_datas = new Array();// 声明一个数组
@@ -75,7 +75,7 @@ $(function () {
 
     function requestCurrentEcharts() {
 
-        $.get('/etlEchartsCurrent', function(res) {
+        $.get(server_context+'/etlEchartsCurrent', function(res) {
 
             var etl_date_datas = new Array();// 声明一个数组
             var running_datas = new Array();// 声明一个数组

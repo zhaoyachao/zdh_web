@@ -35,7 +35,6 @@ public class AccountServiceImpl implements AccountService {
 		@SuppressWarnings("rawtypes")
 		Page startPage = PageHelper.startPage(user.getPageNum2(), user.getPageSize());
 		List<User> findList = accountDao.findList(user);
-		System.out.println("startPage.getTotal()------"+startPage.getTotal());
 		return findList;
 	}
 
