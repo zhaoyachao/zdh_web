@@ -5,6 +5,8 @@
     因本项目没有其他文档,请使用者及开发者详细阅读完本readme 文档,后期会以博客的形式对本项目进行详细功能说明
    博客目录地址：  [https://blog.csdn.net/zhaoyachao123/article/details/113913947](https://blog.csdn.net/zhaoyachao123/article/details/113913947)
    
+
+   
    欢迎你对本项目提出相关issue
    
    本平台主要目的
@@ -14,7 +16,30 @@
    + 降低使用者标准,通过拖拉拽实现数据的采集(任务依赖关系由自带调度完成-优势)
    + 本平台的初衷及目的尽量减少开发者的工作量及降低数据开发者的使用门槛
    
+# 开源/闭源版本
+   + 4.7.10以及之前的版本-代码开源且免费
+   + 4.7.11以及之后的版本-提供编译好的包免费使用,但是不开放源码
    
+# 下载编译包   
+   + 编译包下载地址(只提供4.7.11之后的版本,因4.7.11之后不提供源码下载)：
+   + 执行编译好的包需要提前安装mysql8,redis
+   
+   + 4.7.11
+     +  [zdh_web_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_web.tar)
+     +  [zdh_server_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_server.tar)
+     +  [zdh_flink_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_flink.tar)
+   
+   + 4.7.12
+     +  [zdh_web_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_web.tar)
+     +  [zdh_server_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_server.tar)
+     +  [zdh_flink_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_flink.tar)   
+
+   + 4.7.13
+     +  [zdh_web_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_web.tar)
+     +  [zdh_server_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_server.tar)
+     +  [zdh_flink_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_flink.tar)
+      
+   + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包
 
 #  在线预览
    [http://zycblog.cn:8081/login](http://zycblog.cn:8081/login)
@@ -104,13 +129,18 @@
     打包命令 mvn package -Dmaven.test.skip=true
 
 # 运行
-    在target 目录下找到zdh_web.jar
-    执行 java  -Dfile.encoding=utf-8 -jar zdh_web.jar  
+    4.7.13 之前
+      在target 目录下找到zdh_web.jar
+      执行 java  -Dfile.encoding=utf-8 -jar zdh_web.jar  
+    4.7.13及之后
+      进入在xxx-RELEASE 目录下
+      执行 java -jar -Dfile.encoding=utf-8 -Dloader.path=libs/,conf zdh_web.jar     
 
 # FAQ
 
    + sql结构报错
      遇到sql 结构报错,可直接在resource目录下找db.sql 文件对比是否增加了字段,db.sql 文件会使用alter 方式增加字段
+     quartz 相关的表必须大写
      
    + 日志级别修改
      修改日志文件logback 相关等级即可
@@ -255,10 +285,90 @@
   + v4.7.9 废弃InstanceStatus,统一使用JobStatus 管理任务状态
   + v4.7.9 优化jinjava 参数,统一时间参数
   + v4.7.9 优化shell job 时间参数,增加实时日志展示
+  + v4.7.10 优化数据表字段注释
+  + v4.7.10 优化生成server端任务日志
+  + v4.7.10 前端增加数据源可空功能
+  + v4.7.10 新增数据源逻辑删除功能(数据源表结构变动)
+  
+  + v4.7.11 优化spark-jdbc性能增加提前过滤功能
+  + v4.7.11 增加请求版本号url(http://xxx:port/version)
+  + v4.7.11 调度界面优化-增加默认值,及不可为空校验
+  + v4.7.11 增加hdfs调度组件解决检查hdfs文件是否存在
+  + v4.7.11 优化通知界面,显示通知信息
+  + v4.7.11 优化杀死任务时异常
+  + v4.7.11 增加数据发布,申请,审批功能
+  + v4.7.11 新增申请源ETL(使用他人发布的数据作为输入数据源)
+  + v4.7.11 增加新的表结构apply_info,etl_apply_task_info
+  + v4.7.11 优化串行作业组杀死功能,上游杀死,则对应下游任务直接杀死
+  + v4.7.11 增加发布数据-增删改查功能
+  + v4.7.11 增加quartz并发参数配置
+  + v4.7.11 开启调度时超过最大调度时间弹框提示
+  + v4.7.11 作业组为空时,优化作业组结束状态
+  + v4.7.11 告警作业限制只检查最近2天内的失败作业
+  + v4.7.11 优化shell脚本前端编辑器
+  + v4.7.11 修复调度自定义表达式天级表达式
+  + v4.7.11 修复空作业组杀死时状态未改变bug
+  + v4.7.11 修复shell任务ping命令杀死异常
+  + v4.7.11 手动执行任务,重试任务不限制调度日期检查
+  + v4.7.11 db.sql脚本增加菜单表,权限表数据
+  + v4.7.11 task_log_instance,task_group_log_instance 增加调度来源字段标识任务触发来源
+  + v4.7.11 数据源逻辑删除修复更新时异常bug
+  + v4.7.11 优化日志界面状态外观
+  + v4.7.11 增加etl任务配置时,数据倾斜,分区,合并小文件,写入模式参数
+  + v4.7.11 修复etl任务表达式列表多次增加问题(前端优化)
+  + v4.7.11 修复shell任务调度死掉自动重试
+  + v4.7.11 子任务界面显示job_id
+  + v4.7.11 zdh_server增加hdfs输出数据源zk路径解析功能
+  + v4.7.11 修改多源任务临时表实现
+  + v4.7.11 修复多源任务前端bug(表头信息更新不成功)
+  + v4.7.11 优化子任务界面状态显示
+  + v4.7.11 优化权限界面统一返回值数据结构
+  + v4.7.11 优化etl任务界面统一返回值数据结构
+  + v4.7.11 优化告警模块-增加失败告警,完成通知,超时通知
+  + v4.7.11 平台消息通知重构,统一增加消息管理模块
+  + v4.7.11 修复shiro 获取用户信息异常
+  + v4.7.11 统一返回数据结构,并重构controller层
+  + v4.7.11 增加FLINK采集模块
+  + v4.7.11 优化登陆模块-增加验证码shiro整合
+  + v4.7.11 FLINK增加checkpoint机制
+  + v4.7.11 重构html引入项目根目录
+  + v4.7.11 升级springboot版本1.5.7至1.5.22
+  + v4.7.11 重构登陆页面,注册页面
+  + v4.7.11 增加账户禁用启用功能
+  + v4.7.11 废弃旧版权限模块-改动为 用户->角色->资源 模型模式
+  + v4.7.11 调度任务配置首页增加cron表达式生成链接
+  + v4.7.11 首页去除角色显示,使用签名替换
+  + v4.7.11 菜单管理-新增资源类型,支持接口权限
+  + v4.7.11 重构审批流-支持多人审批,删除旧版数据审批模块
+  + v4.7.11 修复shiro 查询用户信息时无效bug
+  + v4.7.11 增加我发起的流程,流程进度信息
+  + v4.7.11 数据申请使用审批流重构
+  + v4.7.11 修复通知信息-重复显示问题(删除页面下拉面板)
+  + v4.7.11 禁用shiro授权缓存
+  + v4.7.11 更新发布数据时,通知下游具体修改内容
+  + v4.7.11 修改菜单类型,增加内置页面类型
+  + v4.7.11 统一controller层映射规则
+  + v4.7.11 开启接口权限验证
+  + v4.7.11 flink状态监控及更新
+  + v4.7.11 修复server_ack机制
+  + v4.7.11 修复重试-显示禁用任务bug
+  + v4.7.11 web支持flink增加杀死,重试机制
+  + v4.7.11 重试时,至少有一个子任务,否则无法重试
+  + v4.7.11 flink端判定任务状态检查
+  
+  + v4.7.12 优化quartz 超大量任务引起的重复执行问题
+  + v4.7.12 增加【jdbc引擎ETL】,使用presto,clickhouse等jdbc引擎ETL时,可单独使用zdh_web完成,不集成zdh_server
+  + v4.7.12 历史【jdbc依赖】优化
+  
+  + v4.7.13 springboot jar 分离
+  
+  
+  
+  
   
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
-  + v4.7.x 接入flink引擎,实现流采集 开发中
+  + v4.7.x 接入flink引擎,实现流采集 已完成
   + v4.8 优化滚动升级部分 开发中
   + v4.8 计划支持血缘分析 开发中
   
@@ -295,7 +405,7 @@
    详见说明文档
  
 
-   
+
 # 版本计划
   + 1.1 计划支持FTP 调度
   + 1.1 计划支持HFILE 直接读取功能
