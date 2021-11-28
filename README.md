@@ -24,14 +24,21 @@
    + 编译包下载地址(只提供4.7.11之后的版本,因4.7.11之后不提供源码下载)：
    + 执行编译好的包需要提前安装mysql8,redis
    
-   +  [zdh_web_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_web.tar)
-   +  [zdh_server_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_server.tar)
-   +  [zdh_flink_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_flink.tar)
+   + 4.7.11
+     +  [zdh_web_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_web.tar)
+     +  [zdh_server_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_server.tar)
+     +  [zdh_flink_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_flink.tar)
    
-   +  [zdh_web_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_web.tar)
-   +  [zdh_server_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_server.tar)
-   +  [zdh_flink_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_flink.tar)   
-    
+   + 4.7.12
+     +  [zdh_web_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_web.tar)
+     +  [zdh_server_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_server.tar)
+     +  [zdh_flink_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_flink.tar)   
+
+   + 4.7.13
+     +  [zdh_web_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_web.tar)
+     +  [zdh_server_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_server.tar)
+     +  [zdh_flink_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_flink.tar)
+      
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包
 
 #  在线预览
@@ -122,8 +129,12 @@
     打包命令 mvn package -Dmaven.test.skip=true
 
 # 运行
-    在target 目录下找到zdh_web.jar
-    执行 java  -Dfile.encoding=utf-8 -jar zdh_web.jar  
+    4.7.13 之前
+      在target 目录下找到zdh_web.jar
+      执行 java  -Dfile.encoding=utf-8 -jar zdh_web.jar  
+    4.7.13及之后
+      进入在xxx-RELEASE 目录下
+      执行 java -jar -Dfile.encoding=utf-8 -Dloader.path=libs/,conf zdh_web.jar     
 
 # FAQ
 
@@ -349,6 +360,7 @@
   + v4.7.12 增加【jdbc引擎ETL】,使用presto,clickhouse等jdbc引擎ETL时,可单独使用zdh_web完成,不集成zdh_server
   + v4.7.12 历史【jdbc依赖】优化
   
+  + v4.7.13 springboot jar 分离
   
   
   
