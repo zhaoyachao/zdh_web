@@ -5,7 +5,7 @@
 
     <groupId>com.zyc</groupId>
     <artifactId>zdh</artifactId>
-    <version>4.7.11-REALEASE</version>
+    <version>4.7.13-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>zdh_web</name>
@@ -451,16 +451,124 @@
         <finalName>zdh_web</finalName>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${version}/libs</outputDirectory>
+                            <excludeTransitive>false</excludeTransitive>
+                            <stripVersion>false</stripVersion>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/webapp</directory>
+                                    <targetPath>META-INF/resources</targetPath>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${version}/conf</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>copy-bin</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>release/bin</directory>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${version}/bin</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>copy-db</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>release/db</directory>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${version}/db</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>*.yml</exclude>
+                        <exclude>*.properties</exclude>
+                        <exclude>*.xml</exclude>
+                        <exclude>*.docx</exclude>
+                        <exclude>*.txt</exclude>
+                        <exclude>mapper/**</exclude>
+                        <exclude>META-INF/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <!--目前只能使用1.4.2版本，使用其他版本jsp无法显示-->
                 <version>1.4.2.RELEASE</version>
                 <configuration>
                     <fork>true</fork>
+                    <layout>ZIP</layout>
                     <!-- spring-boot:run 中文乱码解决 -->
                     <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
                     <mainClass>com.zyc.zdh.ZdhApplication</mainClass>
-                    <outputDirectory>release/libs</outputDirectory>
+                    <outputDirectory>${version}</outputDirectory>
+                    <includes>
+                        <include>
+                            <groupId>com.zyc</groupId>
+                            <artifactId>zdh_web</artifactId>
+                        </include>
+                    </includes>
                 </configuration>
                 <executions>
                     <execution>
