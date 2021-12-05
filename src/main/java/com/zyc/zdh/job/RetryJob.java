@@ -3,6 +3,7 @@ package com.zyc.zdh.job;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.HttpUtil;
 import com.zyc.zdh.util.SpringContext;
 import com.zyc.zdh.util.StringUtils;
@@ -40,14 +41,14 @@ public class RetryJob {
                 JobCommon2.insertLog(tl, "INFO", "检测到需要重试的任务,添加到重试队列,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 if (!tl.getPlan_count().equals("-1") && tl.getCount()>=Long.parseLong(tl.getPlan_count())) {
                     JobCommon2.insertLog(tl, "INFO", "检测到需要重试的任务,重试次数超过限制,实际重试:" + tl.getCount() + "次,job_id:" + tl.getJob_id() + ",job_context:" + tl.getJob_context());
-                    tlim.updateStatusById("error",tl.getId());
+                    tlim.updateStatusById("error", DateUtil.getCurrentTime(),tl.getId());
                     //quartzJobMapper.updateLastStatus(qj.getJob_id(), "error");
                     continue;
                 }
                 //qj.setLast_status("retry");
                 //quartzJobMapper.updateLastStatus(qj.getJob_id(), "retry");//retry表示当前的任务是重试发起的
                 tl.setStatus("dispatch");
-                tlim.updateStatusById("dispatch",tl.getId());//error表示任务已置为失败
+                tlim.updateStatusById("dispatch",DateUtil.getCurrentTime(),tl.getId());//error表示任务已置为失败
                 logger.info("开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 //debugInfo(tl);
                 //JobCommon.insertLog(tl, "INFO", "开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());

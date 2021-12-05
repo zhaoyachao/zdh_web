@@ -84,6 +84,7 @@
                                     <li>数据源说明：简要说明数据源作用，此说明最好不要重复</li>
                                     <li>数据源类型：选择数据源类型 目前支持 JDBC,HDFS,HBASE,HIVE,KAFKA</li>
                                     <li>驱动类：当数据源选择JDBC 时 配置驱动程序,clickhouse 只支持ClickHouse-Native-JDBC</li>
+                                    <li>驱动类：当数据源选择DATAX 时 格式python datax_home</li>
                                     <li>连接串：数据源选择JDBC,HDFS,HBASE,KAFKA 时填写</li>
                                     <li>   JDBC: 填写数据库连接的url</li>
                                     <li>   example:jdbc:mysql://127.0.0.1:3306/mydb?serverTimezone=GMT%2B8&useSSL=false</li>
@@ -102,7 +103,7 @@
                                     <li>   外部下载:需要在用户设置中设置sftp 登陆的用户名密码</li>
                                     <li>   TIDB:填写ip:port 格式，如果多个ip 则写ip1:port1,ip2:port2,ip3:port3 格式</li>
                                     <li>   ICEBERG:填写HDFS地址/hive metasotre地址 格式,hdfs://xxx:port/xxx, hadoop ha example: ip1:port1,ip2:port2,ip3:port3/clustername ,thrift://localhost:9083格式</li>
-
+                                    <li>   DATAX:填写ip:port 格式，如果多个ip 则写ip1:port1,ip2:port2,ip3:port3 格式,port默认22端口</li>
                                     <li>用户名：JDBC 数据源 用户名</li>
                                     <li>密码：JDBC数据源 密码</li>
                                 </ul>
@@ -275,6 +276,9 @@
                 //成功返回
                 success: function (data) {
                     $("#save_zdh").removeAttr('disabled');
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                    }
                     var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                     parent.layer.close(index); //再执行关闭
                 },
@@ -331,6 +335,9 @@
                 //成功返回
                 success: function (data) {
                     $("#update_zdh").removeAttr('disabled');
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                    }
                     var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                     parent.layer.close(index); //再执行关闭
                 },

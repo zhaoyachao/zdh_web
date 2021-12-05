@@ -2,6 +2,7 @@ package com.zyc.zdh;
 
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.RoleInfo;
+import com.zyc.zdh.job.CheckBloodSourceJob;
 import com.zyc.zdh.job.CheckDepJob;
 import com.zyc.zdh.service.RoleService;
 import net.sf.ehcache.CacheManager;
@@ -56,6 +57,10 @@ public class ZdhApplicationTests {
 		CheckDepJob.create_group_final_status();
 	}
 
+	@Test
+	public void check_sql_blood_source(){
+		CheckBloodSourceJob.check_sql_blood_source("1");
+	}
 
 
 

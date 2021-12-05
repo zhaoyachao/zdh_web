@@ -333,24 +333,24 @@ public class CheckDepJob {
             String msg="更新进度为:"+process;
             if(finish_num==tlidList.size()){
                 //表示全部完成
-                tglim.updateStatusById3(JobStatus.FINISH.getValue(),process ,tgli.getId());
+                tglim.updateStatusById3(JobStatus.FINISH.getValue(),process ,DateUtil.getCurrentTime(),tgli.getId());
                 //tglim.updateStatusById(JobStatus.FINISH.getValue(),tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
                 JobCommon2.insertLog(tgli,"INFO","任务组已完成");
             }else if(kill_num==tlidList.size()){
                 //表示组杀死
-                tglim.updateStatusById3(JobStatus.KILLED.getValue(),process ,tgli.getId());
+                tglim.updateStatusById3(JobStatus.KILLED.getValue(),process ,DateUtil.getCurrentTime(),tgli.getId());
                // tglim.updateStatusById(JobStatus.KILLED.getValue(),tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
                 JobCommon2.insertLog(tgli,"INFO","任务组已杀死");
             }else if(finish_num+error_num == tlidList.size()){
                 //存在失败
-                tglim.updateStatusById3(JobStatus.ERROR.getValue(),process ,tgli.getId());
+                tglim.updateStatusById3(JobStatus.ERROR.getValue(),process ,DateUtil.getCurrentTime(),tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
                 JobCommon2.insertLog(tgli,"INFO","任务组以失败,具体信息请点击子任务查看");
             }else if(finish_num+error_num+kill_num == tlidList.size()){
                 //存在杀死任务
-                tglim.updateStatusById3(JobStatus.KILLED.getValue(),process ,tgli.getId());
+                tglim.updateStatusById3(JobStatus.KILLED.getValue(),process ,DateUtil.getCurrentTime(),tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
                 JobCommon2.insertLog(tgli,"INFO","任务组以完成,存在杀死任务,具体信息请点击子任务查看");
             }

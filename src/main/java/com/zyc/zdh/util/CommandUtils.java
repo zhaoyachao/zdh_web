@@ -68,7 +68,7 @@ public class CommandUtils {
         }
     }
 
-    public static Map<String,String> exeCommand2(TaskLogInstance tli, String cmd, String param, String command) throws IOException {
+    public static Map<String,String> exeCommand2(TaskLogInstance tli, String cmd, String param, String command, String charsetName) throws IOException {
         Map map=new HashMap<String,String>();
         ProcessBuilder processBuilder = new ProcessBuilder();
         try {
@@ -78,9 +78,9 @@ public class CommandUtils {
 //            StringBuilder output = new StringBuilder();
 
             BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(),"GBK"));
+                    new InputStreamReader(process.getInputStream(),charsetName));
             BufferedReader reader_err = new BufferedReader(
-                    new InputStreamReader(process.getErrorStream(),"GBK"));
+                    new InputStreamReader(process.getErrorStream(),charsetName));
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -156,7 +156,7 @@ public class CommandUtils {
             TaskLogInstance tli=new TaskLogInstance();
             tli.setId("1");
             tli.setJob_id("1");
-            Map result = exeCommand2(tli,"cmd.exe", "/c", "java version");
+            Map result = exeCommand2(tli,"cmd.exe", "/c", "java version","GBK");
             System.out.println(result.get("result"));
 
         } catch (IOException e) {

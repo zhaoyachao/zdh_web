@@ -2,13 +2,19 @@ package com.zyc.zdh.controller;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.gson.JsonObject;
+import com.zyc.zdh.dao.AccountMapper;
+import com.zyc.zdh.entity.AccountInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.User;
@@ -39,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.zyc.zdh.service.RoleService;
+import tk.mybatis.mapper.entity.Example;
 
 @Controller
 public class LoginController {
@@ -55,6 +62,8 @@ public class LoginController {
     MyRealm myRealm;
     @Autowired
     JemailService jemailService;
+    @Autowired
+    AccountMapper accountMapper;
 
     @RequestMapping("/")
     public String getLogin() {
@@ -231,6 +240,29 @@ public class LoginController {
                     +users.get(0).getPassword());
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"密码已发送到注册邮箱,如果你已忘记注册邮箱,请联系管理员解决", null );
         }
+    }
+
+    @RequestMapping(value = "user_names", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String user_names(String username){
+
+        AccountInfo accountInfo=new AccountInfo();
+        Example example=new Example(accountInfo.getClass());
+        Example.Criteria criteria=example.createCriteria();
+        if(!StringUtils.isEmpty(username)){
+            criteria.andLike("user_name", username);
+        }
+        List<AccountInfo> accountInfos=accountMapper.selectByExample(example);
+        List<JSONObject> user_names=new ArrayList<>();
+        for (AccountInfo acc:accountInfos){
+            JSONObject js=new JSONObject();
+            js.put("id", acc.getUser_name());
+            js.put("name", acc.getUser_name());
+            user_names.add(js);
+        }
+
+
+        return JSONObject.toJSONString(user_names);
     }
 
 

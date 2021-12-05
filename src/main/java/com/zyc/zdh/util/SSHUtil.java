@@ -132,8 +132,8 @@ public class SSHUtil {
             StringBuilder sb2 = new StringBuilder();
             while ((buf = reader.readLine()) != null) {
                 System.out.println(buf);
-                sb.append(buf);
-                sb.append(line);
+                //sb.append(buf);
+                //sb.append(line);
                 JobCommon2.insertLog(job_id,task_logs_id,"INFO",buf);
             }
             String errbuf;

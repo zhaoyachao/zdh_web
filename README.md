@@ -1,3 +1,35 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [READ MORE](#read-more)
+- [数据采集,处理,监控,调度,管理一体化平台](#%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86%E5%A4%84%E7%90%86%E7%9B%91%E6%8E%A7%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86%E4%B8%80%E4%BD%93%E5%8C%96%E5%B9%B3%E5%8F%B0)
+- [开源/闭源版本](#%E5%BC%80%E6%BA%90%E9%97%AD%E6%BA%90%E7%89%88%E6%9C%AC)
+- [下载编译包](#%E4%B8%8B%E8%BD%BD%E7%BC%96%E8%AF%91%E5%8C%85)
+- [在线预览](#%E5%9C%A8%E7%BA%BF%E9%A2%84%E8%A7%88)
+- [提示](#%E6%8F%90%E7%A4%BA)
+- [特色](#%E7%89%B9%E8%89%B2)
+- [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
+- [主要功能](#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD)
+- [用到的技术体系](#%E7%94%A8%E5%88%B0%E7%9A%84%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB)
+- [下载修改基础配置](#%E4%B8%8B%E8%BD%BD%E4%BF%AE%E6%94%B9%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE)
+- [下载编译好的包](#%E4%B8%8B%E8%BD%BD%E7%BC%96%E8%AF%91%E5%A5%BD%E7%9A%84%E5%8C%85)
+- [源码自定义打包](#%E6%BA%90%E7%A0%81%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%93%E5%8C%85)
+- [运行](#%E8%BF%90%E8%A1%8C)
+- [FAQ](#faq)
+- [功能图](#%E5%8A%9F%E8%83%BD%E5%9B%BE)
+- [版本更新说明](#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0%E8%AF%B4%E6%98%8E)
+- [未完成的功能](#%E6%9C%AA%E5%AE%8C%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD)
+- [支持的数据源](#%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E6%BA%90)
+- [支持的调度对象](#%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E5%BA%A6%E5%AF%B9%E8%B1%A1)
+- [支持的调度器模式](#%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E5%BA%A6%E5%99%A8%E6%A8%A1%E5%BC%8F)
+- [支持调度动态日期参数](#%E6%94%AF%E6%8C%81%E8%B0%83%E5%BA%A6%E5%8A%A8%E6%80%81%E6%97%A5%E6%9C%9F%E5%8F%82%E6%95%B0)
+- [版本计划](#%E7%89%88%E6%9C%AC%E8%AE%A1%E5%88%92)
+- [个人联系方式](#%E4%B8%AA%E4%BA%BA%E8%81%94%E7%B3%BB%E6%96%B9%E5%BC%8F)
+- [界面预览](#%E7%95%8C%E9%9D%A2%E9%A2%84%E8%A7%88)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # READ MORE
 [English description](README_en.md)
 
@@ -6,7 +38,6 @@
    博客目录地址：  [https://blog.csdn.net/zhaoyachao123/article/details/113913947](https://blog.csdn.net/zhaoyachao123/article/details/113913947)
    
 
-   
    欢迎你对本项目提出相关issue
    
    本平台主要目的
@@ -38,6 +69,11 @@
      +  [zdh_web_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_web.tar)
      +  [zdh_server_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_server.tar)
      +  [zdh_flink_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_flink.tar)
+     
+   + 4.7.14
+     +  [zdh_web_4.7.14](http://zycblog.cn:8080/zdh/download/4.7.14/zdh_web.tar)
+     +  [zdh_server_4.7.14](http://zycblog.cn:8080/zdh/download/4.7.14/zdh_server.tar)
+     +  [zdh_flink_4.7.14](http://zycblog.cn:8080/zdh/download/4.7.14/zdh_flink.tar)    
       
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包
 
@@ -361,6 +397,13 @@
   + v4.7.12 历史【jdbc依赖】优化
   
   + v4.7.13 springboot jar 分离
+  
+  + v4.7.14 增加【datax引擎】,通过调度实现可视化配置
+  + v4.7.14 调度页面告警用户账户由输入框改为多选下拉框(模糊匹配)
+  + v4.7.14 优化任务组更新时间,任务更新时间
+  + v4.7.14 优化mybatis-generator插件配置,启用自动生成
+  + v4.7.14 修复数据源新增权限问题
+  
   
   
   

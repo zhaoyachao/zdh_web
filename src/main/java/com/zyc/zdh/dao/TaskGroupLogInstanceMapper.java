@@ -82,8 +82,8 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
      * @param id
      * @return
      */
-    @Update(value = "update task_group_log_instance set status=#{status} ,process = #{process} where id=#{id}")
-    public int updateStatusById3(@Param("status") String status, @Param("process") String process, @Param("id") String id);
+    @Update(value = "update task_group_log_instance set status=#{status} ,process = #{process}, update_time=#{update_time} where id=#{id}")
+    public int updateStatusById3(@Param("status") String status, @Param("process") String process,@Param("update_time") String update_time, @Param("id") String id);
 
 
 

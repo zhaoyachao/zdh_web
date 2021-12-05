@@ -15,6 +15,8 @@ import com.zyc.zdh.service.impl.DataSourcesServiceImpl;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -32,6 +34,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -153,7 +156,7 @@ public class JobCommon2 {
     }
 
 
-    public static ZdhInfo create_zhdInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
+    public static ZdhInfo create_zdhInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
                                          EtlTaskService etlTaskService, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
 
         JSONObject json = new JSONObject();
@@ -175,7 +178,7 @@ public class JobCommon2 {
         if (map != null) {
             logger.info("单源,自定义参数不为空,开始替换:" + tli.getParams());
             //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-            DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null);
+            DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null,null);
         }
 
         //获取数据源信息
@@ -306,7 +309,7 @@ public class JobCommon2 {
             for (EtlTaskInfo etlTaskInfo : etlTaskInfos) {
                 if (map != null) {
                     logger.info("多源,自定义参数不为空,开始替换:" + tli.getParams());
-                    DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null);
+                    DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null,null);
                 }
 
                 //获取数据源信息
@@ -339,7 +342,7 @@ public class JobCommon2 {
         }
     }
 
-    public static ZdhSqlInfo create_zhdSqlInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
+    public static ZdhSqlInfo create_zdhSqlInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
                                                SqlTaskMapper sqlTaskMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
@@ -358,7 +361,7 @@ public class JobCommon2 {
             if (map != null) {
                 logger.info("SQL,自定义参数不为空,开始替换:" + tli.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, tli, null, sqlTaskInfo, null, null,null,null,null);
+                DynamicParams(map, tli, null, sqlTaskInfo, null, null,null,null,null,null);
             }
 
             //获取数据源信息
@@ -439,7 +442,7 @@ public class JobCommon2 {
             if (map != null) {
                 logger.info("JAR,自定义参数不为空,开始替换:" + tli.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, tli, null, null, null, sshTaskInfo,null,null,null);
+                DynamicParams(map, tli, null, null, null, sshTaskInfo,null,null,null,null);
             }
             ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(sshTaskInfo.getOwner());
             List<JarFileInfo> jarFileInfos = jarFileMapper.selectByParams2(sshTaskInfo.getOwner(), new String[]{sshTaskInfo.getId()});
@@ -524,7 +527,7 @@ public class JobCommon2 {
 
                 if (map != null) {
                     logger.info("多源,自定义参数不为空,开始替换:" + tli.getParams());
-                    DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null);
+                    DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null,null);
                 }
 
                 //获取数据源信息
@@ -561,7 +564,7 @@ public class JobCommon2 {
                     //此处做参数匹配转换
                     if (map != null) {
                         logger.info("多源,自定义参数不为空,开始替换:" + tli.getParams());
-                        DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null);
+                        DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null,null);
                     }
 
                     //获取数据源信息
@@ -599,7 +602,7 @@ public class JobCommon2 {
                 //此处做参数匹配转换
                 if (map != null) {
                     logger.info("SQL,自定义参数不为空,开始替换:" + tli.getParams());
-                    DynamicParams(map, tli, null, sqlTaskInfo, null, null,null,null, null);
+                    DynamicParams(map, tli, null, sqlTaskInfo, null, null,null,null, null,null);
                 }
 
                 zdhDroolsInfo.setSqlTaskInfo(sqlTaskInfo);
@@ -620,7 +623,7 @@ public class JobCommon2 {
     }
 
 
-    public static ZdhApplyInfo create_zhdApplyInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
+    public static ZdhApplyInfo create_zdhApplyInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
                                          EtlTaskService etlTaskService, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
 
         EtlApplyTaskMapper etlApplyTaskMapper = (EtlApplyTaskMapper) SpringContext.getBean("etlApplyTaskMapper");
@@ -644,7 +647,7 @@ public class JobCommon2 {
         if (map != null) {
             logger.info("申请源,自定义参数不为空,开始替换:" + tli.getParams());
             //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-            DynamicParams(map, tli, null, null, null, null,etlApplyTaskInfo,null,null);
+            DynamicParams(map, tli, null, null, null, null,etlApplyTaskInfo,null,null,null);
         }
 
         //获取数据源信息
@@ -713,7 +716,7 @@ public class JobCommon2 {
     }
 
 
-    public static ZdhFlinkSqlInfo create_zhdFlinkInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
+    public static ZdhFlinkSqlInfo create_zdhFlinkInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
                                                EtlTaskFlinkMapper etlTaskFlinkMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
@@ -732,7 +735,7 @@ public class JobCommon2 {
             if (map != null) {
                 logger.info("SQL,自定义参数不为空,开始替换:" + tli.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, tli, null, null, null, null,null,etlTaskFlinkInfo,null);
+                DynamicParams(map, tli, null, null, null, null,null,etlTaskFlinkInfo,null,null);
             }
 
 
@@ -748,7 +751,7 @@ public class JobCommon2 {
 
     }
 
-    public static ZdhJdbcInfo create_zhdJdbcInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
+    public static ZdhJdbcInfo create_zdhJdbcInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
                                                EtlTaskJdbcMapper etlTaskJdbcMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
@@ -767,7 +770,7 @@ public class JobCommon2 {
             if (map != null) {
                 logger.info("SQL,自定义参数不为空,开始替换:" + tli.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, tli, null, null, null, null,null,null,etlTaskJdbcInfo);
+                DynamicParams(map, tli, null, null, null, null,null,null,etlTaskJdbcInfo,null);
             }
 
             //获取数据源信息
@@ -832,6 +835,58 @@ public class JobCommon2 {
     }
 
 
+    public static ZdhDataxInfo create_zdhDataxInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
+                                                 EtlTaskDataxMapper etlTaskDataxMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) throws Exception {
+
+        try {
+            JSONObject json = new JSONObject();
+            String date = DateUtil.formatTime(tli.getCur_time());
+            json.put("ETL_DATE", date);
+            logger.info(" JOB ,DATAX,处理当前日期,传递参数ETL_DATE 为" + date);
+            tli.setParams(json.toJSONString());
+
+            String etl_task_id = tli.getEtl_task_id();
+            //获取etl 任务信息
+            EtlTaskDataxInfo etlTaskDataxInfo = etlTaskDataxMapper.selectByPrimaryKey(etl_task_id);
+
+            Map<String, Object> map = (Map<String, Object>) JSON.parseObject(tli.getParams());
+            //此处做参数匹配转换
+            if (map != null) {
+                logger.info("SQL,自定义参数不为空,开始替换:" + tli.getParams());
+                //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
+                DynamicParams(map, tli, null, null, null, null,null,null,null,etlTaskDataxInfo);
+            }
+
+            //获取数据源信息
+            String data_sources_choose_input = etlTaskDataxInfo.getData_sources_choose_input();
+
+
+            DataSourcesInfo dataSourcesInfoInput = null;
+            if (data_sources_choose_input != null && !data_sources_choose_input.equalsIgnoreCase("")) {
+                dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+            }
+
+            if(dataSourcesInfoInput==null){
+                logger.info("[DATAX]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+                //JobCommon2.insertLog(tli,"WARN","[DATAX]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+                throw new Exception("[DATAX]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+            }
+
+
+            ZdhDataxInfo zdhDataxInfo = new ZdhDataxInfo();
+            zdhDataxInfo.setZdhInfo(dataSourcesInfoInput, etlTaskDataxInfo, tli);
+
+            return zdhDataxInfo;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
+
+
+
     /**
      * 根据时间(timestamp) 生成jinjava 模板中的时间参数
      * @param tli
@@ -865,7 +920,7 @@ public class JobCommon2 {
     }
 
     public static void DynamicParams(Map<String, Object> map, TaskLogInstance tli, EtlTaskInfo etlTaskInfo, SqlTaskInfo sqlTaskInfo, JarTaskInfo jarTaskInfo, SshTaskInfo sshTaskInfo,
-                                     EtlApplyTaskInfo etlApplyTaskInfo,EtlTaskFlinkInfo etlTaskFlinkInfo,EtlTaskJdbcInfo etlTaskJdbcInfo) {
+                                     EtlApplyTaskInfo etlApplyTaskInfo,EtlTaskFlinkInfo etlTaskFlinkInfo,EtlTaskJdbcInfo etlTaskJdbcInfo,EtlTaskDataxInfo etlTaskDataxInfo) {
         try {
             Map<String, Object> jinJavaParam = getJinJavaParam(tli);
 
@@ -1085,6 +1140,7 @@ public class JobCommon2 {
         SshTaskMapper sshTaskMapper = (SshTaskMapper) SpringContext.getBean("sshTaskMapper");
         EtlTaskFlinkMapper etlTaskFlinkMapper = (EtlTaskFlinkMapper) SpringContext.getBean("etlTaskFlinkMapper");
         EtlTaskJdbcMapper etlTaskJdbcMapper = (EtlTaskJdbcMapper) SpringContext.getBean("etlTaskJdbcMapper");
+        EtlTaskDataxMapper etlTaskDataxMapper = (EtlTaskDataxMapper) SpringContext.getBean("etlTaskDataxMapper");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
         String params = tli.getParams().trim();
@@ -1117,6 +1173,7 @@ public class JobCommon2 {
         ZdhApplyInfo zdhApplyInfo = new ZdhApplyInfo();
         ZdhFlinkSqlInfo zdhFlinkSqlInfo = new ZdhFlinkSqlInfo();
         ZdhJdbcInfo zdhJdbcInfo=new ZdhJdbcInfo();
+        ZdhDataxInfo zdhDataxInfo=new ZdhDataxInfo();
 
         try {
             if (tli.getMore_task().equals("多源ETL")) {
@@ -1124,10 +1181,10 @@ public class JobCommon2 {
                 zdhMoreInfo = create_more_task_zdhInfo(tli, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
             } else if (tli.getMore_task().equals("单源ETL")) {
                 logger.info("组装单源ETL任务信息");
-                zdhInfo = create_zhdInfo(tli, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
+                zdhInfo = create_zdhInfo(tli, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
             } else if (tli.getMore_task().equalsIgnoreCase("SQL")) {
                 logger.info("组装SQL任务信息");
-                zdhSqlInfo = create_zhdSqlInfo(tli, quartzJobMapper, sqlTaskMapper, dataSourcesServiceImpl, zdhNginxMapper);
+                zdhSqlInfo = create_zdhSqlInfo(tli, quartzJobMapper, sqlTaskMapper, dataSourcesServiceImpl, zdhNginxMapper);
             } else if (tli.getMore_task().equalsIgnoreCase("外部JAR")) {
                 logger.info("组装外部JAR任务信息");
                 logger.info("请使用SSH任务代替Jar任务");
@@ -1140,13 +1197,16 @@ public class JobCommon2 {
                 zdhSshInfo = create_zhdSshInfo(tli, quartzJobMapper, sshTaskMapper, zdhNginxMapper);
             } else if (tli.getMore_task().equalsIgnoreCase("APPLY")) {
                 logger.info("组装申请源任务信息");
-                zdhApplyInfo = create_zhdApplyInfo(tli, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
+                zdhApplyInfo = create_zdhApplyInfo(tli, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
             }else if (tli.getMore_task().equalsIgnoreCase("FLINK")) {
                 logger.info("组装FLINK任务信息");
-                zdhFlinkSqlInfo = create_zhdFlinkInfo(tli, quartzJobMapper, etlTaskFlinkMapper, dataSourcesServiceImpl, zdhNginxMapper);
+                zdhFlinkSqlInfo = create_zdhFlinkInfo(tli, quartzJobMapper, etlTaskFlinkMapper, dataSourcesServiceImpl, zdhNginxMapper);
             }else if (tli.getMore_task().equalsIgnoreCase("JDBC")) {
                 logger.info("组装JDBC任务信息");
-                zdhJdbcInfo = create_zhdJdbcInfo(tli, quartzJobMapper, etlTaskJdbcMapper, dataSourcesServiceImpl, zdhNginxMapper);
+                zdhJdbcInfo = create_zdhJdbcInfo(tli, quartzJobMapper, etlTaskJdbcMapper, dataSourcesServiceImpl, zdhNginxMapper);
+            }else if (tli.getMore_task().equalsIgnoreCase("DATAX")) {
+                logger.info("组装DATAX任务信息");
+                zdhDataxInfo = create_zdhDataxInfo(tli, quartzJobMapper, etlTaskDataxMapper, dataSourcesServiceImpl, zdhNginxMapper);
             }
 
 
@@ -1160,6 +1220,8 @@ public class JobCommon2 {
                 zdhSshInfo.setTask_logs_id(task_logs_id);
                 zdhApplyInfo.setTask_logs_id(task_logs_id);
                 zdhFlinkSqlInfo.setTask_logs_id(task_logs_id);
+                zdhJdbcInfo.setTask_logs_id(task_logs_id);
+                zdhDataxInfo.setTask_logs_id(task_logs_id);
 
                 insertLog(tli, "DEBUG", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求");
                 //tli.setEtl_date(date);
@@ -1233,7 +1295,7 @@ public class JobCommon2 {
                         logger.info("FLINK 任务,判断当前集群为windows, 将使用本地shell命令方式执行");
                         insertLog(tli,"INFO","FLINK 任务,判断当前集群为windows, 将使用本地shell命令方式执行");
                         String cmd = zdhFlinkSqlInfo.getEtlTaskFlinkInfo().getCommand();
-                        Map result = CommandUtils.exeCommand2(tli,"cmd.exe","/c" , cmd);
+                        Map result = CommandUtils.exeCommand2(tli,"cmd.exe","/c" , cmd,"GBK");
                         if(result.get("result").toString().equalsIgnoreCase("success")){
 //                            tli.setStatus(JobStatus.FINISH.getValue());
 //                            tli.setProcess("100");
@@ -1256,7 +1318,7 @@ public class JobCommon2 {
                     }
                 }else if(tli.getMore_task().equalsIgnoreCase("JDBC")){
                     url_tmp = url + "/jdbc";
-                    etl_info = JSON.toJSONString(zdhJdbcInfo);//todo 惺惺惜惺惺
+                    etl_info = JSON.toJSONString(zdhJdbcInfo);//todo
                     insertLog(tli,"INFO", etl_info);
                     if(zdhJdbcInfo!=null && zdhJdbcInfo.getEtlTaskJdbcInfo().getEngine_type().equalsIgnoreCase("loocal")){
                         String msg="当前JDBC引擎为本地模式,将在本地执行,不会发送zdh_server模块执行";
@@ -1282,6 +1344,25 @@ public class JobCommon2 {
                         return false;
                     }
 
+                }else if(tli.getMore_task().equalsIgnoreCase("DATAX")){
+                    url_tmp = url + "/datax";
+                    etl_info = JSON.toJSONString(zdhDataxInfo);//todo
+                    logger.info("[调度平台]:DATAX,参数:" + etl_info);
+                    insertLog(tli, "DEBUG", "[调度平台]:DATAX,参数:" + etl_info);
+                    tli.setEtl_info(etl_info);
+                    tli.setStatus(JobStatus.ETL.getValue());
+                    updateTaskLog(tli, tlim);
+                    boolean rs = datax_exec(tli, zdhDataxInfo);
+                    if (rs) {
+                        tli.setLast_status("finish");
+                        //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
+                        tli.setStatus(JobStatus.FINISH.getValue());
+                        tli.setProcess("100");
+                        tli.setUpdate_time(new Timestamp(new Date().getTime()));
+                        updateTaskLog(tli, tlim);
+                    }
+                    return rs;
+
                 }
 
                 tli.setExecutor(executor);
@@ -1295,6 +1376,7 @@ public class JobCommon2 {
                 updateTaskLog(tli, tlim);
 
 
+                //发往server处任务
                 if (!tli.getMore_task().equalsIgnoreCase("SSH") && !tli.getMore_task().equalsIgnoreCase("FLINK") && zdhJdbcInfo!=null && zdhJdbcInfo.getEtlTaskJdbcInfo().getEngine_type().equalsIgnoreCase("spark")) {
                     logger.info("[调度平台]:" + url_tmp + " ,参数:" + etl_info);
                     insertLog(tli, "DEBUG", "[调度平台]:" + url_tmp + " ,参数:" + etl_info);
@@ -1311,8 +1393,9 @@ public class JobCommon2 {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.info("[调度平台]:" + model_log + " JOB ,开始发送" + tli.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况," + e.getMessage());
-            insertLog(tli, "ERROR", "[调度平台]:" + model_log + " JOB ,开始发送" + tli.getMore_task() + " 处理请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况," + e.getMessage());
+            String msg = "[调度平台]:" + model_log + " JOB ,处理" + tli.getMore_task() + " 请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况,如果是本地任务,请检查本地任务执行,错误信息如下:" + e.getMessage();
+            logger.info(msg);
+            insertLog(tli, "ERROR", msg);
             tli.setStatus(JobStatus.ERROR.getValue());
             tli.setProcess("17");
             tli.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -1428,6 +1511,104 @@ public class JobCommon2 {
                 return false;
             }
             return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
+
+    public static boolean datax_exec(TaskLogInstance tli, ZdhDataxInfo zdhDataxInfo) throws IOException, JSchException, SftpException {
+        try {
+            String system = System.getProperty("os.name");
+            long t1 = System.currentTimeMillis();
+            insertLog(tli, "DEBUG", "[调度平台]:DATAX,当前系统为:" + system + ",请耐心等待DATAX任务开始执行....");
+            String host ="";
+            String url="";
+            if(!StringUtils.isEmpty(zdhDataxInfo.getDsi_Input().getUrl())){
+                String[] urls = zdhDataxInfo.getDsi_Input().getUrl().split(",");
+                url=urls[new Random(urls.length).nextInt()];
+                host = url.split(":")[0];
+            }
+
+            String port = "22";
+            if(url.contains(":")){
+                port = url.split(":")[1];
+            }
+
+
+            String username = zdhDataxInfo.getDsi_Input().getUser();
+            String password = zdhDataxInfo.getDsi_Input().getPassword();
+            String datax_home = zdhDataxInfo.getDsi_Input().getDriver();
+            String python_home="python";
+            if (system.toLowerCase().startsWith("win")) {
+                python_home="python.exe";
+            }
+            if(datax_home.contains(" ")){
+                python_home = datax_home.split(" ",2)[0];
+                datax_home = datax_home.split(" ",2)[1];
+            }
+
+            String id = zdhDataxInfo.getEtlTaskDataxInfo().getId();
+            String t_id=zdhDataxInfo.getTask_logs_id();
+            String script_path = datax_home+"/zdh_datax/"+DateUtil.formatNodash(new Date());
+            String script_context = zdhDataxInfo.getEtlTaskDataxInfo().getDatax_json();
+            String file_name = script_path+"/"+t_id + "_online";
+            //校验是否本地datax
+            if(StringUtils.isEmpty(host)){
+                //本地直接生成文件
+                insertLog(tli, "DEBUG", "[调度平台]:DATAX,本地执行");
+                FileUtils.forceMkdirParent(new File(file_name));
+                FileUtils.write(new File(file_name),script_context, Charset.defaultCharset().name(),false);
+                String newcommand=python_home+ " "+datax_home+"/bin/datax.py "+ file_name;
+                insertLog(tli, "DEBUG", script_context);
+                insertLog(tli, "DEBUG", newcommand);
+                Map  result= new HashMap<String,String>();
+                insertLog(tli, "DEBUG", "系统编码:"+Charset.defaultCharset().name());
+                if (system.toLowerCase().startsWith("win")) {
+                    result= CommandUtils.exeCommand2(tli,"cmd.exe","/c" , newcommand, Charset.defaultCharset().name());
+                } else {
+                    result = CommandUtils.exeCommand2(tli,"sh","-c",newcommand,Charset.defaultCharset().name());
+                }
+                long t2 = System.currentTimeMillis();
+                insertLog(tli, "DEBUG", "[调度平台]:DATAX,DATAX任务执行结束,耗时:" + (t2 - t1) / 1000 + "s");
+                if(result.get("result").equals("success")){
+                    return true;
+                }
+                return false;
+
+            }else{
+                SFTPUtil sftpUtil = new SFTPUtil(username, password, host, Integer.parseInt(port));
+                sftpUtil.login();
+                if (!script_context.isEmpty()) {
+                    insertLog(tli, "DEBUG", "[调度平台]:DATAX,上传配置信息");
+                    InputStream inputStream = new ByteArrayInputStream(script_context.replaceAll("\r\n","\n").getBytes());
+                    sftpUtil.upload(script_path, file_name, inputStream);
+                }
+
+                sftpUtil.logout();
+
+                SSHUtil sshUtil = new SSHUtil(username, password, host, Integer.parseInt(port));
+                sshUtil.login();
+                chm_ssh.put(tli.getId(),sshUtil);
+                String ssh_cmd = "echo task_id="+tli.getId()+ " && "+python_home+" "+datax_home+"bin/datax.py "+ file_name;
+                insertLog(tli, "DEBUG", "[调度平台]:DATAX,远程执行," + ssh_cmd);
+                String[] result = sshUtil.exec(ssh_cmd,tli.getId(),tli.getJob_id());
+                if(chm_ssh.get(tli.getId())!=null){
+                    chm_ssh.get(tli.getId()).logout();
+                }
+                chm_ssh.remove(tli.getId());
+                long t2 = System.currentTimeMillis();
+
+                insertLog(tli, "DEBUG", "[调度平台]:DATAX,DATAX任务执行结束,耗时:" + (t2 - t1) / 1000 + "s");
+                String error=result[0];
+                if (!error.isEmpty()) {
+                    return false;
+                }
+                return true;
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -2439,7 +2620,7 @@ public class JobCommon2 {
             DAG dag=new DAG();
             if(StringUtils.isEmpty(tgli.getJsmind_data())){
                 insertLog(tgli,"ERROR","无法生成子任务,请检查是否配置有子任务信息!");
-                tglim.updateStatusById3(JobStatus.ERROR.getValue(),"100",tgli.getId());
+                tglim.updateStatusById3(JobStatus.ERROR.getValue(),"100",DateUtil.getCurrentTime(),tgli.getId());
                 return tliList;
             }
             JSONArray tasks=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("tasks");
@@ -2546,7 +2727,7 @@ public class JobCommon2 {
                     boolean is_loop = dag.addEdge(map.get(pageSourceId),map.get(pageTargetId));//此处的依赖关系 都是生成的任务实例id
                     if(!is_loop){
                         insertLog(tgli,"ERROR","无法生成子任务,请检查子任务是否存在相互依赖的任务!");
-                        tglim.updateStatusById3(JobStatus.ERROR.getValue(),"100",tgli.getId());
+                        tglim.updateStatusById3(JobStatus.ERROR.getValue(),"100",DateUtil.getCurrentTime(),tgli.getId());
                         return tliList;
                     }
 

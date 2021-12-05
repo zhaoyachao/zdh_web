@@ -857,7 +857,7 @@
         }
 
         var formData = new FormData(document.getElementById("etl_task_jdbc_add_form"));
-        formData.set("etl_sql",window.editor.getValue())
+        formData.set("etl_sql",window.editor.getValue());
 
         $.ajax({
             type: 'POST',

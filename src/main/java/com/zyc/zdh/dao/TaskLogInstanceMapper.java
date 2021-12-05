@@ -21,8 +21,8 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
      * @param id
      * @return
      */
-    @Update(value = "update task_log_instance set status=#{status} where id=#{id}")
-    public int updateStatusById(@Param("status") String status, @Param("id") String id);
+    @Update(value = "update task_log_instance set status=#{status},update_time=#{update_time} where id=#{id}")
+    public int updateStatusById(@Param("status") String status,@Param("update_time") String update_time, @Param("id") String id);
 
 
     /**

@@ -96,4 +96,5 @@ public interface AccountDao {
 	})
 	public List<User> findByUserName2(@Param("user_names")String[] user_names);
 
+
 }

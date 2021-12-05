@@ -15,10 +15,7 @@ import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.HttpUtil;
-import com.zyc.zdh.util.SpringContext;
-import com.zyc.zdh.util.SshUtils;
-import com.zyc.zdh.util.StringUtils;
+import com.zyc.zdh.util.*;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -170,20 +167,23 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                     String msg="杀死线程:线程名:"+td.getName()+",线程id:"+td.getId();
                                     logger.info(msg);
                                     JobCommon2.insertLog(tl,"INFO",msg);
-                                    if(tl.getMore_task().equalsIgnoreCase("ssh")){
-                                        String[] connectUri=JobCommon2.chm_ssh.get(tl.getId()).createUri();
-                                        JobCommon2.chm_ssh.get(tl.getId()).logout();
-                                        JobCommon2.chm_ssh.remove(tl.getId());
-                                        if(connectUri.length==2 && !StringUtils.isEmpty(connectUri[1])){
-                                            try{
-                                                String kill_cmd=String.format("kill -9 `ps -ef |grep '%s' |awk -F \" \" '{print $2}'`",connectUri[1]);
-                                                JobCommon2.insertLog(tl,"INFO",kill_cmd);
-                                                SshUtils.kill(connectUri[0],kill_cmd);
-                                            }catch (Exception e){
-                                                System.out.println("=========================");
-                                                e.printStackTrace();
-                                            }
+                                    if(tl.getMore_task().equalsIgnoreCase("ssh") || tl.getMore_task().equalsIgnoreCase("datax")){
+                                        SSHUtil sshUtil =JobCommon2.chm_ssh.get(tl.getId());
+                                        if(sshUtil!=null){
+                                            String[] connectUri= sshUtil.createUri();
+                                            JobCommon2.chm_ssh.get(tl.getId()).logout();
+                                            JobCommon2.chm_ssh.remove(tl.getId());
+                                            if(connectUri.length==2 && !StringUtils.isEmpty(connectUri[1])){
+                                                try{
+                                                    String kill_cmd=String.format("kill -9 `ps -ef |grep '%s' |awk -F \" \" '{print $2}'`",connectUri[1]);
+                                                    JobCommon2.insertLog(tl,"INFO",kill_cmd);
+                                                    SshUtils.kill(connectUri[0],kill_cmd);
+                                                }catch (Exception e){
+                                                    System.out.println("=========================");
+                                                    e.printStackTrace();
+                                                }
 
+                                            }
                                         }
                                     }
                                     try{
@@ -194,7 +194,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         e.printStackTrace();
                                     }finally {
                                         JobCommon2.chm.remove(tl.getThread_id());
-                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                        taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
                                         JobCommon2.insertLog(tl,"INFO","已杀死当前任务");
                                     }
                                 }else{
@@ -217,10 +217,10 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                             String restul=HttpUtil.getRequest(cancel_url,npl);
                                         }catch (Exception e){
                                             JobCommon2.insertLog(tl,"INFO","杀死当前任务异常,判定服务以死亡,自动更新状态为killed");
-                                            taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                            taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
                                             continue;
                                         }
-                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                        taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
                                         JobCommon2.insertLog(tl,"INFO","已杀死当前任务");
                                         continue;
                                     }else{
@@ -239,7 +239,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         try{
                                              restul=HttpUtil.getRequest(url,npl);
                                         }catch (Exception e){
-                                            taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                            taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
                                             continue;
                                         }
 
@@ -259,10 +259,10 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         //发送杀死请求
                                         String kill_url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getZdh_port()+"/api/v1/kill";
                                         HttpUtil.postJSON(kill_url,js.toJSONString());
-                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                        taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
                                     }else{
                                         String msg2="无法获取具体执行器,判断任务已杀死";
-                                        taskLogInstanceMapper.updateStatusById("killed",tl.getId());
+                                        taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
                                         logger.info(msg2);
                                         JobCommon2.insertLog(tl,"INFO",msg2);
                                     }

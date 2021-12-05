@@ -24,6 +24,7 @@
     <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
 
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="js/plugins/magicsuggest/magicsuggest.css" rel="stylesheet">
 
 </head>
 
@@ -224,8 +225,7 @@
                             </div>
                             <label class="col-sm-2 control-label">配置告警用户</label>
                             <div class="col-sm-10">
-                                <input id="alarm_account" name="alarm_account" type="text"
-                                       placeholder="ZDH用户账号,多用户逗号分隔" class="form-control" aria-required="true"> </span>
+                                    <input type="text" class="form-control" id="alarm_account" name="alarm_account" placeholder="ZDH用户账号,多用户逗号分隔">
                             </div>
 
                             <div class="form-group"></div>
@@ -298,6 +298,8 @@
 <script src="js/jquery-ui-1.10.4.min.js"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
 
+<!--<script type="text/javascript" src="js/plugins/suggest/bootstrap-suggest.min.js"></script>-->
+<script type="text/javascript" src="js/plugins/magicsuggest/magicsuggest.js"></script>
 <!-- Bootstrap table -->
 <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
 <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
@@ -329,6 +331,8 @@
 
 <script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
 <script type="text/javascript" src="js/jsplumb/index.js"></script>
+
+
 <script type="text/javascript">
 
     function add_node_zdh(more_task,etl_id,etl_context){
@@ -844,6 +848,57 @@
             customerTimeShow("block")
             quartTimeShow("none")
         });
+
+        window.addressIdMagicSuggest = $('#alarm_account').magicSuggest({
+            width:200,
+            queryParam: 'username',
+            method: 'get',
+            allowFreeEntries: true,
+            autoSelect:true,
+            valueField:"id",
+            displayField:"name",
+            resultAsString:true,
+            selectionStacked: true,
+            //下拉框数据的获得：
+            data: server_context+'/user_names'
+        });
+
+        // var alarm_accountSuggest = $("#alarm_account").bsSuggest({
+        //     indexId: 2, //data.value 的第几个数据，作为input输入框的内容
+        //     indexKey: 1, //data.value 的第几个数据，作为input输入框的内容
+        //     allowNoKeyword: false, //是否允许无关键字时请求数据
+        //     multiWord: true, //以分隔符号分割的多关键字支持
+        //     separator: ",", //多关键字支持时的分隔符，默认为空格
+        //     getDataMethod: "url", //获取数据的方式，总是从 URL 获取
+        //     effectiveFieldsAlias: {
+        //         Id: "序号",
+        //         Keyword: "用户名"
+        //     },
+        //     showHeader: true,
+        //     url: server_context+'/user_names?username=',
+        //     /*优先从url ajax 请求 json 帮助数据，注意最后一个参数为关键字请求参数*/
+        //     //jsonp: 'callback',
+        //     /*如果从 url 获取数据，并且需要跨域，则该参数必须设置*/
+        //     processData: function (json) { // url 获取数据时，对数据的处理，作为 getData 的回调函数
+        //         var i, len, data = {
+        //             value: []
+        //         };
+        //         if (json.result.length == 0) {
+        //             return false;
+        //         }
+        //         len = json.result.length;
+        //
+        //         for (i = 0; i < len; i++) {
+        //             data.value.push({
+        //                 "Id": (i + 1),
+        //                 "Keyword": json.result[i]
+        //             });
+        //         }
+        //         console.info(data);
+        //         return data;
+        //     }
+        // });
+
     });
 
     function closeTab() {
@@ -1393,142 +1448,142 @@
 
                         }
                         if(more_task=="Drools") {
-                            console.info("选中Drools")
+                            console.info("选中Drools");
                             init_etl_task_drools_sources()
                         }
                         if(more_task=="SSH") {
-                            console.info("选中SSH")
+                            console.info("选中SSH");
                             init_etl_task_ssh_sources()
                         }
 
                         if(more_task=="FLINK") {
-                            console.info("选中FLINK")
+                            console.info("选中FLINK");
                             init_etl_task_flink_sources()
                         }
 
-                        var etl_task_id=data[0].etl_task_id
+                        var etl_task_id=data[0].etl_task_id;
                         //初始化输入数据源select 组件
                         $("#etl_task_id").val(etl_task_id);
                         $("#etl_task_id").trigger("chosen:updated");
 
                         //任务类型
-                        var job_type=data[0].job_type
+                        var job_type=data[0].job_type;
                         //初始化输入数据源select 组件
                         $("#job_type").val(job_type);
-                        var jsmind_data=data[0].jsmind_data
-                        open_json(jsmind_data)
+                        var jsmind_data=data[0].jsmind_data;
+                        open_json(jsmind_data);
 
                         //表达式expr
-                        var expr=data[0].expr
+                        var expr=data[0].expr;
                         $("#expr").val(expr);
 
-                        var use_quartz_time=data[0].use_quartz_time
-                        console.info("use_quartz_time:"+use_quartz_time)
+                        var use_quartz_time=data[0].use_quartz_time;
+                        console.info("use_quartz_time:"+use_quartz_time);
                         if(use_quartz_time=="on"){
                             $('#use_quartz_time').iCheck('check');
                         }
 
-                        var time_diff=data[0].time_diff
+                        var time_diff=data[0].time_diff;
                         if(time_diff!=''){
                             $("#time_diff").val(time_diff);
                         }
                         //开始时间
-                        var start_time=data[0].start_time
+                        var start_time=data[0].start_time;
                         if(start_time!='' && typeof(start_time) !="undefined"){
                             $("#start_time").val(getMyDate(start_time));
                         }
 
                         //结束时间
-                        var end_time=data[0].end_time
+                        var end_time=data[0].end_time;
                         if(end_time!='' && typeof(end_time) !="undefined"){
                             $("#end_time").val(getMyDate(end_time));
                         }
 
-                        var step_size=data[0].step_size
+                        var step_size=data[0].step_size;
                         if(step_size!=''){
                             $("#step_size").val(step_size);
                         }
 
                         //执行模式job_model
-                        var job_model=data[0].job_model
+                        var job_model=data[0].job_model;
                         //初始化输入数据源select 组件
                         $("#job_model").val(job_model);
                         $("#job_model").trigger("chosen:updated");
 
-                        var plan_count=data[0].plan_count
+                        var plan_count=data[0].plan_count;
                         $("#plan_count").val(plan_count);
 
-                        var interval_time=data[0].interval_time
+                        var interval_time=data[0].interval_time;
                         $("#interval_time").val(interval_time);
 
                         //调度任务依赖
-                        var job_ids=data[0].job_ids
+                        var job_ids=data[0].job_ids;
                         if(job_ids!='' && typeof(job_ids) !="undefined"){
                             //初始化输入数据源select 组件
                             $("#job_ids").val(job_ids.split(","));
                             $("#job_ids").trigger("chosen:updated");
                         }
 
-                        var jump_dep=data[0].jump_dep
-                        console.info("jump_dep:"+jump_dep)
+                        var jump_dep=data[0].jump_dep;
+                        console.info("jump_dep:"+jump_dep);
                         if(jump_dep=="on"){
                             $('#jump_dep').iCheck('check');
                         }
 
                         //status
-                        var status=data[0].status
+                        var status=data[0].status;
                         $("#status").val(status);
 
                         //获取输入源数据其他参数
-                        var params=data[0].params
+                        var params=data[0].params;
                         $("#params").val(params);
 
-                        var last_status=data[0].last_status
-                        console.info("last_status:"+last_status)
+                        var last_status=data[0].last_status;
+                        console.info("last_status:"+last_status);
                         $("#last_status").val(last_status);
                         $("#last_status").trigger("chosen:updated");
 
-                        var last_time=data[0].last_time
+                        var last_time=data[0].last_time;
 
                         if(last_time!='' && typeof(last_time) !="undefined")
                         $("#last_time").val(getMyDate(last_time));
 
-                        var notice_error=data[0].notice_error
-                        console.info("notice_error:"+notice_error)
+                        var notice_error=data[0].notice_error;
+                        console.info("notice_error:"+notice_error);
                         if(notice_error=="on"){
                             $('#notice_error').iCheck('check');
                         }
-                        var notice_finish=data[0].notice_finish
-                        console.info("notice_finish:"+notice_finish)
+                        var notice_finish=data[0].notice_finish;
+                        console.info("notice_finish:"+notice_finish);
                         if(notice_finish=="on"){
                             $('#notice_finish').iCheck('check');
                         }
-                        var notice_timeout=data[0].notice_timeout
-                        console.info("notice_timeout:"+notice_timeout)
+                        var notice_timeout=data[0].notice_timeout;
+                        console.info("notice_timeout:"+notice_timeout);
                         if(notice_timeout=="on"){
                             $('#notice_timeout').iCheck('check');
                         }
 
-                        var alarm_email=data[0].alarm_email
-                        console.info("email_alarm:"+alarm_email)
+                        var alarm_email=data[0].alarm_email;
+                        console.info("email_alarm:"+alarm_email);
                         if(alarm_email=="on"){
                             $('#alarm_email').iCheck('check');
                         }
 
-                        var alarm_sms=data[0].alarm_sms
-                        console.info("alarm_sms:"+alarm_sms)
+                        var alarm_sms=data[0].alarm_sms;
+                        console.info("alarm_sms:"+alarm_sms);
                         if(alarm_sms=="on"){
                             $('#alarm_sms').iCheck('check');
                         }
 
-                        var alarm_zdh=data[0].alarm_zdh
-                        console.info("alarm_zdh:"+alarm_zdh)
+                        var alarm_zdh=data[0].alarm_zdh;
+                        console.info("alarm_zdh:"+alarm_zdh);
                         if(alarm_zdh=="on"){
                             $('#alarm_zdh').iCheck('check');
                         }
 
-                        var alarm_account=data[0].alarm_account
-                        $("#alarm_account").val(alarm_account);
+                        var alarm_account=data[0].alarm_account;
+                        window.addressIdMagicSuggest.setValue(alarm_account.split(','));
 
                         var time_out=data[0].time_out
                         $("#time_out").val(time_out);
@@ -1595,7 +1650,7 @@
             return false
         }
 
-        if($('#expr').val()==''){
+        if($('#expr').val() == ''){
             $('#expr').val("1d")
         }
 
@@ -1621,23 +1676,27 @@
             return false
         }
 
-        var count_str=""
+        var count_str="";
         if($('#reset_count').is(':checked')){
             count_str="&count=0"
         }
-        var script_str=""
+        var script_str="";
         if($('#is_script').is(':checked')){
             script_str="&is_script=true"
         }
-        $("#dispatch_task_add_form").attr("etl_context",etl_context)
+        $("#dispatch_task_add_form").attr("etl_context",etl_context);
 
-        var ojson=jsplumb_data()
-        $('#jsmind_data').val(JSON.stringify(ojson))
+        var ojson=jsplumb_data();
+        $('#jsmind_data').val(JSON.stringify(ojson));
+
+        var alarm_str = "&alarm_account="+window.addressIdMagicSuggest.getValue();
+        $("[name='alarm_account[]']").remove();
+
         $.ajax({
             type: 'POST',
             url: server_context+"/dispatch_task_group_add",
             dataType: 'json',
-            data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+count_str+script_str,
+            data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+count_str+script_str+alarm_str,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -1710,26 +1769,29 @@
         var oDate1 = new Date($('#start_time').val());
         var oDate2 = new Date($('#end_time').val());
         if(oDate1 > oDate2){
-            layer.msg("结束时间大于开始时间")
+            layer.msg("结束时间大于开始时间");
             return false
         }
-        var count_str=""
+        var count_str="";
         if($('#reset_count').is(':checked')){
             count_str="&count=0"
         }
-        var script_str=""
+        var script_str="";
         if($('#is_script').is(':checked')){
             script_str="&is_script=true"
         }
 
-        var ojson=jsplumb_data()
-        $('#jsmind_data').val(JSON.stringify(ojson))
-        console.info($("#dispatch_task_add_form").serialize())
+        var ojson=jsplumb_data();
+        $('#jsmind_data').val(JSON.stringify(ojson));
+        console.info($("#dispatch_task_add_form").serialize());
+        var alarm_str = "&alarm_account="+window.addressIdMagicSuggest.getValue();
+        $("[name='alarm_account[]']").remove();
+
         $.ajax({
             type: 'POST',
             url: server_context+"/dispatch_task_group_update",
             dataType: 'json',
-            data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+"&job_id="+s.id+count_str+script_str,
+            data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+"&job_id="+s.id+count_str+script_str+alarm_str,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交

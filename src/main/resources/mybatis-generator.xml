@@ -17,7 +17,7 @@
         </commentGenerator>
         <!--数据库链接地址账号密码 -->
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="jdbc:mysql://127.0.0.1:3306/mydb?serverTimezone=GMT%2B8" userId="zyc"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/zdh?serverTimezone=GMT%2B8&amp;useSSL=false" userId="zyc"
                         password="123456">
         </jdbcConnection>
         <javaTypeResolver>
@@ -37,6 +37,15 @@
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
         <!--生成对应表及类名 -->
-        <table tableName="UserGroupInfo" domainObjectName="UserGroupInfo" mapperName="UserGroupMappeer"></table>
+<!--        <table tableName="blood_source_info" domainObjectName="BloodSourceInfo" mapperName="BloodSourceMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--        </table>-->
+<!--        <table tableName="etl_task_datax_info" domainObjectName="EtlTaskDataxInfo" mapperName="EtlTaskDataxMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--        </table>-->
+
+        <table tableName="account_info" domainObjectName="AccountInfo" mapperName="AccountMapper">
+            <property name="useActualColumnNames" value="true" />
+        </table>
     </context>
 </generatorConfiguration>

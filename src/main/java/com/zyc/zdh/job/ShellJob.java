@@ -95,9 +95,9 @@ public class ShellJob extends JobCommon2 {
                         fileWritter.close();
                         logger.info("当前系统为:" + system+",command:"+newcommand);
                         if (system.toLowerCase().startsWith("win")) {
-                            result = CommandUtils.exeCommand2(tli,"cmd.exe", "/c", file2.getAbsolutePath());
+                            result = CommandUtils.exeCommand2(tli,"cmd.exe", "/c", file2.getAbsolutePath(), "GBK");
                         } else {
-                            result = CommandUtils.exeCommand2(tli,"sh", "-c", file2.getAbsolutePath());
+                            result = CommandUtils.exeCommand2(tli,"sh", "-c", file2.getAbsolutePath(),"GBK");
                         }
                     } else {
                         //命令行执行
@@ -106,9 +106,9 @@ public class ShellJob extends JobCommon2 {
                         logger.info("当前系统为:" + system+",command:"+newcommand+",命令行方式执行;");
                         insertLog(tli, "info", "[" + jobType + "] JOB ,当前系统为:" + system+",command:"+newcommand+",命令行方式执行;");
                         if (system.toLowerCase().startsWith("win")) {
-                            result = CommandUtils.exeCommand2(tli,"cmd.exe","/c" , newcommand);
+                            result = CommandUtils.exeCommand2(tli,"cmd.exe","/c" , newcommand,"GBK");
                         } else {
-                            result = CommandUtils.exeCommand2(tli,"sh","-c",newcommand);
+                            result = CommandUtils.exeCommand2(tli,"sh","-c",newcommand,"GBK");
                         }
                     }
                 }

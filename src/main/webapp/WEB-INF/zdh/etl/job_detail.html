@@ -56,6 +56,7 @@
                                     <option value="APPLY" mytype="">申请源</option>
                                     <option value="FLINK" mytype="">FLINK</option>
                                     <option value="JDBC" mytype="">JDBC</option>
+                                    <option value="DATAX" mytype="">DATAX</option>
                                 </select>
                             </div>
                         </div>
@@ -426,6 +427,36 @@
                     }
                 });
             }
+
+            function init_etl_task_datax_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/etl_task_datax_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].datax_context + "\" hassubinfo=\"true\">" + data[i].datax_context + "</option>"
+                        }
+                        $("#etl_task_id").chosen("destroy");
+                        $('#etl_task_id').html(str);
+                        $('#etl_task_id').chosen()
+
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_jdbc_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_jdbc_error: " + data.responseText);
+                    }
+                });
+            }
             //初始化依赖调度任务数据
             function init_job_sources(){
                 $.ajax({
@@ -536,37 +567,40 @@
 
             function choseMoreTask(more_task){
                 if(more_task=="多源ETL"){
-                    console.info("选中多源ETL")
+                    console.info("选中多源ETL");
                     init_etl_task_more_sources()
                 }else if(more_task=="单源ETL"){
-                    console.info("选中单源ETL")
+                    console.info("选中单源ETL");
                     init_etl_task_sources()
                 }else if(more_task=="SQL") {
-                    console.info("选中SQL")
+                    console.info("选中SQL");
                     init_sql_task_sources()
                 }else if(more_task=="外部JAR"){
                     console.info("选中外部JAR")
                 }else if(more_task=="Drools") {
-                    console.info("选中Drools")
+                    console.info("选中Drools");
                     init_etl_task_drools_sources()
                 }else if(more_task=="SSH"){
-                    console.info("选中SSH")
+                    console.info("选中SSH");
                     init_etl_task_ssh_sources()
                 }else if(more_task=="APPLY"){
-                    console.info("选中申请源")
+                    console.info("选中申请源");
                     init_etl_task_apply_sources()
                 }else if(more_task=="FLINK"){
-                    console.info("选中FLINK")
+                    console.info("选中FLINK");
                     init_etl_task_flink_sources()
                 }else if(more_task=="JDBC"){
                     console.info("选中JDBC")
                     init_etl_task_jdbc_sources()
+                } else if(more_task=="DATAX"){
+                    console.info("选中DATAX")
+                    init_etl_task_datax_sources()
                 }
             }
 
             //启动数据源select 初始化函数
-            $('#etl_task_id').chosen()
-            $('#depend_level').chosen()
+            $('#etl_task_id').chosen();
+            $('#depend_level').chosen();
             init_etl_task_sources();
 
             init_job_sources();
