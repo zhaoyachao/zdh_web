@@ -31,7 +31,7 @@
                   });
               }
           });
-      })
+      });
 
       $('#remove').click(function () {
 
@@ -55,7 +55,7 @@
             });
         }
 
-    })
+    });
 
       function deleteMs(ids) {
           $.ajax({
@@ -85,7 +85,7 @@
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               parent.layer.open({
                   type: 2,
                   title: 'SSH任务配置',

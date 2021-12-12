@@ -319,13 +319,13 @@
 
             }
 
-            load_notice()
+            load_notice();
 
 
 
             setInterval(function () {
                 load_notice();
-            },10000)
+            },60000);
 
 
             $.ajax({
@@ -734,9 +734,9 @@
                 },
                 //处理完成
                 complete: function () {
-                    console.info("complete")
+                    console.info("complete");
                     layer.close(index1)
-                    layer.msg("同步元数据完成")
+                    layer.msg("同步元数据完成");
                 },
                 //报错
                 error: function (data) {

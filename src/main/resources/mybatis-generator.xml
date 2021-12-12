@@ -44,8 +44,28 @@
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--        </table>-->
 
-        <table tableName="account_info" domainObjectName="AccountInfo" mapperName="AccountMapper">
+<!--        <table tableName="account_info" domainObjectName="AccountInfo" mapperName="AccountMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--        </table>-->
+
+<!--        <table tableName="quality_rule_info" domainObjectName="QualityRuleInfo" mapperName="QualityRuleMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+<!--        <table tableName="quality_task_info" domainObjectName="QualityTaskInfo" mapperName="QualityTaskMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+        <table tableName="quality" domainObjectName="QualityInfo" mapperName="QualityMapper">
             <property name="useActualColumnNames" value="true" />
+            <columnOverride column="id" property="id" javaType="java.lang.String"/>
+            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
         </table>
+
     </context>
 </generatorConfiguration>

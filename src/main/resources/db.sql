@@ -1060,6 +1060,51 @@ CREATE TABLE etl_task_datax_info (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--2021-12-08;
+CREATE TABLE quality_rule_info (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `rule_code` varchar(200) DEFAULT NULL COMMENT '规则code',
+  `rule_name` varchar(100) DEFAULT NULL COMMENT '规则名称',
+  `rule_type` varchar(100) DEFAULT NULL COMMENT '规则类型,1:sql表达式,2:正则',
+  `rule_expr` text COMMENT '规则内容',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--2021-12-12;
+CREATE TABLE `quality_task_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `quality_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `data_sources_choose_input` varchar(100) DEFAULT NULL COMMENT '输入数据源id',
+  `data_source_type_input` varchar(100) DEFAULT NULL COMMENT '输入数据源类型',
+  `data_sources_table_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源表名',
+  `data_sources_file_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源文件名',
+  `data_sources_params_input` varchar(500) DEFAULT NULL COMMENT '输入数据源参数',
+  `data_sources_filter_input` varchar(500) DEFAULT NULL COMMENT '输入数据源过滤条件',
+  `file_type_input` varchar(10) DEFAULT NULL COMMENT '输入文件类型',
+  `encoding_input` varchar(10) DEFAULT NULL COMMENT '输入文件编码',
+  `sep_input` varchar(10) DEFAULT NULL COMMENT '输入分割符',
+  `header_input` varchar(10) DEFAULT NULL COMMENT '输入是否包含表头',
+  `data_sources_table_columns` text COMMENT '输入表字段名',
+  `data_sources_file_columns` text COMMENT '输入文件字段名',
+  `repartition_num_input` varchar(64) NOT NULL DEFAULT '' COMMENT '洗牌个数默认空',
+  `repartition_cols_input` varchar(256) NOT NULL DEFAULT '' COMMENT '洗牌字段默认空',
+  `quality_rule_config` text COMMENT '规则配置json',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+  `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+  `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+  `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
+
+alter table quality add column etl_context varchar(256) default null comment '质量任务名称';
+alter table quality add column job_context varchar(256) default null comment '调度任务名称';
+
 
 -- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;

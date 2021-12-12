@@ -250,7 +250,7 @@ public class LoginController {
         Example example=new Example(accountInfo.getClass());
         Example.Criteria criteria=example.createCriteria();
         if(!StringUtils.isEmpty(username)){
-            criteria.andLike("user_name", username);
+            criteria.andLike("user_name", "%"+username+"%");
         }
         List<AccountInfo> accountInfos=accountMapper.selectByExample(example);
         List<JSONObject> user_names=new ArrayList<>();

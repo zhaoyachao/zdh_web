@@ -178,7 +178,7 @@ public class JobCommon2 {
         if (map != null) {
             logger.info("单源,自定义参数不为空,开始替换:" + tli.getParams());
             //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-            DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null,null);
+            DynamicParams(map, tli, etlTaskInfo);
         }
 
         //获取数据源信息
@@ -309,7 +309,7 @@ public class JobCommon2 {
             for (EtlTaskInfo etlTaskInfo : etlTaskInfos) {
                 if (map != null) {
                     logger.info("多源,自定义参数不为空,开始替换:" + tli.getParams());
-                    DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null,null);
+                    DynamicParams(map, tli,etlTaskInfo);
                 }
 
                 //获取数据源信息
@@ -361,7 +361,7 @@ public class JobCommon2 {
             if (map != null) {
                 logger.info("SQL,自定义参数不为空,开始替换:" + tli.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, tli, null, sqlTaskInfo, null, null,null,null,null,null);
+                DynamicParams(map, tli, sqlTaskInfo);
             }
 
             //获取数据源信息
@@ -442,7 +442,7 @@ public class JobCommon2 {
             if (map != null) {
                 logger.info("JAR,自定义参数不为空,开始替换:" + tli.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, tli, null, null, null, sshTaskInfo,null,null,null,null);
+                DynamicParams(map, tli, sshTaskInfo);
             }
             ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(sshTaskInfo.getOwner());
             List<JarFileInfo> jarFileInfos = jarFileMapper.selectByParams2(sshTaskInfo.getOwner(), new String[]{sshTaskInfo.getId()});
@@ -527,7 +527,7 @@ public class JobCommon2 {
 
                 if (map != null) {
                     logger.info("多源,自定义参数不为空,开始替换:" + tli.getParams());
-                    DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null,null);
+                    DynamicParams(map, tli, etlTaskInfo);
                 }
 
                 //获取数据源信息
@@ -564,7 +564,7 @@ public class JobCommon2 {
                     //此处做参数匹配转换
                     if (map != null) {
                         logger.info("多源,自定义参数不为空,开始替换:" + tli.getParams());
-                        DynamicParams(map, tli, etlTaskInfo, null, null, null,null,null,null,null);
+                        DynamicParams(map, tli,etlTaskInfo);
                     }
 
                     //获取数据源信息
@@ -602,7 +602,7 @@ public class JobCommon2 {
                 //此处做参数匹配转换
                 if (map != null) {
                     logger.info("SQL,自定义参数不为空,开始替换:" + tli.getParams());
-                    DynamicParams(map, tli, null, sqlTaskInfo, null, null,null,null, null,null);
+                    DynamicParams(map, tli, sqlTaskInfo);
                 }
 
                 zdhDroolsInfo.setSqlTaskInfo(sqlTaskInfo);
@@ -647,7 +647,7 @@ public class JobCommon2 {
         if (map != null) {
             logger.info("申请源,自定义参数不为空,开始替换:" + tli.getParams());
             //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-            DynamicParams(map, tli, null, null, null, null,etlApplyTaskInfo,null,null,null);
+            DynamicParams(map, tli, etlApplyTaskInfo);
         }
 
         //获取数据源信息
@@ -735,7 +735,7 @@ public class JobCommon2 {
             if (map != null) {
                 logger.info("SQL,自定义参数不为空,开始替换:" + tli.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, tli, null, null, null, null,null,etlTaskFlinkInfo,null,null);
+                DynamicParams(map, tli, etlTaskFlinkInfo);
             }
 
 
@@ -770,7 +770,7 @@ public class JobCommon2 {
             if (map != null) {
                 logger.info("SQL,自定义参数不为空,开始替换:" + tli.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, tli, null, null, null, null,null,null,etlTaskJdbcInfo,null);
+                DynamicParams(map, tli, etlTaskJdbcInfo);
             }
 
             //获取数据源信息
@@ -854,7 +854,7 @@ public class JobCommon2 {
             if (map != null) {
                 logger.info("SQL,自定义参数不为空,开始替换:" + tli.getParams());
                 //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-                DynamicParams(map, tli, null, null, null, null,null,null,null,etlTaskDataxInfo);
+                DynamicParams(map, tli, etlTaskDataxInfo);
             }
 
             //获取数据源信息
@@ -885,6 +885,73 @@ public class JobCommon2 {
 
     }
 
+
+    public static ZdhQualityInfo create_zdhQualityInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
+                                         QualityTaskMapper qualityTaskMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper, QualityRuleMapper qualityRuleMapper) throws Exception {
+
+        JSONObject json = new JSONObject();
+        String date = DateUtil.formatTime(tli.getCur_time());
+        json.put("ETL_DATE", date);
+        logger.info(" JOB ,单源,处理当前日期,传递参数ETL_DATE 为" + date);
+        tli.setParams(json.toJSONString());
+
+        String etl_task_id = tli.getEtl_task_id();
+        //获取etl 任务信息
+        QualityTaskInfo qualityTaskInfo = qualityTaskMapper.selectByPrimaryKey(etl_task_id);
+        if (qualityTaskInfo == null) {
+            logger.info("无法找到对应的[QUALITY]任务,任务id:" + etl_task_id);
+            throw new Exception("无法找到对应的[QUALITY]任务,任务id:" + etl_task_id);
+        }
+
+        //增加quality_rule_info信息
+        JSONArray jsonArray=new JSONArray();
+        if(!StringUtils.isEmpty(qualityTaskInfo.getQuality_rule_config())){
+            for(Object obj:JSON.parseArray(qualityTaskInfo.getQuality_rule_config())){
+                JSONObject jsonObject=(JSONObject) obj;
+                String id = jsonObject.getString("quality_rule");
+                QualityRuleInfo qualityRuleInfo = qualityRuleMapper.selectByPrimaryKey(id);
+                JSONObject jsonObject1 = (JSONObject) JSONObject.toJSON(qualityRuleInfo);
+                jsonObject1.put("quality_columns", jsonObject.getString("quality_columns"));
+                jsonArray.add(jsonObject1);
+            }
+        }
+
+        qualityTaskInfo.setQuality_rule_config(jsonArray.toJSONString());
+
+        Map<String, Object> map = (Map<String, Object>) JSON.parseObject(tli.getParams());
+        //此处做参数匹配转换
+        if (map != null) {
+            logger.info("单源,自定义参数不为空,开始替换:" + tli.getParams());
+            //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
+            DynamicParams(map, tli, qualityTaskInfo);
+        }
+
+        //获取数据源信息
+        String data_sources_choose_input = qualityTaskInfo.getData_sources_choose_input();
+
+        DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+        if(dataSourcesInfoInput==null){
+            logger.info("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+            throw new Exception("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
+        }
+        DataSourcesInfo dataSourcesInfoOutput = null;
+
+        if (dataSourcesInfoInput.getData_source_type()!=null && dataSourcesInfoInput.getData_source_type().equals("外部上传")) {
+            //获取文件服务器信息 配置到数据源选项
+            ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoInput.getOwner());
+            if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
+                dataSourcesInfoInput.setUrl(zdhNginx.getHost() + ":" + zdhNginx.getPort());
+                dataSourcesInfoInput.setUsername(zdhNginx.getUsername());
+                dataSourcesInfoInput.setPassword(zdhNginx.getPassword());
+            }
+        }
+
+        ZdhQualityInfo zdhQualityInfo = new ZdhQualityInfo();
+        zdhQualityInfo.setZdhInfo(dataSourcesInfoInput, qualityTaskInfo, dataSourcesInfoOutput, tli);
+
+        return zdhQualityInfo;
+
+    }
 
 
     /**
@@ -919,8 +986,7 @@ public class JobCommon2 {
 
     }
 
-    public static void DynamicParams(Map<String, Object> map, TaskLogInstance tli, EtlTaskInfo etlTaskInfo, SqlTaskInfo sqlTaskInfo, JarTaskInfo jarTaskInfo, SshTaskInfo sshTaskInfo,
-                                     EtlApplyTaskInfo etlApplyTaskInfo,EtlTaskFlinkInfo etlTaskFlinkInfo,EtlTaskJdbcInfo etlTaskJdbcInfo,EtlTaskDataxInfo etlTaskDataxInfo) {
+    public static void DynamicParams(Map<String, Object> map, TaskLogInstance tli, Object taskInfo) {
         try {
             Map<String, Object> jinJavaParam = getJinJavaParam(tli);
 
@@ -930,85 +996,128 @@ public class JobCommon2 {
                 logger.info("key:" + k + ",value:" + v);
                 jinJavaParam.put(k, v);
             });
-
-            if (etlTaskInfo != null) {
-                final String filter = jj.render(etlTaskInfo.getData_sources_filter_input(), jinJavaParam);
-                final String clear = jj.render(etlTaskInfo.getData_sources_clear_output(), jinJavaParam);
-                final String file_name=jj.render(etlTaskInfo.getData_sources_file_name_input(),jinJavaParam);
-                final String file_name2=jj.render(etlTaskInfo.getData_sources_file_name_output(),jinJavaParam);
-                final String table_name=jj.render(etlTaskInfo.getData_sources_table_name_input(),jinJavaParam);
-                final String table_name2=jj.render(etlTaskInfo.getData_sources_table_name_output(),jinJavaParam);
-                etlTaskInfo.setData_sources_filter_input(filter);
-                etlTaskInfo.setData_sources_clear_output(clear);
-                etlTaskInfo.setData_sources_file_name_input(file_name);
-                etlTaskInfo.setData_sources_file_name_output(file_name2);
-                etlTaskInfo.setData_sources_table_name_input(table_name);
-                etlTaskInfo.setData_sources_table_name_output(table_name2);
+//            EtlTaskInfo etlTaskInfo, SqlTaskInfo sqlTaskInfo, JarTaskInfo jarTaskInfo, SshTaskInfo sshTaskInfo,
+//                    EtlApplyTaskInfo etlApplyTaskInfo,EtlTaskFlinkInfo etlTaskFlinkInfo,EtlTaskJdbcInfo etlTaskJdbcInfo,EtlTaskDataxInfo etlTaskDataxInfo
+            if(taskInfo instanceof EtlTaskInfo){
+                EtlTaskInfo etlTaskInfo = (EtlTaskInfo)taskInfo;
+                if (etlTaskInfo != null) {
+                    final String filter = jj.render(etlTaskInfo.getData_sources_filter_input(), jinJavaParam);
+                    final String clear = jj.render(etlTaskInfo.getData_sources_clear_output(), jinJavaParam);
+                    final String file_name=jj.render(etlTaskInfo.getData_sources_file_name_input(),jinJavaParam);
+                    final String file_name2=jj.render(etlTaskInfo.getData_sources_file_name_output(),jinJavaParam);
+                    final String table_name=jj.render(etlTaskInfo.getData_sources_table_name_input(),jinJavaParam);
+                    final String table_name2=jj.render(etlTaskInfo.getData_sources_table_name_output(),jinJavaParam);
+                    etlTaskInfo.setData_sources_filter_input(filter);
+                    etlTaskInfo.setData_sources_clear_output(clear);
+                    etlTaskInfo.setData_sources_file_name_input(file_name);
+                    etlTaskInfo.setData_sources_file_name_output(file_name2);
+                    etlTaskInfo.setData_sources_table_name_input(table_name);
+                    etlTaskInfo.setData_sources_table_name_output(table_name2);
+                }
             }
 
-            if (sqlTaskInfo != null) {
-                final String etl_sql = jj.render(sqlTaskInfo.getEtl_sql(), jinJavaParam);
-                final String clear = jj.render(sqlTaskInfo.getData_sources_clear_output(), jinJavaParam);
-                final String file_name=jj.render(sqlTaskInfo.getData_sources_file_name_output(),jinJavaParam);
-                final String table_name=jj.render(sqlTaskInfo.getData_sources_table_name_output(),jinJavaParam);
+            if(taskInfo instanceof SqlTaskInfo){
+                SqlTaskInfo sqlTaskInfo=(SqlTaskInfo)taskInfo;
+                if (sqlTaskInfo != null) {
+                    final String etl_sql = jj.render(sqlTaskInfo.getEtl_sql(), jinJavaParam);
+                    final String clear = jj.render(sqlTaskInfo.getData_sources_clear_output(), jinJavaParam);
+                    final String file_name=jj.render(sqlTaskInfo.getData_sources_file_name_output(),jinJavaParam);
+                    final String table_name=jj.render(sqlTaskInfo.getData_sources_table_name_output(),jinJavaParam);
 
-                sqlTaskInfo.setEtl_sql(etl_sql);
-                sqlTaskInfo.setData_sources_clear_output(clear);
-                sqlTaskInfo.setData_sources_file_name_output(file_name);
-                sqlTaskInfo.setData_sources_table_name_output(table_name);
+                    sqlTaskInfo.setEtl_sql(etl_sql);
+                    sqlTaskInfo.setData_sources_clear_output(clear);
+                    sqlTaskInfo.setData_sources_file_name_output(file_name);
+                    sqlTaskInfo.setData_sources_table_name_output(table_name);
 
+                }
+            }
+            if(taskInfo instanceof JarTaskInfo){
+                JarTaskInfo jarTaskInfo = (JarTaskInfo)taskInfo;
+                if (jarTaskInfo != null) {
+                    final String spark_submit_params = jj.render(jarTaskInfo.getSpark_submit_params(), jinJavaParam);
+                    jarTaskInfo.setSpark_submit_params(spark_submit_params);
+                }
             }
 
-            if (jarTaskInfo != null) {
-                final String spark_submit_params = jj.render(jarTaskInfo.getSpark_submit_params(), jinJavaParam);
-                jarTaskInfo.setSpark_submit_params(spark_submit_params);
+            if(taskInfo instanceof SshTaskInfo){
+                SshTaskInfo sshTaskInfo=(SshTaskInfo)taskInfo;
+                if (sshTaskInfo != null) {
+                    final String script_path = jj.render(sshTaskInfo.getSsh_script_path(), jinJavaParam);
+                    sshTaskInfo.setSsh_script_path(script_path);
+
+                    jinJavaParam.put("zdh_online_file", sshTaskInfo.getSsh_script_path() + "/" + tli.getId() + "_online");
+                    final String ssh_cmd = jj.render(sshTaskInfo.getSsh_cmd(), jinJavaParam);
+                    sshTaskInfo.setSsh_cmd(ssh_cmd);
+
+                    final String script_context = jj.render(sshTaskInfo.getSsh_script_context(), jinJavaParam);
+                    sshTaskInfo.setSsh_script_context(script_context);
+
+                }
+            }
+            if(taskInfo instanceof EtlApplyTaskInfo){
+                EtlApplyTaskInfo etlApplyTaskInfo=(EtlApplyTaskInfo) taskInfo;
+                if (etlApplyTaskInfo != null) {
+                    final String filter = jj.render(etlApplyTaskInfo.getData_sources_filter_input(), jinJavaParam);
+                    final String clear = jj.render(etlApplyTaskInfo.getData_sources_clear_output(), jinJavaParam);
+                    final String file_name=jj.render(etlApplyTaskInfo.getData_sources_file_name_input(),jinJavaParam);
+                    final String file_name2=jj.render(etlApplyTaskInfo.getData_sources_file_name_output(),jinJavaParam);
+                    final String table_name=jj.render(etlApplyTaskInfo.getData_sources_table_name_input(),jinJavaParam);
+                    final String table_name2=jj.render(etlApplyTaskInfo.getData_sources_table_name_output(),jinJavaParam);
+                    etlApplyTaskInfo.setData_sources_filter_input(filter);
+                    etlApplyTaskInfo.setData_sources_clear_output(clear);
+                    etlApplyTaskInfo.setData_sources_file_name_input(file_name);
+                    etlApplyTaskInfo.setData_sources_file_name_output(file_name2);
+                    etlApplyTaskInfo.setData_sources_table_name_input(table_name);
+                    etlApplyTaskInfo.setData_sources_table_name_output(table_name2);
+                }
+
+            }
+            if(taskInfo instanceof EtlTaskFlinkInfo){
+                EtlTaskFlinkInfo etlTaskFlinkInfo=(EtlTaskFlinkInfo)taskInfo;
+                if (etlTaskFlinkInfo != null){
+                    final String etl_sql = jj.render(etlTaskFlinkInfo.getEtl_sql(), jinJavaParam);
+                    final String command = jj.render(etlTaskFlinkInfo.getCommand(), jinJavaParam);
+                    etlTaskFlinkInfo.setEtl_sql(etl_sql);
+                    etlTaskFlinkInfo.setCommand(command);
+                }
+            }
+            if(taskInfo instanceof EtlTaskJdbcInfo){
+                EtlTaskJdbcInfo etlTaskJdbcInfo=(EtlTaskJdbcInfo) taskInfo;
+                if (etlTaskJdbcInfo != null){
+                    final String etl_sql = jj.render(etlTaskJdbcInfo.getEtl_sql(), jinJavaParam);
+                    final String clear = jj.render(etlTaskJdbcInfo.getData_sources_clear_output(), jinJavaParam);
+                    final String file_name=jj.render(etlTaskJdbcInfo.getData_sources_file_name_output(),jinJavaParam);
+                    final String table_name=jj.render(etlTaskJdbcInfo.getData_sources_table_name_output(),jinJavaParam);
+
+                    etlTaskJdbcInfo.setEtl_sql(etl_sql);
+                    etlTaskJdbcInfo.setData_sources_clear_output(clear);
+                    etlTaskJdbcInfo.setData_sources_file_name_output(file_name);
+                    etlTaskJdbcInfo.setData_sources_table_name_output(table_name);
+                }
             }
 
-            if (sshTaskInfo != null) {
-                final String script_path = jj.render(sshTaskInfo.getSsh_script_path(), jinJavaParam);
-                sshTaskInfo.setSsh_script_path(script_path);
-
-                jinJavaParam.put("zdh_online_file", sshTaskInfo.getSsh_script_path() + "/" + tli.getId() + "_online");
-                final String ssh_cmd = jj.render(sshTaskInfo.getSsh_cmd(), jinJavaParam);
-                sshTaskInfo.setSsh_cmd(ssh_cmd);
-
-                final String script_context = jj.render(sshTaskInfo.getSsh_script_context(), jinJavaParam);
-                sshTaskInfo.setSsh_script_context(script_context);
-
-            }
-            if (etlApplyTaskInfo != null) {
-                final String filter = jj.render(etlApplyTaskInfo.getData_sources_filter_input(), jinJavaParam);
-                final String clear = jj.render(etlApplyTaskInfo.getData_sources_clear_output(), jinJavaParam);
-                final String file_name=jj.render(etlApplyTaskInfo.getData_sources_file_name_input(),jinJavaParam);
-                final String file_name2=jj.render(etlApplyTaskInfo.getData_sources_file_name_output(),jinJavaParam);
-                final String table_name=jj.render(etlApplyTaskInfo.getData_sources_table_name_input(),jinJavaParam);
-                final String table_name2=jj.render(etlApplyTaskInfo.getData_sources_table_name_output(),jinJavaParam);
-                etlApplyTaskInfo.setData_sources_filter_input(filter);
-                etlApplyTaskInfo.setData_sources_clear_output(clear);
-                etlApplyTaskInfo.setData_sources_file_name_input(file_name);
-                etlApplyTaskInfo.setData_sources_file_name_output(file_name2);
-                etlApplyTaskInfo.setData_sources_table_name_input(table_name);
-                etlApplyTaskInfo.setData_sources_table_name_output(table_name2);
+            if(taskInfo instanceof EtlTaskDataxInfo){
+                EtlTaskDataxInfo etlTaskDataxInfo=(EtlTaskDataxInfo) taskInfo;
+                if (etlTaskDataxInfo != null){
+                    final String datax_json = jj.render(etlTaskDataxInfo.getDatax_json(), jinJavaParam);
+                    etlTaskDataxInfo.setDatax_json(datax_json);
+                }
             }
 
-            if (etlTaskFlinkInfo != null){
-                final String etl_sql = jj.render(etlTaskFlinkInfo.getEtl_sql(), jinJavaParam);
-                final String command = jj.render(etlTaskFlinkInfo.getCommand(), jinJavaParam);
-                etlTaskFlinkInfo.setEtl_sql(etl_sql);
-                etlTaskFlinkInfo.setCommand(command);
+            if(taskInfo instanceof QualityTaskInfo){
+                QualityTaskInfo qualityTaskInfo=(QualityTaskInfo) taskInfo;
+                if (qualityTaskInfo != null){
+                    final String filter = jj.render(qualityTaskInfo.getData_sources_filter_input(), jinJavaParam);
+                    final String file_name=jj.render(qualityTaskInfo.getData_sources_file_name_input(),jinJavaParam);
+                    final String table_name=jj.render(qualityTaskInfo.getData_sources_table_name_input(),jinJavaParam);
+                    final String quality_rule_config=jj.render(qualityTaskInfo.getQuality_rule_config(),jinJavaParam);
+                    qualityTaskInfo.setData_sources_filter_input(filter);
+                    qualityTaskInfo.setData_sources_file_name_input(file_name);
+                    qualityTaskInfo.setData_sources_table_name_input(table_name);
+                    qualityTaskInfo.setQuality_rule_config(quality_rule_config);
+                }
             }
 
-            if (etlTaskJdbcInfo != null){
-                final String etl_sql = jj.render(etlTaskJdbcInfo.getEtl_sql(), jinJavaParam);
-                final String clear = jj.render(etlTaskJdbcInfo.getData_sources_clear_output(), jinJavaParam);
-                final String file_name=jj.render(etlTaskJdbcInfo.getData_sources_file_name_output(),jinJavaParam);
-                final String table_name=jj.render(etlTaskJdbcInfo.getData_sources_table_name_output(),jinJavaParam);
-
-                etlTaskJdbcInfo.setEtl_sql(etl_sql);
-                etlTaskJdbcInfo.setData_sources_clear_output(clear);
-                etlTaskJdbcInfo.setData_sources_file_name_output(file_name);
-                etlTaskJdbcInfo.setData_sources_table_name_output(table_name);
-            }
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -1016,7 +1125,6 @@ public class JobCommon2 {
 
 
     }
-
 
     public static String DynamicParams(Map<String, Object> map, TaskLogInstance tli, String old_str) {
         try {
@@ -1141,6 +1249,9 @@ public class JobCommon2 {
         EtlTaskFlinkMapper etlTaskFlinkMapper = (EtlTaskFlinkMapper) SpringContext.getBean("etlTaskFlinkMapper");
         EtlTaskJdbcMapper etlTaskJdbcMapper = (EtlTaskJdbcMapper) SpringContext.getBean("etlTaskJdbcMapper");
         EtlTaskDataxMapper etlTaskDataxMapper = (EtlTaskDataxMapper) SpringContext.getBean("etlTaskDataxMapper");
+        QualityTaskMapper qualityTaskMapper = (QualityTaskMapper) SpringContext.getBean("qualityTaskMapper");
+        QualityRuleMapper qualityRuleMapper = (QualityRuleMapper) SpringContext.getBean("qualityRuleMapper");
+
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
         String params = tli.getParams().trim();
@@ -1174,6 +1285,7 @@ public class JobCommon2 {
         ZdhFlinkSqlInfo zdhFlinkSqlInfo = new ZdhFlinkSqlInfo();
         ZdhJdbcInfo zdhJdbcInfo=new ZdhJdbcInfo();
         ZdhDataxInfo zdhDataxInfo=new ZdhDataxInfo();
+        ZdhQualityInfo zdhQualityInfo=new ZdhQualityInfo();
 
         try {
             if (tli.getMore_task().equals("多源ETL")) {
@@ -1207,6 +1319,9 @@ public class JobCommon2 {
             }else if (tli.getMore_task().equalsIgnoreCase("DATAX")) {
                 logger.info("组装DATAX任务信息");
                 zdhDataxInfo = create_zdhDataxInfo(tli, quartzJobMapper, etlTaskDataxMapper, dataSourcesServiceImpl, zdhNginxMapper);
+            }else if (tli.getMore_task().equalsIgnoreCase("QUALITY")) {
+                logger.info("组装QUALITY任务信息");
+                zdhQualityInfo = create_zdhQualityInfo(tli, quartzJobMapper, qualityTaskMapper, dataSourcesServiceImpl, zdhNginxMapper, qualityRuleMapper);
             }
 
 
@@ -1222,6 +1337,7 @@ public class JobCommon2 {
                 zdhFlinkSqlInfo.setTask_logs_id(task_logs_id);
                 zdhJdbcInfo.setTask_logs_id(task_logs_id);
                 zdhDataxInfo.setTask_logs_id(task_logs_id);
+                zdhQualityInfo.setTask_logs_id(task_logs_id);
 
                 insertLog(tli, "DEBUG", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求");
                 //tli.setEtl_date(date);
@@ -1320,7 +1436,7 @@ public class JobCommon2 {
                     url_tmp = url + "/jdbc";
                     etl_info = JSON.toJSONString(zdhJdbcInfo);//todo
                     insertLog(tli,"INFO", etl_info);
-                    if(zdhJdbcInfo!=null && zdhJdbcInfo.getEtlTaskJdbcInfo().getEngine_type().equalsIgnoreCase("loocal")){
+                    if(zdhJdbcInfo.getEtlTaskJdbcInfo().getEngine_type().equalsIgnoreCase("loocal")){
                         String msg="当前JDBC引擎为本地模式,将在本地执行,不会发送zdh_server模块执行";
                         logger.info(msg);
                         JobCommon2.insertLog(tli,"INFO",msg);
@@ -1363,6 +1479,10 @@ public class JobCommon2 {
                     }
                     return rs;
 
+                }else if(tli.getMore_task().equalsIgnoreCase("QUALITY")){
+                    //todo 未完成
+                    url_tmp = url + "/quality";
+                    etl_info = JSON.toJSONString(zdhQualityInfo);
                 }
 
                 tli.setExecutor(executor);
@@ -1376,8 +1496,13 @@ public class JobCommon2 {
                 updateTaskLog(tli, tlim);
 
 
+                Boolean is_send_server = true;
+                if(zdhJdbcInfo.getEtlTaskJdbcInfo() != null && zdhJdbcInfo.getEtlTaskJdbcInfo().getEngine_type().equalsIgnoreCase("spark")){
+                    is_send_server = false;
+                }
+
                 //发往server处任务
-                if (!tli.getMore_task().equalsIgnoreCase("SSH") && !tli.getMore_task().equalsIgnoreCase("FLINK") && zdhJdbcInfo!=null && zdhJdbcInfo.getEtlTaskJdbcInfo().getEngine_type().equalsIgnoreCase("spark")) {
+                if (!tli.getMore_task().equalsIgnoreCase("SSH") && !tli.getMore_task().equalsIgnoreCase("FLINK") && is_send_server) {
                     logger.info("[调度平台]:" + url_tmp + " ,参数:" + etl_info);
                     insertLog(tli, "DEBUG", "[调度平台]:" + url_tmp + " ,参数:" + etl_info);
                     HttpUtil.postJSON(url_tmp, etl_info);
@@ -1389,7 +1514,6 @@ public class JobCommon2 {
                     //updateTaskLog(tli, tlim);
                     tlim.updateStatusById3("etl", "15", tli.getId());
                 }
-
             }
         } catch (Exception e) {
             e.printStackTrace();

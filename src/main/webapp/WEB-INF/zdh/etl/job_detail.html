@@ -57,6 +57,7 @@
                                     <option value="FLINK" mytype="">FLINK</option>
                                     <option value="JDBC" mytype="">JDBC</option>
                                     <option value="DATAX" mytype="">DATAX</option>
+                                    <option value="QUALITY" mytype="">数据质量</option>
                                 </select>
                             </div>
                         </div>
@@ -449,11 +450,41 @@
                     },
                     //处理完成
                     complete: function () {
-                        console.info("etl_task_jdbc_complete")
+                        console.info("etl_task_datax_list_complete")
                     },
                     //报错
                     error: function (data) {
-                        console.info("etl_task_jdbc_error: " + data.responseText);
+                        console.info("etl_task_datax_list_error: " + data.responseText);
+                    }
+                });
+            }
+
+            function init_quality_task_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/quality_task_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].quality_context + "\" hassubinfo=\"true\">" + data[i].quality_context + "</option>"
+                        }
+                        $("#etl_task_id").chosen("destroy");
+                        $('#etl_task_id').html(str);
+                        $('#etl_task_id').chosen()
+
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("quality_task_list_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("quality_task_list_error: " + data.responseText);
                     }
                 });
             }
@@ -568,33 +599,36 @@
             function choseMoreTask(more_task){
                 if(more_task=="多源ETL"){
                     console.info("选中多源ETL");
-                    init_etl_task_more_sources()
+                    init_etl_task_more_sources();
                 }else if(more_task=="单源ETL"){
                     console.info("选中单源ETL");
-                    init_etl_task_sources()
+                    init_etl_task_sources();
                 }else if(more_task=="SQL") {
                     console.info("选中SQL");
-                    init_sql_task_sources()
+                    init_sql_task_sources();
                 }else if(more_task=="外部JAR"){
-                    console.info("选中外部JAR")
+                    console.info("选中外部JAR");
                 }else if(more_task=="Drools") {
                     console.info("选中Drools");
-                    init_etl_task_drools_sources()
+                    init_etl_task_drools_sources();
                 }else if(more_task=="SSH"){
                     console.info("选中SSH");
-                    init_etl_task_ssh_sources()
+                    init_etl_task_ssh_sources();
                 }else if(more_task=="APPLY"){
                     console.info("选中申请源");
-                    init_etl_task_apply_sources()
+                    init_etl_task_apply_sources();
                 }else if(more_task=="FLINK"){
                     console.info("选中FLINK");
-                    init_etl_task_flink_sources()
+                    init_etl_task_flink_sources();
                 }else if(more_task=="JDBC"){
-                    console.info("选中JDBC")
-                    init_etl_task_jdbc_sources()
+                    console.info("选中JDBC");
+                    init_etl_task_jdbc_sources();
                 } else if(more_task=="DATAX"){
-                    console.info("选中DATAX")
-                    init_etl_task_datax_sources()
+                    console.info("选中DATAX");
+                    init_etl_task_datax_sources();
+                } else if(more_task=="QUALITY"){
+                    console.info("选中QUALITY");
+                    init_quality_task_sources();
                 }
             }
 
