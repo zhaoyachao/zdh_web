@@ -73,7 +73,12 @@
    + 4.7.14
      +  [zdh_web_4.7.14](http://zycblog.cn:8080/zdh/download/4.7.14/zdh_web.tar)
      +  [zdh_server_4.7.14](http://zycblog.cn:8080/zdh/download/4.7.14/zdh_server.tar)
-     +  [zdh_flink_4.7.14](http://zycblog.cn:8080/zdh/download/4.7.14/zdh_flink.tar)    
+     +  [zdh_flink_4.7.14](http://zycblog.cn:8080/zdh/download/4.7.14/zdh_flink.tar)  
+     
+   + 4.7.15
+     +  [zdh_web_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_web.tar)
+     +  [zdh_server_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_server.tar)
+     +  [zdh_flink_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_flink.tar)          
       
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包
 
@@ -404,7 +409,10 @@
   + v4.7.14 优化mybatis-generator插件配置,启用自动生成
   + v4.7.14 修复数据源新增权限问题
   
-  
+  + v4.7.15 修复数据源字段获取权限,上传文件权限
+  + v4.7.15 单独拆分数据质量检测模块,新增数据质量规则
+  + v4.7.15 修复v4.7.12至4.7.14中发送任务模块到server(spark)失败bug
+  + v4.7.15 优化加载通知有每10秒改为每60秒加载
   
   
   
