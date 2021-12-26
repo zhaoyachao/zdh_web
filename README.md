@@ -55,30 +55,18 @@
    + 编译包下载地址(只提供4.7.11之后的版本,因4.7.11之后不提供源码下载)：
    + 执行编译好的包需要提前安装mysql8,redis
    
-   + 4.7.11
-     +  [zdh_web_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_web.tar)
-     +  [zdh_server_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_server.tar)
-     +  [zdh_flink_4.7.11](http://zycblog.cn:8080/zdh/download/4.7.11/zdh_flink.tar)
-   
-   + 4.7.12
-     +  [zdh_web_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_web.tar)
-     +  [zdh_server_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_server.tar)
-     +  [zdh_flink_4.7.12](http://zycblog.cn:8080/zdh/download/4.7.12/zdh_flink.tar)   
+   + 历史版本(>4.7.11)只提供最近2个版本目录下载,下载历史版本,点击下方下载连接,修改链接中的版本号,可下载历史版本
+     建议使用最新版本(功能更多)
 
-   + 4.7.13
-     +  [zdh_web_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_web.tar)
-     +  [zdh_server_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_server.tar)
-     +  [zdh_flink_4.7.13](http://zycblog.cn:8080/zdh/download/4.7.13/zdh_flink.tar)
-     
-   + 4.7.14
-     +  [zdh_web_4.7.14](http://zycblog.cn:8080/zdh/download/4.7.14/zdh_web.tar)
-     +  [zdh_server_4.7.14](http://zycblog.cn:8080/zdh/download/4.7.14/zdh_server.tar)
-     +  [zdh_flink_4.7.14](http://zycblog.cn:8080/zdh/download/4.7.14/zdh_flink.tar)  
-     
    + 4.7.15
      +  [zdh_web_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_web.tar)
      +  [zdh_server_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_server.tar)
      +  [zdh_flink_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_flink.tar)          
+   
+   + 4.7.16
+     +  [zdh_web_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_web.tar)
+     +  [zdh_server_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_server.tar)
+     +  [zdh_flink_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_flink.tar)      
       
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包
 
