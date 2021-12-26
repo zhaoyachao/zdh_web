@@ -15,6 +15,10 @@ import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.DigestUtils;
 
 import java.util.*;
@@ -23,26 +27,55 @@ public class CheckBloodSourceJob {
     private static Logger logger = LoggerFactory.getLogger(CheckBloodSourceJob.class);
 
 
-    public static BloodSourceInfo resove(EtlTaskInfo eti, String version){
-        EtlTaskMapper etlTaskMapper=(EtlTaskMapper) SpringContext.getBean("etlTaskMapper");
-        DataSourcesMapper dataSourcesMapper=(DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
-        BloodSourceInfo bsi=new BloodSourceInfo();
-        bsi.setContext(eti.getEtl_context());
-        bsi.setOwner(eti.getOwner());
-        bsi.setCreate_time(new Date());
-        bsi.setInput_type(eti.getData_source_type_input());
-        DataSourcesInfo dsi_input=dataSourcesMapper.selectByPrimaryKey(eti.getData_sources_choose_input());
-        String md5=DigestUtils.md5DigestAsHex((dsi_input.getData_source_type()+dsi_input.getUrl()).getBytes());
-        bsi.setInput_md5(md5);
-        bsi.setInput(dsi_input.getData_source_type().equalsIgnoreCase("jdbc")?eti.getData_sources_table_name_input():eti.getData_sources_file_name_input());
+    public static void Check() {
+        try {
+            BloodSourceMapper bloodSourceMapper = (BloodSourceMapper) SpringContext.getBean("bloodSourceMapper");
+            String version = DateUtil.getCurrentTime();
+            List<BloodSourceInfo> bsis = check_etl_blood_source(version);
+            List<BloodSourceInfo> bsis2 = check_more_etl_blood_source(version);
+            List<BloodSourceInfo> bsis3 = check_sql_blood_source(version);
 
-        bsi.setOutput(eti.getData_source_type_output());
-        DataSourcesInfo dsi_output=dataSourcesMapper.selectByPrimaryKey(eti.getData_sources_choose_output());
-        String md5_output=DigestUtils.md5DigestAsHex((dsi_output.getData_source_type()+dsi_output.getUrl()).getBytes());
-        bsi.setOutput_md5(md5_output);
-        bsi.setOutput(dsi_output.getData_source_type().equalsIgnoreCase("jdbc")?eti.getData_sources_table_name_output():eti.getData_sources_file_name_output());
+            bsis.addAll(bsis2);
+            bsis.addAll(bsis3);
 
-        bsi.setVersion(version);
+
+            for (BloodSourceInfo bsi : bsis) {
+                if (!StringUtils.isEmpty(bsi.getInput()))
+                    bloodSourceMapper.insert(bsi);
+            }
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+
+    public static BloodSourceInfo resove(EtlTaskInfo eti, String version) {
+        BloodSourceInfo bsi = new BloodSourceInfo();
+        try {
+            EtlTaskMapper etlTaskMapper = (EtlTaskMapper) SpringContext.getBean("etlTaskMapper");
+            DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
+            bsi.setContext(eti.getEtl_context());
+            bsi.setOwner(eti.getOwner());
+            bsi.setCreate_time(new Date());
+            bsi.setInput_type(eti.getData_source_type_input());
+            DataSourcesInfo dsi_input = dataSourcesMapper.selectByPrimaryKey(eti.getData_sources_choose_input());
+            String md5 = DigestUtils.md5DigestAsHex((dsi_input.getData_source_type() + dsi_input.getUrl()).getBytes());
+            bsi.setInput_md5(md5);
+            bsi.setInput(dsi_input.getData_source_type().equalsIgnoreCase("jdbc") ? eti.getData_sources_table_name_input() : eti.getData_sources_file_name_input());
+
+            bsi.setOutput_type(eti.getData_source_type_output());
+            DataSourcesInfo dsi_output = dataSourcesMapper.selectByPrimaryKey(eti.getData_sources_choose_output());
+            String md5_output = DigestUtils.md5DigestAsHex((dsi_output.getData_source_type() + dsi_output.getUrl()).getBytes());
+            bsi.setOutput_md5(md5_output);
+            bsi.setOutput(dsi_output.getData_source_type().equalsIgnoreCase("jdbc") ? eti.getData_sources_table_name_output() : eti.getData_sources_file_name_output());
+
+            bsi.setVersion(version);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         return bsi;
 
@@ -51,107 +84,175 @@ public class CheckBloodSourceJob {
     /**
      * 检查单源ETL的血源
      */
-    public static void check_etl_blood_source(String version){
+    public static List<BloodSourceInfo> check_etl_blood_source(String version) {
 
-        EtlTaskMapper etlTaskMapper=(EtlTaskMapper) SpringContext.getBean("etlTaskMapper");
+        EtlTaskMapper etlTaskMapper = (EtlTaskMapper) SpringContext.getBean("etlTaskMapper");
 
-        List<EtlTaskInfo> etlTaskInfoList=etlTaskMapper.selectAll();
+        List<EtlTaskInfo> etlTaskInfoList = etlTaskMapper.selectAll();
 
-        List<BloodSourceInfo> bsis=new ArrayList<>();
-        for (EtlTaskInfo eti:etlTaskInfoList){
-            bsis.add(resove(eti,version));
+        List<BloodSourceInfo> bsis = new ArrayList<>();
+        for (EtlTaskInfo eti : etlTaskInfoList) {
+            bsis.add(resove(eti, version));
         }
+
+        return bsis;
     }
 
 
     /**
      * 多源ETL
      */
-    public static void check_more_etl_blood_source(String version){
+    public static List<BloodSourceInfo> check_more_etl_blood_source(String version) {
 
-        EtlMoreTaskMapper etlMoreTaskMapper=(EtlMoreTaskMapper) SpringContext.getBean("etlMoreTaskMapper");
-        EtlTaskMapper etlTaskMapper=(EtlTaskMapper) SpringContext.getBean("etlTaskMapper");
-        DataSourcesMapper dataSourcesMapper=(DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
+        EtlMoreTaskMapper etlMoreTaskMapper = (EtlMoreTaskMapper) SpringContext.getBean("etlMoreTaskMapper");
+        EtlTaskMapper etlTaskMapper = (EtlTaskMapper) SpringContext.getBean("etlTaskMapper");
+        DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
 
-        List<EtlMoreTaskInfo> etlMoreTaskInfoList=etlMoreTaskMapper.selectAll();
+        List<EtlMoreTaskInfo> etlMoreTaskInfoList = etlMoreTaskMapper.selectAll();
 
-        List<BloodSourceInfo> bsis=new ArrayList<>();
-        for (EtlMoreTaskInfo emti:etlMoreTaskInfoList){
-            List<EtlTaskInfo> etlTaskInfoList=etlTaskMapper.selectByIds(emti.getEtl_ids().split(","));
+        List<BloodSourceInfo> bsis = new ArrayList<>();
+        for (EtlMoreTaskInfo emti : etlMoreTaskInfoList) {
+            List<EtlTaskInfo> etlTaskInfoList = etlTaskMapper.selectByIds(emti.getEtl_ids().split(","));
 
-            for (EtlTaskInfo eti:etlTaskInfoList){
-                BloodSourceInfo bsi=new BloodSourceInfo();
+            for (EtlTaskInfo eti : etlTaskInfoList) {
+                BloodSourceInfo bsi = new BloodSourceInfo();
                 bsi.setContext(eti.getEtl_context());
                 bsi.setOwner(eti.getOwner());
                 bsi.setCreate_time(new Date());
                 bsi.setInput_type(eti.getData_source_type_input());
-                DataSourcesInfo dsi_input=dataSourcesMapper.selectByPrimaryKey(eti.getData_sources_choose_input());
-                String md5=DigestUtils.md5DigestAsHex((dsi_input.getData_source_type()+dsi_input.getUrl()).getBytes());
+                DataSourcesInfo dsi_input = dataSourcesMapper.selectByPrimaryKey(eti.getData_sources_choose_input());
+                String md5 = DigestUtils.md5DigestAsHex((dsi_input.getData_source_type() + dsi_input.getUrl()).getBytes());
                 bsi.setInput_md5(md5);
-                bsi.setInput(dsi_input.getData_source_type().equalsIgnoreCase("jdbc")?eti.getData_sources_table_name_input():eti.getData_sources_file_name_input());
+                bsi.setInput(dsi_input.getData_source_type().equalsIgnoreCase("jdbc") ? eti.getData_sources_table_name_input() : eti.getData_sources_file_name_input());
 
-                bsi.setOutput(emti.getData_source_type_output());
-                DataSourcesInfo dsi_output=dataSourcesMapper.selectByPrimaryKey(emti.getData_sources_choose_output());
-                String md5_output=DigestUtils.md5DigestAsHex((dsi_output.getData_source_type()+dsi_output.getUrl()).getBytes());
+                bsi.setOutput_type(emti.getData_source_type_output());
+                DataSourcesInfo dsi_output = dataSourcesMapper.selectByPrimaryKey(emti.getData_sources_choose_output());
+                String md5_output = DigestUtils.md5DigestAsHex((dsi_output.getData_source_type() + dsi_output.getUrl()).getBytes());
                 bsi.setOutput_md5(md5_output);
-                bsi.setOutput(dsi_output.getData_source_type().equalsIgnoreCase("jdbc")?emti.getData_sources_table_name_output():emti.getData_sources_file_name_output());
+                bsi.setOutput(dsi_output.getData_source_type().equalsIgnoreCase("jdbc") ? emti.getData_sources_table_name_output() : emti.getData_sources_file_name_output());
 
                 bsi.setVersion(version);
 
                 bsis.add(bsi);
             }
         }
+        return bsis;
     }
 
-    public static void check_sql_blood_source(String version){
-        BloodSourceMapper bloodSourceMappeer=(BloodSourceMapper) SpringContext.getBean("bloodSourceMapper");
-        EtlTaskJdbcMapper etlTaskJdbcMapper=(EtlTaskJdbcMapper) SpringContext.getBean("etlTaskJdbcMapper");
-        DataSourcesMapper dataSourcesMapper=(DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
-        List<EtlTaskJdbcInfo> etlTaskJdbcInfos=etlTaskJdbcMapper.selectAll();
-        List<BloodSourceInfo> bsis=new ArrayList<>();
-        for (EtlTaskJdbcInfo etlTaskJdbcInfo: etlTaskJdbcInfos){
+    public static List<BloodSourceInfo> check_sql_blood_source(String version) {
+        BloodSourceMapper bloodSourceMappeer = (BloodSourceMapper) SpringContext.getBean("bloodSourceMapper");
+        EtlTaskJdbcMapper etlTaskJdbcMapper = (EtlTaskJdbcMapper) SpringContext.getBean("etlTaskJdbcMapper");
+        DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
+        List<EtlTaskJdbcInfo> etlTaskJdbcInfos = etlTaskJdbcMapper.selectAll();
+        List<BloodSourceInfo> bsis = new ArrayList<>();
+        for (EtlTaskJdbcInfo etlTaskJdbcInfo : etlTaskJdbcInfos) {
             ArrayList input_tables = new ArrayList<String>();
             ArrayList output_tables = new ArrayList<String>();
-            DataSourcesInfo ds =dataSourcesMapper.selectByPrimaryKey(etlTaskJdbcInfo.getData_sources_choose_input());
-            String dbType=JdbcUtils.getDbType(ds.getUrl(),ds.getDriver());
+            DataSourcesInfo ds = dataSourcesMapper.selectByPrimaryKey(etlTaskJdbcInfo.getData_sources_choose_input());
+            String dbType = JdbcUtils.getDbType(ds.getUrl(), ds.getDriver());
             String[] sqls = etlTaskJdbcInfo.getEtl_sql().split("\r\n|\n");
-            for (String sql : sqls){
-                List<SQLStatement> sqlStatementList =SQLUtils.parseStatements(sql, dbType);
+            for (String sql : sqls) {
+                System.out.println(sql);
+                System.out.println("======");
+                try {
+                    List<SQLStatement> sqlStatementList = SQLUtils.parseStatements(sql, dbType);
+                    SQLStatement stmt = sqlStatementList.get(0);
+                    SchemaStatVisitor ssv = SQLUtils.createSchemaStatVisitor(dbType);
+                    stmt.accept(ssv);
+                    for (Map.Entry<TableStat.Name, TableStat> entry : ssv.getTables().entrySet()) {
+
+                        String table_name = entry.getKey().getName();
+                        if (entry.getValue().getInsertCount() > 0 || entry.getValue().getUpdateCount() > 0 || entry.getValue().getDeleteCount() > 0 || entry.getValue().getMergeCount() > 0) {
+                            output_tables.add(table_name);
+                        }
+                        if (entry.getValue().getSelectCount() > 0 || entry.getValue().getCreateCount() > 0) {
+                            input_tables.add(table_name);
+                        }
+
+                    }
+
+                    BloodSourceInfo bsi = new BloodSourceInfo();
+                    bsi.setContext(etlTaskJdbcInfo.getEtl_context());
+                    bsi.setOwner(etlTaskJdbcInfo.getOwner());
+                    bsi.setCreate_time(new Date());
+                    bsi.setInput_type(etlTaskJdbcInfo.getData_source_type_input());
+                    DataSourcesInfo dsi_input = dataSourcesMapper.selectByPrimaryKey(etlTaskJdbcInfo.getData_sources_choose_input());
+                    String md5 = DigestUtils.md5DigestAsHex((dsi_input.getData_source_type() + dsi_input.getUrl()).getBytes());
+                    bsi.setInput_md5(md5);
+                    bsi.setInput(StringUtils.join(input_tables, ","));
+
+                    bsi.setOutput_md5(md5);
+                    bsi.setOutput_type(etlTaskJdbcInfo.getData_source_type_input());
+                    bsi.setOutput(StringUtils.join(output_tables, ","));
+                    bsi.setVersion(version);
+                    bloodSourceMappeer.insert(bsi);
+                    bsis.add(bsi);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
+
+            }
+
+        }
+
+        return bsis;
+
+    }
+
+    public static List<BloodSourceInfo> check_spark_sql_blood_source(String version) {
+        BloodSourceMapper bloodSourceMappeer = (BloodSourceMapper) SpringContext.getBean("bloodSourceMapper");
+        SqlTaskMapper sqlTaskMapper = (SqlTaskMapper) SpringContext.getBean("sqlTaskMapper");
+        DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
+        List<SqlTaskInfo> sqlTaskInfos = sqlTaskMapper.selectAll();
+        List<BloodSourceInfo> bsis = new ArrayList<>();
+        for (SqlTaskInfo sqlTaskInfo : sqlTaskInfos) {
+            ArrayList input_tables = new ArrayList<String>();
+            ArrayList output_tables = new ArrayList<String>();
+            DataSourcesInfo ds = dataSourcesMapper.selectByPrimaryKey(sqlTaskInfo.getData_sources_choose_input());
+            String dbType = JdbcUtils.getDbType(ds.getUrl(), ds.getDriver());
+            String[] sqls = sqlTaskInfo.getEtl_sql().split("\r\n|\n");
+            for (String sql : sqls) {
+                List<SQLStatement> sqlStatementList = SQLUtils.parseStatements(sql, dbType);
                 SQLStatement stmt = sqlStatementList.get(0);
-                SchemaStatVisitor ssv =SQLUtils.createSchemaStatVisitor(dbType);
+                SchemaStatVisitor ssv = SQLUtils.createSchemaStatVisitor(dbType);
                 stmt.accept(ssv);
-                for(Map.Entry<TableStat.Name, TableStat> entry:ssv.getTables().entrySet()){
+                for (Map.Entry<TableStat.Name, TableStat> entry : ssv.getTables().entrySet()) {
 
                     String table_name = entry.getKey().getName();
-                    if(entry.getValue().getInsertCount()>0 || entry.getValue().getUpdateCount()>0 || entry.getValue().getDeleteCount()>0||entry.getValue().getMergeCount()>0){
+                    if (entry.getValue().getInsertCount() > 0 || entry.getValue().getUpdateCount() > 0 || entry.getValue().getDeleteCount() > 0 || entry.getValue().getMergeCount() > 0) {
                         output_tables.add(table_name);
                     }
-                    if(entry.getValue().getSelectCount()>0 || entry.getValue().getCreateCount()>0){
+                    if (entry.getValue().getSelectCount() > 0 || entry.getValue().getCreateCount() > 0) {
                         input_tables.add(table_name);
                     }
 
                 }
 
-                BloodSourceInfo bsi=new BloodSourceInfo();
-                bsi.setContext(etlTaskJdbcInfo.getEtl_context());
-                bsi.setOwner(etlTaskJdbcInfo.getOwner());
+                BloodSourceInfo bsi = new BloodSourceInfo();
+                bsi.setContext(sqlTaskInfo.getSql_context());
+                bsi.setOwner(sqlTaskInfo.getOwner());
                 bsi.setCreate_time(new Date());
-                bsi.setInput_type(etlTaskJdbcInfo.getData_source_type_input());
-                DataSourcesInfo dsi_input=dataSourcesMapper.selectByPrimaryKey(etlTaskJdbcInfo.getData_sources_choose_input());
-                String md5=DigestUtils.md5DigestAsHex((dsi_input.getData_source_type()+dsi_input.getUrl()).getBytes());
+                bsi.setInput_type(sqlTaskInfo.getData_source_type_input());
+                DataSourcesInfo dsi_input = dataSourcesMapper.selectByPrimaryKey(sqlTaskInfo.getData_sources_choose_input());
+                String md5 = DigestUtils.md5DigestAsHex((dsi_input.getData_source_type() + dsi_input.getUrl()).getBytes());
                 bsi.setInput_md5(md5);
-                bsi.setInput(StringUtils.join(input_tables,","));
+                bsi.setInput(StringUtils.join(input_tables, ","));
 
-                bsi.setOutput(etlTaskJdbcInfo.getData_source_type_input());
-                bsi.setOutput_md5(md5);
-                bsi.setOutput_type(etlTaskJdbcInfo.getData_source_type_input());
-                bsi.setOutput(StringUtils.join(output_tables,","));
+                DataSourcesInfo dsi_output = dataSourcesMapper.selectByPrimaryKey(sqlTaskInfo.getData_sources_choose_output());
+                String md5_output = DigestUtils.md5DigestAsHex((dsi_output.getData_source_type() + dsi_output.getUrl()).getBytes());
+
+                bsi.setOutput_md5(md5_output);
+                bsi.setOutput_type(sqlTaskInfo.getData_sources_choose_output());
+                bsi.setOutput(StringUtils.join(output_tables, ","));
                 bsi.setVersion(version);
                 bloodSourceMappeer.insert(bsi);
                 bsis.add(bsi);
             }
 
         }
+
+        return bsis;
 
     }
 }

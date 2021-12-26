@@ -8,7 +8,7 @@
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
@@ -22,7 +22,7 @@
               //area: ['450px', '500px'],
               content: server_context+"/etl_task_ssh_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束")
+                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize()+"&tm="+new Date(),
@@ -106,8 +106,8 @@
 
           },
           'click #copy': function (e, value, row, index) {
-              $("#id").val(row.id)
-              parent.layer.open({
+              $("#id").val(row.id);
+              top.layer.open({
                   type: 2,
                   title: 'SSH任务配置',
                   shadeClose: false,

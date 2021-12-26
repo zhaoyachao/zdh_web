@@ -374,55 +374,55 @@
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取输入数据源id
-                            var data_sources_choose_input = data[0].data_sources_choose_input
-                            console.info("参数赋值:输入数据源id:" + data_sources_choose_input)
+                            //var data_sources_choose_input = data[0].data_sources_choose_input
+                            //console.info("参数赋值:输入数据源id:" + data_sources_choose_input)
 
 
                             //获取ETL 说明
-                            var ssh_context = data[0].ssh_context
+                            var ssh_context = data[0].ssh_context;
                             $("#ssh_context").val(ssh_context);
 
-                            var create_time = data[0].create_time
+                            var create_time = data[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
 
 
                             //获取输入数据源类型
-                            var host = data[0].host
-                            $("#host").val(host)
+                            var host = data[0].host;
+                            $("#host").val(host);
 
-                            var port = data[0].port
-                            $("#port").val(port)
+                            var port = data[0].port;
+                            $("#port").val(port);
 
-                            var user_name = data[0].user_name
-                            $("#user_name").val(user_name)
+                            var user_name = data[0].user_name;
+                            $("#user_name").val(user_name);
 
-                            var password = data[0].password
-                            $("#password").val(password)
+                            var password = data[0].password;
+                            $("#password").val(password);
 
-                            var ssh_cmd = data[0].ssh_cmd
+                            var ssh_cmd = data[0].ssh_cmd;
                             $("#ssh_cmd").val(ssh_cmd);
 
-                            var ssh_script_path = data[0].ssh_script_path
+                            var ssh_script_path = data[0].ssh_script_path;
                             $("#ssh_script_path").val(ssh_script_path);
 
-                            var ssh_script_context = data[0].ssh_script_context
+                            var ssh_script_context = data[0].ssh_script_context;
                             $("#ssh_script_context").val(ssh_script_context);
 
 
                             //获取元数据信息
                             var ssh_params_input = data[0].ssh_params_input;
-                            $('#ssh_params_input').val(ssh_params_input)
+                            $('#ssh_params_input').val(ssh_params_input);
 
                             //获取元数据信息
                             var company = data[0].company;
-                            $('#company').val(company)
+                            $('#company').val(company);
 
                             var section = data[0].section;
-                            $('#section').val(section)
+                            $('#section').val(section);
 
                             var service = data[0].service;
-                            $('#service').val(service)
+                            $('#service').val(service);
 
                             var update_context = data[0].update_context;
                             $('#update_context').val(update_context)
@@ -540,6 +540,7 @@
             data:formData,
             processData: false,
             contentType: false,
+            dataType: 'json',
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -548,8 +549,8 @@
             //成功返回
             success: function (data) {
                 if(data.code != "200"){
-                    layer.msg(data.msg)
-                    return
+                    layer.msg(data.msg);
+                    return;
                 }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
@@ -566,7 +567,7 @@
             }
         });
 
-    })
+    });
 
 
     $('#update_etl_task').click(function () {

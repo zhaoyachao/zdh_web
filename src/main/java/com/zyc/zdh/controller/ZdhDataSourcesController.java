@@ -2,20 +2,26 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.service.DataSourcesService;
 import com.zyc.zdh.service.DispatchTaskService;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
+import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.DBUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -26,7 +32,7 @@ public class ZdhDataSourcesController extends BaseController{
 
 
     @Autowired
-    DataSourcesService dataSourcesServiceImpl;
+    DataSourcesMapper dataSourcesMapper;
     @Autowired
     EtlTaskService etlTaskService;
     @Autowired
@@ -55,7 +61,8 @@ public class ZdhDataSourcesController extends BaseController{
 
         DataSourcesInfo dataSourcesInfo = new DataSourcesInfo();
         dataSourcesInfo.setOwner(getUser().getId());
-        List<DataSourcesInfo> list = dataSourcesServiceImpl.select(dataSourcesInfo);
+        dataSourcesInfo.setIs_delete(Const.NOT_DELETE);
+        List<DataSourcesInfo> list = dataSourcesMapper.select(dataSourcesInfo);
 
         return JSON.toJSONString(list);
     }
@@ -71,8 +78,22 @@ public class ZdhDataSourcesController extends BaseController{
     @ResponseBody
     public String data_sources_list2(String data_source_context, String data_source_type, String url) {
 
+        Example example = new Example(DataSourcesInfo.class);
+        Example.Criteria criteria = example.createCriteria();
 
-        List<DataSourcesInfo> list = dataSourcesServiceImpl.selectByParams(data_source_context, data_source_type, url, getUser().getId());
+        criteria.andEqualTo("owner", getUser().getId());
+        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+        if(!StringUtils.isEmpty(data_source_context)){
+            criteria.andLike("data_source_context", getLikeCondition(data_source_context));
+        }
+        if(!StringUtils.isEmpty(data_source_type)){
+            criteria.andEqualTo("data_source_type", data_source_type);
+        }
+        if(!StringUtils.isEmpty(url)){
+            criteria.andLike("url", getLikeCondition(url));
+        }
+
+        List<DataSourcesInfo> list = dataSourcesMapper.selectByExample(example);
 
         return JSON.toJSONString(list);
     }
@@ -86,7 +107,7 @@ public class ZdhDataSourcesController extends BaseController{
     @ResponseBody
     public String data_sources_info(String id) {
 
-        DataSourcesInfo dataSourcesInfo = dataSourcesServiceImpl.selectById(id);
+        DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
 
         return JSON.toJSONString(dataSourcesInfo);
     }
@@ -99,9 +120,9 @@ public class ZdhDataSourcesController extends BaseController{
     @RequestMapping("/data_sources_delete")
     @ResponseBody
     @Transactional
-    public String deleteIds(Long[] ids) {
+    public String deleteIds(String[] ids) {
         try{
-            dataSourcesServiceImpl.deleteBatchById(ids);
+            dataSourcesMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -133,7 +154,8 @@ public class ZdhDataSourcesController extends BaseController{
         try{
             dataSourcesInfo.setOwner(getUser().getId());
             dataSourcesInfo.setIs_delete("0");
-            dataSourcesServiceImpl.insert(dataSourcesInfo);
+            dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            dataSourcesMapper.insert(dataSourcesInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
@@ -151,7 +173,8 @@ public class ZdhDataSourcesController extends BaseController{
         try{
             dataSourcesInfo.setOwner(getUser().getId());
             dataSourcesInfo.setIs_delete("0");
-            dataSourcesServiceImpl.update(dataSourcesInfo);
+            dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            dataSourcesMapper.updateByPrimaryKey(dataSourcesInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
@@ -166,11 +189,26 @@ public class ZdhDataSourcesController extends BaseController{
     @RequestMapping("/data_sources_type")
     @ResponseBody
     public List<String> data_sources_type() {
-        List<String> result = dataSourcesServiceImpl.selectDataSourcesType();
+        List<String> result = dataSourcesMapper.selectDataSourcesType();
 
         return result;
     }
 
+
+    @RequestMapping(value = "/test_connect", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String test_connect(DataSourcesInfo dataSourcesInfo) {
+        try{
+            if(!dataSourcesInfo.getData_source_type().equalsIgnoreCase("jdbc")){
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"测试连接失败", "只支持JDBC类型连接测试");
+            }
+            new DBUtil().R3(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
+                    "");
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"测试连接成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"测试连接失败", e.getMessage());
+        }
+    }
 
 
     private void debugInfo(Object obj) {

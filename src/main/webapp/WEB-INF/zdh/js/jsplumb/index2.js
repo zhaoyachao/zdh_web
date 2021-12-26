@@ -23,7 +23,7 @@ $(document).ready(function(){
             var tp=ui.draggable[0].dataset.type;
 
             i++;
-            cls_str="node node"+tp+"css tasks"
+            cls_str="node node"+tp+"css tasks";
             var id = guid2();
             $(this).append('<div class="'+cls_str+'" style="position: absolute" id="' + id + '" data-type="'+tp+'" data-id=" " >' + $(ui.helper).html() + '</div>');
             $("#" + id).css("left", left).css("top", top);

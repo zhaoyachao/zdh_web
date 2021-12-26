@@ -6,6 +6,7 @@ import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import com.zyc.zdh.util.StringUtils;
@@ -77,6 +78,7 @@ public class ZdhDataxController extends BaseController{
             cri.andEqualTo("id", id);
         }
         cri.andEqualTo("owner", getUser().getId());
+        cri.andEqualTo("is_delete", Const.NOT_DELETE);
         etlTaskDataxInfos = etlTaskDataxMapper.selectByExample(etlTaskDataxInfoExample);
 
         return JSON.toJSONString(etlTaskDataxInfos);
@@ -93,8 +95,7 @@ public class ZdhDataxController extends BaseController{
     public String etl_task_datax_delete(String[] ids) {
 
         try{
-            for (String id : ids)
-                etlTaskDataxMapper.deleteByPrimaryKey(id);
+            etlTaskDataxMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -119,7 +120,8 @@ public class ZdhDataxController extends BaseController{
             String id=SnowflakeIdWorker.getInstance().nextId()+"";
             etlTaskDataxInfo.setId(id);
             etlTaskDataxInfo.setCreate_time(new Timestamp(new Date().getTime()));
-
+            etlTaskDataxInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskDataxInfo.setIs_delete(Const.NOT_DELETE);
             etlTaskDataxMapper.insert(etlTaskDataxInfo);
 
             if (etlTaskDataxInfo.getUpdate_context() != null && !etlTaskDataxInfo.getUpdate_context().equals("")) {
@@ -153,8 +155,10 @@ public class ZdhDataxController extends BaseController{
         try{
             String owner = getUser().getId();
             etlTaskDataxInfo.setOwner(owner);
-            debugInfo(etlTaskDataxInfo);
             String id=etlTaskDataxInfo.getId();
+            etlTaskDataxInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskDataxInfo.setIs_delete(Const.NOT_DELETE);
+            debugInfo(etlTaskDataxInfo);
             etlTaskDataxMapper.updateByPrimaryKey(etlTaskDataxInfo);
 
             EtlTaskDataxInfo sti = etlTaskDataxMapper.selectByPrimaryKey(etlTaskDataxInfo.getId());

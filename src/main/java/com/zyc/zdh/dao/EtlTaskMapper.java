@@ -6,7 +6,9 @@ import com.zyc.zdh.entity.QuotaInfo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -17,8 +19,18 @@ import java.util.List;
  */
 public interface EtlTaskMapper extends BaseMapper<EtlTaskInfo> {
 
-    @Delete("delete from etl_task_info where id = #{ids_str}")
-    public int deleteBatchById(@Param("ids_str") String ids_str);
+
+    @Update(
+            {
+                    "<script>",
+                    "update etl_task_info set is_delete=1 ,update_time= #{update_time} where id in ",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public int deleteBatchById(@Param("ids") String[] ids, @Param("update_time") Timestamp update_time);
 
     @Select({
             "<script>",
@@ -29,6 +41,7 @@ public interface EtlTaskMapper extends BaseMapper<EtlTaskInfo> {
             "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
             "#{id}",
             "</foreach>",
+            " and is_delete=0",
             "</script>"
     })
     public List<EtlTaskInfo> selectByIds(@Param("ids") String[] ids);
@@ -55,6 +68,7 @@ public interface EtlTaskMapper extends BaseMapper<EtlTaskInfo> {
             "OR data_sources_file_name_output like '%${file_name}%'",
             "OR data_sources_table_name_output like '%${file_name}%' )",
             "</when>",
+            " and is_delete=0",
             "</script>"})
     public List<EtlTaskInfo> selectByParams(@Param("owner") String owner,@Param("etl_context") String etl_context,
                                             @Param("file_name") String file_name);
@@ -77,6 +91,7 @@ public interface EtlTaskMapper extends BaseMapper<EtlTaskInfo> {
             "<when test='service!=null and service !=\"\"'>",
             "AND service like '%${service}%'",
             "</when>",
+            " and is_delete=0",
             "</script>"})
     public List<QuotaInfo> selectByColumn(@Param("owner") String owner, @Param("column_desc") String column_desc,
                                           @Param("column_alias") String column_alias,@Param("company")String company,

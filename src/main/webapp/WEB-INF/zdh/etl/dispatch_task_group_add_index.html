@@ -342,26 +342,26 @@
     //基本连接线样式
     var connectorPaintStyle = {
         lineWidth: 2,
-        strokeStyle: "#61b8d0",
+        strokeStyle: "#61b8d0"
     };
 
     // 鼠标悬浮在连接线上的样式
     var connectorHoverStyle = {
         lineWidth: 2,
-        strokeStyle: "green",
+        strokeStyle: "green"
     };
 
     //端点的颜色样式
     var paintStyle = {
         fillStyle: "#ccc",
         radius: 10,
-        lineWidth:6 ,
-    }
+        lineWidth:6
+    };
 
     // 鼠标悬浮在端点上的样式
     var hoverPaintStyle = {
-        fillStyle: "#aaa",
-    }
+        fillStyle: "#aaa"
+    };
 
 
     var hollowCircle = {
@@ -381,9 +381,9 @@
                     return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
                 },
                 location:0.5,
-                id:"customOverlay",
-            }],
-        ],
+                id:"customOverlay"
+            }]
+        ]
     };
 
     function get_color_by_status(is_disenable){
@@ -398,22 +398,22 @@
     }
 
     function open_json(json) {
-        var jsplumb_json=JSON.parse(json)
+        var jsplumb_json=JSON.parse(json);
         //添加div 数据
-        console.info(json)
+        console.info(json);
         for(var i=0;i< jsplumb_json.tasks.length;i++){
-            var rs=jsplumb_json.tasks[i]
-            var tp=rs.type
-            var divId=rs.divId
-            var etl_context=rs.etl_context
-            var positionX=rs.positionX
-            var positionY=rs.positionY
-            cls_str="node node"+tp+"css tasks"
-            var color=get_color_by_status(rs.is_disenable)
-            console.info("color:"+color)
+            var rs=jsplumb_json.tasks[i];
+            var tp=rs.type;
+            var divId=rs.divId;
+            var etl_context=rs.etl_context;
+            var positionX=rs.positionX;
+            var positionY=rs.positionY;
+            cls_str="node node"+tp+"css tasks";
+            var color=get_color_by_status(rs.is_disenable);
+            console.info("color:"+color);
             $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background: '+color+'" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
             $("#" + divId).css("left", positionX).css("top", positionY);
-            $("#" + divId).attr("type",tp)
+            $("#" + divId).attr("type",tp);
             $("#" + divId).attr("etl_context",rs.etl_context);
             $("#" + divId).attr("is_disenable",rs.is_disenable);
             $("#" + divId).attr("depend_level",rs.depend_level);
@@ -452,10 +452,10 @@
             }
 
             //div.width(etl_task_info.etl_context.length*16)
-            $("#" + divId).css("width","auto")
-            $("#" + divId).css("display","inline-block")
-            $("#" + divId).css("*display","inline")
-            $("#" + divId).css("*zoom","1")
+            $("#" + divId).css("width","auto");
+            $("#" + divId).css("display","inline-block");
+            $("#" + divId).css("*display","inline");
+            $("#" + divId).css("*zoom","1");
             $("#" + divId).html(rs.etl_context);
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
@@ -471,7 +471,7 @@
 
         for(var i=0;i< jsplumb_json.line.length;i++){
                 jsPlumb.connect({
-                    uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"],
+                    uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
                 })
         }
 
@@ -482,19 +482,19 @@
     function doubleclick(id,tp) {
         switch (tp) {
             case "tasks"://服务器
-                doubleclick_tasks(id)
+                doubleclick_tasks(id);
                 break;
             case "shell":
-                doubleclick_shell(id)
+                doubleclick_shell(id);
                 break;
             case "group":
-                doubleclick_group(id)
+                doubleclick_group(id);
                 break;
             case "jdbc":
-                doubleclick_jdbc(id)
+                doubleclick_jdbc(id);
                 break;
             case "hdfs":
-                doubleclick_hdfs(id)
+                doubleclick_hdfs(id);
                 break;
         }
     }
@@ -503,16 +503,16 @@
         $(id).dblclick(function () {
             var text = $(this).text();
             var div = $(this)
-            var etl_task_id=div.attr("etl_task_id")
-            var url=server_context+'/job_detail.html'
+            var etl_task_id=div.attr("etl_task_id");
+            var url=server_context+'/job_detail.html';
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{
-                var more_task=div.attr("more_task")
-                var is_disenable = div.attr("is_disenable")
-                var depend_level = div.attr("depend_level")
-                var zdh_instance = div.attr("zdh_instance")
-                var time_out = div.attr("time_out")
+                var more_task=div.attr("more_task");
+                var is_disenable = div.attr("is_disenable");
+                var depend_level = div.attr("depend_level");
+                var zdh_instance = div.attr("zdh_instance");
+                var time_out = div.attr("time_out");
                 url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&is_disenable="+is_disenable+"&depend_level="+depend_level
                     +"&zdh_instance="+zdh_instance +"&time_out="+time_out
             }
@@ -523,13 +523,13 @@
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
                         console.info("无修改-不更新")
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("more_task",etl_task_info.more_task);
@@ -538,10 +538,10 @@
                     div.attr("zdh_instance",etl_task_info.zdh_instance);
                     div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });
@@ -552,16 +552,16 @@
         $(id).dblclick(function () {
             var etl_context = $(this).text();
             var div = $(this)
-            var command=div.attr("command")
-            var url=server_context+'/shell_detail.html'
+            var command=div.attr("command");
+            var url=server_context+'/shell_detail.html';
             if( command == "" || command == undefined ){
                 url=url+"?command=-1"
             }else{
                 var is_script=div.attr("is_script")
-                var is_disenable = div.attr("is_disenable")
-                var depend_level = div.attr("depend_level")
-                var time_out = div.attr("time_out")
-                $("#shell_text").val(command)
+                var is_disenable = div.attr("is_disenable");
+                var depend_level = div.attr("depend_level");
+                var time_out = div.attr("time_out");
+                $("#shell_text").val(command);
                 url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&is_disenable="+is_disenable+"&depend_level="+depend_level
                     +"&time_out="+time_out
 
@@ -573,23 +573,23 @@
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     div.attr("command",etl_task_info.command);
                     div.attr("is_script",etl_task_info.is_script);
-                    div.attr("etl_context",etl_task_info.etl_context)
+                    div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("is_disenable",etl_task_info.is_disenable);
                     div.attr("depend_level",etl_task_info.depend_level);
                     div.attr("time_out",etl_task_info.time_out);
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });
@@ -600,14 +600,14 @@
         $(id).dblclick(function () {
             var text = $(this).text();
             var div = $(this)
-            var etl_task_id=div.attr("etl_task_id")
-            var url=server_context+'/group_detail.html'
+            var etl_task_id=div.attr("etl_task_id");
+            var url=server_context+'/group_detail.html';
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{
-                var is_disenable = div.attr("is_disenable")
-                var depend_level = div.attr("depend_level")
-                var time_out = div.attr("time_out")
+                var is_disenable = div.attr("is_disenable");
+                var depend_level = div.attr("depend_level");
+                var time_out = div.attr("time_out");
                 url=url+"?etl_task_id="+etl_task_id+"&is_disenable="+is_disenable+"&depend_level="+depend_level
                     +"&time_out="+time_out
             }
@@ -618,23 +618,23 @@
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("is_disenable",etl_task_info.is_disenable);
                     div.attr("depend_level",etl_task_info.depend_level);
                     div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });
@@ -645,21 +645,21 @@
         $(id).dblclick(function () {
             var text = $(this).text();
             var div = $(this)
-            var etl_context=div.attr("etl_context")
-            var url=server_context+'/jdbc_detail.html'
+            var etl_context=div.attr("etl_context");
+            var url=server_context+'/jdbc_detail.html';
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
                 url=url+"?etl_context=-1"
             }else{
-                var is_disenable = div.attr("is_disenable")
-                var jdbc_url=div.attr("url")
-                var driver=div.attr("driver")
-                var username=div.attr("username")
-                var password=div.attr("password")
-                var jdbc_sql=div.attr("jdbc_sql")
-                var depend_level = div.attr("depend_level")
-                var time_out = div.attr("time_out")
-                $("#jdbc_url_text").val(jdbc_url)
-                $("#jdbc_sql_text").val(jdbc_sql)
+                var is_disenable = div.attr("is_disenable");
+                var jdbc_url=div.attr("url");
+                var driver=div.attr("driver");
+                var username=div.attr("username");
+                var password=div.attr("password");
+                var jdbc_sql=div.attr("jdbc_sql");
+                var depend_level = div.attr("depend_level");
+                var time_out = div.attr("time_out");
+                $("#jdbc_url_text").val(jdbc_url);
+                $("#jdbc_sql_text").val(jdbc_sql);
                 url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level
                     +"&is_disenable="+is_disenable+"&time_out="+time_out
             }
@@ -670,13 +670,13 @@
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     div.attr("url",etl_task_info.url);
                     div.attr("driver",etl_task_info.driver);
                     div.attr("username",etl_task_info.username);
@@ -687,10 +687,10 @@
                     div.attr("depend_level",etl_task_info.depend_level);
                     div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });
@@ -701,22 +701,22 @@
         $(id).dblclick(function () {
             var text = $(this).text();
             var div = $(this)
-            var etl_context=div.attr("etl_context")
-            var url=server_context+'/hdfs_detail.html'
+            var etl_context=div.attr("etl_context");
+            var url=server_context+'/hdfs_detail.html';
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
                 url=url+"?etl_context=-1"
             }else{
-                var is_disenable = div.attr("is_disenable")
-                var hdfs_url=div.attr("url")
-                var url_type=div.attr("url_type")
-                var username=div.attr("username")
-                var password=div.attr("password")
-                var hdfs_path=div.attr("hdfs_path")
-                var depend_level = div.attr("depend_level")
-                var hdfs_mode=div.attr("hdfs_mode")
-                var time_out = div.attr("time_out")
-                $("#hdfs_url_text").val(hdfs_url)
-                $("#hdfs_path_text").val(hdfs_path)
+                var is_disenable = div.attr("is_disenable");
+                var hdfs_url=div.attr("url");
+                var url_type=div.attr("url_type");
+                var username=div.attr("username");
+                var password=div.attr("password");
+                var hdfs_path=div.attr("hdfs_path");
+                var depend_level = div.attr("depend_level");
+                var hdfs_mode=div.attr("hdfs_mode");
+                var time_out = div.attr("time_out");
+                $("#hdfs_url_text").val(hdfs_url);
+                $("#hdfs_path_text").val(hdfs_path);
                 url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&username="+username+"&password="+password+"&depend_level="+depend_level
                     +"&is_disenable="+is_disenable+"&hdfs_mode="+hdfs_mode+"&time_out="+time_out
             }
@@ -727,13 +727,13 @@
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
                         console.info("无修改-不更新")
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     div.attr("url",etl_task_info.url);
                     div.attr("url_type",etl_task_info.url_type);
                     div.attr("username",etl_task_info.username);
@@ -745,10 +745,10 @@
                     div.attr("hdfs_mode",etl_task_info.hdfs_mode);
                     div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });
@@ -812,10 +812,10 @@
                 connectionId: connection.id,
                 pageSourceId: connection.sourceId,
                 pageTargetId: connection.targetId
-            }
+            };
             ojson.line.push(param)
         });
-        console.info(ojson)
+        console.info(ojson);
         return ojson
     }
 
@@ -838,15 +838,15 @@
             $('#div_time_diff')[0].style.display = action;
         }
 
-        quartTimeShow("none")
+        quartTimeShow("none");
 
         $('#use_quartz_time').on('ifChecked', function (event) {
-            customerTimeShow("none")
-            quartTimeShow("block")
+            customerTimeShow("none");
+            quartTimeShow("block");
         });
         $('#use_quartz_time').on('ifUnchecked', function (event) {
-            customerTimeShow("block")
-            quartTimeShow("none")
+            customerTimeShow("block");
+            quartTimeShow("none");
         });
 
         window.addressIdMagicSuggest = $('#alarm_account').magicSuggest({
@@ -1014,10 +1014,10 @@
                         for (var i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
                         }
-                        $('#etl_task_id').empty()
+                        $('#etl_task_id').empty();
                         $("#etl_task_id").chosen("destroy");
                         $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen()
+                        $('#etl_task_id').chosen();
 
                     },
                     //处理完成
@@ -1046,7 +1046,7 @@
                         }
                         $("#etl_task_id").chosen("destroy");
                         $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen()
+                        $('#etl_task_id').chosen();
 
                     },
                     //处理完成
@@ -1076,7 +1076,7 @@
                         }
                         $("#etl_task_id").chosen("destroy");
                         $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen()
+                        $('#etl_task_id').chosen();
 
 
                     },
@@ -1106,7 +1106,7 @@
                         }
                         $("#etl_task_id").chosen("destroy");
                         $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen()
+                        $('#etl_task_id').chosen();
 
                     },
                     //处理完成
@@ -1135,7 +1135,7 @@
                         }
                         $("#etl_task_id").chosen("destroy");
                         $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen()
+                        $('#etl_task_id').chosen();
 
                     },
                     //处理完成
@@ -1164,7 +1164,7 @@
                         }
                         $("#etl_task_id").chosen("destroy");
                         $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen()
+                        $('#etl_task_id').chosen();
 
 
                     },
@@ -1194,7 +1194,7 @@
                         }
                         $("#etl_task_id").chosen("destroy");
                         $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen()
+                        $('#etl_task_id').chosen();
 
 
                     },
@@ -1585,7 +1585,7 @@
                         var alarm_account=data[0].alarm_account;
                         window.addressIdMagicSuggest.setValue(alarm_account.split(','));
 
-                        var time_out=data[0].time_out
+                        var time_out=data[0].time_out;
                         $("#time_out").val(time_out);
 
                     },
@@ -1646,7 +1646,7 @@
         var etl_context=$('#etl_task_id').find("option:selected").text();
 
         if($('#job_context').val()==''){
-            layer.msg("调度说明不可为空")
+            layer.msg("调度说明不可为空");
             return false
         }
 
@@ -1655,12 +1655,17 @@
         }
 
         if($('#start_time').val()==''){
-            layer.msg("调度开始时间不可为空")
+            layer.msg("调度开始时间不可为空");
             return false
         }
 
         if($('#end_time').val()==''){
-            layer.msg("调度结束时间不可为空")
+            layer.msg("调度结束时间不可为空");
+            return false
+        }
+
+        if(window.addressIdMagicSuggest.getValue() == ""){
+            layer.msg("告警账号不可为空");
             return false
         }
 
@@ -1672,7 +1677,7 @@
         var oDate1 = new Date($('#start_time').val());
         var oDate2 = new Date($('#end_time').val());
         if(oDate1 > oDate2){
-            layer.msg("结束时间大于开始时间")
+            layer.msg("结束时间大于开始时间");
             return false
         }
 
@@ -1690,7 +1695,12 @@
         $('#jsmind_data').val(JSON.stringify(ojson));
 
         var alarm_str = "&alarm_account="+window.addressIdMagicSuggest.getValue();
+
+
+
         $("[name='alarm_account[]']").remove();
+
+
 
         $.ajax({
             type: 'POST',
@@ -1705,13 +1715,13 @@
             //成功返回
             success: function (data) {
                 if(data.code != "200"){
-                    layer.msg(data.msg)
+                    layer.msg(data.msg);
                     return
                 }
                 $("#save_dispatch_task").removeAttr('disabled');
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 //parent.layer.close(index); //再执行关闭
-                closeTab()
+                closeTab();
                 console.info("closeTab()")
             },
             //处理完成
@@ -1766,6 +1776,10 @@
             return false
         }
 
+        if(window.addressIdMagicSuggest.getValue() == ""){
+            layer.msg("告警账号不可为空");
+            return false
+        }
         var oDate1 = new Date($('#start_time').val());
         var oDate2 = new Date($('#end_time').val());
         if(oDate1 > oDate2){
@@ -1817,7 +1831,7 @@
             }
         });
 
-    })
+    });
 
 
     window.operateEvents = {

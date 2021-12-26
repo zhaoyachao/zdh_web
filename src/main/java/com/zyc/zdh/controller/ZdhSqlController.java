@@ -10,6 +10,7 @@ import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -79,8 +80,7 @@ public class ZdhSqlController extends BaseController{
     @Transactional
     public String sql_task_delete(String[] ids) {
         try{
-            for (String id : ids)
-                sqlTaskMapper.deleteByPrimaryKey(id);
+            sqlTaskMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
 
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
@@ -107,7 +107,8 @@ public class ZdhSqlController extends BaseController{
 
             sqlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             sqlTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-
+            sqlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            sqlTaskInfo.setIs_delete(Const.NOT_DELETE);
 
             sqlTaskMapper.insert(sqlTaskInfo);
 
@@ -141,6 +142,8 @@ public class ZdhSqlController extends BaseController{
         try{
             String owner = getUser().getId();
             sqlTaskInfo.setOwner(owner);
+            sqlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            sqlTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sqlTaskInfo);
 
             sqlTaskMapper.updateByPrimaryKey(sqlTaskInfo);

@@ -1,5 +1,7 @@
 package com.zyc.zdh.entity;
 
+import com.zyc.zdh.util.Const;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -50,6 +52,10 @@ public class EtlMoreTaskInfo {
     private String owner;
 
     private Timestamp create_time;
+
+    private Timestamp update_time;
+
+    private String is_delete= Const.NOT_DELETE;
 
 
     public String getId() {
@@ -210,5 +216,21 @@ public class EtlMoreTaskInfo {
 
     public void setHeader_output(String header_output) {
         this.header_output = header_output;
+    }
+
+    public Timestamp getUpdate_time() {
+        return update_time;
+    }
+
+    public void setUpdate_time(Timestamp update_time) {
+        this.update_time = update_time;
+    }
+
+    public String getIs_delete() {
+        return is_delete;
+    }
+
+    public void setIs_delete(String is_delete) {
+        this.is_delete = is_delete;
     }
 }

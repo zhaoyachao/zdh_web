@@ -99,7 +99,6 @@ public class SystemCommandLineRunner implements CommandLineRunner {
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
             quartzManager2.addTaskToQuartz(quartzJobInfo);
         }
-
     }
 
 

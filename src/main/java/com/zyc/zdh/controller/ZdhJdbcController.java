@@ -7,6 +7,7 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -73,8 +74,7 @@ public class ZdhJdbcController extends BaseController{
     @Transactional
     public String etl_task_jdbc_delete(String[] ids) {
         try{
-            for (String id : ids)
-                etlTaskJdbcMapper.deleteByPrimaryKey(id);
+            etlTaskJdbcMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
 
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
@@ -97,12 +97,12 @@ public class ZdhJdbcController extends BaseController{
         try{
             String owner = getUser().getId();
             etlTaskJdbcInfo.setOwner(owner);
-            debugInfo(etlTaskJdbcInfo);
-
             etlTaskJdbcInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTaskJdbcInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            etlTaskJdbcInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskJdbcInfo.setIs_delete(Const.NOT_DELETE);
 
-
+            debugInfo(etlTaskJdbcInfo);
             etlTaskJdbcMapper.insert(etlTaskJdbcInfo);
 
 
@@ -135,6 +135,8 @@ public class ZdhJdbcController extends BaseController{
         try{
             String owner = getUser().getId();
             etlTaskJdbcInfo.setOwner(owner);
+            etlTaskJdbcInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskJdbcInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskJdbcInfo);
 
             etlTaskJdbcMapper.updateByPrimaryKey(etlTaskJdbcInfo);

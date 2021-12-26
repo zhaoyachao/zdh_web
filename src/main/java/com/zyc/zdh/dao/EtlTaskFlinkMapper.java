@@ -5,7 +5,9 @@ import com.zyc.zdh.entity.EtlTaskFlinkInfo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -16,8 +18,17 @@ import java.util.List;
  */
 public interface EtlTaskFlinkMapper extends BaseMapper<EtlTaskFlinkInfo> {
 
-    @Delete("delete from etl_task_flink_info where id = #{ids_str}")
-    public int deleteBatchById(@Param("ids_str") String ids_str);
+    @Update(
+            {
+                    "<script>",
+                    "update etl_task_flink_info set is_delete=1 ,update_time= #{update_time} where id in ",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public int deleteBatchById(@Param("ids") String[] ids, @Param("update_time") Timestamp update_time);
 
     @Select({
             "<script>",
@@ -28,6 +39,7 @@ public interface EtlTaskFlinkMapper extends BaseMapper<EtlTaskFlinkInfo> {
             "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
             "#{id}",
             "</foreach>",
+            "and is_delete=0",
             "</script>"
     })
     public List<EtlTaskFlinkInfo> selectByIds(@Param("ids") String[] ids);
@@ -43,6 +55,7 @@ public interface EtlTaskFlinkMapper extends BaseMapper<EtlTaskFlinkInfo> {
             "<when test='id!=null and id !=\"\"'>",
             "AND id = #{id}",
             "</when>",
+            "and is_delete=0",
             "</script>"})
     public List<EtlTaskFlinkInfo> selectByParams(@Param("owner") String owner, @Param("sql_context") String sql_context,
                                             @Param("id") String id);

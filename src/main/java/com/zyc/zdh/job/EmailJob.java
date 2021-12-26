@@ -135,6 +135,26 @@ public class EmailJob {
         }
         if(phones.size()>0&& tli.getAlarm_sms()!=null && tli.getAlarm_sms().equalsIgnoreCase("on")){
             logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
+            try{
+                //此处信息写入短信表,待平台接入短信服务
+                AlarmSmsMapper alarmSmsMapper=  (AlarmSmsMapper) SpringContext.getBean("alarmSmsMapper");
+                AlarmSmsInfo alarmSmsInfo=new AlarmSmsInfo();
+                alarmSmsInfo.setTitle(title);
+                alarmSmsInfo.setMsg(msg);
+                alarmSmsInfo.setMsg_url("log_txt.html?job_id="+tli.getJob_id()+"&task_log_id="+tli.getId());
+                alarmSmsInfo.setMsg_type("通知");
+                alarmSmsInfo.setStatus(Const.SMS_INIT);
+                alarmSmsInfo.setCreate_time(new Timestamp(new Date().getTime()));
+                alarmSmsInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+                for(String phone:phones){
+                    alarmSmsInfo.setPhone(phone);
+                    alarmSmsMapper.insert(alarmSmsInfo);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                logger.error("发送告警短信失败",e.getCause());
+            }
+
         }
 
         if( !StringUtils.isEmpty(tli.getAlarm_account()) && tli.getAlarm_zdh()!=null  && tli.getAlarm_zdh().equalsIgnoreCase("on")){

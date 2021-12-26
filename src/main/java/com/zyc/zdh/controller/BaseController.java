@@ -29,4 +29,12 @@ public class BaseController {
         return user;
     }
 
+    /**
+     * 返回 %conditon% 格式
+     * @param condition
+     * @return
+     */
+    public String getLikeCondition(String condition){
+        return "%"+condition+"%";
+    }
 }

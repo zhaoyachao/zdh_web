@@ -86,28 +86,4 @@ public interface EtlApplyTaskMapper extends BaseMapper<EtlApplyTaskInfo> {
     public List<EtlTaskInfo> selectByParams(@Param("owner") String owner, @Param("etl_context") String etl_context,
                                             @Param("file_name") String file_name);
 
-    @Select({"<script>",
-            "SELECT id,etl_context,data_sources_choose_output,data_source_type_output,create_time,case data_sources_table_name_output when '' then data_sources_file_name_output else data_sources_table_name_output end as path FROM etl_task_info",
-            "WHERE owner=#{owner} and is_delete=0",
-            "<when test='column_desc!=null and column_desc !=\"\"'>",
-            "AND column_datas like '%${column_desc}%'",
-            "</when>",
-            "<when test='column_alias!=null and column_alias !=\"\"'>",
-            "AND column_datas like '%${column_alias}%'",
-            "</when>",
-            "<when test='company!=null and company !=\"\"'>",
-            "AND company like '%${company}%'",
-            "</when>",
-            "<when test='section!=null and section !=\"\"'>",
-            "AND section like '%${section}%'",
-            "</when>",
-            "<when test='service!=null and service !=\"\"'>",
-            "AND service like '%${service}%'",
-            "</when>",
-            "</script>"})
-    public List<QuotaInfo> selectByColumn(@Param("owner") String owner, @Param("column_desc") String column_desc,
-                                          @Param("column_alias") String column_alias, @Param("company") String company,
-                                          @Param("section") String section, @Param("service") String service);
-
-
 }

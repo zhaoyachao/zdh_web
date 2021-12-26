@@ -61,11 +61,33 @@
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-        <table tableName="quality" domainObjectName="QualityInfo" mapperName="QualityMapper">
+<!--        <table tableName="quality" domainObjectName="QualityInfo" mapperName="QualityMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="data_sources_info" domainObjectName="DataSourcesInfo" mapperName="DataSourcesMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="alarm_sms_info" domainObjectName="AlarmSmsInfo" mapperName="AlarmSmsMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+        <table tableName="user_operate_log" domainObjectName="UserOperateLogInfo" mapperName="UserOperateLogMapper">
             <property name="useActualColumnNames" value="true" />
             <columnOverride column="id" property="id" javaType="java.lang.String"/>
             <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
+            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
         </table>
+
 
     </context>
 </generatorConfiguration>

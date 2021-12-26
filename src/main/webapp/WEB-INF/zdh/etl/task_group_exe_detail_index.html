@@ -85,11 +85,20 @@
                             </div>
 
                         </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                            <div class="col-sm-10">
+                                <p id="etl_time"></p>
+                            </div>
 
+                        </div>
                         <div class="hr-line-dashed"></div>
 
                         <div class="form-group">
                             <div class="text-center">
+                                <button id="check_time" name="check_time" class="btn btn-info" οnsubmit='return false'
+                                        type="button">生成执行时间
+                                </button>
                                 <button id="execute" name="execute" class="btn btn-primary" οnsubmit='return false'
                                         type="button">执行
                                 </button>
@@ -194,8 +203,8 @@
             laydate(start);
             laydate(end);
 
-            $("#start_time").val(getCurrentDate())
-            $("#end_time").val(getCurrentDate())
+            $("#start_time").val(getCurrentDate());
+            $("#end_time").val(getCurrentDate());
 
             function getCurrentDate(){
                 var oDate = new Date(),
@@ -230,7 +239,7 @@
 
             //获取所有子任务
             function get_all_tasks(){
-                var job_id=s.id
+                var job_id=s.id;
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/dispatch_task_list",
@@ -246,16 +255,16 @@
 
                        if(data.length=1){
 
-                           $('#sub_task_div').empty()
-                           $('#sub_task_div').addClass("checkbox")
-                           $('#sub_task_div').addClass("i-checks")
-                           var jsplumb_json=JSON.parse(data[0].jsmind_data)
+                           $('#sub_task_div').empty();
+                           $('#sub_task_div').addClass("checkbox");
+                           $('#sub_task_div').addClass("i-checks");
+                           var jsplumb_json=JSON.parse(data[0].jsmind_data);
                            for(var i=0;i<jsplumb_json.tasks.length;i++){
                                if(jsplumb_json.tasks[i].is_disenable == "true"){
                                    continue
                                }
-                               var divId=jsplumb_json.tasks[i].divId
-                               $('#sub_task_div').append('<label class="no-padding">')
+                               var divId=jsplumb_json.tasks[i].divId;
+                               $('#sub_task_div').append('<label class="no-padding">');
                                $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' checked=""><i></i>'+jsplumb_json.tasks[i].etl_context+'</label>')
                            }
 
@@ -287,7 +296,7 @@
 
     })(document, window, jQuery);
 
-    $('#execute').click(function () {
+    $('#check_time').click(function () {
 
 
         var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
@@ -299,12 +308,12 @@
         }
 
         if($('#start_time').val()==''){
-            layer.msg("调度开始时间不可为空")
+            layer.msg("调度开始时间不可为空");
             return false
         }
 
         if($('#end_time').val()==''){
-            layer.msg("调度结束时间不可为空")
+            layer.msg("调度结束时间不可为空");
             return false
         }
 
@@ -321,7 +330,99 @@
             concurrency="&concurrency=0"
         }
         //默认不使用调度时间
-        var use_quartz_time="&use_quartz_time=off"
+        var use_quartz_time="&use_quartz_time=off";
+        if($('#use_quartz_time').is(':checked')){
+            use_quartz_time="&use_quartz_time=on"
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/dispatch_task_execute_time",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+"&job_id="+s.id+use_quartz_time+concurrency,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.close(index1);
+                if(data.code!='200'){
+                    layer.msg(data.result);
+                    return;
+                }
+                var title = "总计<strong>"+data.result.length+"</strong>个任务";
+                if(parseInt(data.result.length) >= 5 ){
+                    $('#etl_time').html(title+", ETL时间: "+ "<strong>"+data.result[0] +", "+data.result[0]+ ", .... "+ data.result[data.result.length-1]+"</strong> ");
+                }else{
+                    var time_str = '';
+                    for(var i=0;i<data.result.length;i++){
+                        time_str = time_str + "<strong>"+data.result[i]+"</strong> ";
+                        if(i != data.result.length-1){
+                            time_str = time_str + "<strong>,</strong> ";
+                        }
+                    }
+                    $('#etl_time').html(title+", ETL时间: "+time_str);
+                }
+
+            },
+            //处理完成
+            complete: function () {
+                $("#save_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.close(index1);
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    })
+
+    $('#execute').click(function () {
+
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        if($('#start_time').val()==''){
+            layer.msg("调度开始时间不可为空");
+            return false
+        }
+
+        if($('#end_time').val()==''){
+            layer.msg("调度结束时间不可为空");
+            return false
+        }
+
+        var oDate1 = new Date($('#start_time').val());
+        var oDate2 = new Date($('#end_time').val());
+        if(oDate1 > oDate2){
+            layer.msg("结束时间大于开始时间")
+            return false
+        }
+
+        //默认并行
+        var concurrency="&concurrency=1";
+        if($('#concurrency').is(':checked')){
+            concurrency="&concurrency=0"
+        }
+        //默认不使用调度时间
+        var use_quartz_time="&use_quartz_time=off";
         if($('#use_quartz_time').is(':checked')){
             use_quartz_time="&use_quartz_time=on"
         }
@@ -342,7 +443,11 @@
             //成功返回
             success: function (data) {
                 $("#save_dispatch_task").removeAttr('disabled');
-                layer.close(index1)
+                layer.close(index1);
+                if(data.code != 200){
+                    layer.msg(data.msg);
+                    return ;
+                }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },

@@ -1105,6 +1105,75 @@ CREATE TABLE `quality_task_info` (
 alter table quality add column etl_context varchar(256) default null comment '质量任务名称';
 alter table quality add column job_context varchar(256) default null comment '调度任务名称';
 
+-- 2021-12-19;
+CREATE TABLE blood_source_info (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `input_type` varchar(200) DEFAULT null COMMENT '',
+  `input_md5` varchar(100) DEFAULT NULL COMMENT '输入源唯一标识，数据源类型+数据源url 组合生成的md5',
+  `input` varchar(100) DEFAULT NULL COMMENT '数据库名称+表名/远程文件路径',
+  `output_type` text DEFAULT NULL COMMENT '输出数据源类型',
+  `output_md5` varchar(100) DEFAULT NULL COMMENT '输入源唯一标识，数据源类型+数据源url 组合生成的md5',
+  `output` varchar(100) DEFAULT NULL COMMENT '数据库名称+表名/远程文件路径',
+  `version` varchar(100) DEFAULT NULL COMMENT 'version',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 2021-12-24;
+alter table data_sources_info add column update_time timestamp default current_timestamp() comment '更新时间';
+
+alter table etl_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+alter table etl_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+
+alter table etl_more_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+alter table etl_more_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+
+alter table sql_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+alter table sql_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+
+alter table ssh_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+alter table ssh_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+
+
+alter table etl_task_flink_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+
+alter table etl_task_jdbc_info add column update_time timestamp default current_timestamp() comment '更新时间';
+alter table etl_task_jdbc_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+
+alter table etl_task_datax_info add column update_time timestamp default current_timestamp() comment '更新时间';
+alter table etl_task_datax_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+
+alter table etl_apply_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+
+CREATE TABLE `alarm_sms_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(500) DEFAULT NULL COMMENT '任务说明',
+  `msg` text COMMENT '信息',
+  `msg_type` varchar(100) DEFAULT NULL COMMENT '信息类型，通知,营销',
+  `msg_url` varchar(500) DEFAULT NULL COMMENT '短信附带连接',
+  `phone` varchar(100) DEFAULT NULL COMMENT '手机号',
+  `status` varchar(8) DEFAULT '0' COMMENT '状态,0:未处理,1:处理中,2:失败,3:成功,4:不处理',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
+
+CREATE TABLE `user_operate_log` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+  `user_name` varchar(500) DEFAULT NULL COMMENT '用户名',
+  `operate_url` varchar(500) COMMENT '操作url',
+  `operate_context` varchar(500) COMMENT '操作说明',
+  `operate_input` text  COMMENT '输入参数',
+  `operate_output` text COMMENT '输出结果',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
+
+
 
 -- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;

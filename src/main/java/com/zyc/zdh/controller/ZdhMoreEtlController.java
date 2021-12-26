@@ -12,6 +12,7 @@ import com.zyc.zdh.service.DispatchTaskService;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,6 +95,8 @@ public class ZdhMoreEtlController extends BaseController{
         try{
             etlMoreTaskInfo.setOwner(getUser().getId());
             etlMoreTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            etlMoreTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlMoreTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlMoreTaskInfo);
             etlMoreTaskMapper.insert(etlMoreTaskInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
@@ -113,11 +116,7 @@ public class ZdhMoreEtlController extends BaseController{
     @Transactional
     public String etl_task_more_sources_delete(String[] ids) {
         try{
-            if (ids != null) {
-                for (String id : ids) {
-                    etlMoreTaskMapper.deleteBatchById(id);
-                }
-            }
+             etlMoreTaskMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -135,6 +134,8 @@ public class ZdhMoreEtlController extends BaseController{
     public String etl_task_more_update(EtlMoreTaskInfo etlMoreTaskInfo) {
         try{
             String owner = getUser().getId();
+            etlMoreTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlMoreTaskInfo.setIs_delete(Const.NOT_DELETE);
             etlMoreTaskInfo.setOwner(owner);
             debugInfo(etlMoreTaskInfo);
 

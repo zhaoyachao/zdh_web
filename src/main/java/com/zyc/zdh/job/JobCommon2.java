@@ -11,7 +11,6 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
-import com.zyc.zdh.service.impl.DataSourcesServiceImpl;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.beanutils.BeanUtils;
@@ -157,7 +156,7 @@ public class JobCommon2 {
 
 
     public static ZdhInfo create_zdhInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                         EtlTaskService etlTaskService, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
+                                         EtlTaskService etlTaskService, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
 
         JSONObject json = new JSONObject();
         String date = DateUtil.formatTime(tli.getCur_time());
@@ -184,14 +183,14 @@ public class JobCommon2 {
         //获取数据源信息
         String data_sources_choose_input = etlTaskInfo.getData_sources_choose_input();
         String data_sources_choose_output = etlTaskInfo.getData_sources_choose_output();
-        DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+        DataSourcesInfo dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
         if(dataSourcesInfoInput==null){
             logger.info("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
             throw new Exception("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
         }
         DataSourcesInfo dataSourcesInfoOutput = null;
         if (data_sources_choose_output!=null && !data_sources_choose_output.equals("")) {
-            dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
+            dataSourcesInfoOutput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_output);
         }
         if(dataSourcesInfoOutput==null){
             logger.info("[单源任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
@@ -245,7 +244,7 @@ public class JobCommon2 {
     }
 
     public static ZdhMoreInfo create_more_task_zdhInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                                       EtlTaskService etlTaskService, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
+                                                       EtlTaskService etlTaskService, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
         try {
             JSONObject json = new JSONObject();
             String date = DateUtil.formatTime(tli.getCur_time());
@@ -267,7 +266,7 @@ public class JobCommon2 {
             zdhMoreInfo.setEtlMoreTaskInfo(etlMoreTaskInfo);
             //获取最终输出数据源
             String data_sources_choose_output = etlMoreTaskInfo.getData_sources_choose_output();
-            DataSourcesInfo dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
+            DataSourcesInfo dataSourcesInfoOutput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_output);
             if(dataSourcesInfoOutput==null){
                 logger.info("[多源任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
                 JobCommon2.insertLog(tli,"WARN","[多源任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
@@ -314,7 +313,7 @@ public class JobCommon2 {
 
                 //获取数据源信息
                 String data_sources_choose_input = etlTaskInfo.getData_sources_choose_input();
-                DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+                DataSourcesInfo dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
                 if(dataSourcesInfoInput==null){
                     logger.info("[多源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
                     JobCommon2.insertLog(tli,"ERROR","[多源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
@@ -343,7 +342,7 @@ public class JobCommon2 {
     }
 
     public static ZdhSqlInfo create_zdhSqlInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                               SqlTaskMapper sqlTaskMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) throws Exception {
+                                               SqlTaskMapper sqlTaskMapper, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
             JSONObject json = new JSONObject();
@@ -371,7 +370,7 @@ public class JobCommon2 {
 
             DataSourcesInfo dataSourcesInfoOutput = new DataSourcesInfo();
             if (data_sources_choose_output != null && !data_sources_choose_output.equalsIgnoreCase("")) {
-                dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
+                dataSourcesInfoOutput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_output);
             }
 
             if(dataSourcesInfoOutput==null){
@@ -461,7 +460,7 @@ public class JobCommon2 {
 
 
     public static ZdhDroolsInfo create_zdhDroolsInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                                     EtlTaskService etlTaskService, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper, EtlDroolsTaskMapper etlDroolsTaskMapper,
+                                                     EtlTaskService etlTaskService, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper, EtlDroolsTaskMapper etlDroolsTaskMapper,
                                                      EtlMoreTaskMapper etlMoreTaskMapper, SqlTaskMapper sqlTaskMapper) throws Exception {
         try {
             JSONObject json = new JSONObject();
@@ -479,7 +478,7 @@ public class JobCommon2 {
 
             //获取最终输出数据源
             String data_sources_choose_output = etlDroolsTaskInfo.getData_sources_choose_output();
-            DataSourcesInfo dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
+            DataSourcesInfo dataSourcesInfoOutput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_output);
             if(dataSourcesInfoOutput==null){
                 logger.info("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
                 throw new Exception("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
@@ -532,7 +531,7 @@ public class JobCommon2 {
 
                 //获取数据源信息
                 String data_sources_choose_input = etlTaskInfo.getData_sources_choose_input();
-                DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+                DataSourcesInfo dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
                 if(dataSourcesInfoInput==null){
                     logger.info("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
                     throw new Exception("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
@@ -569,7 +568,7 @@ public class JobCommon2 {
 
                     //获取数据源信息
                     String data_sources_choose_input = etlTaskInfo.getData_sources_choose_input();
-                    DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+                    DataSourcesInfo dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
                     if(dataSourcesInfoOutput==null){
                         logger.info("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
                         throw new Exception("无法找到对应的数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
@@ -624,7 +623,7 @@ public class JobCommon2 {
 
 
     public static ZdhApplyInfo create_zdhApplyInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                         EtlTaskService etlTaskService, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
+                                         EtlTaskService etlTaskService, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
 
         EtlApplyTaskMapper etlApplyTaskMapper = (EtlApplyTaskMapper) SpringContext.getBean("etlApplyTaskMapper");
         ApplyMapper applyMapper = (ApplyMapper) SpringContext.getBean("applyMapper");
@@ -662,7 +661,7 @@ public class JobCommon2 {
             throw new Exception("[申请源任务]无法找到对应的[申请id],任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
         }
 
-        DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(applyIssueInfo.getData_sources_choose_input());
+        DataSourcesInfo dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(applyIssueInfo.getData_sources_choose_input());
 
         if(dataSourcesInfoInput==null){
             logger.info("[申请源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+applyIssueInfo.getData_sources_choose_input());
@@ -672,7 +671,7 @@ public class JobCommon2 {
 
         DataSourcesInfo dataSourcesInfoOutput = null;
         if (data_sources_choose_output!=null && !data_sources_choose_output.equals("")) {
-            dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
+            dataSourcesInfoOutput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_output);
         }
         if(dataSourcesInfoOutput==null){
             logger.info("[申请源任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_output);
@@ -717,7 +716,7 @@ public class JobCommon2 {
 
 
     public static ZdhFlinkSqlInfo create_zdhFlinkInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                               EtlTaskFlinkMapper etlTaskFlinkMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) throws Exception {
+                                               EtlTaskFlinkMapper etlTaskFlinkMapper, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
             JSONObject json = new JSONObject();
@@ -752,7 +751,7 @@ public class JobCommon2 {
     }
 
     public static ZdhJdbcInfo create_zdhJdbcInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                               EtlTaskJdbcMapper etlTaskJdbcMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) throws Exception {
+                                               EtlTaskJdbcMapper etlTaskJdbcMapper, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
             JSONObject json = new JSONObject();
@@ -779,12 +778,12 @@ public class JobCommon2 {
 
             DataSourcesInfo dataSourcesInfoInput = new DataSourcesInfo();
             if (data_sources_choose_input != null && !data_sources_choose_input.equalsIgnoreCase("")) {
-                dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+                dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
             }
 
             DataSourcesInfo dataSourcesInfoOutput = new DataSourcesInfo();
             if (data_sources_choose_output != null && !data_sources_choose_output.equalsIgnoreCase("")) {
-                dataSourcesInfoOutput = dataSourcesServiceImpl.selectById(data_sources_choose_output);
+                dataSourcesInfoOutput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_output);
             }
 
             if(dataSourcesInfoOutput==null){
@@ -836,7 +835,7 @@ public class JobCommon2 {
 
 
     public static ZdhDataxInfo create_zdhDataxInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                                 EtlTaskDataxMapper etlTaskDataxMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper) throws Exception {
+                                                 EtlTaskDataxMapper etlTaskDataxMapper, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
             JSONObject json = new JSONObject();
@@ -863,7 +862,7 @@ public class JobCommon2 {
 
             DataSourcesInfo dataSourcesInfoInput = null;
             if (data_sources_choose_input != null && !data_sources_choose_input.equalsIgnoreCase("")) {
-                dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+                dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
             }
 
             if(dataSourcesInfoInput==null){
@@ -887,7 +886,7 @@ public class JobCommon2 {
 
 
     public static ZdhQualityInfo create_zdhQualityInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
-                                         QualityTaskMapper qualityTaskMapper, DataSourcesServiceImpl dataSourcesServiceImpl, ZdhNginxMapper zdhNginxMapper, QualityRuleMapper qualityRuleMapper) throws Exception {
+                                         QualityTaskMapper qualityTaskMapper, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper, QualityRuleMapper qualityRuleMapper) throws Exception {
 
         JSONObject json = new JSONObject();
         String date = DateUtil.formatTime(tli.getCur_time());
@@ -929,7 +928,7 @@ public class JobCommon2 {
         //获取数据源信息
         String data_sources_choose_input = qualityTaskInfo.getData_sources_choose_input();
 
-        DataSourcesInfo dataSourcesInfoInput = dataSourcesServiceImpl.selectById(data_sources_choose_input);
+        DataSourcesInfo dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
         if(dataSourcesInfoInput==null){
             logger.info("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
             throw new Exception("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
@@ -1237,7 +1236,7 @@ public class JobCommon2 {
         logger.info("开始发送信息到zdh处理引擎");
         QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
         EtlTaskService etlTaskService = (EtlTaskService) SpringContext.getBean("etlTaskServiceImpl");
-        DataSourcesServiceImpl dataSourcesServiceImpl = (DataSourcesServiceImpl) SpringContext.getBean("dataSourcesServiceImpl");
+        DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
         ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
         ZdhHaInfoMapper zdhHaInfoMapper = (ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
         ZdhNginxMapper zdhNginxMapper = (ZdhNginxMapper) SpringContext.getBean("zdhNginxMapper");
@@ -1290,38 +1289,38 @@ public class JobCommon2 {
         try {
             if (tli.getMore_task().equals("多源ETL")) {
                 logger.info("组装多源ETL任务信息");
-                zdhMoreInfo = create_more_task_zdhInfo(tli, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
+                zdhMoreInfo = create_more_task_zdhInfo(tli, quartzJobMapper, etlTaskService, dataSourcesMapper, zdhNginxMapper, etlMoreTaskMapper);
             } else if (tli.getMore_task().equals("单源ETL")) {
                 logger.info("组装单源ETL任务信息");
-                zdhInfo = create_zdhInfo(tli, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
+                zdhInfo = create_zdhInfo(tli, quartzJobMapper, etlTaskService, dataSourcesMapper, zdhNginxMapper, etlMoreTaskMapper);
             } else if (tli.getMore_task().equalsIgnoreCase("SQL")) {
                 logger.info("组装SQL任务信息");
-                zdhSqlInfo = create_zdhSqlInfo(tli, quartzJobMapper, sqlTaskMapper, dataSourcesServiceImpl, zdhNginxMapper);
+                zdhSqlInfo = create_zdhSqlInfo(tli, quartzJobMapper, sqlTaskMapper, dataSourcesMapper, zdhNginxMapper);
             } else if (tli.getMore_task().equalsIgnoreCase("外部JAR")) {
                 logger.info("组装外部JAR任务信息");
                 logger.info("请使用SSH任务代替Jar任务");
                 //zdhJarInfo = create_zhdJarInfo(tli, quartzJobMapper, jarTaskMapper, zdhNginxMapper);
             } else if (tli.getMore_task().equalsIgnoreCase("Drools")) {
                 logger.info("组装Drools任务信息");
-                zdhDroolsInfo = create_zdhDroolsInfo(tli, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlDroolsTaskMapper, etlMoreTaskMapper, sqlTaskMapper);
+                zdhDroolsInfo = create_zdhDroolsInfo(tli, quartzJobMapper, etlTaskService, dataSourcesMapper, zdhNginxMapper, etlDroolsTaskMapper, etlMoreTaskMapper, sqlTaskMapper);
             } else if (tli.getMore_task().equalsIgnoreCase("SSH")) {
                 logger.info("组装SSH任务信息");
                 zdhSshInfo = create_zhdSshInfo(tli, quartzJobMapper, sshTaskMapper, zdhNginxMapper);
             } else if (tli.getMore_task().equalsIgnoreCase("APPLY")) {
                 logger.info("组装申请源任务信息");
-                zdhApplyInfo = create_zdhApplyInfo(tli, quartzJobMapper, etlTaskService, dataSourcesServiceImpl, zdhNginxMapper, etlMoreTaskMapper);
+                zdhApplyInfo = create_zdhApplyInfo(tli, quartzJobMapper, etlTaskService, dataSourcesMapper, zdhNginxMapper, etlMoreTaskMapper);
             }else if (tli.getMore_task().equalsIgnoreCase("FLINK")) {
                 logger.info("组装FLINK任务信息");
-                zdhFlinkSqlInfo = create_zdhFlinkInfo(tli, quartzJobMapper, etlTaskFlinkMapper, dataSourcesServiceImpl, zdhNginxMapper);
+                zdhFlinkSqlInfo = create_zdhFlinkInfo(tli, quartzJobMapper, etlTaskFlinkMapper, dataSourcesMapper, zdhNginxMapper);
             }else if (tli.getMore_task().equalsIgnoreCase("JDBC")) {
                 logger.info("组装JDBC任务信息");
-                zdhJdbcInfo = create_zdhJdbcInfo(tli, quartzJobMapper, etlTaskJdbcMapper, dataSourcesServiceImpl, zdhNginxMapper);
+                zdhJdbcInfo = create_zdhJdbcInfo(tli, quartzJobMapper, etlTaskJdbcMapper, dataSourcesMapper, zdhNginxMapper);
             }else if (tli.getMore_task().equalsIgnoreCase("DATAX")) {
                 logger.info("组装DATAX任务信息");
-                zdhDataxInfo = create_zdhDataxInfo(tli, quartzJobMapper, etlTaskDataxMapper, dataSourcesServiceImpl, zdhNginxMapper);
+                zdhDataxInfo = create_zdhDataxInfo(tli, quartzJobMapper, etlTaskDataxMapper, dataSourcesMapper, zdhNginxMapper);
             }else if (tli.getMore_task().equalsIgnoreCase("QUALITY")) {
                 logger.info("组装QUALITY任务信息");
-                zdhQualityInfo = create_zdhQualityInfo(tli, quartzJobMapper, qualityTaskMapper, dataSourcesServiceImpl, zdhNginxMapper, qualityRuleMapper);
+                zdhQualityInfo = create_zdhQualityInfo(tli, quartzJobMapper, qualityTaskMapper, dataSourcesMapper, zdhNginxMapper, qualityRuleMapper);
             }
 
 

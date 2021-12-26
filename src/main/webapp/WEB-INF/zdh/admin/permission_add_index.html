@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     <div class="ibox-content">
-
+                        <div> <input id="search_input" name="search_input" class="form-control" type="text" value="" placeholder="资源信息"></div><br />
                         <div id="using_json"></div>
 
                     </div>
@@ -81,7 +81,7 @@
         $(document).ready(function () {
 
             $('#using_json').jstree({
-                "plugins" : [ "types"],
+                "plugins" : [ "types","search"],
                 //'plugins' : ["checkbox"], //出现选择框
                 //'checkbox': { cascade: "", three_state: true }, //不级联
                 'core' : {
@@ -142,6 +142,13 @@
                     });
 
                 });
+
+
+
+            $('#search_input').keyup(function () {
+                $('#using_json').jstree(true).search($('#search_input').val());
+
+            });
 
         });
 

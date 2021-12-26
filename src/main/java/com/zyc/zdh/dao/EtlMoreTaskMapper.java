@@ -6,7 +6,9 @@ import com.zyc.zdh.entity.EtlTaskInfo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -17,8 +19,17 @@ import java.util.List;
  */
 public interface EtlMoreTaskMapper extends BaseMapper<EtlMoreTaskInfo> {
 
-    @Delete("delete from etl_more_task_info where id = #{ids_str}")
-    public int deleteBatchById(@Param("ids_str") String ids_str);
+    @Update(
+            {
+                    "<script>",
+                    "update etl_more_task_info set is_delete=1 ,update_time= #{update_time} where id in ",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public int deleteBatchById(@Param("ids") String[] ids, @Param("update_time") Timestamp update_time);
 
     @Select({"<script>",
             "SELECT * FROM etl_more_task_info",
@@ -37,6 +48,7 @@ public interface EtlMoreTaskMapper extends BaseMapper<EtlMoreTaskInfo> {
             "AND ( data_sources_file_name_output like '%${file_name}%'",
             "OR data_sources_table_name_output like '%${file_name}%' )",
             "</when>",
+            " and is_delete=0",
             "</script>"})
     public List<EtlMoreTaskInfo> selectByParams(@Param("owner") String owner, @Param("etl_context") String etl_context,
                                                 @Param("file_name") String file_name);

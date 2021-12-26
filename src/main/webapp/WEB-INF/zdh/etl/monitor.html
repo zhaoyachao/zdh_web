@@ -28,66 +28,85 @@
 
 
 </div>
+
 <div class="wrapper wrapper-content animated fadeInRight">
 
-    <div class="col-sm-2">
-        <div class="widget lazur-bg no-padding">
-            <div class="p-m">
-                <h3 class="font-bold no-margins">
-                    总任务数
-                </h3>
-                <h1 class="m-xs" id="allTaskNum">1540</h1>
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>平台任务监控</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
             </div>
         </div>
-    </div>
+        <div class="ibox-content">
 
-    <div class="col-sm-2">
-        <div class="widget lazur-bg no-padding">
-            <div class="p-m">
-                <h3 class="font-bold no-margins">
-                    总调度数
-                </h3>
-                <h1 class="m-xs" id="allDispatchNum">1540</h1>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="widget navy-bg no-padding">
-            <div class="p-m">
-                <h3 class="font-bold no-margins">
-                    开启调度数
-                </h3>
-                <h1 class="m-xs" id="allDispatchRunNum">1540</h1>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="widget navy-bg no-padding">
-            <div class="p-m">
-                <h3 class="font-bold no-margins">
-                    今日成功数
-                </h3>
-                <h1 class="m-xs" id="successNum">1540</h1>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="widget yellow-bg no-padding">
-            <div class="p-m">
-                <h3 class="font-bold no-margins">
-                    今日告警数
-                </h3>
-                <h1 class="m-xs" id="alarmNum">1540</h1>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="widget red-bg no-padding">
-            <div class="p-m">
-                <h3 class="font-bold no-margins">
-                    今日失败数
-                </h3>
-                <h1 class="m-xs" id="errorNum">1540</h1>
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <!-- Example Events -->
+                    <div class="col-sm-2">
+                        <div class="widget lazur-bg no-padding">
+                            <div class="p-m">
+                                <h3 class="font-bold no-margins">
+                                    总任务数
+                                </h3>
+                                <h1 class="m-xs" id="allTaskNum">1540</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="widget lazur-bg no-padding">
+                            <div class="p-m">
+                                <h3 class="font-bold no-margins">
+                                    总调度数
+                                </h3>
+                                <h1 class="m-xs" id="allDispatchNum">1540</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="widget navy-bg no-padding">
+                            <div class="p-m">
+                                <h3 class="font-bold no-margins">
+                                    开启调度数
+                                </h3>
+                                <h1 class="m-xs" id="allDispatchRunNum">1540</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="widget navy-bg no-padding">
+                            <div class="p-m">
+                                <h3 class="font-bold no-margins">
+                                    今日成功数
+                                </h3>
+                                <h1 class="m-xs" id="successNum">1540</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="widget yellow-bg no-padding">
+                            <div class="p-m">
+                                <h3 class="font-bold no-margins">
+                                    今日告警数
+                                </h3>
+                                <h1 class="m-xs" id="alarmNum">1540</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="widget red-bg no-padding">
+                            <div class="p-m">
+                                <h3 class="font-bold no-margins">
+                                    今日失败数
+                                </h3>
+                                <h1 class="m-xs" id="errorNum">1540</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Example Events -->
             </div>
         </div>
     </div>
@@ -228,7 +247,8 @@
 
 
 <!-- ECharts -->
-<script src="js/plugins/echarts/echarts-all.js"></script>
+<!--<script src="js/plugins/echarts/echarts-all.js"></script>-->
+<script src="js/plugins/echarts/echarts.min.js"></script>
 
 <!-- 自定义js -->
 <script src="js/content.js?v=1.0.0"></script>
@@ -265,13 +285,14 @@
                     var error_datas = new Array();// 声明一个数组
                     var finish_datas = new Array();// 声明一个数组
                     for (var i = 0; i < res.length; i++) {
-                        etl_date_datas.push(res[i].etl_date)
-                        running_datas.push(res[i].running)
-                        error_datas.push(res[i].error)
-                        finish_datas.push(res[i].finish)
+                        etl_date_datas.push(res[i].etl_date);
+                        running_datas.push(res[i].running);
+                        error_datas.push(res[i].error);
+                        finish_datas.push(res[i].finish);
                     }
 
                     var baroption = {
+                        color: ['#00bb00', '#444693','#c23531'],
                         title: {
                             text: '调度任务总计'
                         },

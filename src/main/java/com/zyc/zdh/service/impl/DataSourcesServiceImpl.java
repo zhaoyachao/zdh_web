@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 4.7.16及之后版本废弃,不在使用
+ */
+@Deprecated
 @Service
 public class DataSourcesServiceImpl implements DataSourcesService {
 
@@ -50,14 +54,9 @@ public class DataSourcesServiceImpl implements DataSourcesService {
 
     @Override
     public int deleteBatchById(Long[] ids) {
-        String ids_str = "";
-        String[] ids2 = new String[ids.length];
-        for(int i=0;i<ids.length;i++){
-            ids2[i]=ids[i].toString();
-        }
-        dataSourcesMapper.deleteBatchById2(ids2);
         return 0;
     }
+
 
     @Override
     public List<DataSourcesInfo> select(DataSourcesInfo dataSourcesInfo) {
@@ -71,6 +70,7 @@ public class DataSourcesServiceImpl implements DataSourcesService {
 
     @Override
     public List<DataSourcesInfo> selectByParams(String data_source_context, String data_source_type, String url, String owner) {
-        return dataSourcesMapper.selectByParams(data_source_context,data_source_type,url,owner);
+        return null;
     }
+
 }

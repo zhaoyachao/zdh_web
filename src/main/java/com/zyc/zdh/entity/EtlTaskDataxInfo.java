@@ -1,5 +1,7 @@
 package com.zyc.zdh.entity;
 
+import com.zyc.zdh.util.Const;
+
 import java.sql.Timestamp;
 import javax.persistence.*;
 
@@ -54,6 +56,9 @@ public class EtlTaskDataxInfo {
     private String update_context;
 
     private String datax_json;
+
+    private Timestamp update_time;
+    private String is_delete= Const.NOT_DELETE;
 
     /**
      * @return id
@@ -243,5 +248,21 @@ public class EtlTaskDataxInfo {
      */
     public void setDatax_json(String datax_json) {
         this.datax_json = datax_json;
+    }
+
+    public Timestamp getUpdate_time() {
+        return update_time;
+    }
+
+    public void setUpdate_time(Timestamp update_time) {
+        this.update_time = update_time;
+    }
+
+    public String getIs_delete() {
+        return is_delete;
+    }
+
+    public void setIs_delete(String is_delete) {
+        this.is_delete = is_delete;
     }
 }

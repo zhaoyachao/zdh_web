@@ -10,6 +10,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.DataSourcesService;
 import com.zyc.zdh.service.EtlTaskService;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,6 +146,8 @@ public class ZdhEtlApplyController extends BaseController{
 
             etlApplyTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlApplyTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            etlApplyTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlApplyTaskInfo.setIs_delete(Const.NOT_DELETE);
 
             etlApplyTaskMapper.insert(etlApplyTaskInfo);
             if (etlApplyTaskInfo.getUpdate_context() != null && !etlApplyTaskInfo.getUpdate_context().equals("")) {
@@ -175,10 +178,12 @@ public class ZdhEtlApplyController extends BaseController{
     @RequestMapping("/etl_task_apply_update")
     @ResponseBody
     @Transactional
-    public String etl_task_update(EtlApplyTaskInfo etlApplyTaskInfo) {
+    public String etl_task_apply_update(EtlApplyTaskInfo etlApplyTaskInfo) {
         try{
             String owner = getUser().getId();
             etlApplyTaskInfo.setOwner(owner);
+            etlApplyTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlApplyTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlApplyTaskInfo);
             if (etlApplyTaskInfo.getData_source_type_input().equals("外部上传")) {
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);

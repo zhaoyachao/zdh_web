@@ -6,6 +6,7 @@ import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -274,8 +275,7 @@ public class ZdhSshController extends BaseController{
     public String etl_task_ssh_delete(String[] ids) {
 
         try{
-            for (String id : ids)
-                sshTaskMapper.deleteByPrimaryKey(id);
+            sshTaskMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -297,11 +297,12 @@ public class ZdhSshController extends BaseController{
         try{
             String owner = getUser().getId();
             sshTaskInfo.setOwner(owner);
-            debugInfo(sshTaskInfo);
             String id=SnowflakeIdWorker.getInstance().nextId() + "";
             sshTaskInfo.setId(id);
             sshTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-
+            sshTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            sshTaskInfo.setIs_delete(Const.NOT_DELETE);
+            debugInfo(sshTaskInfo);
 
             sshTaskMapper.insert(sshTaskInfo);
 
@@ -381,6 +382,8 @@ public class ZdhSshController extends BaseController{
         try{
             String owner = getUser().getId();
             sshTaskInfo.setOwner(owner);
+            sshTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            sshTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sshTaskInfo);
             String id=sshTaskInfo.getId();
             sshTaskMapper.updateByPrimaryKey(sshTaskInfo);

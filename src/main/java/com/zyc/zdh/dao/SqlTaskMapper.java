@@ -7,7 +7,9 @@ import com.zyc.zdh.entity.SqlTaskInfo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -18,8 +20,17 @@ import java.util.List;
  */
 public interface SqlTaskMapper extends BaseMapper<SqlTaskInfo> {
 
-    @Delete("delete from sql_task_info where id = #{ids_str}")
-    public int deleteBatchById(@Param("ids_str") String ids_str);
+    @Update(
+            {
+                    "<script>",
+                    "update sql_task_info set is_delete=1 ,update_time= #{update_time} where id in ",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public int deleteBatchById(@Param("ids") String[] ids, @Param("update_time") Timestamp update_time);
 
     @Select({
             "<script>",
@@ -30,6 +41,7 @@ public interface SqlTaskMapper extends BaseMapper<SqlTaskInfo> {
             "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
             "#{id}",
             "</foreach>",
+            "and is_delete=0",
             "</script>"
     })
     public List<SqlTaskInfo> selectByIds(@Param("ids") String[] ids);
@@ -51,6 +63,7 @@ public interface SqlTaskMapper extends BaseMapper<SqlTaskInfo> {
             "<when test='id!=null and id !=\"\"'>",
             "AND id = #{id}",
             "</when>",
+            "and is_delete=0",
             "</script>"})
     public List<SqlTaskInfo> selectByParams(@Param("owner") String owner, @Param("sql_context") String sql_context,
                                             @Param("id") String id);

@@ -195,26 +195,26 @@
     //基本连接线样式
     var connectorPaintStyle = {
         lineWidth: 2,
-        strokeStyle: "#61b8d0",
+        strokeStyle: "#61b8d0"
     };
 
     // 鼠标悬浮在连接线上的样式
     var connectorHoverStyle = {
         lineWidth: 2,
-        strokeStyle: "green",
+        strokeStyle: "green"
     };
 
     //端点的颜色样式
     var paintStyle = {
         fillStyle: "#ccc",
         radius: 10,
-        lineWidth:6 ,
-    }
+        lineWidth:6
+    };
 
     // 鼠标悬浮在端点上的样式
     var hoverPaintStyle = {
-         fillStyle: "#aaa",
-    }
+         fillStyle: "#aaa"
+    };
 
 
     var hollowCircle = {
@@ -234,9 +234,9 @@
                     return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
                 },
                 location:0.5,
-                id:"customOverlay",
-            }],
-        ],
+                id:"customOverlay"
+            }]
+        ]
     };
 
     function get_color_by_status(status){
@@ -271,12 +271,12 @@
         var map2 = new Map();
         var map3 = new Map();
         //获取任务运行状态
-        var run_data=jsplumb_json.run_data
+        var run_data=jsplumb_json.run_data;
         if (run_data.length >= 1 ){
-            console.info("run_data is not null")
+            console.info("run_data is not null");
             for(var i=0;i<run_data.length;i++){
-                var id=run_data[i].task_log_instance_id
-                var divId=run_data[i].divId
+                var id=run_data[i].task_log_instance_id;
+                var divId=run_data[i].divId;
                 map.set(divId,id);
                 map2.set(id,divId);
             }
@@ -288,10 +288,10 @@
                 dataType : "json",
                 async: false,
                 success : function(data) {
-                    console.info("task_log_instance_list success")
+                    console.info("task_log_instance_list success");
                     for(var j=0;j<data.length;j++){
                         //divId->status
-                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id))
+                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id));
                         map3.set(map2.get(data[j].id),data[j].status)
                     }
                 },
@@ -306,20 +306,20 @@
         //添加div 数据
 
         for(var i=0;i< jsplumb_json.tasks.length;i++){
-            var rs=jsplumb_json.tasks[i]
-            var divId=rs.divId
-            var etl_context=rs.etl_context
-            var positionX=rs.positionX
-            var positionY=rs.positionY
-            var tp=rs.type
-            var task_log_instance_id=map.get(divId)
-            cls_str="node node"+tp+"css tasks"
-            var color=get_color_by_status(map3.get(divId))
-            console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color)
+            var rs=jsplumb_json.tasks[i];
+            var divId=rs.divId;
+            var etl_context=rs.etl_context;
+            var positionX=rs.positionX;
+            var positionY=rs.positionY;
+            var tp=rs.type;
+            var task_log_instance_id=map.get(divId);
+            cls_str="node node"+tp+"css tasks";
+            var color=get_color_by_status(map3.get(divId));
+            console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color);
 
             $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="'+tp+'"'+' data-id=" " >' +etl_context+ '</div>');
             $("#" + divId).css("left", positionX).css("top", positionY);
-            $("#" + divId).attr("type",tp)
+            $("#" + divId).attr("type",tp);
             $("#" + divId).attr("etl_context",rs.etl_context);
 
 
@@ -337,42 +337,42 @@
                 $("#" + divId).attr("etl_task_id",rs.etl_task_id);
             }
             //div.width(etl_task_info.etl_context.length*16)
-            $("#" + divId).css("width","auto")
-            $("#" + divId).css("display","inline-block")
-            $("#" + divId).css("*display","inline")
-            $("#" + divId).css("*zoom","1")
+            $("#" + divId).css("width","auto");
+            $("#" + divId).css("display","inline-block");
+            $("#" + divId).css("*display","inline");
+            $("#" + divId).css("*zoom","1");
             $("#" + divId).html(rs.etl_context);
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
             jsPlumb.draggable(divId);
             jsPlumb.makeTarget(divId, {
                 anchor: "Continuous"
-            })
+            });
             $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
             doubleclick("#" + divId,task_log_instance_id,etl_context);
         }
 
         for(var i=0;i< jsplumb_json.line.length;i++){
             jsPlumb.connect({
-                uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"],
+                uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
             })
         }
 
     }
 
     function refash(json,group_id){
-        var jsplumb_json=JSON.parse(json)
+        var jsplumb_json=JSON.parse(json);
         var ids = new Array();// 声明一个数组
         var map = new Map();
         var map2 = new Map();
         var map3 = new Map();
         //获取任务运行状态
-        var run_data=jsplumb_json.run_data
+        var run_data=jsplumb_json.run_data;
         if (run_data.length >= 1 ){
-            console.info("run_data is not null")
+            console.info("run_data is not null");
             for(var i=0;i<run_data.length;i++){
-                var id=run_data[i].task_log_instance_id
-                var divId=run_data[i].divId
+                var id=run_data[i].task_log_instance_id;
+                var divId=run_data[i].divId;
                 map.set(divId,id);
                 map2.set(id,divId);
             }
@@ -384,10 +384,10 @@
                 dataType : "json",
                 async: false,
                 success : function(data) {
-                    console.info("task_log_instance_list success")
+                    console.info("task_log_instance_list success");
                     for(var j=0;j<data.length;j++){
                         //divId->status
-                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id))
+                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id));
                         map3.set(map2.get(data[j].id),data[j].status)
                     }
                 },
@@ -400,7 +400,7 @@
 
         map3.forEach(function(value,key){
             console.log(value,key);
-            var color=get_color_by_status(value)
+            var color=get_color_by_status(value);
             $('#'+key).css("background-color",color);
         });
 
@@ -411,8 +411,8 @@
     function doubleclick(divId,task_log_instance_id,etl_context) {
         $(divId).dblclick(function () {
             var text = $(this).text();
-            var div = $(this)
-            var etl_task_id=div.attr("etl_task_id")
+            var div = $(this);
+            var etl_task_id=div.attr("etl_task_id");
 
             window.open(server_context+"/log_txt.html?task_log_id="+task_log_instance_id)
             //openTabPage("log_txt.html?task_log_id="+task_log_instance_id, etl_context + "日志")
@@ -435,13 +435,13 @@
         if($(document.body).height()*0.8>height){
             height=$(document.body).height()*0.8
         }
-        $('#exampleTableEvents').attr("data-height",height)
+        $('#exampleTableEvents').attr("data-height",height);
 
         function openTabPage(url, title) {
             var wpd = $(window.parent.document);
             var mainContent = wpd.find('.J_mainContent');
             var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
             pageTabs.find(".J_menuTab.active").removeClass("active");
             mainContent.find("iframe").css("display", "none");
             if (thisIframe.length > 0) {	// 选项卡已打开
@@ -568,9 +568,9 @@
                             type: "post",
                             dataType: "json",
                             success: function (data) {
-                                console.info("success")
+                                console.info("success");
                                 if(data.code != "200"){
-                                    layer.msg(data.msg)
+                                    layer.msg(data.msg);
                                     return
                                 }
                                 layer.close(index)
@@ -588,9 +588,9 @@
                             type: "post",
                             dataType: "json",
                             success: function (data) {
-                                console.info("success")
+                                console.info("success");
                                 if(data.code != "200"){
-                                    layer.msg(data.msg)
+                                    layer.msg(data.msg);
                                     return
                                 }
                                 layer.close(index)
@@ -619,7 +619,7 @@
                         type: "post",
                         dataType: "json",
                         success: function (data) {
-                            console.info("success")
+                            console.info("success");
                             layer.close(index)
                         },
                         error: function (data) {
@@ -643,14 +643,14 @@
                         console.info("success")
                         if (!data && typeof data != "undefined" && data != 0 || data.length < 1) {
                             if (typeof row.history_server == "undefined"){
-                                layer.msg("无法找到历史服务器并且应用程序已经死亡")
+                                layer.msg("无法找到历史服务器并且应用程序已经死亡");
                                 return;
                             }
-                            window.open(row.history_server + "/" + row.application_id)
+                            window.open(row.history_server + "/" + row.application_id);
                             return;
                         }
-                        console.info("http://" + data.zdh_host + ":" + data.web_port)
-                        window.open("http://" + data.zdh_host + ":" + data.web_port)
+                        console.info("http://" + data.zdh_host + ":" + data.web_port);
+                        window.open("http://" + data.zdh_host + ":" + data.web_port);
                     },
                     error: function (data) {
                         console.info("error: " + data.responseText);
@@ -658,7 +658,7 @@
 
                 });
 
-            },
+            }
         };
 
         function operateFormatter(value, row, index) {
@@ -757,6 +757,17 @@
                     return getMyDate(value);
                 }
             }, {
+                field: 'count',
+                title: '重试次数',
+                sortable: true,
+                visible: true,
+                formatter: function (value, row, index) {
+                    if(value > 0){
+                        return value - 1
+                    }
+                    return value
+                }
+            },  {
                 field: 'executor',
                 title: '执行器',
                 sortable: true,
@@ -915,9 +926,9 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success")
+                    console.info("success");
                     //重新渲染图
-                    var run_jsmind_data=data[0].run_jsmind_data
+                    var run_jsmind_data=data[0].run_jsmind_data;
                     refash(run_jsmind_data,s.group_id)
 
                 },
@@ -928,8 +939,8 @@
             });
         }
         $('#refash').click(function () {
-            refash_graph()
-            get_task_log()
+            refash_graph();
+            get_task_log();
         })
     });
 </script>

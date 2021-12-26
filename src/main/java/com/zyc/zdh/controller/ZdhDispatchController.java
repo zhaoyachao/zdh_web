@@ -296,6 +296,30 @@ public class ZdhDispatchController extends BaseController {
         }
     }
 
+    @RequestMapping("/dispatch_task_execute_time")
+    @ResponseBody
+    public String dispatch_task_execute_time(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time,String[] sub_tasks) {
+        debugInfo(quartzJobInfo);
+        System.out.println(concurrency);
+        System.out.println(Arrays.toString(sub_tasks));
+        JSONObject json = new JSONObject();
+
+        try {
+            QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
+            List<Date> dates = JobCommon2.resolveQuartzExpr(quartzJobInfo.getUse_quartz_time(),dti.getStep_size(),dti.getExpr(),start_time,end_time);
+            List<String> result=new ArrayList<>();
+            for(Date date:dates){
+                result.add(DateUtil.formatTime(new Timestamp(date.getTime())));
+            }
+
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"执行成功", result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"执行失败", e);
+        }
+    }
+
 
     private List<Timestamp> a(Timestamp start,Timestamp end,String step_size){
         int dateType = Calendar.DAY_OF_MONTH;

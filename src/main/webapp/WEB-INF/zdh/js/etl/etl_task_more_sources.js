@@ -8,7 +8,7 @@
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
@@ -27,7 +27,7 @@
                   });
               }
           });
-      })
+      });
 
       $('#remove').click(function () {
 
@@ -43,8 +43,8 @@
                 $(rows).each(function() {// 通过获得别选中的来进行遍历
                     ids.push(this.id);// cid为获得到的整条数据中的一列
                 });
-                console.log(ids)
-                deleteMs(ids)
+                console.log(ids);
+                deleteMs(ids);
                 layer.close(layer.index);
             }, function(){
 
@@ -62,7 +62,7 @@
               success : function(data) {
                   console.info("success")
                   if(data.code != "200"){
-                      layer.msg(data.msg)
+                      layer.msg(data.msg);
                       return
                   }
                   $('#exampleTableEvents').bootstrapTable('refresh', {
@@ -124,8 +124,9 @@
                   btn: ['确定','取消'] //按钮
               }, function(index){
                   var ids = new Array();// 声明一个数组
-                  ids.push(row.id)
+                  ids.push(row.id);
                   deleteMs(ids)
+                  layer.close(layer.index);
               }, function(){
 
               });

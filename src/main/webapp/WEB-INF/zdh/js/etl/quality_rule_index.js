@@ -162,6 +162,18 @@ function buildTable($el, cells, rows) {
           return num;
       }
 
+      function getRuleTypeName(rule_type){
+          if(rule_type == "1"){
+              return "SQL表达式";
+          }
+          if(rule_type == "2"){
+              return "正则表达式";
+          }
+          if(rule_type == "3"){
+              return "ZDH内置";
+          }
+          return rule_type;
+      }
       window.operateEvents = {
 
           'click #edit': function (e, value, row, index) {
@@ -229,7 +241,10 @@ function buildTable($el, cells, rows) {
         }, {
             field: 'rule_type',
             title: '规则类型(正则,sql表达式)',
-            sortable:true
+            sortable:true,
+            formatter: function (value, row, index) {
+                return getRuleTypeName(value);
+            }
         }, {
             field: 'rule_expr',
             title: '规则内容',

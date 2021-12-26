@@ -69,11 +69,11 @@
               dataType : "json",
               success : function(data) {
                   if(data.code != '200'){
-                      console.error(data.msg)
-                      layer.msg("执行失败")
+                      console.error(data.msg);
+                      layer.msg("执行失败");
                       return ;
                   }
-                  layer.msg("执行成功")
+                  layer.msg("执行成功");
 
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/etl_task_list2?"+$("#etl_task_form").serialize(),
@@ -90,7 +90,7 @@
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               top.layer.open({
                   type: 2,
                   title: 'ETL任务配置',

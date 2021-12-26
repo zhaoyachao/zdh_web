@@ -36,8 +36,8 @@
                     $(rows).each(function () {// 通过获得别选中的来进行遍历
                         ids.push(this.job_id);// job_id为获得到的整条数据中的一列
                     });
-                    console.log(ids)
-                    deleteMs(ids)
+                    console.log(ids);
+                    deleteMs(ids);
                     layer.close(layer.index);
                 }, function(){
 
@@ -78,14 +78,14 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success")
-                    top.layer.close(index)
+                    console.info("success");
+                    top.layer.close(index);
                     layer.msg(data.msg);
                     $("#execute").removeAttr('disabled');
                 },
                 error: function (data) {
                     $("#execute").removeAttr('disabled');
-                    top.layer.close(index)
+                    top.layer.close(index);
                     layer.msg('执行失败');
                     console.info("error: " + data.responseText);
                 }
@@ -105,14 +105,14 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success")
-                    console.info(data)
-                    top.layer.close(index)
+                    console.info("success");
+                    console.info(data);
+                    top.layer.close(index);
                     msg=data.msg
                 },
                 complete: function () {
                     $("#execute_quartz").removeAttr('disabled');
-                    console.info("complete")
+                    console.info("complete");
                 },
                 error: function (data) {
                     $("#execute_quartz").removeAttr('disabled');
@@ -129,7 +129,7 @@
 
         function pauseQuartz(job_id, row_status) {
             if (row_status != 'pause' && row_status != 'running') {
-                layer.msg("任务状态未启动,或者不是处于暂停状态 无法完成暂停或恢复")
+                layer.msg("任务状态未启动,或者不是处于暂停状态 无法完成暂停或恢复");
                 return false;
             }
             var status = "pause"
@@ -145,7 +145,7 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success")
+                    console.info("success");
                     if(data.code != "200"){
                         layer.msg(data.msg);
                         return
@@ -189,7 +189,7 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success")
+                    console.info("success");
                     if(data.code != "200"){
                         layer.msg(data.msg);
                         return
@@ -218,8 +218,8 @@
         window.operateEvents = {
             'click #edit': function (e, value, row, index) {
 
-                $("#id").val(row.job_id)
-                openTabPage(server_context+"/dispatch_task_group_add_index.html?id="+ row.job_id, "修改调度任务")
+                $("#id").val(row.job_id);
+                openTabPage(server_context+"/dispatch_task_group_add_index.html?id="+ row.job_id, "修改调度任务");
 
 
             },
@@ -229,7 +229,7 @@
                 }, function(index){
                     var ids = new Array();// 声明一个数组
                     ids.push(row.job_id);
-                    deleteMs(ids)
+                    deleteMs(ids);
                     layer.close(layer.index)
                 }, function(){
 
@@ -256,24 +256,25 @@
 
             },
             'click #copy': function (e, value, row, index) {
-                $("#id").val(row.job_id)
-                top.layer.open({
-                    type: 2,
-                    title: '调度任务配置',
-                    shadeClose: false,
-                    resize: true,
-                    fixed: false,
-                    maxmin: true,
-                    shade: 0.1,
-                    area: ['45%', '60%'],
-                    //area: ['450px', '500px'],
-                    content: server_context+"/dispatch_task_add_index?id=" + row.job_id+"&is_copy=true", //iframe的url
-                    end: function () {
-                        $('#exampleTableEvents').bootstrapTable('refresh', {
-                            url: server_context+'/dispatch_task_list2'
-                        });
-                    }
-                });
+                $("#id").val(row.job_id);
+                openTabPage(server_context+"/dispatch_task_group_add_index?id=" + row.job_id+"&is_copy=true", "复制调度任务");
+                // top.layer.open({
+                //     type: 2,
+                //     title: '调度任务配置',
+                //     shadeClose: false,
+                //     resize: true,
+                //     fixed: false,
+                //     maxmin: true,
+                //     shade: 0.1,
+                //     area: ['45%', '60%'],
+                //     //area: ['450px', '500px'],
+                //     content: server_context+"/dispatch_task_group_add_index?id=" + row.job_id+"&is_copy=true", //iframe的url
+                //     end: function () {
+                //         $('#exampleTableEvents').bootstrapTable('refresh', {
+                //             url: server_context+'/dispatch_task_list2'
+                //         });
+                //     }
+                // });
             }
         };
 

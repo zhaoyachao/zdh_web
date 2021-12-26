@@ -4,15 +4,20 @@ import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
+import com.zyc.zdh.dao.UserOperateLogMapper;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.User;
+import com.zyc.zdh.entity.UserOperateLogInfo;
 import com.zyc.zdh.exception.ZdhException;
+import com.zyc.zdh.util.SpringContext;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.web.util.WebUtils;
 import org.aspectj.lang.JoinPoint;
@@ -90,6 +95,26 @@ public class AspectConfig implements Ordered{
 			logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,请求参数:【{}】",ipAddr,uid,url,reqParam);
 			Object o=pjp.proceed();
 			logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,结束",ipAddr,uid,url);
+			//跳过特殊操作，etlEcharts,getTotalNum,notice_list
+			if(is_operate_log(url) && getUser() != null){
+				if(o instanceof String){
+					UserOperateLogMapper userOperateLogMapper= (UserOperateLogMapper)SpringContext.getBean("userOperateLogMapper");
+					UserOperateLogInfo userOperateLogInfo=new UserOperateLogInfo();
+					userOperateLogInfo.setOwner(getUser().getId());
+					userOperateLogInfo.setUser_name(getUser().getUserName());
+					userOperateLogInfo.setOperate_url(url);
+					userOperateLogInfo.setOperate_input(reqParam);
+
+					if(((String) o).length()>6400){
+						userOperateLogInfo.setOperate_output(((String) o).substring(0,6400));
+					}else{
+						userOperateLogInfo.setOperate_output((String) o);
+					}
+					userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
+					userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+					userOperateLogMapper.insert(userOperateLogInfo);
+				}
+			}
 			return o;
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -155,6 +180,17 @@ public class AspectConfig implements Ordered{
 			}
 		}
 		return reqParam;
+	}
+
+	private boolean is_operate_log(String url){
+
+		String[] back_urls = new String[]{"etlEcharts", "getTotalNum", "notice_list", "user_operate_log_list", "user_operate_log_index"};
+		for (String back_url: back_urls){
+			if(url.contains(back_url))
+				return false;
+		}
+
+		return true;
 	}
 
 	private List<String> white(){

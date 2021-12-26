@@ -240,7 +240,7 @@ public class CheckDepJob {
 
                 if(check){
                     String tmp_status=taskLogInstanceMapper.selectByPrimaryKey(tl.getId()).getStatus();
-                    if( tmp_status=="kill" || tmp_status =="killed" ) continue; //在检查依赖时杀死任务
+                    if( tmp_status.equalsIgnoreCase("kill") || tmp_status.equalsIgnoreCase("killed") ) continue; //在检查依赖时杀死任务
 
                     if(tl.getJob_type().equalsIgnoreCase("shell")){
                         if(JobCommon2.check_thread_limit(tl))

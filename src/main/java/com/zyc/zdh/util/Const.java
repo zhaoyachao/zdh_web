@@ -26,4 +26,11 @@ public class Const {
     public static String DELETE="1";
     public static String NOT_DELETE="0";
 
+    public static String SMS_INIT = "0";//未处理
+    public static String SMS_HANDLING = "1";//处理中
+    public static String SMS_FAIL = "2";//处理失败
+    public static String SMS_SUCCESS = "3";//成功
+    public static String SMS_NOT_HANDLE = "4";//不做处理
+
+
 }

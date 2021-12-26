@@ -4,9 +4,12 @@ import com.zyc.zdh.dao.EtlTaskMapper;
 import com.zyc.zdh.entity.EtlTaskInfo;
 import com.zyc.zdh.entity.QuotaInfo;
 import com.zyc.zdh.service.EtlTaskService;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -50,11 +53,8 @@ public class EtlTaskServiceImpl implements EtlTaskService {
 
     @Override
     public int deleteBatchById(Long[] ids) {
-        String ids_str = "";
-        for (Long id : ids) {
-            etlTaskMapper.deleteBatchById(id.toString());
-        }
-
+        String[]  ids2 = (String[])ConvertUtils.convert(ids, String[].class);
+        etlTaskMapper.deleteBatchById(ids2, new Timestamp(new Date().getTime()));
         return 0;
     }
 

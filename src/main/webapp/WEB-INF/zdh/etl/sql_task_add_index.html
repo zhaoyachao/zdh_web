@@ -978,11 +978,11 @@
             success: function (data) {
                 $("#save_etl_task").removeAttr('disabled');
                 if(data.code != '200'){
-                    console.error(data.msg)
-                    layer.msg("执行失败")
+                    console.error(data.msg);
+                    layer.msg("执行失败");
                     return ;
                 }
-                layer.msg("执行成功")
+                layer.msg("执行成功");
 
 
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引

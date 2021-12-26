@@ -129,6 +129,9 @@
 
                         <div class="form-group">
                             <div class="text-center">
+                                <button id="test_connect" name="test_connect" class="btn btn-info" οnsubmit='return false'
+                                        type="button">测试连接
+                                </button>
                                 <button id="save_zdh" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
                                 </button>
@@ -236,7 +239,60 @@
 
         }
 
+        $('#test_connect').click(function (){
 
+            if ( $('#data_source_type').val() == '') {
+                layer.msg("数据源类型不能为空！");
+                return ;
+            }
+            if ($('#data_source_type').val() == 'JDBC' && $('#driver').val() == '') {
+                layer.msg("数据源为JDBC时,驱动不能为空！");
+                return ;
+            }
+            if ($('#data_source_type').val() == 'JDBC' && $('#url').val() == '') {
+                layer.msg("数据源为JDBC时,连接串不能为空！");
+                return ;
+            }
+            if ($('#data_source_type').val() == 'JDBC' && $('#username').val() == '') {
+                // layer.msg("数据源为JDBC时,用户不能为空！");
+                //  return ;
+            }
+            if ($('#data_source_type').val() == 'JDBC' && $('#password').val() == '') {
+                //  layer.msg("数据源为JDBC时,密码不能为空！");
+                //  return ;
+            }
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/test_connect",
+                dataType: 'json',
+                data: $("#data_sources").serialize(),
+                //发送数据前
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#test_connect").attr({disabled: "disabled"});
+                },
+                //成功返回
+                success: function (data) {
+                    $("#test_connect").removeAttr('disabled');
+                    if(data.code != "200"){
+                        layer.msg(data.msg+":"+data.result);
+                        return;
+                    }
+                    layer.msg(data.msg);
+                },
+                //处理完成
+                complete: function () {
+                    $("#test_connect").removeAttr('disabled');
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+
+        });
         $('#save_zdh').click(function () {
 
             if ( $('#data_source_context').val() == '') {
@@ -294,7 +350,7 @@
             });
 
 
-        })
+        });
 
         $('#update_zdh').click(function () {
 
@@ -352,7 +408,7 @@
             });
 
 
-        })
+        });
 
     });
 

@@ -59,7 +59,7 @@ public class ZdhApplicationTests {
 
 	@Test
 	public void check_sql_blood_source(){
-		CheckBloodSourceJob.check_sql_blood_source("1");
+		CheckBloodSourceJob.Check();
 	}
 
 

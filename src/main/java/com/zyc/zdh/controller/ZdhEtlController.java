@@ -9,6 +9,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.DataSourcesService;
 import com.zyc.zdh.service.EtlTaskService;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import com.zyc.zdh.util.StringUtils;
@@ -104,13 +105,12 @@ public class ZdhEtlController extends BaseController{
     @ResponseBody
     @Transactional
     public String etl_task_delete(Long[] ids) {
-
         try{
             etlTaskService.deleteBatchById(ids);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error(e.getMessage(),e.getCause());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
     }
@@ -150,6 +150,8 @@ public class ZdhEtlController extends BaseController{
 
             etlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            etlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskInfo.setIs_delete(Const.NOT_DELETE);
             if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
                 if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
@@ -237,6 +239,8 @@ public class ZdhEtlController extends BaseController{
         try{
             String owner = getUser().getId();
             etlTaskInfo.setOwner(owner);
+            etlTaskInfo.setIs_delete(Const.NOT_DELETE);
+            etlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             debugInfo(etlTaskInfo);
             if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);

@@ -7,6 +7,7 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -75,8 +76,7 @@ public class ZdhFlinkController extends BaseController{
     @Transactional
     public String etl_task_flink_delete(String[] ids) {
         try{
-            for (String id : ids)
-                etlTaskFlinkMapper.deleteByPrimaryKey(id);
+            etlTaskFlinkMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -98,12 +98,12 @@ public class ZdhFlinkController extends BaseController{
         try{
             String owner = getUser().getId();
             etlTaskFlinkInfo.setOwner(owner);
-            debugInfo(etlTaskFlinkInfo);
-
             etlTaskFlinkInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTaskFlinkInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            etlTaskFlinkInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskFlinkInfo.setIs_delete(Const.NOT_DELETE);
 
-
+            debugInfo(etlTaskFlinkInfo);
             etlTaskFlinkMapper.insert(etlTaskFlinkInfo);
 
 
@@ -137,6 +137,8 @@ public class ZdhFlinkController extends BaseController{
         try{
             String owner = getUser().getId();
             etlTaskFlinkInfo.setOwner(owner);
+            etlTaskFlinkInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskFlinkInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskFlinkInfo);
 
             etlTaskFlinkMapper.updateByPrimaryKey(etlTaskFlinkInfo);

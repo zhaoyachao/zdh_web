@@ -414,7 +414,23 @@
   + v4.7.15 修复v4.7.12至4.7.14中发送任务模块到server(spark)失败bug
   + v4.7.15 优化加载通知有每10秒改为每60秒加载
   
+  + v4.7.16 检查是否存在log4j2漏洞(无)
+  + v4.7.16 优化调度新增页面,增加告警账号不可为空限制
+  + v4.7.16 增加血源分析(目前只支持1层上下游关系-待优化)
+  + v4.7.16 修复task_group_logs_delete权限
+  + v4.7.16 新增权限dispatch_task_execute_time
+  + v4.7.16 新增调度时间预查看
+  + v4.7.16 增加数据源逻辑删除
+  + v4.7.16 菜单资源页面,角色配置页面 增加树查询功能
+  + v4.7.16 调度页面-复制功能bug修复
+  + v4.7.16 数据源增加更新字段
+  + v4.7.16 删除历史数据源逻辑层,使用Dao层代替
+  + v4.7.16 修复ssh页面关闭无效bug
+  + v4.7.16 单源ETL,多源ETL,SSH,SQL,FLINK_SQL,JDBC_SQL,申请源ETL 增加逻辑删除和更新时间
   
+  
+# 4.7.15迁移4.7.16
+    alter table data_sources_info add column update_time timestamp default null comment '更新时间';  
   
   
 # 未完成的功能

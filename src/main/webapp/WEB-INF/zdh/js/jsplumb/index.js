@@ -159,15 +159,15 @@ $(document).ready(function(){
     function doubleclick_tasks(id) {
                 $(id).dblclick(function () {
                     var text = $(this).text();
-                    var div = $(this)
-                    var etl_task_id=div.attr("etl_task_id")
-                    var url=server_context+'/job_detail.html'
+                    var div = $(this);
+                    var etl_task_id=div.attr("etl_task_id");
+                    var url=server_context+'/job_detail.html';
                     if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                         url=url+"?etl_task_id=-1"
                     }else{
-                        var more_task=div.attr("more_task")
-                        var depend_level = div.attr("depend_level")
-                        var time_out = div.attr("time_out")
+                        var more_task=div.attr("more_task");
+                        var depend_level = div.attr("depend_level");
+                        var time_out = div.attr("time_out");
                         url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out
                     }
                     layer.open({
@@ -177,23 +177,23 @@ $(document).ready(function(){
                         maxmin: true,
                         content: encodeURI(url),
                         end: function () {
-                            console.info("index:doubleclick:"+$("#etl_task_text").val())
+                            console.info("index:doubleclick:"+$("#etl_task_text").val());
                             if($("#etl_task_text").val()==""){
-                                console.info("无修改-不更新")
+                                console.info("无修改-不更新");
                                 return ;
                             }
 
-                            var etl_task_info=JSON.parse($("#etl_task_text").val())
+                            var etl_task_info=JSON.parse($("#etl_task_text").val());
                             div.attr("etl_task_id",etl_task_info.etl_task_id);
                             div.attr("etl_context",etl_task_info.etl_context);
                             div.attr("more_task",etl_task_info.more_task);
-                            div.attr("depend_level",etl_task_info.depend_level)
+                            div.attr("depend_level",etl_task_info.depend_level);
                             div.attr("time_out",etl_task_info.time_out);
                             //div.width(etl_task_info.etl_context.length*16)
-                            div.css("width","auto")
-                            div.css("display","inline-block")
-                            div.css("*display","inline")
-                            div.css("*zoom","1")
+                            div.css("width","auto");
+                            div.css("display","inline-block");
+                            div.css("*display","inline");
+                            div.css("*zoom","1");
                             div.html(etl_task_info.etl_context);
                         }
                     });
@@ -204,14 +204,14 @@ $(document).ready(function(){
         $(id).dblclick(function () {
             var etl_context = $(this).text();
             var div = $(this)
-            var command=div.attr("command")
-            var url=server_context+'/shell_detail.html'
+            var command=div.attr("command");
+            var url=server_context+'/shell_detail.html';
             if( command == "" || command == undefined ){
                 url=url+"?command=-1"
             }else{
-                var is_script=div.attr("is_script")
-                var depend_level = div.attr("depend_level")
-                var time_out = div.attr("time_out")
+                var is_script=div.attr("is_script");
+                var depend_level = div.attr("depend_level");
+                var time_out = div.attr("time_out");
                 url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&depend_level="+depend_level +"&time_out="+time_out
             }
             layer.open({
@@ -221,22 +221,22 @@ $(document).ready(function(){
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
                         console.info("无修改-不更新")
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     div.attr("command",etl_task_info.command);
                     div.attr("is_script",etl_task_info.is_script);
-                    div.attr("etl_context",etl_task_info.etl_context)
-                    div.attr("depend_level",etl_task_info.depend_level)
+                    div.attr("etl_context",etl_task_info.etl_context);
+                    div.attr("depend_level",etl_task_info.depend_level);
                     div.attr("time_out",etl_task_info.time_out);
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });
@@ -246,15 +246,15 @@ $(document).ready(function(){
     function doubleclick_group(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
-            var div = $(this)
-            var etl_task_id=div.attr("etl_task_id")
-            var url=server_context+'/group_detail.html'
+            var div = $(this);
+            var etl_task_id=div.attr("etl_task_id");
+            var url=server_context+'/group_detail.html';
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{
-                var more_task=div.attr("more_task")
-                var depend_level = div.attr("depend_level")
-                var time_out = div.attr("time_out")
+                var more_task=div.attr("more_task");
+                var depend_level = div.attr("depend_level");
+                var time_out = div.attr("time_out");
                 url=url+"?etl_task_id="+etl_task_id+"&depend_level="+depend_level +"&time_out="+time_out
             }
             layer.open({
@@ -264,22 +264,22 @@ $(document).ready(function(){
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
-                    div.attr("depend_level",etl_task_info.depend_level)
+                    div.attr("depend_level",etl_task_info.depend_level);
                     div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });
@@ -296,15 +296,15 @@ $(document).ready(function(){
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
                 url=url+"?etl_context=-1"
             }else{
-                var jdbc_url=div.attr("url")
-                var driver=div.attr("driver")
-                var username=div.attr("username")
-                var password=div.attr("password")
-                var jdbc_sql=div.attr("jdbc_sql")
-                var depend_level = div.attr("depend_level")
-                var time_out = div.attr("time_out")
-                $("#jdbc_url_text").val(jdbc_url)
-                $("#jdbc_sql_text").val(jdbc_sql)
+                var jdbc_url=div.attr("url");
+                var driver=div.attr("driver");
+                var username=div.attr("username");
+                var password=div.attr("password");
+                var jdbc_sql=div.attr("jdbc_sql");
+                var depend_level = div.attr("depend_level");
+                var time_out = div.attr("time_out");
+                $("#jdbc_url_text").val(jdbc_url);
+                $("#jdbc_sql_text").val(jdbc_sql);
                 url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level +"&time_out="+time_out
             }
             layer.open({
@@ -314,13 +314,13 @@ $(document).ready(function(){
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     //alert(etl_task_info.jdbc_sql)
                     div.attr("url",etl_task_info.url);
                     div.attr("driver",etl_task_info.driver);
@@ -328,13 +328,13 @@ $(document).ready(function(){
                     div.attr("password",etl_task_info.password);
                     div.attr("jdbc_sql",etl_task_info.jdbc_sql);
                     div.attr("etl_context",etl_task_info.etl_context);
-                    div.attr("depend_level",etl_task_info.depend_level)
+                    div.attr("depend_level",etl_task_info.depend_level);
                     div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });

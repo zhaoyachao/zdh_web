@@ -4,6 +4,7 @@ package com.zyc.zdh.entity;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.Const;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -110,6 +111,10 @@ public class EtlTaskInfo {
     private String enable_quality;
 
     private String duplicate_columns;//去重字段
+
+    private Timestamp update_time;
+
+    private String is_delete= Const.NOT_DELETE;
 
     @Transient
     private String merge;
@@ -470,6 +475,22 @@ public class EtlTaskInfo {
 
     public void setMerge(String merge) {
         this.merge = merge;
+    }
+
+    public Timestamp getUpdate_time() {
+        return update_time;
+    }
+
+    public void setUpdate_time(Timestamp update_time) {
+        this.update_time = update_time;
+    }
+
+    public String getIs_delete() {
+        return is_delete;
+    }
+
+    public void setIs_delete(String is_delete) {
+        this.is_delete = is_delete;
     }
 }
 
