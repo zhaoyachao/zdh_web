@@ -216,8 +216,10 @@ public class SystemController extends BaseController{
         EveryDayNotice everyDayNotice=new EveryDayNotice();
         everyDayNotice.setIs_delete("false");
         List<EveryDayNotice> list=everyDayNoticeMapper.select(everyDayNotice);
-
-        return JSON.toJSONString(list.get(0));
+        if(list != null && list.size()>0){
+            return JSON.toJSONString(list.get(0));
+        }
+        return JSON.toJSONString(new ArrayList<EveryDayNotice>());
     }
 
     @RequestMapping(value = "/notice_update", produces = "text/html;charset=UTF-8")
