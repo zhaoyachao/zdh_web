@@ -352,6 +352,12 @@ public class ZdhEtlController extends BaseController{
         }
     }
 
+    public void create_etl(){
+        //整库迁移-生成小工具,根据输入源(JDBC)获取对应的表,批量生成ETL任务
+
+
+    }
+
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

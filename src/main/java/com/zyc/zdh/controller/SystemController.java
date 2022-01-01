@@ -345,11 +345,19 @@ public class SystemController extends BaseController{
     @ResponseBody
     public String every_day_notice() {
 
-        EveryDayNotice everyDayNotice=new EveryDayNotice();
-        everyDayNotice.setIs_delete("false");
-        List<EveryDayNotice> list=everyDayNoticeMapper.select(everyDayNotice);
+        try{
+            EveryDayNotice everyDayNotice=new EveryDayNotice();
+            everyDayNotice.setIs_delete("false");
+            List<EveryDayNotice> list=everyDayNoticeMapper.select(everyDayNotice);
+            if(list != null && list.size()>0){
+                return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "", list.get(0));
+            }
 
-        return JSON.toJSONString(list.get(0));
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "暂无通知", null);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询通知失败", e.getMessage());
+        }
     }
 
     @RequestMapping(value = "/notice_update", produces = "text/html;charset=UTF-8")

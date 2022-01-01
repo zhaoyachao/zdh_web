@@ -789,7 +789,11 @@
                 data: {},
                 //成功返回
                 success: function (data) {
-                    console.info("success:"+data.length)
+                    console.info("success:"+data.length);
+                    if(data.code != '200'){
+                        console.info(data.msg);
+                        return
+                    }
                     $('#notice').html(data.msg)
                 },
                 //处理完成

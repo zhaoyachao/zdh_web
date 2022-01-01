@@ -416,9 +416,66 @@
   + v4.7.16 修复ssh页面关闭无效bug
   + v4.7.16 单源ETL,多源ETL,SSH,SQL,FLINK_SQL,JDBC_SQL,申请源ETL 增加逻辑删除和更新时间
   
+  + v4.7.17 接口无权限-增加ZDH告警
+  + v4.7.17 修复every_day_notice接口,无数据异常bug
+  + v4.7.17 修复操作日志写入字符个数
+  
   
 # 4.7.15迁移4.7.16
-    alter table data_sources_info add column update_time timestamp default null comment '更新时间';  
+    alter table data_sources_info add column update_time timestamp default null comment '更新时间';
+    alter table etl_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table etl_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table etl_more_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table etl_more_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table sql_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table sql_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table ssh_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table ssh_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    
+    alter table etl_task_flink_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table etl_task_jdbc_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table etl_task_jdbc_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table etl_task_datax_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table etl_task_datax_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table etl_apply_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    
+    CREATE TABLE `alarm_sms_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `title` varchar(500) DEFAULT NULL COMMENT '任务说明',
+      `msg` text COMMENT '信息',
+      `msg_type` varchar(100) DEFAULT NULL COMMENT '信息类型，通知,营销',
+      `msg_url` varchar(500) DEFAULT NULL COMMENT '短信附带连接',
+      `phone` varchar(100) DEFAULT NULL COMMENT '手机号',
+      `status` varchar(8) DEFAULT '0' COMMENT '状态,0:未处理,1:处理中,2:失败,3:成功,4:不处理',
+      `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+      `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
+    
+    CREATE TABLE `user_operate_log` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+      `user_name` varchar(500) DEFAULT NULL COMMENT '用户名',
+      `operate_url` varchar(500) COMMENT '操作url',
+      `operate_context` varchar(500) COMMENT '操作说明',
+      `operate_input` text  COMMENT '输入参数',
+      `operate_output` text COMMENT '输出结果',
+      `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+      `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
+  
+  
+# 4.7.16迁移4.7.17
+     暂无
+
   
   
 # 未完成的功能

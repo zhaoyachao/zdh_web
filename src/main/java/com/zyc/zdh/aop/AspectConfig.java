@@ -11,13 +11,13 @@ import java.util.Date;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
+import com.zyc.zdh.dao.NoticeMapper;
 import com.zyc.zdh.dao.UserOperateLogMapper;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.User;
-import com.zyc.zdh.entity.UserOperateLogInfo;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.exception.ZdhException;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.web.util.WebUtils;
 import org.aspectj.lang.JoinPoint;
@@ -95,26 +95,31 @@ public class AspectConfig implements Ordered{
 			logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,请求参数:【{}】",ipAddr,uid,url,reqParam);
 			Object o=pjp.proceed();
 			logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,结束",ipAddr,uid,url);
-			//跳过特殊操作，etlEcharts,getTotalNum,notice_list
-			if(is_operate_log(url) && getUser() != null){
-				if(o instanceof String){
-					UserOperateLogMapper userOperateLogMapper= (UserOperateLogMapper)SpringContext.getBean("userOperateLogMapper");
-					UserOperateLogInfo userOperateLogInfo=new UserOperateLogInfo();
-					userOperateLogInfo.setOwner(getUser().getId());
-					userOperateLogInfo.setUser_name(getUser().getUserName());
-					userOperateLogInfo.setOperate_url(url);
-					userOperateLogInfo.setOperate_input(reqParam);
+			try{
+				//跳过特殊操作，etlEcharts,getTotalNum,notice_list
+				if(is_operate_log(url) && getUser() != null){
+					if(o instanceof String){
+						UserOperateLogMapper userOperateLogMapper= (UserOperateLogMapper)SpringContext.getBean("userOperateLogMapper");
+						UserOperateLogInfo userOperateLogInfo=new UserOperateLogInfo();
+						userOperateLogInfo.setOwner(getUser().getId());
+						userOperateLogInfo.setUser_name(getUser().getUserName());
+						userOperateLogInfo.setOperate_url(url);
+						userOperateLogInfo.setOperate_input(reqParam);
 
-					if(((String) o).length()>6400){
-						userOperateLogInfo.setOperate_output(((String) o).substring(0,6400));
-					}else{
-						userOperateLogInfo.setOperate_output((String) o);
+						if(((String) o).length()>6400){
+							userOperateLogInfo.setOperate_output(((String) o).substring(0,256));
+						}else{
+							userOperateLogInfo.setOperate_output((String) o);
+						}
+						userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
+						userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+						userOperateLogMapper.insert(userOperateLogInfo);
 					}
-					userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
-					userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-					userOperateLogMapper.insert(userOperateLogInfo);
 				}
+			}catch (Exception e){
+				e.printStackTrace();
 			}
+
 			return o;
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -173,6 +178,8 @@ public class AspectConfig implements Ordered{
 					break;
 				}
 				if(!SecurityUtils.getSubject().isPermitted(url)){
+					//此处增加zdh通知
+					send_notice(getUser(),"接口权限通知", url+"没有权限");
 					throw new ZdhException(url+"没有权限");
 				}
 
@@ -180,6 +187,26 @@ public class AspectConfig implements Ordered{
 			}
 		}
 		return reqParam;
+	}
+
+	private void send_notice(User user, String title, String msg){
+		try{
+			NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
+			NoticeInfo ni=new NoticeInfo();
+			ni.setMsg_type("告警");
+			ni.setMsg_title(title);
+			ni.setMsg_url("");
+			ni.setMsg(msg);
+			ni.setIs_see(Const.FALSE);
+			ni.setOwner(user.getId());
+			ni.setCreate_time(new Timestamp(new Date().getTime()));
+			ni.setUpdate_time(new Timestamp(new Date().getTime()));
+			noticeMapper.insert(ni);
+		}catch (Exception e){
+			e.printStackTrace();
+			logger.error("接口无权限告警异常",e.getCause());
+		}
+
 	}
 
 	private boolean is_operate_log(String url){
