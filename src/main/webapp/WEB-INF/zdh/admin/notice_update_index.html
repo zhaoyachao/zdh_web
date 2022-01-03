@@ -102,8 +102,11 @@
             data: {},
             //成功返回
             success: function (data) {
-                console.info("success:"+data.length)
-                $('#msg').val(data.msg)
+                if(data.code != '200'){
+                    layer.msg(data.msg);
+                    return ;
+                }
+                $('#msg').val(data.result.msg)
             },
             //处理完成
             complete: function () {
