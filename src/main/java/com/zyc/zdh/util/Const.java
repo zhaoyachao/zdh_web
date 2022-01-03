@@ -32,5 +32,9 @@ public class Const {
     public static String SMS_SUCCESS = "3";//成功
     public static String SMS_NOT_HANDLE = "4";//不做处理
 
+    public static String BATCH_INIT = "0";//未执行
+    public static String BATCH_RUNNING = "1";//执行中
+    public static String BATCH_FAIL = "2";//执行失败
+    public static String BATCH_SUCCESS = "3";//执行成功
 
 }

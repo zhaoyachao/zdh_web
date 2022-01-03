@@ -1,17 +1,10 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.dao.*;
+import com.zyc.zdh.dao.EtlMoreTaskMapper;
 import com.zyc.zdh.entity.EtlMoreTaskInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.quartz.QuartzManager2;
-import com.zyc.zdh.service.DataSourcesService;
-import com.zyc.zdh.service.DispatchTaskService;
-import com.zyc.zdh.service.EtlTaskService;
-import com.zyc.zdh.service.ZdhLogsService;
-import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -2,30 +2,26 @@ package com.zyc.zdh.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.EmailJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.service.DataSourcesService;
-
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.StringUtils;
-import org.skyscreamer.jsonassert.JSONCompare;
-import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.skyscreamer.jsonassert.JSONCompareResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 数据仓库服务
@@ -34,9 +30,6 @@ import java.util.*;
 @Controller
 public class ZdhIssueDataController extends BaseController{
 
-
-    @Autowired
-    DataSourcesService dataSourcesServiceImpl;
 
     @Autowired
     EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;

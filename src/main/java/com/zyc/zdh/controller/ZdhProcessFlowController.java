@@ -1,20 +1,15 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.zyc.zdh.dao.*;
+import com.zyc.zdh.dao.ApplyMapper;
+import com.zyc.zdh.dao.ApprovalAuditorMapper;
+import com.zyc.zdh.dao.IssueDataMapper;
+import com.zyc.zdh.dao.ProcessFlowMapper;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.EmailJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.service.DataSourcesService;
-import com.zyc.zdh.service.JemailService;
-import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 

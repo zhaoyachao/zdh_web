@@ -1,36 +1,24 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.jcraft.jsch.SftpException;
+import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.EtlApplyTaskMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.service.DataSourcesService;
-import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DBUtil;
-import com.zyc.zdh.util.SFTPUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +32,7 @@ public class ZdhEtlApplyController extends BaseController{
 
 
     @Autowired
-    DataSourcesService dataSourcesServiceImpl;
+    DataSourcesMapper dataSourcesMapper;
     @Autowired
     EtlApplyTaskMapper etlApplyTaskMapper;
     @Autowired

@@ -52,7 +52,7 @@ public class ZdhBloodSourceController extends BaseController{
         return "etl/blood_source_detail_index";
     }
 
-    @RequestMapping("/blood_source_create")
+    @RequestMapping(value = "/blood_source_create", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String blood_source_create() {
         CheckBloodSourceJob.Check();

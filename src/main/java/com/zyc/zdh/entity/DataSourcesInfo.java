@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 import javax.persistence.*;
 
 @Table(name = "data_sources_info")
-public class DataSourcesInfo {
+public class DataSourcesInfo extends PageBase{
     @Id
     private String id;
 

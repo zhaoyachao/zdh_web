@@ -228,7 +228,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: "getUserInfo",
+                url: server_context+"/getUserInfo",
                 async:false,
                 dataType: 'json',
                 data: '',
@@ -258,7 +258,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: "notice_list",
+                    url: server_context+"/notice_list",
                     dataType: 'json',
                     data: {},
                     //成功返回
@@ -267,8 +267,8 @@
                         //console.info(data.length)
                         if(data.code=="200"){
 
-                            $('#notice_num').html(data.result.total_num)
-                            $('#msg_ul').html("")
+                            $('#notice_num').html(data.result.total_num);
+                            $('#msg_ul').html("");
                                 for(var i=0;i<data.result.notices.length;i++){
                                 var html_li="<li>"+
                                     " <a href=\"notice_detail_index.html?id="+data.result.notices[i].id+"\">"+
@@ -276,7 +276,7 @@
                                     " <i class=\"fa fa-envelope\"></i>  "+data.result.notices[i].msg_title+
                                     "</div>"+
                                     " </a>"+
-                                    " </li>"
+                                    " </li>";
 
                                     //console.info(html_li)
                                     $('#msg_ul').append(html_li);
@@ -294,15 +294,15 @@
                             $('#msg_ul').append(end_li)
 
                         }else{
-                            $('#msg_ul').html("")
+                            $('#msg_ul').html("");
                             var html_li="<li>"+
                                 " <a href=\"notice_index.html\">"+
                                 " <div>"+
                                 " <i class=\"fa fa-weixin\"></i>  暂无消息"+
                                 "</div>"+
                                 " </a>"+
-                                " </li>"
-                            $('#notice_num').html("")
+                                " </li>";
+                            $('#notice_num').html("");
                             $('#msg_ul').append(html_li)
                         }
                     },
@@ -330,7 +330,7 @@
 
             $.ajax({
                 type : "POST",
-                url : "jstree_permission_list2",
+                url : server_context+"/jstree_permission_list2",
                 dataType : "json",
                 async:'false',
                 success : function(data) {
@@ -338,26 +338,41 @@
                 //当前最大支持层级数是5级
                 for(var j=2;j<=5;j++){
                     for(var i=0;i<data.length;i++){
-                            //console.info(j)
                             if(data[i].level == j) {
+                                var level_tmp = data[i].level;
                                 var li_tmplete =
                                     "<li>" +
                                     "<a class=\"J_menuItem\" href=\"" + data[i].url + "\"><i class=\""+ data[i].icon+"\"></i>" +
                                     "<span class=\"nav-label\">"+data[i].text+"</span></a>" +
                                     "</li>";
 
-                                console.info(data[i].text+"==="+data[i].url+"==="+data[i].level);
+                                //console.info(data[i].text+"==="+data[i].url+"==="+data[i].level+"==="+data[i].parent);
                                 //目录
                                 if(data[i].resource_type == "1"){
+
                                     console.info("url is ''");
+                                    ul_class = "nav nav-second-level";
+                                    //获取level
+                                    if(data[i].level >= "3"){
+                                        ul_class = "nav nav-third-level";
+                                    }
                                     var ul_tmplate =
                                         "<li>"+
-                                        "<a href=\"\#\" id='abc'><i class=\""+data[i].icon+"\"></i><span class=\"nav-label\">"+data[i].text+"</span></a>"+
-                                        "<ul class=\"nav nav-second-level\" id=\"ul_"+data[i].resource_id+"\">"+
+                                        "<a href=\"\#\" ><i class=\""+data[i].icon+"\"></i><span class=\"nav-label\">"+data[i].text+"</span></a>"+
+                                        "<ul class=\""+ul_class+"\" id=\"ul_"+data[i].resource_id+"\">"+
                                         "</ul>"+
                                         "</li>";
-                                    $('#side-menu').append(ul_tmplate);
-                                    $('#side-menu').metisMenu();
+                                    if( level_tmp > "2") {
+                                        console.info("===="+level_tmp);
+                                        $('#ul_'+data[i].parent).append(ul_tmplate);
+                                        $('#'+"ul_"+data[i].parent).metisMenu();
+                                    }else{
+                                        $('#side-menu').append(ul_tmplate);
+                                        $('#side-menu').metisMenu();
+                                    }
+
+
+
                                 }else if(data[i].resource_type == "4"){
                                     //函数
                                     console.info("url is start function");
@@ -371,16 +386,14 @@
                                         $('#ul_'+data[i].parent).append(li_tmplete);
                                         $('#'+"ul_"+data[i].parent).metisMenu();
                                     }else{
-                                        if(data[i].level==2){
+                                        //if(data[i].level==2){
                                             //父节点存在,且是2级目录,才可显示,3级菜单必须有2级目录
                                             $('#side-menu').append(li_tmplete);
-                                        }
+                                        //}
                                     }
 
 
                                 }
-
-
                             }
                     }
 
@@ -730,7 +743,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: "load_meta_databases",
+                url: server_context+"/load_meta_databases",
                 async:false,
                 dataType: 'json',
                 data: '',
@@ -757,7 +770,7 @@
             });
             $.ajax({
                 type: 'POST',
-                url: "del_system_job",
+                url: server_context+"/del_system_job",
                 async:false,
                 dataType: 'json',
                 data: '',
@@ -771,7 +784,7 @@
                 },
                 //处理完成
                 complete: function () {
-                    console.info("complete")
+                    console.info("complete");
                     layer.close(index1)
                 },
                 //报错
@@ -789,12 +802,11 @@
                 data: {},
                 //成功返回
                 success: function (data) {
-                    console.info("success:"+data.length);
                     if(data.code != '200'){
                         console.info(data.msg);
-                        return
+                        return ;
                     }
-                    $('#notice').html(data.msg)
+                    $('#notice').html(data.result.msg)
                 },
                 //处理完成
                 complete: function () {
@@ -811,7 +823,7 @@
         function jump_spark_web() {
             $.ajax({
                 type: 'get',
-                url: "spark_web_ui_port",
+                url: server_context+"/spark_web_ui_port",
                 dataType: 'json',
                 data: {},
                 //成功返回

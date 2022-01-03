@@ -1173,7 +1173,47 @@ CREATE TABLE `user_operate_log` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
-
+-- 2022-01-03;
+CREATE TABLE `etl_task_batch_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `etl_pre_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `etl_suffix_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `data_sources_choose_input` varchar(100) DEFAULT NULL COMMENT '输入数据源id',
+  `data_source_type_input` varchar(100) DEFAULT NULL COMMENT '输入数据源类型',
+  `data_sources_table_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源表名',
+  `data_sources_file_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源文件名',
+  `data_sources_params_input` varchar(500) DEFAULT NULL COMMENT '输入数据源参数',
+  `data_sources_filter_input` varchar(500) DEFAULT NULL COMMENT '输入数据源过滤条件',
+  `data_sources_choose_output` varchar(100) DEFAULT NULL COMMENT '输出数据源id',
+  `data_source_type_output` varchar(100) DEFAULT NULL COMMENT '输出数据源类型',
+  `data_sources_table_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源表名',
+  `data_sources_file_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源文件名',
+  `data_sources_params_output` varchar(500) DEFAULT NULL COMMENT '输出数据源参数',
+  `data_sources_clear_output` varchar(500) DEFAULT NULL COMMENT '数据源数据源删除条件',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+  `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+  `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+  `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+  `file_type_input` varchar(10) DEFAULT NULL COMMENT '输入文件类型',
+  `encoding_input` varchar(10) DEFAULT NULL COMMENT '输入文件编码',
+  `sep_input` varchar(10) DEFAULT NULL COMMENT '输入分割符',
+  `file_type_output` varchar(10) DEFAULT NULL COMMENT '输出文件类型',
+  `encoding_output` varchar(10) DEFAULT NULL COMMENT '输出文件编码',
+  `sep_output` varchar(10) DEFAULT NULL COMMENT '输出文件分割符',
+  `header_input` varchar(10) DEFAULT NULL COMMENT '输入是否包含表头',
+  `header_output` varchar(10) DEFAULT NULL COMMENT '输出是否包含表头',
+  `repartition_num_input` varchar(64) NOT NULL DEFAULT '' COMMENT '洗牌个数默认空',
+  `repartition_cols_input` varchar(256) NOT NULL DEFAULT '' COMMENT '洗牌字段默认空',
+  `model_output` varchar(64) NOT NULL DEFAULT '' COMMENT '写入模式默认空',
+  `partition_by_output` varchar(256) NOT NULL DEFAULT '' COMMENT '分区字段默认空',
+  `merge_output` varchar(256) NOT NULL DEFAULT '-1' COMMENT '合并小文件默认-1 不合并',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `status` varchar(8) not null default '0' comment '0:未执行,1:执行中,2:执行失败,3:执行成功',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;

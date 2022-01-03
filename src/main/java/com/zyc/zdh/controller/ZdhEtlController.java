@@ -2,12 +2,11 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.jcraft.jsch.SftpException;
+import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.service.DataSourcesService;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
@@ -16,7 +15,6 @@ import com.zyc.zdh.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.Transient;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -29,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
@@ -46,7 +43,7 @@ public class ZdhEtlController extends BaseController{
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    DataSourcesService dataSourcesServiceImpl;
+    DataSourcesMapper dataSourcesMapper;
     @Autowired
     EtlTaskService etlTaskService;
     @Autowired
@@ -290,7 +287,7 @@ public class ZdhEtlController extends BaseController{
     @ResponseBody
     public String etl_task_tables(String id) {
 
-        DataSourcesInfo dataSourcesInfo = dataSourcesServiceImpl.selectById(id);
+        DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
 
         String jsonArrayStr = tables(dataSourcesInfo);
 
@@ -330,7 +327,7 @@ public class ZdhEtlController extends BaseController{
     @ResponseBody
     public String etl_task_schema(String id, String table_name) {
 
-        DataSourcesInfo dataSourcesInfo = dataSourcesServiceImpl.selectById(id);
+        DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
 
         String jsonArrayStr = schema(dataSourcesInfo, table_name);
 
@@ -345,7 +342,7 @@ public class ZdhEtlController extends BaseController{
 
         try {
             return JSON.toJSONString(new DBUtil().R4(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
-                    "select * from " + table_name + " where 1=2", table_name));
+                    "select * from " + table_name + " where 1=2 limit 1", table_name));
         } catch (Exception ex) {
             ex.printStackTrace();
             return "";

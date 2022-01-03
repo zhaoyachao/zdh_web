@@ -8,6 +8,7 @@ import com.alibaba.druid.stat.TableStat;
 import com.alibaba.druid.util.JdbcConstants;
 import com.alibaba.druid.util.JdbcUtils;
 import com.alibaba.fastjson.JSON;
+import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.util.DateUtil;
@@ -21,6 +22,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.DigestUtils;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 public class CheckBloodSourceJob {
@@ -150,7 +152,10 @@ public class CheckBloodSourceJob {
             ArrayList output_tables = new ArrayList<String>();
             DataSourcesInfo ds = dataSourcesMapper.selectByPrimaryKey(etlTaskJdbcInfo.getData_sources_choose_input());
             String dbType = JdbcUtils.getDbType(ds.getUrl(), ds.getDriver());
-            String[] sqls = etlTaskJdbcInfo.getEtl_sql().split("\r\n|\n");
+            Map<String, Object> jinJavaParam = getJinJavaParam(new Timestamp(new Date().getTime()));
+            Jinjava jj = new Jinjava();
+            String etl_sql = jj.render(etlTaskJdbcInfo.getEtl_sql(), jinJavaParam);
+            String[] sqls = etl_sql.split("\r\n|\n");
             for (String sql : sqls) {
                 System.out.println(sql);
                 System.out.println("======");
@@ -254,5 +259,24 @@ public class CheckBloodSourceJob {
 
         return bsis;
 
+    }
+
+    public static Map<String, Object> getJinJavaParam(Timestamp timestamp){
+        Timestamp cur_time=timestamp;
+        String date_nodash = DateUtil.formatNodash(cur_time);
+        String date_time = DateUtil.formatTime(cur_time);
+        String date_dt = DateUtil.format(cur_time);
+        Map<String, Object> jinJavaParam = new HashMap<>();
+        jinJavaParam.put("zdh_date_nodash", date_nodash);
+        jinJavaParam.put("zdh_date_time", date_time);
+        jinJavaParam.put("zdh_date", date_dt);
+        jinJavaParam.put("zdh_year",DateUtil.year(cur_time));
+        jinJavaParam.put("zdh_month",DateUtil.month(cur_time));
+        jinJavaParam.put("zdh_day",DateUtil.day(cur_time));
+        jinJavaParam.put("zdh_hour",DateUtil.hour(cur_time));
+        jinJavaParam.put("zdh_minute",DateUtil.minute(cur_time));
+        jinJavaParam.put("zdh_second",DateUtil.second(cur_time));
+        jinJavaParam.put("zdh_time",cur_time.getTime());
+        return jinJavaParam;
     }
 }

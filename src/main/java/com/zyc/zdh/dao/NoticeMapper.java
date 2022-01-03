@@ -28,6 +28,7 @@ public interface NoticeMapper extends BaseMapper<NoticeInfo> {
             "OR msg_title like '%${message}%' ",
             "OR msg like '%${message}%')",
             "</when>",
+            "order by create_time desc",
             "</script>"})
     public List<NoticeInfo> selectByMessage(@Param("message") String message,@Param("owner") String owner);
 
