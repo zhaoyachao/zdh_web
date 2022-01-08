@@ -72,12 +72,12 @@ public class ZdhRedisApiController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException ex) {
-                ex.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             }
         }
     }

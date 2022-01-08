@@ -47,15 +47,15 @@
                 $(rows).each(function() {// 通过获得别选中的来进行遍历
                     ids.push(this.id);// cid为获得到的整条数据中的一列
                 });
-                console.log(ids)
-                deleteMs(ids)
+                console.log(ids);
+                deleteMs(ids);
                 layer.close(layer.index);
             }, function(){
 
             });
         }
 
-    })
+    });
 
       function deleteMs(ids) {
           $.ajax({
@@ -65,11 +65,11 @@
               dataType : "json",
               success : function(data) {
                   if(data.code != '200'){
-                      console.error(data.msg)
-                      layer.msg("执行失败")
+                      console.error(data.msg);
+                      parent.layer.msg("执行失败");
                       return ;
                   }
-                  layer.msg("执行成功")
+                  parent.layer.msg("执行成功");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/etl_task_flink_list?"+$("#sql_task_form").serialize(),
                       contentType: "application/json;charset=utf-8",

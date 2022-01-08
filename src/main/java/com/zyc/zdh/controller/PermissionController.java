@@ -9,6 +9,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.shiro.SessionDao;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -146,7 +147,7 @@ public class PermissionController extends BaseController{
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            e.printStackTrace();
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
@@ -173,7 +174,7 @@ public class PermissionController extends BaseController{
             userGroupMapper.insert(ugi);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-            e.printStackTrace();
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
@@ -189,7 +190,7 @@ public class PermissionController extends BaseController{
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", ugis);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            e.printStackTrace();
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -248,9 +249,13 @@ public class PermissionController extends BaseController{
 
     @RequestMapping(value = "/jstree_add_node", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String jstree_add_node(String parent_id,String text,String icon,String url,String order,String level,String resource_type) {
+    public String jstree_add_node(String parent_id,String text,String icon,String url,String order,String level,String resource_type,String notice_title) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try{
+            if(notice_title.length()>4){
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"参数验证不通过-提示语长度不可超过4个汉字", null);
+            }
+
             String id = SnowflakeIdWorker.getInstance().nextId()+"";
 
             ResourceTreeInfo rti=new ResourceTreeInfo();
@@ -267,6 +272,7 @@ public class PermissionController extends BaseController{
             rti.setResource_desc("");
             rti.setLevel(level);
             rti.setResource_type(resource_type);
+            rti.setNotice_title(notice_title);
             debugInfo(rti);
             resourceTreeMapper.insert(rti);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
@@ -303,7 +309,7 @@ public class PermissionController extends BaseController{
             rti.setUpdate_time(new Timestamp(new Date().getTime()));
             rti.setCreate_time(null);
             rti.setOwner(getUser().getId());
-            rti.setIs_enable("1");
+            rti.setIs_enable(Const.ENABLE);
             rti.setResource_desc("");
             debugInfo(rti);
             resourceTreeMapper.updateByPrimaryKey(rti);
@@ -435,12 +441,12 @@ public class PermissionController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException ex) {
-                ex.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             }
         }
     }

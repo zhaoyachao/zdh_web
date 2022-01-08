@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 下载页面</title>
+    <meta name="keywords" content="ZDH 下载页面">
+    <meta name="description" content="ZDH 下载页面">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+
+            <div class="ibox-content">
+
+                <form role="form" class="form-inline" id="data_sources_form">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select data-placeholder="选择版本" class="chosen-select" style="width: 150px" tabindex="2" id="zdh_version" name="zdh_version">
+                                <option value="">选择版本</option>
+                            </select>
+                        </div>
+                        <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="获取下载链接"/>
+                    </div>
+
+                </form>
+
+                <div class="row row-lg">
+
+                    <div class="col-sm-12" id="downloand_div">
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- End Panel Other -->
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- layer javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+
+    <!-- Bootstrap table -->
+    <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+    <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+    <!-- Peity -->
+    <script src="js/etl/data_sources.js"></script>
+
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#zdh_version').chosen();
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+'/zdh_version',
+            async:true,
+            dataType: 'json',
+            data: '',
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg("获取版本号失败");
+                    return ;
+                }
+                $('#zdh_version').html("");
+                $('#zdh_version').append("<option value=\"\">选择版本</option>");
+                for (i = 0; i < data.result.length; i++) {
+                    $('#zdh_version').append("<option value='"+data.result[i]+"'>"+data.result[i]+"</option>");
+                }
+
+                $("#zdh_version").trigger("chosen:updated");
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                console.info("error: " + data.responseText);
+            }
+        });
+
+        $('#search').click(function () {
+
+
+            if($('#zdh_version').val() == ""){
+                layer.msg("请选择版本号");
+                return ;
+            }
+            $('#downloand_div').html("");
+
+            let s = "  <div class=\"hr-line-dashed\"></div>\n" +
+            "                        <div class=\"search-result\">\n" +
+            "                            <h3><a href=\"http://www.zycblog.cn:8080/zdh/download/zdh_version/zdh_web.tar\" >ZDH WEB下载(zdh_version)</a></h3>\n" +
+            "                            <p>\n" +
+            "                                " +
+            "                            </p>\n" +
+            "                        </div>\n" +
+            "                        <div class=\"hr-line-dashed\"></div>\n" +
+            "                        <div class=\"search-result\">\n" +
+            "                            <h3><a href=\"http://www.zycblog.cn:8080/zdh/download/zdh_version/zdh_server.tar\">ZDH SERVER下载(zdh_version)</a></h3>\n" +
+            "                            <p>\n" +
+            "                            </p>\n" +
+            "                        </div>\n" +
+            "                        <div class=\"hr-line-dashed\"></div>\n" +
+            "                        <div class=\"search-result\">\n" +
+            "                            <h3><a href=\"http://www.zycblog.cn:8080/zdh/download/zdh_version/zdh_flink.tar\">ZDH FLINK下载(zdh_version)</a></h3>\n" +
+            "                            <p>\n" +
+            "                            </p>\n" +
+            "                        </div>";
+            s = s.replaceAll("zdh_version", $('#zdh_version').val());
+            $('#downloand_div').append(s);
+
+        })
+
+    });
+
+</script>
+
+</body>
+
+</html>

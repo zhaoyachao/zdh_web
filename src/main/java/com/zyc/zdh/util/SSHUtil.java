@@ -14,8 +14,8 @@ import java.util.Properties;
 import java.util.Vector;
 
 public class SSHUtil {
-    private transient Logger log = LoggerFactory.getLogger(this.getClass());
-
+    //private transient Logger log = LoggerFactory.getLogger(this.getClass());
+    public Logger logger= LoggerFactory.getLogger(this.getClass());
     private ChannelExec exec;
 
     private Session session;
@@ -75,12 +75,12 @@ public class SSHUtil {
             JSch jsch = new JSch();
             if (privateKey != null) {   
                 jsch.addIdentity(privateKey);// 设置私钥   
-                log.info("ssh connect,path of private key file：{}" , privateKey);
-            }   
-            log.info("ssh connect by host:{} username:{}",host,username);
+                logger.info("ssh connect,path of private key file：{}" , privateKey);
+            }
+            logger.info("ssh connect by host:{} username:{}",host,username);
        
-            session = jsch.getSession(username, host, port);   
-            log.info("Session is build");   
+            session = jsch.getSession(username, host, port);
+            logger.info("Session is build");
             if (password != null) {   
                 session.setPassword(password);     
             }   
@@ -88,14 +88,14 @@ public class SSHUtil {
             config.put("StrictHostKeyChecking", "no");   
                    
             session.setConfig(config);   
-            session.connect();   
-            log.info("Session is connected");   
+            session.connect();
+            logger.info("Session is connected");
                  
             ChannelExec channel = (ChannelExec) session.openChannel("exec");
             exec =channel;
-            log.info(String.format("ssh server host:[%s] port:[%s] is connect successfull", host, port));
+            logger.info(String.format("ssh server host:[%s] port:[%s] is connect successfull", host, port));
         } catch (JSchException e) {
-            log.error("Cannot connect to specified ssh server : {}:{} \n Exception message is: {}", new Object[]{host, port, e.getMessage()});
+            logger.error("Cannot connect to specified ssh server : {}:{} \n Exception message is: {}", new Object[]{host, port, e.getMessage()});
         }   
     }     
        
@@ -106,13 +106,13 @@ public class SSHUtil {
         if (exec != null) {
             if (exec.isConnected()) {
                 exec.disconnect();
-                log.info("ssh is closed already");
+                logger.info("ssh is closed already");
             }   
         }   
         if (session != null) {   
             if (session.isConnected()) {   
-                session.disconnect();   
-                log.info("sshSession is closed already");   
+                session.disconnect();
+                logger.info("sshSession is closed already");
             }   
         }   
     }
@@ -146,10 +146,12 @@ public class SSHUtil {
             }
             return new String[]{sb2.toString(),sb.toString()};
         } catch (JSchException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
            throw e;
         } catch (IOException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
             throw e;
         }finally {
          logout();
@@ -187,10 +189,12 @@ public class SSHUtil {
             }
             return new String[]{sb2.toString(),sb.toString()};
         } catch (JSchException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
             throw e;
         } catch (IOException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
             throw e;
         }finally {
         }
@@ -224,10 +228,12 @@ public class SSHUtil {
             }
             return new String[]{sb2.toString(),sb.toString()};
         } catch (JSchException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
             throw e;
         } catch (IOException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
             throw e;
         }finally {
         }

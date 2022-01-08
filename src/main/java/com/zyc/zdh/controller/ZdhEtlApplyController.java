@@ -8,6 +8,8 @@ import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +31,7 @@ import java.util.List;
  */
 @Controller
 public class ZdhEtlApplyController extends BaseController{
-
+    public Logger logger= LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     DataSourcesMapper dataSourcesMapper;
@@ -229,12 +231,12 @@ public class ZdhEtlApplyController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException ex) {
-                ex.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             }
         }
     }

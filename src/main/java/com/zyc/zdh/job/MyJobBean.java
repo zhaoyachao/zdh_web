@@ -99,7 +99,8 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 			logger.error(e.getMessage());
 		}
 

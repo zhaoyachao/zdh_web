@@ -22,7 +22,7 @@
               //area: ['450px', '500px'],
               content: server_context+"/etl_task_batch_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束")
+                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/etl_task_batch_list?"+$("#etl_task_form").serialize()+"&tm="+new Date(),
@@ -179,10 +179,10 @@
                       success : function(data) {
                           if(data.code != '200'){
                               console.error(data.msg);
-                              layer.msg("执行失败");
+                              parent.layer.msg("执行失败");
                               return ;
                           }
-                          layer.msg("执行成功");
+                          parent.layer.msg("执行成功");
 
                           $('#exampleTableEvents').bootstrapTable('refresh', {
                               url: server_context+"/etl_task_batch_list?"+$("#etl_task_form").serialize(),

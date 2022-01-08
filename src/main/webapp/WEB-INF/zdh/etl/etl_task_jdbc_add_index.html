@@ -21,8 +21,8 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="js/codemirror/codemirror.css" />
-    <link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css" />
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 </head>
 
 <body class="gray-bg">
@@ -97,8 +97,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">SQL逻辑</label>
                             <div class="col-sm-10">
-                              <textarea id="etl_sql" name="etl_sql" class="form-control" rows="10"
-                                          placeholder="SQL逻辑,使用sql语法 example select a.* ,b.* from a,b where a.id=b.id"></textarea>
+                              <div id="etl_sql" name="etl_sql" class="monaco_div"></div>
 
                             </div>
                         </div>
@@ -366,6 +365,14 @@
 </div>
 
 <script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -388,12 +395,11 @@
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
-<script src="js/codemirror/codemirror.js"></script>
-<script src="js/codemirror/addon/edit/matchbrackets.js"></script>
-<script src="js/codemirror/sql.js"></script>
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/sql/sql.js"></script>
 
-<script src="js/codemirror/addon/hint/show-hint.js"></script>
-<script src="js/codemirror/addon/hint/sql-hint.js"></script>
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({
@@ -407,46 +413,13 @@
 
 
         (function () {
-            // var mime = 'text/x-mariadb';
-            // // get mime type
-            // if (window.location.href.indexOf('mime=') > -1) {
-            //     mime = window.location.href.substr(window.location.href.indexOf('mime=') + 5);
-            // }
-            // window.editor = CodeMirror.fromTextArea(document.getElementById('etl_sql'), {
-            //     mode: mime,
-            //     indentWithTabs: true,
-            //     smartIndent: true,
-            //     lineNumbers: true,
-            //     matchBrackets : true,
-            //     autofocus: true,
-            //     extraKeys: {"Ctrl-Space": "autocomplete"},
-            //     hintOptions: {tables: {
-            //             users: ["name", "score", "birthDate"],
-            //             countries: ["name", "population", "size"]
-            //         }}
-            // });
 
 
-            function intCodeMirror(){
 
-            }
-            var mime = 'text/x-hive';
-            // get mime type
-            if (window.location.href.indexOf('mime=') > -1) {
-                mime = window.location.href.substr(window.location.href.indexOf('mime=') + 5);
-            }
-            window.editor = CodeMirror.fromTextArea(document.getElementById('etl_sql'), {
-                mode: mime,
-                indentWithTabs: true,
-                smartIndent: true,
-                lineNumbers: true,
-                matchBrackets : true,
-                autofocus: true,
-                extraKeys: {"Ctrl-Space": "autocomplete"},
-                hintOptions: {tables: {
-                        users: ["name", "score", "birthDate"],
-                        countries: ["name", "population", "size"]
-                    }}
+            window.editor = monaco.editor.create(document.getElementById('etl_sql'), {
+                value: '',
+                language: 'sql',
+                theme:'vs-dark'
             });
 
             var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
@@ -679,7 +652,7 @@
                             //$("#etl_sql").val(etl_sql);
                             console.info(etl_sql);
                             window.editor.setValue(etl_sql);
-                            window.editor.refresh();
+                            //window.editor.refresh();
 
 
                             // 获取输出数据源
@@ -916,7 +889,7 @@
         }
 
         var formData = new FormData(document.getElementById("etl_task_jdbc_add_form"));
-        formData.set("etl_sql",window.editor.getValue())
+        formData.set("etl_sql",window.editor.getValue());
         formData.set("id",s.id)
         $.ajax({
             type: 'POST',

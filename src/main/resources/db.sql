@@ -1215,6 +1215,9 @@ CREATE TABLE `etl_task_batch_info` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- 2022-01-05;
+alter table resource_tree_info add column notice_title varchar(8) not null default '' comment '提示语';
+
 -- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;

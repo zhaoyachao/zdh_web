@@ -60,9 +60,9 @@
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success")
+                  console.info("success");
                   if(data.code != "200"){
-                      layer.msg(data.msg);
+                      parent.layer.msg(data.msg);
                       return
                   }
                   $('#exampleTableEvents').bootstrapTable('refresh', {

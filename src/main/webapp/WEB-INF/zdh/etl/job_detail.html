@@ -22,7 +22,6 @@
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
-
 </head>
 
 <body class="gray-bg">
@@ -204,7 +203,7 @@
                         for (var i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
                         }
-                        $('#etl_task_id').empty()
+                        $('#etl_task_id').empty();
                         $("#etl_task_id").chosen("destroy");
                         $('#etl_task_id').html(str);
                         $('#etl_task_id').chosen()

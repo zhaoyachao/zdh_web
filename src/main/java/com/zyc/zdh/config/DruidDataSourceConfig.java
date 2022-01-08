@@ -4,6 +4,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -18,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 public class DruidDataSourceConfig {
+	public Logger logger= LoggerFactory.getLogger(this.getClass());
 	@Value("${spring.datasource.url}")
 	private String dbUrl;
 
@@ -105,7 +108,8 @@ public class DruidDataSourceConfig {
 			datasource.setFilters(filters);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return datasource;
 	}
@@ -134,7 +138,8 @@ public class DruidDataSourceConfig {
 			datasource.setFilters(filters);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return datasource;
 	}

@@ -21,17 +21,23 @@ public class ClassJob extends JobCommon2{
             Object object = demo.newInstance();
             System.out.println(demo.getMethod("invoke",String.class).invoke(object,new Object[]{"amx"}));
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
 
 

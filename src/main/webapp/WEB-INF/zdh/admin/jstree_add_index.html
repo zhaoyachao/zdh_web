@@ -77,6 +77,10 @@
                                                     <div class="col-sm-10">
                                                         <input id="icon" name="icon" class="form-control" type="text" value="" placeholder="图标 fa fa-hourglass-half">
                                                     </div>
+                                                    <label class="col-sm-2 control-label"></label>
+                                                    <div class="col-sm-10">
+                                                    <span class="help-block m-b-none"><a target="view_window" href="http://www.fontawesome.com.cn/faicons/">图标网站</a></span>
+                                                    </div>
 
                                                 </div>
 
@@ -107,6 +111,13 @@
                                                     <label class="col-sm-2 control-label">顺序号</label>
                                                     <div class="col-sm-10">
                                                         <input id="order" name="order" class="form-control" type="text" value="" placeholder="序号自定义">
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">提示语</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="notice_title" name="notice_title" class="form-control" type="text" value="" placeholder="提示语,最多支持4个汉字">
                                                     </div>
 
                                                 </div>
@@ -148,7 +159,10 @@
                                                     <div class="col-sm-10">
                                                         <input id="icon2" name="icon" class="form-control" type="text" value="" placeholder="图标 fa fa-hourglass-half">
                                                     </div>
-
+                                                    <label class="col-sm-2 control-label"></label>
+                                                    <div class="col-sm-10">
+                                                        <span class="help-block m-b-none"><a target="view_window" href="http://www.fontawesome.com.cn/faicons/">图标网站</a></span>
+                                                    </div>
                                                 </div>
 
                                                 <div class="form-group">
@@ -159,7 +173,7 @@
                                                                 class="chosen-select form-control m-b" tabindex="2">
                                                             <option value="1" mytype="">目录</option>
                                                             <option value="2" mytype="">菜单</option>
-                                                            <option value="3" mytype="">内置页面</option>
+                                                            <option value="3" mytype="">页面</option>
                                                             <option value="4" mytype="">方法</option>
                                                             <option value="5" mytype="">接口</option>
                                                         </select>
@@ -178,6 +192,13 @@
                                                     <label class="col-sm-2 control-label">顺序号</label>
                                                     <div class="col-sm-10">
                                                         <input id="order2" name="order" class="form-control" type="text" value="" placeholder="序号自定义">
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">提示语</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="notice_title2" name="notice_title" class="form-control" type="text" value="" placeholder="提示语,最多支持4个汉字">
                                                     </div>
 
                                                 </div>
@@ -343,7 +364,8 @@
                     $('#icon2').val(data.icon);
                     $('#url2').val(data.url);
                     $('#order2').val(data.order);
-                    $('#resource_type2').val(data.resource_type)
+                    $('#notice_title2').val(data.notice_title);
+                    $('#resource_type2').val(data.resource_type);
                     $("#resource_type2").trigger("chosen:updated");
                 },
                 //处理完成
@@ -421,10 +443,10 @@
             //成功返回
             success: function (data) {
                 $("#execute").removeAttr('disabled');
-                layer.close(index1)
+                layer.close(index1);
                 if(data.code != '200'){
-                    console.error(data.msg)
-                    layer.msg("执行失败")
+                    console.error(data.msg);
+                    layer.msg("执行失败");
                     return ;
                 }
                 //window.parent.create_node(s.id,node);
@@ -435,7 +457,7 @@
             //处理完成
             complete: function () {
                 $("#execute").removeAttr('disabled');
-                layer.close(index1)
+                layer.close(index1);
                 console.info("complete")
             },
             //报错
@@ -447,7 +469,7 @@
 
 
 
-    })
+    });
 
     function cancel(){
         var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
@@ -463,16 +485,16 @@
 
     $('#cancel').click(function (){
         cancel ()
-    })
+    });
     $('#cancel2').click(function (){
         cancel ()
-    })
+    });
     $('#cancel3').click(function (){
         cancel ()
-    })
+    });
     $('#cancel4').click(function (){
         cancel ()
-    })
+    });
 
     $('#execute2').click(function () {
 
@@ -505,11 +527,11 @@
             //成功返回
             success: function (data) {
                 $("#execute2").removeAttr('disabled');
-                layer.close(index1)
+                layer.close(index1);
 
                 if(data.code != '200'){
-                    console.error(data.msg)
-                    layer.msg("执行失败")
+                    console.error(data.msg);
+                    layer.msg("执行失败");
                     return ;
                 }
                 //window.parent.create_node(s.id,node);

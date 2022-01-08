@@ -171,7 +171,7 @@ public class ZdhEtlBatchController extends BaseController{
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error(e.getMessage(),e.getCause());
-            e.printStackTrace();
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
     }
@@ -211,7 +211,7 @@ public class ZdhEtlBatchController extends BaseController{
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
-            e.printStackTrace();
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error(e.getMessage(),e.getCause());
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
@@ -294,7 +294,7 @@ public class ZdhEtlBatchController extends BaseController{
 
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), tab);
         }catch (Exception e){
-            e.printStackTrace();
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             etlTaskBatchInfo.setStatus(Const.BATCH_FAIL);
             etlTaskBatchInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -311,8 +311,8 @@ public class ZdhEtlBatchController extends BaseController{
         try {
             return new DBUtil().R4(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
                     "select * from " + table_name + " where 1=2 limit 1", table_name);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             return new ArrayList<String>();
         }
     }
@@ -334,12 +334,12 @@ public class ZdhEtlBatchController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException ex) {
-                ex.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             }
         }
     }

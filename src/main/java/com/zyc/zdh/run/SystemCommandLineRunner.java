@@ -125,7 +125,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         //此处设置2s 每2秒向redis 设置一个当前服务,作为一个心跳检测使用
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+                        logger.error(error, e.getCause());
                     }
                 }
             }
@@ -179,7 +180,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                                     SshUtils.kill(connectUri[0],kill_cmd);
                                                 }catch (Exception e){
                                                     System.out.println("=========================");
-                                                    e.printStackTrace();
+                                                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+                                                    logger.error(error, e.getCause());
                                                 }
 
                                             }
@@ -190,7 +192,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         td.stop();
 
                                     }catch (Exception e){
-                                        e.printStackTrace();
+                                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+                                        logger.error(error, e.getCause());
                                     }finally {
                                         JobCommon2.chm.remove(tl.getThread_id());
                                         taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
@@ -272,7 +275,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         // List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.select(qj);
                         Thread.sleep(1000*2);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+                        logger.error(error, e.getCause());
                     }
                 }
             }

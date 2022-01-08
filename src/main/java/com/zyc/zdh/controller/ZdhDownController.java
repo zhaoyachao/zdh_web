@@ -7,6 +7,8 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.SFTPUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import java.util.*;
 @Controller
 public class ZdhDownController extends BaseController{
 
+    public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
     ZdhDownloadMapper zdhDownloadMapper;
     @Autowired
@@ -110,11 +113,14 @@ public class ZdhDownController extends BaseController{
 
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         } catch (IOException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         } catch (SftpException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         } finally {
             zdhDownloadInfo.setDown_count(zdhDownloadInfo.getDown_count() + 1);
             zdhDownloadMapper.updateByPrimaryKey(zdhDownloadInfo);
@@ -123,7 +129,8 @@ public class ZdhDownController extends BaseController{
                 try {
                     bis.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+                    logger.error(error, e.getCause());
                 }
             }
         }
@@ -147,12 +154,13 @@ public class ZdhDownController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+                    logger.error(error, e.getCause());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException ex) {
-                ex.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             }
         }
     }

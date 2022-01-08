@@ -21,8 +21,8 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="js/codemirror/codemirror.css" />
-    <link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css" />
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 </head>
 
 <body class="gray-bg">
@@ -77,8 +77,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">SQL逻辑</label>
                             <div class="col-sm-10">
-                              <textarea id="etl_sql" name="etl_sql" class="form-control" rows="10"
-                                          placeholder="SQL逻辑,使用sql语法 example select a.* ,b.* from a,b where a.id=b.id"></textarea>
+                              <div id="etl_sql" name="etl_sql" class="monaco_div"></div>
 
                             </div>
                         </div>
@@ -232,9 +231,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">清空条件</label>
                             <div class="col-sm-10" id="div_data_sources_clear_output">
-                                <textarea id="data_sources_clear_output" name="data_sources_clear_output"
-                                          class="form-control" rows="2"
-                                          placeholder="清空条件,使用sql语法 example: delete from user where etl_date=2019-12-01,如果是hbase数据源直接输入start_row_key,end_row_key 通过逗号分割 example: 001,100"></textarea>
+                                <div id="data_sources_clear_output" name="data_sources_clear_output" class="monaco_div_100"></div>
                             </div>
                         </div>
 
@@ -346,6 +343,14 @@
 </div>
 
 <script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -375,12 +380,10 @@
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
-<script src="js/codemirror/codemirror.js"></script>
-<script src="js/codemirror/addon/edit/matchbrackets.js"></script>
-<script src="js/codemirror/sql.js"></script>
-
-<script src="js/codemirror/addon/hint/show-hint.js"></script>
-<script src="js/codemirror/addon/hint/sql-hint.js"></script>
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/sql/sql.js"></script>
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({
@@ -394,46 +397,16 @@
 
 
         (function () {
-            // var mime = 'text/x-mariadb';
-            // // get mime type
-            // if (window.location.href.indexOf('mime=') > -1) {
-            //     mime = window.location.href.substr(window.location.href.indexOf('mime=') + 5);
-            // }
-            // window.editor = CodeMirror.fromTextArea(document.getElementById('etl_sql'), {
-            //     mode: mime,
-            //     indentWithTabs: true,
-            //     smartIndent: true,
-            //     lineNumbers: true,
-            //     matchBrackets : true,
-            //     autofocus: true,
-            //     extraKeys: {"Ctrl-Space": "autocomplete"},
-            //     hintOptions: {tables: {
-            //             users: ["name", "score", "birthDate"],
-            //             countries: ["name", "population", "size"]
-            //         }}
-            // });
+            window.editor = monaco.editor.create(document.getElementById('etl_sql'), {
+                value: '',
+                language: 'sql',
+                theme:'vs-dark'
+            });
 
-
-            function intCodeMirror(){
-
-            }
-            var mime = 'text/x-hive';
-            // get mime type
-            if (window.location.href.indexOf('mime=') > -1) {
-                mime = window.location.href.substr(window.location.href.indexOf('mime=') + 5);
-            }
-            window.editor = CodeMirror.fromTextArea(document.getElementById('etl_sql'), {
-                mode: mime,
-                indentWithTabs: true,
-                smartIndent: true,
-                lineNumbers: true,
-                matchBrackets : true,
-                autofocus: true,
-                extraKeys: {"Ctrl-Space": "autocomplete"},
-                hintOptions: {tables: {
-                        users: ["name", "score", "birthDate"],
-                        countries: ["name", "population", "size"]
-                    }}
+            window.editor_data_sources_clear_output = monaco.editor.create(document.getElementById('data_sources_clear_output'), {
+                value: '-- 清空条件,使用sql语法 example: delete from user where etl_date=2019-12-01,如果是hbase数据源直接输入start_row_key,end_row_key 通过逗号分割 example: 001,100 ,提交时此语句此提示语必须删除',
+                language: 'sql',
+                theme:'vs-dark'
             });
 
             var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
@@ -444,14 +417,14 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            $('#file_type_output').chosen()
-            $('#encoding_output').chosen()
-            $('#header_output').chosen()
-            $('#model_output').chosen()
+            $('#file_type_output').chosen();
+            $('#encoding_output').chosen();
+            $('#header_output').chosen();
+            $('#model_output').chosen();
 
             //定义特定数据源展示的div
             function fileShow() {
-                console.info("fileShow")
+                console.info("fileShow");
                 //表字段
                 $('#div_data_sources_table_name_output')[0].style.display = 'none';
                 $('#div_data_sources_file_name_output')[0].style.display = 'block';
@@ -510,7 +483,7 @@
                 //alert("datasourceid:"+id)
                 var postData = {
                     id: id,
-                }
+                };
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/etl_task_tables",
@@ -560,7 +533,7 @@
 
                 var postData = {
                     id: id,
-                }
+                };
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/etl_task_tables",
@@ -615,28 +588,28 @@
             init_data_sources();
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
-                console.info("新增按钮触发")
+                console.info("新增按钮触发");
                 //$('#data_sources_table_name_input').chosen();
                 //$('#data_sources_table_name_output').chosen();
-                $('#update_etl_task').hide()
+                $('#update_etl_task').hide();
                 $('#save_etl_task').show()
             } else {
 
                 //init_table_name(s.id)
 
                 if (s.is_copy == "true") {
-                    console.info("拷贝按钮触发")
-                    $('#update_etl_task').hide()
+                    console.info("拷贝按钮触发");
+                    $('#update_etl_task').hide();
                     $('#save_etl_task').show()
                 } else {
-                    console.info("更新按钮触发")
-                    $('#save_etl_task').hide()
+                    console.info("更新按钮触发");
+                    $('#save_etl_task').hide();
                     $('#update_etl_task').show()
                 }
 
                 if (s.only_read == "true") {
-                    $('#update_etl_task').hide()
-                    $('#save_etl_task').hide()
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').hide();
                     $('#reset').hide()
                 }
                 buildParam()
@@ -664,9 +637,9 @@
 
 
             function buildParam() {
-                $('#enable_quality').prop("checked", false)
+                $('#enable_quality').prop("checked", false);
                 if (s.id != '-1') {
-                    console.info("更新按钮触发--开始赋值对应参数")
+                    console.info("更新按钮触发--开始赋值对应参数");
                     //开始赋值
 
                     $.ajax({
@@ -680,15 +653,15 @@
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取输入数据源id
-                            var data_sources_choose_input = data[0].data_sources_choose_input
-                            console.info("参数赋值:输入数据源id:" + data_sources_choose_input)
+                            var data_sources_choose_input = data[0].data_sources_choose_input;
+                            console.info("参数赋值:输入数据源id:" + data_sources_choose_input);
 
 
                             //获取ETL 说明
-                            var sql_context = data[0].sql_context
+                            var sql_context = data[0].sql_context;
                             $("#sql_context").val(sql_context);
 
-                            var create_time = data[0].create_time
+                            var create_time = data[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
 
@@ -697,73 +670,73 @@
 //                            $("#data_sources_choose_input").trigger("chosen:updated");
 
                             //获取输入数据源类型
-                            var data_source_type_input = data[0].data_source_type_input
-                            $("#data_source_type_input").val(data_source_type_input)
+                            var data_source_type_input = data[0].data_source_type_input;
+                            $("#data_source_type_input").val(data_source_type_input);
 
-                            var etl_sql = data[0].etl_sql
+                            var etl_sql = data[0].etl_sql;
                             //$("#etl_sql").val(etl_sql);
-                            console.info(etl_sql)
+                            console.info(etl_sql);
                             window.editor.setValue(etl_sql);
-                            window.editor.refresh();
+                            //window.editor.refresh();
 
                             //获取输入源数据其他参数
-                            var data_sources_params_input = data[0].data_sources_params_input
-                            $("#data_sources_params_input").val(data_sources_params_input)
+                            var data_sources_params_input = data[0].data_sources_params_input;
+                            $("#data_sources_params_input").val(data_sources_params_input);
 
 
                             // 获取输出数据源
-                            var data_sources_choose_output = data[0].data_sources_choose_output
+                            var data_sources_choose_output = data[0].data_sources_choose_output;
                             //初始化输入数据源select 组件
                             $("#data_sources_choose_output").val(data_sources_choose_output);
                             $("#data_sources_choose_output").trigger("chosen:updated");
 
                             //获取输出数据源类型
-                            var data_source_type_output = data[0].data_source_type_output
-                            $("#data_source_type_output").val(data_source_type_output)
+                            var data_source_type_output = data[0].data_source_type_output;
+                            $("#data_source_type_output").val(data_source_type_output);
 
                             //输出文件类型参数
-                            var file_type_output = data[0].file_type_output
-                            $("#file_type_output").val(file_type_output)
+                            var file_type_output = data[0].file_type_output;
+                            $("#file_type_output").val(file_type_output);
                             $("#file_type_output").trigger("chosen:updated");
 
-                            var encoding_output = data[0].encoding_output
-                            $("#encoding_output").val(encoding_output)
+                            var encoding_output = data[0].encoding_output;
+                            $("#encoding_output").val(encoding_output);
                             $("#encoding_output").trigger("chosen:updated");
 
-                            var header_output = data[0].header_output
-                            $("#header_output").val(header_output)
+                            var header_output = data[0].header_output;
+                            $("#header_output").val(header_output);
                             $("#header_output").trigger("chosen:updated");
 
 
-                            var model_output = data[0].model_output
-                            $("#model_output").val(model_output)
+                            var model_output = data[0].model_output;
+                            $("#model_output").val(model_output);
                             $("#model_output").trigger("chosen:updated");
 
-                            var sep_output = data[0].sep_output
-                            $("#sep_output").val(sep_output)
+                            var sep_output = data[0].sep_output;
+                            $("#sep_output").val(sep_output);
 
-                            var partition_by_output = data[0].partition_by_output
-                            $("#partition_by_output").val(partition_by_output)
+                            var partition_by_output = data[0].partition_by_output;
+                            $("#partition_by_output").val(partition_by_output);
 
-                            var merge_output = data[0].merge_output
-                            $("#merge_output").val(merge_output)
+                            var merge_output = data[0].merge_output;
+                            $("#merge_output").val(merge_output);
 
                             //获取输出源数据其他参数
-                            var data_sources_params_output = data[0].data_sources_params_output
-                            $("#data_sources_params_output").val(data_sources_params_output)
+                            var data_sources_params_output = data[0].data_sources_params_output;
+                            $("#data_sources_params_output").val(data_sources_params_output);
 
                             //获取输出数据源表名
                             var data_sources_table_name_output = data[0].data_sources_table_name_output;
-                            var data_sources_file_name_output = data[0].data_sources_file_name_output
+                            var data_sources_file_name_output = data[0].data_sources_file_name_output;
 
                             if (data_source_type_output == "JDBC") {
 
-                                $('#data_sources_file_name_output').val(data_sources_file_name_output)
+                                $('#data_sources_file_name_output').val(data_sources_file_name_output);
 
                                 //初始化数据源对应的表
                                 var postData = {
                                     id: data_sources_choose_output
-                                }
+                                };
 
                                 $.ajax({
                                     type: 'POST',
@@ -773,7 +746,7 @@
                                     //成功返回
                                     success: function (data_table) {
 
-                                        var str = '<option value=\"\" hassubinfo=\"true\"></option>'
+                                        var str = '<option value=\"\" hassubinfo=\"true\"></option>';
                                         for (var i = 0; i < data_table.length; i++) {
                                             str += '<option value=\"' + data_table[i] + '\" hassubinfo=\"true\">' + data_table[i] + '</option>'
                                         }
@@ -803,24 +776,25 @@
 
                             } else {
 
-                                $('#data_sources_file_name_output').val(data_sources_file_name_output)
+                                $('#data_sources_file_name_output').val(data_sources_file_name_output);
                                 $('#div_data_sources_table_name_output')[0].style.display = 'none';
                                 $('#div_data_sources_file_name_output')[0].style.display = 'block';
                             }
 
                             //获取输出删除条件
                             var data_sources_clear_output = data[0].data_sources_clear_output;
-                            $('#data_sources_clear_output').val(data_sources_clear_output)
+                            //$('#data_sources_clear_output').val(data_sources_clear_output);
+                            window.editor_data_sources_clear_output.setValue(data_sources_clear_output);
 
                             //获取元数据信息
                             var company = data[0].company;
-                            $('#company').val(company)
+                            $('#company').val(company);
 
                             var section = data[0].section;
-                            $('#section').val(section)
+                            $('#section').val(section);
 
                             var service = data[0].service;
-                            $('#service').val(service)
+                            $('#service').val(service);
 
                             var update_context = data[0].update_context;
                             $('#update_context').val(update_context)
@@ -959,8 +933,8 @@
         }
 
         var formData = new FormData(document.getElementById("sql_task_add_form"));
-        formData.set("etl_sql",window.editor.getValue())
-
+        formData.set("etl_sql",window.editor.getValue());
+        formData.set("data_sources_clear_output",window.editor_data_sources_clear_output.getValue());
         $.ajax({
             type: 'POST',
             url: server_context+"/sql_task_add",
@@ -1018,8 +992,9 @@
         }
 
         var formData = new FormData(document.getElementById("sql_task_add_form"));
-        formData.set("etl_sql",window.editor.getValue())
-        formData.set("id",s.id)
+        formData.set("etl_sql",window.editor.getValue());
+        formData.set("id",s.id);
+        formData.set("data_sources_clear_output",window.editor_data_sources_clear_output.getValue());
         $.ajax({
             type: 'POST',
             url: server_context+"/sql_task_update",

@@ -16,6 +16,7 @@ import com.zyc.zdh.dao.UserOperateLogMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.exception.ZdhException;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
 import com.zyc.zdh.util.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -66,7 +67,8 @@ public class AspectConfig implements Ordered{
 			return pjp.proceed();
 		} catch (Throwable e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return null;
 	}
@@ -117,12 +119,14 @@ public class AspectConfig implements Ordered{
 					}
 				}
 			}catch (Exception e){
-				e.printStackTrace();
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+                logger.error(error, e.getCause());
 			}
 
 			return o;
 		} catch (Throwable e) {
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
 			return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统错误", e);
 		}
 	}
@@ -134,7 +138,8 @@ public class AspectConfig implements Ordered{
 			logger.info("aroundLog2...end....");
 			return o;
 		} catch (Throwable e) {
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return null;
 	}
@@ -179,7 +184,7 @@ public class AspectConfig implements Ordered{
 				}
 				if(!SecurityUtils.getSubject().isPermitted(url)){
 					//此处增加zdh通知
-					send_notice(getUser(),"接口权限通知", url+"没有权限");
+					send_notice(getUser(),"接口权限通知", "用户名:"+getUser().getUserName()+", 时间:"+ DateUtil.getCurrentTime()+", "+url+"没有权限");
 					throw new ZdhException(url+"没有权限");
 				}
 
@@ -203,7 +208,8 @@ public class AspectConfig implements Ordered{
 			ni.setUpdate_time(new Timestamp(new Date().getTime()));
 			noticeMapper.insert(ni);
 		}catch (Exception e){
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 			logger.error("接口无权限告警异常",e.getCause());
 		}
 
@@ -228,6 +234,8 @@ public class AspectConfig implements Ordered{
 		permissions.add("logout");
 		permissions.add("retrieve_password");
 		permissions.add("register");
+		permissions.add("zdh_version");
+		permissions.add("zdh_download_index");
 
 		return permissions;
 	}
@@ -272,12 +280,14 @@ public class AspectConfig implements Ordered{
 					System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			        logger.error(error, e.getCause());;
 				}
 				// 恢复访问控制权限
 				fields[i].setAccessible(accessFlag);
-			} catch (IllegalArgumentException ex) {
-				ex.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+				logger.error(error, e.getCause());
 			}
 		}
 	}

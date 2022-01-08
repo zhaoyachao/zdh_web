@@ -11,9 +11,12 @@ import java.io.Serializable;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.SimpleSession;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SessionDao extends EnterpriseCacheSessionDAO {
+    public Logger logger= LoggerFactory.getLogger(this.getClass());
     public String getCacheKey(String token) {
         return cacheKey + token;
     }
@@ -88,7 +91,8 @@ public class SessionDao extends EnterpriseCacheSessionDAO {
             oo.writeObject(session);
             bytes = bo.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
         return bytes;
     }
@@ -102,9 +106,11 @@ public class SessionDao extends EnterpriseCacheSessionDAO {
             in = new ObjectInputStream(bi);
             session = (SimpleSession) in.readObject();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         } catch (IOException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
 
         return session;

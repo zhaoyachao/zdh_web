@@ -151,10 +151,10 @@ function buildTable($el, cells, rows) {
               success : function(data) {
                   console.info("success");
                   if(data.code != "200"){
-                      layer.msg(data.msg);
+                      parent.layer.msg(data.msg);
                       return
                   }
-                  layer.msg(data.msg)
+                  parent.layer.msg(data.msg);
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/quality_task_list?"+$("#quality_task_form").serialize(),
                       contentType: "application/json;charset=utf-8",

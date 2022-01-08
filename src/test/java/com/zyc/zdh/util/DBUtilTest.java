@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class DBUtilTest {
-
+    public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Test
     public void dbConnection(){
 
@@ -29,7 +31,8 @@ public class DBUtilTest {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
 
     }
@@ -49,7 +52,8 @@ public class DBUtilTest {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
 
     }
@@ -71,7 +75,8 @@ public class DBUtilTest {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
 
     }
@@ -101,7 +106,8 @@ public class DBUtilTest {
             String kill_url="http://deep-2020klzjdi:60001/api/v1/kill";
             HttpUtil.postJSON(kill_url,js.toJSONString());
         } catch (Exception e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
 
     }

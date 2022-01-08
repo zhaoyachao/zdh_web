@@ -8,6 +8,8 @@ import java.util.Map;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.job.JobCommon2;
 import org.apache.commons.exec.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 执行系统命令工具类
@@ -17,6 +19,7 @@ import org.apache.commons.exec.*;
  */
 public class CommandUtils {
 
+    public static Logger logger= LoggerFactory.getLogger(CommandUtils.class);
     public static final String DEFAULT_CHARSET = "GBK";
 
     /**
@@ -107,9 +110,11 @@ public class CommandUtils {
 //            System.out.println(output);
             process.destroy();
         } catch (IOException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
 
         return map;
@@ -160,7 +165,8 @@ public class CommandUtils {
             System.out.println(result.get("result"));
 
         } catch (IOException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
     }
 

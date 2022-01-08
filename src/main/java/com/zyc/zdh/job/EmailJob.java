@@ -106,7 +106,7 @@ public class EmailJob {
 
 
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error("告警模块", e.getCause());
         }
 
     }
@@ -151,7 +151,8 @@ public class EmailJob {
                     alarmSmsMapper.insert(alarmSmsInfo);
                 }
             }catch (Exception e){
-                e.printStackTrace();
+                String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+                logger.error(error, e.getCause());
                 logger.error("发送告警短信失败",e.getCause());
             }
 

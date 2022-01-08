@@ -363,10 +363,16 @@
                     for(var i=0;i<data.length;i++){
                             if(data[i].level == j) {
                                 var level_tmp = data[i].level;
+
+                                var span_notice_title="";
+                                if(data[i].notice_title != ''){
+                                    span_notice_title = "<span class=\"label label-danger pull-right\">"+data[i].notice_title+"</span>";
+                                }
+
                                 var li_tmplete =
                                     "<li>" +
                                     "<a class=\"J_menuItem\" href=\"" + data[i].url + "\"><i class=\""+ data[i].icon+"\"></i>" +
-                                    "<span class=\"nav-label\">"+data[i].text+"</span></a>" +
+                                    "<span class=\"nav-label\">"+data[i].text+"</span>"+span_notice_title+"</a>" +
                                     "</li>";
 
                                 //console.info(data[i].text+"==="+data[i].url+"==="+data[i].level+"==="+data[i].parent);
@@ -381,7 +387,7 @@
                                     }
                                     var ul_tmplate =
                                         "<li>"+
-                                        "<a href=\"\#\" ><i class=\""+data[i].icon+"\"></i><span class=\"nav-label\">"+data[i].text+"</span></a>"+
+                                        "<a href=\"\#\" ><i class=\""+data[i].icon+"\"></i><span class=\"nav-label\">"+data[i].text+"</span>"+span_notice_title+"</a>"+
                                         "<ul class=\""+ul_class+"\" id=\"ul_"+data[i].resource_id+"\">"+
                                         "</ul>"+
                                         "</li>";

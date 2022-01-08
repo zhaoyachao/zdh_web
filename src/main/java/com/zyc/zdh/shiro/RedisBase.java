@@ -206,7 +206,8 @@ public class RedisBase {
 				result = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return result;
 	}
@@ -250,7 +251,8 @@ public class RedisBase {
 			redisTemplate.expire(key, expireTime, TimeUnit.DAYS);
 			result = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return result;
 	}
@@ -300,7 +302,8 @@ public class RedisBase {
 			redisTemplate.expire(key, expireTime, time);
 			result = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return result;
 	}

@@ -66,10 +66,10 @@
               success : function(data) {
                   if(data.code != '200'){
                       console.error(data.msg);
-                      layer.msg("执行失败");
+                      parent.layer.msg("执行失败");
                       return ;
                   }
-                  layer.msg("执行成功");
+                  parent.layer.msg("执行成功");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/sql_task_list?"+$("#sql_task_form").serialize(),
                       contentType: "application/json;charset=utf-8",

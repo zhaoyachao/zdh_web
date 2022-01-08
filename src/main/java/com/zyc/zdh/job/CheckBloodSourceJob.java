@@ -47,7 +47,7 @@ public class CheckBloodSourceJob {
             }
         } catch (Exception e) {
 
-            e.printStackTrace();
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
         }
     }
 
@@ -75,7 +75,7 @@ public class CheckBloodSourceJob {
             bsi.setVersion(version);
 
         } catch (Exception e) {
-            e.printStackTrace();
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
         }
 
 
@@ -193,7 +193,7 @@ public class CheckBloodSourceJob {
                     bloodSourceMappeer.insert(bsi);
                     bsis.add(bsi);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                     continue;
                 }
 

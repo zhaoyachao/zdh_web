@@ -32,7 +32,7 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 //				try {
 //					date = Timestamp.valueOf(source);
 //				} catch (Exception e) {
-//					e.printStackTrace();
+//					 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
 //				}
 //				return date;
 //			}

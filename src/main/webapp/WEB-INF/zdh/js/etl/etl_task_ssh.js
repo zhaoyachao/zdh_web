@@ -47,8 +47,8 @@
                 $(rows).each(function() {// 通过获得别选中的来进行遍历
                     ids.push(this.id);// cid为获得到的整条数据中的一列
                 });
-                console.log(ids)
-                deleteMs(ids)
+                console.log(ids);
+                deleteMs(ids);
                 layer.close(layer.index);
             }, function(){
 
@@ -66,10 +66,10 @@
               success : function(data) {
                   console.info("success");
                   if(data.code != "200"){
-                      layer.msg(data.msg)
+                      parent.layer.msg(data.msg);
                       return
                   }
-                  layer.msg(data.msg)
+                  parent.layer.msg(data.msg);
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/etl_task_ssh_list?"+$("#etl_task_ssh_from").serialize(),
                       contentType: "application/json;charset=utf-8",

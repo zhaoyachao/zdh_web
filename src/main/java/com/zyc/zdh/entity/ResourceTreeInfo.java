@@ -73,6 +73,7 @@ public class ResourceTreeInfo{
 
 	private String resource_type;//1:目录,2:页面,3:方法,4:接口
 
+	private String notice_title;//提示语
 
 	public String getId() {
 		return id;
@@ -183,5 +184,13 @@ public class ResourceTreeInfo{
 
 	public void setResource_type(String resource_type) {
 		this.resource_type = resource_type;
+	}
+
+	public String getNotice_title() {
+		return notice_title;
+	}
+
+	public void setNotice_title(String notice_title) {
+		this.notice_title = notice_title;
 	}
 }

@@ -48,8 +48,8 @@
                 $(rows).each(function() {// 通过获得别选中的来进行遍历
                     ids.push(this.id);// cid为获得到的整条数据中的一列
                 });
-                console.log(ids)
-                deleteMs(ids)
+                console.log(ids);
+                deleteMs(ids);
                 layer.close(layer.index);
             }, function(){
 
@@ -69,11 +69,11 @@
               dataType : "json",
               success : function(data) {
                   if(data.code != '200'){
-                      console.error(data.msg)
-                      layer.msg("执行失败")
+                      console.error(data.msg);
+                      layer.msg("执行失败");
                       return ;
                   }
-                  layer.msg("执行成功")
+                  layer.msg("执行成功");
 
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/etl_task_jdbc_list?"+$("#etl_task_form").serialize(),

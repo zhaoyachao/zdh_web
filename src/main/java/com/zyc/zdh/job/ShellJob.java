@@ -126,7 +126,7 @@ public class ShellJob extends JobCommon2 {
                 insertLog(tli, "info", "[" + jobType + "] JOB ,执行命令为空,默认返回成功状态");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             logger.error(e.getMessage());
             insertLog(tli, "error","[" + jobType + "] JOB ,"+ e.getMessage());
             jobFail(jobType,tli);
@@ -146,7 +146,7 @@ public class ShellJob extends JobCommon2 {
                 //等待命令执行完成
                 process.waitFor(10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             }
             InputStream is = process.getInputStream();
             input = new Scanner(is);

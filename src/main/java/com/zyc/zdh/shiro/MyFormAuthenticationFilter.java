@@ -11,11 +11,13 @@ import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
-
+	public Logger logger= LoggerFactory.getLogger(this.getClass());
 	// 登录失败，异常抛出
 	@Override
 	protected boolean onLoginFailure(AuthenticationToken token,
@@ -28,7 +30,9 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 						className)
 				&& !LockedAccountException.class.getName().equals(className)
 		        && !AuthenticationException.class.getName().equals(className)) { // 用户被锁定
-			e.printStackTrace(); // 非验证异常抛出
+			// logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause()); // 非验证异常抛出
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return super.onLoginFailure(token, e, request, response);
 	}

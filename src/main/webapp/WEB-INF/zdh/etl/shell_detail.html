@@ -22,9 +22,8 @@
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
-    <link rel="stylesheet" href="js/codemirror/codemirror.css" />
-    <link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css" />
-
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 </head>
 
 <body class="gray-bg">
@@ -61,8 +60,7 @@
                             </div>
                             <label class="col-sm-2 control-label">任务命令</label>
                             <div class="col-sm-10">
-                                <textarea id="command" name="command" rows="5"
-                                          placeholder="SHELL命令,JDBC命令" class="form-control" aria-required="true" ></textarea>
+                                <div id="command" name="command" class="monaco_div"></div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -114,6 +112,16 @@
 
 
 <script src="js/zdh_common.js"></script>
+
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
+
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -147,9 +155,10 @@
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
 
-<script src="js/codemirror/codemirror.js"></script>
-<script src="js/codemirror/addon/edit/matchbrackets.js"></script>
-<script src=js/plugins/codemirror/mode/shell/shell.js></script>
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/shell/shell.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -166,25 +175,11 @@
         (function () {
 
 
-            var mime = 'shell';
-            // get mime type
-            if (window.location.href.indexOf('mime=') > -1) {
-                mime = window.location.href.substr(window.location.href.indexOf('mime=') + 5);
-            }
-            window.editor = CodeMirror.fromTextArea(document.getElementById('command'), {
-                mode: mime,
-                indentWithTabs: true,
-                smartIndent: true,
-                lineNumbers: true,
-                matchBrackets : true,
-                autofocus: true,
-                extraKeys: {"Ctrl-Space": "autocomplete"},
-                hintOptions: {tables: {
-                        users: ["name", "score", "birthDate"],
-                        countries: ["name", "population", "size"]
-                    }}
+            window.editor = monaco.editor.create(document.getElementById('command'), {
+                value: '',
+                language: 'shell',
+                theme:'vs-dark'
             });
-
 
 
             var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
@@ -194,22 +189,21 @@
             for(var i = 0; i < pa.length; i ++){
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
-            $('#depend_level').chosen()
+            $('#depend_level').chosen();
             if(s.command != '-1'){
-                console.info("更新触发")
+                console.info("更新触发");
                 if( s.is_script=="true"){
                     $('#is_script').iCheck('check');
                 }
-                $("#command").val($("#shell_text",window.parent.document).val());
+                //$("#command").val($("#shell_text",window.parent.document).val());
                 window.editor.setValue($("#shell_text",window.parent.document).val());
-                window.editor.refresh();
                 $("#etl_context").val(s.etl_context);
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
                 if (s["time_out"]!="" && typeof(s["time_out"])!="undefined"){
                     $("#time_out").val(s["time_out"]);
                 }
-                var is_disenable=s['is_disenable']
+                var is_disenable=s['is_disenable'];
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
                 }
@@ -225,11 +219,11 @@
 
         //自定义实现
         var command=window.editor.getValue();
-        var is_script="false"
+        var is_script="false";
         if($('#is_script').is(':checked')){
             is_script="true"
         }
-        var is_disenable = "false"
+        var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
         }
@@ -245,7 +239,7 @@
             "depend_level":depend_level,
             "time_out": time_out
         }
-        console.info("shell_detail:"+JSON.stringify(data))
+        console.info("shell_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
         parent.layer.close(index); //再执行关闭

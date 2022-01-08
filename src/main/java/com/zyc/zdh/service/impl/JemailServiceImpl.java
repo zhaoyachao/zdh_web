@@ -1,6 +1,8 @@
 package com.zyc.zdh.service.impl;
 
 import com.zyc.zdh.service.JemailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -15,6 +17,7 @@ import java.util.Properties;
 @Service
 public class JemailServiceImpl implements JemailService{
 
+    public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Value("${spring.mail.username}")
     private String fromEmail;
 
@@ -33,7 +36,8 @@ public class JemailServiceImpl implements JemailService{
 
             javaMailSender.send(simpleMailMessage);
         }catch (Exception e){
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
     }
 
@@ -49,7 +53,8 @@ public class JemailServiceImpl implements JemailService{
             messageHelper.setSubject(subject);
             javaMailSender.send(mailMessage);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
 
     }

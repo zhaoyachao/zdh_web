@@ -11,9 +11,12 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.Const;
 import org.apache.shiro.SecurityUtils;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Transient;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +45,7 @@ import java.util.List;
 @Controller
 public class SystemController extends BaseController{
 
+    public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
     ZdhNginxMapper zdhNginxMapper;
     @Autowired
@@ -218,7 +223,8 @@ public class SystemController extends BaseController{
             quartzManager2.addTaskToQuartz(quartzJobInfo2);
             quartzManager2.addTaskToQuartz(quartzJobInfo3);
         } catch (Exception e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
 
         js.put("data","success");
@@ -347,7 +353,7 @@ public class SystemController extends BaseController{
 
         try{
             EveryDayNotice everyDayNotice=new EveryDayNotice();
-            everyDayNotice.setIs_delete("false");
+            everyDayNotice.setIs_delete(Const.NOT_DELETE);
             List<EveryDayNotice> list=everyDayNoticeMapper.select(everyDayNotice);
             if(list != null && list.size()>0){
                 return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "", list.get(0));
@@ -355,7 +361,8 @@ public class SystemController extends BaseController{
 
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "暂无通知", null);
         }catch (Exception e){
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询通知失败", e.getMessage());
         }
     }
@@ -365,10 +372,13 @@ public class SystemController extends BaseController{
     public String notice_update(String msg) {
 
         EveryDayNotice everyDayNotice=new EveryDayNotice();
-        everyDayNotice.setIs_delete("false");
-
-        everyDayNoticeMapper.delete(everyDayNotice);
+        everyDayNotice.setIs_delete(Const.DELETE);
+        Example example=new Example(everyDayNotice.getClass());
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+        everyDayNoticeMapper.updateByExampleSelective(everyDayNotice, example);
         everyDayNotice.setMsg(msg);
+        everyDayNotice.setIs_delete(Const.NOT_DELETE);
         everyDayNotice.setId(SnowflakeIdWorker.getInstance().nextId()+"");
         everyDayNoticeMapper.insert(everyDayNotice);
 
@@ -472,5 +482,11 @@ public class SystemController extends BaseController{
         int g = fc + random.nextInt(bc - fc);
         int b = fc + random.nextInt(bc - fc);
         return new Color(r , g , b);
+    }
+
+    @RequestMapping("shell_detail2")
+    public String testQuartzJob(){
+
+        return "etl/shell_detail2";
     }
 }

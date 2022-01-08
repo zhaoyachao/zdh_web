@@ -44,8 +44,8 @@
                 $(rows).each(function() {// 通过获得别选中的来进行遍历
                     ids.push(this.id);// cid为获得到的整条数据中的一列
                 });
-                console.log(ids)
-                deleteMs(ids)
+                console.log(ids);
+                deleteMs(ids);
                 layer.close(layer.index);
             }, function(){
 
@@ -54,7 +54,7 @@
 
         }
 
-    })
+    });
 
       function deleteMs(ids) {
           $.ajax({

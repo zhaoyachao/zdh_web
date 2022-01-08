@@ -110,8 +110,8 @@ $(document).ready(function(){
 
     //连接线中的文字双击事件
     $("#deviceRight").on("click", "._jsPlumb_overlay", function () {
-        var that=$(this)
-        that.removeClass('_jsPlumb_overlay')
+        var that=$(this);
+        that.removeClass('_jsPlumb_overlay');
         var text = that.text();
         that.html("");
         that.append('<input type="text" id="myDropDown" value="' + text + '" />');
@@ -139,19 +139,19 @@ $(document).ready(function(){
     function doubleclick(id,tp) {
         switch (tp) {
             case "tasks"://服务器
-                doubleclick_tasks(id)
+                doubleclick_tasks(id);
                 break;
             case "shell":
-                doubleclick_shell(id)
+                doubleclick_shell(id);
                 break;
             case "group":
-                doubleclick_group(id)
+                doubleclick_group(id);
                 break;
             case "jdbc":
-                doubleclick_jdbc(id)
+                doubleclick_jdbc(id);
                 break;
             case "hdfs":
-                doubleclick_hdfs(id)
+                doubleclick_hdfs(id);
                 break;
         }
     }
@@ -203,7 +203,7 @@ $(document).ready(function(){
     function doubleclick_shell(id) {
         $(id).dblclick(function () {
             var etl_context = $(this).text();
-            var div = $(this)
+            var div = $(this);
             var command=div.attr("command");
             var url=server_context+'/shell_detail.html';
             if( command == "" || command == undefined ){
@@ -212,6 +212,7 @@ $(document).ready(function(){
                 var is_script=div.attr("is_script");
                 var depend_level = div.attr("depend_level");
                 var time_out = div.attr("time_out");
+                $("#shell_text").val(command);
                 url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&depend_level="+depend_level +"&time_out="+time_out
             }
             layer.open({
@@ -289,7 +290,7 @@ $(document).ready(function(){
     function doubleclick_jdbc(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
-            var div = $(this)
+            var div = $(this);
             var etl_context=div.attr("etl_context");
             //alert(etl_context)
             var url=server_context+'/jdbc_detail.html';

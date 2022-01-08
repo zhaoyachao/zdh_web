@@ -25,7 +25,6 @@
 
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="js/plugins/magicsuggest/magicsuggest.css" rel="stylesheet">
-
 </head>
 
 <body class="gray-bg">
@@ -462,7 +461,7 @@
             jsPlumb.draggable(divId);
             jsPlumb.makeTarget(divId, {
                 anchor: "Continuous"
-            })
+            });
             $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
 
             doubleclick("#" + divId,tp);
@@ -502,7 +501,7 @@
     function doubleclick_tasks(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
-            var div = $(this)
+            var div = $(this);
             var etl_task_id=div.attr("etl_task_id");
             var url=server_context+'/job_detail.html';
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
@@ -525,7 +524,7 @@
                 end: function () {
                     console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
@@ -551,13 +550,13 @@
     function doubleclick_shell(id) {
         $(id).dblclick(function () {
             var etl_context = $(this).text();
-            var div = $(this)
+            var div = $(this);
             var command=div.attr("command");
             var url=server_context+'/shell_detail.html';
             if( command == "" || command == undefined ){
                 url=url+"?command=-1"
             }else{
-                var is_script=div.attr("is_script")
+                var is_script=div.attr("is_script");
                 var is_disenable = div.attr("is_disenable");
                 var depend_level = div.attr("depend_level");
                 var time_out = div.attr("time_out");
@@ -644,7 +643,7 @@
     function doubleclick_jdbc(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
-            var div = $(this)
+            var div = $(this);
             var etl_context=div.attr("etl_context");
             var url=server_context+'/jdbc_detail.html';
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
@@ -1158,8 +1157,8 @@
                     data: '',
                     //成功返回
                     success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
+                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (let i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].sql_context + "\" hassubinfo=\"true\">" + data[i].sql_context + "</option>"
                         }
                         $("#etl_task_id").chosen("destroy");
@@ -1188,8 +1187,8 @@
                     data: '',
                     //成功返回
                     success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
+                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (let i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
                         }
                         $("#etl_task_id").chosen("destroy");
@@ -1218,8 +1217,8 @@
                     data: '',
                     //成功返回
                     success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
+                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (let i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i].job_id + "\" mytype=\"" + data[i].job_id + "\" hassubinfo=\"true\">" + data[i].job_context + "</option>"
                         }
                         //ETL单任务下拉框
@@ -1312,26 +1311,26 @@
             //启动数据源select 初始化函数
             $('#etl_task_id').chosen().on("change", function (evt, params) {
                 var etl_context=$('#etl_task_id').find("option:selected").attr("mytype")
-                var etl_id=$('#etl_task_id').val()
-                addRow($('#more_task').val(),etl_id,etl_context)
+                var etl_id=$('#etl_task_id').val();
+                addRow($('#more_task').val(),etl_id,etl_context);
                 add_node_zdh($('#more_task').val(),etl_id,etl_context)
-                })
-            init_etl_task_sources();
+                });
+            //init_etl_task_sources();
 
-            init_job_sources();
+            //init_job_sources();
             //s.id=-1 表示新增,否则表示更新
             if(s.id==-1){
-                $('#update_dispatch_task').hide()
-                $('#save_dispatch_task').show()
+                $('#update_dispatch_task').hide();
+                $('#save_dispatch_task').show();
             }else{
                 if(s.is_copy == "true"){
-                    console.info("拷贝按钮触发")
-                    $('#update_dispatch_task').hide()
-                    $('#save_dispatch_task').show()
+                    console.info("拷贝按钮触发");
+                    $('#update_dispatch_task').hide();
+                    $('#save_dispatch_task').show();
                 }else{
-                    console.info("更新按钮触发")
-                    $('#save_dispatch_task').hide()
-                    $('#update_dispatch_task').show()
+                    console.info("更新按钮触发");
+                    $('#save_dispatch_task').hide();
+                    $('#update_dispatch_task').show();
                 }
 
             }
@@ -1364,8 +1363,8 @@
             laydate(start);
             laydate(end);
 
-            $("#start_time").val(getCurrentDate())
-            $("#end_time").val(getCurrentDate())
+            $("#start_time").val(getCurrentDate());
+            $("#end_time").val(getCurrentDate());
 
 
             $('#job_model').chosen();
@@ -1419,7 +1418,7 @@
             }
 
             if(s.id !='-1'){
-                console.info("更新-拷贝按钮触发")
+                console.info("更新-拷贝按钮触发");
                 //开始赋值
                 $.ajax({
                     url : server_context+"/dispatch_task_list",
@@ -1427,44 +1426,44 @@
                     type : "post",
                     dataType : "json",
                     success : function(data) {
-                        console.info("success")
+                        console.info("success");
                        // layer.alert(JSON.stringify(data[0]))
                         //获取调度任务说明
-                        var job_context=data[0].job_context
+                        var job_context=data[0].job_context;
                         $("#job_context").val(job_context);
 
-                        var more_task=data[0].more_task
-                        $("#more_task").val(more_task);
-                        $("#more_task").trigger("chosen:updated");
+                        // var more_task=data[0].more_task;
+                        // $("#more_task").val(more_task);
+                        // $("#more_task").trigger("chosen:updated");
 
                         //如果是多源任务 初始化多源任务下拉框
-                        if(more_task=="多源ETL"){
-                            init_etl_task_more_sources()
-                        }
-                        if(more_task=="SQL"){
-                            init_sql_task_sources()
-                        }
-                        if(more_task=="外部JAR"){
+                        // if(more_task=="多源ETL"){
+                        //     init_etl_task_more_sources()
+                        // }
+                        // if(more_task=="SQL"){
+                        //     init_sql_task_sources()
+                        // }
+                        // if(more_task=="外部JAR"){
+                        //
+                        // }
+                        // if(more_task=="Drools") {
+                        //     console.info("选中Drools");
+                        //     init_etl_task_drools_sources()
+                        // }
+                        // if(more_task=="SSH") {
+                        //     console.info("选中SSH");
+                        //     init_etl_task_ssh_sources()
+                        // }
+                        //
+                        // if(more_task=="FLINK") {
+                        //     console.info("选中FLINK");
+                        //     init_etl_task_flink_sources()
+                        // }
 
-                        }
-                        if(more_task=="Drools") {
-                            console.info("选中Drools");
-                            init_etl_task_drools_sources()
-                        }
-                        if(more_task=="SSH") {
-                            console.info("选中SSH");
-                            init_etl_task_ssh_sources()
-                        }
-
-                        if(more_task=="FLINK") {
-                            console.info("选中FLINK");
-                            init_etl_task_flink_sources()
-                        }
-
-                        var etl_task_id=data[0].etl_task_id;
-                        //初始化输入数据源select 组件
-                        $("#etl_task_id").val(etl_task_id);
-                        $("#etl_task_id").trigger("chosen:updated");
+                        // var etl_task_id=data[0].etl_task_id;
+                        // //初始化输入数据源select 组件
+                        // $("#etl_task_id").val(etl_task_id);
+                        // $("#etl_task_id").trigger("chosen:updated");
 
                         //任务类型
                         var job_type=data[0].job_type;

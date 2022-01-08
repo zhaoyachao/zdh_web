@@ -20,8 +20,8 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
-    <!--    <link rel="stylesheet" type="text/css" href="css/plugins/webuploader/webuploader.css">
-        <link rel="stylesheet" type="text/css" href="css/demo/webuploader-demo.css">-->
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 
 </head>
 
@@ -396,9 +396,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">清空条件</label>
                             <div class="col-sm-10" id="div_data_sources_clear_output">
-                                <textarea id="data_sources_clear_output" name="data_sources_clear_output"
-                                          class="form-control" rows="2"
-                                          placeholder="清空条件,使用sql语法 example: delete from user where etl_date=2019-12-01,如果是hbase数据源直接输入start_row_key,end_row_key 通过逗号分割 example: 001,100"></textarea>
+                                <div id="data_sources_clear_output" name="data_sources_clear_output" class="monaco_div_100"></div>
                             </div>
                         </div>
 
@@ -510,6 +508,14 @@
     </ul>
 </div>
 <script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -527,12 +533,10 @@
 <!-- layer javascript -->
 <script src="js/plugins/layer/layer.min.js"></script>
 
-<!-- Toastr script -->
-<!--<script src="js/plugins/toastr/toastr.min.js"></script>-->
-
-<!--<script src="js/plugins/webuploader/webuploader.min.js"></script>-->
-
-<!--<script src="js/demo/webuploader-demo.js"></script>-->
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/sql/sql.js"></script>
 
 
 <!-- iCheck -->
@@ -551,6 +555,13 @@
 
         (function () {
 
+
+            window.editor_data_sources_clear_output = monaco.editor.create(document.getElementById('data_sources_clear_output'), {
+                value: '-- 清空条件,使用sql语法 example: delete from user where etl_date=2019-12-01,如果是hbase数据源直接输入start_row_key,end_row_key 通过逗号分割 example: 001,100 ,提交时此语句此提示语必须删除',
+                language: 'sql',
+                theme:'vs-dark'
+            });
+
             var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
             var params = url.substr(1);//去掉问号
             var pa = params.split("&");
@@ -559,19 +570,19 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            $('#file_type_input').chosen()
-            $('#encoding_input').chosen()
-            $('#header_input').chosen()
-            $('#file_type_output').chosen()
-            $('#encoding_output').chosen()
-            $('#header_output').chosen()
-            $('#data_sources_table_name_output').chosen()
+            $('#file_type_input').chosen();
+            $('#encoding_input').chosen();
+            $('#header_input').chosen();
+            $('#file_type_output').chosen();
+            $('#encoding_output').chosen();
+            $('#header_output').chosen();
+            $('#data_sources_table_name_output').chosen();
 
-            $('#model_output').chosen()
+            $('#model_output').chosen();
 
             //定义特定数据源展示的div
             function fileShow() {
-                console.info("fileShow")
+                console.info("fileShow");
                 //$('#div_data_sources_table_name_input')[0].style.display = 'none';
                 $('#div_data_sources_file_name_input')[0].style.display = 'block';
                 //$('#div_data_sources_upload_file_name_input')[0].style.display = 'block';
@@ -1223,7 +1234,8 @@
 
                             //获取输出删除条件
                             var data_sources_clear_output = data.result.data_sources_clear_output;
-                            $('#data_sources_clear_output').val(data_sources_clear_output)
+                            //$('#data_sources_clear_output').val(data_sources_clear_output)
+                            window.editor_data_sources_clear_output.setValue(data_sources_clear_output);
 
                             //获取元数据信息
                             var company = data.result.company;
@@ -1351,7 +1363,7 @@
             url: server_context+"/etl_task_apply_add",
             async: false,
             dataType: 'json',
-            data: $("#etl_task_add_form").serialize() + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas)),
+            data: $("#etl_task_add_form").serialize()+"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue() + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas)),
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -1398,7 +1410,7 @@
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
 
-        var tableData = $("#exampleTableEvents").bootstrapTable('getData')
+        var tableData = $("#exampleTableEvents").bootstrapTable('getData');
 
         var column_datas = new Array();// 声明一个数组
         for (var i = 0; i < tableData.length; i++) {
@@ -1412,7 +1424,7 @@
                 column_regex: tableData[i].column_regex,
                 column_desc: tableData[i].column_desc,
                 column_alias: tableData[i].column_alias
-            }
+            };
             column_datas.push(column_data)
         }
 
@@ -1420,7 +1432,7 @@
             type: 'POST',
             url: server_context+"/etl_task_apply_update",
             dataType: 'json',
-            data: $("#etl_task_add_form").serialize() + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas)) + "&" + "id=" + s.id,
+            data: $("#etl_task_add_form").serialize()+"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue() + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas)) + "&" + "id=" + s.id,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -1429,7 +1441,7 @@
             //成功返回
             success: function (data) {
                 if(data.code != "200"){
-                    layer.msg(data.msg)
+                    layer.msg(data.msg);
                     return
                 }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引

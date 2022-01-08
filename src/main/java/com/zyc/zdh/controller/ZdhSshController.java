@@ -9,6 +9,8 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SFTPUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +34,7 @@ import java.util.List;
 
 @Controller
 public class ZdhSshController extends BaseController{
-
+    public Logger logger= LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     ZdhNginxMapper zdhNginxMapper;
@@ -109,9 +111,9 @@ public class ZdhSshController extends BaseController{
                     jarFileInfo.setStatus("success");
                     jarFileMapper.updateByPrimaryKey(jarFileInfo);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                 } catch (SftpException e) {
-                    e.printStackTrace();
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                 }
             }
 
@@ -174,10 +176,10 @@ public class ZdhSshController extends BaseController{
                         jarFileInfo.setStatus("success");
                         jarFileMapper.updateByPrimaryKey(jarFileInfo);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                         logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                         throw e;
                     } catch (SftpException e) {
-                        e.printStackTrace();
+                         logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                         throw e;
                     }
                 }
@@ -213,7 +215,7 @@ public class ZdhSshController extends BaseController{
                 try {
                     sftp.delete(nginx_dir + "/" + owner + "/", fileName);
                 } catch (SftpException e) {
-                    e.printStackTrace();
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                 }
                 sftp.logout();
             }else{
@@ -353,10 +355,10 @@ public class ZdhSshController extends BaseController{
                         jarFileInfo.setStatus("success");
                         jarFileMapper.updateByPrimaryKey(jarFileInfo);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                         logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                         throw e;
                     } catch (SftpException e) {
-                        e.printStackTrace();
+                         logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                         throw e;
                     }
                 }
@@ -439,10 +441,10 @@ public class ZdhSshController extends BaseController{
                         jarFileInfo.setStatus("success");
                         jarFileMapper.updateByPrimaryKey(jarFileInfo);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                         logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                         throw e;
                     } catch (SftpException e) {
-                        e.printStackTrace();
+                         logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                         throw e;
                     }
                 }
@@ -483,7 +485,7 @@ public class ZdhSshController extends BaseController{
                     try {
                         sftp.delete(nginx_dir + "/" + owner + "/", fileName);
                     } catch (SftpException e) {
-                        e.printStackTrace();
+                         logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                     }
                     sftp.logout();
                 }else{
@@ -539,12 +541,12 @@ public class ZdhSshController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException ex) {
-                ex.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             }
         }
     }

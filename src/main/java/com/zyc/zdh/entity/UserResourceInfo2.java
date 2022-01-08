@@ -36,6 +36,8 @@ public class UserResourceInfo2 {
 
 	private String resource_type;//1:目录,2:页面,3:方法,4:接口
 
+	private String notice_title;//提示语
+
 	public int getOrderN() {
 		if(order==null || order.trim().equals("")){
 			return 1;
@@ -113,5 +115,13 @@ public class UserResourceInfo2 {
 
 	public void setResource_type(String resource_type) {
 		this.resource_type = resource_type;
+	}
+
+	public String getNotice_title() {
+		return notice_title;
+	}
+
+	public void setNotice_title(String notice_title) {
+		this.notice_title = notice_title;
 	}
 }

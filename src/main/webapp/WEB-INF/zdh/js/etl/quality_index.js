@@ -115,7 +115,7 @@ function buildTable($el, cells, rows) {
       window.operateEvents = {
 
           'click #search': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               top.layer.open({
                   type: 2,
                   title: 'ETL任务查看',

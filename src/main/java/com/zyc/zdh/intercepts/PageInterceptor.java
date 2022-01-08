@@ -31,6 +31,8 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tk.mybatis.mapper.util.StringUtil;
 import com.zyc.zdh.entity.PageBase;
 
@@ -43,7 +45,7 @@ import com.zyc.zdh.entity.PageBase;
  */
 @Intercepts({@Signature(type=StatementHandler.class,method="prepare",args={Connection.class,Integer.class})})
 public class PageInterceptor implements Interceptor {
-
+	public Logger logger= LoggerFactory.getLogger(this.getClass());
 	private static String dialect = "";	//数据库方言
 	private static String pageSqlId = ""; //mapper.xml中需要拦截的ID(正则匹配)
 	@Override
@@ -188,7 +190,8 @@ public class PageInterceptor implements Interceptor {
 				throw new PropertyException("dialect property is not found!");
 			} catch (PropertyException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+				logger.error(error, e.getCause());
 			}
 		}
 		pageSqlId = p.getProperty("pageSqlId");
@@ -197,7 +200,8 @@ public class PageInterceptor implements Interceptor {
 				throw new PropertyException("pageSqlId property is not found!");
 			} catch (PropertyException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+				logger.error(error, e.getCause());
 			}
 		}
 	}

@@ -1,5 +1,8 @@
 package com.zyc.zdh.jdbc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,6 +17,7 @@ import java.sql.SQLException;
  * @Description: TODO  
  */
 public class MySqlUtil {
+	public Logger logger = LoggerFactory.getLogger(this.getClass());
 	String url = "jdbc:mysql://localhost:3306/mydb?"
             + "user=root&password=123456&useUnicode=true&characterEncoding=UTF8";
 	Connection connection;
@@ -25,10 +29,12 @@ public class MySqlUtil {
 			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 	
 		

@@ -137,15 +137,18 @@ public class QuartzManager2 {
 			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
 		} catch (SecurityException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 			throw e;
 		} catch (SchedulerException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 			throw e;
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 			throw e;
 		}
 
@@ -200,7 +203,8 @@ public class QuartzManager2 {
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		// 下方可以做一些更新数据库中任务的操作
 		quartzJobInfo.setStatus("runing");
@@ -236,7 +240,8 @@ public class QuartzManager2 {
 			quartzJobMapper.updateStatus(quartzJobInfo.getJob_id(),status);
 		} catch (SchedulerException e) {
 
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return quartzJobInfo;
 	}
@@ -257,7 +262,8 @@ public class QuartzManager2 {
 			quartzJobMapper.updateStatus2(tli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
 
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return qji;
 	}
@@ -278,7 +284,8 @@ public class QuartzManager2 {
 			quartzJobMapper.updateStatus2(tgli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
 
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 		return qji;
 	}
@@ -298,7 +305,8 @@ public class QuartzManager2 {
 			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 	}
 
@@ -313,7 +321,8 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().resumeJob(jobKey);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 	}
 
@@ -328,7 +337,8 @@ public class QuartzManager2 {
 			return quartzJobMapper.selectRunJobByOwner(owner,job_ids);
 
 		} catch (SchedulerException e) {
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 			throw e;
 		}
 	}
@@ -341,7 +351,8 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().shutdown();
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+			logger.error(error, e.getCause());
 		}
 	}
 

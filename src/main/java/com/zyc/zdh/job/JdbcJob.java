@@ -74,12 +74,12 @@ public class JdbcJob extends JobCommon2 {
                 exe_status = true;
             }
             return exe_status;
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
             //插入日志
             insertLog(tli, "error",
-                    "[调度平台]:" + ex.getMessage());
-            logger.error(ex.getMessage());
+                    "[调度平台]:" + e.getMessage());
+            logger.error(e.getMessage());
             return false;
         }
 

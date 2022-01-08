@@ -1,6 +1,9 @@
 package com.zyc.zdh.util;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +12,7 @@ import java.util.Map;
 
 
 public class DBUtil{
+    public Logger logger= LoggerFactory.getLogger(this.getClass());
     /**
      * 得到数据库连接
      * @return
@@ -35,7 +39,8 @@ public class DBUtil{
                 resultSet.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
         }
         try {
              if(statement!=null){
@@ -49,7 +54,8 @@ public class DBUtil{
                 connection.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+           String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+           logger.error(error, e.getCause());
         }
 
     }
@@ -84,9 +90,9 @@ public class DBUtil{
 
 
            return result;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
+        } catch (Exception e) {
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+            throw e;
         }finally {
             release(connection, preparedStatement, resultSet);
         }
@@ -122,7 +128,8 @@ public class DBUtil{
 
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
             return null;
         }finally {
             release(connection, preparedStatement, resultSet);
@@ -176,9 +183,9 @@ public class DBUtil{
             }
             return result;
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
+        } catch (Exception e) {
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+            throw e;
         }finally {
             release(connection, preparedStatement, resultSet);
         }
@@ -203,9 +210,9 @@ public class DBUtil{
             }
             return result;
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
+        } catch (Exception e) {
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+            throw e;
         }finally {
             release(connection, preparedStatement, resultSet);
         }
@@ -236,9 +243,9 @@ public class DBUtil{
 
             return result;
 
-        } catch (Exception ex) {
-            //ex.printStackTrace();
-            throw ex;
+        } catch (Exception e) {
+            // logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+            throw e;
         }finally {
             release(connection, preparedStatement, resultSet);
         }
@@ -264,7 +271,8 @@ public class DBUtil{
             //这里可以根据返回结果(影响记录的条数)进行判断，该语句是否执行成功
             System.out.println(result);
         } catch (Exception e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
             e_msg=e.getMessage();
             ret="false";
         }finally {
@@ -290,7 +298,8 @@ public class DBUtil{
             //这里可以根据返回结果(影响记录的条数)进行判断，该语句是否执行成功
             System.out.println(result);
         } catch (Exception e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
             e_msg=e.getMessage();
             ret="false";
         }finally {

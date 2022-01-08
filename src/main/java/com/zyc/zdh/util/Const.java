@@ -37,4 +37,6 @@ public class Const {
     public static String BATCH_FAIL = "2";//执行失败
     public static String BATCH_SUCCESS = "3";//执行成功
 
+    public static String ENABLE = "1";//是否启用
+    public static String UN_ENABLE = "1";//是否启用
 }

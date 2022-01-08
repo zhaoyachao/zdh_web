@@ -1,6 +1,8 @@
 package com.zyc.zdh.util;
 
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -9,6 +11,7 @@ import java.util.Date;
 
 public class DateUtil {
 
+    public static Logger logger= LoggerFactory.getLogger(DateUtil.class);
 
     public static final FastDateFormat df
             = FastDateFormat.getInstance("yyyy-MM-dd");
@@ -73,7 +76,8 @@ public class DateUtil {
         try {
             return FastDateFormat.getInstance(format).parse(date);
         } catch (ParseException e) {
-            e.printStackTrace();
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
+            logger.error(error, e.getCause());
             return null;
         }
     }

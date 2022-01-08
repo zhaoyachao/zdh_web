@@ -69,7 +69,28 @@ public class AuthorController extends BaseController{
         }
     }
 
+    @RequestMapping(value = "/zdh_download_index", method = RequestMethod.GET)
+    public String zdh_dowan() {
+        return "other/zdh_download_index";
+    }
 
 
+    @RequestMapping(value = "/zdh_version", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String zdh_version() {
+        try{
+            List<String> versions = new ArrayList<>();
+            versions.add("4.7.11");
+            versions.add("4.7.12");
+            versions.add("4.7.13");
+            versions.add("4.7.14");
+            versions.add("4.7.15");
+            versions.add("4.7.16");
+            versions.add("4.7.17");
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "发送成功", versions);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "发送失败", e);
+        }
+    }
 
 }

@@ -21,8 +21,8 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="js/codemirror/codemirror.css" />
-    <link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css" />
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 </head>
 
 <body class="gray-bg">
@@ -64,8 +64,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">SQL逻辑</label>
                             <div class="col-sm-10">
-                              <textarea id="etl_sql" name="etl_sql" class="form-control" rows="15"
-                                          placeholder="SQL逻辑,使用sql语法 example select a.* ,b.* from a,b where a.id=b.id"></textarea>
+                              <div id="etl_sql" name="etl_sql" class="monaco_div"></div>
 
                             </div>
                         </div>
@@ -206,6 +205,14 @@
 </div>
 
 <script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -235,12 +242,11 @@
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
-<script src="js/codemirror/codemirror.js"></script>
-<script src="js/codemirror/addon/edit/matchbrackets.js"></script>
-<script src="js/codemirror/sql.js"></script>
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/sql/sql.js"></script>
 
-<script src="js/codemirror/addon/hint/show-hint.js"></script>
-<script src="js/codemirror/addon/hint/sql-hint.js"></script>
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({
@@ -255,23 +261,10 @@
 
         (function () {
 
-            var mime = 'text/x-hive';
-            // get mime type
-            if (window.location.href.indexOf('mime=') > -1) {
-                mime = window.location.href.substr(window.location.href.indexOf('mime=') + 5);
-            }
-            window.editor = CodeMirror.fromTextArea(document.getElementById('etl_sql'), {
-                mode: mime,
-                indentWithTabs: true,
-                smartIndent: true,
-                lineNumbers: true,
-                matchBrackets : true,
-                autofocus: true,
-                extraKeys: {"Ctrl-Space": "autocomplete"},
-                hintOptions: {tables: {
-                        users: ["name", "score", "birthDate"],
-                        countries: ["name", "population", "size"]
-                    }}
+            window.editor = monaco.editor.create(document.getElementById('etl_sql'), {
+                value: '',
+                language: 'sql',
+                theme:'vs-dark'
             });
 
             $('#server_type').chosen();
@@ -288,29 +281,29 @@
 
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
-                console.info("新增按钮触发")
+                console.info("新增按钮触发");
                 //$('#data_sources_table_name_input').chosen();
                 //$('#data_sources_table_name_output').chosen();
-                $('#update_etl_task').hide()
-                $('#save_etl_task').show()
+                $('#update_etl_task').hide();
+                $('#save_etl_task').show();
             } else {
 
                 //init_table_name(s.id)
 
                 if (s.is_copy == "true") {
-                    console.info("拷贝按钮触发")
-                    $('#update_etl_task').hide()
-                    $('#save_etl_task').show()
+                    console.info("拷贝按钮触发");
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').show();
                 } else {
-                    console.info("更新按钮触发")
-                    $('#save_etl_task').hide()
+                    console.info("更新按钮触发");
+                    $('#save_etl_task').hide();
                     $('#update_etl_task').show()
                 }
 
                 if (s.only_read == "true") {
-                    $('#update_etl_task').hide()
-                    $('#save_etl_task').hide()
-                    $('#reset').hide()
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').hide();
+                    $('#reset').hide();
                 }
                 buildParam()
             }
@@ -349,7 +342,7 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
-                            console.info("success")
+                            console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取ETL 说明
@@ -360,11 +353,11 @@
                             $("#create_time").val(getMyDate(create_time));
 
 
-                            var etl_sql = data[0].etl_sql
+                            var etl_sql = data[0].etl_sql;
                             //$("#etl_sql").val(etl_sql);
                             console.info(etl_sql);
                             window.editor.setValue(etl_sql);
-                            window.editor.refresh();
+                            //window.editor.refresh();
 
                             //获取输入源数据其他参数
                             var data_sources_params_input = data[0].data_sources_params_input;

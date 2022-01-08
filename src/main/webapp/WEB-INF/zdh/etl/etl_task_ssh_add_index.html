@@ -24,6 +24,8 @@
     <link href="css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/fileinput.js" type="text/javascript"></script>
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 </head>
 
 <body class="gray-bg">
@@ -95,8 +97,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">SSH命令</label>
                             <div class="col-sm-10">
-                                <textarea id="ssh_cmd" name="ssh_cmd" class="form-control" rows="3"
-                                          placeholder="SSH命令 example ping 127.0.0.1,此任务配合python等脚本语言使用最佳,配合在线脚本使用example sh {{zdh_online_file}},系统会自动替换路径"></textarea>
+                                <div id="ssh_cmd" name="ssh_cmd" class="monaco_div_100"></div>
                             </div>
                             <div class="form-group"></div>
                             <label class="col-sm-2 control-label">脚本/文件路径</label>
@@ -107,8 +108,7 @@
                             <div class="form-group"></div>
                             <label class="col-sm-2 control-label">脚本内容</label>
                             <div class="col-sm-10">
-                                <textarea id="ssh_script_context" name="ssh_script_context" class="form-control" rows="5"
-                                          placeholder="SSH在线脚本"></textarea>
+                                <div id="ssh_script_context" name="ssh_script_context" class="monaco_div"></div>
                             </div>
                             <div class="form-group"></div>
 
@@ -243,6 +243,14 @@
 </div>
 
 <script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -265,6 +273,11 @@
 <script src="js/plugins/jsTree/jstree.min.js"></script>
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/shell/shell.js"></script>
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({
@@ -286,6 +299,18 @@
             for (var i = 0; i < pa.length; i++) {
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
+
+            window.editor = monaco.editor.create(document.getElementById('ssh_cmd'), {
+                value: 'SSH命令 example ping 127.0.0.1,此任务配合python等脚本语言使用最佳,配合在线脚本使用example sh {{zdh_online_file}},系统会自动替换路径',
+                language: 'shell',
+                theme:'vs-dark'
+            });
+
+            window.editor_ssh_script_context = monaco.editor.create(document.getElementById('ssh_script_context'), {
+                value: '',
+                language: 'shell',
+                theme:'vs-dark'
+            });
 
 
 
@@ -309,29 +334,29 @@
 
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
-                console.info("新增按钮触发")
+                console.info("新增按钮触发");
                 //$('#data_sources_table_name_input').chosen();
                 //$('#data_sources_table_name_output').chosen();
-                $('#update_etl_task').hide()
-                $('#save_etl_task').show()
+                $('#update_etl_task').hide();
+                $('#save_etl_task').show();
             } else {
-                file_list_m(s.id)
+                file_list_m(s.id);
                 //init_table_name(s.id)
 
                 if (s.is_copy == "true") {
-                    console.info("拷贝按钮触发")
-                    $('#update_etl_task').hide()
+                    console.info("拷贝按钮触发");
+                    $('#update_etl_task').hide();
                     $('#save_etl_task').show()
                 } else {
-                    console.info("更新按钮触发")
-                    $('#save_etl_task').hide()
-                    $('#update_etl_task').show()
+                    console.info("更新按钮触发");
+                    $('#save_etl_task').hide();
+                    $('#update_etl_task').show();
                 }
 
                 if (s.only_read == "true") {
-                    $('#update_etl_task').hide()
-                    $('#save_etl_task').hide()
-                    $('#reset').hide()
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').hide();
+                    $('#reset').hide();
                 }
                 buildParam()
             }
@@ -358,9 +383,9 @@
 
 
             function buildParam() {
-                $('#enable_quality').prop("checked", false)
+                $('#enable_quality').prop("checked", false);
                 if (s.id != '-1') {
-                    console.info("更新按钮触发--开始赋值对应参数")
+                    console.info("更新按钮触发--开始赋值对应参数");
                     //开始赋值
 
                     $.ajax({
@@ -401,14 +426,16 @@
                             $("#password").val(password);
 
                             var ssh_cmd = data[0].ssh_cmd;
-                            $("#ssh_cmd").val(ssh_cmd);
+                            //$("#ssh_cmd").val(ssh_cmd);
+                            window.editor.setValue(ssh_cmd);
 
                             var ssh_script_path = data[0].ssh_script_path;
                             $("#ssh_script_path").val(ssh_script_path);
 
-                            var ssh_script_context = data[0].ssh_script_context;
-                            $("#ssh_script_context").val(ssh_script_context);
 
+                            var ssh_script_context = data[0].ssh_script_context;
+                            //$("#ssh_script_context").val(ssh_script_context);
+                            window.editor_ssh_script_context.setValue(ssh_script_context);
 
                             //获取元数据信息
                             var ssh_params_input = data[0].ssh_params_input;
@@ -528,10 +555,11 @@
             return;
         }
 
-        var tableData = $("#exampleTableEvents").bootstrapTable('getData')
-
 
         var formData = new FormData($("#etl_task_ssh_add_form")[0]);//获取表单中的文件
+
+        formData.append("ssh_cmd",window.editor.getValue());
+        formData.append("ssh_script_context",window.editor_ssh_script_context.getValue());
 
         $.ajax({
             type: 'POST',
@@ -586,9 +614,9 @@
         }
 
         var formData = new FormData($("#etl_task_ssh_add_form")[0]);//获取表单中的文件
-        formData.append('id',s.id)
-
-
+        formData.append('id',s.id);
+        formData.append("ssh_cmd",window.editor.getValue());
+        formData.append("ssh_script_context",window.editor_ssh_script_context.getValue());
         $.ajax({
             type: 'POST',
             url: server_context+"/etl_task_ssh_update",
