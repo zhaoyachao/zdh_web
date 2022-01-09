@@ -1278,6 +1278,9 @@ public class JobCommon2 {
 
         logger.info(model_log + " JOB ,获取当前的[url]:" + url);
         JobCommon2.insertLog(tli,"INFO",model_log + " JOB ,获取当前的[url]:" + url);
+        if(url.contains("127.0.0.1")){
+            JobCommon2.insertLog(tli,"INFO",model_log + " JOB ,当前url经检测,可能使用默认url,默认url必须保证web和server在同一服务器中");
+        }
         ZdhMoreInfo zdhMoreInfo = new ZdhMoreInfo();
         ZdhInfo zdhInfo = new ZdhInfo();
         ZdhSqlInfo zdhSqlInfo = new ZdhSqlInfo();
