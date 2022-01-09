@@ -19,6 +19,8 @@
 - [FAQ](#faq)
 - [功能图](#%E5%8A%9F%E8%83%BD%E5%9B%BE)
 - [版本更新说明](#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0%E8%AF%B4%E6%98%8E)
+- [4.7.15迁移4.7.16](#4715%E8%BF%81%E7%A7%BB4716)
+- [4.7.16迁移4.7.17](#4716%E8%BF%81%E7%A7%BB4717)
 - [未完成的功能](#%E6%9C%AA%E5%AE%8C%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD)
 - [支持的数据源](#%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E6%BA%90)
 - [支持的调度对象](#%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E5%BA%A6%E5%AF%B9%E8%B1%A1)
@@ -58,17 +60,17 @@
    + 历史版本(>4.7.11)只提供最近2个版本目录下载,下载历史版本,点击下方下载连接,修改链接中的版本号,可下载历史版本
      建议使用最新版本(功能更多)
 
-   + 4.7.15
-     +  [zdh_web_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_web.tar)
-     +  [zdh_server_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_server.tar)
-     +  [zdh_flink_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_flink.tar)          
-   
    + 4.7.16
      +  [zdh_web_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_web.tar)
      +  [zdh_server_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_server.tar)
-     +  [zdh_flink_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_flink.tar)      
+     +  [zdh_flink_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_flink.tar)
+     
+   + 4.7.17
+     +  [zdh_web_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_web.tar)
+     +  [zdh_server_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_server.tar)
+     +  [zdh_flink_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_flink.tar)
       
-   + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包
+   + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包,也可登陆ZDH预览页面下载
 
 #  在线预览
    [http://zycblog.cn:8081/login](http://zycblog.cn:8081/login)
@@ -416,16 +418,124 @@
   + v4.7.16 修复ssh页面关闭无效bug
   + v4.7.16 单源ETL,多源ETL,SSH,SQL,FLINK_SQL,JDBC_SQL,申请源ETL 增加逻辑删除和更新时间
   
+  + v4.7.17 接口无权限-增加ZDH告警
+  + v4.7.17 修复every_day_notice接口,无数据异常bug
+  + v4.7.17 修复操作日志写入字符个数
+  + v4.7.17 增加批量任务生成工具
+  + v4.7.17 优化ZDH目录生成,支持多层级目录生成
+  + v4.7.17 新增工具箱目录,迁移Cron,操作日志,整库迁移到工具箱下
+  + v4.7.17 取消所有dataSourcesService层,直接使用dao层代替
+  + v4.7.17 优化通知信息,增加逻辑删除
+  + v4.7.17 优化目录-增加提示语
+  + v4.7.17 修复调度页面Shell显示bug
+  + v4.7.17 替换全局editor为monaco editor(界面更加清晰美观)
+  + v4.7.17 优化调度新增页面js(删除无用js)
+  + v4.7.17 申请源ETL增加明细查询权限
+  + v4.7.17 删除所有日志打印,统一使用logger管理
+  + v4.7.17 增加ZDH项目下载地址
+  
   
 # 4.7.15迁移4.7.16
-    alter table data_sources_info add column update_time timestamp default null comment '更新时间';  
+    alter table data_sources_info add column update_time timestamp default null comment '更新时间';
+    alter table etl_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table etl_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table etl_more_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table etl_more_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table sql_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table sql_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table ssh_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table ssh_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    
+    alter table etl_task_flink_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table etl_task_jdbc_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table etl_task_jdbc_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table etl_task_datax_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    alter table etl_task_datax_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table etl_apply_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
+    
+    CREATE TABLE `alarm_sms_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `title` varchar(500) DEFAULT NULL COMMENT '任务说明',
+      `msg` text COMMENT '信息',
+      `msg_type` varchar(100) DEFAULT NULL COMMENT '信息类型，通知,营销',
+      `msg_url` varchar(500) DEFAULT NULL COMMENT '短信附带连接',
+      `phone` varchar(100) DEFAULT NULL COMMENT '手机号',
+      `status` varchar(8) DEFAULT '0' COMMENT '状态,0:未处理,1:处理中,2:失败,3:成功,4:不处理',
+      `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+      `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
+    
+    CREATE TABLE `user_operate_log` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+      `user_name` varchar(500) DEFAULT NULL COMMENT '用户名',
+      `operate_url` varchar(500) COMMENT '操作url',
+      `operate_context` varchar(500) COMMENT '操作说明',
+      `operate_input` text  COMMENT '输入参数',
+      `operate_output` text COMMENT '输出结果',
+      `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+      `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
   
+  
+# 4.7.16迁移4.7.17
+     CREATE TABLE `etl_task_batch_info` (
+       `id` bigint NOT NULL AUTO_INCREMENT,
+       `etl_pre_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+       `etl_suffix_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+       `data_sources_choose_input` varchar(100) DEFAULT NULL COMMENT '输入数据源id',
+       `data_source_type_input` varchar(100) DEFAULT NULL COMMENT '输入数据源类型',
+       `data_sources_table_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源表名',
+       `data_sources_file_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源文件名',
+       `data_sources_params_input` varchar(500) DEFAULT NULL COMMENT '输入数据源参数',
+       `data_sources_filter_input` varchar(500) DEFAULT NULL COMMENT '输入数据源过滤条件',
+       `data_sources_choose_output` varchar(100) DEFAULT NULL COMMENT '输出数据源id',
+       `data_source_type_output` varchar(100) DEFAULT NULL COMMENT '输出数据源类型',
+       `data_sources_table_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源表名',
+       `data_sources_file_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源文件名',
+       `data_sources_params_output` varchar(500) DEFAULT NULL COMMENT '输出数据源参数',
+       `data_sources_clear_output` varchar(500) DEFAULT NULL COMMENT '数据源数据源删除条件',
+       `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+       `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+       `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+       `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+       `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+       `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+       `file_type_input` varchar(10) DEFAULT NULL COMMENT '输入文件类型',
+       `encoding_input` varchar(10) DEFAULT NULL COMMENT '输入文件编码',
+       `sep_input` varchar(10) DEFAULT NULL COMMENT '输入分割符',
+       `file_type_output` varchar(10) DEFAULT NULL COMMENT '输出文件类型',
+       `encoding_output` varchar(10) DEFAULT NULL COMMENT '输出文件编码',
+       `sep_output` varchar(10) DEFAULT NULL COMMENT '输出文件分割符',
+       `header_input` varchar(10) DEFAULT NULL COMMENT '输入是否包含表头',
+       `header_output` varchar(10) DEFAULT NULL COMMENT '输出是否包含表头',
+       `repartition_num_input` varchar(64) NOT NULL DEFAULT '' COMMENT '洗牌个数默认空',
+       `repartition_cols_input` varchar(256) NOT NULL DEFAULT '' COMMENT '洗牌字段默认空',
+       `model_output` varchar(64) NOT NULL DEFAULT '' COMMENT '写入模式默认空',
+       `partition_by_output` varchar(256) NOT NULL DEFAULT '' COMMENT '分区字段默认空',
+       `merge_output` varchar(256) NOT NULL DEFAULT '-1' COMMENT '合并小文件默认-1 不合并',
+       `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `status` varchar(8) not null default '0' comment '0:未执行,1:执行中,2:执行失败,3:执行成功',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    alter table resource_tree_info add column notice_title varchar(8) not null default '' comment '提示语';
   
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
   + v4.7.x 接入flink引擎,实现流采集 已完成
   + v4.8 优化滚动升级部分 开发中
-  + v4.8 计划支持血缘分析 开发中
+  + v4.8 计划支持血缘分析 已完成(4.7.x版本以支持)
   
   
 
