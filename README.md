@@ -58,17 +58,17 @@
    + 历史版本(>4.7.11)只提供最近2个版本目录下载,下载历史版本,点击下方下载连接,修改链接中的版本号,可下载历史版本
      建议使用最新版本(功能更多)
 
-   + 4.7.15
-     +  [zdh_web_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_web.tar)
-     +  [zdh_server_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_server.tar)
-     +  [zdh_flink_4.7.15](http://zycblog.cn:8080/zdh/download/4.7.15/zdh_flink.tar)          
-   
    + 4.7.16
      +  [zdh_web_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_web.tar)
      +  [zdh_server_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_server.tar)
      +  [zdh_flink_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_flink.tar)
+     
+   + 4.7.17
+     +  [zdh_web_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_web.tar)
+     +  [zdh_server_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_server.tar)
+     +  [zdh_flink_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_flink.tar)
       
-   + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包
+   + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包,也可登陆ZDH预览页面下载
 
 #  在线预览
    [http://zycblog.cn:8081/login](http://zycblog.cn:8081/login)
@@ -527,7 +527,7 @@
        PRIMARY KEY (`id`)
      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-  
+    alter table resource_tree_info add column notice_title varchar(8) not null default '' comment '提示语';
   
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
