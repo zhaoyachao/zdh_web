@@ -105,9 +105,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">其他参数</label>
                             <div class="col-sm-10" id="div_data_sources_params">
-                                <textarea id="data_sources_params_input" name="data_sources_params_input"
-                                          class="form-control" rows="2"
-                                          placeholder="参数使用固定格式{&#34;k&#34;:&#34;v&#34;,&#34;k1&#34;:&#34;v1&#34;}"></textarea>
+                                <div id="data_sources_params_input" name="data_sources_params_input"
+                                          class="monaco_div_100"></div>
                                 <span class="help-block m-b-none"><a id="a_params" href="javascript:void(0);"
                                                                      onclick="resovle_params()">详细参数</a></span>
                             </div>
@@ -422,6 +421,12 @@
                 theme:'vs-dark'
             });
 
+            window.editor_data_sources_params_input = monaco.editor.create(document.getElementById('data_sources_params_input'), {
+                value: '',
+                language: 'json',
+                theme:'vs-dark'
+            });
+
             var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
             var params = url.substr(1);//去掉问号
             var pa = params.split("&");
@@ -570,19 +575,19 @@
                 //init_table_name(s.id)
 
                 if (s.is_copy == "true") {
-                    console.info("拷贝按钮触发")
-                    $('#update_etl_task').hide()
-                    $('#save_etl_task').show()
+                    console.info("拷贝按钮触发");
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').show();
                 } else {
-                    console.info("更新按钮触发")
-                    $('#save_etl_task').hide()
+                    console.info("更新按钮触发");
+                    $('#save_etl_task').hide();
                     $('#update_etl_task').show()
                 }
 
                 if (s.only_read == "true") {
-                    $('#update_etl_task').hide()
-                    $('#save_etl_task').hide()
-                    $('#reset').hide()
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').hide();
+                    $('#reset').hide();
                 }
                 buildParam()
             }
@@ -609,9 +614,9 @@
 
 
             function buildParam() {
-                $('#enable_quality').prop("checked", false)
+                $('#enable_quality').prop("checked", false);
                 if (s.id != '-1') {
-                    console.info("更新按钮触发--开始赋值对应参数")
+                    console.info("更新按钮触发--开始赋值对应参数");
                     //开始赋值
 
                     $.ajax({
@@ -652,7 +657,10 @@
                             //$("#etl_sql").val(etl_sql);
                             console.info(etl_sql);
                             window.editor.setValue(etl_sql);
-                            //window.editor.refresh();
+
+                            //获取输出源数据其他参数
+                            var data_sources_params_input = data[0].data_sources_params_input;
+                            window.editor_data_sources_params_input.setValue(data_sources_params_input);
 
 
                             // 获取输出数据源
@@ -831,7 +839,7 @@
 
         var formData = new FormData(document.getElementById("etl_task_jdbc_add_form"));
         formData.set("etl_sql",window.editor.getValue());
-
+        formData.set("data_sources_params_input",window.editor_data_sources_params_input.getValue());
         $.ajax({
             type: 'POST',
             url: server_context+"/etl_task_jdbc_add",
@@ -890,7 +898,8 @@
 
         var formData = new FormData(document.getElementById("etl_task_jdbc_add_form"));
         formData.set("etl_sql",window.editor.getValue());
-        formData.set("id",s.id)
+        formData.set("id",s.id);
+        formData.set("data_sources_params_input",window.editor_data_sources_params_input.getValue());
         $.ajax({
             type: 'POST',
             url: server_context+"/etl_task_jdbc_update",

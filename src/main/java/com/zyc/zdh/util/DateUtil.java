@@ -42,6 +42,45 @@ public class DateUtil {
         return new Timestamp(beginDate.getTimeInMillis());
     }
 
+    /**
+     * 天级处理
+     * @param start
+     * @param num
+     * @return
+     */
+    public static Timestamp addDay(String start,Integer num){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(Timestamp.valueOf(start).getTime());
+        beginDate.add(Calendar.DATE, num);
+        return new Timestamp(beginDate.getTimeInMillis());
+    }
+
+    /**
+     * 小时级处理
+     * @param start
+     * @param num
+     * @return
+     */
+    public static Timestamp addHour(String start,Integer num){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(Timestamp.valueOf(start).getTime());
+        beginDate.add(Calendar.HOUR_OF_DAY, num);
+        return new Timestamp(beginDate.getTimeInMillis());
+    }
+
+    /**
+     * 分钟级处理
+     * @param start
+     * @param num
+     * @return
+     */
+    public static Timestamp addMinute(String start,Integer num){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(Timestamp.valueOf(start).getTime());
+        beginDate.add(Calendar.MINUTE, num);
+        return new Timestamp(beginDate.getTimeInMillis());
+    }
+
 
     public static Date pase(String date) throws Exception{
         return df.parse(date);

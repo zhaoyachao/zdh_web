@@ -57,12 +57,18 @@ public class ShiroConfig {
 		LifecycleBeanPostProcessor lifecycleBeanPostProcessor = new LifecycleBeanPostProcessor();
 		return lifecycleBeanPostProcessor;
 	}
-	
+
+	/**
+	 * 4.7.18之后废弃,采用项目本身quartz定时检查session是否过期
+	 * @param defaultWebSessionManager
+	 * @return
+	 */
+	@Deprecated
 	@Bean(name = "sessionValidationScheduler")
 	public ExecutorServiceSessionValidationScheduler getExecutorServiceSessionValidationScheduler(DefaultWebSessionManager defaultWebSessionManager) {
 		ExecutorServiceSessionValidationScheduler scheduler = new ExecutorServiceSessionValidationScheduler();
 		scheduler.setInterval(50*1000);
-		scheduler.setSessionManager(defaultWebSessionManager);
+		//scheduler.setSessionManager(defaultWebSessionManager);
 		return scheduler;
 	}
 	
@@ -144,7 +150,7 @@ public class ShiroConfig {
 		aasa.setSecurityManager(defaultWebSecurityManager);
 		return aasa;
 	}
-	
+
 
 	@Bean(name = "sessionManager")
 	public DefaultWebSessionManager defaultWebSessionManager(SessionDao sessionDao) {
@@ -154,7 +160,7 @@ public class ShiroConfig {
 		sessionManager.setSessionIdUrlRewritingEnabled(false);
 //		// 删除失效的session
 		sessionManager.setDeleteInvalidSessions(true);
-		sessionManager.setSessionValidationSchedulerEnabled(true);
+		sessionManager.setSessionValidationSchedulerEnabled(false);
 		sessionManager.setSessionValidationInterval(18000000);
 		sessionManager.setSessionValidationScheduler(getExecutorServiceSessionValidationScheduler(sessionManager));
 		//sessionManager.setSessionValidationScheduler(quartzSessionValidationScheduler2(sessionManager));
@@ -163,7 +169,7 @@ public class ShiroConfig {
 		sessionManager.getSessionIdCookie().setName("WEBJSESSIONID");
 		sessionManager.getSessionIdCookie().setPath("/");
 		sessionManager.getSessionIdCookie().setMaxAge(60*60*24*7);
-		
+
 		sessionManager.setSessionDAO(sessionDao);
 		Collection<SessionListener> c=new ArrayList<>();
 		c.add(new MyShiroSessionListener());
@@ -198,7 +204,7 @@ public class ShiroConfig {
 	 return redisUtil;
 	 }
 
-	
+
 
 	@Bean(name = "filterRegistrationBean1")
 	public FilterRegistrationBean filterRegistrationBean() {

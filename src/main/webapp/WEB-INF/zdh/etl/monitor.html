@@ -766,54 +766,54 @@
                     var process=100
 
                     if (value == "finish") {
-                        context = "完成"
-                        class_str = "btn-primary btn-xs"
-                        btn_retry_str=''
+                        context = "完成";
+                        class_str = "btn-primary btn-xs";
+                        btn_retry_str='';
                         btn_kill_str=''
                     }
                     if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
                         context = "运行中"
-                        class_str = "btn-primary  btn-xs"
+                        class_str = "btn-primary  btn-xs";
                         btn_retry_str=''
                     }
                     if (value == "error") {
-                        context = "失败"
-                        class_str = "btn-danger btn-xs"
+                        context = "失败";
+                        class_str = "btn-danger btn-xs";
                         btn_kill_str=''
                     }
                     if (value == "retry") {
-                        context = "重试"
+                        context = "重试";
                         class_str = "btn-danger btn-xs"
                     }
                     if (value == "kill" ){
-                        context = "杀死中"
-                        class_str = "btn-danger btn-xs"
+                        context = "杀死中";
+                        class_str = "btn-danger btn-xs";
                         btn_kill_str=''
                     }
                     if (value=="killed" ){
-                        context = "已杀死"
-                        class_str = "btn-danger btn-xs"
+                        context = "已杀死";
+                        class_str = "btn-danger btn-xs";
                         btn_kill_str=''
                     }
                     if (value == "create") {
-                        context = "创建成功"
-                        class_str = "btn-primary  btn-xs"
+                        context = "创建成功";
+                        class_str = "btn-primary  btn-xs";
                         btn_retry_str=''
                     }
 
                     if(context=="未运行"){
-                        btn_retry_str=''
+                        btn_retry_str='';
                         btn_kill_str=''
                     }
-                    var url=server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time
-                    var title=row.job_context + "日志"
+                    var url=server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time;
+                    var title=row.job_context + "日志";
                     return [
                         '<div style="text-align:center" >'+
                         '<div class="btn-group">'+
                         '<button type="button" class="btn '+class_str+'" >'+context+'</button>'+
                         btn_retry_str +
                         btn_kill_str +
-                        '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+
+                        '<button type="button" id="log_txt" class="btn btn-warning btn-xs">组日志</button>'+
                         '<button type="button" id="sub_task_log_instance" class="btn btn-info btn-xs">子任务</button>'+
                         '</div>'+
                         '</div>'

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hubspot.jinjava.Jinjava;
+import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.*;
@@ -995,6 +996,17 @@ public class JobCommon2 {
 
             Jinjava jj = new Jinjava();
 
+            jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "add_day",
+                    DateUtil.class, "addDay", String.class, Integer.class));
+            jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "add_hour",
+                    DateUtil.class, "addHour", String.class, Integer.class));
+            jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "add_minute",
+                    DateUtil.class, "addMinute", String.class, Integer.class));
+
+            String msg="目前支持日期操作: {{add_day('2021-12-01 00:00:00', 1)}} => 2021-12-02 00:00:00 ,{{add_hour('2021-12-01 00:00:00', 1)}} => 2021-12-01 01:00:00,{{add_minute('2021-12-01 00:00:00', 1)}} => 2021-12-01 00:01:00";
+            logger.info(msg);
+            insertLog(tli, "info", msg);
+
             map.forEach((k, v) -> {
                 logger.info("key:" + k + ",value:" + v);
                 jinJavaParam.put(k, v);
@@ -1408,7 +1420,7 @@ public class JobCommon2 {
                     sshTaskInfo.setPassword(zdhFlinkSqlInfo.getEtlTaskFlinkInfo().getPassword());
                     sshTaskInfo.setUser_name(zdhFlinkSqlInfo.getEtlTaskFlinkInfo().getUser_name());
                     sshTaskInfo.setPort(zdhFlinkSqlInfo.getEtlTaskFlinkInfo().getPort());
-
+                    sshTaskInfo.setSsh_cmd(zdhFlinkSqlInfo.getEtlTaskFlinkInfo().getCommand());
                     zdhSshInfo_tmp.setSshTaskInfo(sshTaskInfo);
                     logger.info("FLINK 任务,需下载zdh_flink.jar");
                     insertLog(tli,"INFO","FLINK 任务,需下载zdh_flink.jar");
@@ -1429,12 +1441,8 @@ public class JobCommon2 {
                     }else{
                         boolean rs = ssh_exec(tli, zdhSshInfo_tmp);
                         if (rs) {
-                            //tli.setLast_status("finish");
                             //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
-                            tli.setStatus(JobStatus.FINISH.getValue());
-                            tli.setProcess("100");
-                            tli.setUpdate_time(new Timestamp(new Date().getTime()));
-                            updateTaskLog(tli, tlim);
+                            tlim.updateStatusById4(JobStatus.ETL.getValue(),"65", tli.getId());
                         }
                         return rs;
                     }
@@ -1627,14 +1635,6 @@ public class JobCommon2 {
             chm_ssh.remove(tli.getId());
             long t2 = System.currentTimeMillis();
 
-//            for (String li : out.split("\r\n|\n")) {
-//                if (!li.trim().isEmpty())
-//                    insertLog(tli, "DEBUG", li);
-//            }
-//            for (String li : error.split("\r\n|\n")) {
-//                if (!li.trim().isEmpty())
-//                    insertLog(tli, "ERROR", li);
-//            }
             insertLog(tli, "DEBUG", "[调度平台]:SSH,SSH任务执行结束,耗时:" + (t2 - t1) / 1000 + "s");
 
             if (!error.isEmpty()) {

@@ -63,7 +63,8 @@ public class QuartzConfig {
 		// ClassPathResource("quartz.properties");
 		// schedulerFactoryBean.setConfigLocation(res);
 		schedulerFactoryBean.setQuartzProperties(quartzProperties());
-		// 延迟60s启动quartz
+		//schedulerFactoryBean.setAutoStartup(false);
+		// 延迟25s启动quartz
 		schedulerFactoryBean.setStartupDelay(25);
 
 		return schedulerFactoryBean;
@@ -72,6 +73,7 @@ public class QuartzConfig {
 	@Bean
 	public Scheduler scheduler(SchedulerFactoryBean schedulerFactoryBean) {
 		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+
 //		try {
 //			//scheduler.start();
 //		} catch (SchedulerException e) {
@@ -86,6 +88,7 @@ public class QuartzConfig {
 		Properties prop = new Properties();
 		prop.put("quartz.scheduler.instanceName", quartzInstance);
 		prop.put("org.quartz.scheduler.instanceId", "AUTO");
+		prop.put("org.quartz.scheduler.instanceIdGenerator.class", "com.zyc.zdh.quartz.ZdhInstanceIdGenerator");
 		prop.put("org.quartz.scheduler.skipUpdateCheck", "true");
 		// prop.put("org.quartz.scheduler.jobFactory.class",
 		// "org.quartz.simpl.SimpleJobFactory");

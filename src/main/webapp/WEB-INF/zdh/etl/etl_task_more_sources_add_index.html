@@ -183,7 +183,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">其他参数</label>
                             <div class="col-sm-10" id="div_data_sources_params_output">
-                                <textarea id="data_sources_params_output" name="data_sources_params_output" class="form-control" rows="2" placeholder="参数使用固定格式{&#34;k&#34;:&#34;v&#34;,&#34;k1&#34;:&#34;v1&#34;}"></textarea>
+                                <div id="data_sources_params_output" name="data_sources_params_output" class="monaco_div_100"></div>
                             </div>
                         </div>
 
@@ -346,6 +346,12 @@
             window.editor = monaco.editor.create(document.getElementById('etl_sql'), {
                 value: '-- ETL逻辑,使用sql语法 example select a.* ,b.* from a,b where a.id=b.id',
                 language: 'sql',
+                theme:'vs-dark'
+            });
+
+            window.editor_data_sources_params_output = monaco.editor.create(document.getElementById('data_sources_params_output'), {
+                value: 'json参数 ,提交时此语句此提示语必须删除',
+                language: 'json',
                 theme:'vs-dark'
             });
 
@@ -597,7 +603,8 @@
 
                             //获取输入源数据其他参数
                             var data_sources_params_output=data.result.data_sources_params_output;
-                            $("#data_sources_params_output").val(data_sources_params_output);
+                            //$("#data_sources_params_output").val(data_sources_params_output);
+                            window.editor_data_sources_params_output.setValue(data_sources_params_output);
 
                             //获取输出数据源表名
                             var data_sources_table_name_output=data.result.data_sources_table_name_output;
@@ -698,12 +705,15 @@
             return;
         }
 
+        var editor_str = "&etl_sql="+window.editor.getValue();
+        editor_str = editor_str+"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue();
+        editor_str = editor_str +"&data_sources_params_output="+window.editor_data_sources_params_output.getValue();
 
         $.ajax({
             type: 'POST',
             url: server_context+"/etl_task_more_sources_add",
             dataType: 'json',
-            data: $("#etl_task_add_form").serialize()+"&etl_sql="+window.editor.getValue()+"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue(),
+            data: $("#etl_task_add_form").serialize()+editor_str,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -748,13 +758,15 @@
         for(var i = 0; i < pa.length; i ++){
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
-
+        var editor_str = "&etl_sql="+window.editor.getValue();
+        editor_str = editor_str+"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue();
+        editor_str = editor_str +"&data_sources_params_output="+window.editor_data_sources_params_output.getValue();
 
         $.ajax({
             type: 'POST',
             url: server_context+"/etl_task_more_update",
             dataType: 'json',
-            data: $("#etl_task_add_form").serialize()+"&"+"id="+s.id+"&etl_sql="+window.editor.getValue()+"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue(),
+            data: $("#etl_task_add_form").serialize()+"&"+"id="+s.id+editor_str,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交

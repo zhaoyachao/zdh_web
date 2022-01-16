@@ -3,14 +3,8 @@ package com.zyc.zdh.run;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.dao.QuartzJobMapper;
-import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
-import com.zyc.zdh.dao.TaskLogInstanceMapper;
-import com.zyc.zdh.dao.ZdhHaInfoMapper;
-import com.zyc.zdh.entity.QuartzJobInfo;
-import com.zyc.zdh.entity.TaskGroupLogInstance;
-import com.zyc.zdh.entity.TaskLogInstance;
-import com.zyc.zdh.entity.ZdhHaInfo;
+import com.zyc.zdh.dao.*;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhLogsService;
@@ -23,8 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
+import tk.mybatis.mapper.entity.Example;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,13 +42,14 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     RedisUtil redisUtil;
 
     @Autowired
-    Environment ev;
+    public Environment ev;
 
     @Override
     public void run(String... strings) throws Exception {
         runSnowflakeIdWorker();
         runRetryMQ();
         killJobGroup();
+        quartzExecutor();
         logger.info("初始化通知事件");
         EmailJob.notice_event();
         logger.info("初始化失败任务监控程序");
@@ -283,5 +281,54 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         }).start();
 
 
+    }
+
+    public void quartzExecutor(){
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    try {
+                        SchedulerFactoryBean schedulerFactoryBean = (SchedulerFactoryBean) SpringContext.getBean("&schedulerFactoryBean");
+                        QuartzExecutorMapper quartzExecutorMapper = (QuartzExecutorMapper) SpringContext.getBean("quartzExecutorMapper");
+                        QrtzSchedulerStateMapper qrtzSchedulerStateMapper=(QrtzSchedulerStateMapper) SpringContext.getBean("qrtzSchedulerStateMapper");
+                        logger.debug("检查要操作的Quartz Executor..");
+                        String instance_name = schedulerFactoryBean.getScheduler().getSchedulerInstanceId();
+                        QuartzExecutorInfo qei=new QuartzExecutorInfo();
+                        qei.setIs_handle("false");
+                        qei.setInstance_name(instance_name);
+                        List<QuartzExecutorInfo> quartzExecutorInfos = quartzExecutorMapper.select(qei);
+                        for (QuartzExecutorInfo q:quartzExecutorInfos){
+                            if(q.getStatus().equalsIgnoreCase("online")){
+                                schedulerFactoryBean.start();
+                            }
+                            if(q.getStatus().equalsIgnoreCase("offline")){
+                                schedulerFactoryBean.stop();
+                            }
+                            q.setIs_handle(Const.TRUR);
+                            q.setUpdate_time(new Timestamp(new Date().getTime()));
+                            //更新上下线任务已处理
+                            quartzExecutorMapper.updateByPrimaryKey(q);
+
+
+                            //更新executor状态
+                            QrtzSchedulerState qss=new QrtzSchedulerState();
+                            qss.setStatus(q.getStatus());
+                            Example example=new Example(qss.getClass());
+                            Example.Criteria criteria = example.createCriteria();
+                            criteria.andEqualTo("instance_name", instance_name);
+                            qrtzSchedulerStateMapper.updateByExampleSelective(qss, example);
+                        }
+
+                        Thread.sleep(1000*2);
+                    } catch (Exception e) {
+                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[2].getMethodName();
+                        e.printStackTrace();
+                        logger.error(error, e.getCause());
+                    }
+                }
+            }
+        }).start();
     }
 }

@@ -57,16 +57,18 @@
    
    + 历史版本(>4.7.11)只提供最近2个版本目录下载,下载历史版本,点击下方下载连接,修改链接中的版本号,可下载历史版本
      建议使用最新版本(功能更多)
-
-   + 4.7.16
-     +  [zdh_web_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_web.tar)
-     +  [zdh_server_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_server.tar)
-     +  [zdh_flink_4.7.16](http://zycblog.cn:8080/zdh/download/4.7.16/zdh_flink.tar)
      
+   + 4.7.18版本全部采用maven管理,并重构quartz源码,4.7.18不可和之前任何历史版本重用
+ 
    + 4.7.17
      +  [zdh_web_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_web.tar)
      +  [zdh_server_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_server.tar)
      +  [zdh_flink_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_flink.tar)
+     
+   + 4.7.18
+     +  [zdh_web_4.7.18](http://zycblog.cn:8080/zdh/download/4.7.18/zdh_web.tar)
+     +  [zdh_server_4.7.18](http://zycblog.cn:8080/zdh/download/4.7.18/zdh_server.tar)
+     +  [zdh_flink_4.7.18](http://zycblog.cn:8080/zdh/download/4.7.18/zdh_flink.tar)     
       
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包,也可登陆ZDH预览页面下载
 
@@ -432,6 +434,20 @@
   + v4.7.17 删除所有日志打印,统一使用logger管理
   + v4.7.17 增加ZDH项目下载地址
   
+  + v4.7.18 替换编辑器为monaco editor
+  + v4.7.18 修改fastjson:1.2.44升级为1.2.69
+  + v4.7.18 修改shiro:1.4.0升级1.7.1
+  + v4.7.18 mysql:8.0.11升级为8.0.13
+  + v4.7.18 commons-io:2.6升级2.7
+  + v4.7.18 httpclient:4.5.5升级4.5.13
+  + v4.7.18 删除shiro自动session验证,采用zdh自带quartz任务重写session校验
+  + v4.7.18 增加调度器管理-可对线上已开启的调度器-自动上线下线
+  + v4.7.18 新增菜单时-增加图标查看网址
+  + v4.7.18 修复flink任务杀死bug
+  + v4.7.18 zdh_server更名为zdh_spark,zdh_flink更名为zdh_flinkx 项目管理工具使用maven代替gradle
+  + v4.7.18 重构zdh_flinkx 项目架构
+  
+  
   
 # 4.7.15迁移4.7.16
     alter table data_sources_info add column update_time timestamp default null comment '更新时间';
@@ -528,6 +544,20 @@
      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
     alter table resource_tree_info add column notice_title varchar(8) not null default '' comment '提示语';
+  
+# 4.7.17迁移4.7.18
+    CREATE TABLE `quartz_executor_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `instance_name` varchar(512) DEFAULT NULL COMMENT '调度器唯一实例名',
+      `status` varchar(200) DEFAULT NULL COMMENT '任务说明',
+      `is_handle` varchar(100) DEFAULT NULL COMMENT '是否处理过,true/false',
+      `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+      `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    -- 此处qrtz表名确定是否大写,如果数据库开启不区分大小写,可小写,否则必须使用QRTZ_SCHEDULER_STATE
+    alter table qrtz_scheduler_state add column STATUS varchar(16) not null default 'online' comment '状态，下线offline,上线online';  
   
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

@@ -32,12 +32,16 @@ public class JinjavaTest {
         Jinjava jinjava=new Jinjava();
         jinjava.getGlobalContext().registerFunction(new ELFunctionDefinition("", "currenttime",
                 DateUtil.class, "getCurrentTime"));
+//        jinjava.getGlobalContext().registerFunction(new ELFunctionDefinition("a", "addday",
+//                DateUtil.class, "addDay",String.class,Integer.class));
+        jinjava.getGlobalContext().registerFunction(new ELFunctionDefinition("", "add_day",
+                DateUtil.class, "addDay", String.class, Integer.class));
 
-        String t="hello {{name}},welcome to {{city}},date:{{currenttime()}}";
+        String t="hello {{name}},welcome to {{city}},date:{{currenttime()}}, dd: {{add_day(zdh_date, -1)}}";
         Map<String,Object> m1=new HashMap<>();
         m1.put("name","zyc");
         m1.put("city","china");
-        m1.put("zdh_date","2020-12-01");
+        m1.put("zdh_date","2020-12-01 00:00:00");
         String result=jinjava.render(t,m1);
         System.out.println(result);
 

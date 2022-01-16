@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 调度首页</title>
-    <meta name="keywords" content="ZDH 调度首页">
-    <meta name="description" content="ZDH 调度首页">
+    <title>ZDH 调度器首页</title>
+    <meta name="keywords" content="ZDH 调度器首页">
+    <meta name="description" content="ZDH 调度器首页">
 
     <link rel="shortcut icon" href="img/favicon.ico"> <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
@@ -26,7 +26,7 @@
         <!-- Panel Other -->
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>调度任务</h5>
+                <h5>调度器</h5>
                 <div class="ibox-tools">
                     <a class="collapse-link">
                         <i class="fa fa-chevron-up"></i>
@@ -130,7 +130,7 @@
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
     <!-- Peity -->
-    <script src="js/etl/dispatch_task.js"></script>
+    <script src="js/etl/dispatch_executor.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -139,7 +139,7 @@
         $('#last_status').chosen();
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: server_context+"/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),
+                url: server_context+"/dispatch_executor_list?"+$("#dispatch_task_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });

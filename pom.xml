@@ -5,7 +5,7 @@
 
     <groupId>com.zyc</groupId>
     <artifactId>zdh</artifactId>
-    <version>4.7.17-RELEASE</version>
+    <version>4.7.18-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>zdh_web</name>
@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <shiro.version>1.4.0</shiro.version>
+        <shiro.version>1.7.1</shiro.version>
     </properties>
 
     <dependencies>
@@ -136,13 +136,13 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.11</version>
+            <version>8.0.13</version>
         </dependency>
         <!-- fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.44</version>
+            <version>1.2.69</version>
         </dependency>
         <!-- shiro -->
         <dependency>
@@ -170,10 +170,18 @@
             <artifactId>shiro-guice</artifactId>
             <version>${shiro.version}</version>
         </dependency>
-        <!-- <dependency> <groupId>org.apache.shiro</groupId> <artifactId>shiro-quartz</artifactId>
-            <exclusions> <exclusion> <groupId>org.opensymphony.quartz</groupId> <artifactId>quartz</artifactId>
-            </exclusion> </exclusions> <version>${shiro.version}</version> </dependency> -->
-        <!-- quartz -->
+         <dependency>
+             <groupId>org.apache.shiro</groupId>
+             <artifactId>shiro-quartz</artifactId>
+             <exclusions>
+                 <exclusion>
+                     <groupId>org.opensymphony.quartz</groupId>
+                     <artifactId>quartz</artifactId>
+                 </exclusion>
+             </exclusions>
+             <version>${shiro.version}</version>
+         </dependency>
+        <!--    quartz-->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
@@ -235,14 +243,14 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.5</version>
+            <version>4.5.13</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>4.5.5</version>
+            <version>4.5.13</version>
         </dependency>
 
 
@@ -282,7 +290,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
         </dependency>
 
         <dependency>

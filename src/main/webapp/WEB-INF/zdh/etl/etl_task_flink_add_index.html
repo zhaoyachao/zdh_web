@@ -72,9 +72,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">其他参数</label>
                             <div class="col-sm-10" id="div_data_sources_params">
-                                <textarea id="data_sources_params_input" name="data_sources_params_input"
-                                          class="form-control" rows="2"
-                                          placeholder="参数使用固定格式{&#34;k&#34;:&#34;v&#34;,&#34;k1&#34;:&#34;v1&#34;}"></textarea>
+                                <div id="data_sources_params_input" name="data_sources_params_input"
+                                          class="monaco_div_100"></div>
                             </div>
 
                         </div>
@@ -120,7 +119,7 @@
                             <label class="col-sm-2 control-label">命令</label>
                             <div class="col-sm-10">
                                 <input id="command" name="command" type="text"
-                                       placeholder="命令" class="form-control" aria-required="true"> </span>
+                                       placeholder="命令 example: Linux环境 /home/zyc/zdh_flinkx-4.7.18-RELEASE/bin/start_flink.sh {{zdh_task_log_id}}" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
                         <div class="form-group">
@@ -266,6 +265,11 @@
                 language: 'sql',
                 theme:'vs-dark'
             });
+            window.editor_data_sources_params_input = monaco.editor.create(document.getElementById('data_sources_params_input'), {
+                value: '',
+                language: 'json',
+                theme:'vs-dark'
+            });
 
             $('#server_type').chosen();
 
@@ -361,7 +365,8 @@
 
                             //获取输入源数据其他参数
                             var data_sources_params_input = data[0].data_sources_params_input;
-                            $("#data_sources_params_input").val(data_sources_params_input);
+                            //$("#data_sources_params_input").val(data_sources_params_input);
+                            window.editor_data_sources_params_input.setValue(data_sources_params_input);
 
                             var checkpoint = data[0].checkpoint;
                             $("#checkpoint").val(checkpoint);
@@ -421,7 +426,8 @@
         }
 
         var formData = new FormData(document.getElementById("etl_task_flink_add_form"));
-        formData.set("etl_sql",window.editor.getValue())
+        formData.set("etl_sql",window.editor.getValue());
+        formData.set("data_sources_params_input",window.editor_data_sources_params_input.getValue());
 
         $.ajax({
             type: 'POST',
@@ -461,7 +467,7 @@
             }
         });
 
-    })
+    });
 
 
     $('#update_etl_task').click(function () {
@@ -480,8 +486,9 @@
         }
 
         var formData = new FormData(document.getElementById("etl_task_flink_add_form"));
-        formData.set("etl_sql",window.editor.getValue())
-        formData.set("id",s.id)
+        formData.set("etl_sql",window.editor.getValue());
+        formData.set("id",s.id);
+        formData.set("data_sources_params_input",window.editor_data_sources_params_input.getValue());
         $.ajax({
             type: 'POST',
             url: server_context+"/etl_task_flink_update",

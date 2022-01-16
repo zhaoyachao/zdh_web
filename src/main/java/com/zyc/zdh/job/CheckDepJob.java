@@ -9,12 +9,14 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.http.NameValuePair;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.SimpleSession;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 检查任务及任务组,判定上下游依赖
@@ -31,6 +33,19 @@ public class CheckDepJob {
             logger.debug("开始检测任务组任务...");
             TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+            RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
+            try{
+                Set<String> sets = redisUtil.keys("shiro:cache:shiro-activeSessionCache1*");
+                for(String key:sets){
+                    if( !((SimpleSession) redisUtil.get(key)).isValid()){
+                        logger.info("检测到过期session: "+ JSON.toJSONString(redisUtil.get(key)));
+                        redisUtil.remove(key);
+                    }
+                }
+            }catch (Exception e){
+                logger.info("检测到过期session异常: "+e.getMessage());
+            }
+
 
             // 如果当前任务组无子任务则直接设置完成
             List<TaskGroupLogInstance> non_group=tglim.selectTaskGroupByStatus(new String[]{JobStatus.SUB_TASK_DISPATCH.getValue(),JobStatus.KILL.getValue()});
@@ -407,7 +422,7 @@ public class CheckDepJob {
                         status="";
                 }
                 if(!status.equalsIgnoreCase("")){
-                    JobCommon2.insertLog(tli, "INFO", "更新当前状态:"+status);
+                    JobCommon2.insertLog(tli, "INFO", "WEB模块更新当前状态:"+status);
                     tlim.updateStatusById4(status,process,tli.getId());
                 }
             } catch (Exception e) {

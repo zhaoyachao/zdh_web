@@ -2,10 +2,7 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.dao.QuartzJobMapper;
-import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
-import com.zyc.zdh.dao.TaskLogInstanceMapper;
-import com.zyc.zdh.dao.ZdhHaInfoMapper;
+import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.JobStatus;
@@ -14,6 +11,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.DispatchTaskService;
 import com.zyc.zdh.service.EtlTaskService;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.beanutils.BeanUtils;
@@ -51,6 +49,10 @@ public class ZdhDispatchController extends BaseController {
     TaskLogInstanceMapper taskLogInstanceMapper;
     @Autowired
     TaskGroupLogInstanceMapper tglim;
+    @Autowired
+    QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
+    @Autowired
+    QuartzExecutorMapper quartzExecutorMapper;
 
     /**
      * 调度任务首页
@@ -146,6 +148,10 @@ public class ZdhDispatchController extends BaseController {
         return "etl/shell_detail";
     }
 
+    @RequestMapping("/dispatch_executor_index")
+    public String dispatch_executor_index() {
+        return "etl/dispatch_executor_index";
+    }
     /**
      * 新增调度任务
      *
@@ -464,6 +470,35 @@ public class ZdhDispatchController extends BaseController {
         List<String> instances = zdhHaInfoMapper.selectServerInstance();
 
         return JSON.toJSONString(instances);
+    }
+
+    @RequestMapping(value="/dispatch_executor_list", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String dispatch_executor_list(QuartzJobInfo quartzJobInfo) {
+        try{
+            List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectAll();
+            return JSON.toJSONString(qrtzSchedulerStates);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", e);
+        }
+    }
+
+    @RequestMapping(value="/dispatch_executor_status", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String dispatch_executor_status(String instance_name, String status) {
+        try{
+
+            QuartzExecutorInfo qei=new QuartzExecutorInfo();
+            qei.setCreate_time(new Timestamp(new Date().getTime()));
+            qei.setUpdate_time(new Timestamp(new Date().getTime()));
+            qei.setInstance_name(instance_name);
+            qei.setStatus(status);
+            qei.setIs_handle(Const.FALSE);
+            quartzExecutorMapper.insert(qei);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+        }
     }
 
 

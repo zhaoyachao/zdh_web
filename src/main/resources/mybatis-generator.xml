@@ -88,12 +88,27 @@
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-        <table tableName="etl_task_batch_info" domainObjectName="EtlTaskBatchInfo" mapperName="EtlTaskBatchMapper">
-            <property name="useActualColumnNames" value="true" />
-            <columnOverride column="id" property="id" javaType="java.lang.String"/>
-            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
-            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
-        </table>
+<!--        <table tableName="etl_task_batch_info" domainObjectName="EtlTaskBatchInfo" mapperName="EtlTaskBatchMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="QRTZ_SCHEDULER_STATE" domainObjectName="QrtzSchedulerState" mapperName="QrtzSchedulerStateMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="SCHED_NAME" property="sched_name" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="INSTANCE_NAME" property="instance_name" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="CHECKIN_INTERVAL" property="last_checkin_time" javaType="java.lang.Long"/>-->
+<!--            <columnOverride column="LAST_CHECKIN_TIME" property="last_checkin_time" javaType="java.lang.Long"/>-->
+<!--        </table>-->
+
+            <table tableName="quartz_executor_info" domainObjectName="QuartzExecutorInfo" mapperName="QuartzExecutorMapper">
+                <property name="useActualColumnNames" value="true" />
+                <columnOverride column="id" property="id" javaType="java.lang.String"/>
+                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
+                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
+            </table>
 
 
     </context>

@@ -140,9 +140,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">其他参数</label>
                             <div class="col-sm-10" id="div_data_sources_params">
-                                <textarea id="data_sources_params_input" name="data_sources_params_input"
-                                          class="form-control" rows="2"
-                                          placeholder="参数使用固定格式{&#34;k&#34;:&#34;v&#34;,&#34;k1&#34;:&#34;v1&#34;}"></textarea>
+                                <div id="data_sources_params_input" name="data_sources_params_input" class="monaco_div_100"></div>
                                 <span class="help-block m-b-none"><a id="a_params" href="javascript:void(0);"
                                                                      onclick="resovle_params()">详细参数</a></span>
                             </div>
@@ -176,9 +174,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">过滤条件</label>
                             <div class="col-sm-10" id="div_data_sources_filter_input">
-                                <textarea id="data_sources_filter_input" name="data_sources_filter_input"
-                                          class="form-control" rows="2"
-                                          placeholder="过滤条件,使用sql语法 example: name='zyc' and sex='man' ,如果是hbase数据源直接输入start_row_key,end_row_key 通过逗号分割 example: 001,100"></textarea>
+                                <div id="data_sources_filter_input" name="data_sources_filter_input" class="monaco_div_100"></div>
                             </div>
                         </div>
 
@@ -383,9 +379,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">其他参数</label>
                             <div class="col-sm-10" id="div_data_sources_params_output">
-                                <textarea id="data_sources_params_output" name="data_sources_params_output"
-                                          class="form-control" rows="2"
-                                          placeholder="参数使用固定格式{&#34;k&#34;:&#34;v&#34;,&#34;k1&#34;:&#34;v1&#34;}"></textarea>
+                                <div id="data_sources_params_output" name="data_sources_params_output" class="monaco_div_100"></div>
                             </div>
                         </div>
 
@@ -589,6 +583,24 @@
                 language: 'sql',
                 theme:'vs-dark'
             });
+
+            window.editor_data_sources_params_input = monaco.editor.create(document.getElementById('data_sources_params_input'), {
+                value: 'json参数 ,提交时此语句此提示语必须删除',
+                language: 'json',
+                theme:'vs-dark'
+            });
+            window.editor_data_sources_params_output = monaco.editor.create(document.getElementById('data_sources_params_output'), {
+                value: 'json参数 ,提交时此语句此提示语必须删除',
+                language: 'json',
+                theme:'vs-dark'
+            });
+
+            window.editor_data_sources_filter_input = monaco.editor.create(document.getElementById('data_sources_filter_input'), {
+                value: '-- 过滤条件,使用sql语法 example: name=zyc and sex=man ,如果是hbase数据源直接输入start_row_key,end_row_key 通过逗号分割 example: 001,100,提交时此语句此提示语必须删除',
+                language: 'sql',
+                theme:'vs-dark'
+            });
+
 
             $('#file_type_input').chosen();
             $('#encoding_input').chosen();
@@ -1050,7 +1062,8 @@
 
                             //获取输入源数据其他参数
                             var data_sources_params_input = data.result.data_sources_params_input;
-                            $("#data_sources_params_input").val(data_sources_params_input);
+                            //$("#data_sources_params_input").val(data_sources_params_input);
+                            window.editor_data_sources_params_input.setValue(data_sources_params_input);
 
                             //获取表名/文件名
                             if (data_source_type_input == "外部上传") {
@@ -1113,7 +1126,8 @@
 
                             //获取过滤条件
                             var data_sources_filter_input = data.result.data_sources_filter_input;
-                            $('#data_sources_filter_input').val(data_sources_filter_input);
+                            //$('#data_sources_filter_input').val(data_sources_filter_input);
+                            window.editor_data_sources_filter_input.setValue(data_sources_filter_input);
 
                             //去重字段
                             var duplicate_columns = data.result.duplicate_columns;
@@ -1209,7 +1223,8 @@
 
                             //获取输入源数据其他参数
                             var data_sources_params_output = data.result.data_sources_params_output;
-                            $("#data_sources_params_output").val(data_sources_params_output);
+                            //$("#data_sources_params_output").val(data_sources_params_output);
+                            window.editor_data_sources_params_output.setValue(data_sources_params_output);
 
                             //获取输出数据源表名
                             var data_sources_table_name_output = data.result.data_sources_table_name_output;
@@ -1443,12 +1458,17 @@
             layer.msg("上传文件失败,无法保存");
             return ;
         }
+        var editor_str = "&data_sources_params_input="+window.editor_data_sources_params_input.getValue();
+        editor_str = editor_str +"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue();
+        editor_str = editor_str +"&data_sources_params_output="+window.editor_data_sources_params_output.getValue();
+        editor_str = editor_str +"&data_sources_filter_input="+window.editor_data_sources_filter_input.getValue();
+
         $.ajax({
             type: 'POST',
             url: server_context+"/etl_task_add",
             async: false,
             dataType: 'json',
-            data: $("#etl_task_add_form").serialize()+"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue() + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas)),
+            data: $("#etl_task_add_form").serialize() +editor_str + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas)),
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -1478,7 +1498,7 @@
             }
         });
 
-    })
+    });
 
 
     $('#update_etl_task').click(function () {
@@ -1513,7 +1533,7 @@
                 column_regex: tableData[i].column_regex,
                 column_desc: tableData[i].column_desc,
                 column_alias: tableData[i].column_alias
-            }
+            };
             column_datas.push(column_data)
         }
 
@@ -1524,7 +1544,7 @@
         var form = document.getElementById('etl_task_add_form');
         var formData = new FormData();
         formData.append('up_file', $('#up_file')[0].files[0]);
-        var is_save=false
+        var is_save=false;
         $.ajax({
             type: 'POST',
             url: server_context+"/etl_task_add_file",
@@ -1542,11 +1562,11 @@
             success: function (data) {
                 $("#save_etl_task").removeAttr('disabled');
                 if(data.code != '200'){
-                    console.error(data.msg)
-                    layer.msg("执行失败")
+                    console.error(data.msg);
+                    layer.msg("执行失败");
                     return ;
                 }
-                is_save=true
+                is_save=true;
                 layer.msg("执行成功")
                 // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 // parent.layer.close(index); //再执行关闭
@@ -1566,12 +1586,16 @@
             layer.msg("上传文件失败,无法更新")
             return ;
         }
+        var editor_str = "&data_sources_params_input="+window.editor_data_sources_params_input.getValue();
+        editor_str = editor_str +"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue();
+        editor_str = editor_str +"&data_sources_params_output="+window.editor_data_sources_params_output.getValue();
+        editor_str = editor_str +"&data_sources_filter_input="+window.editor_data_sources_filter_input.getValue();
         $.ajax({
             type: 'POST',
             url: server_context+"/etl_task_update",
             dataType: 'json',
             async: false,
-            data: $("#etl_task_add_form").serialize()+"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue()  + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas)) + "&" + "id=" + s.id,
+            data: $("#etl_task_add_form").serialize()+editor_str + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas)) + "&" + "id=" + s.id,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
