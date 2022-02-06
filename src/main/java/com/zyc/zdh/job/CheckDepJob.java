@@ -104,7 +104,7 @@ public class CheckDepJob {
             //检测flink任务是否已经完成
             check_flink_job_final_status();
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
         }
 
     }
@@ -258,8 +258,11 @@ public class CheckDepJob {
                     if( tmp_status.equalsIgnoreCase("kill") || tmp_status.equalsIgnoreCase("killed") ) continue; //在检查依赖时杀死任务
 
                     if(tl.getJob_type().equalsIgnoreCase("shell")){
-                        if(JobCommon2.check_thread_limit(tl))
+                        if(JobCommon2.check_thread_limit(tl)){
+                            //增加告警通知,每5分钟告警一次
                             continue;
+                        }
+
                     }
 
                     tl.setStatus(JobStatus.DISPATCH.getValue());
@@ -293,7 +296,7 @@ public class CheckDepJob {
             }
 
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
         }
 
     }
@@ -426,7 +429,7 @@ public class CheckDepJob {
                     tlim.updateStatusById4(status,process,tli.getId());
                 }
             } catch (Exception e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
                 //判定任务是否可重试,如果无法获取flink信息 则认为flink任务以死亡,尝试自动拉起
                 JobCommon2.jobFail("ETL",tli);
                 //tlim.updateStatusById4(JobStatus.ERROR.getValue(),"100",tli.getId());
@@ -453,12 +456,12 @@ public class CheckDepJob {
                     logger.info("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
             }
         }
     }

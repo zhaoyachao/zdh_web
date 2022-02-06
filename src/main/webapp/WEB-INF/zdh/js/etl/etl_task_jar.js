@@ -4,11 +4,11 @@
     // Example Bootstrap Table Events
     // ------------------------------
     (function() {
-        var height=400
+        var height=400;
         if($(document.body).height()*0.8>height){
             height=$(document.body).height()*0.8
         }
-        $('#exampleTableEvents').attr("data-height",height)
+        $('#exampleTableEvents').attr("data-height",height);
         $('#add').click(function () {
             parent.layer.open({
                 type: 2,
@@ -27,7 +27,7 @@
                     });
                 }
             });
-        })
+        });
 
         $('#remove').click(function () {
 
@@ -43,8 +43,8 @@
                     $(rows).each(function() {// 通过获得别选中的来进行遍历
                         ids.push(this.id);// cid为获得到的整条数据中的一列
                     });
-                    console.log(ids)
-                    deleteMs(ids)
+                    console.log(ids);
+                    deleteMs(ids);
                     layer.close(layer.index);
                 }, function(){
 
@@ -61,7 +61,7 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success")
+                    console.info("success");
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url : server_context+'/etl_task_jar_list'
                     });
@@ -75,7 +75,7 @@
 
         window.operateEvents = {
             'click #edit': function (e, value, row, index) {
-                $("#id").val(row.id)
+                $("#id").val(row.id);
                 top.layer.open({
                     type: 2,
                     title: '外部JAR配置',
@@ -100,8 +100,8 @@
                     btn: ['确定','取消'] //按钮
                 }, function(index){
                     var ids = new Array();// 声明一个数组
-                    ids.push(row.id)
-                    deleteMs(ids)
+                    ids.push(row.id);
+                    deleteMs(ids);
                     layer.close(layer.index)
                 }, function(){
 

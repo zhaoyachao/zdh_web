@@ -21,7 +21,7 @@ public class Const {
     public static String STATUS_INIT="0";
     public static String STATUS_SUCCESS="1";
     public static String STATUS_FAIL="2";
-    public static String STATUS_RECALL="3";//啊方法的身份
+    public static String STATUS_RECALL="3";
 
     public static String DELETE="1";
     public static String NOT_DELETE="0";
@@ -38,5 +38,9 @@ public class Const {
     public static String BATCH_SUCCESS = "3";//执行成功
 
     public static String ENABLE = "1";//是否启用
-    public static String UN_ENABLE = "1";//是否启用
+    public static String UN_ENABLE = "2";//是否启用
+
+    public static String NOTHING="0";//无操作
+    public static String ALL_HISTORY="1";//所有历史
+    public static String LAST_HISTORY="2";//最近一次历史
 }

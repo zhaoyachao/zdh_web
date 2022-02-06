@@ -78,7 +78,7 @@ public class QuartzConfig {
 //			//scheduler.start();
 //		} catch (SchedulerException e) {
 //			// TODO Auto-generated catch block
-//			 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+//			 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}", e.getCause());
 //		}
 		return scheduler;
 	}

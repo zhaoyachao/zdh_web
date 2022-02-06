@@ -126,18 +126,18 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            var height=400
+            var height=400;
             if($(document.body).height()*0.8>height){
                 height=$(document.body).height()*0.8
             }
-            $('#exampleTableEvents').attr("data-height",height)
+            $('#exampleTableEvents').attr("data-height",height;
 
 
             window.operateEvents = {
                 'click #del': function (e, value, row, index) {
 
                     if(row.status !=0 ){
-                        layer.msg("只有申请中的单子,才可撤销")
+                        layer.msg("只有申请中的单子,才可撤销");
                         return ;
                     }
 
@@ -148,7 +148,7 @@
                         async:false,
                         dataType: "json",
                         success: function (data) {
-                            console.info(data.msg)
+                            console.info(data.msg);
                             layer.msg(data.msg)
                         },
                         complete: function(){
@@ -268,10 +268,10 @@
                // var currentWidth = $(this).parents('.J_menuTab').width();
                 var wpd = $(window.parent.document);
                 var mainContent = wpd.find('.J_mainContent');
-                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
                 var currentTab=pageTabs.find(".J_menuTab.active");
-                var closeTabId = currentTab.data('id')
-                mainContent.find('.J_iframe')
+                var closeTabId = currentTab.data('id');
+                mainContent.find('.J_iframe');
 
                 // 当前元素处于活动状态
                 if (currentTab.hasClass('active')) {

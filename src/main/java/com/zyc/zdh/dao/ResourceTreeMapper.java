@@ -34,7 +34,7 @@ public interface ResourceTreeMapper extends BaseMapper<ResourceTreeInfo> {
     public List<RoleResourceInfo> selectByUserId(@Param("role_id") String role_id);
 
     @Select(value = "" +
-            "select distinct  a.id as user_id,c.resource_id,d.`text`,d.url,d.icon,d.order,d.level,d.parent,d.resource_type ,d.notice_title \n" +
+            "select distinct  a.id as user_id,c.resource_id,d.`text`,d.url,d.icon,d.order,d.level,d.parent,d.resource_type ,d.notice_title,d.event_code \n" +
             "from \n" +
             "account_info a,\n" +
             "role_info b,\n" +

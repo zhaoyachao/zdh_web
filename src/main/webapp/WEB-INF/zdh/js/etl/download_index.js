@@ -89,11 +89,11 @@ function buildTable($el, cells, rows) {
   // ------------------------------
   (function() {
 
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
       $('#remove').click(function () {
 
         var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
@@ -109,8 +109,8 @@ function buildTable($el, cells, rows) {
                 $(rows).each(function() {// 通过获得别选中的来进行遍历
                     ids.push(this.id);// cid为获得到的整条数据中的一列
                 });
-                console.log(ids)
-                deleteMs(ids)
+                console.log(ids);
+                deleteMs(ids);
                 layer.close(layer.index);
             }, function(){
 
@@ -120,7 +120,7 @@ function buildTable($el, cells, rows) {
 
         }
 
-    })
+    });
 
       function deleteMs(ids) {
           $.ajax({
@@ -129,9 +129,9 @@ function buildTable($el, cells, rows) {
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success")
+                  console.info("success");
                   if(data.code != "200"){
-                      layer.msg(data.msg)
+                      layer.msg(data.msg);
                       return
                   }
                   $('#exampleTableEvents').bootstrapTable('refresh', {

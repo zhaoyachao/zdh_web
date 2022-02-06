@@ -194,6 +194,10 @@
                             </div>
                         </div>
 
+                        <div class="form-group col-sm-12" id="label_div">
+
+                        </div>
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label">更新说明</label>
                             <div class="col-sm-10">
@@ -262,6 +266,54 @@
         });
     });
 
+    function load_label() {
+        var label_template = " <label class='col-sm-2'>label_name</label>\n";
+        var a_template = "<button type=\"button\" class=\"btn btn-outline btn-default\" enum_value=\"enum_value_replace\">enum_context</button>\n";
+        var line_template = "                                <br/>\n";
+        $.ajax({
+            type: 'POST',
+            async: false,
+            url: server_context+"/data_ware_house_label",
+            dataType: 'json',
+            data: '',
+            //成功返回
+            success: function (data) {
+                $('#label_div').html("");
+                if(data.result.length>0){
+                    for(var i=0;i<data.result.length;i++){
+                        var dt = data.result[i];
+                        var label_html = label_template.replace("label_name", dt.enum_context);
+
+                        if(dt.enum_json_object.length>0){
+                            for (var j=0;j<dt.enum_json_object.length;j++){
+                                label_html=label_html+a_template.replace("enum_value_replace",dt.enum_json_object[j].enum_value).replace("enum_context", dt.enum_json_object[j].enum_value_context);
+                            }
+                        }
+                        label_html = label_html+line_template;
+                        $('#label_div').append(label_html);
+                    }
+                }
+
+                $('#label_div button').click(function () {
+                    if($(this).hasClass("btn-default")){
+                        $(this).removeClass("btn-default");
+                        $(this).addClass("btn-info")
+                    }else{
+                        $(this).removeClass("btn-info");
+                        $(this).addClass("btn-default");
+                    }
+                });
+            },
+            //处理完成
+            complete: function () {
+                console.info("etl_task_complete")
+            },
+            //报错
+            error: function (data) {
+                console.info("etl_task_error: " + data.responseText);
+            }
+        });
+    }
 
     (function (document, window, $) {
 
@@ -275,10 +327,10 @@
             for (var i = 0; i < pa.length; i++) {
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
-
+            load_label();
             //定义特定数据源展示的div
             function fileShow() {
-                console.info("fileShow")
+                console.info("fileShow");
                 $('#div_data_sources_table_name_input')[0].style.display = 'none';
                 $('#div_data_sources_file_name_input')[0].style.display = 'block';
                 //表字段
@@ -288,7 +340,7 @@
             }
 
             function tableShow() {
-                console.info("tableShow")
+                console.info("tableShow");
                 $('#div_data_sources_table_name_input')[0].style.display = 'block';
                 $('#div_data_sources_file_name_input')[0].style.display = 'none';
                 //表字段
@@ -365,13 +417,13 @@
                     data: postData,
                     //成功返回
                     success: function (data) {
-                        $('#row_num').val('')
-                        var str = ''
+                        $('#row_num').val('');
+                        var str = '';
                         for (var i = 0; i < data.length; i++) {
                             if (str == '')
-                                str = data[i]
+                                str = data[i];
                             else
-                                str += "," + data[i]
+                                str += "," + data[i];
                             addRow(data[i])
                         }
 
@@ -385,7 +437,7 @@
                     },
                     //报错
                     error: function (data) {
-                        layer.msg(data.responseText)
+                        layer.msg(data.responseText);
                         console.info("error: " + data.responseText);
                     }
                 });
@@ -393,16 +445,16 @@
             })
 
             $("#btn_columns_file").click(function () {
-                var cols = $('#data_sources_file_columns').val()
+                var cols = $('#data_sources_file_columns').val();
                 if (cols == '') {
                     layer.msg("配置选择的列不能为空!");
                 }
-                var cols_ary = cols.split(',')
+                var cols_ary = cols.split(',');
                 for (var i = 0; i < cols_ary.length; i++) {
                     addRow(cols_ary[i])
                 }
 
-            })
+            });
 
             //根据数据源id 获取对应的tables
             function init_table_name(id) {
@@ -410,7 +462,7 @@
                 //alert("datasourceid:"+id)
                 var postData = {
                     id: id,
-                }
+                };
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/etl_task_tables",
@@ -420,7 +472,7 @@
                     //成功返回
                     success: function (data) {
 
-                        var str = '<option value=\"\" hassubinfo=\"true\"></option>'
+                        var str = '<option value=\"\" hassubinfo=\"true\"></option>';
                         for (var i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
                         }
@@ -453,46 +505,6 @@
 
 
             }
-
-            //根据数据源id 获取对应的tables
-            function init_table_name_output(id) {
-
-                var postData = {
-                    id: id,
-                }
-                $.ajax({
-                    type: 'POST',
-                    url: server_context+"/etl_task_tables",
-                    dataType: 'json',
-                    data: postData,
-                    //成功返回
-                    success: function (data) {
-
-                        var str = '<option value=\"\" hassubinfo=\"true\"></option>'
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
-                        }
-                        $('#data_sources_table_name_output').html(str);
-                        $("#data_sources_table_name_output").trigger("chosen:updated");
-                        $('#data_sources_table_name_output').chosen().on("change", function (evt, params) {
-                            console.info("'data_sources_table_name_output' event change set text 'data_sources_file_name_output'")
-                            $('#data_sources_file_name_output').val($('#data_sources_table_name_output').val())
-
-                        });
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-                });
-
-
-            }
-
 
             window.operateEvents = {
                 'click #del': function (e, value, row, index) {
@@ -572,20 +584,20 @@
                 })
             }
 
-            fileShow()
+            fileShow();
             //启动数据源select 初始化函数
             init_data_sources();
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
-                console.info("新增按钮触发")
+                console.info("新增按钮触发");
                 //$('#data_sources_table_name_input').chosen();
                 //$('#data_sources_table_name_output').chosen();
-                $('#save_issue_data').show()
+                $('#save_issue_data').show();
                 $('#update_issue_data').hide()
 
             } else {
-                $('#save_issue_data').hide()
-                $('#update_issue_data').show()
+                $('#save_issue_data').hide();
+                $('#update_issue_data').show();
 
                 buildParam()
             }
@@ -612,9 +624,9 @@
 
 
             function buildParam() {
-                $('#enable_quality').prop("checked", false)
+                $('#enable_quality').prop("checked", false);
                 if (s.id != '-1') {
-                    console.info("更新按钮触发--开始赋值对应参数")
+                    console.info("更新按钮触发--开始赋值对应参数");
                     //开始赋值
 
                     $.ajax({
@@ -624,43 +636,43 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
-                            console.info("success")
+                            console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             // 基础信息加载
-                            $('#issue_context').val(data.issue_context)
-                            $('#create_time').val(getMyDate(data.create_time))
-                            $('#data_source_type_input').val(data.data_source_type_input)
+                            $('#issue_context').val(data.issue_context);
+                            $('#create_time').val(getMyDate(data.create_time));
+                            $('#data_source_type_input').val(data.data_source_type_input);
 
 
 
 
-                            $("#data_sources_choose_input").val(data.data_sources_choose_input)
+                            $("#data_sources_choose_input").val(data.data_sources_choose_input);
                             $("#data_sources_choose_input").trigger("chosen:updated");
 
-                            $('#data_sources_file_name_input').val(data.data_sources_table_name_input)
-                            $('#user_name').val(data.user_name)
-                            $('#company').val(data.company)
-                            $('#section').val(data.section)
-                            $('#service').val(data.service)
+                            $('#data_sources_file_name_input').val(data.data_sources_table_name_input);
+                            $('#user_name').val(data.user_name);
+                            $('#company').val(data.company);
+                            $('#section').val(data.section);
+                            $('#service').val(data.service);
 
                             //字段列表
                             if(data.data_source_type_input=="JDBC"){
                                 init_table_name(data.data_sources_choose_input);
                                 $('#data_sources_table_columns').val(data.data_sources_table_columns);
-                                $('#data_sources_table_name_input').val(data.data_sources_table_name_input)
+                                $('#data_sources_table_name_input').val(data.data_sources_table_name_input);
                                 $("#data_sources_table_name_input").trigger("chosen:updated");
 
                             }else{
-                                fileShow()
+                                fileShow();
                                 $('#data_sources_file_columns').val(data.data_sources_file_columns)
                             }
 
 
 
                             // 字段信息加载
-                            var column_datas = data.column_datas
-                            var cd = JSON.parse(column_datas)
+                            var column_datas = data.column_datas;
+                            var cd = JSON.parse(column_datas);
                             for (var i = 0; i < cd.length; i++) {
                                 var index = $('#exampleTableEvents').bootstrapTable('getData').length;
                                 $('#exampleTableEvents').bootstrapTable('insertRow', {
@@ -679,6 +691,22 @@
                                 });
                             }
 
+                            //加载标签信息
+                            if(data.label_params!=""){
+
+                                for(label_name of data.label_params.split(','))
+                                $('#label_div button').each(function ( index,element){
+                                    console.info(label_name);
+                                    if($(this).attr('enum_value') == label_name){
+                                        $(this).removeClass("btn-default");
+                                        if($(this).hasClass("btn-info") != "true") {
+                                            $(this).addClass("btn-info");
+                                        }
+                                    }
+                                });
+                            }
+
+
                         },
                         error: function (data) {
                             console.info("error: " + data.responseText);
@@ -695,7 +723,7 @@
                 var wpd = $(window.parent.document);
                 var mainContent = wpd.find('.J_mainContent');
                 var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
                 pageTabs.find(".J_menuTab.active").removeClass("active");
                 mainContent.find("iframe").css("display", "none");
                 if (thisIframe.length > 0) {	// 选项卡已打开
@@ -724,10 +752,10 @@
                // var currentWidth = $(this).parents('.J_menuTab').width();
                 var wpd = $(window.parent.document);
                 var mainContent = wpd.find('.J_mainContent');
-                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
                 var currentTab=pageTabs.find(".J_menuTab.active");
-                var closeTabId = currentTab.data('id')
-                mainContent.find('.J_iframe')
+                var closeTabId = currentTab.data('id');
+                mainContent.find('.J_iframe');
 
                 // 当前元素处于活动状态
                 if (currentTab.hasClass('active')) {
@@ -814,7 +842,7 @@
                     return;
                 }
 
-                var tableData = $("#exampleTableEvents").bootstrapTable('getData')
+                var tableData = $("#exampleTableEvents").bootstrapTable('getData');
 
                 var column_datas = new Array();// 声明一个数组
                 for (var i = 0; i < tableData.length; i++) {
@@ -824,16 +852,19 @@
                         column_type: tableData[i].column_type,
                         column_is_null: tableData[i].column_is_null,
                         column_desc: tableData[i].column_desc
-                    }
+                    };
                     column_datas.push(column_data)
                 }
-
+                var label_params = new Array();
+                $('#label_div .btn-info').each(function ( index,element){
+                    label_params.push($(this).attr('enum_value'));
+                });
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/issue_data_add",
                     async: false,
                     dataType: 'json',
-                    data: $("#issue_data_add_form").serialize() + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas)),
+                    data: $("#issue_data_add_form").serialize() + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas))+"&label_params="+label_params,
                     //发送数据前
                     beforeSend: function () {
                         // 禁用按钮防止重复提交
@@ -842,10 +873,10 @@
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
-                            layer.msg(data.msg)
+                            parent.layer.msg(data.msg);
                             return
                         }
-                        layer.msg("发布成功")
+                        layer.msg("发布成功");
                         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                         parent.layer.close(index); //再执行关闭
                     },
@@ -871,7 +902,7 @@
                     return;
                 }
 
-                var tableData = $("#exampleTableEvents").bootstrapTable('getData')
+                var tableData = $("#exampleTableEvents").bootstrapTable('getData');
 
                 var column_datas = new Array();// 声明一个数组
                 for (var i = 0; i < tableData.length; i++) {
@@ -881,16 +912,19 @@
                         column_type: tableData[i].column_type,
                         column_is_null: tableData[i].column_is_null,
                         column_desc: tableData[i].column_desc
-                    }
+                    };
                     column_datas.push(column_data)
                 }
-
+                var label_params = new Array();
+                $('#label_div .btn-info').each(function ( index,element){
+                    label_params.push($(this).attr('enum_value'));
+                });
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/issue_data_update",
                     async: false,
                     dataType: 'json',
-                    data: $('#issue_data_add_form').serialize() + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas))+ "&id=" +s.id,
+                    data: $('#issue_data_add_form').serialize() + "&" + "column_datas=" + encodeURIComponent(JSON.stringify(column_datas))+ "&id=" +s.id+"&label_params="+label_params,
                     //发送数据前
                     beforeSend: function () {
                         // 禁用按钮防止重复提交
@@ -899,7 +933,7 @@
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
-                            layer.msg(data.msg)
+                            parent.layer.msg(data.msg);
                             return
                         }
                         layer.msg("更新成功")
@@ -923,7 +957,7 @@
 
             $('#save_issue_data').click(function (){
                 save()
-            })
+            });
             $('#update_issue_data').click(function (){
                 update()
             })

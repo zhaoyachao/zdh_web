@@ -11,6 +11,10 @@ GRANT ALL PRIVILEGES on *.* to zyc@'localhost';
 GRANT USAGE ON *.* to zyc@'127.0.0.1';
 GRANT ALL PRIVILEGES on *.* to zyc@'127.0.0.1';
 
+ALTER USER 'zyc'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
+ALTER USER 'zyc'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '123456';
+ALTER USER 'zyc'@'localhost' IDENTIFIED WITH mysql_native_password BY '123456';
+
 FLUSH PRIVILEGES;
 
 use zdh;
@@ -1218,6 +1222,99 @@ CREATE TABLE `etl_task_batch_info` (
 -- 2022-01-05;
 alter table resource_tree_info add column notice_title varchar(8) not null default '' comment '提示语';
 
+-- 2022-01-16;
+CREATE TABLE `quartz_executor_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `instance_name` varchar(512) DEFAULT NULL COMMENT '调度器唯一实例名',
+  `status` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `is_handle` varchar(100) DEFAULT NULL COMMENT '是否处理过,true/false',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 2022-01-18;
+alter table quartz_job_info add column misfire varchar(8) not null default '0' comment '恢复策略，0:无操作,1:所有历史重新执行,2:最近一次历史重新执行';
+
+-- 2022-02-04;
+alter table resource_tree_info add column event_code varchar(64) not null default '' comment '绑定事件';
+
+CREATE TABLE `enum_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `enum_code` varchar(512) DEFAULT NULL COMMENT '枚举标识',
+  `enum_context` varchar(200) DEFAULT NULL COMMENT '枚举说明',
+  `enum_type` varchar(100) DEFAULT NULL COMMENT '枚举类型',
+  `enum_json` text comment '枚举明细',
+  `owner` varchar(64) default null COMMENT '拥有者',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+drop table param_info;
+CREATE TABLE `param_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `param_name` varchar(512) DEFAULT NULL COMMENT '参数名称',
+  `param_value` text COMMENT '参数名称',
+  `param_context` varchar(200) DEFAULT NULL COMMENT '参数说明',
+  `param_type` varchar(100) DEFAULT NULL COMMENT '参数类型',
+  `param_timeout` varchar(200) DEFAULT NULL COMMENT '缓存超时时间,单位秒',
+  `owner` varchar(64) default null COMMENT '拥有者',
+  `status` varchar(64) default null COMMENT '状态,启用:on, 关闭:off',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` timestamp  DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp  DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER USER 'zyc'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
+ALTER USER 'zyc'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '123456';
+
+FLUSH PRIVILEGES;
+
+alter table issue_data_info add column label_params text  comment '数据标签,多个逗号分割';
+
+CREATE TABLE `data_tag_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `tag_code` varchar(512) DEFAULT NULL COMMENT '标识code',
+  `tag_name` varchar(200) DEFAULT NULL COMMENT '标识名称',
+  `product_code` varchar(100) DEFAULT NULL COMMENT '产品code',
+  `owner` varchar(64) default null COMMENT '拥有者',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `product_tag_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `product_code` varchar(512) DEFAULT NULL COMMENT '产品标识code',
+  `product_name` varchar(200) DEFAULT NULL COMMENT '产品名称',
+  `owner` varchar(64) default null COMMENT '拥有者',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `data_tag_group_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `tag_group_code` varchar(512) DEFAULT NULL COMMENT '标识组code',
+  `tag_group_name` varchar(200) DEFAULT NULL COMMENT '标识组名称',
+  `tag_codes` varchar(512) DEFAULT NULL COMMENT '标识code列表,逗号分割',
+  `product_code` varchar(100) DEFAULT NULL COMMENT '产品code',
+  `owner` varchar(64) default null COMMENT '拥有者',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+alter table account_info add column tag_group_code varchar(512) not null default ''  comment '数据组标识,多个逗号分割';
+alter table data_sources_info add column tag_group_code varchar(512) not null default ''  comment '数据组标识,多个逗号分割';
+
 -- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
@@ -1359,6 +1456,9 @@ LAST_CHECKIN_TIME BIGINT(13) NOT NULL,
 CHECKIN_INTERVAL BIGINT(13) NOT NULL,
 PRIMARY KEY (SCHED_NAME,INSTANCE_NAME))
 ENGINE=InnoDB;
+
+-- 2022-01-16;
+alter table QRTZ_SCHEDULER_STATE add column STATUS varchar(16) not null default 'online' comment '状态，下线offline,上线online';
 
 CREATE TABLE QRTZ_LOCKS (
 SCHED_NAME VARCHAR(120) NOT NULL,

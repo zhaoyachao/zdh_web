@@ -17,6 +17,7 @@ import com.zyc.zdh.service.AccountService;
  * @date 2018年2月6日  
  * @Description: TODO  
  */
+@Deprecated
 @Service("accountService")
 public class AccountServiceImpl implements AccountService {
 

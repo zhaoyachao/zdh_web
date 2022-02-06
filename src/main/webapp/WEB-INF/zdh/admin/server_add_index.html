@@ -180,10 +180,10 @@
         // var currentWidth = $(this).parents('.J_menuTab').width();
         var wpd = $(window.parent.document);
         var mainContent = wpd.find('.J_mainContent');
-        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
         var currentTab=pageTabs.find(".J_menuTab.active");
-        var closeTabId = currentTab.data('id')
-        mainContent.find('.J_iframe')
+        var closeTabId = currentTab.data('id');
+        mainContent.find('.J_iframe');
 
         // 当前元素处于活动状态
         if (currentTab.hasClass('active')) {
@@ -276,21 +276,21 @@
             radioClass: 'iradio_square-green',
         });
 
-        $("#build_type").chosen()
+        $("#build_type").chosen();
         if (s.id == -1) {
-            console.info("新增按钮触发")
-            $('#save_zdh').show()
+            console.info("新增按钮触发");
+            $('#save_zdh').show();
             $('#update_zdh').hide()
         }else{
-            console.info("更新按钮触发")
+            console.info("更新按钮触发");
             $('#save_zdh').hide()
-            $('#update_zdh').show()
+            $('#update_zdh').show();
             buildParam()
         }
 
         function buildParam() {
             if (s.id != '-1') {
-                console.info("更新按钮触发--开始赋值对应参数")
+                console.info("更新按钮触发--开始赋值对应参数");
                 //开始赋值
                 $.ajax({
                     url: server_context+"/server_manager_list",
@@ -304,47 +304,47 @@
 
                         //获取输入数据源id
                         var id = data[0].id
-                        console.info("参数赋值:输入数据源id:" + id)
+                        console.info("参数赋值:输入数据源id:" + id);
 
 
                         //获取ETL 说明
-                        var build_task = data[0].build_task
+                        var build_task = data[0].build_task;
                         $("#build_task").val(build_task);
 
-                        var build_ip = data[0].build_ip
-                        $("#build_ip").val(build_ip)
+                        var build_ip = data[0].build_ip;
+                        $("#build_ip").val(build_ip);
 
 
-                        var build_type = data[0].build_type
-                        $("#build_type").val(build_type)
+                        var build_type = data[0].build_type;
+                        $("#build_type").val(build_type);
                         $("#build_type").trigger("chosen:updated");
 
 
-                        var build_username = data[0].build_username
-                        $("#build_username").val(build_username)
+                        var build_username = data[0].build_username;
+                        $("#build_username").val(build_username);
 
-                        var build_privatekey = data[0].build_privatekey
-                        $("#build_privatekey").val(build_privatekey)
+                        var build_privatekey = data[0].build_privatekey;
+                        $("#build_privatekey").val(build_privatekey);
 
-                        var build_path = data[0].build_path
-                        $("#build_path").val(build_path)
+                        var build_path = data[0].build_path;
+                        $("#build_path").val(build_path);
 
-                        var git_url = data[0].git_url
-                        $("#git_url").val(git_url)
+                        var git_url = data[0].git_url;
+                        $("#git_url").val(git_url);
 
-                        var build_command = data[0].build_command
-                        $("#build_command").val(build_command)
+                        var build_command = data[0].build_command;
+                        $("#build_command").val(build_command);
 
-                        var remote_ip = data[0].remote_ip
-                        $("#remote_ip").val(remote_ip)
+                        var remote_ip = data[0].remote_ip;
+                        $("#remote_ip").val(remote_ip);
 
-                        var remote_path = data[0].remote_path
-                        $("#remote_path").val(remote_path)
+                        var remote_path = data[0].remote_path;
+                        $("#remote_path").val(remote_path);
 
-                        var build_branch = data[0].build_branch
-                        $("#build_branch").val(build_branch)
+                        var build_branch = data[0].build_branch;
+                        $("#build_branch").val(build_branch);
 
-                        var param = data[0].param
+                        var param = data[0].param;
                         $("#param").val(param)
 
                     }
@@ -384,7 +384,7 @@
             });
 
 
-        })
+        });
 
         $('#update_zdh').click(function () {
 
@@ -406,7 +406,7 @@
                 //成功返回
                 success: function (data) {
                     $("#update_zdh").removeAttr('disabled');
-                    layer.msg("更新完成")
+                    layer.msg("更新完成");
                     closeTab()
                 },
                 //处理完成

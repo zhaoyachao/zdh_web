@@ -57,6 +57,7 @@ public class IssueDataInfo implements Serializable {
 
     private String status;//状态：1：已发布, 2:未发布
 
+    private String label_params="";
 
     public String getIssue_context() {
         return issue_context;
@@ -208,6 +209,14 @@ public class IssueDataInfo implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getLabel_params() {
+        return label_params;
+    }
+
+    public void setLabel_params(String label_params) {
+        this.label_params = label_params;
     }
 }
 

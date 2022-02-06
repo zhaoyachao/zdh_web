@@ -351,7 +351,7 @@
                         for (var i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
                         }
-                        $('#etl_task_id').empty()
+                        $('#etl_task_id').empty();
                         $("#etl_task_id").chosen("destroy");
                         $('#etl_task_id').html(str);
                         $('#etl_task_id').chosen()
@@ -638,13 +638,13 @@
 
             init_job_sources();
 
-            init_zdh_instance()
+            init_zdh_instance();
 
             if(s["etl_task_id"] != '-1'){
-                console.info("更新触发")
-                var more_task=s["more_task"]
-                console.info("more_task:"+more_task)
-                choseMoreTask(more_task)
+                console.info("更新触发");
+                var more_task=s["more_task"];
+                console.info("more_task:"+more_task);
+                choseMoreTask(more_task);
                 $("#more_task").val(more_task);
                 $("#more_task").trigger("chosen:updated");
                 $("#etl_task_id").val(s["etl_task_id"]);
@@ -656,7 +656,7 @@
                 if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
                     $("#time_out").val(s["time_out"]);
                 }
-                var is_disenable=s['is_disenable']
+                var is_disenable=s['is_disenable'];
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
                 }
@@ -690,8 +690,8 @@
             "depend_level":depend_level,
             "zdh_instance":zdh_instance,
             "time_out": time_out
-        }
-        console.info("job_detail:"+JSON.stringify(data))
+        };
+        console.info("job_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
         parent.layer.close(index); //再执行关闭

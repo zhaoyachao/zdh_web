@@ -34,10 +34,14 @@ public class SFTPUtil {
      * @param port  
      */     
     public SFTPUtil(String username, String password, String host, int port) {   
-        this.username = username;   
-        this.password = password;   
-        this.host = host;   
-        this.port = port;   
+        this.username = username;
+        if(password.startsWith("privateKey:")){
+            this.privateKey=password.substring(10);
+        }else{
+            this.password = password;
+        }
+        this.host = host;
+        this.port = port;
     }   
        
     /**  

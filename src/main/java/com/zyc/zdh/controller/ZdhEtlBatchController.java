@@ -33,7 +33,7 @@ import java.util.List;
  * 批量任务服务
  */
 @Controller
-public class ZdhEtlBatchController extends BaseController{
+public class ZdhEtlBatchController extends BaseController {
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -49,6 +49,7 @@ public class ZdhEtlBatchController extends BaseController{
 
     /**
      * 批量任务首页
+     *
      * @return
      */
     @RequestMapping("/etl_task_batch_index")
@@ -59,6 +60,7 @@ public class ZdhEtlBatchController extends BaseController{
 
     /**
      * 批量任务新增首页
+     *
      * @param request
      * @param response
      * @param id
@@ -72,16 +74,17 @@ public class ZdhEtlBatchController extends BaseController{
 
     /**
      * 批量任务明细
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "/etl_task_batch_detail", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_batch_detail(String id) {
-        try{
-            EtlTaskBatchInfo eti=etlTaskBatchMapper.selectByPrimaryKey(id);
+        try {
+            EtlTaskBatchInfo eti = etlTaskBatchMapper.selectByPrimaryKey(id);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
@@ -89,6 +92,7 @@ public class ZdhEtlBatchController extends BaseController{
 
     /**
      * 根据条件模糊查询批量任务信息
+     *
      * @param etl_context
      * @param file_name
      * @return
@@ -97,15 +101,15 @@ public class ZdhEtlBatchController extends BaseController{
     @ResponseBody
     public String etl_task_batch_list(String etl_context, String file_name) {
         List<EtlTaskBatchInfo> list = new ArrayList<>();
-        Example example=new Example(EtlTaskBatchInfo.class);
+        Example example = new Example(EtlTaskBatchInfo.class);
 
 
-        Example.Criteria criteria2 =example.createCriteria();
+        Example.Criteria criteria2 = example.createCriteria();
         criteria2.andEqualTo("owner", getUser().getId());
         criteria2.andEqualTo("is_delete", Const.NOT_DELETE);
 
-        Example.Criteria criteria =example.createCriteria();
-        if(!StringUtils.isEmpty(etl_context)){
+        Example.Criteria criteria = example.createCriteria();
+        if (!StringUtils.isEmpty(etl_context)) {
             criteria.andLike("etl_pre_context", getLikeCondition(etl_context));
             criteria.orLike("etl_suffix_context", getLikeCondition(etl_context));
         }
@@ -116,6 +120,7 @@ public class ZdhEtlBatchController extends BaseController{
 
     /**
      * 批量删除'批量任务信息'
+     *
      * @param ids
      * @return
      */
@@ -123,30 +128,30 @@ public class ZdhEtlBatchController extends BaseController{
     @ResponseBody
     @Transactional
     public String etl_task_batch_delete(String[] ids) {
-        try{
+        try {
             etlTaskBatchMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
     }
 
 
-
-
     /**
      * 新增批量任务
+     *
      * @param etlTaskBatchInfo
      * @return
      */
-    @RequestMapping(value="/etl_task_batch_add", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_add", produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional
     public String etl_task_batch_add(EtlTaskBatchInfo etlTaskBatchInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
-        try{
+        try {
             String owner = getUser().getId();
             etlTaskBatchInfo.setOwner(owner);
             debugInfo(etlTaskBatchInfo);
@@ -167,26 +172,28 @@ public class ZdhEtlBatchController extends BaseController{
                 etlTaskUpdateLogs.setOwner(getUser().getId());
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
-        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+        } catch (Exception e) {
+
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            logger.error(e.getMessage(),e.getCause());
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
     }
 
 
     /**
      * 批量任务更新
+     *
      * @param etlTaskBatchInfo
      * @return
      */
-    @RequestMapping(value="/etl_task_batch_update", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_update", produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional
     public String etl_task_batch_update(EtlTaskBatchInfo etlTaskBatchInfo) {
-        try{
+        try {
             String owner = getUser().getId();
             etlTaskBatchInfo.setOwner(owner);
             etlTaskBatchInfo.setIs_delete(Const.NOT_DELETE);
@@ -209,44 +216,44 @@ public class ZdhEtlBatchController extends BaseController{
                 etlTaskUpdateLogs.setOwner(getUser().getId());
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
-        }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            logger.error(e.getMessage(),e.getCause());
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
     }
 
 
-    @RequestMapping(value="/etl_task_batch_create", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_create", produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional
     public String etl_task_batch_create(EtlTaskBatchInfo etlTaskBatchInfo) {
-        try{
+        try {
             String owner = getUser().getId();
             debugInfo(etlTaskBatchInfo);
-            EtlTaskBatchInfo etbi=etlTaskBatchMapper.selectByPrimaryKey(etlTaskBatchInfo);
+            EtlTaskBatchInfo etbi = etlTaskBatchMapper.selectByPrimaryKey(etlTaskBatchInfo);
 
             //校验状态
-            if(!etbi.getStatus().equalsIgnoreCase(Const.BATCH_INIT) && !etbi.getStatus().equalsIgnoreCase(Const.BATCH_FAIL)){
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"批量任务状态必须是未执行或失败", null);
+            if (!etbi.getStatus().equalsIgnoreCase(Const.BATCH_INIT) && !etbi.getStatus().equalsIgnoreCase(Const.BATCH_FAIL)) {
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "批量任务状态必须是未执行或失败", null);
             }
             //校验数据源是否JDBC类型
-            if(!etbi.getData_source_type_input().equalsIgnoreCase("jdbc")){
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"批量任务输入数据源必须是JDBC类型", null);
+            if (!etbi.getData_source_type_input().equalsIgnoreCase("jdbc")) {
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "批量任务输入数据源必须是JDBC类型", null);
             }
 
             //拉取JDBC下满足的表
-            DataSourcesInfo dataSourcesInfo=dataSourcesMapper.selectByPrimaryKey(etbi.getData_sources_choose_input());
+            DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(etbi.getData_sources_choose_input());
             debugInfo(dataSourcesInfo);
 
             String url = dataSourcesInfo.getUrl();
             List<String> tables = new DBUtil().R3(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(),
-                    dataSourcesInfo.getPassword(),"");
-            List<String> tab=new ArrayList<>();
-            for (String table: tables){
-                if(StringUtils.isEmpty(etbi.getData_sources_file_name_input()) || table.matches(etbi.getData_sources_file_name_input())){
+                    dataSourcesInfo.getPassword(), "");
+            List<String> tab = new ArrayList<>();
+            for (String table : tables) {
+                if (StringUtils.isEmpty(etbi.getData_sources_file_name_input()) || table.matches(etbi.getData_sources_file_name_input())) {
                     tab.add(table);
                 }
             }
@@ -256,26 +263,26 @@ public class ZdhEtlBatchController extends BaseController{
             etlTaskBatchMapper.updateByPrimaryKey(etbi);
 
             //生成单源ETL
-            for (String table:tab){
-                EtlTaskInfo eti=new EtlTaskInfo();
+            for (String table : tab) {
+                EtlTaskInfo eti = new EtlTaskInfo();
                 BeanUtils.copyProperties(eti, etbi);
-                eti.setId(SnowflakeIdWorker.getInstance().nextId()+"");
-                eti.setEtl_context(etbi.getEtl_pre_context()+"_"+table);
-                if(!StringUtils.isEmpty(etbi.getEtl_suffix_context())){
-                    eti.setEtl_context(etbi.getEtl_pre_context()+"_"+table+"_"+etbi.getEtl_suffix_context());
+                eti.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                eti.setEtl_context(etbi.getEtl_pre_context() + "_" + table);
+                if (!StringUtils.isEmpty(etbi.getEtl_suffix_context())) {
+                    eti.setEtl_context(etbi.getEtl_pre_context() + "_" + table + "_" + etbi.getEtl_suffix_context());
                 }
 
                 eti.setData_sources_table_name_input(table);
                 eti.setData_sources_file_name_input(table);
 
-                List<column_data> cds=new ArrayList<>();
+                List<column_data> cds = new ArrayList<>();
                 List<String> cols = schema(dataSourcesInfo, table);
-                for (String col:cols){
-                    column_data cd=new column_data();
+                for (String col : cols) {
+                    column_data cd = new column_data();
                     cd.setColumn_expr(col);
                     cd.setColumn_alias(col);
                     cd.setColumn_type("string");
-                    cd.setColumn_md5(SnowflakeIdWorker.getInstance().nextId()+"");
+                    cd.setColumn_md5(SnowflakeIdWorker.getInstance().nextId() + "");
                     cds.add(cd);
                 }
 
@@ -292,15 +299,15 @@ public class ZdhEtlBatchController extends BaseController{
             etbi.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskBatchMapper.updateByPrimaryKey(etbi);
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), tab);
-        }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), tab);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             etlTaskBatchInfo.setStatus(Const.BATCH_FAIL);
             etlTaskBatchInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskBatchMapper.updateByPrimaryKey(etlTaskBatchInfo);
-            logger.error(e.getMessage(),e.getCause());
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
     }
 
@@ -312,7 +319,7 @@ public class ZdhEtlBatchController extends BaseController{
             return new DBUtil().R4(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
                     "select * from " + table_name + " where 1=2 limit 1", table_name);
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
             return new ArrayList<String>();
         }
     }
@@ -334,12 +341,12 @@ public class ZdhEtlBatchController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
             }
         }
     }

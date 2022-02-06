@@ -89,11 +89,11 @@ function buildTable($el, cells, rows) {
   // ------------------------------
   (function() {
 
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
       $('#remove').click(function () {
 
           layer.msg("当前不支持删除");
@@ -110,8 +110,8 @@ function buildTable($el, cells, rows) {
                 $(rows).each(function() {// 通过获得别选中的来进行遍历
                     ids.push(this.id);// cid为获得到的整条数据中的一列
                 });
-                console.log(ids)
-                deleteMs(ids)
+                console.log(ids);
+                deleteMs(ids);
                 layer.close(layer.index);
             }, function(){
 
@@ -126,7 +126,7 @@ function buildTable($el, cells, rows) {
               type : "get",
               dataType : "json",
               success : function(data) {
-                  console.info("success")
+                  console.info("success");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url : 'notice_list2'
                   });
@@ -160,7 +160,7 @@ function buildTable($el, cells, rows) {
                       dataType : "json",
                       async:false,
                       success : function(data) {
-                          console.info("success")
+                          console.info("success");
                           $('#exampleTableEvents').bootstrapTable('refresh', {
                               url : 'notice_list2'
                           });
@@ -255,10 +255,10 @@ function buildTable($el, cells, rows) {
             title: '是否已读',
             sortable:true,
             formatter: function (value, row, index) {
-                var context = "未读"
-                var class_str = "btn-danger btn-xs"
+                var context = "未读";
+                var class_str = "btn-danger btn-xs";
                 if (value == "true") {
-                    context = "已读"
+                    context = "已读";
                     class_str = "btn-primary  btn-xs"
                 }
                 return [

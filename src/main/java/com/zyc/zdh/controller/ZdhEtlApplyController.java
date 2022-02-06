@@ -44,7 +44,7 @@ public class ZdhEtlApplyController extends BaseController{
 
 
     /**
-     * 单源ETL首页
+     * 申请源首页
      * @return
      */
     @RequestMapping("/etl_task_apply_index")
@@ -54,7 +54,7 @@ public class ZdhEtlApplyController extends BaseController{
     }
 
     /**
-     * 获取申请源ETL任务明细
+     * 申请源明细
      * @param id
      * @return
      */
@@ -231,12 +231,12 @@ public class ZdhEtlApplyController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
             }
         }
     }

@@ -32,7 +32,7 @@ $(document).ready(function(){
             jsPlumb.draggable(id);
             jsPlumb.makeTarget(id, {
                 anchor: "Continuous"
-            })
+            });
             $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
             doubleclick("#" + id,tp);
         }
@@ -55,12 +55,12 @@ $(document).ready(function(){
         fillStyle: "#ccc",
         radius: 10,
         lineWidth:6 ,
-    }
+    };
 
     // 鼠标悬浮在端点上的样式
     var hoverPaintStyle = {
         fillStyle: "#aaa",
-    }
+    };
 
     //设置连接端点和连接线
     var hollowCircle = {
@@ -97,7 +97,7 @@ $(document).ready(function(){
     });
     //节点小图标的单击事件
     $("#m1").on("click", "img",function () {
-        var div=$(this).parent()
+        var div=$(this).parent();
         layer.confirm('确定要删除此节点吗', {
             btn: ['确定','取消'] //按钮
         }, function(index){
@@ -111,8 +111,8 @@ $(document).ready(function(){
 
     //连接线中的文字双击事件
     $("#deviceRight").on("click", "._jsPlumb_overlay", function () {
-        var that=$(this)
-        that.removeClass('_jsPlumb_overlay')
+        var that=$(this);
+        that.removeClass('_jsPlumb_overlay');
         var text = that.text();
         that.html("");
         that.append('<input type="text" id="myDropDown" value="' + text + '" />');
@@ -136,111 +136,34 @@ $(document).ready(function(){
         });
     });
 
-    //双击节点内容区域时的事件
-    // function doubleclick(id) {
-    //     $(id).dblclick(function () {
-    //         var text = $(this).text();
-    //         var div = $(this)
-    //         var etl_task_id=div.attr("etl_task_id")
-    //         var url='job_detail.html'
-    //         if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
-    //             url=url+"?etl_task_id=-1"
-    //         }else{
-    //             var more_task=div.attr("more_task")
-    //             url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task
-    //         }
-    //         layer.open({
-    //             type: 2,
-    //             area: ['700px', '450px'],
-    //             fixed: false, //不固定
-    //             maxmin: true,
-    //             content: encodeURI(url),
-    //             end: function () {
-    //                 console.info("index:doubleclick:"+$("#etl_task_text").val())
-    //                 if($("#etl_task_text").val()==""){
-    //                     console.info("无修改-不更新")
-    //                     return ;
-    //                 }
-    //
-    //                 var etl_task_info=JSON.parse($("#etl_task_text").val())
-    //                 div.attr("etl_task_id",etl_task_info.etl_task_id);
-    //                 div.attr("etl_context",etl_task_info.etl_context);
-    //                 div.attr("more_task",etl_task_info.more_task);
-    //                 //div.width(etl_task_info.etl_context.length*16)
-    //                 div.css("width","auto")
-    //                 div.css("display","inline-block")
-    //                 div.css("*display","inline")
-    //                 div.css("*zoom","1")
-    //                 div.html(etl_task_info.etl_context);
-    //             }
-    //         });
-    //     });
-    // }
-    //
-    // function doubleclick_shell(id) {
-    //     $(id).dblclick(function () {
-    //         var etl_context = $(this).text();
-    //         var div = $(this)
-    //         var command=div.attr("command")
-    //         var url='shell_detail.html'
-    //         if( command == "" || command == undefined ){
-    //             url=url+"?command=-1"
-    //         }else{
-    //             var is_script=div.attr("is_script")
-    //             url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
-    //         }
-    //         layer.open({
-    //             type: 2,
-    //             area: ['700px', '450px'],
-    //             fixed: false, //不固定
-    //             maxmin: true,
-    //             content: encodeURI(url),
-    //             end: function () {
-    //                 console.info("index:doubleclick:"+$("#etl_task_text").val())
-    //                 if($("#etl_task_text").val()==""){
-    //                     console.info("无修改-不更新")
-    //                     return ;
-    //                 }
-    //
-    //                 var etl_task_info=JSON.parse($("#etl_task_text").val())
-    //                 div.attr("command",etl_task_info.command);
-    //                 div.attr("is_script",etl_task_info.is_script);
-    //                 div.css("width","auto")
-    //                 div.css("display","inline-block")
-    //                 div.css("*display","inline")
-    //                 div.css("*zoom","1")
-    //                 div.html(etl_task_info.etl_context);
-    //             }
-    //         });
-    //     });
-    // }
-
 
     //双击节点内容区域时的事件
     function doubleclick(id,tp) {
         switch (tp) {
             case "tasks"://服务器
-                doubleclick_tasks(id)
+                doubleclick_tasks(id);
                 break;
             case "shell":
-                doubleclick_shell(id)
+                doubleclick_shell(id);
                 break;
             case "group":
-                doubleclick_group(id)
+                doubleclick_group(id);
                 break;
+            default:
+                $(id).dblclick(function () {parent.layer.msg("开发中");});
         }
     }
 
     function doubleclick_tasks(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
-            var div = $(this)
-            var etl_task_id=div.attr("etl_task_id")
-            var url=server_context+'/job_detail.html'
+            var div = $(this);
+            var etl_task_id=div.attr("etl_task_id");
+            var url=server_context+'/job_detail.html';
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{
-                var more_task=div.attr("more_task")
+                var more_task=div.attr("more_task");
                 url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task
             }
             layer.open({
@@ -250,9 +173,9 @@ $(document).ready(function(){
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
@@ -261,10 +184,10 @@ $(document).ready(function(){
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("more_task",etl_task_info.more_task);
                     //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });
@@ -275,12 +198,12 @@ $(document).ready(function(){
         $(id).dblclick(function () {
             var etl_context = $(this).text();
             var div = $(this)
-            var command=div.attr("command")
-            var url=server_context+'/shell_detail.html'
+            var command=div.attr("command");
+            var url=server_context+'/shell_detail.html';
             if( command == "" || command == undefined ){
                 url=url+"?command=-1"
             }else{
-                var is_script=div.attr("is_script")
+                var is_script=div.attr("is_script");
                 url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context
             }
             layer.open({
@@ -290,20 +213,20 @@ $(document).ready(function(){
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     div.attr("command",etl_task_info.command);
                     div.attr("is_script",etl_task_info.is_script);
-                    div.attr("etl_context",etl_task_info.etl_context)
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.attr("etl_context",etl_task_info.etl_context);
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });
@@ -313,7 +236,7 @@ $(document).ready(function(){
     function doubleclick_group(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
-            var div = $(this)
+            var div = $(this);
             var etl_task_id=div.attr("etl_task_id")
             var url=server_context+'/group_detail.html'
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
@@ -329,20 +252,20 @@ $(document).ready(function(){
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
                     //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });
@@ -358,7 +281,7 @@ $(document).ready(function(){
         }
         console.info("链接自动建立")
         return true // 链接会自动建立
-    })
+    });
 
     //导出json
     $('.btn1').click(function(){
@@ -366,7 +289,7 @@ $(document).ready(function(){
             tasks:[],
             shell:[],
             line:[]
-        }
+        };
 
         //服务器
         $("#m1 .tasks").each(function (idx, elem) {
@@ -381,7 +304,7 @@ $(document).ready(function(){
                 positionX: parseInt($elem.css("left"), 10),
                 positionY: parseInt($elem.css("top"), 10),
                 type:$elem.data('type')
-            }
+            };
             ojson.tasks.push(param)
         });
 
@@ -397,7 +320,7 @@ $(document).ready(function(){
                 positionX: parseInt($elem.css("left"), 10),
                 positionY: parseInt($elem.css("top"), 10),
                 type:$elem.data('type')
-            }
+            };
             ojson.shell.push(param)
         });
 
@@ -407,16 +330,16 @@ $(document).ready(function(){
                 connectionId: connection.id,
                 pageSourceId: connection.sourceId,
                 pageTargetId: connection.targetId
-            }
+            };
             ojson.line.push(param)
         });
 
         //打印json
-        ojson=JSON.stringify(ojson)
+        ojson=JSON.stringify(ojson);
         console.log(ojson)
 
     })
 
-})
+});
  
 

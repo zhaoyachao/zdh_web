@@ -4,7 +4,7 @@ import com.zyc.zdh.util.Const;
 
 import javax.persistence.*;
 
-@Table(name = "qrtz_scheduler_state")
+@Table(name = "QRTZ_SCHEDULER_STATE")
 public class QrtzSchedulerState {
     @Id
     @Column(name = "SCHED_NAME")
@@ -14,10 +14,13 @@ public class QrtzSchedulerState {
     @Column(name = "INSTANCE_NAME")
     private String instance_name;
 
+    @Column(name = "LAST_CHECKIN_TIME")
     private Long last_checkin_time;
 
+    @Column(name = "CHECKIN_INTERVAL")
     private Long checkin_interval;
 
+    @Column(name = "STATUS")
     private String status;
 
     @Transient

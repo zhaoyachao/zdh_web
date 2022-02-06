@@ -56,17 +56,18 @@ public class ZdhDataSourcesController extends BaseController{
 
     /**
      * 获取当前用户下的所有数据源
-     * @param ids
      * @return
      */
     @RequestMapping(value = "/data_sources_list", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String data_sources_list(String[] ids) {
+    public String data_sources_list() {
+        //获取数据权限
+        String[] tag_group_code = getUser().getTag_group_code().split(",");
 
         DataSourcesInfo dataSourcesInfo = new DataSourcesInfo();
         dataSourcesInfo.setOwner(getUser().getId());
         dataSourcesInfo.setIs_delete(Const.NOT_DELETE);
-        List<DataSourcesInfo> list = dataSourcesMapper.select(dataSourcesInfo);
+        List<DataSourcesInfo> list = dataSourcesMapper.selectByParams(getUser().getId(), tag_group_code);
 
         return JSON.toJSONString(list);
     }
@@ -96,8 +97,8 @@ public class ZdhDataSourcesController extends BaseController{
         if(!StringUtils.isEmpty(url)){
             criteria.andLike("url", getLikeCondition(url));
         }
-
-        List<DataSourcesInfo> list = dataSourcesMapper.selectByExample(example);
+        String[] tag_group_code = getUser().getTag_group_code().split(",");
+        List<DataSourcesInfo> list = dataSourcesMapper.selectByParams2(getUser().getId(), tag_group_code, url, data_source_context, data_source_type);
 
         return JSON.toJSONString(list);
     }
@@ -175,7 +176,8 @@ public class ZdhDataSourcesController extends BaseController{
     @ResponseBody
     public String data_sources_update(DataSourcesInfo dataSourcesInfo) {
         try{
-            dataSourcesInfo.setOwner(getUser().getId());
+            DataSourcesInfo oldDataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(dataSourcesInfo.getId());
+            dataSourcesInfo.setOwner(oldDataSourcesInfo.getOwner());
             dataSourcesInfo.setIs_delete("0");
             dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             dataSourcesMapper.updateByPrimaryKey(dataSourcesInfo);
@@ -232,13 +234,13 @@ public class ZdhDataSourcesController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                    logger.error(error, e.getCause());
+                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                    logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
             }
         }
     }

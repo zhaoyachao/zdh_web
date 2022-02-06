@@ -111,7 +111,7 @@
     function register(){
 
         if( $('#userName').val().trim()==''){
-            layer.msg("用户名不能为空")
+            layer.msg("用户名不能为空");
             return ;
         }
 
@@ -123,15 +123,15 @@
         }
 
         if( $('#password').val()==''){
-            layer.msg("密码不能为空")
+            layer.msg("密码不能为空");
             return ;
         }
         if( $('#password').val().trim()!=$('#password2').val().trim()){
-            layer.msg("2次密码不一致")
+            layer.msg("2次密码不一致");
             return ;
         }
         if( $('#check_agree').is(':checked')==false){
-            layer.msg("请选择同意协议")
+            layer.msg("请选择同意协议");
             return ;
         }
 

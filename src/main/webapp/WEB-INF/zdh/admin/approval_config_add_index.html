@@ -121,7 +121,7 @@
             if(s.id != '-1'){
                 $.ajax({
                     type: 'GET',
-                    url: "approval_config_detail",
+                    url: server_context+"/approval_config_detail",
                     dataType: 'json',
                     data: "id="+s.id,
                     //发送数据前
@@ -162,7 +162,7 @@
                 $('#btn_up').click(function () {
                     $.ajax({
                         type: 'POST',
-                        url: "approval_config_update",
+                        url: server_context+"/approval_config_update",
                         dataType: 'json',
                         data: $("#signupForm").serialize()+"&id="+s.id,
                         //发送数据前
@@ -197,13 +197,13 @@
                 $('#btn_up').click(function () {
 
                     if($('#user_group').val() == ""){
-                        layer.msg("组名不可为空")
+                        layer.msg("组名不可为空");
                         return ;
                     }
 
                     $.ajax({
                         type: 'POST',
-                        url: "approval_config_add",
+                        url: server_context+"/approval_config_add",
                         dataType: 'json',
                         data: $("#signupForm").serialize(),
                         //发送数据前

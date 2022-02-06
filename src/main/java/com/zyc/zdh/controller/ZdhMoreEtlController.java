@@ -22,15 +22,16 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-public class ZdhMoreEtlController extends BaseController{
+public class ZdhMoreEtlController extends BaseController {
 
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
+    public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     EtlMoreTaskMapper etlMoreTaskMapper;
 
 
     /**
      * 多源ETL任务首页
+     *
      * @return
      */
     @RequestMapping("/etl_task_more_sources_index")
@@ -41,24 +42,26 @@ public class ZdhMoreEtlController extends BaseController{
 
     /**
      * 根据指定任务id,或者查询当前用户下的所有多源任务
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "/etl_task_more_detail", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_more_detail(String id) {
-        try{
-            EtlMoreTaskInfo etlMoreTaskInfo=etlMoreTaskMapper.selectByPrimaryKey(id);
+        try {
+            EtlMoreTaskInfo etlMoreTaskInfo = etlMoreTaskMapper.selectByPrimaryKey(id);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlMoreTaskInfo);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
     /**
      * 模糊查询多源ETL任务信息
+     *
      * @param etl_context 任务说明
-     * @param file_name 输出文件名/表名
+     * @param file_name   输出文件名/表名
      * @return
      */
     @RequestMapping(value = "/etl_task_more_list2", produces = "text/html;charset=UTF-8")
@@ -72,6 +75,7 @@ public class ZdhMoreEtlController extends BaseController{
 
     /**
      * 新增多源ETL任务首页
+     *
      * @return
      */
     @RequestMapping("/etl_task_more_sources_add_index")
@@ -82,28 +86,30 @@ public class ZdhMoreEtlController extends BaseController{
 
     /**
      * 新增多源ETL任务
+     *
      * @param etlMoreTaskInfo
      * @return
      */
     @RequestMapping("/etl_task_more_sources_add")
     @ResponseBody
     public String etl_task_more_sources_add(EtlMoreTaskInfo etlMoreTaskInfo) {
-        try{
+        try {
             etlMoreTaskInfo.setOwner(getUser().getId());
             etlMoreTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
             etlMoreTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlMoreTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlMoreTaskInfo);
             etlMoreTaskMapper.insert(etlMoreTaskInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
 
-        }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+        } catch (Exception e) {
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
     /**
      * 删除多源ETL任务
+     *
      * @param ids
      * @return
      */
@@ -111,24 +117,25 @@ public class ZdhMoreEtlController extends BaseController{
     @ResponseBody
     @Transactional
     public String etl_task_more_sources_delete(String[] ids) {
-        try{
-             etlMoreTaskMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
-        }catch (Exception e){
+        try {
+            etlMoreTaskMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
     /**
      * 更新多源ETL任务
+     *
      * @param etlMoreTaskInfo
      * @return
      */
     @RequestMapping("/etl_task_more_update")
     @ResponseBody
     public String etl_task_more_update(EtlMoreTaskInfo etlMoreTaskInfo) {
-        try{
+        try {
             String owner = getUser().getId();
             etlMoreTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlMoreTaskInfo.setIs_delete(Const.NOT_DELETE);
@@ -136,12 +143,11 @@ public class ZdhMoreEtlController extends BaseController{
             debugInfo(etlMoreTaskInfo);
 
             etlMoreTaskMapper.updateByPrimaryKey(etlMoreTaskInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
-        }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        } catch (Exception e) {
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
-
 
 
     private void debugInfo(Object obj) {
@@ -161,13 +167,13 @@ public class ZdhMoreEtlController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                    logger.error(error, e.getCause());
+                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+                    logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
             }
         }
     }

@@ -4,11 +4,11 @@
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
@@ -27,7 +27,7 @@
                   });
               }
           });
-      })
+      });
 
       $('#remove').click(function () {
 
@@ -77,7 +77,7 @@
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               top.layer.open({
                   type: 2,
                   title: 'Drools任务配置',
@@ -98,7 +98,7 @@
 
           },
           'click #copy': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               top.layer.open({
                   type: 2,
                   title: 'Drools任务配置',
@@ -123,8 +123,8 @@
                   btn: ['确定','取消'] //按钮
               }, function(index){
                   var ids = new Array();// 声明一个数组
-                  ids.push(row.id)
-                  deleteMs(ids)
+                  ids.push(row.id);
+                  deleteMs(ids);
                   layer.close(layer.index)
               }, function(){
 

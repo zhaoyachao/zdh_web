@@ -632,7 +632,7 @@
             //成功返回
             success: function (data) {
                 if(data.code != "200"){
-                    layer.msg(data.msg)
+                    layer.msg(data.msg);
                     return
                 }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引

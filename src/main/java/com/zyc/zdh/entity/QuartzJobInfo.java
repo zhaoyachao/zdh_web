@@ -72,6 +72,8 @@ public class QuartzJobInfo implements Serializable {
     private String notice_finish=Const.OFF;
     private String notice_timeout=Const.OFF;
 
+    private String misfire=Const.NOTHING;
+
     public String getNotice_error() {
         return notice_error;
     }
@@ -423,5 +425,13 @@ public class QuartzJobInfo implements Serializable {
 
     public void setTime_out(String time_out) {
         this.time_out = time_out;
+    }
+
+    public String getMisfire() {
+        return misfire;
+    }
+
+    public void setMisfire(String misfire) {
+        this.misfire = misfire;
     }
 }

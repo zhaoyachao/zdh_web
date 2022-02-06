@@ -34,6 +34,9 @@ public class SSHUtil {
 
     public String[] createUri(){
         String connectUri=String.format("ssh://%s:%s@%s",username,password,host);
+        if(privateKey!=null){
+            connectUri=String.format("ssh://%s@%s",username,host);
+        }
         return new String[]{connectUri,cmd};
     }
     /**
@@ -45,7 +48,11 @@ public class SSHUtil {
      */
     public SSHUtil(String username, String password, String host, int port) {
         this.username = username;
-        this.password = password;
+        if(password.startsWith("privateKey:")){
+            this.privateKey=password.substring(10);
+        }else{
+            this.password = password;
+        }
         this.host = host;
         this.port = port;
     }
@@ -146,12 +153,12 @@ public class SSHUtil {
             }
             return new String[]{sb2.toString(),sb.toString()};
         } catch (JSchException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
            throw e;
         } catch (IOException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
             throw e;
         }finally {
          logout();
@@ -189,12 +196,12 @@ public class SSHUtil {
             }
             return new String[]{sb2.toString(),sb.toString()};
         } catch (JSchException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
             throw e;
         } catch (IOException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
             throw e;
         }finally {
         }
@@ -228,12 +235,12 @@ public class SSHUtil {
             }
             return new String[]{sb2.toString(),sb.toString()};
         } catch (JSchException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
             throw e;
         } catch (IOException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
             throw e;
         }finally {
         }

@@ -6,6 +6,7 @@ import com.zyc.zdh.entity.TaskGroupLogInstance;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.job.MyJobBean;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.StringUtils;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -110,14 +111,17 @@ public class QuartzManager2 {
 			if (expression.contains("s") || expression.contains("m")
 					|| expression.contains("h") || expression.contains("d")) {
 				SimpleScheduleBuilder simpleScheduleBuilder = getSimpleScheduleBuilder(
-						expression, -1);
+						expression, -1,quartzJobInfo.getMisfire());
+
+
+
 				trigger = TriggerBuilder
 						.newTrigger()
 						.withPriority(Integer.valueOf(StringUtils.isEmpty(quartzJobInfo.getPriority())?"5":quartzJobInfo.getPriority())) //设置优先级
 						.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).startNow()
 						.withSchedule(simpleScheduleBuilder).build();
 			} else {
-				CronScheduleBuilder cronScheduleBuilder = getCronScheduleBuilder(expression);
+				CronScheduleBuilder cronScheduleBuilder = getCronScheduleBuilder(expression,quartzJobInfo.getMisfire());
 				trigger = TriggerBuilder
 						.newTrigger()
 						.withPriority(Integer.valueOf(StringUtils.isEmpty(quartzJobInfo.getPriority())?"5":quartzJobInfo.getPriority())) //设置优先级
@@ -137,18 +141,18 @@ public class QuartzManager2 {
 			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
 		} catch (SecurityException e) {
 			logger.error(e.getMessage());
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 			throw e;
 		} catch (SchedulerException e) {
 			logger.error(e.getMessage());
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 			throw e;
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 			throw e;
 		}
 
@@ -174,7 +178,7 @@ public class QuartzManager2 {
 								new TriggerKey(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()))
 						.withSchedule(
 								getSimpleScheduleBuilder(expression,
-										-1)).build();
+										-1,quartzJobInfo.getMisfire())).build();
 
 				/*
 				 * trigger=TriggerBuilder.newTrigger().startNow() .withIdentity(
@@ -193,7 +197,7 @@ public class QuartzManager2 {
 						.getTriggerBuilder()
 						.withIdentity(
 								new TriggerKey(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id())).startNow()
-						.withSchedule(getCronScheduleBuilder(expression))
+						.withSchedule(getCronScheduleBuilder(expression,quartzJobInfo.getMisfire()))
 						.build();
 				trigger.getJobDataMap().put(MyJobBean.TASK_ID,
 						quartzJobInfo.getJob_id());
@@ -203,8 +207,8 @@ public class QuartzManager2 {
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 		// 下方可以做一些更新数据库中任务的操作
 		quartzJobInfo.setStatus("runing");
@@ -240,8 +244,8 @@ public class QuartzManager2 {
 			quartzJobMapper.updateStatus(quartzJobInfo.getJob_id(),status);
 		} catch (SchedulerException e) {
 
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 		return quartzJobInfo;
 	}
@@ -262,8 +266,8 @@ public class QuartzManager2 {
 			quartzJobMapper.updateStatus2(tli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
 
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 		return qji;
 	}
@@ -284,8 +288,8 @@ public class QuartzManager2 {
 			quartzJobMapper.updateStatus2(tgli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
 
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 		return qji;
 	}
@@ -305,8 +309,8 @@ public class QuartzManager2 {
 			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 	}
 
@@ -321,8 +325,8 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().resumeJob(jobKey);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 	}
 
@@ -337,8 +341,8 @@ public class QuartzManager2 {
 			return quartzJobMapper.selectRunJobByOwner(owner,job_ids);
 
 		} catch (SchedulerException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 			throw e;
 		}
 	}
@@ -351,8 +355,8 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().shutdown();
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 	}
 
@@ -363,7 +367,7 @@ public class QuartzManager2 {
 	 * @return
 	 */
 	private SimpleScheduleBuilder getSimpleScheduleBuilder(String expression,
-			int count) {
+			int count, String misfire) {
 		String time = expression.substring(0, expression.length() - 1);
 		int interval = Integer.parseInt(time);
 		String timeType = expression.substring(expression.length() - 1,
@@ -403,16 +407,31 @@ public class QuartzManager2 {
 		simpleScheduleBuilder = simpleScheduleBuilder
 				.withMisfireHandlingInstructionNextWithRemainingCount();//故障转移由程序自己实现不依赖quartz故障转移
 				//.withMisfireHandlingInstructionNextWithRemainingCount();
+
+		if(misfire.equalsIgnoreCase(Const.NOTHING)){
+			simpleScheduleBuilder = simpleScheduleBuilder.withMisfireHandlingInstructionNextWithRemainingCount();
+		}else if(misfire.equalsIgnoreCase(Const.ALL_HISTORY)){
+			simpleScheduleBuilder = simpleScheduleBuilder.withMisfireHandlingInstructionFireNow();
+		}else if(misfire.equalsIgnoreCase(Const.LAST_HISTORY)){
+			logger.info("SimpleSchedule 调度器不支持最近一次历史任务执行,将使用默认执行策略");
+		}
+
 		return simpleScheduleBuilder;
 	}
 
-	private CronScheduleBuilder getCronScheduleBuilder(String expression) {
+	private CronScheduleBuilder getCronScheduleBuilder(String expression, String misfire) {
 
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
 				.cronSchedule(expression)
 				.withMisfireHandlingInstructionDoNothing();//故障转移由程序自己实现不依赖quartz故障转移
 				//.withMisfireHandlingInstructionDoNothing();
-
+		if(misfire.equalsIgnoreCase(Const.NOTHING)){
+			cronScheduleBuilder = cronScheduleBuilder.withMisfireHandlingInstructionDoNothing();
+		}else if(misfire.equalsIgnoreCase(Const.ALL_HISTORY)){
+			cronScheduleBuilder = cronScheduleBuilder.withMisfireHandlingInstructionIgnoreMisfires();
+		}else if(misfire.equalsIgnoreCase(Const.LAST_HISTORY)){
+			cronScheduleBuilder = cronScheduleBuilder.withMisfireHandlingInstructionFireAndProceed();
+		}
 		return cronScheduleBuilder;
 	}
 }

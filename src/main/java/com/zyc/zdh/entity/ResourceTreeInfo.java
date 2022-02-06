@@ -75,6 +75,8 @@ public class ResourceTreeInfo{
 
 	private String notice_title;//提示语
 
+	private String event_code;
+
 	public String getId() {
 		return id;
 	}
@@ -192,5 +194,13 @@ public class ResourceTreeInfo{
 
 	public void setNotice_title(String notice_title) {
 		this.notice_title = notice_title;
+	}
+
+	public String getEvent_code() {
+		return event_code;
+	}
+
+	public void setEvent_code(String event_code) {
+		this.event_code = event_code;
 	}
 }

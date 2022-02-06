@@ -24,7 +24,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 @Controller
-public class ZdhJdbcController extends BaseController{
+public class ZdhJdbcController extends BaseController {
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -49,8 +49,9 @@ public class ZdhJdbcController extends BaseController{
 
     /**
      * 模糊查询jdbc任务
+     *
      * @param etl_context jdbc任务说明
-     * @param id jdbc任务id
+     * @param id          jdbc任务id
      * @return
      */
     @RequestMapping(value = "/etl_task_jdbc_list", produces = "text/html;charset=UTF-8")
@@ -66,6 +67,7 @@ public class ZdhJdbcController extends BaseController{
 
     /**
      * 批量删除sql任务
+     *
      * @param ids
      * @return
      */
@@ -73,19 +75,21 @@ public class ZdhJdbcController extends BaseController{
     @ResponseBody
     @Transactional
     public String etl_task_jdbc_delete(String[] ids) {
-        try{
+        try {
             etlTaskJdbcMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
     /**
      * 新增sql 任务
+     *
      * @param etlTaskJdbcInfo
      * @return
      */
@@ -94,7 +98,7 @@ public class ZdhJdbcController extends BaseController{
     @Transactional
     public String etl_task_jdbc_add(EtlTaskJdbcInfo etlTaskJdbcInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
-        try{
+        try {
             String owner = getUser().getId();
             etlTaskJdbcInfo.setOwner(owner);
             etlTaskJdbcInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
@@ -115,16 +119,18 @@ public class ZdhJdbcController extends BaseController{
                 etlTaskUpdateLogs.setOwner(getUser().getId());
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
     /**
      * 更新sql 任务
+     *
      * @param etlTaskJdbcInfo
      * @return
      */
@@ -132,7 +138,7 @@ public class ZdhJdbcController extends BaseController{
     @ResponseBody
     public String etl_task_jdbc_update(EtlTaskJdbcInfo etlTaskJdbcInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
-        try{
+        try {
             String owner = getUser().getId();
             etlTaskJdbcInfo.setOwner(owner);
             etlTaskJdbcInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -153,11 +159,11 @@ public class ZdhJdbcController extends BaseController{
                 etlTaskUpdateLogs.setOwner(getUser().getId());
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e.getCause());
+
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -179,12 +185,12 @@ public class ZdhJdbcController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
             }
         }
     }

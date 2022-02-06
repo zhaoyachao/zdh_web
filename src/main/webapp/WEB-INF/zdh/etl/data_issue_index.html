@@ -106,63 +106,7 @@
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
-        })
-
-        $('#update_zdh').click(function () {
-
-            if ( $('#data_source_context').val() == '') {
-                layer.msg("数据源说明不能为空！");
-                return ;
-            }
-            if ( $('#data_source_type').val() == '') {
-                layer.msg("数据源类型不能为空！");
-                return ;
-            }
-            if ($('#data_source_type').val() == 'JDBC' && $('#driver').val() == '') {
-                layer.msg("数据源为JDBC时,驱动不能为空！");
-                return ;
-            }
-            if ($('#data_source_type').val() == 'JDBC' && $('#url').val() == '') {
-                layer.msg("数据源为JDBC时,连接串不能为空！");
-                return ;
-            }
-            if ($('#data_source_type').val() == 'JDBC' && $('#username').val() == '') {
-                layer.msg("数据源为JDBC时,用户不能为空！");
-                return ;
-            }
-            if ($('#data_source_type').val() == 'JDBC' && $('#password').val() == '') {
-                layer.msg("数据源为JDBC时,密码不能为空！");
-                return ;
-            }
-            $.ajax({
-                type: 'POST',
-                url: server_context+"/etl_task_update",
-                dataType: 'json',
-                data: $("#data_sources").serialize(),
-                //发送数据前
-                beforeSend: function () {
-                    // 禁用按钮防止重复提交
-                    $("#update_zdh").attr({disabled: "disabled"});
-                },
-                //成功返回
-                success: function (data) {
-                    $("#update_zdh").removeAttr('disabled');
-                    layer.close(layer.index)
-//                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-//                parent.layer.close(index); //再执行关闭
-                },
-                //处理完成
-                complete: function () {
-                    console.info("complete")
-                },
-                //报错
-                error: function (data) {
-                    console.info("error: " + data.responseText);
-                }
-            });
-
-
-        })
+        });
 
     })
 

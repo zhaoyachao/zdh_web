@@ -46,6 +46,29 @@
                 </div>
             </div>
 
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>资源配置</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="using_json6" style="width: 100%; height: 800px">
+                            <iframe id="ifm" src="" style="width: 100%; height: 100%" frameBorder="0"></iframe>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
 
 
@@ -106,44 +129,42 @@
 
                 } })
                 .bind('dblclick.jstree',function(e){
-                    console.info(e.target.id)
-                    var id=e.target.id.split("_anchor")[0]
-                    console.info("event:"+e.target.id.split("_anchor")[0])
+                    console.info(e.target.id);
+                    var id=e.target.id.split("_anchor")[0];
+                    console.info("event:"+e.target.id.split("_anchor")[0]);
                     $('#using_json').jstree("open_node", id);
                     var node = $('#using_json').jstree("get_node", id);
-                    console.info("id:"+node.id+",parent:"+node.parent+",text:"+node.text)
+                    console.info("id:"+node.id+",parent:"+node.parent+",text:"+node.text);
                     //$('#jstree').jstree('create_node', $(parent_node), { "text":new_node_text, "id":new_node_id }, position, false, false);
                     var parent_ary = $('#using_json').jstree("get_path", id);
-                    console.info("level:"+parent_ary.length)
+                    console.info("level:"+parent_ary.length);
                     var level=parent_ary.length;
 
 
                     var is_open = $('#using_json').jstree("is_open", id);
-                    console.info("is_open:"+is_open)
-
-                    layer.open({
-                        type: 2,
-                        title: '节点操作',
-                        shadeClose: false,
-                        resize: true,
-                        fixed: false,
-                        maxmin: true,
-                        shade: 0.1,
-                        area : ['45%', '60%'],
-                        //area: ['450px', '500px'],
-                        content: encodeURI(server_context+"/jstree_add_index?id="+node.id+"&text="+node.text+"&level="+level), //iframe的url
-                        end : function () {
-                            console.info("弹框结束")
-                            //$('#using_json').jstree(true).destroy();
-                            $('#using_json').jstree(true).refresh();
-                            //$('#using_json').jstree('load_node',node.parent);
-                            $('#using_json').jstree("open_node", id);
-                        }
-                    });
+                    console.info("is_open:"+is_open);
+                    $("#ifm").attr("src", encodeURI(server_context+"/jstree_add_index?id="+node.id+"&text="+node.text+"&level="+level));
+                    // layer.open({
+                    //     type: 2,
+                    //     title: '节点操作',
+                    //     shadeClose: false,
+                    //     resize: true,
+                    //     fixed: false,
+                    //     maxmin: true,
+                    //     shade: 0.1,
+                    //     area : ['45%', '60%'],
+                    //     //area: ['450px', '500px'],
+                    //     content: encodeURI(server_context+"/jstree_add_index?id="+node.id+"&text="+node.text+"&level="+level), //iframe的url
+                    //     end : function () {
+                    //         console.info("弹框结束");
+                    //         //$('#using_json').jstree(true).destroy();
+                    //         $('#using_json').jstree(true).refresh();
+                    //         //$('#using_json').jstree('load_node',node.parent);
+                    //         $('#using_json').jstree("open_node", id);
+                    //     }
+                    // });
 
                 });
-
-
 
             $('#search_input').keyup(function () {
                 $('#using_json').jstree(true).search($('#search_input').val());
@@ -152,6 +173,10 @@
 
         });
 
+        function refash(id){
+            $('#using_json').jstree(true).refresh();
+            $('#using_json').jstree("open_node", id);
+        }
     </script>
 
 </body>

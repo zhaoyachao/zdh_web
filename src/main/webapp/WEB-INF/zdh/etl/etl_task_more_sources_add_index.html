@@ -453,14 +453,14 @@
                     //成功返回
                     success: function (data) {
 
-                        var str = '<option value=\"\" hassubinfo=\"true\"></option>'
+                        var str = '<option value=\"\" hassubinfo=\"true\"></option>';
                         for (var i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
                         }
                         $('#data_sources_table_name_output').html(str);
                         $("#data_sources_table_name_output").trigger("chosen:updated");
                         $('#data_sources_table_name_output').chosen().on("change", function (evt, params) {
-                            console.info("'data_sources_table_name_output' event change set text 'data_sources_file_name_output'")
+                            console.info("'data_sources_table_name_output' event change set text 'data_sources_file_name_output'");
                             $('#data_sources_file_name_output').val($('#data_sources_table_name_output').val())
 
                         });
@@ -657,7 +657,7 @@
 
                             }else{
 
-                                $('#data_sources_file_name_output').val(data_sources_file_name_output)
+                                $('#data_sources_file_name_output').val(data_sources_file_name_output);
                                 $('#div_data_sources_table_name_output')[0].style.display='none';
                                 $('#div_data_sources_file_name_output')[0].style.display='block';
                             }

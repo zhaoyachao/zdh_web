@@ -8,7 +8,7 @@
             var wpd = $(window.parent.document);
             var mainContent = wpd.find('.J_mainContent');
             var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
             pageTabs.find(".J_menuTab.active").removeClass("active");
             mainContent.find("iframe").css("display", "none");
             if (thisIframe.length > 0) {	// 选项卡已打开
@@ -33,12 +33,12 @@
 
         }
 
-        var height=400
+        var height=400;
         if($(document.body).height()*0.8>height){
             height=$(document.body).height()*0.8
         }
-        $('#exampleTableEvents').attr("data-height",height)
-        $('#exampleTableEvents2').attr("data-height",height)
+        $('#exampleTableEvents').attr("data-height",height);
+        $('#exampleTableEvents2').attr("data-height",height);
 
         $('#add').click(function () {
 
@@ -46,7 +46,7 @@
             layer.confirm('一键部署', {
                 btn: ['确定','取消'] //按钮
             }, function(index){
-                openTabPage(server_context+"/server_add_index.html?id=-1", "一键部署")
+                openTabPage(server_context+"/server_add_index.html?id=-1", "一键部署");
                 layer.close(layer.index);
             }, function(){
 
@@ -62,7 +62,7 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success")
+                    console.info("success");
                     layer.msg(data.msg);
                 },
                 complete: function () {
@@ -80,7 +80,7 @@
         }
 
         function update(id,online) {
-            var context="上线"
+            var context="上线";
             if(online=="0"){
                 context="逻辑下线"
             }else if(online == "2") {
@@ -95,7 +95,7 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success")
+                    console.info("success");
                     layer.msg(context+data.msg);
                 },
                 complete: function () {
@@ -121,7 +121,7 @@
                     },
                     title:"信息"
                 }, function(index){
-                    openTabPage(server_context+"/server_add_index.html?id="+row.id, "更新模板")
+                    openTabPage(server_context+"/server_add_index.html?id="+row.id, "更新模板");
                     layer.close(layer.index)
                 }, function(index){
                 });
@@ -179,7 +179,7 @@
                     },
                     title:"上线节点"
                 }, function(index){
-                    update(row.id,"1")
+                    update(row.id,"1");
                     layer.close(layer.index)
                 }, function(index){
                 });
@@ -193,7 +193,7 @@
                     },
                     title:"逻辑下线节点"
                 }, function(index){
-                    update(row.id,"0")
+                    update(row.id,"0");
                     layer.close(layer.index)
                 }, function(index){
                 });
@@ -207,7 +207,7 @@
                     },
                     title:"物理下线节点"
                 }, function(index){
-                    update(row.id,"2")
+                    update(row.id,"2");
                     layer.close(layer.index)
                 }, function(index){
                 });

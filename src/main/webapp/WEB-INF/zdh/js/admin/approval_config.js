@@ -4,11 +4,11 @@
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
 
 
 
@@ -159,7 +159,7 @@
           var wpd = $(window.parent.document);
           var mainContent = wpd.find('.J_mainContent');
           var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-          var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+          var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
           pageTabs.find(".J_menuTab.active").removeClass("active");
           mainContent.find("iframe").css("display", "none");
           if (thisIframe.length > 0) {	// 选项卡已打开

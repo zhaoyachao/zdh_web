@@ -117,19 +117,19 @@
 
             $.ajax({
                 type: 'POST',
-                url: "getFileManager",
+                url: server_context+"/getFileManager",
                 async:false,
                 dataType: 'json',
                 data: '',
                 //成功返回
                 success: function (data) {
                     if(data.userName !='' ){
-                        $('#username').val(data.username)
-                        $('#password').val(data.password)
-                        $('#host').val(data.host)
-                        $('#port').val(data.port)
-                        $('#tmp_dir').val(data.tmp_dir)
-                        $('#nginx_dir').val(data.nginx_dir)
+                        $('#username').val(data.username);
+                        $('#password').val(data.password);
+                        $('#host').val(data.host);
+                        $('#port').val(data.port);
+                        $('#tmp_dir').val(data.tmp_dir);
+                        $('#nginx_dir').val(data.nginx_dir);
                     }
                 },
                 //处理完成
@@ -146,13 +146,13 @@
             $('#btn_up').click(function () {
 
                 if($('#password').val() != $('#confirm_password').val()){
-                    layer.msg("2次密码不一致,请检查密码")
+                    layer.msg("2次密码不一致,请检查密码");
                     return ;
                 }
 
                 $.ajax({
                     type: 'POST',
-                    url: "file_manager_up",
+                    url: server_context+"/file_manager_up",
                     dataType: 'json',
                     data: $("#signupForm").serialize(),
                     //发送数据前

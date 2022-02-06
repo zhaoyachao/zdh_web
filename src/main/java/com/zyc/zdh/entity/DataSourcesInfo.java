@@ -54,6 +54,12 @@ public class DataSourcesInfo{
     private Timestamp update_time;
 
     /**
+     * 数据组标识,多个逗号分割
+     */
+    private String tag_group_code;
+
+
+    /**
      * @return id
      */
     public String getId() {
@@ -227,5 +233,13 @@ public class DataSourcesInfo{
      */
     public void setUpdate_time(Timestamp update_time) {
         this.update_time = update_time;
+    }
+
+    public String getTag_group_code() {
+        return tag_group_code;
+    }
+
+    public void setTag_group_code(String tag_group_code) {
+        this.tag_group_code = tag_group_code;
     }
 }

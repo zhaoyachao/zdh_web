@@ -31,6 +31,8 @@ public class PermissionUserInfo implements Serializable {
 
 	private String signature;
 
+	private String tag_group_code;
+
 	public String getId() {
 		return id;
 	}
@@ -114,5 +116,13 @@ public class PermissionUserInfo implements Serializable {
 
 	public void setSignature(String signature) {
 		this.signature = signature;
+	}
+
+	public String getTag_group_code() {
+		return tag_group_code;
+	}
+
+	public void setTag_group_code(String tag_group_code) {
+		this.tag_group_code = tag_group_code;
 	}
 }

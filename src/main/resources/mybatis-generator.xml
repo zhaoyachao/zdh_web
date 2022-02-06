@@ -103,13 +103,46 @@
 <!--            <columnOverride column="LAST_CHECKIN_TIME" property="last_checkin_time" javaType="java.lang.Long"/>-->
 <!--        </table>-->
 
-            <table tableName="quartz_executor_info" domainObjectName="QuartzExecutorInfo" mapperName="QuartzExecutorMapper">
-                <property name="useActualColumnNames" value="true" />
-                <columnOverride column="id" property="id" javaType="java.lang.String"/>
-                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
-                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
-            </table>
+<!--            <table tableName="quartz_executor_info" domainObjectName="QuartzExecutorInfo" mapperName="QuartzExecutorMapper">-->
+<!--                <property name="useActualColumnNames" value="true" />-->
+<!--                <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--            </table>-->
+<!--        <table tableName="enum_info" domainObjectName="EnumInfo" mapperName="EnumMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
 
+<!--        <table tableName="param_info" domainObjectName="ParamInfo" mapperName="ParamMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="data_tag_info" domainObjectName="DataTagInfo" mapperName="DataTagMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="product_tag_info" domainObjectName="ProductTagInfo" mapperName="ProductTagMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="data_tag_group_info" domainObjectName="DataTagGroupInfo" mapperName="DataTagGroupMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
 
     </context>
 </generatorConfiguration>

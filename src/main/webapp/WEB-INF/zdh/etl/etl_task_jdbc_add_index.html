@@ -443,7 +443,7 @@
 
             //定义特定数据源展示的div
             function fileShow() {
-                console.info("fileShow")
+                console.info("fileShow");
                 //表字段
                 $('#div_data_sources_table_name_output')[0].style.display = 'none';
                 $('#div_data_sources_file_name_output')[0].style.display = 'block';
@@ -510,7 +510,7 @@
 
                 var postData = {
                     id: id,
-                }
+                };
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/etl_task_tables",
@@ -519,7 +519,7 @@
                     //成功返回
                     success: function (data) {
 
-                        var str = '<option value=\"\" hassubinfo=\"true\"></option>'
+                        var str = '<option value=\"\" hassubinfo=\"true\"></option>';
                         for (var i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
                         }
@@ -565,10 +565,10 @@
             init_data_sources();
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
-                console.info("新增按钮触发")
+                console.info("新增按钮触发");
                 //$('#data_sources_table_name_input').chosen();
                 //$('#data_sources_table_name_output').chosen();
-                $('#update_etl_task').hide()
+                $('#update_etl_task').hide();
                 $('#save_etl_task').show()
             } else {
 
@@ -725,7 +725,7 @@
                                     //成功返回
                                     success: function (data_table) {
 
-                                        var str = '<option value=\"\" hassubinfo=\"true\"></option>'
+                                        var str = '<option value=\"\" hassubinfo=\"true\"></option>';
                                         for (var i = 0; i < data_table.length; i++) {
                                             str += '<option value=\"' + data_table[i] + '\" hassubinfo=\"true\">' + data_table[i] + '</option>'
                                         }
@@ -755,24 +755,24 @@
 
                             } else {
 
-                                $('#data_sources_file_name_output').val(data_sources_file_name_output)
+                                $('#data_sources_file_name_output').val(data_sources_file_name_output);
                                 $('#div_data_sources_table_name_output')[0].style.display = 'none';
                                 $('#div_data_sources_file_name_output')[0].style.display = 'block';
                             }
 
                             //获取输出删除条件
                             var data_sources_clear_output = data[0].data_sources_clear_output;
-                            $('#data_sources_clear_output').val(data_sources_clear_output)
+                            $('#data_sources_clear_output').val(data_sources_clear_output);
 
                             //获取元数据信息
                             var company = data[0].company;
-                            $('#company').val(company)
+                            $('#company').val(company);
 
                             var section = data[0].section;
-                            $('#section').val(section)
+                            $('#section').val(section);
 
                             var service = data[0].service;
-                            $('#service').val(service)
+                            $('#service').val(service);
 
                             var update_context = data[0].update_context;
                             $('#update_context').val(update_context)

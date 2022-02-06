@@ -127,6 +127,16 @@
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">数据标识组</label>
+                                <div class="col-sm-8">
+                                    <select id="tag_group_code" name="tag_group_code"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2">
+                                        <option value="" mytype="">空</option>
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="form-group">
                                 <div class="col-sm-8 col-sm-offset-3">
@@ -178,17 +188,18 @@
 
             $('#user_group').chosen();
             $('#roles').chosen();
+            $('#tag_group_code').chosen();
 
             $.ajax({
                 type: 'get',
-                url: "user_group_list?enable=true",
+                url: server_context+"/user_group_list?enable=true",
                 async:false,
                 dataType: 'json',
                 data: '',
                 //成功返回
                 success: function (data) {
 
-                    var str = '<option value=\"\" hassubinfo=\"true\"></option>'
+                    var str = '<option value=\"\" hassubinfo=\"true\"></option>';
                     for (var i = 0; i < data.result.length; i++) {
                         str += '<option value=\"' + data.result[i].id + '\" hassubinfo=\"true\">' + data.result[i].name + '</option>'
                     }
@@ -206,17 +217,16 @@
                 }
             });
 
-
             $.ajax({
                 type: 'get',
-                url: "role_list?enable=true",
+                url: server_context+"/role_list?enable=true",
                 async:false,
                 dataType: 'json',
                 data: '',
                 //成功返回
                 success: function (data) {
 
-                    var str = '<option value=\"\" hassubinfo=\"true\"></option>'
+                    var str = '<option value=\"\" hassubinfo=\"true\"></option>';
                     for (var i = 0; i < data.length; i++) {
                         str += '<option value=\"' + data[i].id + '\" hassubinfo=\"true\">' + data[i].name + '</option>'
                     }
@@ -234,10 +244,37 @@
                 }
             });
 
+            $.ajax({
+                type: 'get',
+                url: server_context+"/data_tag_group_list",
+                async:false,
+                dataType: 'json',
+                data: '',
+                //成功返回
+                success: function (data) {
+
+                    var str = '<option value=\"\" hassubinfo=\"true\"></option>';
+                    for (var i = 0; i < data.length; i++) {
+                        str += '<option value=\"' + data[i].tag_group_code + '\" hassubinfo=\"true\">' + data[i].tag_group_name + '</option>'
+                    }
+                    $('#tag_group_code').html(str);
+                    $("#tag_group_code").trigger("chosen:updated");
+                    $('#tag_group_code').chosen();
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete data_tag_group_list")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+
             if(id != '-1'){
                 $.ajax({
                     type: 'POST',
-                    url: "user_detail",
+                    url: server_context+"/user_detail",
                     async:false,
                     dataType: 'json',
                     data: 'id='+id,
@@ -257,20 +294,26 @@
                                 $('#is_use_email').prop("checked",false)
                                 //$('#is_use_email').find("input[type='checkbox']").onoff();
                             }
-                            $('#phone').val(data.result.phone)
+                            $('#phone').val(data.result.phone);
                             if(data.result.is_use_phone != "on"){
                                 $('#is_use_phone').prop("checked",false)
                                 //$('#is_use_email').find("input[type='checkbox']").onoff();
                             }
                             if(data.result.user_group != ""){
-                                $("#user_group").val(data.result.user_group)
+                                $("#user_group").val(data.result.user_group);
                                 $("#user_group").trigger("chosen:updated");
                             }
 
                             if(data.result.roles != ""){
-                                $("#roles").val(data.result.roles.split(","))
+                                $("#roles").val(data.result.roles.split(","));
                                 $("#roles").trigger("chosen:updated");
                             }
+
+                            if(data.result.tag_group_code != ""){
+                                $("#tag_group_code").val(data.result.tag_group_code.split(","));
+                                $("#tag_group_code").trigger("chosen:updated");
+                            }
+
                         }
                     },
                     //处理完成
@@ -292,13 +335,13 @@
             $('#btn_up').click(function () {
 
                 if($('#password').val() != $('#confirm_password').val()){
-                    layer.msg("2次密码不一致,请检查密码")
+                    layer.msg("2次密码不一致,请检查密码");
                     return ;
                 }
 
                 $.ajax({
                     type: 'POST',
-                    url: "user_update",
+                    url: server_context+"/user_update",
                     dataType: 'json',
                     data: $("#signupForm").serialize()+"&id="+id,
                     //发送数据前

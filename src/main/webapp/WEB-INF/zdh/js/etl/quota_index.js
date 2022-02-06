@@ -88,11 +88,11 @@ function buildTable($el, cells, rows) {
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
       function getMyDate(str){
           var oDate = new Date(str),
               oYear = oDate.getFullYear(),
@@ -115,7 +115,7 @@ function buildTable($el, cells, rows) {
       window.operateEvents = {
 
           'click #search': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               top.layer.open({
                   type: 2,
                   title: 'ETL任务查看',

@@ -27,7 +27,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 @Controller
-public class ZdhSqlController extends BaseController{
+public class ZdhSqlController extends BaseController {
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -55,8 +55,9 @@ public class ZdhSqlController extends BaseController{
 
     /**
      * 模糊查询Sql任务
+     *
      * @param sql_context sql任务说明
-     * @param id sql任务id
+     * @param id          sql任务id
      * @return
      */
     @RequestMapping(value = "/sql_task_list", produces = "text/html;charset=UTF-8")
@@ -72,6 +73,7 @@ public class ZdhSqlController extends BaseController{
 
     /**
      * 批量删除sql任务
+     *
      * @param ids
      * @return
      */
@@ -79,19 +81,20 @@ public class ZdhSqlController extends BaseController{
     @ResponseBody
     @Transactional
     public String sql_task_delete(String[] ids) {
-        try{
+        try {
             sqlTaskMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+        } catch (Exception e) {
+            logger.error("删除异常:{}", e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
     /**
      * 新增sql 任务
+     *
      * @param sqlTaskInfo
      * @return
      */
@@ -100,7 +103,7 @@ public class ZdhSqlController extends BaseController{
     @Transactional
     public String sql_task_add(SqlTaskInfo sqlTaskInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
-        try{
+        try {
             String owner = getUser().getId();
             sqlTaskInfo.setOwner(owner);
             debugInfo(sqlTaskInfo);
@@ -122,16 +125,18 @@ public class ZdhSqlController extends BaseController{
                 etlTaskUpdateLogs.setOwner(getUser().getId());
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
     /**
      * 更新sql 任务
+     *
      * @param sqlTaskInfo
      * @return
      */
@@ -139,7 +144,7 @@ public class ZdhSqlController extends BaseController{
     @ResponseBody
     public String sql_task_update(SqlTaskInfo sqlTaskInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
-        try{
+        try {
             String owner = getUser().getId();
             sqlTaskInfo.setOwner(owner);
             sqlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -160,28 +165,30 @@ public class ZdhSqlController extends BaseController{
                 etlTaskUpdateLogs.setOwner(getUser().getId());
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
 
     /**
      * 加载元数据信息
+     *
      * @return
      */
-    @RequestMapping(value="/load_meta_databases", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/load_meta_databases", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String load_meta_databases() {
-        JSONObject js=new JSONObject();
-        if(!SecurityUtils.getSubject().isPermitted("function:load_meta_databases()")){
-            js.put("data","您没有权限访问,请联系管理员添加权限");
+        JSONObject js = new JSONObject();
+        if (!SecurityUtils.getSubject().isPermitted("function:load_meta_databases()")) {
+            js.put("data", "您没有权限访问,请联系管理员添加权限");
             return js.toJSONString();
         }
-        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper,"").getZdh_url();
+        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper, "").getZdh_url();
         try {
             String databases = HttpUtil.postJSON(url + "/show_databases", new JSONObject().toJSONString());
 
@@ -215,17 +222,18 @@ public class ZdhSqlController extends BaseController{
                     metaDatabaseMapper.insert(meta_database_info);
                 }
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"同步成功", null);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "同步成功", null);
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"同步失败", e);
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "同步失败", e);
         }
     }
 
     /**
      * 查询当前数据仓库的所有数据库
+     *
      * @return
      */
     @RequestMapping("/show_databases")
@@ -259,8 +267,8 @@ public class ZdhSqlController extends BaseController{
             return jsa.toJSONString();
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
 
         }
 
@@ -270,21 +278,22 @@ public class ZdhSqlController extends BaseController{
 
     /**
      * 此服务停用
+     *
      * @return
      */
     @RequestMapping("/show_tables")
     @ResponseBody
     public String show_tables() {
 
-        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper,"").getZdh_url();
+        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper, "").getZdh_url();
         try {
             String tableNames = HttpUtil.postJSON(url + "/show_tables", "");
 
             return tableNames;
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
         }
 
 
@@ -294,6 +303,7 @@ public class ZdhSqlController extends BaseController{
 
     /**
      * 获取表结构说明
+     *
      * @param table
      * @return
      */
@@ -301,15 +311,15 @@ public class ZdhSqlController extends BaseController{
     @ResponseBody
     public String desc_table(String table) {
 
-        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper,"").getZdh_url();
+        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper, "").getZdh_url();
         try {
             JSONObject p = new JSONObject();
             p.put("table", table);
             String desc_table = HttpUtil.postJSON(url + "/desc_table", p.toJSONString());
             return desc_table;
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
         }
 
 
@@ -334,13 +344,13 @@ public class ZdhSqlController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                    logger.error(error, e.getCause());
+                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+                    logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}", e);
             }
         }
     }

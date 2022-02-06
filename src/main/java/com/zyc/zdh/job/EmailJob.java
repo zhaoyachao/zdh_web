@@ -151,8 +151,8 @@ public class EmailJob {
                     alarmSmsMapper.insert(alarmSmsInfo);
                 }
             }catch (Exception e){
-                String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                logger.error(error, e.getCause());
+                String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                logger.error(error, e);
                 logger.error("发送告警短信失败",e.getCause());
             }
 
@@ -194,7 +194,7 @@ public class EmailJob {
             ni.setMsg_type("文件下载");
             ni.setMsg_title("文件下载:"+zdhDownloadInfo.getJob_context());
             ni.setMsg("文件以生成,请尽快下载, 文件由任务【"+zdhDownloadInfo.getJob_context()+"】于"+zdhDownloadInfo.getCreate_time()
-                    +"产生, 文件唯一码: "+zdhDownloadInfo.getId()+", 请前往系统=>下载管理页面进行下载");
+                    +"产生, 文件唯一码: "+zdhDownloadInfo.getId()+", 请前往系统=>下载管理页面进行下载,时间:"+DateUtil.getCurrentTime());
             ni.setIs_see(Const.FALSE);
             ni.setOwner(zdhDownloadInfo.getOwner());
             ni.setCreate_time(new Timestamp(new Date().getTime()));
@@ -219,9 +219,6 @@ public class EmailJob {
 
     }
 
-
-
-
     public static void apply_notice(){
         logger.debug("加载申请通知信息");
         ApplyMapper applyMapper = (ApplyMapper) SpringContext.getBean("applyMapper");
@@ -239,7 +236,7 @@ public class EmailJob {
                 NoticeInfo ni=new NoticeInfo();
                 ni.setMsg_type("审批");
                 ni.setMsg_title("审批通知:"+applyInfo.getApply_context());
-                ni.setMsg("你有一个审批单,需要处理,单号: "+applyInfo.getId()+",申请原因:"+ applyInfo.getReason());
+                ni.setMsg("你有一个审批单,需要处理,单号: "+applyInfo.getId()+",申请原因:"+ applyInfo.getReason()+",时间:"+DateUtil.getCurrentTime());
                 ni.setIs_see(Const.FALSE);
                 ni.setOwner(applyInfo.getOwner());
                 ni.setCreate_time(new Timestamp(new Date().getTime()));
@@ -261,5 +258,25 @@ public class EmailJob {
 //            }
         }
         logger.debug("完成加载申请通知信息");
+    }
+
+    public static void send_notice(String owner, String title, String msg){
+        try{
+            NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
+            NoticeInfo ni=new NoticeInfo();
+            ni.setMsg_type("告警");
+            ni.setMsg_title(title);
+            ni.setMsg_url("");
+            ni.setMsg(msg);
+            ni.setIs_see(Const.FALSE);
+            ni.setOwner(owner);
+            ni.setCreate_time(new Timestamp(new Date().getTime()));
+            ni.setUpdate_time(new Timestamp(new Date().getTime()));
+            noticeMapper.insert(ni);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
+            logger.error("接口无权限告警异常",e.getCause());
+        }
     }
 }

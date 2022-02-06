@@ -15,6 +15,7 @@ import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -272,7 +274,7 @@ public class ZdhDispatchController extends BaseController {
                 tgli.setLast_task_log_id(null);
                 tgli.setNext_time(null);
                 tgli.setStatus(JobStatus.NON.getValue());//单独的线程扫描状态时创建并且pre_tasks 不为空的任务
-                tgli.setConcurrency("0");
+                tgli.setConcurrency(concurrency);
                 tgli.setRun_time(new Timestamp(new Date().getTime()));
                 tgli.setUpdate_time(new Timestamp(new Date().getTime()));
                 tgli.setCur_time(new Timestamp(dates.get(i).getTime()));
@@ -298,8 +300,8 @@ public class ZdhDispatchController extends BaseController {
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"执行成功", null);
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"执行失败", e);
         }
@@ -324,8 +326,8 @@ public class ZdhDispatchController extends BaseController {
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"执行成功", result);
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"执行失败", e);
         }
     }
@@ -394,14 +396,13 @@ public class ZdhDispatchController extends BaseController {
                 result= ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"调度时间超过最大限制",null);
                 return result;
             }
-
         }
         try {
             //添加调度器并更新quartzjobinfo
             quartzManager2.addTaskToQuartz(dti);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
             result=ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"调度开启失败",e);
 
         }
@@ -474,9 +475,21 @@ public class ZdhDispatchController extends BaseController {
 
     @RequestMapping(value="/dispatch_executor_list", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String dispatch_executor_list(QuartzJobInfo quartzJobInfo) {
+    public String dispatch_executor_list(QrtzSchedulerState qrtzSchedulerState) {
         try{
-            List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectAll();
+
+            Example example=new Example(qrtzSchedulerState.getClass());
+            Example.Criteria criteria=example.createCriteria();
+            if(!StringUtils.isEmpty(qrtzSchedulerState.getInstance_name())){
+                criteria.orLike("instance_name", getLikeCondition(qrtzSchedulerState.getInstance_name()));
+            }
+            Example.Criteria criteria2=example.createCriteria();
+            if(!StringUtils.isEmpty(qrtzSchedulerState.getStatus())){
+                criteria.andEqualTo("status", qrtzSchedulerState.getStatus());
+            }
+            example.and(criteria2);
+
+            List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(example);
             return JSON.toJSONString(qrtzSchedulerStates);
         }catch (Exception e){
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", e);
@@ -519,13 +532,13 @@ public class ZdhDispatchController extends BaseController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                    logger.error(error, e.getCause());
+                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                    logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}", e);
             }
         }
     }

@@ -66,11 +66,11 @@ public class SetUpJob {
             System.out.println(out[0]+"=="+out[1]);
             sshUtil.logout();
         } catch (IOException e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
             JobCommon2.insertLog(sti.getTemplete_id(),sti.getId(),"INFO",e.getMessage());
             setStatus(sti.getId(),"2");
         } catch (JSchException e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
             JobCommon2.insertLog(sti.getTemplete_id(),sti.getId(),"INFO",e.getMessage());
             setStatus(sti.getId(),"2");
         }

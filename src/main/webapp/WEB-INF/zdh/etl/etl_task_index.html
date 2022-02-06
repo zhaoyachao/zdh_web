@@ -113,7 +113,7 @@
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
-        })
+        });
 
         $('#update_zdh').click(function () {
 
@@ -154,7 +154,7 @@
                 //成功返回
                 success: function (data) {
                     if(data.code != "200"){
-                        layer.msg(data.msg)
+                        layer.msg(data.msg);
                         return
                     }
                     layer.close(layer.index)

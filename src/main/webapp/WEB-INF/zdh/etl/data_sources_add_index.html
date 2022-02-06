@@ -12,6 +12,7 @@
     <meta name="description" content="ZDH 数据新增">
 
     <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
@@ -125,6 +126,17 @@
                                 <input type="password" class="form-control" id="password" name="password">
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">数据标识组</label>
+                            <div class="col-sm-8">
+                                <select id="tag_group_code" name="tag_group_code"
+                                        data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="hr-line-dashed"></div>
 
                         <div class="form-group">
@@ -162,6 +174,8 @@
 <!-- Toastr script -->
 <script src="js/plugins/toastr/toastr.min.js"></script>
 
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
 <!-- Bootstrap table -->
 <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
 <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
@@ -172,8 +186,39 @@
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 <script>
     $(document).ready(function () {
-
+        $('#tag_group_code').chosen();
         $('#data_sources_params').hide();
+
+        $.ajax({
+            type: 'post',
+            url: server_context+"/user_tag_group_code",
+            async:false,
+            dataType: 'json',
+            data: '',
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    parent.layer.msg(data.msg);
+                    return ;
+                }
+
+                var str = '<option value=\"\" hassubinfo=\"true\"></option>';
+                for (var i = 0; i < data.result.length; i++) {
+                    str += '<option value=\"' + data.result[i].tag_group_code + '\" hassubinfo=\"true\">' + data.result[i].tag_group_name + '</option>'
+                }
+                $('#tag_group_code').html(str);
+                $("#tag_group_code").trigger("chosen:updated");
+                $('#tag_group_code').chosen();
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete data_tag_group_list")
+            },
+            //报错
+            error: function (data) {
+                console.info("error: " + data.responseText);
+            }
+        });
 
         var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
         var params = url.substr(1);//去掉问号
@@ -189,7 +234,7 @@
         });
 
         $.get(server_context+'/data_sources_type', function(res) {
-            $('#data_source_type').html("")
+            $('#data_source_type').html("");
             for (i = 0; i < res.length; i++) {
                 $('#data_source_type').append("<option value='"+res[i]+"'>"+res[i]+"</option>");
             }
@@ -198,23 +243,24 @@
                 console.info("新增按钮触发")
             }else{
                //根据id 获取数据源信息
-                console.info("更新按钮触发")
+                console.info("更新按钮触发");
                 $.ajax({
                     type: 'POST',
-                    url: "data_sources_info",
+                    url: server_context+"/data_sources_info",
                     dataType: 'json',
                     async: false,
                     data: 'id='+s.id,
                     //成功返回
                     success: function (data) {
-                        $("#id").val(data.id)
-                        $("#data_source_context").val(data.data_source_context)
-                        $("#data_source_type").val(data.data_source_type)
-                        $("#driver").val(data.driver)
-                        $("#url").val(data.url)
-                        $("#username").val(data.username)
-                        $("#password").val(data.password)
-
+                        $("#id").val(data.id);
+                        $("#data_source_context").val(data.data_source_context);
+                        $("#data_source_type").val(data.data_source_type);
+                        $("#driver").val(data.driver);
+                        $("#url").val(data.url);
+                        $("#username").val(data.username);
+                        $("#password").val(data.password);
+                        $("#tag_group_code").val(data.tag_group_code.split(','));
+                        $("#tag_group_code").trigger("chosen:updated");
                     },
                     //处理完成
                     complete: function () {
@@ -226,15 +272,15 @@
                     }
                 });
             }
-        })
+        });
 
         if (s.id == -1) {
-            console.info("新增按钮触发")
-            $('#save_zdh').show()
+            console.info("新增按钮触发");
+            $('#save_zdh').show();
             $('#update_zdh').hide()
         }else{
-            console.info("更新按钮触发")
-            $('#save_zdh').hide()
+            console.info("更新按钮触发");
+            $('#save_zdh').hide();
             $('#update_zdh').show()
 
         }
@@ -415,10 +461,10 @@
     function resovle_params() {
 
         if($('#data_sources_params').attr("is_hide")=="false"){
-            $('#data_sources_params').hide()
+            $('#data_sources_params').hide();
             $('#data_sources_params').attr("is_hide","true")
         }else{
-            $('#data_sources_params').show()
+            $('#data_sources_params').show();
             $('#data_sources_params').attr("is_hide","false")
         }
 

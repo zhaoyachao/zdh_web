@@ -134,21 +134,21 @@
 
             $.ajax({
                 type: 'POST',
-                url: "getUserInfo",
+                url: server_context+"/getUserInfo",
                 async:false,
                 dataType: 'json',
                 data: '',
                 //成功返回
                 success: function (data) {
                     if(data.result.userName !='' ){
-                        $('#userName').val(data.result.userName)
-                        $('#email').val(data.result.email)
-                        $('#password').val("")
+                        $('#userName').val(data.result.userName);
+                        $('#email').val(data.result.email);
+                        $('#password').val("");
                         if(data.result.is_use_email != "on"){
                             $('#is_use_email').prop("checked",false)
                             //$('#is_use_email').find("input[type='checkbox']").onoff();
                         }
-                        $('#phone').val(data.result.phone)
+                        $('#phone').val(data.result.phone);
                         if(data.result.is_use_phone != "on"){
                             $('#is_use_phone').prop("checked",false)
                             //$('#is_use_email').find("input[type='checkbox']").onoff();
@@ -169,13 +169,13 @@
             $('#btn_up').click(function () {
 
                 if($('#password').val() != $('#confirm_password').val()){
-                    layer.msg("2次密码不一致,请检查密码")
+                    layer.msg("2次密码不一致,请检查密码");
                     return ;
                 }
 
                 $.ajax({
                     type: 'POST',
-                    url: "user",
+                    url: server_context+"/user",
                     dataType: 'json',
                     data: $("#signupForm").serialize(),
                     //发送数据前

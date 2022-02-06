@@ -30,9 +30,9 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 						className)
 				&& !LockedAccountException.class.getName().equals(className)
 		        && !AuthenticationException.class.getName().equals(className)) { // 用户被锁定
-			// logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause()); // 非验证异常抛出
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			// logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}", e); // 非验证异常抛出
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 		return super.onLoginFailure(token, e, request, response);
 	}

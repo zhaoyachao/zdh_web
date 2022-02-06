@@ -136,7 +136,7 @@
                 deleteMs(ids)
             }
 
-        })
+        });
 
         function deleteMs(ids) {
             $.ajax({
@@ -145,8 +145,8 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success")
-                    layer.msg(data.msg)
+                    console.info("success");
+                    layer.msg(data.msg);
                     $('#search').click()
                 },
                 error: function (data) {
@@ -165,7 +165,7 @@
                 dataType: "json"
             });
 
-        })
+        });
 
         $('#search').click()
 

@@ -11,5 +11,4 @@ import tk.mybatis.mapper.common.Mapper;
  * <br>注意此接口存在泛型，不能被spring和mybatis 扫描到
  */
 public interface BaseMapper<T> extends Mapper<T> {
-
 }

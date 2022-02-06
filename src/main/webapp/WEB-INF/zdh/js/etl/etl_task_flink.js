@@ -4,11 +4,11 @@
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
@@ -22,7 +22,7 @@
               //area: ['450px', '500px'],
               content: server_context+"/etl_task_flink_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束")
+                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/etl_task_flink_list?"+$("#sql_task_form").serialize()+"&tm="+new Date(),
@@ -85,7 +85,7 @@
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               top.layer.open({
                   type: 2,
                   title: 'SQL任务配置',
@@ -106,7 +106,7 @@
 
           },
           'click #copy': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               top.layer.open({
                   type: 2,
                   title: 'SQL任务配置',

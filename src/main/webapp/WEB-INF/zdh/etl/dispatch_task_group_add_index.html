@@ -71,6 +71,8 @@
                                             <div class="node nodegroupcss" data-type="group">任务组</div>
                                             <div class="node nodejdbccss" data-type="jdbc">JDBC</div>
                                             <div class="node nodehdfscss" data-type="hdfs">HDFS</div>
+                                            <div class="node nodehttpcss" data-type="http">HTTP</div>
+                                            <div class="node nodeemailcss" data-type="email">EMAIL</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight">
@@ -145,6 +147,19 @@
                                     <option value="1" mytype="" selected = "selected">顺时间执行</option>
                                     <option value="2" mytype="">执行一次</option>
                                    <!-- <option value="3" mytype="">重复执行</option>-->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">恢复策略</label>
+                            <div class="col-sm-10">
+                                <select id="misfire" name="misfire" data-placeholder="选择恢复策略..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="0" mytype="" selected = "selected">无</option>
+                                    <option value="1" mytype="">执行所有历史错过任务</option>
+                                    <option value="2" mytype="">执行最近一次错过历史</option>
+                                    <!-- <option value="3" mytype="">重复执行</option>-->
                                 </select>
                             </div>
                         </div>
@@ -495,6 +510,12 @@
             case "hdfs":
                 doubleclick_hdfs(id);
                 break;
+            case "http":
+                $(id).dblclick(function () {layer.msg("开发中");});
+                break;
+            case "email":
+                $(id).dblclick(function () {layer.msg("开发中");});
+                break;
         }
     }
 
@@ -598,7 +619,7 @@
     function doubleclick_group(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
-            var div = $(this)
+            var div = $(this);
             var etl_task_id=div.attr("etl_task_id");
             var url=server_context+'/group_detail.html';
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
@@ -699,7 +720,7 @@
     function doubleclick_hdfs(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
-            var div = $(this)
+            var div = $(this);
             var etl_context=div.attr("etl_context");
             var url=server_context+'/hdfs_detail.html';
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
@@ -728,7 +749,7 @@
                 end: function () {
                     console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
@@ -758,7 +779,7 @@
         var ojson={
             tasks:[],
             line:[]
-        }
+        };
         //服务器
         $("#m1 .tasks").each(function (idx, elem) {
             var $elem = $(elem);
@@ -786,7 +807,7 @@
                 positionX: parseInt($elem.css("left"), 10),
                 positionY: parseInt($elem.css("top"), 10),
                 type:$elem.data('type')
-            }
+            };
             ojson.tasks.push(param)
         });
 
@@ -837,7 +858,9 @@
             $('#div_time_diff')[0].style.display = action;
         }
 
-        quartTimeShow("none");
+        $('#use_quartz_time').iCheck('check');
+        quartTimeShow("block");
+        customerTimeShow("none");
 
         $('#use_quartz_time').on('ifChecked', function (event) {
             customerTimeShow("none");
@@ -862,52 +885,16 @@
             data: server_context+'/user_names'
         });
 
-        // var alarm_accountSuggest = $("#alarm_account").bsSuggest({
-        //     indexId: 2, //data.value 的第几个数据，作为input输入框的内容
-        //     indexKey: 1, //data.value 的第几个数据，作为input输入框的内容
-        //     allowNoKeyword: false, //是否允许无关键字时请求数据
-        //     multiWord: true, //以分隔符号分割的多关键字支持
-        //     separator: ",", //多关键字支持时的分隔符，默认为空格
-        //     getDataMethod: "url", //获取数据的方式，总是从 URL 获取
-        //     effectiveFieldsAlias: {
-        //         Id: "序号",
-        //         Keyword: "用户名"
-        //     },
-        //     showHeader: true,
-        //     url: server_context+'/user_names?username=',
-        //     /*优先从url ajax 请求 json 帮助数据，注意最后一个参数为关键字请求参数*/
-        //     //jsonp: 'callback',
-        //     /*如果从 url 获取数据，并且需要跨域，则该参数必须设置*/
-        //     processData: function (json) { // url 获取数据时，对数据的处理，作为 getData 的回调函数
-        //         var i, len, data = {
-        //             value: []
-        //         };
-        //         if (json.result.length == 0) {
-        //             return false;
-        //         }
-        //         len = json.result.length;
-        //
-        //         for (i = 0; i < len; i++) {
-        //             data.value.push({
-        //                 "Id": (i + 1),
-        //                 "Keyword": json.result[i]
-        //             });
-        //         }
-        //         console.info(data);
-        //         return data;
-        //     }
-        // });
-
     });
 
     function closeTab() {
         // var currentWidth = $(this).parents('.J_menuTab').width();
         var wpd = $(window.parent.document);
         var mainContent = wpd.find('.J_mainContent');
-        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
         var currentTab=pageTabs.find(".J_menuTab.active");
-        var closeTabId = currentTab.data('id')
-        mainContent.find('.J_iframe')
+        var closeTabId = currentTab.data('id');
+        mainContent.find('.J_iframe');
 
         // 当前元素处于活动状态
         if (currentTab.hasClass('active')) {
@@ -1030,287 +1017,9 @@
                 });
             }
 
-            function init_etl_task_more_sources(){
-                $.ajax({
-                    type: 'POST',
-                    async: false,
-                    url: server_context+"/etl_task_more_list2",
-                    dataType: 'json',
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
-                        }
-                        $("#etl_task_id").chosen("destroy");
-                        $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen();
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("etl_task_more_complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("etl_task_more_error: " + data.responseText);
-                    }
-                });
-            }
-
-            //初始化数据源
-            function init_sql_task_sources(){
-                $.ajax({
-                    type: 'POST',
-                    async: false,
-                    url: server_context+"/sql_task_list",
-                    dataType: 'json',
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].sql_context + "\" hassubinfo=\"true\">" + data[i].sql_context + "</option>"
-                        }
-                        $("#etl_task_id").chosen("destroy");
-                        $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen();
-
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("sql_task_complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("sql_task_error: " + data.responseText);
-                    }
-                });
-            }
-
-            function init_etl_task_drools_sources(){
-                $.ajax({
-                    type: 'POST',
-                    async: false,
-                    url: server_context+"/etl_task_drools_list2",
-                    dataType: 'json',
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
-                        }
-                        $("#etl_task_id").chosen("destroy");
-                        $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen();
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("etl_task_drools_complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("etl_task_drools_error: " + data.responseText);
-                    }
-                });
-            }
-
-            function init_etl_task_ssh_sources(){
-                $.ajax({
-                    type: 'POST',
-                    async: false,
-                    url: server_context+"/etl_task_ssh_list",
-                    dataType: 'json',
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].ssh_context + "\" hassubinfo=\"true\">" + data[i].ssh_context + "</option>"
-                        }
-                        $("#etl_task_id").chosen("destroy");
-                        $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen();
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("ssh_task_complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("ssh_task_error: " + data.responseText);
-                    }
-                });
-            }
-
-            function init_etl_task_flink_sources(){
-                $.ajax({
-                    type: 'POST',
-                    async: false,
-                    url: server_context+"/etl_task_flink_list",
-                    dataType: 'json',
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (let i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].sql_context + "\" hassubinfo=\"true\">" + data[i].sql_context + "</option>"
-                        }
-                        $("#etl_task_id").chosen("destroy");
-                        $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen();
-
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("etl_task_flink_complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("etl_task_flink_error: " + data.responseText);
-                    }
-                });
-            }
-
-            function init_etl_task_jdbc_sources(){
-                $.ajax({
-                    type: 'POST',
-                    async: false,
-                    url: server_context+"/etl_task_jdbc_list",
-                    dataType: 'json',
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (let i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
-                        }
-                        $("#etl_task_id").chosen("destroy");
-                        $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen();
-
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("etl_task_jdbc_complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("etl_task_jdbc_error: " + data.responseText);
-                    }
-                });
-            }
-            //初始化依赖调度任务数据
-            function init_job_sources(){
-                $.ajax({
-                    type: 'POST',
-                    url: server_context+"/dispatch_task_list2",
-                    dataType: 'json',
-                    async: false,
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (let i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].job_id + "\" mytype=\"" + data[i].job_id + "\" hassubinfo=\"true\">" + data[i].job_context + "</option>"
-                        }
-                        //ETL单任务下拉框
-                        $('#job_ids').html(str);
-                        $('#job_ids').chosen().on("change", function (evt, params) {
-                            $("#job_ids").trigger("chosen:updated");
-                        });
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-                });
-
-                $.ajax({
-                    type: 'POST',
-                    url: server_context+"/data_sources_list",
-                    dataType: 'json',
-                    async: false,
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
-                        }
-                        //输出数据源类型下拉框
-                        $('#data_sources_choose_output').html(str);
-
-                        $('#data_sources_choose_output').chosen().on("change", function (evt, params) {
-                            $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
-                            $("#data_sources_choose_output").trigger("chosen:updated");
-                            if ($('#data_sources_choose_output').find("option:selected").attr("mytype") == 'JDBC') {
-                                init_table_name_output($('#data_sources_choose_output').val());
-
-                                $('#div_data_sources_table_name_output')[0].style.display='block';
-                                $('#div_data_sources_file_name_output')[0].style.display='block';
-                            } else{
-                                $('#div_data_sources_file_name_output')[0].style.display='block';
-                                $('#div_data_sources_table_name_output')[0].style.display='none';
-
-                            }
-                        });
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-                });
-            }
-
-
-            // $('#more_task').chosen().on("change", function (evt, params) {
-            //     if($("#more_task").val()=="多源ETL"){
-            //         console.info("选中多源ETL");
-            //         init_etl_task_more_sources();
-            //     }else if($("#more_task").val()=="单源ETL"){
-            //         console.info("选中单源ETL");
-            //         init_etl_task_sources()
-            //     }else if($("#more_task").val()=="SQL") {
-            //         console.info("选中SQL");
-            //         init_sql_task_sources()
-            //     }else if($("#more_task").val()=="外部JAR"){
-            //         console.info("选中外部JAR")
-            //     }else if($("#more_task").val()=="Drools") {
-            //         console.info("选中Drools");
-            //         init_etl_task_drools_sources()
-            //     }else if($("#more_task").val()=="SSH"){
-            //         console.info("选中SSH");
-            //         init_etl_task_ssh_sources()
-            //     }else if($("#more_task").val()=="FLINK"){
-            //         console.info("选中FLINK");
-            //         init_etl_task_flink_sources()
-            //     }else if($("#more_task").val()=="JDBC"){
-            //         console.info("选中JDBC");
-            //         init_etl_task_jdbc_sources()
-            //     }
-            // });
-
             //启动数据源select 初始化函数
             $('#etl_task_id').chosen().on("change", function (evt, params) {
-                var etl_context=$('#etl_task_id').find("option:selected").attr("mytype")
+                var etl_context=$('#etl_task_id').find("option:selected").attr("mytype");
                 var etl_id=$('#etl_task_id').val();
                 addRow($('#more_task').val(),etl_id,etl_context);
                 add_node_zdh($('#more_task').val(),etl_id,etl_context)
@@ -1369,6 +1078,7 @@
 
             $('#job_model').chosen();
             $('#last_status').chosen();
+            $('#misfire').chosen();
 
             var last_time = {
                 elem: '#last_time',
@@ -1432,38 +1142,6 @@
                         var job_context=data[0].job_context;
                         $("#job_context").val(job_context);
 
-                        // var more_task=data[0].more_task;
-                        // $("#more_task").val(more_task);
-                        // $("#more_task").trigger("chosen:updated");
-
-                        //如果是多源任务 初始化多源任务下拉框
-                        // if(more_task=="多源ETL"){
-                        //     init_etl_task_more_sources()
-                        // }
-                        // if(more_task=="SQL"){
-                        //     init_sql_task_sources()
-                        // }
-                        // if(more_task=="外部JAR"){
-                        //
-                        // }
-                        // if(more_task=="Drools") {
-                        //     console.info("选中Drools");
-                        //     init_etl_task_drools_sources()
-                        // }
-                        // if(more_task=="SSH") {
-                        //     console.info("选中SSH");
-                        //     init_etl_task_ssh_sources()
-                        // }
-                        //
-                        // if(more_task=="FLINK") {
-                        //     console.info("选中FLINK");
-                        //     init_etl_task_flink_sources()
-                        // }
-
-                        // var etl_task_id=data[0].etl_task_id;
-                        // //初始化输入数据源select 组件
-                        // $("#etl_task_id").val(etl_task_id);
-                        // $("#etl_task_id").trigger("chosen:updated");
 
                         //任务类型
                         var job_type=data[0].job_type;
@@ -1480,6 +1158,8 @@
                         console.info("use_quartz_time:"+use_quartz_time);
                         if(use_quartz_time=="on"){
                             $('#use_quartz_time').iCheck('check');
+                        }else{
+                            $('#use_quartz_time').iCheck('uncheck');
                         }
 
                         var time_diff=data[0].time_diff;
@@ -1508,6 +1188,11 @@
                         //初始化输入数据源select 组件
                         $("#job_model").val(job_model);
                         $("#job_model").trigger("chosen:updated");
+
+                        var misfire=data[0].misfire;
+                        //初始化输入数据源select 组件
+                        $("#misfire").val(misfire);
+                        $("#misfire").trigger("chosen:updated");
 
                         var plan_count=data[0].plan_count;
                         $("#plan_count").val(plan_count);
@@ -1695,10 +1380,7 @@
 
         var alarm_str = "&alarm_account="+window.addressIdMagicSuggest.getValue();
 
-
-
         $("[name='alarm_account[]']").remove();
-
 
 
         $.ajax({
@@ -1737,7 +1419,7 @@
         });
 
 
-    })
+    });
 
     $('#update_dispatch_task').click(function () {
 
@@ -1752,26 +1434,26 @@
         var etl_context=$('#etl_task_id').find("option:selected").text();
 
         if($('#job_context').val()==''){
-            layer.msg("调度说明不可为空")
+            layer.msg("调度说明不可为空");
             return false
         }
 
         if($('#expr').val()==''){
-            layer.msg("调度任务表达式不可为空")
+            layer.msg("调度任务表达式不可为空");
             return false
         }
 
         if($('#start_time').val()==''){
-            layer.msg("调度开始时间不可为空")
+            layer.msg("调度开始时间不可为空");
             return false
         }
 
         if($('#end_time').val()==''){
-            layer.msg("调度结束时间不可为空")
+            layer.msg("调度结束时间不可为空");
             return false
         }
         if($('#job_model').val()==''){
-            layer.msg("调度模式不可为空")
+            layer.msg("调度模式不可为空");
             return false
         }
 
@@ -1916,7 +1598,7 @@
         }
 
 
-        var guid_str = guid()
+        var guid_str = guid();
         // newFlag == 1的数据为新规的数据
         $('#exampleTableEvents').bootstrapTable('insertRow', {
             index: index,

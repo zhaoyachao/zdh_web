@@ -2,6 +2,7 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
@@ -10,6 +11,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.JobStatus;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.monitor.Server;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.util.DateUtil;
@@ -35,9 +37,9 @@ import java.util.Iterator;
 import java.util.List;
 
 @Controller
-public class ZdhMonitorController extends BaseController{
+public class ZdhMonitorController extends BaseController {
 
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
+    public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     QuartzJobMapper quartzJobMapper;
     @Autowired
@@ -71,9 +73,9 @@ public class ZdhMonitorController extends BaseController{
         //    int total_task_num = quartzJobMapper.selectCountByOwner(getUser().getId());
 
         List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwner(getUser().getId());
-        if(echartsList == null || echartsList.size()==0){
+        if (echartsList == null || echartsList.size() == 0) {
             echartsList = new ArrayList<>();
-            EtlEcharts ee=new EtlEcharts();
+            EtlEcharts ee = new EtlEcharts();
             ee.setError("0");
             ee.setFinish("0");
             ee.setRunning("0");
@@ -117,13 +119,13 @@ public class ZdhMonitorController extends BaseController{
     @Transactional
     public String task_logs_delete(String[] ids) {
 
-        try{
+        try {
             System.out.println("开始删除任务日志");
             taskLogInstanceMapper.deleteByIds(ids);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
-        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
@@ -133,76 +135,78 @@ public class ZdhMonitorController extends BaseController{
     @Transactional
     public String task_group_logs_delete(String[] ids) {
 
-        try{
+        try {
             System.out.println("开始删除任务组日志");
             tglim.deleteByIds(ids);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
-        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
     /**
      * 杀死单个任务
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "/kill", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String killJob(String id){
+    public String killJob(String id) {
         // check_dep,wait_retry 状态 直接killed
         // dispatch,etl 状态 kill
-        try{
+        try {
             taskLogInstanceMapper.updateStatusById2(id);
-            TaskLogInstance tli=taskLogInstanceMapper.selectByPrimaryKey(id);
-            JobCommon2.insertLog(tli,"INFO","接受到杀死请求,开始进行杀死操作...");
-            if(tli.getStatus().equalsIgnoreCase("killed")){
-                JobCommon2.insertLog(tli,"INFO","任务已杀死");
+            TaskLogInstance tli = taskLogInstanceMapper.selectByPrimaryKey(id);
+            JobCommon2.insertLog(tli, "INFO", "接受到杀死请求,开始进行杀死操作...");
+            if (tli.getStatus().equalsIgnoreCase("killed")) {
+                JobCommon2.insertLog(tli, "INFO", "任务已杀死");
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"杀死任务成功", null);
-        }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"杀死任务失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "杀死任务成功", null);
+        } catch (Exception e) {
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "杀死任务失败", e);
         }
 
     }
 
     /**
      * 杀死任务组
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "/killJobGroup", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String killJobGroup(String id){
+    public String killJobGroup(String id) {
         // check_dep,wait_retry,create,check_dep_finish 状态 直接killed
         // dispatch,etl 状态 kill
-        try{
+        try {
             tglim.updateStatusById2(id);
             taskLogInstanceMapper.updateStatusByGroupId(id);
-            TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(id);
-            JobCommon2.insertLog(tgli,"INFO","接受到杀死请求,开始进行杀死操作...");
-            if(tgli.getStatus().equalsIgnoreCase("killed")){
-                JobCommon2.insertLog(tgli,"INFO","任务已杀死");
+            TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(id);
+            JobCommon2.insertLog(tgli, "INFO", "接受到杀死请求,开始进行杀死操作...");
+            if (tgli.getStatus().equalsIgnoreCase("killed")) {
+                JobCommon2.insertLog(tgli, "INFO", "任务已杀死");
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"杀死任务组成功", null);
-        }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"杀死任务组失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "杀死任务组成功", null);
+        } catch (Exception e) {
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "杀死任务组失败", e);
         }
     }
 
     @RequestMapping(value = "/retryJob", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String retryJob(String id,String new_version){
+    public String retryJob(String id, String new_version) {
         //taskLogInstanceMapper.updateStatusById2("kill",id);
-        try{
-            TaskLogInstance tli=taskLogInstanceMapper.selectByPrimaryKey(id);
+        try {
+            TaskLogInstance tli = taskLogInstanceMapper.selectByPrimaryKey(id);
             tli.setIs_retryed("1");
             taskLogInstanceMapper.updateByPrimaryKey(tli);
-            QuartzJobInfo qji=quartzJobMapper.selectByPrimaryKey(tli.getJob_id());
+            QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(tli.getJob_id());
 
             //重试最新版-拉去quartJobInfo 中的shell 及参数
-            if(new_version.equalsIgnoreCase("true")){
+            if (new_version.equalsIgnoreCase("true")) {
                 tli.setIs_script(qji.getIs_script());
                 tli.setJob_ids(qji.getJob_ids());
                 tli.setJump_script(qji.getJump_script());
@@ -222,7 +226,7 @@ public class ZdhMonitorController extends BaseController{
                 tli.setNotice_timeout(qji.getNotice_timeout());
             }
 
-            String new_id=SnowflakeIdWorker.getInstance().nextId()+"";
+            String new_id = SnowflakeIdWorker.getInstance().nextId() + "";
             tli.setIs_retryed("0");
             tli.setId(new_id);
             tli.setCount(0);
@@ -231,36 +235,35 @@ public class ZdhMonitorController extends BaseController{
             tli.setUpdate_time(new Timestamp(new Date().getTime()));
             tli.setStatus(JobStatus.CREATE.getValue());
             taskLogInstanceMapper.insert(tli);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"重试任务成功", null);
-        }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"重试任务失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "重试任务成功", null);
+        } catch (Exception e) {
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "重试任务失败", e);
         }
 
     }
 
     /**
-     *
      * @param id
      * @param new_version
-     * @param sub_tasks 重试的子任务,不可为空
+     * @param sub_tasks   重试的子任务,不可为空
      * @return
      */
     @RequestMapping(value = "/retryJobGroup", produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional
-    public String retryJobGroup(String id,String new_version,String[] sub_tasks){
+    public String retryJobGroup(String id, String new_version, String[] sub_tasks) {
         //taskLogInstanceMapper.updateStatusById2("kill",id);
-        try{
-            if(sub_tasks == null || sub_tasks.length<1){
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"重试子任务不可为空", "");
+        try {
+            if (sub_tasks == null || sub_tasks.length < 1) {
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "重试子任务不可为空", "");
             }
-            TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(id);
+            TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(id);
             tgli.setIs_retryed("1");
             tglim.updateByPrimaryKey(tgli);
-            QuartzJobInfo qji=quartzJobMapper.selectByPrimaryKey(tgli.getJob_id());
+            QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(tgli.getJob_id());
 
             //重试最新版-拉去quartJobInfo 中的shell 及参数
-            if(new_version.equalsIgnoreCase("true")){
+            if (new_version.equalsIgnoreCase("true")) {
                 tgli.setIs_script(qji.getIs_script());
                 tgli.setJob_ids(qji.getJob_ids());
                 tgli.setJump_script(qji.getJump_script());
@@ -287,12 +290,12 @@ public class ZdhMonitorController extends BaseController{
 //        tglim.insert(tgli);
 //        JobCommon2.sub_task_log_instance(tgli);
 
-            JobCommon2.chooseJobBean(qji,2,tgli,sub_tasks);
+            JobCommon2.chooseJobBean(qji, 2, tgli, sub_tasks);
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"重试任务组成功", null);
-        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "重试任务组成功", null);
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"重试任务组失败", e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "重试任务组失败", e);
         }
     }
 
@@ -304,8 +307,8 @@ public class ZdhMonitorController extends BaseController{
         try {
             return JSON.toJSONString(quartzManager2.getScheduleTask(owner));
         } catch (SchedulerException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
             return JSON.toJSONString(new JSONObject());
         }
     }
@@ -314,31 +317,31 @@ public class ZdhMonitorController extends BaseController{
     @RequestMapping(value = "/getSparkMonitor", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getSparkMonitor(String executor) {
-        ZdhHaInfo zdhHaInfo=zdhHaInfoMapper.selectByPrimaryKey(executor);
+        ZdhHaInfo zdhHaInfo = zdhHaInfoMapper.selectByPrimaryKey(executor);
 
         return JSON.toJSONString(zdhHaInfo);
     }
 
     @RequestMapping(value = "/getTotalNum", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String getTotalNum(){
+    public String getTotalNum() {
 
-       int allTaskNum=taskLogInstanceMapper.allTaskNum();
-       int allDispatchNum=taskLogInstanceMapper.allDispatchNum();
-       int allDispatchRunNum=taskLogInstanceMapper.allDispatchRunNum();
-       int successNum=taskLogInstanceMapper.successNum();
-       int errorNum=taskLogInstanceMapper.errorNum();
-       int alarmNum=taskLogInstanceMapper.alarmNum();
+        int allTaskNum = taskLogInstanceMapper.allTaskNum();
+        int allDispatchNum = taskLogInstanceMapper.allDispatchNum();
+        int allDispatchRunNum = taskLogInstanceMapper.allDispatchRunNum();
+        int successNum = taskLogInstanceMapper.successNum();
+        int errorNum = taskLogInstanceMapper.errorNum();
+        int alarmNum = taskLogInstanceMapper.alarmNum();
 
-       JSONObject js=new JSONObject();
-       js.put("allTaskNum",allTaskNum);
-       js.put("allDispatchNum",allDispatchNum);
-       js.put("allDispatchRunNum",allDispatchRunNum);
-       js.put("successNum",successNum);
-       js.put("errorNum",errorNum);
-       js.put("alarmNum",alarmNum);
+        JSONObject js = new JSONObject();
+        js.put("allTaskNum", allTaskNum);
+        js.put("allDispatchNum", allDispatchNum);
+        js.put("allDispatchRunNum", allDispatchRunNum);
+        js.put("successNum", successNum);
+        js.put("errorNum", errorNum);
+        js.put("alarmNum", alarmNum);
 
-       return js.toJSONString();
+        return js.toJSONString();
 
     }
 
@@ -361,22 +364,22 @@ public class ZdhMonitorController extends BaseController{
 
     @RequestMapping(value = "/task_log_instance_list", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String task_log_instance_list(String status,String group_id) {
+    public String task_log_instance_list(String status, String group_id) {
 
         List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs2(getUser().getId(), null,
-                null, status,group_id);
+                null, status, group_id);
 
         return JSON.toJSONString(list);
     }
 
     @RequestMapping(value = "/task_group_log_instance_list", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String task_group_log_instance_list(String start_time, String end_time, String status,String job_id) {
+    public String task_group_log_instance_list(String start_time, String end_time, String status, String job_id) {
 
         System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
 
         List<TaskGroupLogInstance> list = tglim.selectByTaskLogs2(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
-                Timestamp.valueOf(end_time + " 23:59:59"), status,job_id);
+                Timestamp.valueOf(end_time + " 23:59:59"), status, job_id);
 
         return JSON.toJSONString(list);
     }
@@ -396,7 +399,7 @@ public class ZdhMonitorController extends BaseController{
     @RequestMapping(value = "/task_group_log_instance_list3", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String task_group_log_instance_list3(String[] ids) {
-        List<TaskGroupLogInstance> list = tglim.selectByIds(ids,null);
+        List<TaskGroupLogInstance> list = tglim.selectByIds(ids, null);
         return JSON.toJSONString(list);
     }
 
@@ -450,7 +453,7 @@ public class ZdhMonitorController extends BaseController{
         StringBuilder sb = new StringBuilder();
         while (it.hasNext()) {
             ZdhLogs next = it.next();
-            String info = "调度任务ID:" + next.getJob_id()+",任务实例ID:"+task_log_id + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
+            String info = "调度任务ID:" + next.getJob_id() + ",任务实例ID:" + task_log_id + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
             sb.append(info + "\r\n");
         }
 
@@ -473,7 +476,7 @@ public class ZdhMonitorController extends BaseController{
 
     @RequestMapping(value = "/download_log", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public void download_log(HttpServletResponse response, String job_id, String task_log_id){
+    public void download_log(HttpServletResponse response, String job_id, String task_log_id) {
         String levels = "'DEBUG','WARN','INFO','ERROR'";
         File path = null;
         response.setHeader("content-type", "text/html;charset=UTF-8");
@@ -482,7 +485,7 @@ public class ZdhMonitorController extends BaseController{
         OutputStream os = null;
         ByteArrayInputStream bis = null;
         try {
-            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("日志"+task_log_id+".log", "UTF-8"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("日志" + task_log_id + ".log", "UTF-8"));
             byte[] buff = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
 
             List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id, task_log_id, null, null, levels);
@@ -490,7 +493,7 @@ public class ZdhMonitorController extends BaseController{
             StringBuilder sb = new StringBuilder();
             while (it.hasNext()) {
                 ZdhLogs next = it.next();
-                String info = "调度任务ID:" + next.getJob_id()+",任务实例ID:"+task_log_id + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
+                String info = "调度任务ID:" + next.getJob_id() + ",任务实例ID:" + task_log_id + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
                 sb.append(info + "\r\n");
             }
             os = response.getOutputStream();
@@ -503,24 +506,33 @@ public class ZdhMonitorController extends BaseController{
             }
 
 
-
         } catch (UnsupportedEncodingException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
         } catch (IOException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
-        }finally {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
+        } finally {
             try {
                 bis.close();
                 os.close();
             } catch (IOException e) {
-                String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                logger.error(error, e.getCause());
+                String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+                logger.error(error, e);
             }
         }
 
 
+    }
+
+    @White()
+    @RequestMapping(value = "/system_monitor", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getInfo() throws Exception {
+        Server server = new Server();
+        server.copyTo();
+
+        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "成功", server);
     }
 
     private void debugInfo(Object obj) {
@@ -540,13 +552,13 @@ public class ZdhMonitorController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                    logger.error(error, e.getCause());
+                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+                    logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
             }
         }
     }

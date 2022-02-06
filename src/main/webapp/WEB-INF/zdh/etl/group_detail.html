@@ -173,10 +173,10 @@
                         for (var i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i].job_id + "\" mytype=\"" +  data[i].job_id + "\" hassubinfo=\"true\">" + data[i].job_context + "</option>"
                         }
-                        $('#group_job').empty()
+                        $('#group_job').empty();
                         $("#group_job").chosen("destroy");
                         $('#group_job').html(str);
-                        $('#group_job').chosen()
+                        $('#group_job').chosen();
 
 
                     },
@@ -193,12 +193,12 @@
 
             }
 
-            $('#depend_level').chosen()
-            $('#group_job').chosen()
+            $('#depend_level').chosen();
+            $('#group_job').chosen();
             init_job_sources();
 
             if(s["etl_task_id"] != '-1'){
-                console.info("更新触发")
+                console.info("更新触发");
                 $("#group_job").val(s["etl_task_id"]);
                 $("#group_job").trigger("chosen:updated");
                 $("#depend_level").val(s["depend_level"]);
@@ -206,7 +206,7 @@
                 if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
                     $("#time_out").val(s["time_out"]);
                 }
-                var is_disenable=s['is_disenable']
+                var is_disenable=s['is_disenable'];
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
                 }
@@ -235,7 +235,7 @@
             "depend_level":depend_level,
             "time_out": time_out
         }
-        console.info("job_detail:"+JSON.stringify(data))
+        console.info("job_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
         parent.layer.close(index); //再执行关闭

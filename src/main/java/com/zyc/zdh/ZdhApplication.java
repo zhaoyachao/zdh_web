@@ -3,6 +3,7 @@ package com.zyc.zdh;
 
 import com.zyc.zdh.annotation.MyMark;
 import com.zyc.zdh.controller.LoginController;
+import com.zyc.zdh.util.DateUtil;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,9 +22,10 @@ import org.springframework.context.annotation.FilterType;
 //@EnableAspectJAutoProxy exposeProxy:暴露代理对象,proxyTargetClass强制使用cglib代理
 public class ZdhApplication {
 
+	public static String start_time= DateUtil.getCurrentTime();
 	public static void main(String[] args) {
 		SpringApplication springApplication = new SpringApplication(ZdhApplication.class);
-		System.out.println("ApplicationRun......run....");
+		System.out.println("ZDH......run....");
 		ApplicationContext context=springApplication.run(args);
 		LoginController.context = context;
 	}

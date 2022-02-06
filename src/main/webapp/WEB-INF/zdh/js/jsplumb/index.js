@@ -22,7 +22,7 @@ $(document).ready(function(){
             var top = parseInt(ui.offset.top - $(this).offset().top);
             var tp=ui.draggable[0].dataset.type;
                     i++;
-                    cls_str="node node"+tp+"css tasks"
+                    cls_str="node node"+tp+"css tasks";
                     var id = guid2();
                     $(this).append('<div class="'+cls_str+'" style="position: absolute" id="' + id + '" data-type="'+tp+'" data-id=" " >' + $(ui.helper).html() + '</div>');
                     $("#" + id).css("left", left).css("top", top);
@@ -31,7 +31,7 @@ $(document).ready(function(){
                     jsPlumb.draggable(id);
                     jsPlumb.makeTarget(id, {
                         anchor: "Continuous"
-                    })
+                    });
                     $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
                     doubleclick("#" + id,tp);
         }
@@ -54,12 +54,12 @@ $(document).ready(function(){
         fillStyle: "#ccc",
         radius: 10,
         lineWidth:6 ,
-    }
+    };
 
     // 鼠标悬浮在端点上的样式
     var hoverPaintStyle = {
         fillStyle: "#aaa",
-    }
+    };
 
     //设置连接端点和连接线
     var hollowCircle = {
@@ -96,7 +96,7 @@ $(document).ready(function(){
     });
     //节点小图标的单击事件
     $("#m1").on("click", "img",function () {
-        var div=$(this).parent()
+        var div=$(this).parent();
         layer.confirm('确定要删除此节点吗', {
             btn: ['确定','取消'] //按钮
         }, function(index){
@@ -152,6 +152,12 @@ $(document).ready(function(){
                 break;
             case "hdfs":
                 doubleclick_hdfs(id);
+                break;
+            case "http":
+                $(id).dblclick(function () {layer.msg("开发中");});
+                break;
+            case "email":
+                $(id).dblclick(function () {layer.msg("开发中");});
                 break;
         }
     }
@@ -345,23 +351,23 @@ $(document).ready(function(){
     function doubleclick_hdfs(id) {
         $(id).dblclick(function () {
             var text = $(this).text();
-            var div = $(this)
+            var div = $(this);
             var etl_context=div.attr("etl_context");
             //alert(etl_context)
             var url=server_context+'/hdfs_detail.html';
             if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
                 url=url+"?etl_context=-1"
             }else{
-                var hdfs_url=div.attr("url")
-                var url_type=div.attr("url_type")
-                var username=div.attr("username")
-                var password=div.attr("password")
-                var hdfs_path=div.attr("hdfs_path")
-                var depend_level = div.attr("depend_level")
-                var hdfs_mode=div.attr("hdfs_mode")
-                var time_out = div.attr("time_out")
-                $("#hdfs_url_text").val(hdfs_url)
-                $("#hdfs_path_text").val(hdfs_path)
+                var hdfs_url=div.attr("url");
+                var url_type=div.attr("url_type");
+                var username=div.attr("username");
+                var password=div.attr("password");
+                var hdfs_path=div.attr("hdfs_path");
+                var depend_level = div.attr("depend_level");
+                var hdfs_mode=div.attr("hdfs_mode");
+                var time_out = div.attr("time_out");
+                $("#hdfs_url_text").val(hdfs_url);
+                $("#hdfs_path_text").val(hdfs_path);
                 url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&username="+username+"&password="+password+"&depend_level="+depend_level +"&time_out="+time_out
                 +"$hdfs_mode="+hdfs_mode
             }
@@ -372,13 +378,13 @@ $(document).ready(function(){
                 maxmin: true,
                 content: encodeURI(url),
                 end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val())
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     //alert(etl_task_info.jdbc_sql)
                     div.attr("url",etl_task_info.url);
                     div.attr("url_type",etl_task_info.url_type);
@@ -386,14 +392,14 @@ $(document).ready(function(){
                     div.attr("password",etl_task_info.password);
                     div.attr("hdfs_path",etl_task_info.hdfs_path);
                     div.attr("etl_context",etl_task_info.etl_context);
-                    div.attr("depend_level",etl_task_info.depend_level)
-                    div.attr("hdfs_mode",etl_task_info.hdfs_mode)
+                    div.attr("depend_level",etl_task_info.depend_level);
+                    div.attr("hdfs_mode",etl_task_info.hdfs_mode);
                     div.attr("time_out",etl_task_info.time_out);
                     //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto")
-                    div.css("display","inline-block")
-                    div.css("*display","inline")
-                    div.css("*zoom","1")
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
                 }
             });

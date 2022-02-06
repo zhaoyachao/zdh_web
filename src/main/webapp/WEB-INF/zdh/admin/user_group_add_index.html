@@ -99,13 +99,13 @@
             $('#btn_up').click(function () {
 
                 if($('#user_group').val() == ""){
-                    layer.msg("组名不可为空")
+                    layer.msg("组名不可为空");
                     return ;
                 }
 
                 $.ajax({
                     type: 'POST',
-                    url: "user_group_add",
+                    url: server_context+"/user_group_add",
                     dataType: 'json',
                     data: $("#signupForm").serialize(),
                     //发送数据前

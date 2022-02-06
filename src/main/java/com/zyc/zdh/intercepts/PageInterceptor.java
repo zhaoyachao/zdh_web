@@ -190,8 +190,8 @@ public class PageInterceptor implements Interceptor {
 				throw new PropertyException("dialect property is not found!");
 			} catch (PropertyException e) {
 				// TODO Auto-generated catch block
-				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-				logger.error(error, e.getCause());
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+				logger.error(error, e);
 			}
 		}
 		pageSqlId = p.getProperty("pageSqlId");
@@ -200,8 +200,8 @@ public class PageInterceptor implements Interceptor {
 				throw new PropertyException("pageSqlId property is not found!");
 			} catch (PropertyException e) {
 				// TODO Auto-generated catch block
-				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-				logger.error(error, e.getCause());
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+				logger.error(error, e);
 			}
 		}
 	}

@@ -1,7 +1,6 @@
 $(function () {
 
-    $('#exampleTableEvents').attr("data-height",$(document.body).height()*0.6)
-    $('#exampleTableEvents').attr("data-height",$(document.body).height()*0.6)
+    $('#exampleTableEvents').attr("data-height",$(document.body).height()*0.6);
     // var barChart = echarts.init(document.getElementById("echarts-bar-chart"));
     var pieChart = echarts.init(document.getElementById("echarts-pie-chart"));
 
@@ -14,9 +13,9 @@ $(function () {
             var error_datas = new Array();// 声明一个数组
             var finish_datas = new Array();// 声明一个数组
             for (i = 0; i < res.length; i++) {
-                etl_date_datas.push(res[i].etl_date)
-                running_datas.push(res[i].running)
-                error_datas.push(res[i].error)
+                etl_date_datas.push(res[i].etl_date);
+                running_datas.push(res[i].running);
+                error_datas.push(res[i].error);
                 finish_datas.push(res[i].finish)
             }
 
@@ -82,9 +81,9 @@ $(function () {
             var error_datas = new Array();// 声明一个数组
             var finish_datas = new Array();// 声明一个数组
             for (i = 0; i < res.length; i++) {
-                etl_date_datas.push(res[i].etl_date)
-                running_datas.push(res[i].running)
-                error_datas.push(res[i].error)
+                etl_date_datas.push(res[i].etl_date);
+                running_datas.push(res[i].running);
+                error_datas.push(res[i].error);
                 finish_datas.push(res[i].finish)
             }
 

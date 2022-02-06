@@ -17,8 +17,8 @@ public interface AccountDao {
 	@Select(value="select * from account_info where user_name=#{userName} and user_password=#{password}")
 	@Results({@Result(column="id",property="id"),
 			@Result(column="user_name",property="userName"),
-		@Result(column="user_password",property="password"),
-		@Result(column="email",property="email"),
+		    @Result(column="user_password",property="password"),
+		    @Result(column="email",property="email"),
 			@Result(column="is_use_email",property="is_use_email"),
 			@Result(column="phone",property="phone"),
 			@Result(column="is_use_phone",property="is_use_phone"),
@@ -26,7 +26,8 @@ public interface AccountDao {
 			@Result(column="enable",property="enable"),
 			@Result(column="user_group",property="user_group"),
 			@Result(column="roles",property="roles"),
-			@Result(column="signature",property="signature")
+			@Result(column="signature",property="signature"),
+			@Result(column="tag_group_code",property="tag_group_code")
 	})
 	public User findByPw(User user);
 	
@@ -37,7 +38,8 @@ public interface AccountDao {
 			@Result(column="email",property="email"),
 			@Result(column="is_use_email",property="is_use_email"),
 			@Result(column="phone",property="phone"),
-			@Result(column="is_use_phone",property="is_use_phone")
+			@Result(column="is_use_phone",property="is_use_phone"),
+			@Result(column="tag_group_code",property="tag_group_code")
 	})
 	public List<User> findList(User user);
 
@@ -52,7 +54,8 @@ public interface AccountDao {
 			@Result(column="enable",property="enable"),
 			@Result(column="user_group",property="user_group"),
 			@Result(column="roles",property="roles"),
-			@Result(column="signature",property="signature")
+			@Result(column="signature",property="signature"),
+			@Result(column="tag_group_code",property="tag_group_code")
 	})
 	public List<User> findByUserName(User user);
 
@@ -71,7 +74,8 @@ public interface AccountDao {
 			@Result(column="email",property="email"),
 			@Result(column="is_use_email",property="is_use_email"),
 			@Result(column="phone",property="phone"),
-			@Result(column="is_use_phone",property="is_use_phone")
+			@Result(column="is_use_phone",property="is_use_phone"),
+			@Result(column="tag_group_code",property="tag_group_code")
 	})
 	public User selectByPrimaryKey(@Param("id") String id) ;
 
@@ -92,7 +96,8 @@ public interface AccountDao {
 			@Result(column="email",property="email"),
 			@Result(column="is_use_email",property="is_use_email"),
 			@Result(column="phone",property="phone"),
-			@Result(column="is_use_phone",property="is_use_phone")
+			@Result(column="is_use_phone",property="is_use_phone"),
+			@Result(column="tag_group_code",property="tag_group_code")
 	})
 	public List<User> findByUserName2(@Param("user_names")String[] user_names);
 

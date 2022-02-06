@@ -3,7 +3,7 @@
     // Example Bootstrap Table Events
     // ------------------------------
     (function () {
-        var height=400
+        var height=400;
         if($(document.body).height()*0.8>height){
             height=$(document.body).height()*0.8
         }

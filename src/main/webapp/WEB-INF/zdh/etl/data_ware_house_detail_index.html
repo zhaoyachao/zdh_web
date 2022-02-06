@@ -253,16 +253,16 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            $('#file_type_input').chosen()
-            $('#encoding_input').chosen()
-            $('#header_input').chosen()
-            $('#file_type_output').chosen()
-            $('#encoding_output').chosen()
-            $('#header_output').chosen()
+            $('#file_type_input').chosen();
+            $('#encoding_input').chosen();
+            $('#header_input').chosen();
+            $('#file_type_output').chosen();
+            $('#encoding_output').chosen();
+            $('#header_output').chosen();
 
             //定义特定数据源展示的div
             function fileShow() {
-                console.info("fileShow")
+                console.info("fileShow");
                 $('#div_data_sources_file_name_input')[0].style.display = 'block';
             }
 
@@ -332,12 +332,12 @@
                 })
             }
 
-            fileShow()
+            fileShow();
             //启动数据源select 初始化函数
             //init_data_sources();
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
-                console.info("新增按钮触发")
+                console.info("新增按钮触发");
                 $('#save_etl_task').show()
 
             } else {
@@ -355,20 +355,20 @@
                         success: function (data) {
 
                             // 基础信息加载
-                            $('#issue_context').val(data.issue_context)
-                            $('#create_time').val(getMyDate(data.create_time))
-                            $('#data_source_type_input').val(data.data_source_type_input)
-                            $('#data_sources_file_name_input').val(data.data_sources_table_name_input)
-                            $('#user_name').val(data.user_name)
-                            $('#company').val(data.company)
-                            $('#section').val(data.section)
-                            $('#service').val(data.service)
+                            $('#issue_context').val(data.issue_context);
+                            $('#create_time').val(getMyDate(data.create_time));
+                            $('#data_source_type_input').val(data.data_source_type_input);
+                            $('#data_sources_file_name_input').val(data.data_sources_table_name_input);
+                            $('#user_name').val(data.user_name);
+                            $('#company').val(data.company);
+                            $('#section').val(data.section);
+                            $('#service').val(data.service);
 
 
                             // 字段信息加载
 
-                            var column_datas = data.column_datas
-                            var cd = JSON.parse(column_datas)
+                            var column_datas = data.column_datas;
+                            var cd = JSON.parse(column_datas);
                             for (var i = 0; i < cd.length; i++) {
                                 var index = $('#exampleTableEvents').bootstrapTable('getData').length;
                                 $('#exampleTableEvents').bootstrapTable('insertRow', {
@@ -428,7 +428,7 @@
                 var wpd = $(window.parent.document);
                 var mainContent = wpd.find('.J_mainContent');
                 var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
                 pageTabs.find(".J_menuTab.active").removeClass("active");
                 mainContent.find("iframe").css("display", "none");
                 if (thisIframe.length > 0) {	// 选项卡已打开
@@ -457,10 +457,10 @@
                // var currentWidth = $(this).parents('.J_menuTab').width();
                 var wpd = $(window.parent.document);
                 var mainContent = wpd.find('.J_mainContent');
-                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
                 var currentTab=pageTabs.find(".J_menuTab.active");
-                var closeTabId = currentTab.data('id')
-                mainContent.find('.J_iframe')
+                var closeTabId = currentTab.data('id');
+                mainContent.find('.J_iframe');
 
                 // 当前元素处于活动状态
                 if (currentTab.hasClass('active')) {
@@ -490,7 +490,7 @@
 
                         // 移除tab对应的内容区
                         mainContent.find('.J_iframe').each(function (index,e) {
-                            alert($(e).data('id'))
+                            alert($(e).data('id'));
                             if ($(e).data('id') == closeTabId) {
                                 $(e).remove();
                                 return false;

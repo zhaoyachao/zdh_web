@@ -26,14 +26,15 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-public class ZdhOperateLogController extends BaseController{
+public class ZdhOperateLogController extends BaseController {
 
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
+    public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     UserOperateLogMapper userOperateLogMapper;
 
     /**
      * 操作日志首页
+     *
      * @return
      */
     @RequestMapping("/user_operate_log_index")
@@ -43,9 +44,9 @@ public class ZdhOperateLogController extends BaseController{
     }
 
 
-
     /**
      * datax任务明细
+     *
      * @param log_context
      * @param id
      * @return
@@ -53,17 +54,17 @@ public class ZdhOperateLogController extends BaseController{
     @RequestMapping(value = "/user_operate_log_list", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String user_operate_log_list(String log_context, String id) {
-        UserOperateLogInfo userOperateLogInfo=new UserOperateLogInfo();
-        Example example= new Example(userOperateLogInfo.getClass());
+        UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();
+        Example example = new Example(userOperateLogInfo.getClass());
         List<UserOperateLogInfo> userOperateLogInfos = new ArrayList<>();
-        Example.Criteria cri=example.createCriteria();
+        Example.Criteria cri = example.createCriteria();
         cri.andEqualTo("owner", getUser().getId());
-        if(!StringUtils.isEmpty(log_context)){
-            cri.andLike("user_name", "%"+log_context+"%");
-            cri.orLike("operate_input", "%"+log_context+"%");
-            cri.orLike("operate_output", "%"+log_context+"%");
-            cri.orLike("operate_context", "%"+log_context+"%");
-            cri.orLike("operate_url", "%"+log_context+"%");
+        if (!StringUtils.isEmpty(log_context)) {
+            cri.andLike("user_name", "%" + log_context + "%");
+            cri.orLike("operate_input", "%" + log_context + "%");
+            cri.orLike("operate_output", "%" + log_context + "%");
+            cri.orLike("operate_context", "%" + log_context + "%");
+            cri.orLike("operate_url", "%" + log_context + "%");
         }
         example.setOrderByClause("update_time desc");
         userOperateLogInfos = userOperateLogMapper.selectByExample(example);
@@ -88,12 +89,12 @@ public class ZdhOperateLogController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
             }
         }
     }

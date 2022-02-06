@@ -4,11 +4,11 @@
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
 
 
 
@@ -34,7 +34,7 @@
           layer.confirm('新增', {
               btn: ['确定','取消'] //按钮
           }, function(index){
-              openTabPage(server_context+"/user_add_index.html?id=-1", "用户权限配置")
+              openTabPage(server_context+"/user_add_index.html?id=-1", "用户权限配置");
               layer.close(layer.index);
           }, function(){
 
@@ -57,7 +57,7 @@
                   ids.push(this.id);// cid为获得到的整条数据中的一列
               });
               console.log(ids)
-              enableUsers(ids, "true")
+              enableUsers(ids, "true");
               layer.close(layer.index);
           }, function(){
 
@@ -79,7 +79,7 @@
                   ids.push(this.id);// cid为获得到的整条数据中的一列
               });
               console.log(ids)
-              enableUsers(ids, "false")
+              enableUsers(ids, "false");
               layer.close(layer.index);
           }, function(){
 
@@ -144,11 +144,11 @@
               dataType : "json",
               success : function(data) {
                   if(data.code != '200'){
-                      console.error(data.msg)
-                      layer.msg("执行失败")
+                      console.error(data.msg);
+                      layer.msg("执行失败");
                       return ;
                   }
-                  layer.msg("执行成功")
+                  layer.msg("执行成功");
 
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/user_list?"+$("#user_form").serialize(),

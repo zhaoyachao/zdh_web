@@ -371,9 +371,9 @@
 
 
             function buildParam() {
-                $('#enable_quality').prop("checked", false)
+                $('#enable_quality').prop("checked", false);
                 if (s.id != '-1') {
-                    console.info("更新按钮触发--开始赋值对应参数")
+                    console.info("更新按钮触发--开始赋值对应参数");
                     //开始赋值
 
                     $.ajax({
@@ -383,12 +383,12 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
-                            console.info("success")
+                            console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取输入数据源id
                             var data_sources_choose_input = data[0].data_sources_choose_input;
-                            console.info("参数赋值:输入数据源id:" + data_sources_choose_input)
+                            console.info("参数赋值:输入数据源id:" + data_sources_choose_input);
 
 
                             //获取ETL 说明
@@ -447,7 +447,7 @@
     $('#save_etl_task').click(function () {
 
         if ($('#datax_context').val() == '') {
-            layer.msg("SSH任务说明不能为空！");
+            layer.msg("DATAX任务说明不能为空！");
             return;
         }
 
@@ -493,7 +493,7 @@
     $('#update_etl_task').click(function () {
 
         if ($('#datax_context').val() == '') {
-            layer.msg("SSH任务说明不能为空！");
+            layer.msg("DATAX任务说明不能为空！");
             return;
         }
 
@@ -523,7 +523,7 @@
             //成功返回
             success: function (data) {
                 if(data.code != "200"){
-                    layer.msg(data.msg)
+                    layer.msg(data.msg);
                     return
                 }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引

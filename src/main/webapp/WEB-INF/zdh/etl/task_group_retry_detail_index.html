@@ -137,8 +137,8 @@
 
             //获取所有子任务
             function get_all_tasks(){
-                var job_id=s.job_id
-                var t_id=s.id
+                var job_id=s.job_id;
+                var t_id=s.id;
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/task_group_log_instance_list3",
@@ -154,10 +154,10 @@
 
                        if(data.length=1){
 
-                           $('#sub_task_div').empty()
-                           $('#sub_task_div').addClass("checkbox")
-                           $('#sub_task_div').addClass("i-checks")
-                           var jsplumb_json=JSON.parse(data[0].jsmind_data)
+                           $('#sub_task_div').empty();
+                           $('#sub_task_div').addClass("checkbox");
+                           $('#sub_task_div').addClass("i-checks");
+                           var jsplumb_json=JSON.parse(data[0].jsmind_data);
 
                            for(var i=0;i<jsplumb_json.tasks.length;i++){
                                var divId=jsplumb_json.tasks[i].divId;
@@ -242,7 +242,7 @@
             });
 
 
-    })
+    });
 
     $('#execute_newversion').click(function () {
 
@@ -280,7 +280,7 @@
         });
 
 
-    })
+    });
 
     $('#cancel').click(function () {
 

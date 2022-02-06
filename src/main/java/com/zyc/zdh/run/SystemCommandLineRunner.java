@@ -123,8 +123,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         //此处设置2s 每2秒向redis 设置一个当前服务,作为一个心跳检测使用
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
-                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                        logger.error(error, e.getCause());
+                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                        logger.error(error, e);
                     }
                 }
             }
@@ -178,8 +178,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                                     SshUtils.kill(connectUri[0],kill_cmd);
                                                 }catch (Exception e){
                                                     System.out.println("=========================");
-                                                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                                                    logger.error(error, e.getCause());
+                                                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                                                    logger.error(error, e);
                                                 }
 
                                             }
@@ -190,8 +190,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         td.stop();
 
                                     }catch (Exception e){
-                                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                                        logger.error(error, e.getCause());
+                                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                                        logger.error(error, e);
                                     }finally {
                                         JobCommon2.chm.remove(tl.getThread_id());
                                         taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
@@ -207,6 +207,9 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                     if(tl.getMore_task().equalsIgnoreCase(MoreTask.FLINK.getValue())){
                                         //如果找不到flink_job_id,历史服务器,则跳过
                                         if(StringUtils.isEmpty(tl.getApplication_id()) || StringUtils.isEmpty(tl.getHistory_server())){
+                                            if(System.currentTimeMillis()-tl.getUpdate_time().getTime() > 2*60*1000){
+                                                taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
+                                            }
                                             continue;
                                         }
 
@@ -273,8 +276,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         // List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.select(qj);
                         Thread.sleep(1000*2);
                     } catch (Exception e) {
-                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                        logger.error(error, e.getCause());
+                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                        logger.error(error, e);
                     }
                 }
             }
@@ -325,7 +328,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                     } catch (Exception e) {
                         String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[2].getMethodName();
                         e.printStackTrace();
-                        logger.error(error, e.getCause());
+                        logger.error(error, e);
                     }
                 }
             }

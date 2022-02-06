@@ -213,20 +213,20 @@
 
             //s.id=-1 表示新增,否则表示更新
             if(s.id==-1){
-                console.info("新增按钮触发")
+                console.info("新增按钮触发");
                 //$('#data_sources_table_name_input').chosen();
                 //$('#data_sources_table_name_output').chosen();
-                $('#update_etl_task').hide()
-                $('#save_etl_task').show()
+                $('#update_etl_task').hide();
+                $('#save_etl_task').show();
             }else{
                 //init_table_name(s.id)
                 if(s.is_copy =="true"){
-                    console.info("拷贝按钮触发")
-                    $('#update_etl_task').hide()
-                    $('#save_etl_task').show()
+                    console.info("拷贝按钮触发");
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').show();
                 }else{
-                    console.info("更新按钮触发")
-                    $('#save_etl_task').hide()
+                    console.info("更新按钮触发");
+                    $('#save_etl_task').hide();
                     $('#update_etl_task').show()
                 }
                 buildParam()
@@ -256,9 +256,9 @@
 
             function  buildParam(){
                 if(s.id !='-1'){
-                    console.info("更新按钮触发--开始赋值对应参数:"+s.id)
+                    console.info("更新按钮触发--开始赋值对应参数:"+s.id);
                     //开始赋值
-                    file_list_m(s.id)
+                    file_list_m(s.id);
 
                     $.ajax({
                         url : server_context+"/etl_task_jar_list",
@@ -267,42 +267,41 @@
                         async: false,
                         dataType : "json",
                         success : function(data) {
-                            console.info("success")
+                            console.info("success");
 
 
                             //获取输入数据源id
-                            var id=data[0].id
-                            console.info("参数赋值:多源etl任务id:"+id)
+                            var id=data[0].id;
+                            console.info("参数赋值:多源etl任务id:"+id);
 
                             //获取ETL 说明
-                            var etl_context=data[0].etl_context
+                            var etl_context=data[0].etl_context;
                             $("#etl_context").val(etl_context);
 
-                            var create_time=data[0].create_time
+                            var create_time=data[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
                             //集群连接信息
-                            var master = data[0].master
-                            $("#master").val(master)
-
+                            var master = data[0].master;
+                            $("#master").val(master);
                             //cpu 资源信息
-                            var cpu = data[0].cpu
-                            $("#cpu").val(cpu)
+                            var cpu = data[0].cpu;
+                            $("#cpu").val(cpu);
 
                             //内存信息
-                            var memory = data[0].memory
-                            $("#memory").val(memory)
+                            var memory = data[0].memory;
+                            $("#memory").val(memory);
 
                             //初始化集群模式select 组件
-                            var deploy_mode=data[0].deploy_mode
+                            var deploy_mode=data[0].deploy_mode;
                             $("#deploy_mode").val(deploy_mode);
                             $("#deploy_mode").trigger("chosen:updated");
 
-                            var main_class = data[0].main_class
-                            $("#main_class").val(main_class)
+                            var main_class = data[0].main_class;
+                            $("#main_class").val(main_class);
 
 
-                            var spark_submit_params = data[0].spark_submit_params
+                            var spark_submit_params = data[0].spark_submit_params;
                             $("#spark_submit_params").val(spark_submit_params)
 
 
@@ -329,13 +328,13 @@
             async: false,
             dataType : "json",
             success : function(data) {
-                console.info("success")
+                console.info("success");
                 //获取输入数据源id
-                $("#file_list").html("")
+                $("#file_list").html("");
                 for (var i = 0; i < data.length; i++) {
-                    var id=data[i].id
-                    var fileName=data[i].file_name
-                    console.info("参数赋值:文件唯一id:"+id)
+                    var id=data[i].id;
+                    var fileName=data[i].file_name;
+                    console.info("参数赋值:文件唯一id:"+id);
                     var div1=' <div class="checkbox i-checks">'+
                         '<label class="no-padding">'+
                         ' <input type="checkbox" value="'+id+'"><i></i> '+fileName+'</label>'+
@@ -370,7 +369,7 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success:s.id:"+id_tmp)
+                    console.info("success:s.id:"+id_tmp);
                     file_list_m(id_tmp)
                 },
                 error: function (data) {
@@ -428,7 +427,7 @@
         });
 
 
-    })
+    });
 
     $('#update_etl_task').click(function () {
 
@@ -446,7 +445,7 @@
         }
 
         var formData = new FormData($("#etl_task_jar_add_form")[0]);//获取表单中的文件
-        formData.append('id',s.id)
+        formData.append('id',s.id);
 
         $.ajax({
             type: 'POST',
@@ -462,7 +461,7 @@
             //成功返回
             success: function (data) {
                 if(data.code != "200"){
-                    layer.msg(data.msg)
+                    layer.msg(data.msg);
                     return
                 }
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引

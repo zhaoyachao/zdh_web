@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 数据资产</title>
+    <meta name="keywords" content="ZDH 数据资产">
+    <meta name="description" content="ZDH 数据资产">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <style type="text/css">
+        .btn_page {
+        }
+        .label_active{
+            background-color: #18a689;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+<!--                        <h2>-->
+<!--                                为您找到相关结果约total_size个： <span class="text-navy">“数据资产”</span>-->
+<!--                        </h2>-->
+                        <div class="search-form">
+                            <form method="get" id="etl_task_form">
+                                <div class="input-group">
+                                    <input type="text" placeholder="数据资产" name="issue_context" class="form-control input-lg">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-lg btn-primary" type="button" οnsubmit='return false' id="search">
+                                            搜索
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="col-sm-12" id="label_div">
+
+                            </div>
+                            <br/>
+                            <br/>
+                        </div>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <div id="data_div">
+
+                        </div>
+
+
+                        <div class="text-center">
+                            <div class="btn-group" id="page_div">
+
+                            </div>
+                            <div class="btn-group input-group" style="float: right">
+                                <input type="text" placeholder="页数" id="page" name="page" class="form-control input-sm" style="width: 60px">
+                                <button class="btn btn-sm btn-primary" type="button" οnsubmit='return false' onclick="jump()">
+                                    跳转
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+    <!-- layer javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+    <script>
+
+        //加载标签
+        function load_label() {
+            var label_template = " <label>label_name</label>&nbsp&nbsp&nbsp&nbsp\n";
+            var a_template = "<button type=\"button\" class=\"btn btn-outline btn-default\" enum_value=\"enum_value_replace\">enum_context</button>\n";
+            var line_template = "                                <br/>\n";
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: server_context+"/data_ware_house_label",
+                dataType: 'json',
+                data: '',
+                //成功返回
+                success: function (data) {
+                    $('#label_div').html("");
+                    if(data.result.length>0){
+                        for(var i=0;i<data.result.length;i++){
+                            var dt = data.result[i];
+                            var label_html = label_template.replace("label_name", dt.enum_context);
+
+                            if(dt.enum_json_object.length>0){
+                               for (var j=0;j<dt.enum_json_object.length;j++){
+                                   label_html=label_html+a_template.replace("enum_value_replace",dt.enum_json_object[j].enum_value).replace("enum_context", dt.enum_json_object[j].enum_value_context);
+                               }
+                            }
+                            label_html = label_html+line_template;
+                            $('#label_div').append(label_html);
+                        }
+                    }
+
+                    $('#label_div button').click(function () {
+                        if($(this).hasClass("btn-default")){
+                            $(this).removeClass("btn-default");
+                            $(this).addClass("btn-info")
+                        }else{
+                            $(this).removeClass("btn-info");
+                            $(this).addClass("btn-default");
+                        }
+                    });
+                },
+                //处理完成
+                complete: function () {
+                    console.info("etl_task_complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("etl_task_error: " + data.responseText);
+                }
+            });
+        }
+
+        function openTabPage(url, title) {
+            var wpd = $(window.parent.document);
+            var mainContent = wpd.find('.J_mainContent');
+            var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
+            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+            pageTabs.find(".J_menuTab.active").removeClass("active");
+            mainContent.find("iframe").css("display", "none");
+            if (thisIframe.length > 0) {	// 选项卡已打开
+                thisIframe.css("display", "inline");
+                pageTabs.find(".J_menuTab[data-id='" + url + "']").addClass("active");
+            } else {
+                var menuItem = wpd.find("a.J_menuItem[href='" + url + "']");
+                var dataIndex = title == undefined ? menuItem.attr("data-index") : '9999';
+                var _title = title == undefined ? menuItem.find('.nav-label').text() : title;
+                var iframe = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + url + '" frameborder="0" data-id="' + url
+                    + '" seamless="" style="display: inline;"></iframe>';
+                pageTabs.append(
+                    ' <a href="javascript:;" class="J_menuTab active" data-id="' + url + '">' + _title + ' <i class="fa fa-times-circle"></i></a>');
+                mainContent.append(iframe);
+                //显示loading提示
+                var loading = top.layer.load();
+                mainContent.find('iframe:visible').load(function () {
+                    //iframe加载完成后隐藏loading提示
+                    top.layer.close(loading);
+                });
+            }
+
+        }
+
+        var data_params = "";
+        var label_params = new Array();
+        $(document).ready(function () {
+            $('#search').click(function () {
+                data_params = $('#etl_task_form').serialize();
+                label_params = new Array();
+                $('#label_div .btn-info').each(function ( index,element){
+                    label_params.push($(this).attr('enum_value'));
+                });
+                load_data(1);
+            });
+
+            $('.btn_page').click(function () {
+                var currentPage = $(this).attr('value');
+                $('.btn_page').removeClass("active");
+                $(this).addClass("active");
+
+            });
+            load_label();
+            $('#search').click();
+        });
+
+        var template =
+        "                            <div class=\"search-result\" style='margin-top: 20px'>\n" +
+        "                                <h3><a href=\"javascript:void(0)\" data_id='table_id' data_id_context='data_context'>table_name</a></h3>\n" +
+        "                                <p>\n" +
+        "                                    data_context" +
+        "                                </p>\n" +
+        "                            </div>\n" +
+        "                            <div class=\"hr-line-dashed\"></div>";
+
+
+        function load_data(currentPage){
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: server_context+"/data_ware_house_list6?current_page="+currentPage+"&"+data_params+"&label_params="+label_params,
+                dataType: 'json',
+                data: '',
+                //成功返回
+                success: function (data) {
+                    $('#data_div').html("");
+                    $('#page_div').html("");
+                    if(data.list.length>0){
+                        var page_start = "                                <button class=\"btn btn-white btn_left\" type=\"button\"><i class=\"fa fa-chevron-left\"></i>\n" +
+                        "                                </button>";
+                        $('#page_div').append(page_start);
+                        for(var i=0;i <data.list.length;i++){
+                            var tmp = template.replace("table_name", data.list[i].data_sources_table_name_input);
+                            tmp = tmp.replace("table_id",data.list[i].id);
+                            tmp = tmp.replaceAll("data_context", data.list[i].issue_context);
+                            $('#data_div').append(tmp);
+                        }
+
+                        $(".search-result a").click(function () {
+                            openTabPage(server_context+"/data_ware_house_detail_index.html?id=" + $(this).attr("data_id"), "表信息:"+$(this).attr("data_id_context"))
+                        });
+                    }
+                    //生成分页信息
+                    var btn_template = "<button class=\"btn btn-white btn_page active\" value=\"page_num\">page_num_text</button>";
+                    for (var i=0;i<data.left_page.length;i++){
+                        var btn_tmp = btn_template;
+                        btn_tmp = btn_tmp.replace("page_num_text", data.left_page[i]);
+                        btn_tmp = btn_tmp.replace("page_num", data.left_page[i]);
+                        if(data.left_page[i] !=data.current_page){
+                            btn_tmp = btn_tmp.replace("active", "");
+                        }
+                        $('#page_div').append(btn_tmp);
+                    }
+                    for (var i=0;i<data.right_page.length;i++){
+                        var btn_tmp = btn_template;
+                        btn_tmp = btn_tmp.replace("page_num_text", data.right_page[i]);
+                        btn_tmp = btn_tmp.replace("page_num", data.right_page[i]);
+                        if(data.right_page[i] != data.current_page){
+                            btn_tmp = btn_tmp.replace("active", "");
+                        }
+                        $('#page_div').append(btn_tmp);
+                    }
+
+                    var page_end = "                                <button class=\"btn btn-white btn_right\" type=\"button\"><i class=\"fa fa-chevron-right\"></i>\n" +
+                    "                                </button>";
+                    if(data.list.length>0){
+                        $('#page_div').append(page_end);
+                        $('.btn_page').click(function () {
+                            var currentPage = $(this).attr('value');
+                            $('.btn_page').removeClass("active");
+                            $(this).addClass("active");
+                            load_data(currentPage)
+                            $('.btn_left').click(function () {
+                                if(currentPage>=2){
+                                    load_data(currentPage-1)
+                                }else{
+                                    layer.msg("已到第一页")
+                                }
+
+                            });
+                            $('.btn_right').click(function () {
+                                if(currentPage < data.total_page){
+                                    load_data(currentPage+1)
+                                }else{
+                                    layer.msg("已到最后一页")
+                                }
+                            });
+                        });
+                    }
+
+
+                },
+                //处理完成
+                complete: function () {
+                    console.info("etl_task_complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("etl_task_error: " + data.responseText);
+                }
+            });
+        }
+
+        function jump() {
+            if($('#page').val()!=""){
+                var r = /^\+?[1-9][0-9]*$/;　　//正整数
+                var flag=r.test($('#page').val());
+                if(flag == true){
+                    load_data($('#page').val());
+                }
+            }else{
+                layer.msg("页数为空");
+            }
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

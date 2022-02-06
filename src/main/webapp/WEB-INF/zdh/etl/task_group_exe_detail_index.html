@@ -386,7 +386,7 @@
         });
 
 
-    })
+    });
 
     $('#execute').click(function () {
 
@@ -412,7 +412,7 @@
         var oDate1 = new Date($('#start_time').val());
         var oDate2 = new Date($('#end_time').val());
         if(oDate1 > oDate2){
-            layer.msg("结束时间大于开始时间")
+            layer.msg("结束时间大于开始时间");
             return false
         }
 
@@ -459,7 +459,7 @@
             //报错
             error: function (data) {
                 $("#save_dispatch_task").removeAttr('disabled');
-                layer.close(index1)
+                layer.close(index1);
                 layer.msg(data.responseText);
                 console.info("error: " + data.responseText);
             }

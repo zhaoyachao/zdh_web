@@ -3,22 +3,22 @@
     // Example Bootstrap Table Events
     // ------------------------------
     (function () {
-        var height=400
+        var height=400;
         if($(document.body).height()*0.8>height){
             height=$(document.body).height()*0.8
         }
-        $('#exampleTableEvents').attr("data-height",height)
+        $('#exampleTableEvents').attr("data-height",height);
         $('#add').click(function () {
 
             layer.confirm('是否新增调度任务', {
                 btn: ['确定','取消'] //按钮
             }, function(index){
-                openTabPage(server_context+"/dispatch_task_group_add_index.html?id=-1", "创建调度任务")
+                openTabPage(server_context+"/dispatch_task_group_add_index.html?id=-1", "创建调度任务");
                 layer.close(layer.index);
             }, function(){
 
             });
-        })
+        });
 
 
         $('#remove').click(function () {
@@ -46,7 +46,7 @@
 
             }
 
-        })
+        });
 
         function deleteMs(ids) {
             $.ajax({
@@ -97,7 +97,7 @@
             $('#execute_quartz').attr({disabled: "disabled"});
             var index=top.layer.msg('添加到调度器开始执行',{time:"-1"});
 
-            var msg=""
+            var msg="";
             $.ajax({
                 url: server_context+"/dispatch_task_execute_quartz",
                 data: "job_id=" + job_id+"&reset="+reset,
@@ -120,7 +120,7 @@
                     console.info("error: " + data.responseText);
                 }
             });
-            top.layer.msg(msg)
+            top.layer.msg(msg);
             $("#execute_quartz").removeAttr('disabled');
             $('#exampleTableEvents').bootstrapTable('refresh', {
                 url: server_context+'/dispatch_task_list2'
@@ -287,11 +287,11 @@
                     },
                     title:"启用调度",
                     btn1:function(index){
-                        executeQuartz(row.job_id,"0")
+                        executeQuartz(row.job_id,"0");
                         layer.close(layer.index)
                     },
                     btn2:function(index){
-                        executeQuartz(row.job_id,"1")
+                        executeQuartz(row.job_id,"1");
                         layer.close(layer.index)
                     }
                 });
@@ -304,8 +304,8 @@
                     },
                     title:"暂停/恢复调度"
                 }, function(index){
-                    $("#id").val(row.job_id)
-                    pauseQuartz(row.job_id, row.status)
+                    $("#id").val(row.job_id);
+                    pauseQuartz(row.job_id, row.status);
                     layer.close(layer.index)
                 }, function(index){
                 });
@@ -319,7 +319,7 @@
                     },
                     title:"关闭调度"
                 }, function(index){
-                    delQuartz(row.job_id)
+                    delQuartz(row.job_id);
                     layer.close(layer.index)
                 }, function(index){
                 });
@@ -355,7 +355,7 @@
         }
 
         function operateFormatter2(value, row, index) {
-            var status_context = "暂停"
+            var status_context = "暂停";
             if (row.status == "pause") {
                 status_context = "恢复"
             }
@@ -420,21 +420,21 @@
                 field: 'job_id',
                 title: 'JOB_ID',
                 sortable: false
-            },{
+            },   {
+                field: 'job_context',
+                title: '调度说明',
+                sortable: false
+            }, {
                 field: 'expr',
                 title: '表达式',
                 sortable: false,
-                visible:false
+                visible:true
             }, {
                 field: 'use_quartz_time',
                 title: '是否使用quart时间',
                 sortable: false,
                 visible:false
-            },  {
-                field: 'job_context',
-                title: '调度说明',
-                sortable: false
-            },  {
+            }, {
                 field: 'status',
                 title: '调度器状态及执行记录',
                 sortable: true,

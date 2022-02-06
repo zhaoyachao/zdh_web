@@ -43,8 +43,14 @@ public interface IssueDataMapper extends BaseMapper<IssueDataInfo> {
             "AND ( issue_context like '%${issue_context}%'",
             "OR data_sources_table_name_input like '%${issue_context}%')",
             "</when>",
+            "<when test='label_params!=null and label_params.length>0'>",
+            "and ",
+            "<foreach collection='label_params' item='label_name' separator='and'>",
+            "FIND_IN_SET('${label_name}',label_params)",
+            "</foreach >",
+            "</when>",
             "</script>"})
-    public List<IssueDataInfo> selectByParams(@Param("issue_context") String issue_context);
+    public List<IssueDataInfo> selectByParams(@Param("issue_context") String issue_context,@Param("label_params") String[] label_params);
 
 
     @Select({"<script>",

@@ -4,11 +4,11 @@
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
 
       $('#btn_add').click(function () {
 
@@ -40,8 +40,8 @@
               $(rows).each(function() {// 通过获得别选中的来进行遍历
                   ids.push(this.id);// cid为获得到的整条数据中的一列
               });
-              console.log(ids)
-              enableRoles(ids, "true")
+              console.log(ids);
+              enableRoles(ids, "true");
               layer.close(layer.index);
           }, function(){
 
@@ -62,8 +62,8 @@
               $(rows).each(function() {// 通过获得别选中的来进行遍历
                   ids.push(this.id);// cid为获得到的整条数据中的一列
               });
-              console.log(ids)
-              enableRoles(ids, "false")
+              console.log(ids);
+              enableRoles(ids, "false");
               layer.close(layer.index);
           }, function(){
 
@@ -127,11 +127,11 @@
               dataType : "json",
               success : function(data) {
                   if(data.code != '200'){
-                      console.error(data.msg)
-                      layer.msg("执行失败")
+                      console.error(data.msg);
+                      layer.msg("执行失败");
                       return ;
                   }
-                  layer.msg("执行成功")
+                  layer.msg("执行成功");
 
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/role_list?"+$("#user_form").serialize(),
@@ -222,11 +222,11 @@
             sortable:false,
             events: operateEvents2,//给按钮注册事件
             formatter: function (value, row, index){
-                var context = "未启用"
-                var class_str = "btn-danger btn-xs"
+                var context = "未启用";
+                var class_str = "btn-danger btn-xs";
 
                 if (value == "true") {
-                    context = "启用"
+                    context = "启用";
                     class_str = "btn-primary  btn-xs"
                 }
                 return [
@@ -250,7 +250,7 @@
           var wpd = $(window.parent.document);
           var mainContent = wpd.find('.J_mainContent');
           var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-          var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+          var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
           pageTabs.find(".J_menuTab.active").removeClass("active");
           mainContent.find("iframe").css("display", "none");
           if (thisIframe.length > 0) {	// 选项卡已打开

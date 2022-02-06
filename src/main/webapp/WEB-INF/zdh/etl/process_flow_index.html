@@ -126,7 +126,7 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            var height=400
+            var height=400;
             if($(document.body).height()*0.8>height){
                 height=$(document.body).height()*0.8
             }
@@ -137,7 +137,7 @@
                 'click #approve': function (e, value, row, index) {
 
                     if(row.status != 0 ){
-                        layer.msg("流程以结束")
+                        layer.msg("流程以结束");
                         return ;
                     }
 
@@ -152,7 +152,7 @@
                                 async:false,
                                 dataType: "json",
                                 success: function (data) {
-                                    console.info(data.msg)
+                                    console.info(data.msg);
                                     layer.msg(data.msg)
                                 },
                                 complete: function(){
@@ -177,7 +177,7 @@
                             async:false,
                             dataType: "json",
                             success: function (data) {
-                                console.info(data.msg)
+                                console.info(data.msg);
                                 layer.msg(data.msg)
                             },
                             complete: function(){
@@ -252,18 +252,18 @@
                         sortable: false,
                         formatter: function (value, row, index) {
                             var context = "未审批"
-                            var class_str = "btn-danger btn-xs"
+                            var class_str = "btn-danger btn-xs";
                             if(value==0){
-                                class_str = "btn-warning btn-xs"
+                                class_str = "btn-warning btn-xs";
                                 context= "未审批"
                             }else if(value==1){
                                 context= "审批完成"
                                 class_str = "btn-primary  btn-xs"
                             }else if(value==2){
-                                class_str = "btn-danger  btn-xs"
+                                class_str = "btn-danger  btn-xs";
                                 context= "审批不通过"
                             }else if(value==3){
-                                class_str = "btn-danger  btn-xs"
+                                class_str = "btn-danger  btn-xs";
                                 context= "撤销申请"
                             }
 
@@ -319,10 +319,10 @@
                 // var currentWidth = $(this).parents('.J_menuTab').width();
                 var wpd = $(window.parent.document);
                 var mainContent = wpd.find('.J_mainContent');
-                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+                var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
                 var currentTab=pageTabs.find(".J_menuTab.active");
-                var closeTabId = currentTab.data('id')
-                mainContent.find('.J_iframe')
+                var closeTabId = currentTab.data('id');
+                mainContent.find('.J_iframe');
 
                 // 当前元素处于活动状态
                 if (currentTab.hasClass('active')) {

@@ -182,11 +182,11 @@
             $("#start_time").val(getMyDate(s.run_time))
         }else{
             var day = new Date();
-            var day_5m=day.getTime()-10*60*1000
+            var day_5m=day.getTime()-10*60*1000;
             $("#start_time").val(getMyDate(day_5m))
         }
         var day = new Date();
-        $("#end_time").val(getMyDate(day.getTime()))
+        $("#end_time").val(getMyDate(day.getTime()));
 
 
         $('#btn_search').click(function () {
@@ -227,7 +227,7 @@
             });
 
 
-        })
+        });
 
 
         $('#btn_del').click(function () {
@@ -267,7 +267,7 @@
             });
 
 
-        })
+        });
 
 
         $('#btn_down').click(function () {
@@ -281,9 +281,9 @@
 
             window.open(server_context+"/download_log?job_id="+s.job_id+ "&task_log_id=" + s.task_log_id);
 
-        })
+        });
 
-        $('#btn_search').click()
+        $('#btn_search').click();
     });
 
 

@@ -131,17 +131,17 @@
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
 
-        var height=400
+        var height=400;
         if($(document.body).height()*0.8>height){
             height=$(document.body).height()*0.8
         }
-        $('#exampleTableEvents').attr("data-height",height)
+        $('#exampleTableEvents').attr("data-height",height);
 
         function openTabPage(url, title) {
             var wpd = $(window.parent.document);
             var mainContent = wpd.find('.J_mainContent');
             var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
             pageTabs.find(".J_menuTab.active").removeClass("active");
             mainContent.find("iframe").css("display", "none");
             if (thisIframe.length > 0) {	// 选项卡已打开
@@ -193,8 +193,8 @@
         };
         laydate(start);
         laydate(end);
-        $("#start_time").val(getCurrentDate())
-        $("#end_time").val(getCurrentDate())
+        $("#start_time").val(getCurrentDate());
+        $("#end_time").val(getCurrentDate());
 
 
         $('#status').chosen();
@@ -273,7 +273,7 @@
                 type: "post",
                 dataType: "json",
                 success: function (data) {
-                    console.info("success")
+                    console.info("success");
                     if(data.code != "200"){
                         layer.msg(data.msg);
                     }
@@ -378,14 +378,14 @@
                 valign : "middle",
                 events: operateEvents,
                 formatter: function (value, row, index) {
-                    var context="已完成"
-                    var cls="btn-primary"
+                    var context="已完成";
+                    var cls="btn-primary";
                     if(value=="0"){
-                        context="进行中"
+                        context="进行中";
                         cls="btn-primary"
                     }
                     if(value=="2"){
-                        context="失败"
+                        context="失败";
                         cls="btn-danger"
                     }
                     return [

@@ -121,14 +121,14 @@
     $(document).ready(function () {
         $('#data_source_type').chosen();
         $.get(server_context+'/data_sources_type', function(res) {
-            $('#data_source_type').html("")
-            $('#data_source_type').append("<option value=\"\">数据源类型</option>")
+            $('#data_source_type').html("");
+            $('#data_source_type').append("<option value=\"\">数据源类型</option>");
             for (i = 0; i < res.length; i++) {
                 $('#data_source_type').append("<option value='"+res[i]+"'>"+res[i]+"</option>");
             }
 
             $("#data_source_type").trigger("chosen:updated");
-        })
+        });
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {

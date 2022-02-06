@@ -207,11 +207,11 @@
             for(var i = 0; i < pa.length; i ++){
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
-            $('#url_type').chosen()
-            $('#depend_level').chosen()
-            $('#hdfs_mode').chosen()
+            $('#url_type').chosen();
+            $('#depend_level').chosen();
+            $('#hdfs_mode').chosen();
             if(s["etl_context"] != '-1'){
-                console.info("更新触发")
+                console.info("更新触发");
                 $('#url').val($("#hdfs_url_text",window.parent.document).val());
                 $('#url_type').val(s.url_type);
                 $("#url_type").trigger("chosen:updated");
@@ -226,7 +226,7 @@
                 if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
                     $("#time_out").val(s["time_out"]);
                 }
-                var is_disenable=s['is_disenable']
+                var is_disenable=s['is_disenable'];
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
                 }
@@ -266,7 +266,7 @@
             "hdfs_mode":hdfs_mode,
             "time_out": time_out
         }
-        console.info("hdfs_detail:"+JSON.stringify(data))
+        console.info("hdfs_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
         parent.layer.close(index); //再执行关闭

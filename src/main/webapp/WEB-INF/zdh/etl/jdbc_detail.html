@@ -221,9 +221,9 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            $('#depend_level').chosen()
+            $('#depend_level').chosen();
             if(s["etl_context"] != '-1'){
-                console.info("更新触发")
+                console.info("更新触发");
                 $('#url').val($("#jdbc_url_text",window.parent.document).val());
                 $('#driver').val(s.driver);
                 $('#username').val(s.username);
@@ -236,7 +236,7 @@
                 }
                 window.editor.setValue($("#jdbc_sql_text",window.parent.document).val());
                 window.editor.refresh();
-                var is_disenable=s['is_disenable']
+                var is_disenable=s['is_disenable'];
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
                 }
@@ -258,7 +258,7 @@
         var jdbc_sql=window.editor.getValue();
         var depend_level=$('#depend_level').find("option:selected").val();
         var time_out=$('#time_out').val();
-        var is_disenable = "false"
+        var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
         }
@@ -273,7 +273,7 @@
             "depend_level":depend_level,
             "time_out": time_out
         }
-        console.info("job_detail:"+JSON.stringify(data))
+        console.info("job_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
         parent.layer.close(index); //再执行关闭

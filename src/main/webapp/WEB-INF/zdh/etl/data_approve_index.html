@@ -126,18 +126,18 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            var height=400
+            var height=400;
             if($(document.body).height()*0.8>height){
                 height=$(document.body).height()*0.8
             }
-            $('#exampleTableEvents').attr("data-height",height)
+            $('#exampleTableEvents').attr("data-height",height);
 
 
             window.operateEvents = {
                 'click #approve': function (e, value, row, index) {
 
                     if(row.status != 0 ){
-                        layer.msg("流程以结束")
+                        layer.msg("流程以结束");
                         return ;
                     }
 
@@ -175,7 +175,7 @@
                             async:false,
                             dataType: "json",
                             success: function (data) {
-                                console.info(data.msg)
+                                console.info(data.msg);
                                 layer.msg(data.msg)
                             },
                             complete: function(){

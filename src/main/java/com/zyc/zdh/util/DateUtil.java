@@ -115,8 +115,8 @@ public class DateUtil {
         try {
             return FastDateFormat.getInstance(format).parse(date);
         } catch (ParseException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
             return null;
         }
     }
@@ -154,6 +154,5 @@ public class DateUtil {
         beginDate.setTimeInMillis(date.getTime());
         return beginDate.get(Calendar.SECOND);
     }
-
 
 }

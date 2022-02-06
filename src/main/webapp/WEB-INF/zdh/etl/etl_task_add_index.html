@@ -828,7 +828,7 @@
                         $('#data_sources_table_name_output').html(str);
                         $("#data_sources_table_name_output").trigger("chosen:updated");
                         $('#data_sources_table_name_output').chosen().on("change", function (evt, params) {
-                            console.info("'data_sources_table_name_output' event change set text 'data_sources_file_name_output'")
+                            console.info("'data_sources_table_name_output' event change set text 'data_sources_file_name_output'");
                             $('#data_sources_file_name_output').val($('#data_sources_table_name_output').val())
 
                         });
@@ -950,7 +950,7 @@
             init_data_sources();
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
-                console.info("新增按钮触发")
+                console.info("新增按钮触发");
                 //$('#data_sources_table_name_input').chosen();
                 //$('#data_sources_table_name_output').chosen();
                 $('#update_etl_task').hide();
@@ -1583,7 +1583,7 @@
             }
         });
         if(is_save==false){
-            layer.msg("上传文件失败,无法更新")
+            layer.msg("上传文件失败,无法更新");
             return ;
         }
         var editor_str = "&data_sources_params_input="+window.editor_data_sources_params_input.getValue();

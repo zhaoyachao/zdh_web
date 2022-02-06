@@ -75,7 +75,7 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">图标设置</label>
                                                     <div class="col-sm-10">
-                                                        <input id="icon" name="icon" class="form-control" type="text" value="" placeholder="图标 fa fa-hourglass-half">
+                                                        <input id="icon" name="icon" class="form-control" type="text" value="fa fa-coffee" placeholder="图标 fa fa-hourglass-half">
                                                     </div>
                                                     <label class="col-sm-2 control-label"></label>
                                                     <div class="col-sm-10">
@@ -114,6 +114,17 @@
                                                     </div>
 
                                                 </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">事件</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="event_code" name="event_code"
+                                                                data-placeholder="空"
+                                                                class="chosen-select form-control m-b" tabindex="2">
+                                                        </select>
+                                                    </div>
+                                                </div>
+
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">提示语</label>
                                                     <div class="col-sm-10">
@@ -195,6 +206,17 @@
                                                     </div>
 
                                                 </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">事件</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="event_code2" name="event_code"
+                                                                data-placeholder="空"
+                                                                class="chosen-select form-control m-b" tabindex="2">
+                                                        </select>
+                                                    </div>
+                                                </div>
+
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">提示语</label>
                                                     <div class="col-sm-10">
@@ -341,7 +363,38 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
+            $('#event_code').chosen();
+            $('#event_code2').chosen();
+            //获取事件列表
+            $.ajax({
+                type: 'get',
+                url: server_context+"/approval_event_list",
+                dataType: 'json',
+                async:'false',
+                data: "",
+                //成功返回
+                success: function (data) {
+                    var str = '<option value=\"\" hassubinfo=\"true\"></option>';
+                   for(var i=0;i<data.length;i++){
+                       str += '<option value=\"' + data[i].event_code + '\" hassubinfo=\"true\">' + data[i].event_context + '</option>'
+                   }
+                    $('#event_code').html(str);
+                    $('#event_code').trigger("chosen:updated");
+                    $('#event_code').chosen();
+                    $('#event_code2').html(str);
+                    $('#event_code2').trigger("chosen:updated");
+                    $('#event_code2').chosen();
 
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
 
             var node_text=s.text;
             $('#parent').attr('node_id',s.id);
@@ -352,7 +405,7 @@
             //更新模块设置
             $.ajax({
                 type: 'get',
-                url: "jstree_get_node",
+                url: server_context+"/jstree_get_node",
                 dataType: 'json',
                 async:'false',
                 data: "id="+s.id,
@@ -360,6 +413,10 @@
                 success: function (data) {
                     $('#text').attr('node_id',s.id);
                     $('#text').val(data.text);
+
+                    $('#event_code2').val(data.event_code);
+                    $('#event_code2').trigger("chosen:updated");
+
                     $('#parent2').val(data.parent);
                     $('#icon2').val(data.icon);
                     $('#url2').val(data.url);
@@ -431,7 +488,7 @@
         //增加子节点,返回子节点id
         $.ajax({
             type: 'POST',
-            url: "jstree_add_node",
+            url: server_context+"/jstree_add_node",
             dataType: 'json',
             async:'false',
             data: $("#jstree_add_node_from").serialize()+"&parent_id="+s.id+"&text="+$("#child").val()+"&level="+(parseInt(s.level)+1),
@@ -446,18 +503,20 @@
                 layer.close(index1);
                 if(data.code != '200'){
                     console.error(data.msg);
-                    layer.msg("执行失败");
+                    parent.layer.msg("执行失败");
                     return ;
                 }
+                parent.refash(s.id);
+                parent.layer.msg("执行成功");
                 //window.parent.create_node(s.id,node);
-                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                parent.layer.close(index); //再执行关闭
+                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                // parent.layer.close(index); //再执行关闭
 
             },
             //处理完成
             complete: function () {
                 $("#execute").removeAttr('disabled');
-                layer.close(index1);
+                //layer.close(index1);
                 console.info("complete")
             },
             //报错
@@ -512,10 +571,10 @@
         });
 
 
-        //增加子节点,返回子节点id
+        //更新节点
         $.ajax({
             type: 'POST',
-            url: "jstree_update_node",
+            url: server_context+"/jstree_update_node",
             dataType: 'json',
             async:'false',
             data: $("#jstree_update_node_from").serialize()+"&id="+s.id+"&level="+s.level,
@@ -534,15 +593,17 @@
                     layer.msg("执行失败");
                     return ;
                 }
+                parent.refash(s.id);
+                parent.layer.msg("执行成功");
                 //window.parent.create_node(s.id,node);
-                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                parent.layer.close(index); //再执行关闭
+                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                // parent.layer.close(index); //再执行关闭
 
             },
             //处理完成
             complete: function () {
                 $("#execute2").removeAttr('disabled');
-                layer.close(index1)
+                //layer.close(index1)
             },
             //报错
             error: function (data) {
@@ -553,7 +614,7 @@
 
 
 
-    })
+    });
 
     $('#execute3').click(function () {
 
@@ -571,10 +632,10 @@
         });
 
 
-        //增加子节点,返回子节点id
+        //删除节点
         $.ajax({
             type: 'POST',
-            url: "jstree_del_node",
+            url: server_context+"/jstree_del_node",
             dataType: 'json',
             async:'false',
             data: $("#jstree_del_node_from").serialize()+"&id="+s.id,
@@ -586,20 +647,22 @@
             //成功返回
             success: function (data) {
                 $("#execute3").removeAttr('disabled');
-                layer.close(index1)
+                layer.close(index1);
                 if(data.code != '200'){
-                    console.error(data.msg)
-                    layer.msg("执行失败")
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
                     return ;
                 }
-                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                parent.layer.close(index); //再执行关闭
+                parent.refash(s.id);
+                parent.layer.msg("执行成功");
+                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                // parent.layer.close(index); //再执行关闭
 
             },
             //处理完成
             complete: function () {
                 $("#execute3").removeAttr('disabled');
-                layer.close(index1)
+                //layer.close(index1);
                 console.info("complete")
             },
             //报错
@@ -611,7 +674,7 @@
 
 
 
-    })
+    });
 
     $('#execute4').click(function () {
 
@@ -632,20 +695,20 @@
         var parent_id = $('#using_json2').jstree("get_checked");
 
         if(parent_id.length != 1){
-            layer.msg("请选中一个父节点")
-            layer.close(index1)
+            layer.msg("请选中一个父节点");
+            layer.close(index1);
             return ;
         }
 
         var parent_ary = $('#using_json2').jstree("get_path", parent_id);
-        console.info(parent_ary)
-        console.info("parent_id:"+parent_id)
-        console.info("level:"+parent_ary.length+1)
+        console.info(parent_ary);
+        console.info("parent_id:"+parent_id);
+        console.info("level:"+parent_ary.length+1);
         var level=parent_ary.length+1;
         //增加子节点,返回子节点id
         $.ajax({
             type: 'POST',
-            url: "jstree_update_parent",
+            url: server_context+"/jstree_update_parent",
             dataType: 'json',
             async:'false',
             data: "id="+s.id+"&parent_id="+parent_id+"&level="+level,
@@ -657,20 +720,22 @@
             //成功返回
             success: function (data) {
                 $("#execute4").removeAttr('disabled');
-                layer.close(index1)
+                layer.close(index1);
                 if(data.code != '200'){
-                    console.error(data.msg)
-                    layer.msg("执行失败")
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
                     return ;
                 }
-                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                parent.layer.close(index); //再执行关闭
+                parent.refash(parent_id);
+                parent.layer.msg("执行成功");
+                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                // parent.layer.close(index); //再执行关闭
 
             },
             //处理完成
             complete: function () {
                 $("#execute4").removeAttr('disabled');
-                layer.close(index1)
+                //layer.close(index1);
                 console.info("complete")
             },
             //报错

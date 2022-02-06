@@ -1,23 +1,16 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.JobModel;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.apache.shiro.subject.support.DefaultSubjectContext;
-import org.quartz.TriggerUtils;
-import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +19,20 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * 权限节点相关
+ */
 @Controller
-public class PermissionController extends BaseController{
+public class PermissionController extends BaseController {
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -67,6 +61,9 @@ public class PermissionController extends BaseController{
     @Autowired
     UserGroupMapper userGroupMapper;
 
+    @Autowired
+    DataTagGroupMapper dataTagGroupMapper;
+
 
     @RequestMapping(value = "/permission_index", method = RequestMethod.GET)
     public String permission_index() {
@@ -77,7 +74,6 @@ public class PermissionController extends BaseController{
     @RequestMapping(value = "/user_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String user_list(String user_context) {
-        System.out.println(user_context);
         List<PermissionUserInfo> users = permissionMapper.findAll(user_context);
 
         return JSONObject.toJSONString(users);
@@ -88,10 +84,10 @@ public class PermissionController extends BaseController{
     @Transactional
     public String user_enable(String[] ids, String enable) {
 
-        try{
-            int result= permissionMapper.updateEnable(ids, enable);
+        try {
+            int result = permissionMapper.updateEnable(ids, enable);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
-        }catch (Exception e){
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -113,11 +109,11 @@ public class PermissionController extends BaseController{
     @RequestMapping(value = "/user_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String user_detail(String id) {
-        try{
+        try {
             PermissionUserInfo user = permissionMapper.selectByPrimaryKey(id);
             user.setPassword("");
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", user);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -126,28 +122,28 @@ public class PermissionController extends BaseController{
     @ResponseBody
     @Transactional
     public String user_update(PermissionUserInfo user) {
-        try{
+        try {
 
-            if(user.getId().equalsIgnoreCase("-1")){
+            if (user.getId().equalsIgnoreCase("-1")) {
                 //新增用户
-                if(StringUtils.isEmpty(user.getPassword())){
+                if (StringUtils.isEmpty(user.getPassword())) {
                     throw new Exception("新增用户密码不可为空");
                 }
                 user.setEnable("false");
                 user.setId(null);
                 permissionMapper.insert(user);
-            }else{
-                PermissionUserInfo pui=permissionMapper.selectByPrimaryKey(user.getId());
-                if(user.getPassword().equalsIgnoreCase("")){
+            } else {
+                PermissionUserInfo pui = permissionMapper.selectByPrimaryKey(user.getId());
+                if (user.getPassword().equalsIgnoreCase("")) {
                     user.setPassword(pui.getPassword());
                     user.setEnable(pui.getEnable());
                 }
                 permissionMapper.updateByPrimaryKey(user);
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
-        }catch (Exception e){
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
@@ -162,10 +158,10 @@ public class PermissionController extends BaseController{
     @ResponseBody
     @Transactional
     public String user_group_add(UserGroupInfo ugi) {
-        try{
+        try {
 
-            List<UserGroupInfo> ugis=userGroupMapper.select(ugi);
-            if(ugis!=null && ugis.size()>0){
+            List<UserGroupInfo> ugis = userGroupMapper.select(ugi);
+            if (ugis != null && ugis.size() > 0) {
                 throw new Exception("组名已经存在");
             }
             ugi.setEnable("true");
@@ -173,8 +169,8 @@ public class PermissionController extends BaseController{
             ugi.setUpdate_time(new Timestamp(new Date().getTime()));
             userGroupMapper.insert(ugi);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
-        }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
@@ -183,14 +179,14 @@ public class PermissionController extends BaseController{
     @ResponseBody
     @Transactional
     public String user_group_list(String enable) {
-        try{
-            UserGroupInfo ugi=new UserGroupInfo();
+        try {
+            UserGroupInfo ugi = new UserGroupInfo();
             ugi.setEnable(enable);
-            List<UserGroupInfo> ugis=userGroupMapper.select(ugi);
+            List<UserGroupInfo> ugis = userGroupMapper.select(ugi);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", ugis);
-        }catch (Exception e){
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -209,9 +205,9 @@ public class PermissionController extends BaseController{
 
     @RequestMapping(value = "/role_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String role_list(String role_context,String enable) {
+    public String role_list(String role_context, String enable) {
         System.out.println(role_context);
-        List<RoleInfo> users = roleDao.selectByContext(role_context,enable);
+        List<RoleInfo> users = roleDao.selectByContext(role_context, enable);
         return JSONObject.toJSONString(users);
     }
 
@@ -220,10 +216,10 @@ public class PermissionController extends BaseController{
     @Transactional
     public String role_enable(String[] ids, String enable) {
 
-        try{
-            int result= roleDao.updateEnable(ids, enable);
+        try {
+            int result = roleDao.updateEnable(ids, enable);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
-        }catch (Exception e){
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -233,10 +229,10 @@ public class PermissionController extends BaseController{
     @RequestMapping(value = "/role_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String role_detail(String id) {
-        try{
+        try {
             RoleInfo role = roleDao.selectByPrimaryKey(id);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", role);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -249,16 +245,16 @@ public class PermissionController extends BaseController{
 
     @RequestMapping(value = "/jstree_add_node", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String jstree_add_node(String parent_id,String text,String icon,String url,String order,String level,String resource_type,String notice_title) {
+    public String jstree_add_node(String parent_id, String text, String icon, String url, String order, String level, String resource_type, String notice_title,String event_code) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        try{
-            if(notice_title.length()>4){
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"参数验证不通过-提示语长度不可超过4个汉字", null);
+        try {
+            if (notice_title.length() > 4) {
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "参数验证不通过-提示语长度不可超过4个汉字", null);
             }
 
-            String id = SnowflakeIdWorker.getInstance().nextId()+"";
+            String id = SnowflakeIdWorker.getInstance().nextId() + "";
 
-            ResourceTreeInfo rti=new ResourceTreeInfo();
+            ResourceTreeInfo rti = new ResourceTreeInfo();
             rti.setId(id);
             rti.setParent(parent_id);
             rti.setText(text);
@@ -273,12 +269,14 @@ public class PermissionController extends BaseController{
             rti.setLevel(level);
             rti.setResource_type(resource_type);
             rti.setNotice_title(notice_title);
+            rti.setEvent_code(event_code);
             debugInfo(rti);
             resourceTreeMapper.insert(rti);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
 
 
@@ -286,9 +284,9 @@ public class PermissionController extends BaseController{
 
     @RequestMapping(value = "/jstree_node", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String jstree_node(String parent_id,String text) {
+    public String jstree_node(String parent_id, String text) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        List<ResourceTreeInfo> rtis=resourceTreeMapper.selectAll();
+        List<ResourceTreeInfo> rtis = resourceTreeMapper.selectAll();
         rtis.sort(Comparator.comparing(ResourceTreeInfo::getOrderN));
 
         return JSON.toJSONString(rtis);
@@ -296,7 +294,7 @@ public class PermissionController extends BaseController{
 
     @RequestMapping(value = "/jstree_get_node", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String jstree_get_node(String id,String text) {
+    public String jstree_get_node(String id, String text) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         return JSON.toJSONString(resourceTreeMapper.selectByPrimaryKey(id));
     }
@@ -305,7 +303,7 @@ public class PermissionController extends BaseController{
     @ResponseBody
     public String jstree_update_node(ResourceTreeInfo rti) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        try{
+        try {
             rti.setUpdate_time(new Timestamp(new Date().getTime()));
             rti.setCreate_time(null);
             rti.setOwner(getUser().getId());
@@ -314,10 +312,11 @@ public class PermissionController extends BaseController{
             debugInfo(rti);
             resourceTreeMapper.updateByPrimaryKey(rti);
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),null );
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
 
     }
@@ -326,12 +325,13 @@ public class PermissionController extends BaseController{
     @ResponseBody
     public String jstree_del_node(String id) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        try{
+        try {
             resourceTreeMapper.deleteByPrimaryKey(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),null );
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
 
     }
@@ -339,14 +339,15 @@ public class PermissionController extends BaseController{
 
     @RequestMapping(value = "/jstree_update_parent", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String jstree_update_parent(String id,String parent_id,String level) {
+    public String jstree_update_parent(String id, String parent_id, String level) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        try{
-            resourceTreeMapper.updateParentById(id,parent_id,level);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),null );
+        try {
+            resourceTreeMapper.updateParentById(id, parent_id, level);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
 
     }
@@ -354,22 +355,22 @@ public class PermissionController extends BaseController{
     @RequestMapping(value = "/jstree_add_permission")
     @ResponseBody
     @Transactional
-    public String jstree_add_permission(String id,String[] resource_id,String code,String name) {
+    public String jstree_add_permission(String id, String[] resource_id, String code, String name) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        try{
-            if(id.equalsIgnoreCase("-1")){
-                id=SnowflakeIdWorker.getInstance().nextId()+"";
+        try {
+            if (id.equalsIgnoreCase("-1")) {
+                id = SnowflakeIdWorker.getInstance().nextId() + "";
                 //新增角色
-                RoleInfo role=new RoleInfo();
+                RoleInfo role = new RoleInfo();
                 role.setCode(code);
                 role.setName(name);
                 role.setId(id);
                 roleDao.insert(role);
             }
             debugInfo(resource_id);
-            List<RoleResourceInfo> rris=new ArrayList<>();
-            for(String rid:resource_id){
-                RoleResourceInfo rri=new RoleResourceInfo();
+            List<RoleResourceInfo> rris = new ArrayList<>();
+            for (String rid : resource_id) {
+                RoleResourceInfo rri = new RoleResourceInfo();
                 rri.setRole_id(id);
                 rri.setResource_id(rid);
                 rri.setCreate_time(new Timestamp(new Date().getTime()));
@@ -378,11 +379,12 @@ public class PermissionController extends BaseController{
             }
             resourceTreeMapper.deleteById(id);
             resourceTreeMapper.updateUserResource(rris);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e.getCause());
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),null );
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
     }
 
@@ -391,9 +393,9 @@ public class PermissionController extends BaseController{
     @ResponseBody
     public String jstree_permission_list(String id) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        List<RoleResourceInfo> uris=new ArrayList<>();
+        List<RoleResourceInfo> uris = new ArrayList<>();
 
-        uris=resourceTreeMapper.selectByUserId(id);
+        uris = resourceTreeMapper.selectByUserId(id);
 
         return JSON.toJSONString(uris);
     }
@@ -402,8 +404,8 @@ public class PermissionController extends BaseController{
     @ResponseBody
     public String jstree_permission_list2() {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        List<UserResourceInfo2> uris=new ArrayList<>();
-        uris=resourceTreeMapper.selectResourceByUserId(getUser().getId());
+        List<UserResourceInfo2> uris = new ArrayList<>();
+        uris = resourceTreeMapper.selectResourceByUserId(getUser().getId());
         uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
 
         return JSON.toJSONString(uris);
@@ -416,6 +418,27 @@ public class PermissionController extends BaseController{
         return "admin/user_index";
     }
 
+    @RequestMapping(value = "/user_tag_group_code", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String user_tag_group_code() {
+        try {
+            String tag_group_code = getUser().getTag_group_code();
+
+            if(org.apache.commons.lang3.StringUtils.isEmpty(tag_group_code)){
+                return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", new ArrayList<DataTagGroupInfo>());
+            }
+            Example example=new Example(DataTagGroupInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete",Const.NOT_DELETE);
+            criteria.andIn("tag_group_code", Arrays.asList(tag_group_code.split(",")));
+
+            List<DataTagGroupInfo> dataTagGroupInfos = dataTagGroupMapper.selectByExample(example);
+
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", dataTagGroupInfos);
+        } catch (Exception e) {
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
 
 
     public User getUser() {
@@ -441,16 +464,15 @@ public class PermissionController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName(), e.getCause());
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
             }
         }
     }
-
 
 
 }

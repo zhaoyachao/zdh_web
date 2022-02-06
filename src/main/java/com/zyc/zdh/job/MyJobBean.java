@@ -1,5 +1,6 @@
 package com.zyc.zdh.job;
 
+import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
@@ -58,7 +59,7 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 				throw new Exception("任务id为空");
 			}
 			// 记录当前时间更新任务最后执行时间
-			Date currentTime =context.getFireTime();
+			Date currentTime =context.getScheduledFireTime();
 
 			QuartzJobMapper quartzJobMapper2 = this.quartzJobMapper;
 			QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
@@ -99,9 +100,8 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 
 
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
-			logger.error(e.getMessage());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 
 	}

@@ -4,11 +4,11 @@
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
 
 
 
@@ -44,8 +44,8 @@
                   $(rows).each(function() {// 通过获得别选中的来进行遍历
                       ids.push(this.id);// cid为获得到的整条数据中的一列
                   });
-                  console.log(ids)
-                  deleteMs(ids)
+                  console.log(ids);
+                  deleteMs(ids);
                   layer.close(layer.index);
               }, function(){
 
@@ -64,7 +64,7 @@
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success")
+                  console.info("success");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url : server_context+"/approval_auditor_list"
                   });
@@ -218,7 +218,7 @@
           var wpd = $(window.parent.document);
           var mainContent = wpd.find('.J_mainContent');
           var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-          var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+          var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
           pageTabs.find(".J_menuTab.active").removeClass("active");
           mainContent.find("iframe").css("display", "none");
           if (thisIframe.length > 0) {	// 选项卡已打开

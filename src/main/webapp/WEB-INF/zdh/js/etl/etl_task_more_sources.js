@@ -4,7 +4,7 @@
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
@@ -78,7 +78,7 @@
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               top.layer.open({
                   type: 2,
                   title: '多源ETL任务配置',
@@ -99,7 +99,7 @@
 
           },
           'click #copy': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               top.layer.open({
                   type: 2,
                   title: 'ETL任务配置',
@@ -125,7 +125,7 @@
               }, function(index){
                   var ids = new Array();// 声明一个数组
                   ids.push(row.id);
-                  deleteMs(ids)
+                  deleteMs(ids);
                   layer.close(layer.index);
               }, function(){
 

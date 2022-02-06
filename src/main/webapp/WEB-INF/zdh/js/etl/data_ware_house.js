@@ -8,7 +8,7 @@
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
-      $('#exampleTableEvents').attr("data-height",height)
+      $('#exampleTableEvents').attr("data-height",height);
       function deleteMs(id) {
           $.ajax({
               url: server_context+"/data_ware_house_del",
@@ -58,7 +58,7 @@
                       async:false,
                       dataType: "json",
                       success: function (data) {
-                          console.info(data.msg)
+                          console.info(data.msg);
                           layer.msg(data.msg)
                       },
                       error: function (data) {

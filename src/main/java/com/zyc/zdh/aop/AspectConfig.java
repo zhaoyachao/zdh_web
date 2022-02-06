@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.NoticeMapper;
 import com.zyc.zdh.dao.UserOperateLogMapper;
 import com.zyc.zdh.entity.*;
@@ -67,8 +68,8 @@ public class AspectConfig implements Ordered{
 			return pjp.proceed();
 		} catch (Throwable e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 		return null;
 	}
@@ -119,14 +120,14 @@ public class AspectConfig implements Ordered{
 					}
 				}
 			}catch (Exception e){
-				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-                logger.error(error, e.getCause());
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                logger.error(error, e);
 			}
 
 			return o;
 		} catch (Throwable e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-            logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            logger.error(error, e);
 			return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统错误", e);
 		}
 	}
@@ -138,8 +139,8 @@ public class AspectConfig implements Ordered{
 			logger.info("aroundLog2...end....");
 			return o;
 		} catch (Throwable e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 		}
 		return null;
 	}
@@ -169,6 +170,13 @@ public class AspectConfig implements Ordered{
 		MethodSignature methodSignature = (MethodSignature) signature;
 		Method targetMethod = methodSignature.getMethod();
 		Annotation[] annotations = targetMethod.getAnnotations();
+		boolean is_white=false;
+		for (Annotation annotation : annotations) {
+			if (annotation.annotationType().equals(White.class)){
+				if(targetMethod.getAnnotation(White.class).value())
+					is_white=true;
+			}
+		}
 		for (Annotation annotation : annotations) {
 			//此处可以改成自定义的注解
 			if (annotation.annotationType().equals(RequestMapping.class)) {
@@ -179,7 +187,7 @@ public class AspectConfig implements Ordered{
 					url = url.substring(1).replaceAll("function:","");
 				url = url.split("\\.")[0];
 
-				if(white().contains(url)){
+				if(white().contains(url) || is_white){
 					break;
 				}
 				if(!SecurityUtils.getSubject().isPermitted(url)){
@@ -208,11 +216,10 @@ public class AspectConfig implements Ordered{
 			ni.setUpdate_time(new Timestamp(new Date().getTime()));
 			noticeMapper.insert(ni);
 		}catch (Exception e){
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			logger.error(error, e.getCause());
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			logger.error(error, e);
 			logger.error("接口无权限告警异常",e.getCause());
 		}
-
 	}
 
 	private boolean is_operate_log(String url){
@@ -280,14 +287,14 @@ public class AspectConfig implements Ordered{
 					System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
-					String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-			        logger.error(error, e.getCause());;
+					String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			        logger.error(error, e);
 				}
 				// 恢复访问控制权限
 				fields[i].setAccessible(accessFlag);
 			} catch (IllegalArgumentException e) {
-				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName();
-				logger.error(error, e.getCause());
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+				logger.error(error, e);
 			}
 		}
 	}

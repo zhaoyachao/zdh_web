@@ -438,8 +438,8 @@
         };
         laydate(start);
         laydate(end);
-        $("#start_time").val(getCurrentDate())
-        $("#end_time").val(getCurrentDate())
+        $("#start_time").val(getCurrentDate());
+        $("#end_time").val(getCurrentDate());
 
 
         $('#status').chosen();
@@ -499,15 +499,15 @@
                     $(rows).each(function () {// 通过获得别选中的来进行遍历
                         ids.push(this.id);// cid为获得到的整条数据中的一列
                     });
-                    console.log(ids)
-                    deleteMs(ids)
+                    console.log(ids);
+                    deleteMs(ids);
                     layer.close(layer.index);
                 }, function(){
 
                 });
             }
 
-        })
+        });
 
         function deleteMs(ids) {
             $.ajax({
@@ -516,7 +516,7 @@
                 type: "post",
                 dataType: "json",
                 success: function (data) {
-                    console.info("success")
+                    console.info("success");
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url: "/task_group_log_instance_list2?" + $("#task_logs_form").serialize(),
                         contentType: "application/json;charset=utf-8",
@@ -574,9 +574,9 @@
                         type: "post",
                         dataType: "json",
                         success: function (data) {
-                            console.info("success")
+                            console.info("success");
                             if(data.code != "200"){
-                                layer.msg(data.msg)
+                                layer.msg(data.msg);
                                 return
                             }
                             layer.close(index)
@@ -599,17 +599,17 @@
                     type: "post",
                     dataType: "json",
                     success: function (data) {
-                        console.info("success")
+                        console.info("success");
                         if (!data && typeof data != "undefined" && data != 0 || data.length < 1) {
                             if (typeof row.history_server == "undefined"){
-                                layer.msg("无法找到历史服务器并且应用程序已经死亡")
+                                layer.msg("无法找到历史服务器并且应用程序已经死亡");
                                 return;
                             }
-                            window.open(row.history_server + "/" + row.application_id)
+                            window.open(row.history_server + "/" + row.application_id);
                             return;
                         }
-                        console.info("http://" + data.zdh_host + ":" + data.web_port)
-                        window.open("http://" + data.zdh_host + ":" + data.web_port)
+                        console.info("http://" + data.zdh_host + ":" + data.web_port);
+                        window.open("http://" + data.zdh_host + ":" + data.web_port);
                     },
                     error: function (data) {
                         console.info("error: " + data.responseText);
@@ -731,7 +731,7 @@
                 title: '进度',
                 sortable: true,
                 formatter: function (value, row, index) {
-                    var context = row.process_msg
+                    var context = row.process_msg;
 
                     var class_str = "progress-bar progress-bar-success"
                     if (row.status == "error" || row.status == "kill"|| row.status == "killed") {
@@ -753,17 +753,17 @@
                 width:230,
                 events: operateEvents,//给按钮注册事件
                 formatter: function (value, row, index) {
-                    var r1=row
-                    var class_str = "btn-primary  btn-xs"
-                    var class_str2 = "btn-primary  "
-                    var context = "未运行"
-                    var btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>'
-                    var btn_kill_str='<button id="kill" type="button" class="btn btn-danger btn-xs">杀死</button>'
+                    var r1=row;
+                    var class_str = "btn-primary  btn-xs";
+                    var class_str2 = "btn-primary  ";
+                    var context = "未运行";
+                    var btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>';
+                    var btn_kill_str='<button id="kill" type="button" class="btn btn-danger btn-xs">杀死</button>';
                     if(row.is_retryed==1){
                         btn_retry_str='<button disabled="disabled" id="retry" type="button" class="btn btn-primary btn-xs">重试</button>'
                     }
 
-                    var process=100
+                    var process=100;
 
                     if (value == "finish") {
                         context = "完成";
@@ -772,7 +772,7 @@
                         btn_kill_str=''
                     }
                     if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
-                        context = "运行中"
+                        context = "运行中";
                         class_str = "btn-primary  btn-xs";
                         btn_retry_str=''
                     }

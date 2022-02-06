@@ -19,16 +19,6 @@ import java.util.List;
  */
 public interface EtlApplyTaskMapper extends BaseMapper<EtlApplyTaskInfo> {
 
-    @Delete({
-            "<script>",
-            "delete from etl_apply_task_info where id in ",
-            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
-            "#{id}",
-            "</foreach>",
-            "</script>"
-    }
-            )
-    public int deleteBatchByIds(@Param("ids") String[] ids);
 
     /**
      * 逻辑删除

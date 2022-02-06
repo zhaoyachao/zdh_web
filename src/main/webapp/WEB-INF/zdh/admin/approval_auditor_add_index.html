@@ -162,14 +162,14 @@
 
             $.ajax({
                 type: 'get',
-                url: "user_group_list?enable=true",
+                url: server_context+"/user_group_list?enable=true",
                 async:false,
                 dataType: 'json',
                 data: '',
                 //成功返回
                 success: function (data) {
 
-                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>'
+                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
                     for (var i = 0; i < data.result.length; i++) {
                         str += '<option value=\"' + data.result[i].id + '\" hassubinfo=\"true\">' + data.result[i].name + '</option>'
                     }
@@ -190,13 +190,13 @@
 
             $.ajax({
                 type: 'GET',
-                url: "approval_config_list",
+                url: server_context+"/approval_config_list",
                 async:false,
                 dataType: 'json',
                 data: "",
                 //成功返回
                 success: function (data) {
-                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>'
+                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
                     for (var i = 0; i < data.length; i++) {
                         str += '<option value=\"' + data[i].code + '\" hassubinfo=\"true\">' + data[i].code_name + '</option>'
                     }
@@ -220,9 +220,9 @@
                 data: "",
                 //成功返回
                 success: function (data) {
-                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>'
+                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
                     for (var i = 0; i < data.length; i++) {
-                        str += '<option value=\"' + data[i].id + '\"user_group\"=\"'+data[i].user_group+'\"' + '\" hassubinfo=\"true\">' + data[i].userName + '</option>'
+                        str += '<option value=\"' + data[i].id + '\"user_group\"=\"'+data[i].user_group+'\"' + '\" hassubinfo=\"true\">' + data[i].userName + '</option>';
                     }
                     $('#auditor_id').html(str);
                     $("#auditor_id").trigger("chosen:updated");
@@ -244,7 +244,7 @@
             if(s.id != '-1'){
                 $.ajax({
                     type: 'GET',
-                    url: "approval_auditor_detail",
+                    url: server_context+"/approval_auditor_detail",
                     dataType: 'json',
                     async:false,
                     data: "id="+s.id,
@@ -293,7 +293,7 @@
                 $('#btn_up').click(function () {
                     $.ajax({
                         type: 'POST',
-                        url: "approval_auditor_update",
+                        url: server_context+"/approval_auditor_update",
                         dataType: 'json',
                         data: $("#signupForm").serialize()+"&id="+s.id,
                         //发送数据前
@@ -339,13 +339,13 @@
                 $('#btn_up').click(function () {
 
                     if($('#user_group').val() == ""){
-                        layer.msg("组名不可为空")
+                        layer.msg("组名不可为空");
                         return ;
                     }
 
                     $.ajax({
                         type: 'POST',
-                        url: "approval_auditor_add",
+                        url: server_context+"/approval_auditor_add",
                         dataType: 'json',
                         data: $("#signupForm").serialize(),
                         //发送数据前

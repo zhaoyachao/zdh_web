@@ -131,17 +131,17 @@
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
 
-        var height=400
+        var height=400;
         if($(document.body).height()*0.8>height){
             height=$(document.body).height()*0.8
         }
-        $('#exampleTableEvents').attr("data-height",height)
+        $('#exampleTableEvents').attr("data-height",height);
 
         function openTabPage(url, title) {
             var wpd = $(window.parent.document);
             var mainContent = wpd.find('.J_mainContent');
             var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
             pageTabs.find(".J_menuTab.active").removeClass("active");
             mainContent.find("iframe").css("display", "none");
             if (thisIframe.length > 0) {	// 选项卡已打开
@@ -193,8 +193,8 @@
         };
         laydate(start);
         laydate(end);
-        $("#start_time").val(getCurrentDate())
-        $("#end_time").val(getCurrentDate())
+        $("#start_time").val(getCurrentDate());
+        $("#end_time").val(getCurrentDate());
 
 
         $('#status').chosen();
@@ -238,7 +238,7 @@
                 dataType: "json"
             });
 
-        })
+        });
 
         $('#remove').click(function () {
 
@@ -362,14 +362,14 @@
                         console.info("success")
                         if (!data && typeof data != "undefined" && data != 0 || data.length < 1) {
                             if (typeof row.history_server == "undefined"){
-                                layer.msg("无法找到历史服务器并且应用程序已经死亡")
+                                layer.msg("无法找到历史服务器并且应用程序已经死亡");
                                 return;
                             }
-                            window.open(row.history_server + "/" + row.application_id)
+                            window.open(row.history_server + "/" + row.application_id);
                             return;
                         }
-                        console.info("http://" + data.zdh_host + ":" + data.web_port)
-                        window.open("http://" + data.zdh_host + ":" + data.web_port)
+                        console.info("http://" + data.zdh_host + ":" + data.web_port);
+                        window.open("http://" + data.zdh_host + ":" + data.web_port);
                     },
                     error: function (data) {
                         console.info("error: " + data.responseText);
@@ -491,9 +491,9 @@
                 title: '进度',
                 sortable: true,
                 formatter: function (value, row, index) {
-                    var context = row.process_msg
+                    var context = row.process_msg;
 
-                    var class_str = "progress-bar progress-bar-success"
+                    var class_str = "progress-bar progress-bar-success";
                     if (row.status == "error" || row.status == "killed") {
                         class_str = "progress-bar progress-bar-danger"
                         //context = "采集失败"
@@ -514,59 +514,59 @@
                 events: operateEvents,//给按钮注册事件
                 formatter: function (value, row, index) {
                     var r1=row
-                    var class_str = "btn-primary  btn-xs"
-                    var class_str2 = "btn-primary  "
-                    var context = "未运行"
-                    var btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>'
-                    var btn_kill_str='<button id="kill" type="button" class="btn btn-danger btn-xs">杀死</button>'
+                    var class_str = "btn-primary  btn-xs";
+                    var class_str2 = "btn-primary  ";
+                    var context = "未运行";
+                    var btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>';
+                    var btn_kill_str='<button id="kill" type="button" class="btn btn-danger btn-xs">杀死</button>';
                     if(row.is_retryed==1){
                         btn_retry_str='<button disabled="disabled" id="retry" type="button" class="btn btn-primary btn-xs">重试</button>'
                     }
 
-                    var process=100
+                    var process=100;
 
                     if (value == "finish") {
-                        context = "完成"
-                        class_str = "btn-primary btn-xs"
-                        btn_retry_str=''
+                        context = "完成";
+                        class_str = "btn-primary btn-xs";
+                        btn_retry_str='';
                         btn_kill_str=''
                     }
                     if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
-                        context = "运行中"
-                        class_str = "btn-primary  btn-xs"
-                        btn_retry_str=''
+                        context = "运行中";
+                        class_str = "btn-primary  btn-xs";
+                        btn_retry_str='';
                     }
                     if (value == "error") {
-                        context = "失败"
-                        class_str = "btn-danger btn-xs"
-                        btn_kill_str=''
+                        context = "失败";
+                        class_str = "btn-danger btn-xs";
+                        btn_kill_str='';
                     }
                     if (value == "retry") {
                         context = "重试"
                         class_str = "btn-danger btn-xs"
                     }
                     if (value == "kill" ){
-                        context = "杀死中"
-                        class_str = "btn-danger btn-xs"
-                        btn_kill_str=''
+                        context = "杀死中";
+                        class_str = "btn-danger btn-xs";
+                        btn_kill_str='';
                     }
                     if (value=="killed" ){
-                        context = "已杀死"
-                        class_str = "btn-danger btn-xs"
+                        context = "已杀死";
+                        class_str = "btn-danger btn-xs";
                         btn_kill_str=''
                     }
                     if (value == "create") {
-                        context = "创建成功"
-                        class_str = "btn-primary  btn-xs"
+                        context = "创建成功";
+                        class_str = "btn-primary  btn-xs";
                         btn_retry_str=''
                     }
 
                     if(context=="未运行"){
-                        btn_retry_str=''
+                        btn_retry_str='';
                         btn_kill_str=''
                     }
                     var url=server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time
-                    var title=row.job_context + "日志"
+                    var title=row.job_context + "日志";
                     return [
                         '<div style="text-align:center" >'+
                         '<div class="btn-group">'+
