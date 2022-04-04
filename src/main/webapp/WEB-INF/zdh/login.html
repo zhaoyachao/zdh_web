@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>后台管理-登陆</title>
+    <title>ZDH后台管理-登陆</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -15,8 +15,8 @@
 
     <![endif]-->
     <style>
-        html, body {width: 100%;height: 100%;overflow: hidden}
-        body {background: #1E9FFF;}
+        html, body {width: 100%;height: 100%;overflow: hidden;}
+        body {background: #1E9FFF;background-image: url("img/b4.jpg");background-repeat: no-repeat; background-size: 100% 100%;}
         body:after {content:'';background-repeat:no-repeat;background-size:cover;-webkit-filter:blur(3px);-moz-filter:blur(3px);-o-filter:blur(3px);-ms-filter:blur(3px);filter:blur(3px);position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1;}
         .layui-container {width: 100%;height: 100%;overflow: hidden}
         .admin-login-background {width:360px;height:300px;position:absolute;left:50%;top:40%;margin-left:-180px;margin-top:-100px;}
@@ -37,19 +37,19 @@
         <div class="layui-form login-form">
             <form class="layui-form" action="" method="post" id="login">
                 <div class="layui-form-item logo-title">
-                    <h1>ZDH后台登录</h1>
+                    <h1 id="platform_name">ZDH数据平台</h1>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-icon layui-icon-username" for="username"></label>
-                    <input type="text" name="username" lay-verify="required|account" placeholder="用户名" autocomplete="off" class="layui-input" >
+                    <input id="username" type="text" name="username" lay-verify="required|account" placeholder="用户名" autocomplete="off" class="layui-input" >
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-icon layui-icon-password" for="password"></label>
-                    <input type="password" name="password" lay-verify="required|password" placeholder="密码" autocomplete="off" class="layui-input">
+                    <input id="password" type="password" name="password" lay-verify="required|password" placeholder="密码" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-icon layui-icon-vercode" for="captcha"></label>
-                    <input type="text" name="captcha" lay-verify="required|captcha" placeholder="图形验证码" autocomplete="off" class="layui-input verification captcha">
+                    <input id="captcha" type="text" name="captcha" lay-verify="required|captcha" placeholder="图形验证码" autocomplete="off" class="layui-input verification captcha">
                     <div class="captcha-img">
                         <img id="captcha_img" src="captcha" onclick="refash_captcha()">
                     </div>
@@ -59,7 +59,7 @@
 <!--                </div>-->
 
                 <div class="layui-form-item">
-                    <button class="layui-btn layui-btn layui-btn-normal layui-btn-fluid" lay-submit="" lay-filter="login">登 入</button>
+                    <button class="layui-btn layui-btn layui-btn-normal layui-btn-fluid" lay-submit="ddddd" lay-filter="login4444" onclick="login2();return false;">登 入</button>
                 </div>
                 <div class="layui-form-item">
                     <div class="layui-inline">
@@ -79,6 +79,34 @@
 <script src="js/layui/lib/jq-module/jquery.particleground.min.js" charset="utf-8"></script>
 <script src="js/zdh_common.js"></script>
 <script>
+
+    $(document).ready(function () {
+        //加载平台名称
+        $.ajax({
+            type: 'GET',
+            url: server_context+"/get_platform_name",
+            dataType: 'json',
+            async: false,
+            data: {},
+            //成功返回
+            success: function (data) {
+                //layer.close(index)
+                if(data.code != "200"){
+                    parent.layer.msg(data.msg);
+                    return ;
+                }
+                $('#platform_name').html(data.result);
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+
+    });
 
     function refash_captcha() {
         $("#captcha_img").attr('src',server_context+'/captcha?'+Math.random());
@@ -101,6 +129,7 @@
 
         //进行登录操作
         form.on('submit(login)', function (data) {
+            return false;
             data = data.field;
             if (data.username == '') {
                 layer.msg('用户名不能为空');
@@ -121,6 +150,46 @@
         });
     });
 
+    function  login2() {
+
+        if (is_empty($('#username').val())) {
+            layer.msg('用户名不能为空');
+            return false;
+        }
+        if (is_empty($('#password').val())) {
+            layer.msg('密码不能为空');
+            return false;
+        }
+        if (is_empty($('#captcha').val())) {
+            layer.msg('验证码不能为空');
+            return false;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/check_captcha",
+            dataType: 'json',
+            async: false,
+            data: $("#login").serialize(),
+            //成功返回
+            success: function (data) {
+                //layer.close(index)
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
+                }
+                $("#login").submit();
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+
+    }
     function retrieve_password() {
 
         var index=layer.load(1, {

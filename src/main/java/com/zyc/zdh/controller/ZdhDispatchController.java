@@ -4,32 +4,30 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.JobCommon2;
-import com.zyc.zdh.job.JobStatus;
-import com.zyc.zdh.job.ScheduleSource;
-import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.DispatchTaskService;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
@@ -55,6 +53,8 @@ public class ZdhDispatchController extends BaseController {
     QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
     @Autowired
     QuartzExecutorMapper quartzExecutorMapper;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     /**
      * 调度任务首页
@@ -72,7 +72,7 @@ public class ZdhDispatchController extends BaseController {
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/dispatch_task_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/dispatch_task_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String dispatch_task_list(String[] ids) {
         List<QuartzJobInfo> list = new ArrayList<>();
@@ -160,7 +160,7 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
-    @RequestMapping(value="/dispatch_task_group_add", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/dispatch_task_group_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String dispatch_task_group_add(QuartzJobInfo quartzJobInfo) {
 
@@ -191,9 +191,9 @@ public class ZdhDispatchController extends BaseController {
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/dispatch_task_group_delete", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/dispatch_task_group_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String dispatch_task_group_delete(String[] ids) {
         QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
         try{
@@ -215,7 +215,7 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
-    @RequestMapping(value="/dispatch_task_group_update", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/dispatch_task_group_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String dispatch_task_group_update(QuartzJobInfo quartzJobInfo) {
 
@@ -243,9 +243,9 @@ public class ZdhDispatchController extends BaseController {
      * @param concurrency 0:串行,1:并行
      * @return
      */
-    @RequestMapping("/dispatch_task_execute")
+    @RequestMapping(value = "/dispatch_task_execute", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String dispatch_task_execute(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time,String[] sub_tasks) {
         debugInfo(quartzJobInfo);
         System.out.println(concurrency);
@@ -300,14 +300,14 @@ public class ZdhDispatchController extends BaseController {
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"执行成功", null);
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"执行失败", e);
         }
     }
 
-    @RequestMapping("/dispatch_task_execute_time")
+    @RequestMapping(value = "/dispatch_task_execute_time",method = RequestMethod.POST)
     @ResponseBody
     public String dispatch_task_execute_time(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time,String[] sub_tasks) {
         debugInfo(quartzJobInfo);
@@ -326,7 +326,7 @@ public class ZdhDispatchController extends BaseController {
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"执行成功", result);
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"执行失败", e);
         }
@@ -371,7 +371,7 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
-    @RequestMapping(value = "/dispatch_task_execute_quartz", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/dispatch_task_execute_quartz", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String dispatch_task_execute_quartz(QuartzJobInfo quartzJobInfo,String reset) {
 
@@ -401,7 +401,7 @@ public class ZdhDispatchController extends BaseController {
             //添加调度器并更新quartzjobinfo
             quartzManager2.addTaskToQuartz(dti);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             result=ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"调度开启失败",e);
 
@@ -418,9 +418,9 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
-    @RequestMapping("/dispatch_task_quartz_pause")
+    @RequestMapping(value = "/dispatch_task_quartz_pause",method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String dispatch_task_quartz_pause(QuartzJobInfo quartzJobInfo) {
 
         try{
@@ -437,6 +437,8 @@ public class ZdhDispatchController extends BaseController {
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"暂停成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"暂停失败", e);
         }
@@ -449,8 +451,9 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
-    @RequestMapping("/dispatch_task_quartz_del")
+    @RequestMapping(value = "/dispatch_task_quartz_del", method = RequestMethod.POST)
     @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
     public String dispatch_task_quartz_del(QuartzJobInfo quartzJobInfo) {
 
         try{
@@ -464,7 +467,7 @@ public class ZdhDispatchController extends BaseController {
     }
 
 
-    @RequestMapping("zdh_instance_list")
+    @RequestMapping(value = "zdh_instance_list", method = RequestMethod.POST)
     @ResponseBody
     public String zdh_instance_list() {
 
@@ -473,7 +476,7 @@ public class ZdhDispatchController extends BaseController {
         return JSON.toJSONString(instances);
     }
 
-    @RequestMapping(value="/dispatch_executor_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/dispatch_executor_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String dispatch_executor_list(QrtzSchedulerState qrtzSchedulerState) {
         try{
@@ -492,11 +495,13 @@ public class ZdhDispatchController extends BaseController {
             List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(example);
             return JSON.toJSONString(qrtzSchedulerStates);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", e);
         }
     }
 
-    @RequestMapping(value="/dispatch_executor_status", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/dispatch_executor_status", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String dispatch_executor_status(String instance_name, String status) {
         try{
@@ -510,9 +515,135 @@ public class ZdhDispatchController extends BaseController {
             quartzExecutorMapper.insert(qei);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
+
+
+    @RequestMapping("/dispatch_system_task_add_index")
+    public String dispatch_system_task_add_index() {
+        return "etl/dispatch_system_task_add_index";
+    }
+
+    @RequestMapping(value="/dispatch_system_task_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String dispatch_system_task_list(String instance_name) {
+        try{
+
+            Example example=new Example(QuartzJobInfo.class);
+
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andIn("job_type", Arrays.asList(new String[]{JobType.CHECK.getCode(),JobType.EMAIL.getCode(),JobType.RETRY.getCode(),JobType.BLOOD.getCode()}));
+            if(!StringUtils.isEmpty(instance_name)){
+                criteria.andLike("job_context", getLikeCondition(instance_name));
+            }
+            List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.selectByExample(example);
+
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"查询成功", quartzJobInfos);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", e);
+        }
+    }
+
+    @RequestMapping(value="/dispatch_system_task_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public String dispatch_system_task_add(QuartzJobInfo quartzJobInfo) {
+        try{
+
+            QuartzJobInfo qji = quartzManager2.createQuartzJobInfo(quartzJobInfo.getJob_type(),quartzJobInfo.getJob_model(),new Date(), new Date(),
+                    quartzJobInfo.getJob_context(), quartzJobInfo.getExpr(),"-1","",  quartzJobInfo.getJob_type());
+            qji.setAlarm_account(getUser().getUserName());
+            qji.setAlarm_email("on");
+            qji.setAlarm_zdh("on");
+            qji.setAlarm_sms("on");
+            quartzManager2.addQuartzJobInfo(qji);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+        }
+    }
+
+    @RequestMapping(value="/dispatch_system_task_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public String dispatch_system_task_update(QuartzJobInfo quartzJobInfo) {
+        try{
+
+            quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+        }
+    }
+
+    @RequestMapping(value="/dispatch_system_task_create", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public String dispatch_system_task_create(String id) {
+        try{
+
+            if(StringUtils.isEmpty(id)){
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", "id参数不可为空");
+            }
+            QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(id);
+            String sql=String.format("delete from QRTZ_SIMPLE_TRIGGERS where TRIGGER_GROUP in ('%s')", qji.getJob_type());
+            String sql2=String.format("delete from QRTZ_TRIGGERS where TRIGGER_GROUP in ('%s')", qji.getJob_type());
+            String sql3=String.format("delete from QRTZ_JOB_DETAILS where  JOB_GROUP in ('%s')", qji.getJob_type());
+            jdbcTemplate.execute(sql);
+            jdbcTemplate.execute(sql2);
+            jdbcTemplate.execute(sql3);
+
+            quartzManager2.addTaskToQuartz(qji);
+
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+        }
+    }
+
+    @RequestMapping(value="/dispatch_system_task_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public String dispatch_system_task_delete(String id) {
+        try{
+            if(StringUtils.isEmpty(id)){
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"禁用失败", "id参数不可为空");
+            }
+            QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(id);
+
+
+            if(!EnumUtils.isValidEnum(JobType.class, qji.getJob_type())){
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"禁用失败", "无法识别当前任务类型:"+qji.getJob_type());
+            }
+
+            String sql=String.format("delete from QRTZ_SIMPLE_TRIGGERS where TRIGGER_GROUP in ('%s')", qji.getJob_type());
+            String sql2=String.format("delete from QRTZ_TRIGGERS where TRIGGER_GROUP in ('%s')", qji.getJob_type());
+            String sql3=String.format("delete from QRTZ_JOB_DETAILS where  JOB_GROUP in ('%s')", qji.getJob_type());
+            jdbcTemplate.execute(sql);
+            jdbcTemplate.execute(sql2);
+            jdbcTemplate.execute(sql3);
+            quartzManager2.deleteTask(qji, "remove");
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"禁用成功", null);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"禁用失败", e);
+        }
+    }
+
 
 
     private void debugInfo(Object obj) {
@@ -532,13 +663,13 @@ public class ZdhDispatchController extends BaseController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
                     logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}", e);
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             }
         }
     }

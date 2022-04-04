@@ -1,13 +1,12 @@
 package com.zyc.zdh.shiro;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.zyc.zdh.dao.ResourceTreeMapper;
+import com.zyc.zdh.entity.User;
 import com.zyc.zdh.entity.UserResourceInfo2;
+import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.StringUtils;
-import org.apache.shiro.SecurityUtils;
+import com.zyc.zdh.util.SpringContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -16,12 +15,10 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.realm.AuthorizingRealm;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 
-import com.zyc.zdh.entity.User;
-import com.zyc.zdh.service.AccountService;
-import com.zyc.zdh.util.SpringContext;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyRealm extends AuthorizingRealm {
 

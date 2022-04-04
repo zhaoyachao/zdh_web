@@ -1,15 +1,5 @@
 package com.zyc.zdh.aop;
 
-import java.io.PrintWriter;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
 import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.NoticeMapper;
@@ -19,9 +9,7 @@ import com.zyc.zdh.exception.ZdhException;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
-import com.zyc.zdh.util.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.web.util.WebUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -40,6 +28,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 /***
@@ -58,7 +53,7 @@ public class AspectConfig implements Ordered{
 	//在方法上的自定义注解使用@annotation,类上自定义注解使用@within(com.zyc.springboot.类名)
 	@Pointcut("@annotation(com.zyc.zdh.aop.Log)")
 	public void pointcutMethod2(){}
-	@Pointcut("execution(* com.zyc.zdh.controller.*.*(..))")
+	@Pointcut("execution(* com.zyc.zdh.controller.*.*(..)) && !execution(* com.zyc.zdh.controller.LoginController.login1(..)) && !execution(* com.zyc.zdh.controller.LoginController.getIndex(..))")
 	public void pointcutMethod3(){}
 
 	@Around(value = "pointcutMethod()")
@@ -68,7 +63,7 @@ public class AspectConfig implements Ordered{
 			return pjp.proceed();
 		} catch (Throwable e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 		return null;
@@ -77,6 +72,7 @@ public class AspectConfig implements Ordered{
 	@Around(value = "pointcutMethod3()")
 	public Object aroundLog(ProceedingJoinPoint pjp) throws Exception {
 		try {
+			long start = System.currentTimeMillis();
 			String classType = pjp.getTarget().getClass().getName();
 			Signature sig = pjp.getSignature();
 			MethodSignature msig = (MethodSignature) sig;
@@ -93,9 +89,57 @@ public class AspectConfig implements Ordered{
 			//IP地址
 			String ipAddr = getRemoteHost(request);
 			String url = request.getRequestURL().toString();
-			String reqParam = preHandle(pjp,request);
+			String reqParam = "";
+			//未登录且非登录请求强制跳转到登录页面
+			if(!SecurityUtils.getSubject().isAuthenticated()){
+				//WebUtils.issueRedirect(request, response, "login");
+				//SecurityUtils.getSecurityManager().logout(subject);
+				String whiteUrl =getUrl(request);
+				if(!white().contains(whiteUrl)){
+					return "redirect:login";
+				}
+			}
+			//此处校验用户是否在名单中,有则不允许访问
+			if(getUser()!=null && is_blacklist(getUser().getUserName())){
+				return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前用户为黑名单用户,请联系管理员解封", null);
+			}
+
+			try{
+				reqParam = preHandle(pjp,request);
+			}catch (Exception e){
+				try{
+					UserOperateLogMapper userOperateLogMapper= (UserOperateLogMapper)SpringContext.getBean("userOperateLogMapper");
+					UserOperateLogInfo userOperateLogInfo=new UserOperateLogInfo();
+					userOperateLogInfo.setOwner(getUser().getId());
+					userOperateLogInfo.setUser_name(getUser().getUserName());
+					userOperateLogInfo.setOperate_url(url);
+					userOperateLogInfo.setOperate_input(reqParam);
+					userOperateLogInfo.setTime(String.valueOf((System.currentTimeMillis()-start)/1000.0));
+					if((e.getMessage()).length()>6400){
+						userOperateLogInfo.setOperate_output((e.getMessage()).substring(0,256));
+					}else{
+						userOperateLogInfo.setOperate_output(e.getMessage());
+					}
+					userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
+					userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+					userOperateLogMapper.insert(userOperateLogInfo);
+				}catch (Exception ex){
+					String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+					logger.error(error, ex);
+				}
+
+				if(e.getMessage().contains("没有权限")){
+					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "无权限", e);
+				}
+				if (request.getMethod().equalsIgnoreCase("get")){
+					return "404";
+				}
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+				logger.error(error, e);
+				return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统错误", e);
+			}
             String uid = getUser() == null? "":getUser().getId();
-			logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,请求参数:【{}】",ipAddr,uid,url,reqParam);
+			logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】请求参数:【{}】",ipAddr,uid,url,request.getMethod(),reqParam);
 			Object o=pjp.proceed();
 			logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,结束",ipAddr,uid,url);
 			try{
@@ -108,7 +152,7 @@ public class AspectConfig implements Ordered{
 						userOperateLogInfo.setUser_name(getUser().getUserName());
 						userOperateLogInfo.setOperate_url(url);
 						userOperateLogInfo.setOperate_input(reqParam);
-
+						userOperateLogInfo.setTime(String.valueOf((System.currentTimeMillis()-start)/1000.0));
 						if(((String) o).length()>6400){
 							userOperateLogInfo.setOperate_output(((String) o).substring(0,256));
 						}else{
@@ -120,13 +164,13 @@ public class AspectConfig implements Ordered{
 					}
 				}
 			}catch (Exception e){
-				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
                 logger.error(error, e);
 			}
 
 			return o;
 		} catch (Throwable e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
 			return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统错误", e);
 		}
@@ -139,7 +183,7 @@ public class AspectConfig implements Ordered{
 			logger.info("aroundLog2...end....");
 			return o;
 		} catch (Throwable e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 		return null;
@@ -182,11 +226,8 @@ public class AspectConfig implements Ordered{
 			if (annotation.annotationType().equals(RequestMapping.class)) {
 				reqParam = JSON.toJSONString(request.getParameterMap());
 				//验证权限
-				String url = request.getServletPath();
-				if(url.startsWith("/"))
-					url = url.substring(1).replaceAll("function:","");
-				url = url.split("\\.")[0];
-
+				String url =getUrl(request);
+				String method = request.getMethod();
 				if(white().contains(url) || is_white){
 					break;
 				}
@@ -200,6 +241,14 @@ public class AspectConfig implements Ordered{
 			}
 		}
 		return reqParam;
+	}
+
+	private String getUrl(HttpServletRequest request){
+		String url = request.getServletPath();
+		if(url.startsWith("/"))
+			url = url.substring(1).replaceAll("function:","");
+		url = url.split("\\.")[0];
+		return url;
 	}
 
 	private void send_notice(User user, String title, String msg){
@@ -216,9 +265,9 @@ public class AspectConfig implements Ordered{
 			ni.setUpdate_time(new Timestamp(new Date().getTime()));
 			noticeMapper.insert(ni);
 		}catch (Exception e){
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
-			logger.error("接口无权限告警异常",e.getCause());
+			logger.error("接口无权限告警异常, {}",e);
 		}
 	}
 
@@ -238,13 +287,33 @@ public class AspectConfig implements Ordered{
 		permissions.add("login");
 		permissions.add("captcha");
 		permissions.add("404");
+		permissions.add("403");
 		permissions.add("logout");
 		permissions.add("retrieve_password");
 		permissions.add("register");
 		permissions.add("zdh_version");
 		permissions.add("zdh_download_index");
+		permissions.add("favicon");
+		permissions.add("index");
+		permissions.add("every_day_notice");
+		permissions.add("notice_list");
+		permissions.add("readme");
+		permissions.add("zdh_help");
+		permissions.add("check_captcha");
+		permissions.add("get_platform_name");
 
 		return permissions;
+	}
+
+	/**
+	 * 查询是否命中用户名单,命中则不许访问
+	 * @param userName
+	 * @return
+	 */
+	private boolean is_blacklist(String userName){
+		//查询黑名单
+
+		return false;
 	}
 	/**
 	 * 获取ip
@@ -287,13 +356,13 @@ public class AspectConfig implements Ordered{
 					System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
-					String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+					String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			        logger.error(error, e);
 				}
 				// 恢复访问控制权限
 				fields[i].setAccessible(accessFlag);
 			} catch (IllegalArgumentException e) {
-				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 				logger.error(error, e);
 			}
 		}

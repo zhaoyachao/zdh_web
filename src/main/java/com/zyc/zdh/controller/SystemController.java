@@ -2,14 +2,11 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.bcel.internal.generic.RETURN;
-import com.zyc.zdh.config.DateConverter;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.JobModel;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
-import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.shiro.SecurityUtils;
@@ -19,28 +16,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.data.annotation.Transient;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.beans.PropertyEditorSupport;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.List;
 
 @Controller
 public class SystemController extends BaseController{
@@ -71,6 +61,15 @@ public class SystemController extends BaseController{
         return "404";
     }
 
+    @RequestMapping(value = "/get_platform_name", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @White
+    public String get_platform_name() {
+        String platform_name = ev.getProperty("platform_name", "ZDH数据平台");
+        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", platform_name);
+    }
+
+
     @RequestMapping(value = "/zdh_help", method = RequestMethod.GET)
     public String zdh_help() {
 
@@ -89,7 +88,7 @@ public class SystemController extends BaseController{
         return "file_manager";
     }
 
-    @RequestMapping("/getFileManager")
+    @RequestMapping(value = "/getFileManager", method = RequestMethod.POST )
     @ResponseBody
     public ZdhNginx getFileManager() {
         ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(getUser().getId());
@@ -117,7 +116,7 @@ public class SystemController extends BaseController{
         return json.toJSONString();
     }
 
-    @RequestMapping(value = "/notice_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/notice_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String notice() {
         //System.out.println("加载缓存中通知事件");
@@ -184,51 +183,53 @@ public class SystemController extends BaseController{
        // return JSON.toJSONString(noticeInfos);
     }
 
-    @RequestMapping(value = "/del_system_job", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/del_system_job", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
+    @Deprecated
     public String del_system_job(){
 
-        JSONObject js=new JSONObject();
-        if(! SecurityUtils.getSubject().isPermitted("function:del_system_job()")){
-            js.put("data","您没有权限访问,请联系管理员添加权限");
-            return js.toJSONString();
-        }
-        //1 获取所有的email,retry 任务
-        String sql="delete from QRTZ_SIMPLE_TRIGGERS where TRIGGER_GROUP in ('email','retry','check')";
-        String sql2="delete from QRTZ_TRIGGERS where TRIGGER_GROUP in ('email','retry','check')";
-        String sql3="delete from QRTZ_JOB_DETAILS where  JOB_GROUP in ('email','retry','check')";
-        jdbcTemplate.execute(sql);
-        jdbcTemplate.execute(sql2);
-        jdbcTemplate.execute(sql3);
-
-        quartzJobMapper.deleteSystemJob();
-        //2 重新添加到调度队列
-
-        String expr = ev.getProperty("email.schedule.interval");
-        QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "email");
-        quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
-        quartzManager2.addQuartzJobInfo(quartzJobInfo);
-        String expr2 = ev.getProperty("retry.schedule.interval");
-        QuartzJobInfo quartzJobInfo2 = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr2, "-1", "", "retry");
-        quartzJobInfo2.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
-        quartzManager2.addQuartzJobInfo(quartzJobInfo2);
-        String expr3 = "5s";
-        QuartzJobInfo quartzJobInfo3 = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr3, "-1", "", "check");
-        quartzJobInfo3.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
-        quartzManager2.addQuartzJobInfo(quartzJobInfo3);
-
-
-        try {
-            quartzManager2.addTaskToQuartz(quartzJobInfo);
-            quartzManager2.addTaskToQuartz(quartzJobInfo2);
-            quartzManager2.addTaskToQuartz(quartzJobInfo3);
-        } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
-            logger.error(error, e);
-        }
-
-        js.put("data","success");
-        return js.toJSONString();
+        return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前功能已废弃,可使用调度管理=>调度器功能代替", "当前功能已废弃");
+//        JSONObject js=new JSONObject();
+//        if(!SecurityUtils.getSubject().isPermitted("function:del_system_job()")){
+//            js.put("data","您没有权限访问,请联系管理员添加权限");
+//            return js.toJSONString();
+//        }
+//        //1 获取所有的email,retry 任务
+//        String sql="delete from QRTZ_SIMPLE_TRIGGERS where TRIGGER_GROUP in ('email','retry','check')";
+//        String sql2="delete from QRTZ_TRIGGERS where TRIGGER_GROUP in ('email','retry','check')";
+//        String sql3="delete from QRTZ_JOB_DETAILS where  JOB_GROUP in ('email','retry','check')";
+//        jdbcTemplate.execute(sql);
+//        jdbcTemplate.execute(sql2);
+//        jdbcTemplate.execute(sql3);
+//
+//        quartzJobMapper.deleteSystemJob();
+//        //2 重新添加到调度队列
+//
+//        String expr = ev.getProperty("email.schedule.interval");
+//        QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查告警任务", expr, "-1", "", "email");
+//        quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+//        quartzManager2.addQuartzJobInfo(quartzJobInfo);
+//        String expr2 = ev.getProperty("retry.schedule.interval");
+//        QuartzJobInfo quartzJobInfo2 = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查失败重试任务", expr2, "-1", "", "retry");
+//        quartzJobInfo2.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+//        quartzManager2.addQuartzJobInfo(quartzJobInfo2);
+//        String expr3 = "5s";
+//        QuartzJobInfo quartzJobInfo3 = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查依赖任务", expr3, "-1", "", "check");
+//        quartzJobInfo3.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+//        quartzManager2.addQuartzJobInfo(quartzJobInfo3);
+//
+//
+//        try {
+//            quartzManager2.addTaskToQuartz(quartzJobInfo);
+//            quartzManager2.addTaskToQuartz(quartzJobInfo2);
+//            quartzManager2.addTaskToQuartz(quartzJobInfo3);
+//        } catch (Exception e) {
+//            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+//            logger.error(error, e);
+//        }
+//
+//        js.put("data","success");
+//        return js.toJSONString();
 
     }
 
@@ -238,9 +239,9 @@ public class SystemController extends BaseController{
         return "admin/notice_detail_index";
     }
 
-    @RequestMapping(value = "/notice_message", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/notice_message", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String notice_message(String id) {
         //System.out.println("加载缓存中通知事件");
 
@@ -255,6 +256,8 @@ public class SystemController extends BaseController{
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", ni);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -267,7 +270,7 @@ public class SystemController extends BaseController{
         return "admin/notice_index";
     }
 
-    @RequestMapping(value = "/notice_list2", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/notice_list2", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String notice2(String message) {
         //System.out.println("加载缓存中通知事件");
@@ -278,9 +281,9 @@ public class SystemController extends BaseController{
         return JSON.toJSONString(noticeInfos);
     }
 
-    @RequestMapping(value = "/notice_delete", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/notice_delete", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String notice_delete(String[] ids) {
         try{
             for (String id :ids){
@@ -288,19 +291,23 @@ public class SystemController extends BaseController{
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
-    @RequestMapping(value = "/notice_update_see", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/notice_update_see", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String notice_update_see(String[] ids, String is_see) {
         try{
             noticeMapper.updateIsSeeByIds(ids, is_see);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -347,7 +354,7 @@ public class SystemController extends BaseController{
         return "admin/notice_update_index";
     }
 
-    @RequestMapping(value = "/every_day_notice", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/every_day_notice", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String every_day_notice() {
 
@@ -361,13 +368,13 @@ public class SystemController extends BaseController{
 
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "暂无通知", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询通知失败", e.getMessage());
         }
     }
 
-    @RequestMapping(value = "/notice_update", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/notice_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String notice_update(String msg) {
 
@@ -388,7 +395,7 @@ public class SystemController extends BaseController{
     }
 
 
-    @RequestMapping(value = "/version", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/version", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String version() {
         String version=ev.getProperty("version","");
@@ -396,97 +403,4 @@ public class SystemController extends BaseController{
         return "当前版本:"+version;
     }
 
-    @RequestMapping(value = "/captcha")
-    public void captcha(HttpServletRequest request,
-                          HttpServletResponse response) throws IOException {
-
-        response.setHeader("Pragma","No-cache");
-        response.setHeader("Cache-Control","no-cache");
-        response.setDateHeader("Expires", 0);
-        response.setContentType("image/jpeg");
-        BufferedImage image = new BufferedImage
-                (IMG_WIDTH , IMG_HEIGTH , BufferedImage.TYPE_INT_RGB);
-        Graphics g = image.getGraphics();
-        Random random = new Random();
-        g.setColor(getRandColor(200 , 250));
-        g.fillRect(1, 1, IMG_WIDTH - 1, IMG_HEIGTH - 1);
-        g.setColor(new Color(102 , 102 , 102));
-        g.drawRect(0, 0, IMG_WIDTH - 1, IMG_HEIGTH - 1);
-        g.setColor(getRandColor(160,200));
-        for (int i = 0 ; i < 30 ; i++)
-        {
-            int x = random.nextInt(IMG_WIDTH - 1);
-            int y = random.nextInt(IMG_HEIGTH - 1);
-            int xl = random.nextInt(6) + 1;
-            int yl = random.nextInt(12) + 1;
-            g.drawLine(x , y , x + xl , y + yl);
-        }
-        g.setColor(getRandColor(160,200));
-        for (int i = 0 ; i < 30 ; i++)
-        {
-            int x = random.nextInt(IMG_WIDTH - 1);
-            int y = random.nextInt(IMG_HEIGTH - 1);
-            int xl = random.nextInt(12) + 1;
-            int yl = random.nextInt(6) + 1;
-            g.drawLine(x , y , x - xl , y - yl);
-        }
-        g.setFont(mFont);
-        String sRand = "";
-        for (int i = 0 ; i < 4 ; i++)
-        {
-            String tmp = getRandomChar();
-            sRand += tmp;
-            g.setColor(new Color(20 + random.nextInt(110)
-                    ,20 + random.nextInt(110)
-                    ,20 + random.nextInt(110)));
-            g.drawString(tmp , 15 * i + 10,15);
-        }
-        HttpSession session = request.getSession(true);
-        session.setAttribute(MyAuthenticationToken.captcha_key , sRand);
-//			System.out.println("写入session"+sRand);
-        g.dispose();
-        ImageIO.write(image, "JPEG", response.getOutputStream());
-    }
-
-    private String getRandomChar()
-    {
-        int rand = (int)Math.round(Math.random() * 2);
-        long itmp = 0;
-        char ctmp = '\u0000';
-        switch (rand)
-        {
-            case 1:
-                itmp = Math.round(Math.random() * 25 + 65);
-                ctmp = (char)itmp;
-                return String.valueOf(ctmp);
-            case 2:
-                itmp = Math.round(Math.random() * 25 + 97);
-                ctmp = (char)itmp;
-                return String.valueOf(ctmp);
-            default :
-                itmp = Math.round(Math.random() * 9);
-                return  itmp + "";
-        }
-    }
-
-    private final Font mFont =
-            new Font("Arial Black", Font.PLAIN, 16);
-    private final int IMG_WIDTH = 100;
-    private final int IMG_HEIGTH = 18;
-    private Color getRandColor(int fc,int bc)
-    {
-        Random random = new Random();
-        if(fc > 255) fc = 255;
-        if(bc > 255) bc=255;
-        int r = fc + random.nextInt(bc - fc);
-        int g = fc + random.nextInt(bc - fc);
-        int b = fc + random.nextInt(bc - fc);
-        return new Color(r , g , b);
-    }
-
-    @RequestMapping("shell_detail2")
-    public String testQuartzJob(){
-
-        return "etl/shell_detail2";
-    }
 }

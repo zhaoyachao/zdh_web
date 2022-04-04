@@ -13,6 +13,7 @@
     <meta name="description" content="ZDH 权限设置">
 
     <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
@@ -39,6 +40,13 @@
                         </div>
                     </div>
                     <div class="ibox-content">
+                        <div>
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code"
+                                    class="chosen-select form-control m-b" tabindex="2">
+                                <option value="">空</option>
+                            </select>
+                        </div><br />
                         <div> <input id="search_input" name="search_input" class="form-control" type="text" value="" placeholder="资源信息"></div><br />
                         <div id="using_json"></div>
 
@@ -85,6 +93,8 @@
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
 
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
     <!-- jsTree plugin javascript -->
     <script src="js/plugins/layer/layer.min.js"></script>
@@ -101,8 +111,37 @@
     </style>
 
     <script>
-        $(document).ready(function () {
 
+        $('#product_code').chosen();
+
+        $.ajax({
+            type: 'GET',
+            url: server_context+"/product_tag_list",
+            async:false,
+            dataType: 'json',
+            data: "",
+            //成功返回
+            success: function (data) {
+                var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                for (var i = 0; i < data.length; i++) {
+                    str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+                }
+                $('#product_code').html(str);
+                $("#product_code").trigger("chosen:updated");
+                $('#product_code').chosen().on("change", function (evt, params) {
+                    init_jstree($("#product_code").val());
+                });
+            },
+            //处理完成
+            complete: function () {
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+
+        function init_jstree(product_code){
+            $('#using_json').jstree("destroy");
             $('#using_json').jstree({
                 "plugins" : [ "types","search"],
                 //'plugins' : ["checkbox"], //出现选择框
@@ -112,15 +151,16 @@
                     'data' :  function (obj, callback){
                         $.ajax({
                             type : "post",
-                            url : server_context+"/jstree_node",//getAreaBuild=getTreeArea
+                            url : server_context+"/jstree_node?product_code="+product_code,//getAreaBuild=getTreeArea
                             dataType : "json",
                             async:'false',
                             success : function(data) {
                                 console.info(data);
-                                if(data) {
-                                    callback.call(this, data);
+                                if(data.code == "200") {
+                                    callback.call(this, data.result);
                                 }else{
-                                    //$("#using_json").html("暂无数据！");
+                                    callback.call(this, []);
+                                    layer.msg(data.msg);
                                 }
                             }
                         });
@@ -132,6 +172,10 @@
                     console.info(e.target.id);
                     var id=e.target.id.split("_anchor")[0];
                     console.info("event:"+e.target.id.split("_anchor")[0]);
+                    if(!id){
+                        layer.msg("请双击资源名称！");
+                        return ;
+                    }
                     $('#using_json').jstree("open_node", id);
                     var node = $('#using_json').jstree("get_node", id);
                     console.info("id:"+node.id+",parent:"+node.parent+",text:"+node.text);
@@ -143,7 +187,7 @@
 
                     var is_open = $('#using_json').jstree("is_open", id);
                     console.info("is_open:"+is_open);
-                    $("#ifm").attr("src", encodeURI(server_context+"/jstree_add_index?id="+node.id+"&text="+node.text+"&level="+level));
+                    $("#ifm").attr("src", encodeURI(server_context+"/jstree_add_index?id="+node.id+"&text="+node.text+"&level="+level+"&product_code="+product_code));
                     // layer.open({
                     //     type: 2,
                     //     title: '节点操作',
@@ -165,6 +209,9 @@
                     // });
 
                 });
+        }
+
+        $(document).ready(function () {
 
             $('#search_input').keyup(function () {
                 $('#using_json').jstree(true).search($('#search_input').val());

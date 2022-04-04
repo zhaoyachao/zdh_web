@@ -1,34 +1,29 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.jcraft.jsch.SftpException;
-import com.zyc.zdh.dao.*;
-import com.zyc.zdh.entity.*;
+import com.zyc.zdh.dao.EtlTaskDataxMapper;
+import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
+import com.zyc.zdh.entity.EtlTaskDataxInfo;
+import com.zyc.zdh.entity.EtlTaskUpdateLogs;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.SFTPUtil;
-import com.zyc.zdh.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -91,15 +86,17 @@ public class ZdhDataxController extends BaseController{
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/etl_task_datax_delete", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_datax_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_datax_delete(String[] ids) {
 
         try{
             etlTaskDataxMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
@@ -110,9 +107,9 @@ public class ZdhDataxController extends BaseController{
      * @param etlTaskDataxInfo
      * @return
      */
-    @RequestMapping(value="/etl_task_datax_add", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/etl_task_datax_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_datax_add(EtlTaskDataxInfo etlTaskDataxInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
@@ -138,6 +135,8 @@ public class ZdhDataxController extends BaseController{
 
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
@@ -149,9 +148,9 @@ public class ZdhDataxController extends BaseController{
      * @param jar_files
      * @return
      */
-    @RequestMapping(value = "/etl_task_datax_update", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_datax_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_datax_update(EtlTaskDataxInfo etlTaskDataxInfo,MultipartFile[] jar_files) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
@@ -179,6 +178,8 @@ public class ZdhDataxController extends BaseController{
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
 
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
@@ -202,12 +203,12 @@ public class ZdhDataxController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             }
         }
     }

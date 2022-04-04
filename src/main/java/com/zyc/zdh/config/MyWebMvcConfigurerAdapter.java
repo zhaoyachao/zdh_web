@@ -8,14 +8,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
-
-import java.nio.charset.Charset;
-import java.util.List;
 
 @Configuration
 @EnableWebMvc
@@ -74,19 +72,17 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 		String project_pre="";
 		registry.addResourceHandler(project_pre+"/register**",project_pre+"/statics/**",project_pre+"/css/**",project_pre+"/js/**",project_pre+"/fonts/**",
 				project_pre+"/img/**",
-				project_pre+"/plugins/**",project_pre+"/zdh_flow/**",project_pre+"/favicon**",project_pre+"/etl/js/**",project_pre+"/etl/css/**",
+				project_pre+"/plugins/**",project_pre+"/zdh_flow/**",project_pre+"/favicon.ico",project_pre+"/etl/js/**",project_pre+"/etl/css/**",
 				project_pre+"/statics/**",project_pre+"/404**",project_pre+"/cron/**",project_pre+"/download/**")
 				.addResourceLocations(ev.getProperty("web.path"))
-				.addResourceLocations("/statics/")
+				.addResourceLocations(ev.getProperty("web.path")+"favicon.ico")
 				.addResourceLocations(ev.getProperty("web.path")+"download/")
 				.addResourceLocations(ev.getProperty("web.path")+"css/")
 				.addResourceLocations(ev.getProperty("web.path")+"cron/")
 				.addResourceLocations(ev.getProperty("web.path")+"js/")
 				.addResourceLocations(ev.getProperty("web.path")+"fonts/")
 				.addResourceLocations(ev.getProperty("web.path")+"img/")
-				.addResourceLocations(ev.getProperty("web.path")+"plugins/")
-				.addResourceLocations(ev.getProperty("web.path")+"zdh_flow/")
-				.addResourceLocations(ev.getProperty("web.path")+"statics/");
+				.addResourceLocations(ev.getProperty("web.path")+"plugins/");
 
 	}
 

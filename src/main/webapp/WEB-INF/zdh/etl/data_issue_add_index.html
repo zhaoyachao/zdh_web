@@ -644,9 +644,6 @@
                             $('#create_time').val(getMyDate(data.create_time));
                             $('#data_source_type_input').val(data.data_source_type_input);
 
-
-
-
                             $("#data_sources_choose_input").val(data.data_sources_choose_input);
                             $("#data_sources_choose_input").trigger("chosen:updated");
 
@@ -876,7 +873,7 @@
                             parent.layer.msg(data.msg);
                             return
                         }
-                        layer.msg("发布成功");
+                        parent.layer.msg(data.msg);
                         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                         parent.layer.close(index); //再执行关闭
                     },
@@ -936,7 +933,7 @@
                             parent.layer.msg(data.msg);
                             return
                         }
-                        layer.msg("更新成功")
+                        parent.layer.msg(data.msg);
                         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                         parent.layer.close(index); //再执行关闭
                     },

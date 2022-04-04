@@ -219,7 +219,7 @@
                             //获取ETL 说明
                             var product_code = data.result.product_code;
                             $("#product_code").val(product_code);
-
+                            $("#product_code").attr("readonly","readonly");
                             var create_time = data.result.create_time;
                             $("#create_time").val(getMyDate(create_time));
 

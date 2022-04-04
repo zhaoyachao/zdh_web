@@ -11,7 +11,7 @@ import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
-import com.zyc.zdh.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ public class EmailJob {
             AccountService accountService=(AccountService) SpringContext.getBean("accountService");
             //获取失败的任务
             List<TaskLogInstance> tlis=taskLogInstanceMapper.selectByStatus(JobStatus.ERROR.getValue());
-            String line = System.getProperty("line.separator");
+            String line = Const.LINE_SEPARATOR;
             //根据任务执行时间，主键 获取对应的日志信息
             for(TaskLogInstance tli:tlis){
 
@@ -106,100 +106,184 @@ public class EmailJob {
 
 
         }catch (Exception e){
-            logger.error("告警模块", e.getCause());
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
         }
 
     }
 
 
     private static void alarm(TaskLogInstance tli, String title, String msg){
-        JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
-        TaskLogInstanceMapper taskLogInstanceMapper = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-        AccountService accountService=(AccountService) SpringContext.getBean("accountService");
-        NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
-        List<User> users=accountService.findByUserName2(tli.getAlarm_account().split(","));
-        List<String> emails=new ArrayList<>();
-        List<String> phones=new ArrayList<>();
-        for(User user:users){
-            if(user.getEmail()!=null){
-                System.out.println("email:"+user.getEmail());
-                emails.add(user.getEmail());
-            }
-            if(user.getPhone()!=null){
-                phones.add(user.getPhone());
-            }
-        }
+        try{
+            JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
+            TaskLogInstanceMapper taskLogInstanceMapper = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+            AccountService accountService=(AccountService) SpringContext.getBean("accountService");
+            NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
 
-        if(emails.size()>0 && tli.getAlarm_email()!=null  && tli.getAlarm_email().equalsIgnoreCase("on")){
-            jemailService.sendEmail(emails.toArray(new String[0]),title,msg);
-        }
-        if(phones.size()>0&& tli.getAlarm_sms()!=null && tli.getAlarm_sms().equalsIgnoreCase("on")){
-            logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
-            try{
-                //此处信息写入短信表,待平台接入短信服务
-                AlarmSmsMapper alarmSmsMapper=  (AlarmSmsMapper) SpringContext.getBean("alarmSmsMapper");
-                AlarmSmsInfo alarmSmsInfo=new AlarmSmsInfo();
-                alarmSmsInfo.setTitle(title);
-                alarmSmsInfo.setMsg(msg);
-                alarmSmsInfo.setMsg_url("log_txt.html?job_id="+tli.getJob_id()+"&task_log_id="+tli.getId());
-                alarmSmsInfo.setMsg_type("通知");
-                alarmSmsInfo.setStatus(Const.SMS_INIT);
-                alarmSmsInfo.setCreate_time(new Timestamp(new Date().getTime()));
-                alarmSmsInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-                for(String phone:phones){
-                    alarmSmsInfo.setPhone(phone);
-                    alarmSmsMapper.insert(alarmSmsInfo);
-                }
-            }catch (Exception e){
-                String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
-                logger.error(error, e);
-                logger.error("发送告警短信失败",e.getCause());
+            if(StringUtils.isEmpty(tli.getAlarm_account())){
+                logger.warn("当前告警为找到告警账号:"+JSON.toJSONString(tli));
+                return ;
             }
 
-        }
-
-        if( !StringUtils.isEmpty(tli.getAlarm_account()) && tli.getAlarm_zdh()!=null  && tli.getAlarm_zdh().equalsIgnoreCase("on")){
+            List<User> users=accountService.findByUserName2(tli.getAlarm_account().split(","));
+            List<String> emails=new ArrayList<>();
+            List<String> phones=new ArrayList<>();
             for(User user:users){
-                NoticeInfo ni=new NoticeInfo();
-                ni.setMsg_type("通知");
-                ni.setMsg_title(title);
-                ni.setMsg_url("log_txt.html?job_id="+tli.getJob_id()+"&task_log_id="+tli.getId());
-                ni.setMsg(msg);
-                ni.setIs_see(Const.FALSE);
-                ni.setOwner(user.getId());
-                ni.setCreate_time(new Timestamp(new Date().getTime()));
-                ni.setUpdate_time(new Timestamp(new Date().getTime()));
-                noticeMapper.insert(ni);
+                if(user.getEmail()!=null){
+                    System.out.println("email:"+user.getEmail());
+                    emails.add(user.getEmail());
+                }
+                if(user.getPhone()!=null){
+                    phones.add(user.getPhone());
+                }
             }
+
+            if(emails.size()>0 && tli.getAlarm_email()!=null  && tli.getAlarm_email().equalsIgnoreCase("on")){
+                jemailService.sendEmail(emails.toArray(new String[0]),title,msg);
+            }
+            if(phones.size()>0&& tli.getAlarm_sms()!=null && tli.getAlarm_sms().equalsIgnoreCase("on")){
+                logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
+                try{
+                    //此处信息写入短信表,待平台接入短信服务
+                    AlarmSmsMapper alarmSmsMapper=  (AlarmSmsMapper) SpringContext.getBean("alarmSmsMapper");
+                    AlarmSmsInfo alarmSmsInfo=new AlarmSmsInfo();
+                    alarmSmsInfo.setTitle(title);
+                    alarmSmsInfo.setMsg(msg);
+                    alarmSmsInfo.setMsg_url("log_txt.html?job_id="+tli.getJob_id()+"&task_log_id="+tli.getId());
+                    alarmSmsInfo.setMsg_type("通知");
+                    alarmSmsInfo.setStatus(Const.SMS_INIT);
+                    alarmSmsInfo.setCreate_time(new Timestamp(new Date().getTime()));
+                    alarmSmsInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+                    for(String phone:phones){
+                        alarmSmsInfo.setPhone(phone);
+                        alarmSmsMapper.insert(alarmSmsInfo);
+                    }
+                }catch (Exception e){
+                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+                    logger.error(error, e);
+                    logger.error("发送告警短信失败, {}",e);
+                }
+
+            }
+
+            if( !StringUtils.isEmpty(tli.getAlarm_account()) && tli.getAlarm_zdh()!=null  && tli.getAlarm_zdh().equalsIgnoreCase("on")){
+                for(User user:users){
+                    NoticeInfo ni=new NoticeInfo();
+                    ni.setMsg_type("通知");
+                    ni.setMsg_title(title);
+                    ni.setMsg_url("log_txt.html?job_id="+tli.getJob_id()+"&task_log_id="+tli.getId());
+                    ni.setMsg(msg);
+                    ni.setIs_see(Const.FALSE);
+                    ni.setOwner(user.getId());
+                    ni.setCreate_time(new Timestamp(new Date().getTime()));
+                    ni.setUpdate_time(new Timestamp(new Date().getTime()));
+                    noticeMapper.insert(ni);
+                }
+            }
+            taskLogInstanceMapper.updateNoticeById(Const.TRUR,tli.getId());
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
         }
-        taskLogInstanceMapper.updateNoticeById(Const.TRUR,tli.getId());
+
     }
 
+    public static void alarm(QuartzJobInfo qji, String title, String msg){
+        try{
+            JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
+            AccountService accountService=(AccountService) SpringContext.getBean("accountService");
+            NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
+            if(StringUtils.isEmpty(qji.getAlarm_account())){
+                logger.warn("当前告警为找到告警账号:"+JSON.toJSONString(qji));
+                return ;
+            }
+            List<User> users=accountService.findByUserName2(qji.getAlarm_account().split(","));
+            List<String> emails=new ArrayList<>();
+            List<String> phones=new ArrayList<>();
+            for(User user:users){
+                if(user.getEmail()!=null){
+                    System.out.println("email:"+user.getEmail());
+                    emails.add(user.getEmail());
+                }
+                if(user.getPhone()!=null){
+                    phones.add(user.getPhone());
+                }
+            }
+
+            if(emails.size()>0 && qji.getAlarm_email()!=null  && qji.getAlarm_email().equalsIgnoreCase("on")){
+                jemailService.sendEmail(emails.toArray(new String[0]),title,msg);
+            }
+            if(phones.size()>0&& qji.getAlarm_sms()!=null && qji.getAlarm_sms().equalsIgnoreCase("on")){
+                logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
+                try{
+                    //此处信息写入短信表,待平台接入短信服务
+                    AlarmSmsMapper alarmSmsMapper=  (AlarmSmsMapper) SpringContext.getBean("alarmSmsMapper");
+                    AlarmSmsInfo alarmSmsInfo=new AlarmSmsInfo();
+                    alarmSmsInfo.setTitle(title);
+                    alarmSmsInfo.setMsg(msg);
+                    alarmSmsInfo.setMsg_url("");
+                    alarmSmsInfo.setMsg_type("通知");
+                    alarmSmsInfo.setStatus(Const.SMS_INIT);
+                    alarmSmsInfo.setCreate_time(new Timestamp(new Date().getTime()));
+                    alarmSmsInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+                    for(String phone:phones){
+                        alarmSmsInfo.setPhone(phone);
+                        alarmSmsMapper.insert(alarmSmsInfo);
+                    }
+                }catch (Exception e){
+                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+                    logger.error(error, e);
+                    logger.error("发送告警短信失败, {}",e);
+                }
+
+            }
+
+            if( !StringUtils.isEmpty(qji.getAlarm_account()) && qji.getAlarm_zdh()!=null  && qji.getAlarm_zdh().equalsIgnoreCase("on")){
+                for(User user:users){
+                    NoticeInfo ni=new NoticeInfo();
+                    ni.setMsg_type("通知");
+                    ni.setMsg_title(title);
+                    ni.setMsg_url("");
+                    ni.setMsg(msg);
+                    ni.setIs_see(Const.FALSE);
+                    ni.setOwner(user.getId());
+                    ni.setCreate_time(new Timestamp(new Date().getTime()));
+                    ni.setUpdate_time(new Timestamp(new Date().getTime()));
+                    noticeMapper.insert(ni);
+                }
+            }
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+        }
+
+    }
 
     public static void notice_event(){
 
-        logger.debug("开始加载通知信息");
-        ZdhDownloadMapper zdhDownloadMapper = (ZdhDownloadMapper) SpringContext.getBean("zdhDownloadMapper");
-        RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-        NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
-        List<ZdhDownloadInfo> zdhDownloadInfos=zdhDownloadMapper.selectNotice();
+        try{
+            logger.debug("开始加载通知信息");
+            ZdhDownloadMapper zdhDownloadMapper = (ZdhDownloadMapper) SpringContext.getBean("zdhDownloadMapper");
+            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+            NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
+            List<ZdhDownloadInfo> zdhDownloadInfos=zdhDownloadMapper.selectNotice();
 
-        Iterator<ZdhDownloadInfo> iterator=zdhDownloadInfos.iterator();
-        Map<String,List<ZdhDownloadInfo>> map=new HashMap<>();
-        while (iterator.hasNext()){
-            ZdhDownloadInfo zdhDownloadInfo=iterator.next();
-            zdhDownloadInfo.setIs_notice(Const.TRUR);
-            zdhDownloadMapper.updateByPrimaryKey(zdhDownloadInfo);
-            NoticeInfo ni=new NoticeInfo();
-            ni.setMsg_type("文件下载");
-            ni.setMsg_title("文件下载:"+zdhDownloadInfo.getJob_context());
-            ni.setMsg("文件以生成,请尽快下载, 文件由任务【"+zdhDownloadInfo.getJob_context()+"】于"+zdhDownloadInfo.getCreate_time()
-                    +"产生, 文件唯一码: "+zdhDownloadInfo.getId()+", 请前往系统=>下载管理页面进行下载,时间:"+DateUtil.getCurrentTime());
-            ni.setIs_see(Const.FALSE);
-            ni.setOwner(zdhDownloadInfo.getOwner());
-            ni.setCreate_time(new Timestamp(new Date().getTime()));
-            ni.setUpdate_time(new Timestamp(new Date().getTime()));
-            noticeMapper.insert(ni);
+            Iterator<ZdhDownloadInfo> iterator=zdhDownloadInfos.iterator();
+            Map<String,List<ZdhDownloadInfo>> map=new HashMap<>();
+            while (iterator.hasNext()){
+                ZdhDownloadInfo zdhDownloadInfo=iterator.next();
+                zdhDownloadInfo.setIs_notice(Const.TRUR);
+                zdhDownloadMapper.updateByPrimaryKey(zdhDownloadInfo);
+                NoticeInfo ni=new NoticeInfo();
+                ni.setMsg_type("文件下载");
+                ni.setMsg_title("文件下载:"+zdhDownloadInfo.getJob_context());
+                ni.setMsg("文件以生成,请尽快下载, 文件由任务【"+zdhDownloadInfo.getJob_context()+"】于"+zdhDownloadInfo.getCreate_time()
+                        +"产生, 文件唯一码: "+zdhDownloadInfo.getId()+", 请前往系统=>下载管理页面进行下载,时间:"+DateUtil.getCurrentTime());
+                ni.setIs_see(Const.FALSE);
+                ni.setOwner(zdhDownloadInfo.getOwner());
+                ni.setCreate_time(new Timestamp(new Date().getTime()));
+                ni.setUpdate_time(new Timestamp(new Date().getTime()));
+                noticeMapper.insert(ni);
 
 //            if(map.containsKey(zdhDownloadInfo.getOwner())){
 //                map.get(zdhDownloadInfo.getOwner()).add(zdhDownloadInfo);
@@ -208,40 +292,46 @@ public class EmailJob {
 //                zdhDownloadInfos2.add(zdhDownloadInfo);
 //                map.put(zdhDownloadInfo.getOwner(),zdhDownloadInfos2);
 //            }
-        }
+            }
 
 //        for(Map.Entry<String,List<ZdhDownloadInfo>> a: map.entrySet()){
 //            String key=a.getKey();
 //            redisUtil.set("zdhdownloadinfos_"+key,JSON.toJSONString(a.getValue()));
 //        }
-        apply_notice();
-        logger.debug("完成加载通知信息");
+            apply_notice();
+            logger.debug("完成加载通知信息");
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+        }
+
 
     }
 
     public static void apply_notice(){
-        logger.debug("加载申请通知信息");
-        ApplyMapper applyMapper = (ApplyMapper) SpringContext.getBean("applyMapper");
-        RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-        NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
+        try{
+            logger.debug("加载申请通知信息");
+            ApplyMapper applyMapper = (ApplyMapper) SpringContext.getBean("applyMapper");
+            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+            NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
 
-        List<ApplyInfo> applyInfos=applyMapper.selectNotice();
-        if(applyInfos!=null){
-            Iterator<ApplyInfo> iterator2=applyInfos.iterator();
-            Map<String,List<ApplyInfo>> map2=new HashMap<>();
-            while (iterator2.hasNext()){
-                ApplyInfo applyInfo=iterator2.next();
-                applyInfo.setIs_notice(Const.TRUR);
-                applyMapper.updateByPrimaryKey(applyInfo);
-                NoticeInfo ni=new NoticeInfo();
-                ni.setMsg_type("审批");
-                ni.setMsg_title("审批通知:"+applyInfo.getApply_context());
-                ni.setMsg("你有一个审批单,需要处理,单号: "+applyInfo.getId()+",申请原因:"+ applyInfo.getReason()+",时间:"+DateUtil.getCurrentTime());
-                ni.setIs_see(Const.FALSE);
-                ni.setOwner(applyInfo.getOwner());
-                ni.setCreate_time(new Timestamp(new Date().getTime()));
-                ni.setUpdate_time(new Timestamp(new Date().getTime()));
-                noticeMapper.insert(ni);
+            List<ApplyInfo> applyInfos=applyMapper.selectNotice();
+            if(applyInfos!=null){
+                Iterator<ApplyInfo> iterator2=applyInfos.iterator();
+                Map<String,List<ApplyInfo>> map2=new HashMap<>();
+                while (iterator2.hasNext()){
+                    ApplyInfo applyInfo=iterator2.next();
+                    applyInfo.setIs_notice(Const.TRUR);
+                    applyMapper.updateByPrimaryKey(applyInfo);
+                    NoticeInfo ni=new NoticeInfo();
+                    ni.setMsg_type("审批");
+                    ni.setMsg_title("审批通知:"+applyInfo.getApply_context());
+                    ni.setMsg("你有一个审批单,需要处理,单号: "+applyInfo.getId()+",申请原因:"+ applyInfo.getReason()+",时间:"+DateUtil.getCurrentTime());
+                    ni.setIs_see(Const.FALSE);
+                    ni.setOwner(applyInfo.getOwner());
+                    ni.setCreate_time(new Timestamp(new Date().getTime()));
+                    ni.setUpdate_time(new Timestamp(new Date().getTime()));
+                    noticeMapper.insert(ni);
 
 //                if(map2.containsKey(applyInfo.getApprove_id())){
 //                    map2.get(applyInfo.getApprove_id()).add(applyInfo);
@@ -250,14 +340,18 @@ public class EmailJob {
 //                    applyInfos2.add(applyInfo);
 //                    map2.put(applyInfo.getApprove_id(),applyInfos2);
 //                }
-            }
+                }
 
 //            for(Map.Entry<String,List<ApplyInfo>> a: map2.entrySet()){
 //                String key=a.getKey();
 //                redisUtil.set("zdhapplyinfos_"+key,JSON.toJSONString(a.getValue()));
 //            }
+            }
+            logger.debug("完成加载申请通知信息");
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
         }
-        logger.debug("完成加载申请通知信息");
     }
 
     public static void send_notice(String owner, String title, String msg){
@@ -274,9 +368,8 @@ public class EmailJob {
             ni.setUpdate_time(new Timestamp(new Date().getTime()));
             noticeMapper.insert(ni);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            logger.error("接口无权限告警异常",e.getCause());
         }
     }
 }

@@ -1,27 +1,32 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.dao.*;
-import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.JobCommon2;
+import com.zyc.zdh.dao.EtlTaskFlinkMapper;
+import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
+import com.zyc.zdh.dao.MetaDatabaseMapper;
+import com.zyc.zdh.dao.ZdhHaInfoMapper;
+import com.zyc.zdh.entity.EtlTaskFlinkInfo;
+import com.zyc.zdh.entity.EtlTaskUpdateLogs;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.HttpUtil;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 public class ZdhFlinkController extends BaseController {
@@ -73,16 +78,16 @@ public class ZdhFlinkController extends BaseController {
      * @param ids
      * @return
      */
-    @RequestMapping("/etl_task_flink_delete")
+    @RequestMapping(value = "/etl_task_flink_delete", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_flink_delete(String[] ids) {
         try {
             etlTaskFlinkMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
@@ -94,9 +99,9 @@ public class ZdhFlinkController extends BaseController {
      * @param etlTaskFlinkInfo
      * @return
      */
-    @RequestMapping("/etl_task_flink_add")
+    @RequestMapping(value = "/etl_task_flink_add", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_flink_add(EtlTaskFlinkInfo etlTaskFlinkInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
@@ -122,7 +127,7 @@ public class ZdhFlinkController extends BaseController {
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
@@ -135,9 +140,9 @@ public class ZdhFlinkController extends BaseController {
      * @param etlTaskFlinkInfo
      * @return
      */
-    @RequestMapping("/etl_task_flink_update")
+    @RequestMapping(value = "/etl_task_flink_update", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_flink_update(EtlTaskFlinkInfo etlTaskFlinkInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
@@ -163,7 +168,7 @@ public class ZdhFlinkController extends BaseController {
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
@@ -188,13 +193,13 @@ public class ZdhFlinkController extends BaseController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
                     logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
             }
         }
     }

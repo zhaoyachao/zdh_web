@@ -51,6 +51,10 @@
                                     </li>
                                     <li class=""><a data-toggle="tab" href="#tab-3" aria-expanded="true">分区信息</a>
                                     </li>
+                                    <li class=""><a data-toggle="tab" href="#tab-4" aria-expanded="true">样本数据</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="#tab-5" aria-expanded="true">已申请组</a>
+                                    </li>
                                 </ul>
                                 <div class="tab-content">
                                     <div id="tab-1" class="tab-pane active">
@@ -189,6 +193,44 @@
                                         </div>
                                     </div>
                                     <div id="tab-3" class="tab-pane">
+                                        <div class="panel-body">
+
+                                        </div>
+                                    </div>
+                                    <div id="tab-4" class="tab-pane">
+                                        <div class="panel-body">
+                                            <form id="etl_task_add_form4" name="etl_task_add_form4" method="post" class="form-inline"
+                                                  action="">
+                                                <div class="form-group">
+                                                    <div class="input-group" >
+                                                        <input id="context" name="context" class="form-control" type="text" value="" placeholder="关键词">
+                                                        <span class="add-on"><i class="icon-remove"></i></span>
+                                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input id="export" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="导出"/>
+                                                </div>
+                                                <br/>
+                                                <br/>
+                                            </form>
+                                            <div class="row">
+                                                <div class="col-sm-12">
+
+                                                    <table id="exampleTableEvents2" name="exampleTableEvents2" data-height="100%"
+                                                           data-mobile-responsive="false">
+
+                                                    </table>
+                                                    <!-- End Example Events -->
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="tab-5" class="tab-pane">
                                         <div class="panel-body">
 
                                         </div>
@@ -363,12 +405,11 @@
                             $('#company').val(data.company);
                             $('#section').val(data.section);
                             $('#service').val(data.service);
-
-
                             // 字段信息加载
-
                             var column_datas = data.column_datas;
                             var cd = JSON.parse(column_datas);
+                            var columnsArray=new Array();
+                            columnsArray.push({field: "state", checkbox: true});
                             for (var i = 0; i < cd.length; i++) {
                                 var index = $('#exampleTableEvents').bootstrapTable('getData').length;
                                 $('#exampleTableEvents').bootstrapTable('insertRow', {
@@ -385,9 +426,41 @@
                                         //column_alias: cd[i].column_alias
                                     }
                                 });
+
+                                columnsArray.push({
+                                    "title": cd[i].column_name,
+                                    "field": cd[i].column_name,
+                                    switchable: true,
+                                    sortable: true});
                             }
 
 
+                            //生成表格
+                            $('#exampleTableEvents2').bootstrapTable({
+                                url: "",
+                                search: true,
+                                clickEdit: false,
+                                pagination: false,
+                                showRefresh: false,
+                                showToggle: false,
+                                showColumns: true,
+                                useRowAttrFunc: true,
+                                iconSize: 'outline',
+                                //toolbar: '#exampleTableEventsToolbar',
+                                icons: {
+                                    refresh: 'glyphicon-repeat',
+                                    toggle: 'glyphicon-list-alt',
+                                    columns: 'glyphicon-list'
+                                },
+                                columns: columnsArray,
+                                onLoadSuccess: function (ee)
+                                {
+                                    //查询数据成功
+                                    if(ee.code == "201"){
+                                        layer.msg(ee.result);
+                                    }
+                                }
+                            });
                         },
                         //处理完成
                         complete: function () {
@@ -398,10 +471,6 @@
                             console.info("error: " + data.responseText);
                         }
                     });
-
-
-
-
             }
 
             function getMyDate(str) {
@@ -544,6 +613,26 @@
 
     })(document, window, jQuery);
 
+    $(document).ready(function () {
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();//定义一个全局变量-存储任务ID
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+        $('#search').click(function () {
+            $('#exampleTableEvents2').bootstrapTable('refresh', {
+                url: server_context+"/data_ware_house_sample?"+$("#etl_task_add_form4").serialize()+"&id="+s.id,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json"
+            });
+        });
+        $('#export').click(function () {
+            window.open(server_context+"/data_ware_house_export?id="+s.id,);
+        })
+
+    })
 </script>
 
 </body>

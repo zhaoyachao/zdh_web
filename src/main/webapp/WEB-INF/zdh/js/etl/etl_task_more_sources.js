@@ -199,6 +199,16 @@
       showToggle: true,
       showColumns: true,
       iconSize: 'outline',
+      responseHandler:function (res) {
+          if(!Array.isArray(res)){
+              if(res.code == "201"){
+                  layer.msg(res.msg);
+              }else{
+                  layer.msg("未返回有效数据");
+              }
+          }
+          return res;
+      },
       toolbar: '#exampleTableEventsToolbar',
       icons: {
         refresh: 'glyphicon-repeat',

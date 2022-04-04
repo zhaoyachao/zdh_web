@@ -17,6 +17,8 @@ public class ApprovalEventInfo {
     private String event_code;//事件code,
     private String event_context;//事件说明,
     private Timestamp create_time;//'创建时间',
+    private Timestamp update_time;//'更新时间',
+    private String skip_account;
 
     @Transient
     private String code_name;
@@ -100,5 +102,21 @@ public class ApprovalEventInfo {
 
     public void setUser_name(String user_name) {
         this.user_name = user_name;
+    }
+
+    public String getSkip_account() {
+        return skip_account;
+    }
+
+    public void setSkip_account(String skip_account) {
+        this.skip_account = skip_account;
+    }
+
+    public Timestamp getUpdate_time() {
+        return update_time;
+    }
+
+    public void setUpdate_time(Timestamp update_time) {
+        this.update_time = update_time;
     }
 }

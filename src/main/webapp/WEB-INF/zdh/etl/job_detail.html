@@ -57,6 +57,7 @@
                                     <option value="JDBC" mytype="">JDBC</option>
                                     <option value="DATAX" mytype="">DATAX</option>
                                     <option value="QUALITY" mytype="">数据质量</option>
+                                    <option value="UNSTRUCTURE" mytype="">非结构化ETL</option>
                                 </select>
                             </div>
                         </div>
@@ -487,6 +488,36 @@
                     }
                 });
             }
+
+            function init_unstructure_task_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/etl_task_unstructure_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].unstructure_context + "\" hassubinfo=\"true\">" + data[i].unstructure_context + "</option>"
+                        }
+                        $("#etl_task_id").chosen("destroy");
+                        $('#etl_task_id').html(str);
+                        $('#etl_task_id').chosen()
+
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_unstructure_list_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_unstructure_list_error: " + data.responseText);
+                    }
+                });
+            }
             //初始化依赖调度任务数据
             function init_job_sources(){
                 $.ajax({
@@ -628,6 +659,9 @@
                 } else if(more_task=="QUALITY"){
                     console.info("选中QUALITY");
                     init_quality_task_sources();
+                } else if(more_task=="UNSTRUCTURE"){
+                    console.info("选中UNSTRUCTURE");
+                    init_unstructure_task_sources();
                 }
             }
 

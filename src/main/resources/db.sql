@@ -1315,6 +1315,74 @@ CREATE TABLE `data_tag_group_info` (
 alter table account_info add column tag_group_code varchar(512) not null default ''  comment '数据组标识,多个逗号分割';
 alter table data_sources_info add column tag_group_code varchar(512) not null default ''  comment '数据组标识,多个逗号分割';
 
+-- 2022-02-09;
+insert into data_sources_type_info(sources_type) values('FTP');
+
+-- 2022-02-26;
+CREATE TABLE `etl_task_unstructure_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `unstructure_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `project_id` varchar(100) DEFAULT NULL,
+  `data_sources_choose_file_input` varchar(100) DEFAULT null comment '输入数据源',
+  `input_path` varchar(512) DEFAULT null comment '文件读取路径',
+  `data_sources_choose_file_output` varchar(100) DEFAULT NULL,
+  `data_sources_choose_jdbc_output` varchar(100) DEFAULT NULL,
+  `output_path` varchar(512) DEFAULT null comment '文件写入路径',
+  `etl_sql` text,
+  `unstructure_params_output` varchar(500) DEFAULT NULL,
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+  `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+  `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+  `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `etl_task_unstructure_log_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `unstructure_id` varchar(100) DEFAULT null comment '非结构化任务ID',
+  `unstructure_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `project_id` varchar(100) DEFAULT NULL,
+  `data_sources_choose_file_input` varchar(100) DEFAULT null comment '输入数据源',
+  `input_path` varchar(512) DEFAULT null comment '文件读取路径',
+  `data_sources_choose_file_output` varchar(100) DEFAULT NULL,
+  `data_sources_choose_jdbc_output` varchar(100) DEFAULT NULL,
+  `output_path` varchar(512) DEFAULT null comment '文件写入路径',
+  `etl_sql` text,
+  `unstructure_params_output` varchar(500) DEFAULT NULL,
+  `msg` text comment '执行日志',
+  `status` varchar(64) default null COMMENT '状态,true/false',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+  `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+  `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- 2022-03-05;
+alter table resource_tree_info add column product_code varchar(100) not null default ''  comment '产品code';
+
+update resource_tree_info set product_code='zdh';
+
+alter table role_info add column product_code varchar(100) not null default ''  comment '产品code';
+
+update role_info set product_code='zdh';
+
+-- 2022-04-01;
+alter table user_operate_log add column `time` varchar(100) not null default ''  comment '请求响应耗时';
+
+alter table approval_event_info add column `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间'
+alter table approval_event_info add column `skip_account` text  comment '可跳过审批的用户';
+
+
+
 -- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
@@ -1459,6 +1527,9 @@ ENGINE=InnoDB;
 
 -- 2022-01-16;
 alter table QRTZ_SCHEDULER_STATE add column STATUS varchar(16) not null default 'online' comment '状态，下线offline,上线online';
+
+-- 2022-04-01;
+alter table QRTZ_SCHEDULER_STATE add column RUNNING varchar(16) not null default '' comment '正在执行中的任务数';
 
 CREATE TABLE QRTZ_LOCKS (
 SCHED_NAME VARCHAR(120) NOT NULL,

@@ -20,9 +20,7 @@ public interface ZdhLogsMapper extends BaseMapper<ZdhLogs> {
 
     @Select({"<script>",
             "select * from zdh_logs where level in (${levels}) ",
-            "<when test='task_logs_id == null and task_logs_id == \"\"'>",
             "and <![CDATA[ log_time >=#{start_time} ]]> and <![CDATA[ log_time <=#{end_time} ]]>",
-            "</when>",
             "<when test='task_logs_id!=null and task_logs_id !=\"\"'>",
             "AND task_logs_id = #{task_logs_id}",
             "</when>",

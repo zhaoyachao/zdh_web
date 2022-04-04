@@ -15,9 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
@@ -78,13 +80,15 @@ public class ZdhEtlBatchController extends BaseController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/etl_task_batch_detail", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_batch_detail(String id) {
         try {
             EtlTaskBatchInfo eti = etlTaskBatchMapper.selectByPrimaryKey(id);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
         } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
@@ -124,15 +128,15 @@ public class ZdhEtlBatchController extends BaseController {
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/etl_task_batch_delete", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_batch_delete(String[] ids) {
         try {
             etlTaskBatchMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
@@ -146,9 +150,9 @@ public class ZdhEtlBatchController extends BaseController {
      * @param etlTaskBatchInfo
      * @return
      */
-    @RequestMapping(value = "/etl_task_batch_add", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_batch_add(EtlTaskBatchInfo etlTaskBatchInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
@@ -175,7 +179,7 @@ public class ZdhEtlBatchController extends BaseController {
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
 
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
@@ -189,9 +193,9 @@ public class ZdhEtlBatchController extends BaseController {
      * @param etlTaskBatchInfo
      * @return
      */
-    @RequestMapping(value = "/etl_task_batch_update", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_batch_update(EtlTaskBatchInfo etlTaskBatchInfo) {
         try {
             String owner = getUser().getId();
@@ -218,7 +222,7 @@ public class ZdhEtlBatchController extends BaseController {
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
@@ -226,9 +230,9 @@ public class ZdhEtlBatchController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/etl_task_batch_create", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_create", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_batch_create(EtlTaskBatchInfo etlTaskBatchInfo) {
         try {
             String owner = getUser().getId();
@@ -301,7 +305,7 @@ public class ZdhEtlBatchController extends BaseController {
 
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), tab);
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             etlTaskBatchInfo.setStatus(Const.BATCH_FAIL);
@@ -319,7 +323,7 @@ public class ZdhEtlBatchController extends BaseController {
             return new DBUtil().R4(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
                     "select * from " + table_name + " where 1=2 limit 1", table_name);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
             return new ArrayList<String>();
         }
     }
@@ -341,12 +345,12 @@ public class ZdhEtlBatchController extends BaseController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
+                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
             }
         }
     }

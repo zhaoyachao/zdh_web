@@ -15,9 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
@@ -82,9 +84,9 @@ public class ZdhQualityController extends BaseController {
         return JSON.toJSONString(qualityRuleInfos);
     }
 
-    @RequestMapping(value = "/quality_rule_add", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_rule_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String quality_rule_add(QualityRuleInfo qualityRuleInfo) {
         try {
             if (StringUtils.isEmpty(qualityRuleInfo.getRule_code())) {
@@ -104,14 +106,16 @@ public class ZdhQualityController extends BaseController {
             qualityRuleMapper.insert(qualityRuleInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
-    @RequestMapping(value = "/quality_rule_update", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_rule_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String quality_rule_update(QualityRuleInfo qualityRuleInfo) {
         try {
             qualityRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -119,6 +123,8 @@ public class ZdhQualityController extends BaseController {
             qualityRuleMapper.updateByPrimaryKey(qualityRuleInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -169,9 +175,9 @@ public class ZdhQualityController extends BaseController {
         return JSON.toJSONString(qualityTaskInfos);
     }
 
-    @RequestMapping(value = "/quality_task_add", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_task_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String quality_task_add(QualityTaskInfo qualityTaskInfo, String[] quality_rule, String[] quality_columns) {
         try {
             qualityTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
@@ -190,14 +196,16 @@ public class ZdhQualityController extends BaseController {
             qualityTaskMapper.insert(qualityTaskInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
-    @RequestMapping(value = "/quality_task_update", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_task_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String quality_task_update(QualityTaskInfo qualityTaskInfo, String[] quality_rule, String[] quality_columns) {
         try {
             qualityTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -213,14 +221,16 @@ public class ZdhQualityController extends BaseController {
             qualityTaskMapper.updateByPrimaryKey(qualityTaskInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
-    @RequestMapping(value = "/quality_task_delete", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_task_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String quality_task_delete(String[] ids) {
         try {
             Example example = new Example(QualityTaskInfo.class);
@@ -229,6 +239,8 @@ public class ZdhQualityController extends BaseController {
             qualityTaskMapper.deleteByExample(example);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
@@ -261,7 +273,7 @@ public class ZdhQualityController extends BaseController {
      * @param service
      * @return
      */
-    @RequestMapping(value = "/quota_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quota_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String quota_list(String column_desc, String column_alias, String company, String section, String service) {
 
@@ -279,7 +291,7 @@ public class ZdhQualityController extends BaseController {
      * @param status
      * @return
      */
-    @RequestMapping(value = "/quality_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String quality_list(String job_context, String etl_context, String status) {
 
@@ -311,9 +323,9 @@ public class ZdhQualityController extends BaseController {
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/quality_delete", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String quality_delete(String[] ids) {
 
         try {
@@ -323,6 +335,8 @@ public class ZdhQualityController extends BaseController {
             qualityMapper.deleteByExample(example);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
@@ -346,13 +360,13 @@ public class ZdhQualityController extends BaseController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
                     logger.error(error);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}");
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}");
             }
         }
     }

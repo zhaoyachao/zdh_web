@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSON;
 import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
+import com.zyc.zdh.monitor.Sys;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
@@ -36,18 +37,22 @@ public class CheckBloodSourceJob {
             List<BloodSourceInfo> bsis = check_etl_blood_source(version);
             List<BloodSourceInfo> bsis2 = check_more_etl_blood_source(version);
             List<BloodSourceInfo> bsis3 = check_sql_blood_source(version);
+            List<BloodSourceInfo> bsis4 = check_spark_sql_blood_source(version);
 
             bsis.addAll(bsis2);
             bsis.addAll(bsis3);
-
+            bsis.addAll(bsis4);
 
             for (BloodSourceInfo bsi : bsis) {
-                if (!StringUtils.isEmpty(bsi.getInput()))
+                if (!StringUtils.isEmpty(bsi.getInput())&& !StringUtils.isEmpty(bsi.getOutput_type())){
+                    System.out.println("Blood: "+JSON.toJSONString(bsi));
                     bloodSourceMapper.insert(bsi);
+                }
+
             }
         } catch (Exception e) {
-
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+            logger.error("{}",e);
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
         }
     }
 
@@ -68,6 +73,9 @@ public class CheckBloodSourceJob {
 
             bsi.setOutput_type(eti.getData_source_type_output());
             DataSourcesInfo dsi_output = dataSourcesMapper.selectByPrimaryKey(eti.getData_sources_choose_output());
+            if(dsi_output==null){
+                return bsi;
+            }
             String md5_output = DigestUtils.md5DigestAsHex((dsi_output.getData_source_type() + dsi_output.getUrl()).getBytes());
             bsi.setOutput_md5(md5_output);
             bsi.setOutput(dsi_output.getData_source_type().equalsIgnoreCase("jdbc") ? eti.getData_sources_table_name_output() : eti.getData_sources_file_name_output());
@@ -75,7 +83,8 @@ public class CheckBloodSourceJob {
             bsi.setVersion(version);
 
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+            logger.error("{}", e);
+            logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
         }
 
 
@@ -155,7 +164,7 @@ public class CheckBloodSourceJob {
             Map<String, Object> jinJavaParam = getJinJavaParam(new Timestamp(new Date().getTime()));
             Jinjava jj = new Jinjava();
             String etl_sql = jj.render(etlTaskJdbcInfo.getEtl_sql(), jinJavaParam);
-            String[] sqls = etl_sql.split("\r\n|\n");
+            String[] sqls = etl_sql.split(";\r\n|;\n");
             for (String sql : sqls) {
                 System.out.println(sql);
                 System.out.println("======");
@@ -193,7 +202,7 @@ public class CheckBloodSourceJob {
                     bloodSourceMappeer.insert(bsi);
                     bsis.add(bsi);
                 } catch (Exception e) {
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
                     continue;
                 }
 
@@ -214,9 +223,12 @@ public class CheckBloodSourceJob {
         for (SqlTaskInfo sqlTaskInfo : sqlTaskInfos) {
             ArrayList input_tables = new ArrayList<String>();
             ArrayList output_tables = new ArrayList<String>();
-            DataSourcesInfo ds = dataSourcesMapper.selectByPrimaryKey(sqlTaskInfo.getData_sources_choose_input());
-            String dbType = JdbcUtils.getDbType(ds.getUrl(), ds.getDriver());
-            String[] sqls = sqlTaskInfo.getEtl_sql().split("\r\n|\n");
+            DataSourcesInfo ds = new DataSourcesInfo();//dataSourcesMapper.selectByPrimaryKey(sqlTaskInfo.getData_sources_choose_input());
+            ds.setData_source_type("HIVE");
+            ds.setUrl("");
+
+            String dbType = "hive";//JdbcUtils.getDbType(ds.getUrl(), ds.getDriver());
+            String[] sqls = sqlTaskInfo.getEtl_sql().split(";\r\n|;\n");
             for (String sql : sqls) {
                 List<SQLStatement> sqlStatementList = SQLUtils.parseStatements(sql, dbType);
                 SQLStatement stmt = sqlStatementList.get(0);
@@ -238,20 +250,24 @@ public class CheckBloodSourceJob {
                 bsi.setContext(sqlTaskInfo.getSql_context());
                 bsi.setOwner(sqlTaskInfo.getOwner());
                 bsi.setCreate_time(new Date());
-                bsi.setInput_type(sqlTaskInfo.getData_source_type_input());
-                DataSourcesInfo dsi_input = dataSourcesMapper.selectByPrimaryKey(sqlTaskInfo.getData_sources_choose_input());
-                String md5 = DigestUtils.md5DigestAsHex((dsi_input.getData_source_type() + dsi_input.getUrl()).getBytes());
+                bsi.setInput_type(ds.getData_source_type());
+                //DataSourcesInfo dsi_input = dataSourcesMapper.selectByPrimaryKey(sqlTaskInfo.getData_sources_choose_input());
+                String md5 = DigestUtils.md5DigestAsHex((ds.getData_source_type() + ds.getUrl()).getBytes());
                 bsi.setInput_md5(md5);
                 bsi.setInput(StringUtils.join(input_tables, ","));
 
                 DataSourcesInfo dsi_output = dataSourcesMapper.selectByPrimaryKey(sqlTaskInfo.getData_sources_choose_output());
+                if(dsi_output == null) continue;
                 String md5_output = DigestUtils.md5DigestAsHex((dsi_output.getData_source_type() + dsi_output.getUrl()).getBytes());
 
                 bsi.setOutput_md5(md5_output);
-                bsi.setOutput_type(sqlTaskInfo.getData_sources_choose_output());
+                bsi.setOutput_type(sqlTaskInfo.getData_source_type_output());
+                String out = dsi_output.getData_source_type().equalsIgnoreCase("jdbc") ? sqlTaskInfo.getData_sources_table_name_output() : sqlTaskInfo.getData_sources_file_name_output();
+                if(!StringUtils.isEmpty(out)) output_tables.add(out);
                 bsi.setOutput(StringUtils.join(output_tables, ","));
                 bsi.setVersion(version);
                 bloodSourceMappeer.insert(bsi);
+                System.out.println("Spark: "+JSON.toJSONString(bsi));
                 bsis.add(bsi);
             }
 

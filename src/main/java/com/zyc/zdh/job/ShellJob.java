@@ -59,7 +59,7 @@ public class ShellJob extends JobCommon2 {
 
                     String[] str = command.split("\r\n");
                     String newcommand = "";
-                    String line = System.getProperty("line.separator");
+                    String line = Const.LINE_SEPARATOR;
                     for (String s : str) {
                         newcommand = newcommand + s + line;
                         newcommand=newcommand.trim();
@@ -126,7 +126,7 @@ public class ShellJob extends JobCommon2 {
                 insertLog(tli, "info", "[" + jobType + "] JOB ,执行命令为空,默认返回成功状态");
             }
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             logger.error(e.getMessage());
             insertLog(tli, "error","[" + jobType + "] JOB ,"+ e.getMessage());
             jobFail(jobType,tli);
@@ -146,7 +146,7 @@ public class ShellJob extends JobCommon2 {
                 //等待命令执行完成
                 process.waitFor(10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             }
             InputStream is = process.getInputStream();
             input = new Scanner(is);

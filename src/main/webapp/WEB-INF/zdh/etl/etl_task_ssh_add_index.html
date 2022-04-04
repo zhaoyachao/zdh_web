@@ -489,7 +489,7 @@
                     var div1=' <div class="checkbox i-checks">'+
                         '<label class="no-padding">'+
                         ' <input type="checkbox" value="'+id+'"><i></i> '+fileName+'</label>'+
-                        '  </div>'
+                        '  </div>';
                     $("#file_list").prepend(div1);
                 }
                 if(data.length>0){
@@ -520,7 +520,7 @@
         $('#file_list input:checked').each(function () {
             ids.push($(this).attr("value"))
             // alert($(this).attr("value"))
-        })
+        });
         if(ids.length>0){
             $.ajax({
                 url : server_context+"/etl_task_ssh_del_file",
@@ -528,9 +528,9 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success:s.id:"+ids)
+                    console.info("success:s.id:"+ids);
                     if(data.code != "200"){
-                        layer.msg(data.msg)
+                        layer.msg(data.msg);
                         return
                     }
                     if(s.id != -1){

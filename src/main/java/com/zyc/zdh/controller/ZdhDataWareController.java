@@ -6,27 +6,25 @@ import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.EmailJob;
-import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.service.JemailService;
-import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.DBUtil;
+import com.zyc.zdh.util.ExportUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedWriter;
 import java.lang.reflect.Field;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 新数据仓库服务
@@ -38,6 +36,12 @@ public class ZdhDataWareController extends BaseController {
     IssueDataMapper issueDataMapper;
     @Autowired
     EnumMapper enumMapper;
+    @Autowired
+    DataSourcesMapper dataSourcesMapper;
+    @Autowired
+    AccountMapper accountMapper;
+    @Autowired
+    ApplyMapper applyMapper;
 
     @RequestMapping("/data_ware_house_index_plus")
     public String data_ware_house_index_plus() {
@@ -45,11 +49,13 @@ public class ZdhDataWareController extends BaseController {
         return "etl/data_ware_house_index_plus";
     }
 
-    @White
-    @RequestMapping(value = "/data_ware_house_list6", produces = "text/html;charset=UTF-8")
+
+    @RequestMapping(value = "/data_ware_house_list6", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_list6(String issue_context,String current_page,String label_params) {
-        int page_size = 3;
+    public String data_ware_house_list6(String issue_context,String current_page,String label_params,Integer  page_size) {
+        if(page_size==null || page_size==0){
+            page_size = 10;
+        }
         List<IssueDataInfo> list = new ArrayList<>();
         String[] labels = new String[]{};
         if(!StringUtils.isEmpty(label_params)){
@@ -78,14 +84,18 @@ public class ZdhDataWareController extends BaseController {
                 left_page.add(String.valueOf(i));
             }
         }
-        for(int i=Integer.parseInt(current_page); i<Integer.parseInt(current_page)+3;i++ ){
-            if(i<= total_page){
-                right_page.add(String.valueOf(i));
+        //当前页后的2页展示
+        for(int j=Integer.parseInt(current_page); j<Integer.parseInt(current_page)+3;j++ ){
+            if(j<= total_page){
+                right_page.add(String.valueOf(j));
             }
         }
         if(Integer.parseInt(current_page)+4<total_page){
             right_page.add("...");
             right_page.add(String.valueOf(total_page-1));
+            right_page.add(String.valueOf(total_page));
+        }else if(Integer.parseInt(current_page)+3==total_page){
+            //right_page.add(String.valueOf(total_page-1));
             right_page.add(String.valueOf(total_page));
         }else if(Integer.parseInt(current_page)+3<total_page){
             right_page.add(String.valueOf(total_page-1));
@@ -101,7 +111,7 @@ public class ZdhDataWareController extends BaseController {
     }
 
     @White
-    @RequestMapping(value = "/data_ware_house_label", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_ware_house_label", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_ware_house_label() {
 
@@ -109,12 +119,126 @@ public class ZdhDataWareController extends BaseController {
         Example.Criteria criteria = example.createCriteria();
 
         criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        criteria.andLike("enum_code", "data_ware_house_label_%");
+        criteria.andLike("enum_type", "label_category");
+        //criteria.andLike("enum_code", "data_ware_house_label_%");
         List<EnumInfo> enumInfos = enumMapper.selectByExample(example);
 
         return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"查询成功", enumInfos);
     }
 
+
+
+    @RequestMapping(value = "/data_ware_house_sample", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String data_ware_house_sample(String context, String id) {
+
+        IssueDataInfo idi = issueDataMapper.selectById(id);
+
+
+        //验证权限,验证当前数据是否同一个组下的人申请
+        String user_group = getUser().getUser_group();
+
+        Example example=new Example(AccountInfo.class);
+        Example.Criteria criteria=example.createCriteria();
+        criteria.andEqualTo("user_group", user_group);
+        List<AccountInfo> accountInfos=accountMapper.selectByExample(example);
+        List<String> owners = new ArrayList<>();
+        for (AccountInfo accountInfo: accountInfos){
+            owners.add(accountInfo.getId().toString());
+        }
+
+        Example example2=new Example(ApplyInfo.class);
+        Example.Criteria criteria2=example2.createCriteria();
+        criteria2.andEqualTo("issue_id", idi.getId());
+        criteria2.andEqualTo("status", Const.APPLY_STATUS_SUCCESS);
+        criteria2.andIn("owner", owners);
+        int count = applyMapper.selectCountByExample(example2);
+        if(count<=0 && !idi.getOwner().equalsIgnoreCase(getUser().getId())){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", "当前表无操作权限");
+        }
+
+        if(!idi.getData_source_type_input().equalsIgnoreCase("jdbc")){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", "只支持JDBC类型数据查询");
+        }
+        String sources_id = idi.getData_sources_choose_input();
+        String table = idi.getData_sources_table_name_input();
+        List<column_data> columns = idi.getColumn_data_list();
+        DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(sources_id);
+
+        String sql = "select ";
+        List<String> columnList = new ArrayList<>();
+        for(column_data column:columns){
+            columnList.add(column.getColumn_name());
+        }
+        sql=sql+StringUtils.join(columnList,",")+" from "+table +" limit 1000";
+        try {
+            List<Map<String,Object>> result = new DBUtil().R5(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
+                    sql);
+            return JSON.toJSONString(result);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+        }
+
+        return JSON.toJSONString("");
+    }
+
+
+    @RequestMapping(value = "/data_ware_house_export", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String data_ware_house_export(String id, HttpServletResponse response) {
+
+        IssueDataInfo idi = issueDataMapper.selectById(id);
+        //验证权限,验证当前数据是否同一个组下的人申请
+        String user_group = getUser().getUser_group();
+
+        Example example=new Example(AccountInfo.class);
+        Example.Criteria criteria=example.createCriteria();
+        criteria.andEqualTo("user_group", user_group);
+        List<AccountInfo> accountInfos=accountMapper.selectByExample(example);
+        List<String> owners = new ArrayList<>();
+        for (AccountInfo accountInfo: accountInfos){
+            owners.add(accountInfo.getId().toString());
+        }
+
+        Example example2=new Example(ApplyInfo.class);
+        Example.Criteria criteria2=example2.createCriteria();
+        criteria2.andEqualTo("issue_id", idi.getId());
+        criteria2.andEqualTo("status", Const.APPLY_STATUS_SUCCESS);
+        criteria2.andIn("owner", owners);
+        int count = applyMapper.selectCountByExample(example2);
+        if(count<=0 && !idi.getOwner().equalsIgnoreCase(getUser().getId())){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"导出失败", "当前表无操作权限");
+        }
+
+        if(!idi.getData_source_type_input().equalsIgnoreCase("jdbc")){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"导出失败", "只支持JDBC类型数据查询");
+        }
+        String sources_id = idi.getData_sources_choose_input();
+        String table = idi.getData_sources_table_name_input();
+        List<column_data> columns = idi.getColumn_data_list();
+        DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(sources_id);
+
+        String sql = "select ";
+        List<String> columnList = new ArrayList<>();
+        for(column_data column:columns){
+            columnList.add(column.getColumn_name());
+        }
+        sql=sql+StringUtils.join(columnList,",")+" from "+table +" limit 1000000";
+        BufferedWriter csvWtriter = null;
+        try {
+            List<Map<String,Object>> result = new DBUtil().R5(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
+                    sql);
+
+            ExportUtil.responseSetProperties(idi.getIssue_context(),response);
+            ExportUtil.doExport(result, StringUtils.join(columnList,","), StringUtils.join(columnList,","),response.getOutputStream());
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", e);
+        }
+        return null;
+    }
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();
@@ -133,13 +257,13 @@ public class ZdhDataWareController extends BaseController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
                     logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}");
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}");
             }
         }
     }

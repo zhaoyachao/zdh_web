@@ -864,7 +864,9 @@
                             $('#service').val(service);
 
                             var update_context = data.result.update_context;
-                            $('#update_context').val(update_context)
+                            $('#update_context').val(update_context);
+
+                            parent.layer.msg(data.msg);
 
                         },
                         error: function (data) {

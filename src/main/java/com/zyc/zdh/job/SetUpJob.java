@@ -7,7 +7,7 @@ import com.zyc.zdh.entity.ServerTaskInfo;
 import com.zyc.zdh.entity.ServerTaskInstance;
 import com.zyc.zdh.util.SSHUtil;
 import com.zyc.zdh.util.SpringContext;
-import com.zyc.zdh.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,11 +66,11 @@ public class SetUpJob {
             System.out.println(out[0]+"=="+out[1]);
             sshUtil.logout();
         } catch (IOException e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             JobCommon2.insertLog(sti.getTemplete_id(),sti.getId(),"INFO",e.getMessage());
             setStatus(sti.getId(),"2");
         } catch (JSchException e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             JobCommon2.insertLog(sti.getTemplete_id(),sti.getId(),"INFO",e.getMessage());
             setStatus(sti.getId(),"2");
         }

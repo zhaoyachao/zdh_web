@@ -15,9 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
@@ -108,7 +110,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param id id
      * @return
      */
-    @RequestMapping(value = "/data_sources_info", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_sources_info", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_sources_info(String id) {
 
@@ -122,14 +124,16 @@ public class ZdhDataSourcesController extends BaseController{
      * @param ids
      * @return
      */
-    @RequestMapping("/data_sources_delete")
+    @RequestMapping(value = "/data_sources_delete", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String deleteIds(String[] ids) {
         try{
             dataSourcesMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
@@ -153,7 +157,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param dataSourcesInfo
      * @return
      */
-    @RequestMapping(value = "/data_sources_add", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_sources_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_sources_add(DataSourcesInfo dataSourcesInfo) {
         try{
@@ -163,6 +167,8 @@ public class ZdhDataSourcesController extends BaseController{
             dataSourcesMapper.insert(dataSourcesInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
@@ -172,7 +178,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param dataSourcesInfo
      * @return
      */
-    @RequestMapping("/data_sources_update")
+    @RequestMapping(value="/data_sources_update", method = RequestMethod.POST)
     @ResponseBody
     public String data_sources_update(DataSourcesInfo dataSourcesInfo) {
         try{
@@ -183,6 +189,8 @@ public class ZdhDataSourcesController extends BaseController{
             dataSourcesMapper.updateByPrimaryKey(dataSourcesInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
 
@@ -192,7 +200,7 @@ public class ZdhDataSourcesController extends BaseController{
      * 获取所有的数据源类型
      * @return
      */
-    @RequestMapping("/data_sources_type")
+    @RequestMapping(value = "/data_sources_type", method = RequestMethod.GET)
     @ResponseBody
     public List<String> data_sources_type() {
         List<String> result = dataSourcesMapper.selectDataSourcesType();
@@ -201,7 +209,7 @@ public class ZdhDataSourcesController extends BaseController{
     }
 
 
-    @RequestMapping(value = "/test_connect", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/test_connect", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String test_connect(DataSourcesInfo dataSourcesInfo) {
         try{
@@ -212,6 +220,8 @@ public class ZdhDataSourcesController extends BaseController{
                     "");
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"测试连接成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"测试连接失败", e.getMessage());
         }
     }
@@ -234,13 +244,13 @@ public class ZdhDataSourcesController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
                     logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             }
         }
     }

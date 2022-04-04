@@ -23,6 +23,9 @@ public class QrtzSchedulerState {
     @Column(name = "STATUS")
     private String status;
 
+    @Column(name = "RUNNING")
+    private String running;
+
     @Transient
     private String executor_status;
     /**
@@ -83,5 +86,13 @@ public class QrtzSchedulerState {
 
     public void setExecutor_status(String executor_status) {
         this.executor_status = executor_status;
+    }
+
+    public String getRunning() {
+        return running;
+    }
+
+    public void setRunning(String running) {
+        this.running = running;
     }
 }

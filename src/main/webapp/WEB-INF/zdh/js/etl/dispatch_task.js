@@ -9,7 +9,6 @@
         }
         $('#exampleTableEvents').attr("data-height",height);
         $('#add').click(function () {
-
             layer.confirm('是否新增调度任务', {
                 btn: ['确定','取消'] //按钮
             }, function(index){
@@ -406,6 +405,16 @@
             showToggle: true,
             showColumns: true,
             iconSize: 'outline',
+            responseHandler:function (res) {
+                if(!Array.isArray(res)){
+                    if(res.code == "201"){
+                        layer.msg(res.msg);
+                    }else{
+                        layer.msg("未返回有效数据");
+                    }
+                }
+                return res;
+            },
             toolbar: '#exampleTableEventsToolbar',
             icons: {
                 refresh: 'glyphicon-repeat',

@@ -77,6 +77,8 @@ public class ResourceTreeInfo{
 
 	private String event_code;
 
+	private String product_code;
+
 	public String getId() {
 		return id;
 	}
@@ -202,5 +204,13 @@ public class ResourceTreeInfo{
 
 	public void setEvent_code(String event_code) {
 		this.event_code = event_code;
+	}
+
+	public String getProduct_code() {
+		return product_code;
+	}
+
+	public void setProduct_code(String product_code) {
+		this.product_code = product_code;
 	}
 }

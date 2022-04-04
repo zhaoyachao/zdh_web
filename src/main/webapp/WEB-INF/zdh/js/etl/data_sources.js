@@ -207,13 +207,23 @@ function buildTable($el, cells, rows) {
 
 
     $('#exampleTableEvents').bootstrapTable({
-      url: server_context+"/data_sources_list",
+      url: server_context+"/data_sources_list2",
       search: true,
       pagination: true,
       showRefresh: true,
       showToggle: true,
       showColumns: true,
       iconSize: 'outline',
+      responseHandler:function (res) {
+          if(!Array.isArray(res)){
+              if(res.code == "201"){
+                  layer.msg(res.msg);
+              }else{
+                  layer.msg("未返回有效数据");
+              }
+          }
+          return res;
+      },
       toolbar: '#exampleTableEventsToolbar',
       icons: {
         refresh: 'glyphicon-repeat',

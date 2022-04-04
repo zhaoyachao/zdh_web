@@ -1,15 +1,13 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.kingbase.util.MD5Digest;
 import com.zyc.zdh.dao.BloodSourceMapper;
 import com.zyc.zdh.dao.EtlTaskJdbcMapper;
-import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
-import com.zyc.zdh.entity.*;
+import com.zyc.zdh.entity.BloodSourceInfo;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.CheckBloodSourceJob;
-import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.DAG;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,15 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
-import java.sql.Timestamp;
 import java.util.*;
 
 @Controller
@@ -52,7 +48,7 @@ public class ZdhBloodSourceController extends BaseController{
         return "etl/blood_source_detail_index";
     }
 
-    @RequestMapping(value = "/blood_source_create", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/blood_source_create", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String blood_source_create() {
         CheckBloodSourceJob.Check();
@@ -64,7 +60,7 @@ public class ZdhBloodSourceController extends BaseController{
      * @param input 表名/文件名
      * @return
      */
-    @RequestMapping(value = "/blood_source_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/blood_source_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String blood_source_list(String input) {
 
@@ -120,7 +116,7 @@ public class ZdhBloodSourceController extends BaseController{
      * @param stream_type 上游/下游  1：上游,2：下游, 3：全部
      * @return
      */
-    @RequestMapping(value = "/blood_source_detail", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/blood_source_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String blood_source_detail(String input, String level, String stream_type) {
         DAG dag=new DAG();
@@ -267,12 +263,12 @@ public class ZdhBloodSourceController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             }
         }
     }

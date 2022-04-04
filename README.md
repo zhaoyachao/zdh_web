@@ -468,10 +468,48 @@
   + v4.7.18 修复增加根项目名,部分页面无法获取数据bug
   + v4.7.18 数据源增加权限控制
   + v4.7.18 系统限流等动态参数配置
-  + v5.0.0 增加HTTP,EMAIL调度对象 【开发中】
-  + v5.0.0 wemock 【开发中】
-  + v5.0.0 实现非结构化数据录入-并自动生成对应关系 【开发中】
-  + v5.0.0 flink增加手动checkpoint功能 【开发中】
+  
+  + v5.0.0 增加数据资产导出功能
+  + v5.0.0 增加调度器自动启动配置
+  + v5.0.0 增加数据资产查询
+  + v5.0.0 日志下载增加白名单
+  + v5.0.0 实现非结构化数据录入-并自动生成对应关系
+  + v5.0.0 实现非结构化数据录入数据源-只支持sftp,ftp,hdfs
+  + v5.0.0 [zdh_spark]修复hbase写入动态更新进度bug
+  + v5.0.0 [zdh_spark]修复hbase写入时,原始数据为空时无法写入bug
+  + v5.0.0 [zdh_spark]优化kafka数据写入
+  + v5.0.0 优化404页面,增加403无权限页面
+  + v5.0.0 功能权限(角色,资源)-增加产品绑定
+  + v5.0.0 [zdh_spark]升级hudi-spark版本0.5.1==>0.10.1
+  + v5.0.0 重构zdh_spark 进度监控
+  + v5.0.0 优化登录页面-验证码,及验证码无效提示
+  + v5.0.0 优化列表页面无权限提示
+  + v5.0.0 修复web端登录后,再次使用login页面无跳转首页bug
+  + v5.0.0 删除自定义StringUtils使用common-lang3.StringUtils
+  + v5.0.0 requestmapping注解中补全请求类型
+  + v5.0.0 整合springdoc,当前不完善,因json解析冲突,会出现json错误日志(不影响系统)
+  + v5.0.0 优化枚举,增加枚举类别显示
+  + v5.0.0 增加系统监控任务列表,启用,禁用
+  + v5.0.0 优化日志打印
+  + v5.0.0 数据资产页面增加分页大小
+  + v5.0.0 优化数据资产获取标签逻辑,改用通过获取枚举类别获取数据资产的标签
+  + v5.0.0 迁移验证码接口到LoginController层
+  + v5.0.0 操作日志增加耗时
+  + v5.0.0 无权限增加操作日志
+  + v5.0.0 日志打开时间条件查询,修复监控页面组日志日期无效bug
+  + v5.0.0 审批页面-增加跳过流程,申请页面-增加跳过流程
+  + v5.0.0 申请页面bug修复
+  + v5.0.0 优化登录页面背景
+  + v5.0.0 appication相关配置文件修改编码为utf-8
+  + v5.0.0 增加spark数据源解析
+  
+  + v5.0.0 增加用户黑名单限制【开发中】
+  + v5.0.0 增加接口黑名单限制【开发中】
+  + v5.0.1 权限单独出SDK及分配身份码(身份码和产品id加密解密绑定)【开发中】
+  + v5.0.1 数据资产-申请组信息【开发中】
+  + v5.0.1 增加HTTP,EMAIL调度对象 【开发中】
+  + v5.0.1 wemock 【开发中】
+  + v5.0.1 flink增加手动checkpoint功能 【开发中】
   
   
   
@@ -800,7 +838,134 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
     VALUES(939848526425231360, '936943441596649472', '同步redis', '4', '1', 'fa fa-coffee', '', '7', '1', '2022-02-06 11:42:30', '2022-02-06 11:42:30', 'param_to_redis', '5', '', '');
 
+# 4.7.18迁移5.0.0
 
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(942052856712663040, '937123552732123136', '查询', '4', '1', 'fa fa-coffee', '', '1', '1', '2022-02-12 13:41:44', '2022-02-12 13:41:44', 'data_ware_house_list6', '5', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(942052978712383488, '937123552732123136', '标签查询', '4', '1', 'fa fa-coffee', '', '2', '1', '2022-02-12 13:42:13', '2022-02-12 13:42:13', 'data_ware_house_label', '5', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(942053081317642240, '937123552732123136', '样本数据查询', '4', '1', 'fa fa-coffee', '', '3', '1', '2022-02-12 13:42:37', '2022-02-12 13:43:08', 'data_ware_house_sample', '5', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(942053175202942976, '937123552732123136', '样本数据导出', '4', '1', 'fa fa-coffee', '', '4', '1', '2022-02-12 13:42:59', '2022-02-12 13:42:59', 'data_ware_house_export', '5', '', '');
+
+    CREATE TABLE `etl_task_unstructure_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `unstructure_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+      `project_id` varchar(100) DEFAULT NULL,
+      `data_sources_choose_file_input` varchar(100) DEFAULT null comment '输入数据源',
+      `input_path` varchar(512) DEFAULT null comment '文件读取路径',
+      `data_sources_choose_file_output` varchar(100) DEFAULT NULL,
+      `data_sources_choose_jdbc_output` varchar(100) DEFAULT NULL,
+      `output_path` varchar(512) DEFAULT null comment '文件写入路径',
+      `etl_sql` text,
+      `unstructure_params_output` varchar(500) DEFAULT NULL,
+      `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+      `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+      `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+      `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+      `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+      `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+      `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    CREATE TABLE `etl_task_unstructure_log_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `unstructure_id` varchar(100) DEFAULT null comment '非结构化任务ID',
+      `unstructure_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+      `project_id` varchar(100) DEFAULT NULL,
+      `data_sources_choose_file_input` varchar(100) DEFAULT null comment '输入数据源',
+      `input_path` varchar(512) DEFAULT null comment '文件读取路径',
+      `data_sources_choose_file_output` varchar(100) DEFAULT NULL,
+      `data_sources_choose_jdbc_output` varchar(100) DEFAULT NULL,
+      `output_path` varchar(512) DEFAULT null comment '文件写入路径',
+      `etl_sql` text,
+      `unstructure_params_output` varchar(500) DEFAULT NULL,
+      `msg` text comment '执行日志',
+      `status` varchar(64) default null COMMENT '状态,true/false',
+      `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+      `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+      `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+      `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+      `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+      `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(943266657919307776, '802852358580080640', '非结构化采集', '3', '1', 'non', '', '11', '1', '2022-02-15 22:04:56', '2022-02-15 22:05:37', 'etl_task_unstructure_index', '2', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(943266905408409600, '943266657919307776', '查询', '4', '1', 'fa fa-coffee', '', '1', '1', '2022-02-15 22:05:55', '2022-02-15 22:05:55', 'etl_task_unstructure_list', '5', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(943267015571804160, '943266657919307776', '新增页面', '4', '1', 'fa fa-coffee', '', '2', '1', '2022-02-15 22:06:22', '2022-02-15 22:06:22', 'etl_task_unstructure_add_index', '3', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(943267126561476608, '943266657919307776', '新增', '4', '1', 'fa fa-coffee', '', '3', '1', '2022-02-15 22:06:48', '2022-02-15 22:06:48', 'etl_task_unstructure_add', '5', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(943267228420149248, '943266657919307776', '更新', '4', '1', 'fa fa-coffee', '', '4', '1', '2022-02-15 22:07:12', '2022-02-15 22:07:12', 'etl_task_unstructure_update', '5', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(943267317154844672, '943266657919307776', '删除', '4', '1', 'fa fa-coffee', '', '5', '1', '2022-02-15 22:07:33', '2022-02-15 22:07:33', 'etl_task_unstructure_delete', '5', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(943633847528984576, '943266657919307776', '上传文件页面', '4', '1', 'fa fa-coffee', '', '6', '1', '2022-02-16 22:24:01', '2022-02-16 22:24:01', 'etl_task_unstructure_upload_index', '3', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(943633913723490304, '943266657919307776', '上传文件', '4', '1', 'fa fa-coffee', '', '7', '1', '2022-02-16 22:24:17', '2022-02-16 22:24:17', 'etl_task_unstructure_upload', '5', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(944568364485840896, '943266657919307776', '日志页面', '4', '1', 'fa fa-coffee', '', '8', '1', '2022-02-19 12:17:27', '2022-02-19 12:17:27', 'etl_task_unstructure_log_index', '3', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(944568478025650176, '943266657919307776', '日志查询', '4', '1', 'fa fa-coffee', '', '9', '1', '2022-02-19 12:17:54', '2022-02-19 12:17:54', 'etl_task_unstructure_log_list', '5', '', '');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
+    VALUES(944718135569682432, '943266657919307776', '日志删除', '4', '1', 'fa fa-coffee', '', '10', '1', '2022-02-19 22:12:36', '2022-02-19 22:12:36', 'etl_task_unstructure_log_delete', '5', '', '');
+
+    alter table resource_tree_info add column product_code varchar(100) not null default ''  comment '产品code';
+    
+    update resource_tree_info set product_code='zdh';
+    
+    alter table role_info add column product_code varchar(100) not null default ''  comment '产品code';
+    
+    update role_info set product_code='zdh';
+
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+    VALUES(958858421291978752, '930966518835974144', '查询系统任务', '4', '1', 'fa fa-coffee', '', '3', '1', '2022-03-30 22:41:02', '2022-03-30 22:41:02', 'dispatch_system_task_list', '5', '', '', 'zdh');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+    VALUES(958858522265653248, '930966518835974144', '启用系统任务', '4', '1', 'fa fa-coffee', '', '4', '1', '2022-03-30 22:41:26', '2022-03-30 22:41:26', 'dispatch_system_task_create', '5', '', '', 'zdh');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+    VALUES(958858665077510144, '930966518835974144', '禁用系统任务', '4', '1', 'fa fa-coffee', '', '5', '1', '2022-03-30 22:42:00', '2022-03-30 22:42:00', 'dispatch_system_task_delete', '5', '', '', 'zdh');
+
+    alter table user_operate_log add column `time` varchar(100) not null default ''  comment '请求响应耗时';
+   
+    alter table QRTZ_SCHEDULER_STATE add column RUNNING varchar(16) not null default '' comment '正在执行中的任务数';
+  
+    alter table approval_event_info add column `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间'
+    alter table approval_event_info add column `skip_account` text  comment '可跳过审批的用户';
+    
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+    VALUES(960131981750833152, '930966518835974144', '新增系统任务页面', '4', '1', 'fa fa-coffee', '', '6', '1', '2022-04-03 11:01:43', '2022-04-03 11:02:13', 'dispatch_system_task_add_index', '3', '', '', 'zdh');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+    VALUES(960132057952948224, '930966518835974144', '新增系统任务', '4', '1', 'fa fa-coffee', '', '7', '1', '2022-04-03 11:02:01', '2022-04-03 11:02:01', 'dispatch_system_task_add', '5', '', '', 'zdh');
+
+  
   
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

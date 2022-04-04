@@ -204,7 +204,7 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
             id_tmp=s.id;
-            $('#deploy_mode').chosen()
+            $('#deploy_mode').chosen();
 
 
 
@@ -302,9 +302,7 @@
 
 
                             var spark_submit_params = data[0].spark_submit_params;
-                            $("#spark_submit_params").val(spark_submit_params)
-
-
+                            $("#spark_submit_params").val(spark_submit_params);
 
                         },
                         error: function (data) {

@@ -13,6 +13,7 @@
     <meta name="description" content="ZDH 权限设置">
 
     <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
@@ -47,12 +48,21 @@
                                 <input id="search2" onclick="update_auth()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="更新权限"/>
                             </div>
                             <div class="hr-line-dashed"></div>
+                            <div class="form-group" style="width: 100%">
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code"
+                                    class="chosen-select form-control m-b" tabindex="2" style="width: 35%">
+                                <option value="">空</option>
+                            </select>
+                            </div>
+                            <div class="form-group" style="width: 100%;"></div>
                             <div class="form-group">
                                 <input id="code" name="code" type="text"
                                        placeholder="角色code" class="form-control" aria-required="true"> </span>
                                 <input id="name" name="name" type="text"
                                        placeholder="角色说明" class="form-control" aria-required="true"> </span>
                             </div>
+
                             <div class="hr-line-dashed"></div>
                             <div class="form-group">
                                 <div> <input id="search_input" name="search_input" class="form-control" type="text" value="" placeholder="资源信息"></div><br />
@@ -81,7 +91,8 @@
 
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
-
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
     <!-- jsTree plugin javascript -->
     <script src="js/plugins/layer/layer.min.js"></script>
@@ -98,8 +109,36 @@
     </style>
 
     <script>
-        $(document).ready(function () {
+        $('#product_code').chosen();
 
+        $.ajax({
+            type: 'GET',
+            url: server_context+"/product_tag_list",
+            async:false,
+            dataType: 'json',
+            data: "",
+            //成功返回
+            success: function (data) {
+                var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                for (var i = 0; i < data.length; i++) {
+                    str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+                }
+                $('#product_code').html(str);
+                $("#product_code").trigger("chosen:updated");
+                $('#product_code').chosen().on("change", function (evt, params) {
+                    init_jstree($("#product_code").val());
+                });
+            },
+            //处理完成
+            complete: function () {
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+
+        function init_jstree(product_code){
+            $('#using_json3').jstree("destroy");
             $('#using_json3').jstree({
                 "plugins" : [ "types","checkbox", "search"],
                 'checkbox': { cascade: "", three_state: false }, //级联
@@ -109,14 +148,16 @@
                         $.ajax({
                             type : "post",
                             url : server_context+"/jstree_node",//getAreaBuild=getTreeArea
+                            data: {"product_code": product_code},
                             dataType : "json",
                             async:'false',
                             success : function(data) {
                                 console.info(data);
-                                if(data) {
-                                    callback.call(this, data);
+                                if(data.code == "200") {
+                                    callback.call(this, data.result);
                                 }else{
-                                    //$("#using_json").html("暂无数据！");
+                                    callback.call(this, []);
+                                    layer.msg(data.msg);
                                 }
                             }
                         });
@@ -124,11 +165,14 @@
 
 
                 } });
-
             $('#search_input').keyup(function () {
                 $('#using_json3').jstree(true).search($('#search_input').val());
 
             });
+        }
+
+        $(document).ready(function () {
+
         });
 
 
@@ -153,6 +197,10 @@
                     }
                     $('#code').val(data.result.code);
                     $('#name').val(data.result.name);
+                    $("#product_code").val(data.result.product_code);
+                    $("#product_code").prop("disabled","true");
+                    $("#product_code").trigger("chosen:updated");
+                    init_jstree(data.result.product_code);
                 }
             });
 
@@ -234,7 +282,8 @@
                     resource_id:ids,
                     level:level,
                     code: $('#code').val(),
-                    name:$('#name').val()
+                    name:$('#name').val(),
+                    product_code: $('#product_code').val()
                 },
                 async:'false',
                 traditional: true,

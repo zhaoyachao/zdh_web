@@ -7,12 +7,13 @@ import com.zyc.zdh.dao.ProcessFlowMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Field;
@@ -59,7 +60,7 @@ public class ZdhProcessFlowController extends BaseController {
         return "etl/process_flow_index2";
     }
 
-    @RequestMapping(value = "/process_flow_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/process_flow_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String process_flow_list(String context) {
 
@@ -74,7 +75,7 @@ public class ZdhProcessFlowController extends BaseController {
      * @param context
      * @return
      */
-    @RequestMapping(value = "/process_flow_list2", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/process_flow_list2", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String process_flow_list2(String context) {
 
@@ -88,7 +89,7 @@ public class ZdhProcessFlowController extends BaseController {
      * @param pfi
      * @return
      */
-    @RequestMapping(value = "/process_flow_status", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/process_flow_status", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String process_flow_status(ProcessFlowInfo pfi) {
         ProcessFlowInfo pfi_old = processFlowMapper.selectByPrimaryKey(pfi.getId());
@@ -132,7 +133,7 @@ public class ZdhProcessFlowController extends BaseController {
      * @param pfi
      * @return
      */
-    @RequestMapping(value = "/process_flow_status2", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/process_flow_status2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String process_flow_status2(ProcessFlowInfo pfi) {
         processFlowMapper.updateStatus2(pfi.getFlow_id(), pfi.getStatus());
@@ -151,7 +152,7 @@ public class ZdhProcessFlowController extends BaseController {
         return "etl/process_flow_detail_index";
     }
 
-    @RequestMapping(value = "/process_flow_detail", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/process_flow_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String process_flow_detail(String flow_id) {
 
@@ -159,6 +160,8 @@ public class ZdhProcessFlowController extends BaseController {
             List<ProcessFlowInfo> pfis = processFlowMapper.selectByFlowId(flow_id);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取流程进度", pfis);
         } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "获取流程进度", e);
         }
 
@@ -234,12 +237,12 @@ public class ZdhProcessFlowController extends BaseController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
+                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage());
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
             }
         }
     }

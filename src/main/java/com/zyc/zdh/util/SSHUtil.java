@@ -127,7 +127,7 @@ public class SSHUtil {
     public String[] exec(String cmd,String task_logs_id,String job_id) throws IOException, JSchException {
         this.cmd=cmd;
         exec.setCommand(cmd);
-        String line = System.getProperty("line.separator");
+        String line = Const.LINE_SEPARATOR;
         try {
             InputStream in=exec.getInputStream();
             InputStream error_in=exec.getErrStream();
@@ -153,11 +153,11 @@ public class SSHUtil {
             }
             return new String[]{sb2.toString(),sb.toString()};
         } catch (JSchException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
            throw e;
         } catch (IOException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             throw e;
         }finally {
@@ -168,7 +168,7 @@ public class SSHUtil {
     public String[] exec2(String cmd,String task_logs_id,String job_id) throws IOException, JSchException {
         this.cmd=cmd;
         exec.setCommand(cmd);
-        String line = System.getProperty("line.separator");
+        String line = Const.LINE_SEPARATOR;
         try {
             InputStream in=exec.getInputStream();
             InputStream error_in=exec.getErrStream();
@@ -196,11 +196,11 @@ public class SSHUtil {
             }
             return new String[]{sb2.toString(),sb.toString()};
         } catch (JSchException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             throw e;
         } catch (IOException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             throw e;
         }finally {
@@ -210,7 +210,7 @@ public class SSHUtil {
     public String[] exec3(String cmd,String task_logs_id,String job_id) throws IOException, JSchException {
         this.cmd=cmd;
         exec.setCommand(cmd);
-        String line = System.getProperty("line.separator");
+        String line = Const.LINE_SEPARATOR;
         try {
             InputStream in=exec.getInputStream();
             InputStream error_in=exec.getErrStream();
@@ -235,11 +235,11 @@ public class SSHUtil {
             }
             return new String[]{sb2.toString(),sb.toString()};
         } catch (JSchException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             throw e;
         } catch (IOException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             throw e;
         }finally {

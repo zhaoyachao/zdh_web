@@ -17,9 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Field;
@@ -77,16 +79,17 @@ public class ZdhSqlController extends BaseController {
      * @param ids
      * @return
      */
-    @RequestMapping("/sql_task_delete")
+    @RequestMapping(value = "/sql_task_delete", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String sql_task_delete(String[] ids) {
         try {
             sqlTaskMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
 
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
-            logger.error("删除异常:{}", e);
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
@@ -98,9 +101,9 @@ public class ZdhSqlController extends BaseController {
      * @param sqlTaskInfo
      * @return
      */
-    @RequestMapping("/sql_task_add")
+    @RequestMapping(value = "/sql_task_add", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String sql_task_add(SqlTaskInfo sqlTaskInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
@@ -127,7 +130,7 @@ public class ZdhSqlController extends BaseController {
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
@@ -140,7 +143,7 @@ public class ZdhSqlController extends BaseController {
      * @param sqlTaskInfo
      * @return
      */
-    @RequestMapping("/sql_task_update")
+    @RequestMapping(value = "/sql_task_update", method = RequestMethod.POST)
     @ResponseBody
     public String sql_task_update(SqlTaskInfo sqlTaskInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
@@ -167,7 +170,7 @@ public class ZdhSqlController extends BaseController {
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
@@ -180,7 +183,7 @@ public class ZdhSqlController extends BaseController {
      *
      * @return
      */
-    @RequestMapping(value = "/load_meta_databases", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/load_meta_databases", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String load_meta_databases() {
         JSONObject js = new JSONObject();
@@ -225,7 +228,7 @@ public class ZdhSqlController extends BaseController {
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "同步成功", null);
 
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "同步失败", e);
         }
@@ -236,7 +239,7 @@ public class ZdhSqlController extends BaseController {
      *
      * @return
      */
-    @RequestMapping("/show_databases")
+    @RequestMapping(value = "/show_databases", method = RequestMethod.POST)
     @ResponseBody
     public String show_databases() {
         meta_database_info meta_database_info = new meta_database_info();
@@ -267,7 +270,7 @@ public class ZdhSqlController extends BaseController {
             return jsa.toJSONString();
 
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
 
         }
@@ -281,7 +284,7 @@ public class ZdhSqlController extends BaseController {
      *
      * @return
      */
-    @RequestMapping("/show_tables")
+    @RequestMapping(value = "/show_tables", method = RequestMethod.POST)
     @ResponseBody
     public String show_tables() {
 
@@ -292,7 +295,7 @@ public class ZdhSqlController extends BaseController {
             return tableNames;
 
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
         }
 
@@ -307,7 +310,7 @@ public class ZdhSqlController extends BaseController {
      * @param table
      * @return
      */
-    @RequestMapping("/desc_table")
+    @RequestMapping(value = "/desc_table", method = RequestMethod.GET)
     @ResponseBody
     public String desc_table(String table) {
 
@@ -318,7 +321,7 @@ public class ZdhSqlController extends BaseController {
             String desc_table = HttpUtil.postJSON(url + "/desc_table", p.toJSONString());
             return desc_table;
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
         }
 
@@ -344,13 +347,13 @@ public class ZdhSqlController extends BaseController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}";
+                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
                     logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常:" + e.getMessage() + ", 异常详情:{}", e);
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}", e);
             }
         }
     }

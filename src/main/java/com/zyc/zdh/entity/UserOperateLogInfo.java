@@ -48,6 +48,8 @@ public class UserOperateLogInfo {
      */
     private String operate_output;
 
+    private String time;
+
     /**
      * @return id
      */
@@ -204,5 +206,13 @@ public class UserOperateLogInfo {
      */
     public void setOperate_output(String operate_output) {
         this.operate_output = operate_output;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

@@ -59,9 +59,13 @@
                                                   action="">
 
                                                 <div class="form-group">
+                                                    <label class="col-sm-2 control-label">产品代码</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="product_code" name="product_code" class="form-control" type="text" value="" readonly placeholder="产品代码">
+                                                    </div>
                                                     <label class="col-sm-2 control-label">父节点名称</label>
                                                     <div class="col-sm-10">
-                                                        <input id="parent" name="parent" class="form-control" type="text" value="" readonly placeholder="父节点名称">
+                                                        <input id="parent_text" name="parent_text" class="form-control" type="text" value="" readonly placeholder="父节点名称">
                                                     </div>
 
                                                 </div>
@@ -156,6 +160,7 @@
                                             <form id="jstree_update_node_from" name="jstree_update_node_from" method="post" class="form-horizontal"
                                                   action="">
 
+                                                <input type="hidden" name="product_code" value="" id="product_code2">
                                                 <input type="hidden" name="parent" value="" id="parent2">
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">本节点名称</label>
@@ -397,8 +402,10 @@
             });
 
             var node_text=s.text;
-            $('#parent').attr('node_id',s.id);
-            $('#parent').val(node_text);
+            var product_code=s.product_code;
+            $('#parent_text').attr('node_id',s.id);
+            $('#parent_text').val(node_text);
+            $('#product_code').val(product_code);
             //设置删除节点
             $('#text3').val(node_text);
 
@@ -418,6 +425,7 @@
                     $('#event_code2').trigger("chosen:updated");
 
                     $('#parent2').val(data.parent);
+                    $('#product_code2').val(data.product_code);
                     $('#icon2').val(data.icon);
                     $('#url2').val(data.url);
                     $('#order2').val(data.order);
@@ -446,14 +454,15 @@
                         $.ajax({
                             type : "post",
                             url : server_context+"/jstree_node",//getAreaBuild=getTreeArea
+                            data: {"product_code": product_code},
                             dataType : "json",
                             async:'false',
                             success : function(data) {
                                 console.info(data);
-                                if(data) {
-                                    callback.call(this, data);
+                                if(data.code == "200") {
+                                    callback.call(this, data.result);
                                 }else{
-                                    //$("#using_json").html("暂无数据！");
+                                    layer.msg(data.msg);
                                 }
                             }
                         });
@@ -491,7 +500,7 @@
             url: server_context+"/jstree_add_node",
             dataType: 'json',
             async:'false',
-            data: $("#jstree_add_node_from").serialize()+"&parent_id="+s.id+"&text="+$("#child").val()+"&level="+(parseInt(s.level)+1),
+            data: $("#jstree_add_node_from").serialize()+"&parent="+s.id+"&text="+$("#child").val()+"&level="+(parseInt(s.level)+1),
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交

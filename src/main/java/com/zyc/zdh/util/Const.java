@@ -43,4 +43,10 @@ public class Const {
     public static String NOTHING="0";//无操作
     public static String ALL_HISTORY="1";//所有历史
     public static String LAST_HISTORY="2";//最近一次历史
+
+    public static String APPLY_STATUS_INIT="0";//申请状态,未处理
+    public static String APPLY_STATUS_SUCCESS="1";//申请状态,申请成功
+    public static String APPLY_STATUS_FAIL="2";//申请状态,申请失败
+
+    public static String LINE_SEPARATOR=System.getProperty("line.separator");
 }

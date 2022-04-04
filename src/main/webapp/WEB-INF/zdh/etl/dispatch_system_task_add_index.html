@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 系统调度任务新增首页</title>
+    <meta name="keywords" content="ZDH 系统调度任务新增首页">
+    <meta name="description" content="ZDH 系统调度任务新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>系统任务</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+
+                <form id="system_task_add_form" name="system_task_add_form" method="post" class="form-horizontal"
+                      action="">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">任务说明</label>
+                        <div class="col-sm-10">
+                            <input id="job_context" name="job_context" type="text"
+                                   placeholder="任务说明" class="form-control" aria-required="true"> </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">创建时间</label>
+                        <div class="col-sm-10">
+                            <input id="create_time" name="create_time" type="text" readonly
+                                   placeholder="创建时间" class="form-control" aria-required="true"> </span>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+                    <!-- 输入数据源开始-->
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">任务类型</label>
+                        <div class="col-sm-10">
+                            <select id="job_type" name="job_type"
+                                    data-placeholder="选择任务类型..."
+                                    class="chosen-select form-control m-b" tabindex="2">
+                                <option value="EMAIL" mytype="">系统任务-告警</option>
+                                <option value="CHECK" mytype="">系统任务-检查</option>
+                                <option value="RETRY" mytype="">系统任务-重试</option>
+                                <option value="BLOOD" mytype="">系统任务-血缘</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">表达式</label>
+                        <div class="col-sm-10">
+                            <input id="expr" name="expr" type="text"
+                                   placeholder="表达式" class="form-control" aria-required="true"> </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">执行模式</label>
+                        <div class="col-sm-10">
+                            <select id="job_model" name="job_model" data-placeholder="选择执行模式..."
+                                    class="chosen-select form-control m-b" tabindex="2">
+                                <option value="1" mytype="" selected = "selected">顺时间执行</option>
+                                <option value="2" mytype="">执行一次</option>
+                                <!-- <option value="3" mytype="">重复执行</option>-->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <!-- 输出数据源结束-->
+
+                    <div class="form-group">
+                        <div class="text-center">
+                            <button id="save_zdh" name="save_zdh" class="btn btn-primary"
+                                    οnsubmit='return false'
+                                    type="button">保存
+                            </button>
+                            <button id="update_zdh" name="update_zdh" class="btn btn-primary"
+                                    οnsubmit='return false'
+                                    type="button">更新
+                            </button>
+                            <button id="reset" class="btn btn-white" type=reset>清空</button>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+        <!-- End Panel Other -->
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- layer javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!--iframe 标签-->
+    <script type="text/javascript" src="js/contabs.js"></script>
+
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <!-- Bootstrap table -->
+    <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+    <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+
+        $('#job_type').chosen();
+        $('#job_model').chosen();
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        if(s.id !='-1'){
+            console.info("更新-拷贝按钮触发");
+            //开始赋值
+            $.ajax({
+                url : server_context+"/dispatch_system_task_detail",
+                data : "id=" + s.id,
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+                    console.info("success");
+                    // layer.alert(JSON.stringify(data[0]))
+                    //获取调度任务说明
+                    var job_context=data.result.job_context;
+                    $("#job_context").val(job_context);
+
+
+                    //任务类型
+                    var job_type=data.result.job_type;
+                    //初始化输入数据源select 组件
+                    $("#job_type").val(job_type);
+                    $("#job_type").trigger("chosen:updated");
+
+                    //表达式expr
+                    var expr=data.result.expr;
+                    $("#expr").val(expr);
+
+                    //执行模式job_model
+                    var job_model=data.result.job_model;
+                    //初始化输入数据源select 组件
+                    $("#job_model").val(job_model);
+                    $("#job_model").trigger("chosen:updated");
+
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }else{
+            $('#update_zdh').hide();
+            $('#save_zdh').show();
+        }
+    });
+
+    $('#save_zdh').click(function () {
+
+
+        if($('#job_context').val()==''){
+            layer.msg("调度说明不可为空");
+            return false
+        }
+
+        if($('#expr').val() == ''){
+            $('#expr').val("1d")
+        }
+
+        if($('#job_model').val()==''){
+            $('#job_model').val("1")
+            //layer.msg("调度模式不可为空")
+        }
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/dispatch_system_task_add",
+            dataType: 'json',
+            data: $("#system_task_add_form").serialize(),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_zdh").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#save_zdh").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                $("#save_zdh").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_zdh").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    });
+
+    $('#update_zdh').click(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        if($('#job_context').val()==''){
+            layer.msg("调度说明不可为空");
+            return false
+        }
+
+        if($('#expr').val() == ''){
+            $('#expr').val("1d")
+        }
+
+        if($('#job_model').val()==''){
+            $('#job_model').val("1")
+            //layer.msg("调度模式不可为空")
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/dispatch_system_task_update?"+"job_id="+s.id,
+            dataType: 'json',
+            data: $("#system_task_add_form").serialize(),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_zdh").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#update_zdh").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                $("#update_zdh").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_zdh").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+
+</script>
+
+</body>
+
+</html>

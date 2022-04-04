@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.EtlDroolsTaskMapper;
 import com.zyc.zdh.entity.EtlDroolsTaskInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -11,9 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Field;
@@ -47,7 +48,7 @@ public class ZdhDroolsController extends BaseController{
      * @param id
      * @return
      */
-    @RequestMapping(value = "/etl_task_drools_detail", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_drools_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_drools_detail(String id) {
         try{
@@ -78,7 +79,7 @@ public class ZdhDroolsController extends BaseController{
      * @param etlDroolsTaskInfo
      * @return
      */
-    @RequestMapping("/etl_task_drools_add")
+    @RequestMapping(value = "/etl_task_drools_add", method = RequestMethod.POST)
     @ResponseBody
     public String etl_task_drools_add(EtlDroolsTaskInfo etlDroolsTaskInfo) {
         try{
@@ -99,9 +100,9 @@ public class ZdhDroolsController extends BaseController{
      * @param ids
      * @return
      */
-    @RequestMapping("/etl_task_drools_delete")
+    @RequestMapping(value = "/etl_task_drools_delete", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String etl_task_drools_delete(String[] ids) {
         try{
             if (ids != null) {
@@ -121,7 +122,7 @@ public class ZdhDroolsController extends BaseController{
      * @param etlDroolsTaskInfo
      * @return
      */
-    @RequestMapping("/etl_task_drools_update")
+    @RequestMapping(value = "/etl_task_drools_update", method = RequestMethod.POST)
     @ResponseBody
     public String etl_task_drools_update(EtlDroolsTaskInfo etlDroolsTaskInfo) {
         try{
@@ -154,13 +155,13 @@ public class ZdhDroolsController extends BaseController{
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
                     logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}", e);
+                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             }
         }
     }

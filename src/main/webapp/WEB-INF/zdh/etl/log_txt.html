@@ -82,9 +82,9 @@
                 <br/> <br/>
 
 
-                <div class="col-sm-12">
-                    <textarea id="textarea_logs" name="textarea_logs" class="form-control" style="background-color: #333333;color: #44ee44"
-                              rows="20" readonly></textarea>
+                <div class="col-sm-12" id="textarea_logs_div">
+                    <textarea id="textarea_logs" name="textarea_logs" class="form-control" style="background-color: #333333;color: #44ee44;height: 100%;"
+                               readonly></textarea>
                 </div>
             </div>
         </div>
@@ -122,7 +122,12 @@
 
 
     $(function () {
-
+        var height=400;
+        if($(document.body).height()*0.8>height){
+            height=$(document.body).height()*0.8
+        }
+        $('#textarea_logs_div').css("height",height);
+        $('#textarea_logs').css("height",height);
         var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
         var params = url.substr(1);//去掉问号
         var pa = params.split("&");
@@ -178,8 +183,8 @@
             return num;
         }
 
-        if(s.run_time!="" && typeof(s.run_time) != "undefined"){
-            $("#start_time").val(getMyDate(s.run_time))
+        if(s.start_time!="" && typeof(s.start_time) != "undefined"){
+            $("#start_time").val(getMyDate(s.start_time))
         }else{
             var day = new Date();
             var day_5m=day.getTime()-10*60*1000;

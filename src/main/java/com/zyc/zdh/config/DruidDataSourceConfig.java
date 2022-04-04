@@ -108,7 +108,7 @@ public class DruidDataSourceConfig {
 			datasource.setFilters(filters);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 		return datasource;
@@ -138,7 +138,7 @@ public class DruidDataSourceConfig {
 			datasource.setFilters(filters);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 		return datasource;

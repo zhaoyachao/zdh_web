@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,7 +52,7 @@ public class ZdhApprovalController extends BaseController{
             List<ApprovalConfigInfo> approvalConfigInfos=approvalConfigMapper.selectByContext(approval_context);
             return JSON.toJSONString(approvalConfigInfos);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -70,7 +71,7 @@ public class ZdhApprovalController extends BaseController{
             ApprovalConfigInfo approvalConfigInfo=approvalConfigMapper.selectByPrimaryKey(id);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalConfigInfo);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -89,7 +90,7 @@ public class ZdhApprovalController extends BaseController{
             approvalConfigMapper.insert(approvalConfigInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
@@ -104,7 +105,7 @@ public class ZdhApprovalController extends BaseController{
             approvalConfigMapper.updateByPrimaryKey(approvalConfigInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
@@ -122,7 +123,7 @@ public class ZdhApprovalController extends BaseController{
             List<ApprovalAuditorInfo> approvalAuditorInfos=approvalAuditorMapper.selectByContext(approval_context);
             return JSON.toJSONString(approvalAuditorInfos);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -146,21 +147,21 @@ public class ZdhApprovalController extends BaseController{
             approvalAuditorMapper.insert(approvalAuditorInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
     @RequestMapping(value = "/approval_auditor_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional
+    @Transactional(propagation= Propagation.NESTED)
     public String approval_auditor_delete(String[] ids) {
         try{
             approvalAuditorMapper.deleteByPrimaryKeys(ids);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
@@ -172,7 +173,7 @@ public class ZdhApprovalController extends BaseController{
             approvalAuditorMapper.updateByPrimaryKey(approvalAuditorInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
@@ -184,7 +185,7 @@ public class ZdhApprovalController extends BaseController{
             ApprovalAuditorInfo approvalAuditorInfo=approvalAuditorMapper.selectById(id);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalAuditorInfo);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -211,10 +212,11 @@ public class ZdhApprovalController extends BaseController{
                 throw new Exception("审批事件已存在");
             }
             approvalEventInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            approvalEventInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             approvalEventMapper.insert(approvalEventInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
@@ -226,7 +228,7 @@ public class ZdhApprovalController extends BaseController{
             ApprovalEventInfo approvalEventInfo=approvalEventMapper.selectById(id);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalEventInfo);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -238,7 +240,7 @@ public class ZdhApprovalController extends BaseController{
             List<ApprovalEventInfo> approvalEventInfos=approvalEventMapper.selectByContext(event_context);
             return JSON.toJSONString(approvalEventInfos);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -247,10 +249,13 @@ public class ZdhApprovalController extends BaseController{
     @ResponseBody
     public String approval_event_update(ApprovalEventInfo approvalEventInfo) {
         try{
+            ApprovalEventInfo old = approvalEventMapper.selectByPrimaryKey(approvalEventInfo.getId());
+            approvalEventInfo.setCreate_time(old.getCreate_time());
+            approvalEventInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             approvalEventMapper.updateByPrimaryKey(approvalEventInfo);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", approvalEventInfo);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage());
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }

@@ -17,13 +17,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class MyErrorConroller {
 
-	@RequestMapping("/404")
+	@RequestMapping(value = "/404", produces = "text/html;charset=UTF-8")
 	public String  error(HttpServletRequest request){
 		Map<String, String[]> parameterMap = request.getParameterMap();
 		
 		for(Map.Entry<String, String[]> m:parameterMap.entrySet()){
 			System.out.println(m.getKey()+"==="+Arrays.toString(m.getValue()));
 		}
-		return "/404";
+		return "404";
+	}
+
+	@RequestMapping(value="/403", produces = "text/html;charset=UTF-8")
+	public String  permission(HttpServletRequest request){
+		Map<String, String[]> parameterMap = request.getParameterMap();
+
+		return "403";
 	}
 }

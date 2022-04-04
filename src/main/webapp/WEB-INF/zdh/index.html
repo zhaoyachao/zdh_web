@@ -805,11 +805,7 @@
                 data: '',
                 //成功返回
                 success: function (data) {
-                    if(data.data == "success"){
-                        layer.msg("生成监控任务完成")
-                    }else{
-                        layer.msg(data.data)
-                    }
+                    parent.layer.msg(data.msg);
                 },
                 //处理完成
                 complete: function () {

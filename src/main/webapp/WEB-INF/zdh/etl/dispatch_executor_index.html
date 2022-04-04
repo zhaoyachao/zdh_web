@@ -24,8 +24,8 @@
 <body class="gray-bg">
     <div class="wrapper wrapper-content animated fadeInRight">
         <!-- Panel Other -->
-        <div class="ibox float-e-margins">
-            <div class="ibox-title">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
                 <h5>调度器</h5>
                 <div class="ibox-tools">
                     <a class="collapse-link">
@@ -33,7 +33,7 @@
                     </a>
                 </div>
             </div>
-            <div class="ibox-content">
+                <div class="ibox-content">
                 <form role="form" class="form-inline" id="dispatch_task_form">
 
                     <div class="form-group">
@@ -63,14 +63,6 @@
                     <div class="col-sm-12">
                         <!-- Example Events -->
                         <div class="example-wrap">
-                                <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
-                                    <button id="add" type="button" class="btn btn-outline btn-default">
-                                        <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
-                                    </button>
-                                    <button id="remove" type="button" class="btn btn-outline btn-default">
-                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
-                                    </button>
-                                </div>
                                 <table id="exampleTableEvents" data-height="400" data-mobile-responsive="true">
 
                                 </table>
@@ -82,7 +74,55 @@
                     </div>
                 </div>
             </div>
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>系统任务</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <form role="form" class="form-inline" id="dispatch_form">
+
+                    <div class="form-group">
+                        <div class="input-group" >
+                            <input name="instance_name" class="form-control" type="text" value="" placeholder="关键词">
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input id="search2" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                    </div>
+
+                </form>
+                <div class="row row-lg">
+
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                                <button id="add" type="button" class="btn btn-outline btn-default">
+                                    <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <table id="exampleTableEvents2" data-height="400" data-mobile-responsive="true">
+
+                            </table>
+
+
+                        </div>
+                    </div>
+                    <!-- End Example Events -->
+                </div>
+            </div>
         </div>
+    </div>
         <!-- End Panel Other -->
     </div>
 
@@ -121,9 +161,16 @@
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
-        })
+        });
 
-
+        $('#search2').click(function () {
+            $('#exampleTableEvents2').bootstrapTable('refresh', {
+                url: server_context+"/dispatch_system_task_list?"+$("#dispatch_form").serialize(),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json"
+            });
+        });
+        $('#search2').click();
     })
 
 </script>

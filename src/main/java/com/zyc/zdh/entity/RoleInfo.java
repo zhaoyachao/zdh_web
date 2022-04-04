@@ -41,6 +41,8 @@ public class RoleInfo extends PageBase implements Serializable {
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Timestamp update_time;
 
+	private String product_code;
+
 
 	public String getId() {
 		return id;
@@ -89,5 +91,13 @@ public class RoleInfo extends PageBase implements Serializable {
 
 	public void setEnable(String enable) {
 		this.enable = enable;
+	}
+
+	public String getProduct_code() {
+		return product_code;
+	}
+
+	public void setProduct_code(String product_code) {
+		this.product_code = product_code;
 	}
 }

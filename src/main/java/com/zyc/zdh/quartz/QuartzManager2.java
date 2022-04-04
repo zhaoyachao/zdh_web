@@ -4,10 +4,11 @@ import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
 import com.zyc.zdh.entity.TaskGroupLogInstance;
 import com.zyc.zdh.entity.TaskLogInstance;
+import com.zyc.zdh.job.JobType;
 import com.zyc.zdh.job.MyJobBean;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
@@ -84,6 +85,7 @@ public class QuartzManager2 {
 				logger.info("已经存在同名的triggerkey,请重新创建");
 				throw new Exception("已经存在同名的triggerkey,请重新创建");
 			}
+
 			boolean recovery = false;
 			switch (quartzJobInfo.getJob_type().toLowerCase()){
 				case "email":
@@ -140,18 +142,15 @@ public class QuartzManager2 {
 			}
 			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
 		} catch (SecurityException e) {
-			logger.error(e.getMessage());
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 			throw e;
 		} catch (SchedulerException e) {
-			logger.error(e.getMessage());
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 			throw e;
 		} catch (Exception e) {
-			logger.error(e.getMessage());
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 			throw e;
 		}
@@ -207,7 +206,7 @@ public class QuartzManager2 {
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 		// 下方可以做一些更新数据库中任务的操作
@@ -243,8 +242,7 @@ public class QuartzManager2 {
 			quartzJobInfo.setStatus(status);
 			quartzJobMapper.updateStatus(quartzJobInfo.getJob_id(),status);
 		} catch (SchedulerException e) {
-
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 		return quartzJobInfo;
@@ -266,7 +264,7 @@ public class QuartzManager2 {
 			quartzJobMapper.updateStatus2(tli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
 
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 		return qji;
@@ -288,7 +286,7 @@ public class QuartzManager2 {
 			quartzJobMapper.updateStatus2(tgli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
 
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 		return qji;
@@ -309,7 +307,7 @@ public class QuartzManager2 {
 			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 	}
@@ -325,7 +323,7 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().resumeJob(jobKey);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 	}
@@ -341,7 +339,7 @@ public class QuartzManager2 {
 			return quartzJobMapper.selectRunJobByOwner(owner,job_ids);
 
 		} catch (SchedulerException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 			throw e;
 		}
@@ -355,7 +353,7 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().shutdown();
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
 		}
 	}

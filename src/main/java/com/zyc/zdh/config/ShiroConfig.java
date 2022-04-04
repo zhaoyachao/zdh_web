@@ -4,13 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-
-
-
-
-
-
 import javax.servlet.Filter;
 
 import com.zyc.zdh.shiro.*;
@@ -246,6 +239,7 @@ public class ShiroConfig {
 		filterMap.put(project_pre+"/api/**", "anon");
 		filterMap.put(project_pre+"/logout", "anon");
 		filterMap.put(project_pre+"/captcha", "anon");
+		filterMap.put(project_pre+"/check_captcha", "anon");
 		filterMap.put(project_pre+"/download/**", "anon");
 		filterMap.put(project_pre+"/login", "authc");
 		filterMap.put(project_pre+"/index", "authc");
@@ -255,7 +249,14 @@ public class ShiroConfig {
 		filterMap.put(project_pre+"/retrieve_password", "anon");
 		filterMap.put(project_pre+"/404", "anon");
 		filterMap.put(project_pre+"/img/favicon**", "anon");
+		filterMap.put(project_pre+"/favicon.ico", "anon");
 		filterMap.put(project_pre+"/version", "anon");
+		filterMap.put(project_pre+"/zdh_download_index", "anon");
+		filterMap.put(project_pre+"/zdh_version", "anon");
+		filterMap.put(project_pre+"/swagger**", "anon");
+		filterMap.put(project_pre+"/api-docs/**", "anon");
+		filterMap.put(project_pre+"/get_platform_name", "anon");
+
 		filterMap.put(project_pre+"/**", "authc");
 
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);

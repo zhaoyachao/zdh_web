@@ -10,8 +10,10 @@ import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.quartz.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         }else{
             logger.info("自动生成监控任务");
             String expr = ev.getProperty("email.schedule.interval");
-            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "email");
+            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查告警任务", expr, "-1", "", "email");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
             quartzManager2.addTaskToQuartz(quartzJobInfo);
@@ -77,7 +79,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         }else{
             logger.info("自动生成监控任务");
             String expr = ev.getProperty("retry.schedule.interval");
-            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "retry");
+            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查失败重试任务", expr, "-1", "", "retry");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
             quartzManager2.addTaskToQuartz(quartzJobInfo);
@@ -92,7 +94,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         }else{
             logger.info("自动生成监控任务");
             String expr = "30s" ;//ev.getProperty("retry.schedule.interval");
-            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "", expr, "-1", "", "retry");
+            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查依赖任务", expr, "-1", "", "retry");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
             quartzManager2.addTaskToQuartz(quartzJobInfo);
@@ -123,7 +125,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         //此处设置2s 每2秒向redis 设置一个当前服务,作为一个心跳检测使用
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
-                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
                         logger.error(error, e);
                     }
                 }
@@ -177,8 +179,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                                     JobCommon2.insertLog(tl,"INFO",kill_cmd);
                                                     SshUtils.kill(connectUri[0],kill_cmd);
                                                 }catch (Exception e){
-                                                    System.out.println("=========================");
-                                                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                                                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
                                                     logger.error(error, e);
                                                 }
 
@@ -190,7 +191,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         td.stop();
 
                                     }catch (Exception e){
-                                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
                                         logger.error(error, e);
                                     }finally {
                                         JobCommon2.chm.remove(tl.getThread_id());
@@ -276,7 +277,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         // List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.select(qj);
                         Thread.sleep(1000*2);
                     } catch (Exception e) {
-                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}";
+                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
                         logger.error(error, e);
                     }
                 }
@@ -324,6 +325,16 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                             qrtzSchedulerStateMapper.updateByExampleSelective(qss, example);
                         }
 
+                        //更新正在执行中的任务数
+                        int running = JobCommon2.chm.size()+ JobCommon2.chm_ssh.size();
+                        Example example=new Example(QrtzSchedulerState.class);
+                        Example.Criteria criteria=example.createCriteria();
+                        if(!StringUtils.isEmpty(instance_name)){
+                            criteria.andEqualTo("instance_name", instance_name);
+                            QrtzSchedulerState qss=new QrtzSchedulerState();
+                            qss.setRunning(String.valueOf(running));
+                            qrtzSchedulerStateMapper.updateByExampleSelective(qss, example);
+                        }
                         Thread.sleep(1000*2);
                     } catch (Exception e) {
                         String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[2].getMethodName();

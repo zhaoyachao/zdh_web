@@ -52,6 +52,13 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">枚举类别</label>
+                            <div class="col-sm-10">
+                                <input id="enum_type" name="enum_type" type="text"
+                                       placeholder="枚举类别" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">枚举标识</label>
                             <div class="col-sm-10">
                                 <input id="enum_code" name="enum_code" type="text"
@@ -272,6 +279,9 @@
                             //获取ETL 说明
                             var enum_context = data.result.enum_context;
                             $("#enum_context").val(enum_context);
+
+                            var enum_type = data.result.enum_type;
+                            $("#enum_type").val(enum_type);
 
                             var enum_code = data.result.enum_code;
                             $("#enum_code").val(enum_code);

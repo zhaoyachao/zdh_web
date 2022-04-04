@@ -18,7 +18,8 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/switchery/switchery.css" rel="stylesheet">
-
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="js/plugins/magicsuggest/magicsuggest.css" rel="stylesheet">
 
 </head>
 
@@ -69,6 +70,12 @@
                                            placeholder="审批事件说明" class="form-control" aria-required="true"> </span>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">跳过审批流用户：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="skip_account" name="skip_account" placeholder="ZDH用户账号,多用户逗号分隔">
+                                </div>
+                            </div>
 
                             <div class="form-group">
                                 <div class="col-sm-8 col-sm-offset-3">
@@ -91,6 +98,8 @@
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
 
+    <script type="text/javascript" src="js/plugins/magicsuggest/magicsuggest.js"></script>
+
     <!-- jQuery Validation plugin javascript-->
     <script src="js/plugins/validate/jquery.validate.min.js"></script>
     <script src="js/plugins/validate/messages_zh.min.js"></script>
@@ -107,6 +116,20 @@
 
         (function(document, window, $) {
 
+
+            window.addressIdMagicSuggest = $('#skip_account').magicSuggest({
+                width:200,
+                queryParam: 'username',
+                method: 'get',
+                allowFreeEntries: true,
+                autoSelect:true,
+                valueField:"id",
+                displayField:"name",
+                resultAsString:true,
+                selectionStacked: true,
+                //下拉框数据的获得：
+                data: server_context+'/user_names'
+            });
 
             var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
             var params = url.substr(1);//去掉问号
@@ -159,6 +182,8 @@
                             $("#code").trigger("chosen:updated");
                             $('#event_code').val(data.result.event_code);
                             $('#event_context').val(data.result.event_context);
+                            var skip_account=data.result.skip_account;
+                            window.addressIdMagicSuggest.setValue(skip_account.split(','));
                             layer.msg('查询成功');
                         }else{
                             layer.msg('查询失败,'+data.result);
@@ -178,11 +203,15 @@
                 });
 
                 $('#btn_up').click(function () {
+
+                    var skip_account_str = "&skip_account="+window.addressIdMagicSuggest.getValue();
+
+                    $("[name='skip_account[]']").remove();
                     $.ajax({
                         type: 'POST',
                         url: server_context+"/approval_event_update",
                         dataType: 'json',
-                        data: $("#signupForm").serialize()+"&id="+s.id,
+                        data: $("#signupForm").serialize()+"&id="+s.id+skip_account_str,
                         //发送数据前
                         beforeSend: function () {
                             // 禁用按钮防止重复提交
@@ -225,9 +254,13 @@
                         return ;
                     }
 
+                    var skip_account_str = "skip_account="+window.addressIdMagicSuggest.getValue();
+
+                    $("[name='skip_account[]']").remove();
+
                     $.ajax({
                         type: 'POST',
-                        url: server_context+"/approval_event_add",
+                        url: server_context+"/approval_event_add?"+skip_account_str,
                         dataType: 'json',
                         data: $("#signupForm").serialize(),
                         //发送数据前

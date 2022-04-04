@@ -75,7 +75,7 @@ public class JdbcJob extends JobCommon2 {
             }
             return exe_status;
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常:"+e.getMessage()+", 异常详情:{}", e);
+             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             //插入日志
             insertLog(tli, "error",
                     "[调度平台]:" + e.getMessage());

@@ -8,6 +8,30 @@
             height=$(document.body).height()*0.8
         }
         $('#exampleTableEvents').attr("data-height",height);
+        $('#exampleTableEvents2').attr("data-height",height);
+
+        $('#add').click(function () {
+            parent.layer.open({
+                type: 2,
+                title: '创建调度任务',
+                shadeClose: false,
+                resize: true,
+                fixed: false,
+                maxmin: true,
+                shade: 0.1,
+                area : ['45%', '60%'],
+                //area: ['450px', '500px'],
+                content: server_context+"/dispatch_system_task_add_index.html?id=-1", //iframe的url
+                end : function () {
+                    console.info("弹框结束");
+                    $('#exampleTableEvents2').bootstrapTable('refresh', {
+                        url: server_context+"/dispatch_system_task_list",
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json"
+                    });
+                }
+            });
+        });
 
         function update_executor(instance_name, status) {
 
@@ -90,6 +114,72 @@
 
         }
 
+        function update_system_task(id, status) {
+
+            var url = server_context+"/dispatch_system_task_create";
+            if(status == "offline"){
+                url = server_context+"/dispatch_system_task_delete";
+            }
+
+            layer.msg('系统任务');
+            $.ajax({
+                url: url,
+                data: "id=" + id,
+                type: "post",
+                async:false,
+                dataType: "json",
+                success: function (data) {
+                    console.info("success");
+                    if(data.code != "200"){
+                        parent.layer.msg(data.msg);
+                        return
+                    }
+                    parent.layer.msg(data.msg);
+                    $('#exampleTableEvents2').bootstrapTable('refresh', {
+                        url: server_context+'/dispatch_system_task_list'
+                    });
+                },
+                complete: function () {
+                    console.info("complete")
+                },
+                error: function (data) {
+                    parent.layer.msg('操作失败');
+
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+        window.operateEvents3 = {
+            'click #create': function (e, value, row, index) {
+                layer.confirm('启用调度任务', {
+                    btn: ['确定','取消'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    title:"启用调度"
+                }, function(index){
+                    update_system_task(row.job_id, "online");
+                    layer.close(layer.index)
+                }, function(index){
+                });
+            },
+            'click #delete': function (e, value, row, index) {
+                layer.confirm('禁用调度任务', {
+                    btn: ['确定','取消'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    title:"禁用调度"
+                }, function(index){
+                    update_system_task(row.job_id, "offline");
+                    layer.close(layer.index)
+                }, function(index){
+                });
+            },
+        };
+
         function getMyDate(str){
             var oDate = new Date(str),
                 oYear = oDate.getFullYear(),
@@ -117,6 +207,16 @@
             showToggle: true,
             showColumns: true,
             iconSize: 'outline',
+            responseHandler:function (res) {
+                if(!Array.isArray(res)){
+                    if(res.code == "201"){
+                        layer.msg(res.msg);
+                    }else{
+                        layer.msg("未返回有效数据");
+                    }
+                }
+                return res;
+            },
             toolbar: '#exampleTableEventsToolbar',
             icons: {
                 refresh: 'glyphicon-repeat',
@@ -134,6 +234,11 @@
             },{
                 field: 'instance_name',
                 title: '调度器名称',
+                sortable: true,
+                visible:true
+            },{
+                field: 'running',
+                title: '执行中任务数',
                 sortable: true,
                 visible:true
             },{
@@ -169,35 +274,95 @@
             ]
         });
 
+        $('#exampleTableEvents2').bootstrapTable({
+            url: server_context+"/dispatch_system_task_list",
+            search: true,
+            pagination: true,
+            showRefresh: true,
+            showToggle: true,
+            showColumns: true,
+            iconSize: 'outline',
+            responseHandler:function (res) {
+                if(res.code == "200"){
+                    return res.result;
+                } else if(res.code == "201"){
+                    layer.msg(res.msg);
+                }else{
+                    layer.msg("未返回有效数据");
+                }
+            },
+            toolbar: '#exampleTableEventsToolbar',
+            icons: {
+                refresh: 'glyphicon-repeat',
+                toggle: 'glyphicon-list-alt',
+                columns: 'glyphicon-list'
+            },
+            columns: [{
+                checkbox: true,
+                field: 'state',
+                sortable: true
+            }, {
+                field: 'job_id',
+                title: 'JOB_ID',
+                sortable: false
+            },   {
+                field: 'job_context',
+                title: '调度说明',
+                sortable: false
+            }, {
+                field: 'expr',
+                title: '表达式',
+                sortable: false,
+                visible:true
+            }, {
+                field: 'use_quartz_time',
+                title: '是否使用quart时间',
+                sortable: false,
+                visible:false
+            }, {
+                field: 'status',
+                title: '调度器状态及操作',
+                sortable: true,
+                width:250,
+                events: operateEvents3,//给按钮注册事件
+                formatter: function (value, row, index) {
+                    var context = "未启用";
+                    var class_str = "btn-danger btn-xs";
+                    if (value == "create") {
+                        context = "未启用";
+                        class_str = "btn-danger  btn-xs"
+                    }
+                    if (value == "finish") {
+                        context = "已完成";
+                        class_str = "btn-primary  btn-xs"
+                    }
+                    if (value == "running") {
+                        context = "运行中";
+                        class_str = "btn-primary  btn-xs"
+                    }
+                    if (value == "remove") {
+                        context = "未启用";
+                        class_str = "btn-danger  btn-xs"
+                    }
+                    if (value == "pause") {
+                        context = "暂停中";
+                        class_str = "btn-warning btn-xs"
 
-        function openTabPage(url, title) {
-            var wpd = $(window.parent.document);
-            var mainContent = wpd.find('.J_mainContent');
-            var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
-            pageTabs.find(".J_menuTab.active").removeClass("active");
-            mainContent.find("iframe").css("display", "none");
-            if (thisIframe.length > 0) {	// 选项卡已打开
-                thisIframe.css("display", "inline");
-                pageTabs.find(".J_menuTab[data-id='" + url + "']").addClass("active");
-            } else {
-                var menuItem = wpd.find("a.J_menuItem[href='" + url + "']");
-                var dataIndex = title == undefined ? menuItem.attr("data-index") : '9999';
-                var _title = title == undefined ? menuItem.find('.nav-label').text() : title;
-                var iframe = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + url + '" frameborder="0" data-id="' + url
-                    + '" seamless="" style="display: inline;"></iframe>';
-                pageTabs.append(
-                    ' <a href="javascript:;" class="J_menuTab active" data-id="' + url + '">' + _title + ' <i class="fa fa-times-circle"></i></a>');
-                mainContent.append(iframe);
-                //显示loading提示
-                var loading = top.layer.load();
-                mainContent.find('iframe:visible').load(function () {
-                    //iframe加载完成后隐藏loading提示
-                    top.layer.close(loading);
-                });
+                    }
+                    return [
+                        '<div style="text-align:center" >'+
+                        '<div class="btn-group">'+
+                        '<button type="button" class="btn '+class_str+'">'+context+'</button>'+
+                        '<button type="button" id="create" class="btn btn-warning btn-xs">启用</button>'+
+                        '<button type="button" id="delete" class="btn btn-danger btn-xs">禁用</button>'+
+                        '</div>'+
+                        '</div>'
+                    ].join('');
+                }
+
             }
-
-        }
+            ]
+        });
 
     })();
 })(document, window, jQuery);

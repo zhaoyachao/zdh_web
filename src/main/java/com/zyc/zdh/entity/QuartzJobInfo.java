@@ -20,7 +20,8 @@ public class QuartzJobInfo implements Serializable {
     private String job_id;//任务id,
     private String job_context;//任务说明
     private String more_task;//多源任务 值：多源ETL,单源ETL,SQL
-    private String job_type;// 任务类型,SHELL,FTP,CLASS
+    @Column
+    private String job_type;// 任务类型,EMAIL,RETRY,CHECK,ETL
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Timestamp start_time;// 起始时间

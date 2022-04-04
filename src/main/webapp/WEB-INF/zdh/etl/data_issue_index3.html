@@ -372,11 +372,11 @@
                 var postData = {
                     id: $("#data_sources_choose_input").val(),
                     table_name: $("#data_sources_table_name_input").val(),
-                }
+                };
 
                 $.ajax({
                     type: 'POST',
-                    url: "etl_task_schema",
+                    url: server_context+"/etl_task_schema",
                     dataType: 'json',
                     async: false,
                     data: postData,

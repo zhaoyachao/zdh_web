@@ -667,7 +667,7 @@
                             //$('#data_sources_clear_output').val(data_sources_clear_output)
                             window.editor_data_sources_clear_output.setValue(data_sources_clear_output);
 
-
+                            parent.layer.msg(data.msg);
                         },
                         error: function (data) {
                             console.info("error: " + data.responseText);

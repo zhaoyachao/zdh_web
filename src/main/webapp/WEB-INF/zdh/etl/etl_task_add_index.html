@@ -1298,8 +1298,12 @@
                             $('#service').val(service);
 
                             var update_context = data.result.update_context;
-                            $('#update_context').val(update_context)
+                            $('#update_context').val(update_context);
 
+                            parent.layer.msg(data.msg);
+                        },
+                        //处理完成
+                        complete: function (data) {
                         },
                         error: function (data) {
                             console.info("error: " + data.responseText);

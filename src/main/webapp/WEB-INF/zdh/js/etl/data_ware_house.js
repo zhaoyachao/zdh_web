@@ -19,7 +19,7 @@
               success: function (data) {
                   console.info("success");
                   if(data.code != "200"){
-                      layer.msg(data.msg)
+                      layer.msg(data.msg);
                       return
                   }
                   $('#exampleTableEvents').bootstrapTable('refresh', {
@@ -52,7 +52,7 @@
                   btn: ['确定','取消'] //按钮
               }, function(index){
                   $.ajax({
-                      url: "data_apply_add",
+                      url: server_context+"/data_apply_add",
                       data: "issue_id=" + row.id,
                       type: "post",
                       async:false,

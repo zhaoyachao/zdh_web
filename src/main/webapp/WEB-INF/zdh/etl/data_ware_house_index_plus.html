@@ -64,10 +64,12 @@
 
 
                         <div class="text-center">
+                            <span id="total_size">总计0条</span>
                             <div class="btn-group" id="page_div">
 
                             </div>
                             <div class="btn-group input-group" style="float: right">
+                                <input type="text" placeholder="10" id="page_size" name="page_size" class="form-control input-sm" style="width: 60px">
                                 <input type="text" placeholder="页数" id="page" name="page" class="form-control input-sm" style="width: 60px">
                                 <button class="btn btn-sm btn-primary" type="button" οnsubmit='return false' onclick="jump()">
                                     跳转
@@ -147,7 +149,7 @@
             var wpd = $(window.parent.document);
             var mainContent = wpd.find('.J_mainContent');
             var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+            var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
             pageTabs.find(".J_menuTab.active").removeClass("active");
             mainContent.find("iframe").css("display", "none");
             if (thisIframe.length > 0) {	// 选项卡已打开
@@ -195,33 +197,43 @@
         });
 
         var template =
+        "<div class='row'>\n"+
+        "<div class='col-sm-11'>\n"+
         "                            <div class=\"search-result\" style='margin-top: 20px'>\n" +
         "                                <h3><a href=\"javascript:void(0)\" data_id='table_id' data_id_context='data_context'>table_name</a></h3>\n" +
         "                                <p>\n" +
         "                                    data_context" +
-        "                                </p>\n" +
+        "                                </p>" +
         "                            </div>\n" +
-        "                            <div class=\"hr-line-dashed\"></div>";
+        "</div>\n"+
+        "<div class='col-sm-1' style='margin-top: 25px;text-align: right'><button class=\"btn btn-primary btn_apply\" type=\"button\" data_id='table_id'>申请</button> </div>\n"+
+            "                            <div class=\"hr-line-dashed\"></div>\n"+
+        "</div>\n"+
+        "</div>"
+        ;
 
 
         function load_data(currentPage){
+            var page_size = $('#page_size').val();
+
             $.ajax({
                 type: 'POST',
                 async: false,
-                url: server_context+"/data_ware_house_list6?current_page="+currentPage+"&"+data_params+"&label_params="+label_params,
+                url: server_context+"/data_ware_house_list6?current_page="+currentPage+"&"+data_params+"&label_params="+label_params+"&page_size="+page_size,
                 dataType: 'json',
                 data: '',
                 //成功返回
                 success: function (data) {
                     $('#data_div').html("");
                     $('#page_div').html("");
+                    $('#total_size').html("总计"+data.total_size+"条");
                     if(data.list.length>0){
                         var page_start = "                                <button class=\"btn btn-white btn_left\" type=\"button\"><i class=\"fa fa-chevron-left\"></i>\n" +
                         "                                </button>";
                         $('#page_div').append(page_start);
                         for(var i=0;i <data.list.length;i++){
                             var tmp = template.replace("table_name", data.list[i].data_sources_table_name_input);
-                            tmp = tmp.replace("table_id",data.list[i].id);
+                            tmp = tmp.replaceAll("table_id",data.list[i].id);
                             tmp = tmp.replaceAll("data_context", data.list[i].issue_context);
                             $('#data_div').append(tmp);
                         }
@@ -229,13 +241,40 @@
                         $(".search-result a").click(function () {
                             openTabPage(server_context+"/data_ware_house_detail_index.html?id=" + $(this).attr("data_id"), "表信息:"+$(this).attr("data_id_context"))
                         });
+
+                        $(".btn_apply").click(function () {
+                            var id= $(this).attr('data_id');
+                            //alert();
+                            layer.confirm('申请数据', {
+                                btn: ['确定','取消'] //按钮
+                            }, function(index){
+                                $.ajax({
+                                    url: server_context+"/data_apply_add",
+                                    data: "issue_id=" + id,
+                                    type: "post",
+                                    async:false,
+                                    dataType: "json",
+                                    success: function (data) {
+                                        console.info(data.msg);
+                                        layer.msg(data.msg)
+                                    },
+                                    error: function (data) {
+                                        console.info("error: " + data.msg);
+                                    }
+
+                                });
+                            }, function(){
+
+                            });
+                        });
                     }
                     //生成分页信息
-                    var btn_template = "<button class=\"btn btn-white btn_page active\" value=\"page_num\">page_num_text</button>";
+                    var btn_template = "<button class=\"btn btn-white btn_page active\" value=\"page_num\" disabled>page_num_text</button>";
                     for (var i=0;i<data.left_page.length;i++){
                         var btn_tmp = btn_template;
                         btn_tmp = btn_tmp.replace("page_num_text", data.left_page[i]);
                         btn_tmp = btn_tmp.replace("page_num", data.left_page[i]);
+                        btn_tmp = btn_tmp.replace("disabled", "");
                         if(data.left_page[i] !=data.current_page){
                             btn_tmp = btn_tmp.replace("active", "");
                         }
@@ -245,6 +284,11 @@
                         var btn_tmp = btn_template;
                         btn_tmp = btn_tmp.replace("page_num_text", data.right_page[i]);
                         btn_tmp = btn_tmp.replace("page_num", data.right_page[i]);
+                        if(data.right_page[i] == '...'){
+                            btn_tmp = btn_tmp.replace("disabled", "disabled=\"disabled\"");
+                        }else{
+                            btn_tmp = btn_tmp.replace("disabled", "");
+                        }
                         if(data.right_page[i] != data.current_page){
                             btn_tmp = btn_tmp.replace("active", "");
                         }
@@ -259,7 +303,7 @@
                             var currentPage = $(this).attr('value');
                             $('.btn_page').removeClass("active");
                             $(this).addClass("active");
-                            load_data(currentPage)
+                            load_data(currentPage);
                             $('.btn_left').click(function () {
                                 if(currentPage>=2){
                                     load_data(currentPage-1)
@@ -292,14 +336,15 @@
         }
 
         function jump() {
-            if($('#page').val()!=""){
+
+            if(!is_empty($('#page').val())){
                 var r = /^\+?[1-9][0-9]*$/;　　//正整数
                 var flag=r.test($('#page').val());
                 if(flag == true){
                     load_data($('#page').val());
                 }
             }else{
-                layer.msg("页数为空");
+                layer.msg("页数为空,请选择有效的页数");
             }
 
         }
