@@ -259,13 +259,16 @@
                 type: 'POST',
                 url: server_context+"/version",
                 async:true,
-                dataType: 'text',
+                dataType: 'json',
                 data: '',
                 //成功返回
                 success: function (data) {
-                    if(data.length >=0 ){
-                        $('#version').text(data);
+                    if(data.code != "200" ){
+                        $('#version').text("未知版本");
+                        layer.msg("查询版本失败: "+data.msg);
+                        return ;
                     }
+                    $('#version').text(data.result);
                 },
                 //处理完成
                 complete: function () {

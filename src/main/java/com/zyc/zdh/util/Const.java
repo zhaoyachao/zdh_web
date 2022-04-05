@@ -49,4 +49,6 @@ public class Const {
     public static String APPLY_STATUS_FAIL="2";//申请状态,申请失败
 
     public static String LINE_SEPARATOR=System.getProperty("line.separator");
+
+    public static String ZDH_IS_PASS = "zdh_is_pass";
 }

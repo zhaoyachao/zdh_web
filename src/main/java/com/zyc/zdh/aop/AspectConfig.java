@@ -6,6 +6,7 @@ import com.zyc.zdh.dao.NoticeMapper;
 import com.zyc.zdh.dao.UserOperateLogMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.exception.ZdhException;
+import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
@@ -90,6 +91,20 @@ public class AspectConfig implements Ordered{
 			String ipAddr = getRemoteHost(request);
 			String url = request.getRequestURL().toString();
 			String reqParam = "";
+
+			//校验网址是否可访问
+			boolean is_pass = is_pass(getUrl(request));
+			if(!is_pass){
+				logger.warn("系统维护中,只有admin用户和zyc用户可访问....");
+				if (request.getMethod().equalsIgnoreCase("get")){
+					return "redirect:503";
+				}else{
+					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统维护中", "系统维护中");
+				}
+
+			}
+
+
 			//未登录且非登录请求强制跳转到登录页面
 			if(!SecurityUtils.getSubject().isAuthenticated()){
 				//WebUtils.issueRedirect(request, response, "login");
@@ -288,6 +303,8 @@ public class AspectConfig implements Ordered{
 		permissions.add("captcha");
 		permissions.add("404");
 		permissions.add("403");
+		permissions.add("503");
+		permissions.add("500");
 		permissions.add("logout");
 		permissions.add("retrieve_password");
 		permissions.add("register");
@@ -313,6 +330,31 @@ public class AspectConfig implements Ordered{
 	private boolean is_blacklist(String userName){
 		//查询黑名单
 
+		return false;
+	}
+
+	/**
+	 * 校验网址是否可访问,不区分用户,如果想个别用户区分,则使用黑名单限制功能
+	 * @return
+	 */
+	private boolean is_pass(String url){
+		if(url.contains("503")){
+			return true;
+		}
+		RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+		if(getUser()==null){
+			return true;
+		}
+		if(getUser().getUserName().equalsIgnoreCase("admin") || getUser().getUserName().equalsIgnoreCase("zyc") ){
+			return true;
+		}
+		Object o = redisUtil.get(Const.ZDH_IS_PASS);
+		if(o == null){
+			return true;
+		}
+		if(o!=null && o.toString().equalsIgnoreCase("true")){
+			return true;
+		}
 		return false;
 	}
 	/**

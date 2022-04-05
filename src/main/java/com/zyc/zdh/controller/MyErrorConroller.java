@@ -33,4 +33,9 @@ public class MyErrorConroller {
 
 		return "403";
 	}
+
+	@RequestMapping(value="/503", produces = "text/html;charset=UTF-8")
+	public String  manager(HttpServletRequest request){
+		return "503";
+	}
 }

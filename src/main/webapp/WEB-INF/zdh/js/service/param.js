@@ -60,7 +60,7 @@
 
           var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
           if (rows.length == 0) {// rows 主要是为了判断是否选中，下面的else内容才是主要
-              layer.msg("请先选择要删除的记录!");
+              layer.msg("请先选择要同步的记录!");
               return;
           } else {
               layer.confirm('是否批量同步redis', {

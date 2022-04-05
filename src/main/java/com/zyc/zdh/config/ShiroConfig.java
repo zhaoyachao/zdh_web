@@ -248,6 +248,9 @@ public class ShiroConfig {
 		filterMap.put(project_pre+"/register/**", "anon");
 		filterMap.put(project_pre+"/retrieve_password", "anon");
 		filterMap.put(project_pre+"/404", "anon");
+		filterMap.put(project_pre+"/403", "anon");
+		filterMap.put(project_pre+"/503", "anon");
+		filterMap.put(project_pre+"/500", "anon");
 		filterMap.put(project_pre+"/img/favicon**", "anon");
 		filterMap.put(project_pre+"/favicon.ico", "anon");
 		filterMap.put(project_pre+"/version", "anon");

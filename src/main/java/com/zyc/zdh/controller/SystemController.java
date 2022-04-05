@@ -399,8 +399,7 @@ public class SystemController extends BaseController{
     @ResponseBody
     public String version() {
         String version=ev.getProperty("version","");
-
-        return "当前版本:"+version;
+        return  ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", "当前版本:"+version);
     }
 
 }

@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 参数配置服务
@@ -142,7 +143,11 @@ public class ZdhParamController extends BaseController {
             criteria.andIn("id", Arrays.asList(ids));
             List<ParamInfo> paramInfos = paramMapper.selectByExample(example);
             for (ParamInfo paramInfo:paramInfos){
-                redisUtil.set(paramInfo.getParam_name(),  paramInfo.getParam_value(), StringUtils.isEmpty(paramInfo.getParam_timeout())?300L:Long.parseLong(paramInfo.getParam_timeout()));
+                if(paramInfo.getParam_timeout().equalsIgnoreCase("-1")){
+                    redisUtil.set(paramInfo.getParam_name(),  paramInfo.getParam_value());
+                }else{
+                    redisUtil.set(paramInfo.getParam_name(),  paramInfo.getParam_value(), StringUtils.isEmpty(paramInfo.getParam_timeout())?300L:Long.parseLong(paramInfo.getParam_timeout()), TimeUnit.SECONDS);
+                }
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
