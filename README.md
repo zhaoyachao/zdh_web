@@ -971,7 +971,11 @@
 
     alter table blood_source_info add column `input_json` text  comment '输入源配置';
     alter table blood_source_info add column `output_json` text  comment '输出源配置';
-  
+    
+    INSERT INTO zdh.param_info
+    (id, param_name, param_value, param_context, param_type, param_timeout, owner, status, is_delete, create_time, update_time)
+    VALUES(4, 'zdh_is_pass', 'false', '系统访问控制', '1', '120', '1', 'on', '0', '2022-04-05 18:27:30', '2022-04-05 19:57:47');
+
   
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
