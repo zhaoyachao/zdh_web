@@ -56,6 +56,16 @@ public class BloodSourceInfo {
     private String output_type;
 
     /**
+     * 输出源配置
+     */
+    private String output_json;
+
+    /**
+     * 输入源配置
+     */
+    private String input_json;
+
+    /**
      * @return id
      */
     public Long getId() {
@@ -243,5 +253,41 @@ public class BloodSourceInfo {
      */
     public void setOutput_type(String output_type) {
         this.output_type = output_type;
+    }
+
+    /**
+     * 获取输出源配置
+     *
+     * @return output_json - 输出源配置
+     */
+    public String getOutput_json() {
+        return output_json;
+    }
+
+    /**
+     * 设置输出源配置
+     *
+     * @param output_json 输出源配置
+     */
+    public void setOutput_json(String output_json) {
+        this.output_json = output_json;
+    }
+
+    /**
+     * 获取输入源配置
+     *
+     * @return input_json - 输入源配置
+     */
+    public String getInput_json() {
+        return input_json;
+    }
+
+    /**
+     * 设置输入源配置
+     *
+     * @param input_json 输入源配置
+     */
+    public void setInput_json(String input_json) {
+        this.input_json = input_json;
     }
 }

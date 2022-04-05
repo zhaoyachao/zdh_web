@@ -63,7 +63,33 @@
                                        style="margin-bottom:0px" value="分析血源"/>
                             </div>
                             <div id="deviceRight">
-                                <div id="m1"></div>
+                                <div id="m1" style="width: 80%;float:left;"></div>
+                                <div id="m2" style="width: 20%;float:right;">
+                                    <div class="form-group">
+                                        <label class="control-label">数据源说明</label>
+                                        <div>
+                                            <input id="data_source_context" name="data_source_context" type="text"
+                                                   placeholder="数据源说明" class="form-control" aria-required="true" readonly > </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label">数据源类型</label>
+                                        <div>
+                                            <input id="data_source_type" name="data_source_type" type="text"
+                                                   placeholder="数据源类型" class="form-control" aria-required="true" readonly > </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label">节点</label>
+                                        <div>
+                                            <input id="topic" name="topic" type="text"
+                                                   placeholder="节点" class="form-control" aria-required="true" readonly > </span>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -124,9 +150,10 @@
         var options = {
             container:'m1',
             theme:'greensea',
-            editable:true
-        }
+            editable:false,//是否可编辑
+        };
         _jm = jsMind.show(options);
+        _jm.end_edit();
         // _jm = jsMind.show(options,mind);
     }
     open_empty();
@@ -142,11 +169,20 @@
             "data": data
         };
         _jm.show(mind);
+        _jm.end_edit();
     }
 
 </script>
 <script>
+    var tmp_source_json = {};
     $(document).ready(function () {
+
+        window.document.addEventListener('dblclick',function(){
+            var selected_node = _jm.get_selected_node();
+            $('#data_source_context').val(tmp_source_json[selected_node.id].data_source_context);
+            $('#data_source_type').val(tmp_source_json[selected_node.id].data_source_type);
+            $('#topic').val(selected_node.topic);
+        });
 
         var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
         var params = url.substr(1);//去掉问号
@@ -159,13 +195,18 @@
         function refash_graph(){
             $.ajax({
                 url : server_context+"/blood_source_detail",
-                data : "input=" + s.input,
+                data : {"input":s.input, "input_md5":s.input_md5},
                 type : "post",
                 dataType : "json",
                 success : function(data) {
                     console.info("success");
+                    if(data.length>0){
+                        for(var i=0;i<data.length;i++){
+                            tmp_source_json[data[i].id]=data[i].source_json;
+                        }
+                    }
                     open_jsmind(data);
-                    layer.msg("完成");
+                    layer.msg("分析完成");
                 },
                 error: function (data) {
                     console.info("error: " + data.responseText);

@@ -37,9 +37,9 @@
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
         <!--生成对应表及类名 -->
-<!--        <table tableName="blood_source_info" domainObjectName="BloodSourceInfo" mapperName="BloodSourceMapper">-->
-<!--            <property name="useActualColumnNames" value="true" />-->
-<!--        </table>-->
+        <table tableName="blood_source_info" domainObjectName="BloodSourceInfo" mapperName="BloodSourceMapper">
+            <property name="useActualColumnNames" value="true" />
+        </table>
 <!--        <table tableName="etl_task_datax_info" domainObjectName="EtlTaskDataxInfo" mapperName="EtlTaskDataxMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--        </table>-->
@@ -144,19 +144,19 @@
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-            <table tableName="etl_task_unstructure_info" domainObjectName="EtlTaskUnstructureInfo" mapperName="EtlTaskUnstructureMapper">
-                <property name="useActualColumnNames" value="true" />
-                <columnOverride column="id" property="id" javaType="java.lang.String"/>
-                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
-                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
-            </table>
+<!--            <table tableName="etl_task_unstructure_info" domainObjectName="EtlTaskUnstructureInfo" mapperName="EtlTaskUnstructureMapper">-->
+<!--                <property name="useActualColumnNames" value="true" />-->
+<!--                <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--            </table>-->
 
-        <table tableName="etl_task_unstructure_log_info" domainObjectName="EtlTaskUnstructureLogInfo" mapperName="EtlTaskUnstructureLogMapper">
-            <property name="useActualColumnNames" value="true" />
-            <columnOverride column="id" property="id" javaType="java.lang.String"/>
-            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
-            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
-        </table>
+<!--        <table tableName="etl_task_unstructure_log_info" domainObjectName="EtlTaskUnstructureLogInfo" mapperName="EtlTaskUnstructureLogMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
 
     </context>
 </generatorConfiguration>

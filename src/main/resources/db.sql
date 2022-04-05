@@ -1381,7 +1381,9 @@ alter table user_operate_log add column `time` varchar(100) not null default '' 
 alter table approval_event_info add column `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间'
 alter table approval_event_info add column `skip_account` text  comment '可跳过审批的用户';
 
-
+-- 2022-04-05;
+alter table blood_source_info add column `input_json` text  comment '输入源配置';
+alter table blood_source_info add column `output_json` text  comment '输出源配置';
 
 -- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;

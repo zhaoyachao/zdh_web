@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.BloodSourceMapper;
@@ -66,9 +67,7 @@ public class ZdhBloodSourceController extends BaseController{
 
         List<Map<String,Object>>  rs = jdbcTemplate.queryForList("select max(version) as version from blood_source_info");
         if(rs==null || rs.size()<1){
-            JSONObject jsonObject= new JSONObject();
-            jsonObject.put("message", "未找到任何血源分析数据");
-            return jsonObject.toJSONString();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "未找到任何血源分析数据", "未找到任何血源分析数据");
         }
 
         String version = rs.get(0).getOrDefault("version", "0").toString();
@@ -91,6 +90,7 @@ public class ZdhBloodSourceController extends BaseController{
                     inputs.add(bsi.getInput_type()+bsi.getInput());
                     jsonObject.put("input_type", bsi.getInput_type());
                     jsonObject.put("input", bsi.getInput());
+                    jsonObject.put("input_md5", bsi.getInput_md5());
                     jsonArray.add(jsonObject);
                 }
             }
@@ -101,12 +101,13 @@ public class ZdhBloodSourceController extends BaseController{
                     inputs.add(bsi.getOutput_type()+bsi.getOutput());
                     jsonObject1.put("input_type", bsi.getOutput_type());
                     jsonObject1.put("input", bsi.getOutput());
+                    jsonObject1.put("input_md5", bsi.getOutput_md5());
                     jsonArray.add(jsonObject1);
                 }
             }
 
         }
-        return jsonArray.toJSONString();
+        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonArray);
     }
 
     /**
@@ -118,25 +119,29 @@ public class ZdhBloodSourceController extends BaseController{
      */
     @RequestMapping(value = "/blood_source_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String blood_source_detail(String input, String level, String stream_type) {
+    public String blood_source_detail(String input, String input_md5, String level, String stream_type) {
         DAG dag=new DAG();
+        Map<String, String> source_json = new HashMap<>();
         JSONObject jsonObject=new JSONObject();
         List<BloodSourceInfo> bloodSourceInfos = bloodSourceMapper.selectAll();
         for (BloodSourceInfo bsi: bloodSourceInfos){
             if(!StringUtils.isEmpty(bsi.getInput()) && !StringUtils.isEmpty(bsi.getOutput()) && !bsi.getInput().equalsIgnoreCase(bsi.getOutput())){
                 System.out.println(bsi.getInput()+"====="+bsi.getOutput());
-                boolean result = dag.addEdge(bsi.getInput(),bsi.getOutput());
+
+                boolean result = dag.addEdge(bsi.getInput()+"__-__"+bsi.getInput_md5(),bsi.getOutput()+"__-__"+bsi.getOutput_md5());
+                source_json.put(bsi.getInput()+"__-__"+bsi.getInput_md5(), bsi.getInput_json());
+                source_json.put(bsi.getOutput()+"__-__"+bsi.getOutput_md5(), bsi.getOutput_json());
                 if(!result){
                     jsonObject.put("result","失败");
                     return jsonObject.toJSONString();
                 }
             }
         }
-        Set<String> upstreams = (Set<String>)dag.getParent(input);
-        Set<String> downstreams = (Set<String>)dag.getChildren(input);
+        Set<String> upstreams = (Set<String>)dag.getParent(input+"__-__"+input_md5);
+        Set<String> downstreams = (Set<String>)dag.getChildren(input+"__-__"+input_md5);
         Map<String,Set<String>> downstream_map = new HashMap<>();
         Map<String,Set<String>> upstream_map = new HashMap<>();
-        downstream_map.put(input, downstreams);
+        downstream_map.put(input+"__-__"+input_md5, downstreams);
         Queue queue=new LinkedList<String>();
         queue.addAll(downstreams);
         while (!queue.isEmpty()){
@@ -147,9 +152,9 @@ public class ZdhBloodSourceController extends BaseController{
         }
 
 
-        upstream_map.put(input, upstreams);
+        upstream_map.put(input+"__-__"+input_md5, upstreams);
         Queue queue2=new LinkedList<String>();
-        queue2.add(input);
+        queue2.add(input+"__-__"+input_md5);
         while (!queue.isEmpty()){
             String v = queue.poll().toString();
             Set<String> upstreams1 = (Set<String>)dag.getParent(v);
@@ -162,8 +167,9 @@ public class ZdhBloodSourceController extends BaseController{
 
         //生成根节点
         JSONObject j2=new JSONObject();
-        j2.put("id", DigestUtils.md5DigestAsHex(input.getBytes()));
+        j2.put("id", DigestUtils.md5DigestAsHex((input+"__-__"+input_md5).getBytes()));
         j2.put("topic", input);
+        j2.put("source_json", JSON.parseObject(source_json.get(input+"__-__"+input_md5)));
         j2.put("background-color", "#C2DFFF");
         j2.put("isroot", true);
         jsonArray.add(j2);
@@ -180,7 +186,8 @@ public class ZdhBloodSourceController extends BaseController{
             for(String chilren:downstream_map.get(key)){
                 JSONObject j3=new JSONObject();
                 j3.put("id", DigestUtils.md5DigestAsHex(chilren.getBytes()));
-                j3.put("topic", chilren);
+                j3.put("topic", chilren.split("__-__")[0]);
+                j3.put("source_json", JSON.parseObject(source_json.get(chilren)));
                 j3.put("background-color", color_value);
                 j3.put("parentid", DigestUtils.md5DigestAsHex(key.getBytes()));
                 j3.put("direction","right");
@@ -196,28 +203,14 @@ public class ZdhBloodSourceController extends BaseController{
             for(String upstream: upstream_map.get(key)){
                 JSONObject j1=new JSONObject();
                 j1.put("id", DigestUtils.md5DigestAsHex(upstream.getBytes()) );
-                j1.put("topic", upstream);
+                j1.put("topic", upstream.split("__-__")[0]);
+                j1.put("source_json", JSON.parseObject(source_json.get(upstream)));
                 j1.put("background-color", "#00bb00");
                 j1.put("parentid", DigestUtils.md5DigestAsHex(key.getBytes()));
                 j1.put("direction","left");
                 jsonArray.add(j1);
             }
         }
-//        for(String upstream:upstreams){
-//            JSONObject j1=new JSONObject();
-//            j1.put("id", DigestUtils.md5DigestAsHex(upstream.getBytes()) );
-//            j1.put("topic", upstream);
-//            j1.put("background-color", "#00bb00");
-//            j1.put("parentid", DigestUtils.md5DigestAsHex(input.getBytes()));
-//            j1.put("direction","left");
-//            jsonArray.add(j1);
-//        }
-
-        //JSONObject jsonObject1=a(dag, input, "#C2DFFF");
-
-
-        //System.out.println(jsonObject1.toJSONString());
-
 
         return jsonArray.toJSONString();
     }

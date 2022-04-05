@@ -711,6 +711,48 @@
                 </configuration>
             </plugin>
 
+            <!-- screws 生成数据库文档  -->
+            <plugin>
+                <groupId>cn.smallbun.screw</groupId>
+                <artifactId>screw-maven-plugin</artifactId>
+                <version>1.0.5</version>
+                <dependencies>
+                    <!-- 数据库连接 -->
+<!--                    <dependency>-->
+<!--                        <groupId>com.zaxxer</groupId>-->
+<!--                        <artifactId>HikariCP</artifactId>-->
+<!--                        <version>3.4.5</version>-->
+<!--                    </dependency>-->
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>8.0.22</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <!-- 数据库相关配置 -->
+                    <driverClassName>com.mysql.cj.jdbc.Driver</driverClassName>
+                    <jdbcUrl>jdbc:mysql://127.0.0.1:3306/zdh?serverTimezone=GMT%2B8&amp;useSSL=false</jdbcUrl>
+                    <username>zyc</username>
+                    <password>123456</password>
+                    <!-- screw 配置 -->
+                    <fileType>HTML</fileType><!--可选值HTML,WORD,MARKDOWN-->
+                    <title>ZDH数据库文档</title> <!--标题-->
+                    <fileName>ZDH数据库表说明</fileName> <!--文档名称 为空时:将采用[数据库名称-描述-版本号]作为文档名称-->
+                    <description>ZDH数据库文档生成</description> <!--描述-->
+                    <version>${project.version}</version> <!--版本-->
+                    <openOutputDir>false</openOutputDir> <!--打开文件输出目录-->
+                    <produceType>freemarker</produceType> <!--生成模板-->
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <resources>

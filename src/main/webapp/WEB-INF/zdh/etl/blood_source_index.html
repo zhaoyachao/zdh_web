@@ -168,7 +168,7 @@
 
         window.operateEvents = {
             'click #blood_source': function (e, value, row, index) {
-                window.open(server_context+"/blood_source_detail_index.html?input=" + row.input)
+                window.open(server_context+"/blood_source_detail_index.html?input=" + row.input+"&input_md5="+row.input_md5)
                 //openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
             }
         };
@@ -196,6 +196,15 @@
             showToggle: true,
             showColumns: true,
             iconSize: 'outline',
+            responseHandler:function (res) {
+                if(res.code == "200"){
+                    layer.msg(res.msg);
+                    return res.result;
+                }else{
+                    layer.msg("未返回有效数据");
+                    return ;
+                }
+            },
             toolbar: '#exampleTableEventsToolbar',
             icons: {
                 refresh: 'glyphicon-repeat',
@@ -217,6 +226,11 @@
             }, {
                 field: 'input',
                 title: '数据源',
+                sortable: false,
+                visible: true
+            },{
+                field: 'input_md5',
+                title: '数据源标识',
                 sortable: false,
                 visible: true
             },{

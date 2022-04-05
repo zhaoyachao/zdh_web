@@ -123,6 +123,8 @@ CREATE TABLE `blood_source_info` (
   `version` varchar(100) DEFAULT NULL COMMENT 'version',
   `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
   `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `output_json` text COMMENT '输出源配置',
+  `input_json` text COMMENT '输入源配置',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 /*!40101 SET character_set_client = @saved_cs_client */;

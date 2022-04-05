@@ -22,6 +22,7 @@
 - [4.7.15迁移4.7.16](#4715%E8%BF%81%E7%A7%BB4716)
 - [4.7.16迁移4.7.17](#4716%E8%BF%81%E7%A7%BB4717)
 - [4.7.17迁移4.7.18](#4717%E8%BF%81%E7%A7%BB4718)
+- [4.7.18迁移5.0.0](#4718%E8%BF%81%E7%A7%BB500)
 - [未完成的功能](#%E6%9C%AA%E5%AE%8C%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD)
 - [支持的数据源](#%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E6%BA%90)
 - [支持的调度对象](#%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E5%BA%A6%E5%AF%B9%E8%B1%A1)
@@ -64,16 +65,16 @@
    + 4.7.18版本全部采用maven管理,并重构quartz源码,4.7.18不可和之前任何历史版本重用
    + 4.7.18为4.x最后一个版本,5.x版本会重构所有代码,自2022-02-06~2022-06-01不进行新功能开发,此段时间会完善使用文档
  
-   + 4.7.17
-     +  [zdh_web_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_web.tar)
-     +  [zdh_server_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_server.tar)
-     +  [zdh_flink_4.7.17](http://zycblog.cn:8080/zdh/download/4.7.17/zdh_flink.tar)
-     
    + 4.7.18
      +  [zdh_web_4.7.18](http://zycblog.cn:8080/zdh/download/4.7.18/zdh_web.tar)
      +  [zdh_server_4.7.18](http://zycblog.cn:8080/zdh/download/4.7.18/zdh_server.tar)
      +  [zdh_flink_4.7.18](http://zycblog.cn:8080/zdh/download/4.7.18/zdh_flink.tar)     
       
+   + 5.0.0
+     +  [zdh_web_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_web.tar)
+     +  [zdh_server_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_server.tar)
+     +  [zdh_flink_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_flink.tar)
+           
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包,也可登陆ZDH预览页面下载
 
 #  在线预览
@@ -502,9 +503,10 @@
   + v5.0.0 优化登录页面背景
   + v5.0.0 appication相关配置文件修改编码为utf-8
   + v5.0.0 增加spark数据源解析
+  + v5.0.0 pom增加screw数据库文档生成插件
   
-  + v5.0.0 增加用户黑名单限制【开发中】
-  + v5.0.0 增加接口黑名单限制【开发中】
+  + v5.0.1 增加用户黑名单限制【开发中】
+  + v5.0.1 增加接口黑名单限制【开发中】
   + v5.0.1 权限单独出SDK及分配身份码(身份码和产品id加密解密绑定)【开发中】
   + v5.0.1 数据资产-申请组信息【开发中】
   + v5.0.1 增加HTTP,EMAIL调度对象 【开发中】
@@ -965,6 +967,8 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
     VALUES(960132057952948224, '930966518835974144', '新增系统任务', '4', '1', 'fa fa-coffee', '', '7', '1', '2022-04-03 11:02:01', '2022-04-03 11:02:01', 'dispatch_system_task_add', '5', '', '', 'zdh');
 
+    alter table blood_source_info add column `input_json` text  comment '输入源配置';
+    alter table blood_source_info add column `output_json` text  comment '输出源配置';
   
   
 # 未完成的功能
