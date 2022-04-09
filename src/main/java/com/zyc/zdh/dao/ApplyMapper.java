@@ -134,7 +134,7 @@ public interface ApplyMapper extends BaseMapper<ApplyInfo> {
      * @return
      */
     @Select({"<script>",
-            "SELECT apply.*,acc.email FROM apply_info apply,account_info acc",
+            "SELECT apply.*,acc.email,acc.user_name FROM apply_info apply,account_info acc",
             "WHERE issue_id=${issue_id}",
             "AND apply.owner=acc.id",
             "AND status = 1",

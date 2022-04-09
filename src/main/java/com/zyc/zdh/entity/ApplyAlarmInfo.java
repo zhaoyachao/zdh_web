@@ -35,6 +35,9 @@ public class ApplyAlarmInfo {
 
     private String email;
 
+    @Transient
+    private String user_name;
+
 
     public String getId() {
         return id;
@@ -114,5 +117,13 @@ public class ApplyAlarmInfo {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 }

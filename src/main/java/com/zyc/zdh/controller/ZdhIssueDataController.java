@@ -345,7 +345,7 @@ public class ZdhIssueDataController extends BaseController {
 //            app.setIssue_id(issue_id);
             List<ApplyInfo> applyInfos = applyMapper.selectByExample(example1);
             if (applyInfos != null && applyInfos.size() > 0) {
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前数据以申请过,不可重复申请", null);
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前数据以申请完成/正在申请中,不可重复申请", null);
             }
 
             String id = SnowflakeIdWorker.getInstance().nextId() + "";

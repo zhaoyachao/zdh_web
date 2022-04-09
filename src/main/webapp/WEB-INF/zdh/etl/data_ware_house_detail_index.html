@@ -232,7 +232,17 @@
                                     </div>
                                     <div id="tab-5" class="tab-pane">
                                         <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-sm-12">
 
+                                                    <table id="exampleTableEvents3" name="exampleTableEvents3" data-height="100%"
+                                                           data-mobile-responsive="false">
+
+                                                    </table>
+                                                    <!-- End Example Events -->
+
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -471,6 +481,41 @@
                             console.info("error: " + data.responseText);
                         }
                     });
+
+                // 字段信息加载
+                var columnsArray=new Array();
+                columnsArray.push({
+                    "title": "用户名",
+                    "field": "user_name",
+                    switchable: true,
+                    sortable: true});
+
+                //生成表格
+                $('#exampleTableEvents3').bootstrapTable({
+                    method: "POST",
+                    url: server_context+"/data_ware_house_apply?issue_id="+id,
+                    search: true,
+                    clickEdit: false,
+                    pagination: false,
+                    showRefresh: false,
+                    showToggle: false,
+                    showColumns: true,
+                    useRowAttrFunc: true,
+                    iconSize: 'outline',
+                    responseHandler:function (res) {
+                        if(res.code == "201"){
+                            layer.msg(res.msg);
+                        }
+                        return res.result;
+                    },
+                    //toolbar: '#exampleTableEventsToolbar',
+                    icons: {
+                        refresh: 'glyphicon-repeat',
+                        toggle: 'glyphicon-list-alt',
+                        columns: 'glyphicon-list'
+                    },
+                    columns: columnsArray
+                });
             }
 
             function getMyDate(str) {

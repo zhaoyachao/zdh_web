@@ -244,6 +244,21 @@ public class ZdhDataWareController extends BaseController {
         return null;
     }
 
+    /**
+     * 获取当前数据的申请人列表
+     * @param issue_id
+     * @return
+     */
+    @RequestMapping(value = "/data_ware_house_apply", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String data_ware_house_apply(String issue_id){
+
+        List<ApplyAlarmInfo> applyAlarmInfos = applyMapper.selectByIssueId(issue_id);
+
+        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", applyAlarmInfos);
+
+
+    }
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (int i = 0, len = fields.length; i < len; i++) {
