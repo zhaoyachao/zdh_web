@@ -50,6 +50,8 @@ public class UserOperateLogInfo {
 
     private String time;
 
+    private String ip;
+
     /**
      * @return id
      */
@@ -214,5 +216,13 @@ public class UserOperateLogInfo {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

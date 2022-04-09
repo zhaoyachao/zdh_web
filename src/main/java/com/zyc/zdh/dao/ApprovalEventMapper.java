@@ -25,10 +25,10 @@ public interface ApprovalEventMapper extends BaseMapper<ApprovalEventInfo> {
             "SELECT a.*,b.code_name,b.type FROM approval_event_info a inner join approval_config_info b on a.code=b.code ",
             "WHERE 1=1",
             "<when test='event_context!=null and event_context !=\"\"'>",
-            "AND (a.code like '%${event_context}%'",
-            "or event_code like '%${event_context}%'",
-            "or event_context like '%${event_context}%'",
-            "or a.id like '%${event_context}%')",
+            "AND (a.code like #{event_context}",
+            "or event_code like #{event_context}",
+            "or event_context like #{event_context}",
+            "or a.id like #{event_context})",
             "</when>",
             "</script>"})
     public List<ApprovalEventInfo> selectByContext(@Param("event_context") String event_context);

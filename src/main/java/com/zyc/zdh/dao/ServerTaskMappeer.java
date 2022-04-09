@@ -19,11 +19,11 @@ public interface ServerTaskMappeer extends BaseMapper<ServerTaskInfo> {
                     "AND id = #{id}",
                     "</when>",
                     "<when test='context!=null and context !=\"\"'>",
-                    "AND (build_task like  '%${context}%' ",
-                    " OR git_url like  '%${context}%' ",
-                    " OR build_type like  '%${context}%' ",
-                    " OR build_ip like  '%${context}%' ",
-                    " OR remote_ip like  '%${context}%' )",
+                    "AND (build_task like  #{context} ",
+                    " OR git_url like  #{context} ",
+                    " OR build_type like  #{context} ",
+                    " OR build_ip like  #{context} ",
+                    " OR remote_ip like  #{context} )",
                     "</when>",
                     "</script>"
             }

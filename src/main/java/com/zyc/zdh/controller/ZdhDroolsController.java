@@ -6,6 +6,7 @@ import com.zyc.zdh.entity.EtlDroolsTaskInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,12 @@ public class ZdhDroolsController extends BaseController{
     @ResponseBody
     public String etl_task_drools_list2(String etl_context, String file_name) {
         List<EtlDroolsTaskInfo> etlDroolsTaskInfos = new ArrayList<EtlDroolsTaskInfo>();
+        if(!StringUtils.isEmpty(etl_context)){
+            etl_context=getLikeCondition(etl_context);
+        }
+        if(!StringUtils.isEmpty(file_name)){
+            file_name=getLikeCondition(file_name);
+        }
         etlDroolsTaskInfos = etlDroolsTaskMapper.selectByParams(getUser().getId(), etl_context, file_name);
         return JSON.toJSONString(etlDroolsTaskInfos);
     }

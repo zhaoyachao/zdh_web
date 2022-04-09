@@ -27,9 +27,9 @@ public interface ApprovalAuditorMapper extends BaseMapper<ApprovalAuditorInfo> {
             " left join account_info d on a.auditor_id=d.id",
             "WHERE 1=1",
             "<when test='approval_context!=null and approval_context !=\"\"'>",
-            "AND (a.code like '%${approval_context}%'",
-            "or auditor_group like '%${approval_context}%'",
-            "or a.id like '%${approval_context}%')",
+            "AND (a.code like #{approval_context}",
+            "or auditor_group like #{approval_context}",
+            "or a.id like #{approval_context})",
             "</when>",
             "</script>"})
     public List<ApprovalAuditorInfo> selectByContext(@Param("approval_context") String approval_context);

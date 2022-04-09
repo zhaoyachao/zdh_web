@@ -9,6 +9,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -275,7 +276,9 @@ public class SystemController extends BaseController{
     public String notice2(String message) {
         //System.out.println("加载缓存中通知事件");
         List<NoticeInfo> noticeInfos = new ArrayList<>();
-
+        if(!StringUtils.isEmpty(message)){
+            message=getLikeCondition(message);
+        }
         noticeInfos = noticeMapper.selectByMessage(message, getUser().getId());
 
         return JSON.toJSONString(noticeInfos);
@@ -376,7 +379,7 @@ public class SystemController extends BaseController{
 
     @RequestMapping(value = "/notice_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String notice_update(String msg) {
+    public String notice_update(String msg, String show_type) {
 
         EveryDayNotice everyDayNotice=new EveryDayNotice();
         everyDayNotice.setIs_delete(Const.DELETE);
@@ -387,6 +390,7 @@ public class SystemController extends BaseController{
         everyDayNotice.setMsg(msg);
         everyDayNotice.setIs_delete(Const.NOT_DELETE);
         everyDayNotice.setId(SnowflakeIdWorker.getInstance().nextId()+"");
+        everyDayNotice.setShow_type(show_type);
         everyDayNoticeMapper.insert(everyDayNotice);
 
         JSONObject json=new JSONObject();

@@ -13,7 +13,7 @@ public interface ZdhDownloadMapper extends BaseMapper<ZdhDownloadInfo> {
     @Select({"<script>",
             "select * from zdh_download_info where owner=#{owner}",
             "<when test='file_name!=null and file_name !=\"\"'>",
-            "AND file_name like '%${file_name}%'",
+            "AND file_name like #{file_name}",
             "</when>",
             "</script>"})
     public List<ZdhDownloadInfo> slectByOwner(@Param("owner") String owner,@Param("file_name")String file_name);

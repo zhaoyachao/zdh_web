@@ -69,7 +69,7 @@ public class ZdhDataxController extends BaseController{
         List<EtlTaskDataxInfo> etlTaskDataxInfos = new ArrayList<>();
         Example.Criteria cri=etlTaskDataxInfoExample.createCriteria();
         if(!StringUtils.isEmpty(datax_context)){
-            cri.andLike("datax_context", "%"+datax_context+"%");
+            cri.andLike("datax_context", getLikeCondition(datax_context));
         }
         if(!StringUtils.isEmpty(id)){
             cri.andEqualTo("id", id);

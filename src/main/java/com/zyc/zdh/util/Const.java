@@ -51,4 +51,6 @@ public class Const {
     public static String LINE_SEPARATOR=System.getProperty("line.separator");
 
     public static String ZDH_IS_PASS = "zdh_is_pass";
+
+    public static String ZDH_IP_BACKLIST= "zdh_ip_backlist";//黑名单参数
 }

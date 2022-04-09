@@ -62,7 +62,9 @@ public class NodeController extends BaseController{
     @RequestMapping(value = "/server_manager_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String server_manager_list(String id,String context) {
-        //System.out.println(context);
+        if(!StringUtils.isEmpty(context)){
+            context = getLikeCondition(context);
+        }
         List<ServerTaskInfo> serverTaskInfos = serverTaskMappeer.selectServer(id,context);
 
         return JSONObject.toJSONString(serverTaskInfos);
@@ -72,7 +74,9 @@ public class NodeController extends BaseController{
     @RequestMapping(value = "/server_manager_online_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String server_manager_online_list(String online,String context) {
-        //System.out.println(context);
+        if(!StringUtils.isEmpty(context)){
+            context = getLikeCondition(context);
+        }
         List<ZdhHaInfo> zdhHaInfos = zdhHaInfoMapper.selectServer(online,context);
 
         return JSONObject.toJSONString(zdhHaInfos);

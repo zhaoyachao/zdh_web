@@ -20,9 +20,9 @@ public interface PermissionMapper extends BaseMapper<PermissionUserInfo> {
 			"<script>",
 			"select * from account_info ",
 			"<when test='user_context!=null and user_context !=\"\"'>",
-			"where user_name like '%${user_context}%'",
-			"or email like '%${user_context}%'",
-			"or phone like '%${user_context}%'",
+			"where user_name like #{user_context}",
+			"or email like #{user_context}",
+			"or phone like #{user_context}",
 			"</when>",
 			"</script>"
 

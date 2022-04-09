@@ -40,8 +40,8 @@ public interface IssueDataMapper extends BaseMapper<IssueDataInfo> {
             "SELECT * FROM issue_data_info",
             "WHERE status=1",
             "<when test='issue_context!=null and issue_context !=\"\"'>",
-            "AND ( issue_context like '%${issue_context}%'",
-            "OR data_sources_table_name_input like '%${issue_context}%')",
+            "AND ( issue_context like #{issue_context}",
+            "OR data_sources_table_name_input like #{issue_context})",
             "</when>",
             "<when test='label_params!=null and label_params.length>0'>",
             "and ",
@@ -57,8 +57,8 @@ public interface IssueDataMapper extends BaseMapper<IssueDataInfo> {
             "SELECT * FROM issue_data_info",
             "WHERE owner=#{owner}",
             "<when test='issue_context!=null and issue_context !=\"\"'>",
-            "AND ( issue_context like '%${issue_context}%'",
-            "OR data_sources_table_name_input like '%${issue_context}%')",
+            "AND ( issue_context like #{issue_context}",
+            "OR data_sources_table_name_input like #{issue_context})",
             "</when>",
             "</script>"})
     public List<IssueDataInfo> selectByOwner(@Param("issue_context") String issue_context,@Param("owner") String owner);

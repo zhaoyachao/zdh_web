@@ -117,7 +117,7 @@ public class ZdhEtlBatchController extends BaseController {
             criteria.andLike("etl_pre_context", getLikeCondition(etl_context));
             criteria.orLike("etl_suffix_context", getLikeCondition(etl_context));
         }
-
+        example.and(criteria);
         list = etlTaskBatchMapper.selectByExample(example);
         return JSON.toJSONString(list);
     }

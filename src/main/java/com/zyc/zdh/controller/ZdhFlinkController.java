@@ -11,6 +11,7 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,9 @@ public class ZdhFlinkController extends BaseController {
     public String etl_task_flink_list(String sql_context, String id) {
 
         List<EtlTaskFlinkInfo> sqlTaskInfos = new ArrayList<>();
-
+        if(!StringUtils.isEmpty(sql_context)){
+            sql_context=getLikeCondition(sql_context);
+        }
         sqlTaskInfos = etlTaskFlinkMapper.selectByParams(getUser().getId(), sql_context, id);
 
         return JSON.toJSONString(sqlTaskInfos);

@@ -99,6 +99,12 @@ public class ZdhDispatchController extends BaseController {
     @ResponseBody
     public String dispatch_task_list2(String job_context, String etl_context, String status, String last_status) {
         List<QuartzJobInfo> list = new ArrayList<>();
+        if(!StringUtils.isEmpty(job_context)){
+            job_context=getLikeCondition(job_context);
+        }
+        if(!StringUtils.isEmpty(etl_context)){
+            etl_context=getLikeCondition(etl_context);
+        }
         list = quartzJobMapper.selectByParams(getUser().getId(), job_context, etl_context, status, last_status);
         return JSON.toJSONString(list);
     }

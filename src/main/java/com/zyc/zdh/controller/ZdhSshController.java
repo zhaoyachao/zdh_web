@@ -9,6 +9,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SFTPUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -264,7 +265,9 @@ public class ZdhSshController extends BaseController{
     public String etl_task_ssh_list(String ssh_context, String id) {
 
         List<SshTaskInfo> sshTaskInfos = new ArrayList<>();
-
+        if(!StringUtils.isEmpty(ssh_context)){
+            ssh_context=getLikeCondition(ssh_context);
+        }
         sshTaskInfos = sshTaskMapper.selectByParams(getUser().getId(), ssh_context, id);
 
         return JSON.toJSONString(sshTaskInfos);

@@ -1,6 +1,7 @@
 package com.zyc.zdh.entity;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import javax.persistence.*;
 
 @Table(name = "data_sources_info")
@@ -51,7 +52,7 @@ public class DataSourcesInfo{
     /**
      * 更新时间
      */
-    private Timestamp update_time;
+    private Date update_time;
 
     /**
      * 数据组标识,多个逗号分割
@@ -222,7 +223,7 @@ public class DataSourcesInfo{
      *
      * @return update_time - 更新时间
      */
-    public Timestamp getUpdate_time() {
+    public Date getUpdate_time() {
         return update_time;
     }
 
@@ -231,7 +232,7 @@ public class DataSourcesInfo{
      *
      * @param update_time 更新时间
      */
-    public void setUpdate_time(Timestamp update_time) {
+    public void setUpdate_time(Date update_time) {
         this.update_time = update_time;
     }
 

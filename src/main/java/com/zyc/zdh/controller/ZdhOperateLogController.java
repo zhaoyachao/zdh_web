@@ -45,18 +45,19 @@ public class ZdhOperateLogController extends BaseController {
      */
     @RequestMapping(value = "/user_operate_log_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String user_operate_log_list(String log_context, String id) {
+    public String user_operate_log_list(String log_context, String id, String start_time, String end_time) {
         UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();
         Example example = new Example(userOperateLogInfo.getClass());
         List<UserOperateLogInfo> userOperateLogInfos = new ArrayList<>();
         Example.Criteria cri = example.createCriteria();
         cri.andEqualTo("owner", getUser().getId());
+        cri.andBetween("create_time", start_time, end_time);
         if (!StringUtils.isEmpty(log_context)) {
-            cri.andLike("user_name", "%" + log_context + "%");
-            cri.orLike("operate_input", "%" + log_context + "%");
-            cri.orLike("operate_output", "%" + log_context + "%");
-            cri.orLike("operate_context", "%" + log_context + "%");
-            cri.orLike("operate_url", "%" + log_context + "%");
+            cri.andLike("user_name", getLikeCondition(log_context));
+            cri.orLike("operate_input", getLikeCondition(log_context));
+            cri.orLike("operate_output", getLikeCondition(log_context));
+            cri.orLike("operate_context", getLikeCondition(log_context));
+            cri.orLike("operate_url", getLikeCondition(log_context));
         }
         example.setOrderByClause("update_time desc");
         userOperateLogInfos = userOperateLogMapper.selectByExample(example);

@@ -111,6 +111,11 @@
             title: '操作说明',
             sortable:false
         },{
+            field: 'create_time',
+            title: '操作时间',
+            formatter: getMyDate,
+            sortable:false
+        },{
             field: 'time',
             title: '响应时间(秒)',
             sortable:false

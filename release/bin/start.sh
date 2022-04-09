@@ -1,3 +1,4 @@
+set ff=unix
 bin_path=`dirname "$0"`
 echo $bin_path
 cd "$bin_path/.."

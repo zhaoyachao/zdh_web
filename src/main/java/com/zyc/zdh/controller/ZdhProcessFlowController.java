@@ -64,6 +64,9 @@ public class ZdhProcessFlowController extends BaseController {
     @ResponseBody
     public String process_flow_list(String context) {
 
+        if(!StringUtils.isEmpty(context)){
+            context = getLikeCondition(context);
+        }
         List<ProcessFlowInfo> pfis = processFlowMapper.selectByAuditorId(Const.SHOW, getUser().getId(), context);
         String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
         return json;
@@ -78,7 +81,9 @@ public class ZdhProcessFlowController extends BaseController {
     @RequestMapping(value = "/process_flow_list2", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String process_flow_list2(String context) {
-
+        if(!StringUtils.isEmpty(context)){
+            context = getLikeCondition(context);
+        }
         List<ProcessFlowInfo> pfis = processFlowMapper.selectByOwner(getUser().getId(), context);
         String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
         return json;

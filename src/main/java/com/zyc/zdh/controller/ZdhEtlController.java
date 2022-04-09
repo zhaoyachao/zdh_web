@@ -3,6 +3,7 @@ package com.zyc.zdh.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.DataSourcesMapper;
+import com.zyc.zdh.dao.EtlTaskMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
@@ -52,7 +53,8 @@ public class ZdhEtlController extends BaseController{
     EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
     @Autowired
     ZdhNginxMapper zdhNginxMapper;
-
+    @Autowired
+    EtlTaskMapper etlTaskMapper;
 
     /**
      * 单源ETL首页
@@ -91,7 +93,13 @@ public class ZdhEtlController extends BaseController{
     @ResponseBody
     public String etl_task_list2(String etl_context, String file_name) {
         List<EtlTaskInfo> list = new ArrayList<>();
-        list = etlTaskService.selectByParams(getUser().getId(), etl_context, file_name);
+        if(!StringUtils.isEmpty(etl_context)){
+            etl_context=getLikeCondition(etl_context);
+        }
+        if(!StringUtils.isEmpty(file_name)){
+            file_name=getLikeCondition(file_name);
+        }
+        list = etlTaskMapper.selectByParams(getUser().getId(),etl_context,file_name);
         return JSON.toJSONString(list);
     }
 

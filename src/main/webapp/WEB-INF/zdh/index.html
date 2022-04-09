@@ -834,7 +834,22 @@
                         console.info(data.msg);
                         return ;
                     }
-                    $('#notice').html(data.result.msg)
+                    if(data.result.show_type == "1"){
+                        layer.open({
+                            type: 1
+                            ,title: false //不显示标题栏
+                            ,closeBtn: true
+                            ,area: '300px;'
+                            ,shade: 0.8
+                            ,id: 'notice_layer' //设定一个id，防止重复弹出
+                            ,btnAlign: 'c'
+                            ,moveType: 1 //拖拽模式，0或者1
+                            ,content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">系统公告！<br>'+data.result.msg+'<br></div>'
+                        });
+                    }else{
+                        $('#notice').html(data.result.msg);
+                    }
+
                 },
                 //处理完成
                 complete: function () {

@@ -3,10 +3,7 @@ package com.zyc.zdh.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.dao.QualityMapper;
-import com.zyc.zdh.dao.QualityRuleMapper;
-import com.zyc.zdh.dao.QualityTaskMapper;
-import com.zyc.zdh.dao.ZdhHaInfoMapper;
+import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.EtlTaskService;
@@ -44,6 +41,8 @@ public class ZdhQualityController extends BaseController {
     QualityTaskMapper qualityTaskMapper;
     @Autowired
     ZdhHaInfoMapper zdhHaInfoMapper;
+    @Autowired
+    EtlTaskMapper etlTaskMapper;
 
     /**
      * 质量检测规则首页
@@ -73,10 +72,10 @@ public class ZdhQualityController extends BaseController {
             criteria.andEqualTo("id", qualityRuleInfo.getId());
         }
         if (!StringUtils.isEmpty(qualityRuleInfo.getRule_code())) {
-            criteria.andLike("rule_code", "%" + qualityRuleInfo.getRule_code());
+            criteria.andLike("rule_code", getLikeCondition(qualityRuleInfo.getRule_code()));
         }
         if (!StringUtils.isEmpty(qualityRuleInfo.getRule_name())) {
-            criteria.andLike("rule_name", "%" + qualityRuleInfo.getRule_name());
+            criteria.andLike("rule_name", getLikeCondition(qualityRuleInfo.getRule_name()));
         }
 
         qualityRuleInfos = qualityRuleMapper.selectByExample(example);
@@ -159,15 +158,15 @@ public class ZdhQualityController extends BaseController {
         }
         if (!StringUtils.isEmpty(qualityTaskInfo.getQuality_context())) {
             Example.Criteria criteria1 = example.createCriteria();
-            criteria1.orLike("quality_context", "%" + qualityTaskInfo.getQuality_context() + "%");
-            criteria1.orLike("data_sources_table_name_input", "%" + qualityTaskInfo.getQuality_context() + "%");
-            criteria1.orLike("data_sources_file_name_input", "%" + qualityTaskInfo.getQuality_context() + "%");
-            criteria1.orLike("data_source_type_input", "%" + qualityTaskInfo.getQuality_context() + "%");
-            criteria1.orLike("quality_rule_config", "%" + qualityTaskInfo.getQuality_context() + "%");
+            criteria1.orLike("quality_context", getLikeCondition(qualityTaskInfo.getQuality_context()));
+            criteria1.orLike("data_sources_table_name_input", getLikeCondition(qualityTaskInfo.getQuality_context()));
+            criteria1.orLike("data_sources_file_name_input", getLikeCondition(qualityTaskInfo.getQuality_context()));
+            criteria1.orLike("data_source_type_input", getLikeCondition(qualityTaskInfo.getQuality_context()));
+            criteria1.orLike("quality_rule_config", getLikeCondition(qualityTaskInfo.getQuality_context()));
             example.and(criteria1);
         }
         if (!StringUtils.isEmpty(rule_code)) {
-            criteria.andLike("quality_rule_config", "%" + rule_code + "%");
+            criteria.andLike("quality_rule_config", getLikeCondition(rule_code));
         }
 
         qualityTaskInfos = qualityTaskMapper.selectByExample(example);
@@ -278,7 +277,22 @@ public class ZdhQualityController extends BaseController {
     public String quota_list(String column_desc, String column_alias, String company, String section, String service) {
 
         List<QuotaInfo> etlTaskInfos = new ArrayList<>();
-        etlTaskInfos = etlTaskService.selectByColumn(getUser().getId(), column_desc, column_alias, company, section, service);
+        if(!StringUtils.isEmpty(column_desc)){
+            column_desc = getLikeCondition(column_desc);
+        }
+        if(!StringUtils.isEmpty(column_alias)){
+            column_alias = getLikeCondition(column_alias);
+        }
+        if(!StringUtils.isEmpty(company)){
+            company = getLikeCondition(company);
+        }
+        if(!StringUtils.isEmpty(section)){
+            section = getLikeCondition(section);
+        }
+        if(!StringUtils.isEmpty(service)){
+            service = getLikeCondition(service);
+        }
+        etlTaskInfos = etlTaskMapper.selectByColumn(getUser().getId(), column_desc, column_alias, company, section, service);
         return JSON.toJSONString(etlTaskInfos);
     }
 

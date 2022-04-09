@@ -92,13 +92,13 @@ public class ZdhUnstructureController extends BaseController{
 
     /**
      *  非结构化任务列表
-     * @param ssh_context
+     * @param unstructure_context
      * @param id
      * @return
      */
     @RequestMapping(value = "/etl_task_unstructure_list", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String etl_task_unstructure_list(String ssh_context, String id) {
+    public String etl_task_unstructure_list(String unstructure_context, String id) {
 
         List<EtlTaskUnstructureInfo> etlTaskUnstructureInfos = new ArrayList<>();
 
@@ -109,7 +109,9 @@ public class ZdhUnstructureController extends BaseController{
         if(!StringUtils.isEmpty(id)){
             criteria.andEqualTo("id", id);
         }
-
+        if(!StringUtils.isEmpty(unstructure_context)){
+            criteria.andLike("unstructure_context", getLikeCondition(unstructure_context));
+        }
         etlTaskUnstructureInfos = etlTaskUnstructureMapper.selectByExample(example);
 
         return JSON.toJSONString(etlTaskUnstructureInfos);

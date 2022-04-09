@@ -141,6 +141,9 @@ public class ZdhIssueDataController extends BaseController {
     @ResponseBody
     public String data_ware_house_list2(String issue_context) {
         List<IssueDataInfo> list = new ArrayList<>();
+        if(!StringUtils.isEmpty(issue_context)){
+            issue_context = getLikeCondition(issue_context);
+        }
         list = issueDataMapper.selectByParams(issue_context,new String[]{});
 
         return JSON.toJSONString(list);
@@ -157,6 +160,9 @@ public class ZdhIssueDataController extends BaseController {
     public String data_ware_house_list3(String issue_context) {
         List<IssueDataInfo> list = new ArrayList<>();
         String owner = getUser().getId();
+        if(!StringUtils.isEmpty(issue_context)){
+            issue_context = getLikeCondition(issue_context);
+        }
         list = issueDataMapper.selectByOwner(issue_context, owner);
 
         return JSON.toJSONString(list);
@@ -406,6 +412,9 @@ public class ZdhIssueDataController extends BaseController {
 
         ApplyInfo applyInfo = new ApplyInfo();
         applyInfo.setOwner(getUser().getId());
+        if(!StringUtils.isEmpty(apply_context)){
+            apply_context = getLikeCondition(apply_context);
+        }
         List<ApplyInfo> applyInfos = applyMapper.selectByParams(apply_context, null, null, getUser().getId());
         String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取申请明细", applyInfos);
         return json;
@@ -417,6 +426,9 @@ public class ZdhIssueDataController extends BaseController {
 
         ApplyInfo applyInfo = new ApplyInfo();
         applyInfo.setOwner(getUser().getId());
+        if(!StringUtils.isEmpty(apply_context)){
+            apply_context = getLikeCondition(apply_context);
+        }
         List<ApplyIssueInfo> applyInfos = applyMapper.selectByParams3(apply_context, "1", null, getUser().getId());
         String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取申请明细", applyInfos);
         return json;
@@ -462,6 +474,9 @@ public class ZdhIssueDataController extends BaseController {
 
         ApplyInfo applyInfo = new ApplyInfo();
         applyInfo.setApprove_id(getUser().getId());
+        if(!StringUtils.isEmpty(apply_context)){
+            apply_context = getLikeCondition(apply_context);
+        }
         List<ApplyInfo> applyInfos = applyMapper.selectByParams2(apply_context, getUser().getId(), null);
         String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取审批明细", applyInfos);
         return json;

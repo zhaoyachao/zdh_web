@@ -44,6 +44,22 @@
                             <span class="add-on"><i class="icon-calendar"></i></span>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <div class="input-group date form_datetime">
+                            <input id="start_time" name="start_time" class="form-control" type="text" value=""
+                                   placeholder="开始时间" readonly>
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group date form_datetime">
+                            <input id="end_time" name="end_time" class="form-control" type="text" value=""
+                                   placeholder="结束时间" readonly>
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
@@ -72,6 +88,7 @@
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
 
+    <script src="js/plugins/layer/laydate/laydate.js"></script>
     <!-- layer javascript -->
     <script src="js/plugins/layer/layer.min.js"></script>
 
@@ -91,6 +108,52 @@
 
     $(document).ready(function () {
 
+
+        var start = {
+            elem: '#start_time',
+            format: 'YYYY-MM-DD hh:mm:ss',
+            min: '2000-01-01',
+            max: '2099-06-16', //最大日期
+            istime: true,
+            istoday: false,
+            choose: function (datas) {
+                end.min = datas; //开始日选好后，重置结束日的最小日期
+                end.start = datas //将结束日的初始值设定为开始日
+            }
+        };
+        var end = {
+            elem: '#end_time',
+            format: 'YYYY-MM-DD hh:mm:ss',
+            min: '2000-01-01',
+            max: '2099-06-16',
+            istime: true,
+            istoday: false,
+            choose: function (datas) {
+                start.max = datas; //结束日选好后，重置开始日的最大日期
+            }
+        };
+        laydate(start);
+        laydate(end);
+        $("#start_time").val(getCurrentDate());
+        $("#end_time").val(getCurrentDate());
+        function getCurrentDate() {
+            var oDate = new Date(),
+                oYear = oDate.getFullYear(),
+                oMonth = oDate.getMonth() + 1,
+                oDay = oDate.getDate(),
+                oHour = oDate.getHours(),
+                oMin = oDate.getMinutes(),
+                oSen = oDate.getSeconds(),
+                oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + ' '+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+            return oTime;
+        };
+        //补0操作
+        function getzf(num) {
+            if (parseInt(num) < 10) {
+                num = '0' + num;
+            }
+            return num;
+        }
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
                 url: server_context+"/user_operate_log_list?"+$("#user_form").serialize(),

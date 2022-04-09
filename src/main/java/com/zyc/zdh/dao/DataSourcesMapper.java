@@ -62,10 +62,10 @@ public interface DataSourcesMapper extends BaseMapper<DataSourcesInfo> {
             "AND data_source_type =  #{data_source_type}",
             "</when>",
             "<when test='data_source_context!=null and data_source_context !=\"\"'>",
-            "AND data_source_context like  '%${data_source_context}%'",
+            "AND data_source_context like  #{data_source_context}",
             "</when>",
             "<when test='url!=null and url !=\"\"'>",
-            "AND url like  '%${owner}%'",
+            "AND url like  #{url}",
             "</when>",
             "</script>"})
     public List<DataSourcesInfo> selectByParams2(@Param("owner") String owner,@Param("tag_group_code") String[] tag_group_code, @Param("url") String url,@Param("data_source_context") String data_source_context,@Param("data_source_type") String data_source_type);

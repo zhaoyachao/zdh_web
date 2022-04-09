@@ -625,6 +625,23 @@
                             <outputDirectory>${version}/db</outputDirectory>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>copy-doc</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>doc</directory>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${version}/doc</outputDirectory>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
             <plugin>

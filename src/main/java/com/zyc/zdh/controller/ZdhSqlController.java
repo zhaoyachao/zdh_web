@@ -12,6 +12,7 @@ import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,9 @@ public class ZdhSqlController extends BaseController {
     public String sql_task_list(String sql_context, String id) {
 
         List<SqlTaskInfo> sqlTaskInfos = new ArrayList<>();
-
+        if(!StringUtils.isEmpty(sql_context)){
+            sql_context=getLikeCondition(sql_context);
+        }
         sqlTaskInfos = sqlTaskMapper.selectByParams(getUser().getId(), sql_context, id);
 
         return JSON.toJSONString(sqlTaskInfos);

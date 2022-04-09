@@ -61,6 +61,10 @@ public class ZdhDataWareController extends BaseController {
         if(!StringUtils.isEmpty(label_params)){
             labels = label_params.split(",");
         }
+
+        if(!StringUtils.isEmpty(issue_context)){
+            issue_context = getLikeCondition(issue_context);
+        }
         list = issueDataMapper.selectByParams(issue_context, labels);
 
         int end_index = Integer.parseInt(current_page)*page_size;

@@ -24,9 +24,9 @@ public interface NoticeMapper extends BaseMapper<NoticeInfo> {
             "SELECT * FROM notice_info",
             "WHERE owner=#{owner}",
             "<when test='message!=null and message !=\"\"'>",
-            "AND ( msg_type like '%${message}%'",
-            "OR msg_title like '%${message}%' ",
-            "OR msg like '%${message}%')",
+            "AND ( msg_type like #{message}",
+            "OR msg_title like #{message} ",
+            "OR msg like #{message})",
             "</when>",
             "order by create_time desc",
             "</script>"})

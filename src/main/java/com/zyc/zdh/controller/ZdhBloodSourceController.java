@@ -74,8 +74,8 @@ public class ZdhBloodSourceController extends BaseController{
         Example example=new Example(BloodSourceInfo.class);
 
         Example.Criteria criteria = example.createCriteria();
-        criteria.orLike("input","%"+input+"%");
-        criteria.orLike("output","%"+input+"%");
+        criteria.orLike("input",getLikeCondition(input));
+        criteria.orLike("output",getLikeCondition(input));
         Example.Criteria criteria2 = example.createCriteria();
         criteria2.andEqualTo("version", version);
 

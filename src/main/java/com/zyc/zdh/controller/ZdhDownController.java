@@ -10,6 +10,7 @@ import com.zyc.zdh.entity.ZdhDownloadInfo;
 import com.zyc.zdh.entity.ZdhNginx;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.SFTPUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,9 @@ public class ZdhDownController extends BaseController{
     @ResponseBody
     public String download_list(String file_name) {
         List<ZdhDownloadInfo> list = new ArrayList<>();
+        if(!StringUtils.isEmpty(file_name)){
+            file_name=getLikeCondition(file_name);
+        }
         list = zdhDownloadMapper.slectByOwner(getUser().getId(), file_name);
         return JSON.toJSONString(list);
     }

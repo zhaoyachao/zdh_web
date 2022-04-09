@@ -6,6 +6,7 @@ import com.zyc.zdh.dao.ApprovalConfigMapper;
 import com.zyc.zdh.dao.ApprovalEventMapper;
 import com.zyc.zdh.entity.*;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -49,7 +51,14 @@ public class ZdhApprovalController extends BaseController{
     @ResponseBody
     public String approve_config_list(String approval_context) {
         try{
-            List<ApprovalConfigInfo> approvalConfigInfos=approvalConfigMapper.selectByContext(approval_context);
+            Example example=new Example(ApprovalConfigInfo.class);
+            Example.Criteria criteria = example.createCriteria();
+            if(!StringUtils.isEmpty(approval_context)){
+                criteria.orLike("code", getLikeCondition(approval_context));
+                criteria.orLike("code_name", getLikeCondition(approval_context));
+                criteria.orLike("id", getLikeCondition(approval_context));
+            }
+            List<ApprovalConfigInfo> approvalConfigInfos=approvalConfigMapper.selectByExample(example);
             return JSON.toJSONString(approvalConfigInfos);
         }catch (Exception e){
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
@@ -120,6 +129,9 @@ public class ZdhApprovalController extends BaseController{
     @ResponseBody
     public String approval_auditor_list(String approval_context) {
         try{
+            if(!StringUtils.isEmpty(approval_context)){
+                approval_context = getLikeCondition(approval_context);
+            }
             List<ApprovalAuditorInfo> approvalAuditorInfos=approvalAuditorMapper.selectByContext(approval_context);
             return JSON.toJSONString(approvalAuditorInfos);
         }catch (Exception e){
@@ -237,6 +249,9 @@ public class ZdhApprovalController extends BaseController{
     @ResponseBody
     public String approval_event_list(String event_context) {
         try{
+            if(!StringUtils.isEmpty(event_context)){
+                event_context = getLikeCondition(event_context);
+            }
             List<ApprovalEventInfo> approvalEventInfos=approvalEventMapper.selectByContext(event_context);
             return JSON.toJSONString(approvalEventInfos);
         }catch (Exception e){

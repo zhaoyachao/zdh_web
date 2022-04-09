@@ -21,7 +21,7 @@ public interface ProcessFlowMapper extends BaseMapper<ProcessFlowInfo> {
             "<script>",
             "select pfi.*,acc.user_name as by_person_name from process_flow_info pfi left join account_info acc on pfi.owner=acc.id where is_show=#{is_show} and find_in_set(#{auditor_id}, auditor_id) ",
             "<when test='context!=null and context !=\"\"'>",
-            "and context like '%${context}%'",
+            "and context like #{context}",
             "</when>",
             "</script>"
 
@@ -68,7 +68,7 @@ public interface ProcessFlowMapper extends BaseMapper<ProcessFlowInfo> {
             "<script>",
             "select  min(create_time) as create_time,owner,flow_id as id, min(context) as context,  case when max(status) > 1 then max(status)  when min(status) = 0 then min(status) when max(status) = 1 then '1' end as status from process_flow_info pfi  where pfi.owner=#{owner} ",
             "<when test='context!=null and context !=\"\"'>",
-            "and context like '%${context}%'",
+            "and context like #{context}",
             "</when>",
             "group by owner,flow_id",
             "</script>"

@@ -9,6 +9,7 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,9 @@ public class ZdhJdbcController extends BaseController {
     public String etl_task_jdbc_list(String etl_context, String id) {
 
         List<EtlTaskJdbcInfo> etlTaskJdbcInfos = new ArrayList<>();
-
+        if(!StringUtils.isEmpty(etl_context)){
+            etl_context=getLikeCondition(etl_context);
+        }
         etlTaskJdbcInfos = etlTaskJdbcMapper.selectByParams(getUser().getId(), etl_context, id);
 
         return JSON.toJSONString(etlTaskJdbcInfos);

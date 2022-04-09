@@ -12,11 +12,13 @@
     <meta name="description" content="ZDH 数据资产">
 
     <link rel="shortcut icon" href="img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="js/layui/lib/layui-v2.5.5/css/layui.css"/>
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
     <style type="text/css">
         .btn_page {
         }
@@ -64,16 +66,8 @@
 
 
                         <div class="text-center">
-                            <span id="total_size">总计0条</span>
-                            <div class="btn-group" id="page_div">
+                            <div id="itemPage">
 
-                            </div>
-                            <div class="btn-group input-group" style="float: right">
-                                <input type="text" placeholder="10" id="page_size" name="page_size" class="form-control input-sm" style="width: 60px">
-                                <input type="text" placeholder="页数" id="page" name="page" class="form-control input-sm" style="width: 60px">
-                                <button class="btn btn-sm btn-primary" type="button" οnsubmit='return false' onclick="jump()">
-                                    跳转
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -90,6 +84,8 @@
 
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
+
+    <script type="text/javascript" src="js/layui/lib/layui-v2.5.5/layui.js"></script>
     <!-- layer javascript -->
     <script src="js/plugins/layer/layer.min.js"></script>
 
@@ -183,15 +179,16 @@
                 $('#label_div .btn-info').each(function ( index,element){
                     label_params.push($(this).attr('enum_value'));
                 });
-                load_data(1);
+                //load_data(1);
+                load_data2(1, 5);
             });
 
-            $('.btn_page').click(function () {
-                var currentPage = $(this).attr('value');
-                $('.btn_page').removeClass("active");
-                $(this).addClass("active");
-
-            });
+            // $('.btn_page').click(function () {
+            //     var currentPage = $(this).attr('value');
+            //     $('.btn_page').removeClass("active");
+            //     $(this).addClass("active");
+            //
+            // });
             load_label();
             $('#search').click();
         });
@@ -213,8 +210,12 @@
         ;
 
 
-        function load_data(currentPage){
-            var page_size = $('#page_size').val();
+
+    </script>
+
+    <script type="text/javascript">
+        // 加载laypage模块
+        function load_data2(currentPage, page_size){
 
             $.ajax({
                 type: 'POST',
@@ -224,13 +225,27 @@
                 data: '',
                 //成功返回
                 success: function (data) {
+                    layui.use("laypage",function() {
+                        var laypage = layui.laypage;
+
+                        // 加载laypage实例
+                        laypage.render({
+                            elem: "itemPage", // elem绑定的是容器的id属性值，不需要加#
+                            count: data.total_size, // 总数量，一般是从服务器获取
+                            limit: 5, // 每页显示的数量
+                            limits: [5, 10, 20, 30,100], // 每页条数选项
+                            layout: ['prev', 'page', 'next', 'limit', 'count', 'skip'], // 自定义排版
+                            groups: 10, // 连续显示的页码数
+                            jump: function (obj) {
+                                load_data3(obj.curr, obj.limit)
+                            }
+                        });
+                    });
+
                     $('#data_div').html("");
-                    $('#page_div').html("");
-                    $('#total_size').html("总计"+data.total_size+"条");
+
                     if(data.list.length>0){
-                        var page_start = "                                <button class=\"btn btn-white btn_left\" type=\"button\"><i class=\"fa fa-chevron-left\"></i>\n" +
-                        "                                </button>";
-                        $('#page_div').append(page_start);
+
                         for(var i=0;i <data.list.length;i++){
                             var tmp = template.replace("table_name", data.list[i].data_sources_table_name_input);
                             tmp = tmp.replaceAll("table_id",data.list[i].id);
@@ -268,60 +283,6 @@
                             });
                         });
                     }
-                    //生成分页信息
-                    var btn_template = "<button class=\"btn btn-white btn_page active\" value=\"page_num\" disabled>page_num_text</button>";
-                    for (var i=0;i<data.left_page.length;i++){
-                        var btn_tmp = btn_template;
-                        btn_tmp = btn_tmp.replace("page_num_text", data.left_page[i]);
-                        btn_tmp = btn_tmp.replace("page_num", data.left_page[i]);
-                        btn_tmp = btn_tmp.replace("disabled", "");
-                        if(data.left_page[i] !=data.current_page){
-                            btn_tmp = btn_tmp.replace("active", "");
-                        }
-                        $('#page_div').append(btn_tmp);
-                    }
-                    for (var i=0;i<data.right_page.length;i++){
-                        var btn_tmp = btn_template;
-                        btn_tmp = btn_tmp.replace("page_num_text", data.right_page[i]);
-                        btn_tmp = btn_tmp.replace("page_num", data.right_page[i]);
-                        if(data.right_page[i] == '...'){
-                            btn_tmp = btn_tmp.replace("disabled", "disabled=\"disabled\"");
-                        }else{
-                            btn_tmp = btn_tmp.replace("disabled", "");
-                        }
-                        if(data.right_page[i] != data.current_page){
-                            btn_tmp = btn_tmp.replace("active", "");
-                        }
-                        $('#page_div').append(btn_tmp);
-                    }
-
-                    var page_end = "                                <button class=\"btn btn-white btn_right\" type=\"button\"><i class=\"fa fa-chevron-right\"></i>\n" +
-                    "                                </button>";
-                    if(data.list.length>0){
-                        $('#page_div').append(page_end);
-                        $('.btn_page').click(function () {
-                            var currentPage = $(this).attr('value');
-                            $('.btn_page').removeClass("active");
-                            $(this).addClass("active");
-                            load_data(currentPage);
-                            $('.btn_left').click(function () {
-                                if(currentPage>=2){
-                                    load_data(currentPage-1)
-                                }else{
-                                    layer.msg("已到第一页")
-                                }
-
-                            });
-                            $('.btn_right').click(function () {
-                                if(currentPage < data.total_page){
-                                    load_data(currentPage+1)
-                                }else{
-                                    layer.msg("已到最后一页")
-                                }
-                            });
-                        });
-                    }
-
 
                 },
                 //处理完成
@@ -335,22 +296,68 @@
             });
         }
 
-        function jump() {
+        function load_data3(currentPage, page_size){
 
-            if(!is_empty($('#page').val())){
-                var r = /^\+?[1-9][0-9]*$/;　　//正整数
-                var flag=r.test($('#page').val());
-                if(flag == true){
-                    load_data($('#page').val());
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: server_context+"/data_ware_house_list6?current_page="+currentPage+"&"+data_params+"&label_params="+label_params+"&page_size="+page_size,
+                dataType: 'json',
+                data: '',
+                //成功返回
+                success: function (data) {
+                    $('#data_div').html("");
+                    if(data.list.length>0){
+                        for(var i=0;i <data.list.length;i++){
+                            var tmp = template.replace("table_name", data.list[i].data_sources_table_name_input);
+                            tmp = tmp.replaceAll("table_id",data.list[i].id);
+                            tmp = tmp.replaceAll("data_context", data.list[i].issue_context);
+                            $('#data_div').append(tmp);
+                        }
+
+                        $(".search-result a").click(function () {
+                            openTabPage(server_context+"/data_ware_house_detail_index.html?id=" + $(this).attr("data_id"), "表信息:"+$(this).attr("data_id_context"))
+                        });
+
+                        $(".btn_apply").click(function () {
+                            var id= $(this).attr('data_id');
+                            //alert();
+                            layer.confirm('申请数据', {
+                                btn: ['确定','取消'] //按钮
+                            }, function(index){
+                                $.ajax({
+                                    url: server_context+"/data_apply_add",
+                                    data: "issue_id=" + id,
+                                    type: "post",
+                                    async:false,
+                                    dataType: "json",
+                                    success: function (data) {
+                                        console.info(data.msg);
+                                        layer.msg(data.msg)
+                                    },
+                                    error: function (data) {
+                                        console.info("error: " + data.msg);
+                                    }
+
+                                });
+                            }, function(){
+
+                            });
+                        });
+                    }
+
+                },
+                //处理完成
+                complete: function () {
+                    console.info("etl_task_complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("etl_task_error: " + data.responseText);
                 }
-            }else{
-                layer.msg("页数为空,请选择有效的页数");
-            }
-
+            });
         }
-
     </script>
-
 
 </body>
 

@@ -74,6 +74,9 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/user_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String user_list(String user_context) {
+        if(!StringUtils.isEmpty(user_context)){
+            user_context = getLikeCondition(user_context);
+        }
         List<PermissionUserInfo> users = permissionMapper.findAll(user_context);
 
         return JSONObject.toJSONString(users);
@@ -208,7 +211,9 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/role_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String role_list(String role_context, String enable) {
-        System.out.println(role_context);
+        if(!StringUtils.isEmpty(role_context)){
+            role_context = getLikeCondition(role_context);
+        }
         List<RoleInfo> users = roleDao.selectByContext(role_context, enable);
         return JSONObject.toJSONString(users);
     }

@@ -8,6 +8,7 @@ import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,12 @@ public class ZdhEtlApplyController extends BaseController{
     @ResponseBody
     public String etl_task_list2(String etl_context, String file_name) {
         List<EtlTaskInfo> list = new ArrayList<>();
+        if(!StringUtils.isEmpty(etl_context)){
+            etl_context=getLikeCondition(etl_context);
+        }
+        if(!StringUtils.isEmpty(file_name)){
+            file_name=getLikeCondition(file_name);
+        }
         list = etlApplyTaskMapper.selectByParams(getUser().getId(), etl_context, file_name);
         return JSON.toJSONString(list);
     }

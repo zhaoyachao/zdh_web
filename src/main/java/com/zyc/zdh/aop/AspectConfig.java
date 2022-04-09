@@ -92,6 +92,30 @@ public class AspectConfig implements Ordered{
 			String url = request.getRequestURL().toString();
 			String reqParam = "";
 
+			//校验ip黑名单
+			boolean is_ipbacklist = is_ipblacklist(ipAddr);
+			if(is_ipbacklist){
+				UserOperateLogMapper userOperateLogMapper= (UserOperateLogMapper)SpringContext.getBean("userOperateLogMapper");
+				UserOperateLogInfo userOperateLogInfo=new UserOperateLogInfo();
+				userOperateLogInfo.setOwner(getUser().getId());
+				userOperateLogInfo.setUser_name(getUser().getUserName());
+				userOperateLogInfo.setOperate_url(url);
+				userOperateLogInfo.setOperate_input(reqParam);
+				userOperateLogInfo.setTime(String.valueOf((System.currentTimeMillis()-start)/1000.0));
+				userOperateLogInfo.setIp(ipAddr);
+				String output = String.format("用户:%s命中IP黑名单,IP地址:%s", getUser().getUserName(), ipAddr);
+				userOperateLogInfo.setOperate_output(output);
+
+				userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
+				userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+				userOperateLogMapper.insert(userOperateLogInfo);
+				if (request.getMethod().equalsIgnoreCase("get")){
+					return "redirect:403";
+				}else{
+					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "命中ip黑名单,禁止访问", "命中ip黑名单,禁止访问");
+				}
+			}
+
 			//校验网址是否可访问
 			boolean is_pass = is_pass(getUrl(request));
 			if(!is_pass){
@@ -114,7 +138,7 @@ public class AspectConfig implements Ordered{
 					return "redirect:login";
 				}
 			}
-			//此处校验用户是否在名单中,有则不允许访问
+			//此处校验用户是否在黑名单中,有则不允许访问
 			if(getUser()!=null && is_blacklist(getUser().getUserName())){
 				return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前用户为黑名单用户,请联系管理员解封", null);
 			}
@@ -130,6 +154,7 @@ public class AspectConfig implements Ordered{
 					userOperateLogInfo.setOperate_url(url);
 					userOperateLogInfo.setOperate_input(reqParam);
 					userOperateLogInfo.setTime(String.valueOf((System.currentTimeMillis()-start)/1000.0));
+					userOperateLogInfo.setIp(ipAddr);
 					if((e.getMessage()).length()>6400){
 						userOperateLogInfo.setOperate_output((e.getMessage()).substring(0,256));
 					}else{
@@ -167,6 +192,7 @@ public class AspectConfig implements Ordered{
 						userOperateLogInfo.setUser_name(getUser().getUserName());
 						userOperateLogInfo.setOperate_url(url);
 						userOperateLogInfo.setOperate_input(reqParam);
+						userOperateLogInfo.setIp(ipAddr);
 						userOperateLogInfo.setTime(String.valueOf((System.currentTimeMillis()-start)/1000.0));
 						if(((String) o).length()>6400){
 							userOperateLogInfo.setOperate_output(((String) o).substring(0,256));
@@ -356,6 +382,29 @@ public class AspectConfig implements Ordered{
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * ip 是否在黑名单中
+	 * @param ip
+	 * @return true:命中黑名单,false:为命中黑名单
+	 */
+	private boolean is_ipblacklist(String ip){
+
+		if(getUser()==null){
+			return false;
+		}
+
+		RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+
+		Object o = redisUtil.get(Const.ZDH_IP_BACKLIST);
+		if(o == null){
+			return false;
+		}
+		if(o!=null && !o.toString().contains(ip)){
+			return false;
+		}
+		return true;
 	}
 	/**
 	 * 获取ip

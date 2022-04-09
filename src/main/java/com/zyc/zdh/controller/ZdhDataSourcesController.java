@@ -100,6 +100,12 @@ public class ZdhDataSourcesController extends BaseController{
             criteria.andLike("url", getLikeCondition(url));
         }
         String[] tag_group_code = getUser().getTag_group_code().split(",");
+        if(!StringUtils.isEmpty(data_source_context)){
+            data_source_context = getLikeCondition(data_source_context);
+        }
+        if(!StringUtils.isEmpty(url)){
+            url = getLikeCondition(url);
+        }
         List<DataSourcesInfo> list = dataSourcesMapper.selectByParams2(getUser().getId(), tag_group_code, url, data_source_context, data_source_type);
 
         return JSON.toJSONString(list);
