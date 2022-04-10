@@ -66,8 +66,11 @@ public class SystemController extends BaseController{
     @ResponseBody
     @White
     public String get_platform_name() {
-        String platform_name = ev.getProperty("platform_name", "ZDH数据平台");
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", platform_name);
+        Object o = redisUtil.get(Const.ZDH_PLATFORM_NAME);
+        if(o==null){
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", "ZDH数据平台");
+        }
+        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", o);
     }
 
 

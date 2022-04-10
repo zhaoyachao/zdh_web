@@ -32,7 +32,7 @@
                 <ul class="nav" id="side-menu">
                     <li class="nav-header">
                         <div class="dropdown profile-element">
-                            <span><img alt="image" class="img-circle" src="img/zdh.png" /></span>
+<!--                            <span><img alt="image" class="img-circle" src="img/zdh.png" /></span>-->
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                                 <span class="clear">
                                     <span class="block m-t-xs"><strong id="userName" class="font-bold"></strong></span>
@@ -354,13 +354,13 @@
             },60000);
 
 
+            //加载目录菜单
             $.ajax({
                 type : "POST",
                 url : server_context+"/jstree_permission_list2",
                 dataType : "json",
                 async:'false',
                 success : function(data) {
-                    console.info(data);
                 //当前最大支持层级数是5级
                 for(var j=2;j<=5;j++){
                     for(var i=0;i<data.length;i++){
@@ -382,7 +382,6 @@
                                 //目录
                                 if(data[i].resource_type == "1"){
 
-                                    console.info("url is ''");
                                     ul_class = "nav nav-second-level";
                                     //获取level
                                     if(data[i].level >= "3"){
@@ -390,12 +389,11 @@
                                     }
                                     var ul_tmplate =
                                         "<li>"+
-                                        "<a href=\"\#\" ><i class=\""+data[i].icon+"\"></i><span class=\"nav-label\">"+data[i].text+"</span>"+span_notice_title+"</a>"+
+                                        "<a href=\"\#\"><i class=\""+data[i].icon+"\"></i><span class=\"nav-label\">"+data[i].text+"</span>"+span_notice_title+"</a>"+
                                         "<ul class=\""+ul_class+"\" id=\"ul_"+data[i].resource_id+"\">"+
                                         "</ul>"+
                                         "</li>";
                                     if( level_tmp > "2") {
-                                        console.info("===="+level_tmp);
                                         $('#ul_'+data[i].parent).append(ul_tmplate);
                                         $('#'+"ul_"+data[i].parent).metisMenu();
                                     }else{
@@ -403,13 +401,10 @@
                                         $('#side-menu').metisMenu();
                                     }
 
-
-
                                 }else if(data[i].resource_type == "4"){
                                     //函数
-                                    console.info("url is start function");
                                     li_tmplete =
-                                        "<li><a href=\"javascript:void(0);\" onclick=\"" +data[i].url.split("function:")[1] +"\">" + "<i class=\""+ data[i].icon+"\"></i>"+data[i].text+"</a>"
+                                        "<li><a href=\"javascript:void(0);\" onclick=\"" +data[i].url.split("function:")[1] +"\">" + "<i class=\""+ data[i].icon+"\"></i>"+data[i].text+"</a>";
                                     $('#ul_'+data[i].parent).append(li_tmplete);
                                     $('#'+"ul_"+data[i].parent).metisMenu();
                                 }else if(data[i].resource_type == "2"){
@@ -839,7 +834,7 @@
                             type: 1
                             ,title: false //不显示标题栏
                             ,closeBtn: true
-                            ,area: $(document.body).height()*0.48+"px"
+                            ,area: [$(document.body).width()*0.48+"px", "auto"]
                             ,shade: 0.8
                             ,id: 'notice_layer' //设定一个id，防止重复弹出
                             ,btnAlign: 'c'

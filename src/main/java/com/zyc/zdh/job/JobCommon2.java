@@ -2316,6 +2316,7 @@ public class JobCommon2 {
         String dep_job_id = tli.getEtl_task_id();
         String etl_date = tli.getEtl_date();
 
+        //判断当前节点父任务是否全部已完成,否直接返回
         if (!checkDep(jobType, tli)) {
             return false;
         }
@@ -2360,7 +2361,7 @@ public class JobCommon2 {
 
         DBUtil dbUtil = new DBUtil();
 
-        System.out.println("checkDep_jdbc:" + tli.getRun_jsmind_data());
+        logger.info("checkDep_jdbc:" + tli.getRun_jsmind_data());
         if (!org.apache.commons.lang3.StringUtils.isEmpty(tli.getRun_jsmind_data())) {
             JSONObject jdbc = JSON.parseObject(tli.getRun_jsmind_data());
             String driver = jdbc.getString("driver");
