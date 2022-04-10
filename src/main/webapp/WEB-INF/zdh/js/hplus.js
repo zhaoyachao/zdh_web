@@ -219,6 +219,7 @@ $(function () {
         $("body").removeClass("skin-1");
         $("body").removeClass("skin-2");
         $("body").removeClass("skin-3");
+        localStorage.removeItem("topic");
         return false;
     });
 
@@ -227,6 +228,7 @@ $(function () {
         $("body").removeClass("skin-2");
         $("body").removeClass("skin-3");
         $("body").addClass("skin-1");
+        localStorage.setItem("topic", 'skin-1');
         return false;
     });
 
@@ -235,6 +237,7 @@ $(function () {
         $("body").removeClass("skin-1");
         $("body").removeClass("skin-2");
         $("body").addClass("skin-3");
+        localStorage.setItem("topic", 'skin-3');
         return false;
     });
 
@@ -276,6 +279,14 @@ $(function () {
         if (boxedlayout == 'on') {
             body.addClass('boxed-layout');
         }
+    }
+
+    if(localStorageSupport){
+        var topic_clss = localStorage.getItem("topic");
+        $("body").removeClass("skin-1");
+        $("body").removeClass("skin-2");
+        $("body").removeClass("skin-3");
+        $("body").addClass(topic_clss);
     }
 });
 
