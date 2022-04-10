@@ -55,4 +55,7 @@ public class Const {
     public static String ZDH_IP_BACKLIST= "zdh_ip_backlist";//黑名单参数
 
     public static String ZDH_PLATFORM_NAME = "zdh_platform_name";//系统名称,登录页显示
+
+    public static String HTTP_POST = "0";
+    public static  String HTTP_GET = "1";
 }

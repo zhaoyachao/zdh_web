@@ -1,6 +1,7 @@
 package com.zyc.zdh.job;
 
 import com.alibaba.fastjson.JSON;
+import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.controller.ZdhMonitorController;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
@@ -18,9 +19,12 @@ import org.slf4j.LoggerFactory;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static com.zyc.zdh.job.JobCommon2.*;
+
 //定期拉取失败任务并发送邮件
 public class EmailJob {
 
+    public static String jobType = "EMAIL";
     private static Logger logger= LoggerFactory.getLogger(EmailJob.class);
 
     public static List<ZdhDownloadInfo> zdhDownloadInfos=new ArrayList<>();
@@ -371,5 +375,49 @@ public class EmailJob {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
         }
+    }
+
+
+    public static boolean run(TaskLogInstance tli){
+
+        Boolean exe_status = true;
+        //执行命令
+        try {
+            logger.info("email任务当前只支持同步email,异步email暂不支持");
+            insertLog(tli,"info","email任务当前只支持同步email,异步email暂不支持");
+            //当前只支持检查文件是否存在 if [ ! -f "/data/filename" ];then echo "文件不存在"; else echo "true"; fi
+            //日期替换zdh.date => yyyy-MM-dd 模式
+            //日期替换zdh.date.nodash=> yyyyMMdd 模式
+            Map<String, Object> jinJavaParam = getJinJavaParam(tli);
+
+            Jinjava jj = new Jinjava();
+
+            String run_jsmind = tli.getRun_jsmind_data();
+            String subject = JSON.parseObject(run_jsmind).getString("subject");
+            String to_emails = JSON.parseObject(run_jsmind).getString("to_emails");
+            String email_type = JSON.parseObject(run_jsmind).getString("email_type");
+            String email_context = JSON.parseObject(run_jsmind).getString("email_context");
+            email_context = jj.render(email_context, jinJavaParam);
+
+            if(StringUtils.isEmpty(email_type)){
+                throw new Exception("email任务类型为空");
+            }
+            if(StringUtils.isEmpty(to_emails)){
+                throw new Exception("email任务接收方为空");
+            }
+
+            JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
+
+            jemailService.sendEmail(to_emails.split(","), subject, email_context);
+
+            insertLog(tli, "info", "[" + jobType + "] JOB 发送成功");
+        } catch (Exception e) {
+            logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            logger.error(e.getMessage());
+            insertLog(tli, "error","[" + jobType + "] JOB ,"+ e.getMessage());
+            jobFail(jobType,tli);
+            exe_status = false;
+        }
+        return exe_status;
     }
 }

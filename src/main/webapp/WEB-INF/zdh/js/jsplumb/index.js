@@ -154,10 +154,10 @@ $(document).ready(function(){
                 doubleclick_hdfs(id);
                 break;
             case "http":
-                $(id).dblclick(function () {layer.msg("开发中");});
+                doubleclick_http(id);
                 break;
             case "email":
-                $(id).dblclick(function () {layer.msg("开发中");});
+                doubleclick_email(id);
                 break;
         }
     }
@@ -405,15 +405,120 @@ $(document).ready(function(){
             });
         });
     }
+
+    function doubleclick_http(id) {
+        $(id).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this);
+            var etl_context=div.attr("etl_context");
+            var url=server_context+'/http_detail.html';
+            if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
+                url=url+"?etl_context=-1"
+            }else{
+                var is_disenable = div.attr("is_disenable");
+                var http_url=div.attr("url");
+                var url_type=div.attr("url_type");
+                var depend_level = div.attr("depend_level");
+                var params=div.attr("params");
+                var time_out = div.attr("time_out");
+                $("#http_params").val(params);
+                $("#http_url_text").val(http_url);
+                url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&depend_level="+depend_level
+                    +"&is_disenable="+is_disenable+"&time_out="+time_out
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新");
+                        return ;
+                    }
+
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
+                    div.attr("url",etl_task_info.url);
+                    div.attr("url_type",etl_task_info.url_type);
+                    div.attr("params",etl_task_info.params);
+                    div.attr("etl_context",etl_task_info.etl_context);
+                    div.attr("is_disenable",etl_task_info.is_disenable);
+                    div.attr("depend_level",etl_task_info.depend_level);
+                    div.attr("time_out",etl_task_info.time_out);
+                    //div.width(etl_task_info.etl_context.length*16)
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
+
+    function doubleclick_email(id) {
+        $(id).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this);
+            var etl_context=div.attr("etl_context");
+            var url=server_context+'/email_detail.html';
+            if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
+                url=url+"?etl_context=-1"
+            }else{
+                var is_disenable = div.attr("is_disenable");
+                var to_emails=div.attr("to_emails");
+                var email_context=div.attr("email_context");
+                var subject=div.attr("subject");
+                var email_type=div.attr("email_type");
+                var depend_level = div.attr("depend_level");
+                var time_out = div.attr("time_out");
+                $("#to_emails").val(to_emails);
+                $("#email_context").val(email_context);
+                url=url+"?etl_context="+etl_context+"&email_type="+email_type+"&depend_level="+depend_level
+                    +"&is_disenable="+is_disenable+"&time_out="+time_out+"&subject="+subject
+            }
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    console.info("index:doubleclick:"+$("#etl_task_text").val());
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新");
+                        return ;
+                    }
+
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
+                    div.attr("to_emails",etl_task_info.to_emails);
+                    div.attr("email_type",etl_task_info.email_type);
+                    div.attr("email_context",etl_task_info.email_context);
+                    div.attr("subject",etl_task_info.subject);
+                    div.attr("etl_context",etl_task_info.etl_context);
+                    div.attr("is_disenable",etl_task_info.is_disenable);
+                    div.attr("depend_level",etl_task_info.depend_level);
+                    div.attr("time_out",etl_task_info.time_out);
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
+                    div.html(etl_task_info.etl_context);
+                }
+            });
+        });
+    }
     // 当连线建立前
     jsPlumb.bind('beforeDrop', function (info) {
         if(info.sourceId==info.targetId){//判断当开始和终点为一个节点时，不连线。
             return false
         }
-        console.info("链接自动建立")
+        console.info("链接自动建立");
         return true // 链接会自动建立
     })
 
-})
+});
  
 

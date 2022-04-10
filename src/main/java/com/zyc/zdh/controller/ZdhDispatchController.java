@@ -156,6 +156,16 @@ public class ZdhDispatchController extends BaseController {
         return "etl/shell_detail";
     }
 
+    @RequestMapping("/http_detail")
+    public String http_detail() {
+        return "etl/http_detail";
+    }
+
+    @RequestMapping("/email_detail")
+    public String email_detail() {
+        return "etl/email_detail";
+    }
+
     @RequestMapping("/dispatch_executor_index")
     public String dispatch_executor_index() {
         return "etl/dispatch_executor_index";

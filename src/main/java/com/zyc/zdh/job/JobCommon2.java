@@ -2089,13 +2089,11 @@ public class JobCommon2 {
     }
 
     public static void updateTaskStatus(String status, String id, String process, TaskLogInstanceMapper tlim) {
-        System.out.println("updateTaskLog===============");
         tlim.updateStatusById4(status, process, id);
 
     }
 
     public static void updateTaskLog(TaskLogInstance tli, TaskLogInstanceMapper tlim) {
-        System.out.println("updateTaskLog===============");
         if (tli.getLast_time() == null) {
             if (tli.getCur_time() == null) {
                 tli.setLast_time(tli.getStart_time());
@@ -2108,7 +2106,6 @@ public class JobCommon2 {
     }
 
     public static void updateTaskLog(TaskGroupLogInstance tgli, TaskGroupLogInstanceMapper tglim) {
-        System.out.println("updateTaskLog===============");
         if (tgli.getLast_time() == null) {
             if (tgli.getCur_time() == null) {
                 tgli.setLast_time(tgli.getStart_time());
@@ -2911,12 +2908,30 @@ public class JobCommon2 {
                 //此处更新如果时间晚于server更新,则会覆盖server处数据,改为只更新end_time
 //              tli.setProcess_time("");
 //              updateTaskLog(tli,tlim);
-
-
             } else if (jobType.equalsIgnoreCase("SHELL")) {
                 tli.setStatus(JobStatus.ETL.getValue());
                 updateTaskLog(tli, tlim);
                 exe_status = ShellJob.shellCommand(tli);
+                if (exe_status) {
+                    //设置任务状态为finish
+                    tli.setStatus(JobStatus.FINISH.getValue());
+                    tli.setProcess("100");
+                    updateTaskLog(tli, tlim);
+                }
+            }else if (jobType.equalsIgnoreCase("HTTP")) {
+                tli.setStatus(JobStatus.ETL.getValue());
+                updateTaskLog(tli, tlim);
+                exe_status = HttpJob.httpCommand(tli);
+                if (exe_status) {
+                    //设置任务状态为finish
+                    tli.setStatus(JobStatus.FINISH.getValue());
+                    tli.setProcess("100");
+                    updateTaskLog(tli, tlim);
+                }
+            }else if (jobType.equalsIgnoreCase("EMAIL")) {
+                tli.setStatus(JobStatus.ETL.getValue());
+                updateTaskLog(tli, tlim);
+                exe_status = EmailJob.run(tli);
                 if (exe_status) {
                     //设置任务状态为finish
                     tli.setStatus(JobStatus.FINISH.getValue());
@@ -3162,6 +3177,14 @@ public class JobCommon2 {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type("GROUP");
                 }
+                if (((JSONObject) job).getString("type").equalsIgnoreCase("email")) {
+                    taskLogInstance.setMore_task("");
+                    taskLogInstance.setJob_type("EMAIL");
+                }
+                if (((JSONObject) job).getString("type").equalsIgnoreCase("http")) {
+                    taskLogInstance.setMore_task("");
+                    taskLogInstance.setJob_type("HTTP");
+                }
 
                 taskLogInstance.setJsmind_data("");
                 taskLogInstance.setRun_jsmind_data("");
@@ -3177,6 +3200,20 @@ public class JobCommon2 {
                     taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type("HDFS");
+                }
+
+                if (((JSONObject) job).getString("type").equalsIgnoreCase("http")) {
+                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setMore_task("");
+                    taskLogInstance.setJob_type("HTTP");
+                }
+
+                if (((JSONObject) job).getString("type").equalsIgnoreCase("email")) {
+                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setMore_task("");
+                    taskLogInstance.setJob_type("EMAIL");
                 }
 
 
@@ -3271,10 +3308,8 @@ public class JobCommon2 {
                     }
                 }
 
-
                 tlim.insert(tli);
                 // debugInfo(tli);
-                System.out.println("=======================");
             }
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
