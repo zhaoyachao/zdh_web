@@ -15,7 +15,14 @@ import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -405,10 +412,15 @@ public class EmailJob {
             if(StringUtils.isEmpty(to_emails)){
                 throw new Exception("email任务接收方为空");
             }
-
-            JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
-
-            jemailService.sendEmail(to_emails.split(","), subject, email_context);
+            if(email_type.equalsIgnoreCase(Const.EMAIL_TXT)){
+                sendTxtEmail(to_emails.split(","), subject, email_context);
+            }
+            if(email_type.equalsIgnoreCase(Const.EMAIL_HTML)){
+                sendHtmlEmail(to_emails.split(","), subject, email_context);
+            }
+            if(!email_type.equalsIgnoreCase(Const.EMAIL_TXT) && !email_type.equalsIgnoreCase(Const.EMAIL_HTML)){
+                throw new Exception("无法识别的email类型,系统只支持txt,html格式");
+            }
 
             insertLog(tli, "info", "[" + jobType + "] JOB 发送成功");
         } catch (Exception e) {
@@ -419,5 +431,33 @@ public class EmailJob {
             exe_status = false;
         }
         return exe_status;
+    }
+
+    public static void sendTxtEmail(String[] to,String subject, String context){
+
+        Environment environment= (Environment) SpringContext.getBean("environment");
+        JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean("javaMailSender");
+
+        SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
+        simpleMailMessage.setFrom(environment.getProperty("spring.mail.username"));
+        simpleMailMessage.setTo(to);
+        simpleMailMessage.setText(context);
+        simpleMailMessage.setSubject(subject);
+
+        javaMailSender.send(simpleMailMessage);
+    }
+
+    public static void sendHtmlEmail(String[] to,String subject, String context) throws MessagingException {
+
+        Environment environment= (Environment) SpringContext.getBean("environment");
+        JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean("javaMailSender");
+
+        MimeMessage mailMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage);
+        messageHelper.setFrom(environment.getProperty("spring.mail.username"));
+        messageHelper.setTo(to);
+        messageHelper.setText(context,true);
+        messageHelper.setSubject(subject);
+        javaMailSender.send(mailMessage);
     }
 }

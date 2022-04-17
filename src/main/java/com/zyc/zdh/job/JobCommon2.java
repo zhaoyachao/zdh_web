@@ -2080,7 +2080,13 @@ public class JobCommon2 {
         jinJavaParam.put("zdh_create_time", new Timestamp(new Date().getTime()));
         jinJavaParam.put("file_name",input_path.substring(input_path.lastIndexOf('/')+1));
         jinJavaParam.put("file_path",etlTaskUnstructureInfo.getOutput_path());
-
+        String params = etlTaskUnstructureInfo.getUnstructure_params_output();
+        if(!StringUtils.isEmpty(params)){
+            JSONObject jsonObject = JSON.parseObject(params);
+            for(Map.Entry<String, Object> p:jsonObject.entrySet()){
+                jinJavaParam.put(p.getKey(), p.getValue());
+            }
+        }
         List<String> etl_sqls=new ArrayList<>();
         Jinjava jj = new Jinjava();
         String etl_sql = jj.render(etlTaskUnstructureInfo.getEtl_sql(), jinJavaParam);

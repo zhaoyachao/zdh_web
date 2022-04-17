@@ -48,7 +48,7 @@ public class JavaEmailConfig {
         this.password = password;
     }
 
-    @Bean(name = "JavaMailSender")
+    @Bean(name = "javaMailSender")
     public JavaMailSender getSender(){
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setUsername(username);

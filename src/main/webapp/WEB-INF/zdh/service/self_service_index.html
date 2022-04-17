@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 自助服务</title>
+    <meta name="keywords" content="ZDH 自助服务">
+    <meta name="description" content="ZDH 自助服务">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
+
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content  animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="ibox">
+                    <div class="ibox-content">
+<!--                        <span class="text-muted small pull-right">最后更新：<i class="fa fa-clock-o"></i> 2015-09-01 12:00</span>-->
+                        <h2>历史记录</h2>
+                        <div class="input-group">
+                            <input type="text" placeholder="查找历史" class="input form-control" id="history_context">
+                            <span class="input-group-btn">
+                                        <button type="button" class="btn btn btn-primary" onclick="history_list()"> <i class="fa fa-search"></i> 搜索</button>
+                                </span>
+                        </div>
+                        <div class="clients-list">
+                            <div class="tab-content">
+                                <div id="tab-1" class="tab-pane active">
+                                    <div class="full-height-scroll">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <tbody id="table_history">
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-envelope"></i>
+                                                            <a href="javascript:void(0);" onclick="history_click(this);return false;" history_id="" class="client-link">袁岳</a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="ibox ">
+                    <div class="ibox-content">
+                        <div class="row content-tabs">
+                            <nav class="page-tabs J_menuTabs">
+                                <div class="page-tabs-content" id="page_tabs">
+                                    <a href="javascript:void(0);" class="active J_menuTab" onclick="menu_click(this);return false;" history_id="">新建</a>
+                                </div>
+<!--                                <div class="page-tabs-content">-->
+<!--                                    <a href="javascript:void(0);" class=" J_menuTab"><i class="fa fa-plus" onclick="add_click(this);return false;"></i></a>-->
+<!--                                </div>-->
+                            </nav>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-white" type="button" onclick="execute_all()">执行</button>
+                            <button class="btn btn-white" type="button" onclick="execute_select()">选中执行</button>
+                            <button class="btn btn-white" type="button" onclick="save_history()">保存</button>
+                            <button class="btn btn-white" type="button" onclick="reset()">清空</button>
+                        </div>
+                        <div class="row" id="">
+                            <div class="col-sm-12">
+                                <select id="data_sources_choose_input" name="data_sources_choose_input"
+                                        data-placeholder="数据源..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">数据源...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" style="height: 2px"></div>
+                        <div class="row" id="iframe_div">
+
+                            <div id="etl_sql"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+
+                                <table id="exampleTableEvents" name="exampleTableEvents" data-height="100%"
+                                       data-mobile-responsive="false">
+
+                                </table>
+                                <!-- End Example Events -->
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var require = {
+            paths: {
+                'vs': 'js/plugins/vs'
+            }
+        };
+
+    </script>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+    <!-- Bootstrap table -->
+    <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+    <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+    <script src="js/plugins/vs/loader.js"></script>
+    <script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+    <script src="js/plugins/vs/editor/editor.main.js"></script>
+    <script type="text/javascript" src="js/plugins/vs/basic-languages/sql/sql.js"></script>
+
+    <script>
+        $(function () {
+            $('.full-height-scroll').slimScroll({
+                height: '100%'
+            });
+
+            var height = $(document.body).height()*0.8;
+            $('#iframe_div').css("height", height+"px");
+            $('#etl_sql').css("height", height+"px");
+            window.editor = monaco.editor.create(document.getElementById("etl_sql"), {
+                value: '',
+                language: 'sql',
+                theme: 'vs-dark'
+            });
+
+
+        });
+
+        function init_data_sources() {
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/data_sources_list",
+                dataType: 'json',
+                async: false,
+                data: '',
+                //成功返回
+                success: function (data) {
+                    var str_input = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        if($.inArray(data[i].data_source_type, new Array("JDBC")) > -1){
+                            str_input += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>";
+                        }
+                    }
+                    console.info(str_input);
+                    //输入数据源下拉框
+
+                    $('#data_sources_choose_input').html(str_input);
+                    $('#data_sources_choose_input').chosen();
+
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        init_data_sources();
+
+
+        function guid() {
+            return 'xxx-4xxx-yxxx-xx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function history_list() {
+            $.ajax({
+                type: 'GET',
+                url: server_context+"/self_service_list",
+                async:false,
+                dataType: 'json',
+                data: {"history_context": $('#history_context').val()},
+                //成功返回
+                success: function (data) {
+                    if(data.code != "200" ){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    var template = "                                                    <tr>\n" +
+                        "                                                        <td>\n" +
+                        "                                                            <i class=\"fa fa-envelope\"></i>\n" +
+                        "                                                            <a href=\"javascript:void(0);\" onclick=\"history_click(this);return false;\" history_id=\"history_id_str\" class=\"client-link\">history_context</a>\n" +
+                        "                                                        </td>\n" +
+                        "                                                        <td>\n" +
+                        "                                                            <i class=\"fa fa-trash-o\" onclick='history_delete(this)' history_id=\"history_id_str\"></i>\n" +
+                        "                                                        </td>"
+                        "                                                    </tr>";
+                    $('#table_history').html("");
+                    for (var i=0;i<data.result.length;i++){
+                        var template_tmp = template.replaceAll("history_id_str", data.result[i].id);
+                        template_tmp = template_tmp.replaceAll("history_context", data.result[i].history_context);
+                        $('#table_history').append(template_tmp);
+                    }
+
+                    if(data.result.length<=0){
+                        $('#table_history').html("无历史记录");
+                    }
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function history_delete(obj) {
+
+            var history_id = $(obj).attr('history_id');
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/self_service_delete",
+                async:false,
+                dataType: 'json',
+                data: {"ids": history_id},
+                //成功返回
+                success: function (data) {
+                    if(data.code != "200" ){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    layer.msg(data.msg);
+                    history_list();
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function history_click(obj) {
+            var uid = guid();
+            var height = $(document.body).height()*0.8;
+            var history_id = $(obj).attr('history_id');
+            var text = $(obj).text();
+            var value = "";
+            if(is_empty(history_id)){
+                text = "新建";
+                history_id = 'xj_'+guid();
+            }else{
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/self_service_detail",
+                    async:false,
+                    dataType: 'json',
+                    data: {"id": history_id},
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200" ){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        value = data.result.etl_sql;
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+                //此处从系统中拉取
+            }
+            var is_exists = false;
+            var template = " <a href=\"javascript:void(0);\" class=\" J_menuTab\" id=\""+history_id+"\" onclick=\"menu_click(this);return false;\" history_id=\""+history_id+"\">"+text+"<i class=\"fa fa-times-circle\" onclick=\"close_click2(this)\"></i></a>";
+            $('.J_menuTab').each(function (index, domEle) {
+                if($(domEle).attr("history_id") == history_id){
+                    is_exists = true;
+                }
+            });
+            if(!is_exists){
+                $('#page_tabs').append(template);
+            }
+            $('#'+history_id).click();
+            window.editor.setValue(value);
+
+        }
+
+        function close_click(obj) {
+            $(obj).parent('a').remove();
+        }
+
+        function close_click2(obj) {
+            $(obj).parent('a').remove();
+            window.editor.setValue("");
+        }
+
+        function menu_click(obj) {
+            //校验之前是否是新建
+            var old_history_id = "";
+            $(".J_menuTab").each(function(){
+                if($(this).hasClass("active")){
+                    old_history_id = $(this).attr('history_id');
+                }
+            });
+            $(".J_menuTab").each(function(){
+                $(this).removeClass("active");
+            });
+            $(obj).addClass("active");
+
+            if(is_empty($(obj).attr('history_id'))){
+                //从历史拉取
+                if(!is_empty(localStorage.getItem("history_tmp_sql"))){
+                    window.editor.setValue(localStorage.getItem("history_tmp_sql"));
+                    var history_tmp_source = localStorage.getItem("history_tmp_source");
+                    $("#data_sources_choose_input").val(history_tmp_source);
+                    $("#data_sources_choose_input").trigger("chosen:updated");
+                }
+                return ;
+            }
+
+            if(is_empty(old_history_id)){
+                localStorage.setItem("history_tmp_sql", window.editor.getValue());
+                localStorage.setItem("history_tmp_source", $("#data_sources_choose_input").val());
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/self_service_detail",
+                async:false,
+                dataType: 'json',
+                data: {"id": $(obj).attr('history_id')},
+                //成功返回
+                success: function (data) {
+                    if(data.code != "200" ){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    window.editor.setValue(data.result.etl_sql);
+                    var data_sources_choose_input = data.result.data_sources_choose_input;
+                    $("#data_sources_choose_input").val(data_sources_choose_input);
+                    $("#data_sources_choose_input").trigger("chosen:updated");
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+        
+        function save_history() {
+            layer.open({
+                //formType: 2,//这里依然指定类型是多行文本框，但是在下面content中也可绑定多行文本框
+                title: '保存SQL',
+                area: "auto",
+                btnAlign: 'c',
+                closeBtn:'1',//右上角的关闭
+                content: `<div><p>SQL说明:</p><input name="txt_remark" id="remark" style="width:200px;"></div>`,
+                btn:['确认','取消','关闭'],
+                yes: function (index, layero) {
+                    var value1 = $('#remark').val();//获取多行文本框的值
+                    var history_context = "";
+                    var id = "";
+                    $(".J_menuTab").each(function(index, domEle){
+                        if($(domEle).hasClass("active")){
+                            if(!$(domEle).attr("history_id").startsWith("xj_")){
+                                id = $(domEle).attr("history_id");
+                            }
+                        }
+                    });
+                    var url = server_context+"/self_service_add";
+                    if(!is_empty(id)){
+                        url = server_context+"/self_service_update";
+                    }else{
+                        console.info("保存临时sql");
+                        localStorage.setItem("history_tmp_sql", window.editor.getValue());
+                        localStorage.setItem("history_tmp_source", $('#data_sources_choose_input').val());
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        async:false,
+                        dataType: 'json',
+                        data: {"etl_sql": window.editor.getValue(), "history_context":value1, "data_sources_choose_input": $('#data_sources_choose_input').val()},
+                        //成功返回
+                        success: function (data) {
+                            if(data.code != "200" ){
+                                layer.msg(data.msg);
+                                return ;
+                            }
+                            layer.msg(data.msg);
+                        },
+                        //处理完成
+                        complete: function () {
+                            console.info("complete")
+                        },
+                        //报错
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+                    });
+                    layer.close(index);
+                    history_list();
+
+                    //可执行确定按钮事件并把备注信息（即多行文本框值）存入需要的地方
+                },
+                no:function(index)
+                {
+                    layer.close(index);
+                    return false;//点击按钮按钮不想让弹层关闭就返回false
+                },
+                close:function(index)
+                {
+                    return false;//点击按钮按钮不想让弹层关闭就返回false
+                }
+            });
+            return ;
+
+        }
+
+        history_list();
+
+        function execute_all() {
+            var etl_sql = window.editor.getValue();
+            if(is_empty(etl_sql)){
+                layer.msg("未找到可执行的sql")
+            }
+            execute(etl_sql, $("#data_sources_choose_input").val());
+        }
+        function execute_select() {
+            var etl_sql = window.editor.getModel().getValueInRange(window.editor.getSelection());
+            if(is_empty(etl_sql)){
+                layer.msg("未找到可执行的sql")
+            }
+            execute(etl_sql, $("#data_sources_choose_input").val());
+        }
+
+        function execute(etl_sql, data_sources_choose_input) {
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/self_service_execute",
+                async:false,
+                dataType: 'json',
+                data: {"etl_sql": etl_sql, "data_sources_choose_input": data_sources_choose_input},
+                //成功返回
+                success: function (data) {
+                    if(data.code != "200" ){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    // 字段信息加载
+                    if(data.result.length>0){
+                        var column_datas = data.result[0];
+                        var columnsArray=new Array();
+                        for (var key in column_datas){
+                            columnsArray.push({
+                                "title": key,
+                                "field": key,
+                                switchable: true,
+                                sortable: true});
+                        }
+
+                        $('#exampleTableEvents').bootstrapTable('destroy');
+
+                        $('#exampleTableEvents').bootstrapTable({
+                            url: "",
+                            search: true,
+                            clickEdit: false,
+                            pagination: false,
+                            showRefresh: false,
+                            showToggle: false,
+                            showColumns: true,
+                            useRowAttrFunc: true,
+                            iconSize: 'outline',
+                            //toolbar: '#exampleTableEventsToolbar',
+                            icons: {
+                                refresh: 'glyphicon-repeat',
+                                toggle: 'glyphicon-list-alt',
+                                columns: 'glyphicon-list'
+                            },
+                            columns: columnsArray
+                        });
+
+                        for(var i=0;i<data.result.length;i++){
+                            var index = $('#exampleTableEvents').bootstrapTable('getData').length;
+                            $('#exampleTableEvents').bootstrapTable('insertRow', {
+                                index: index,
+                                row: data.result[i]
+                            });
+                        }
+
+                    }
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function reset() {
+            window.editor.setValue("");
+        }
+
+
+        //判断浏览器是否支持html5本地存储
+        function localStorageSupport() {
+            return (('localStorage' in window) && window['localStorage'] !== null)
+        }
+    </script>
+
+
+
+</body>
+
+</html>

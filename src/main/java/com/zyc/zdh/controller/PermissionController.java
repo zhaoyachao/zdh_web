@@ -351,12 +351,29 @@ public class PermissionController extends BaseController {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
             resourceTreeMapper.updateParentById(id, parent_id, level);
+            //递归修改层级
+            update_level(id, Integer.parseInt(level));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
+    }
+
+    public void update_level(String id, int level){
+        Example example=new Example(ResourceTreeInfo.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("parent", id);
+        List<ResourceTreeInfo> resourceTreeInfos = resourceTreeMapper.selectByExample(example);
+        if(resourceTreeInfos!=null && resourceTreeInfos.size()>0){
+            for (ResourceTreeInfo rti:resourceTreeInfos){
+                int next_level = level+1;
+                resourceTreeMapper.updateParentById(rti.getId(), id, String.valueOf(next_level));
+                update_level(rti.getId(), next_level);
+            }
+        }
+
 
     }
 

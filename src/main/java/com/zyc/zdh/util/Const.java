@@ -58,4 +58,7 @@ public class Const {
 
     public static String HTTP_POST = "0";
     public static  String HTTP_GET = "1";
+
+    public static String EMAIL_TXT = "0";
+    public static  String EMAIL_HTML = "1";
 }

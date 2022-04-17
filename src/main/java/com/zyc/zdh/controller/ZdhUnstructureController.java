@@ -1,6 +1,7 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
@@ -241,6 +242,10 @@ public class ZdhUnstructureController extends BaseController{
         etlTaskUnstructureInfo = etlTaskUnstructureMapper.selectByPrimaryKey(id);
         EtlTaskUnstructureLogInfo etlTaskUnstructureLogInfo=new EtlTaskUnstructureLogInfo();
         try {
+            if(!StringUtils.isEmpty(etlTaskUnstructureInfo.getUnstructure_params_output())) {
+                //此处当做校验参数是否正常json格式
+                JSONObject jsonObject = JSON.parseObject(etlTaskUnstructureInfo.getUnstructure_params_output());
+            }
             BeanUtils.copyProperties(etlTaskUnstructureLogInfo, etlTaskUnstructureInfo);
             etlTaskUnstructureLogInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             etlTaskUnstructureLogInfo.setUnstructure_id(etlTaskUnstructureInfo.getId());
