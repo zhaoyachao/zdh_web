@@ -202,6 +202,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
+      method: "POST",
       url: server_context+"/etl_task_apply_list2",
       search: true,
       pagination: true,
@@ -218,7 +219,7 @@
               }
           }
           return res;
-      },
+       },
       toolbar: '#exampleTableEventsToolbar',
       icons: {
         refresh: 'glyphicon-repeat',

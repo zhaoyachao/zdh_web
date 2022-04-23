@@ -166,7 +166,7 @@
             }
             $('#product_code').chosen();
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: server_context+"/product_tag_list",
                 async:false,
                 dataType: 'json',

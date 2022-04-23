@@ -43,7 +43,7 @@ public class ProductTagController extends BaseController {
         return "admin/product_tag_index";
     }
 
-    @RequestMapping(value = "/product_tag_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/product_tag_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String product_tag_list(String tag_context) {
         Example example=new Example(ProductTagInfo.class);

@@ -222,6 +222,7 @@ function buildTable($el, cells, rows) {
       }
 
     $('#exampleTableEvents').bootstrapTable({
+      method: "POST",
       url: "",
       search: true,
       pagination: true,

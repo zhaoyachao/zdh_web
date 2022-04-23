@@ -682,6 +682,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
+            method: 'POST',
             url: server_context+"/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group="+s.group_id,
             contentType: "application/json;charset=utf-8",
             dataType: "json",

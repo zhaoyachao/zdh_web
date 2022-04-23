@@ -123,7 +123,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/data_ware_house_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_ware_house_list", method=RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_ware_house_list(String id) {
 
@@ -137,7 +137,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param issue_context
      * @return
      */
-    @RequestMapping(value = "/data_ware_house_list2", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_ware_house_list2",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_ware_house_list2(String issue_context) {
         List<IssueDataInfo> list = new ArrayList<>();
@@ -155,7 +155,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param issue_context
      * @return
      */
-    @RequestMapping(value = "/data_ware_house_list3", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_ware_house_list3", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_ware_house_list3(String issue_context) {
         List<IssueDataInfo> list = new ArrayList<>();

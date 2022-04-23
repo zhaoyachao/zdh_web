@@ -204,7 +204,7 @@
             // $("#tag_codes").val(data.result.roles.split(","));
             // $("#tag_codes").trigger("chosen:updated");
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: server_context+"/product_tag_list",
                 async:false,
                 dataType: 'json',

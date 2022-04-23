@@ -504,7 +504,7 @@
   + v5.0.0 appication相关配置文件修改编码为utf-8
   + v5.0.0 增加spark数据源解析
   + v5.0.0 pom增加screw数据库文档生成插件
-  + v5.0.0 增加系统访问限制
+  + v5.0.0 增加系统访问限制(zdh_is_pass)
   + v5.0.0 优化系统参数配置,同步redis增加失效限制
   + v5.0.0 优化mybatis like 查询
   + v5.0.0 修复部分页面查询条件无效
@@ -519,13 +519,14 @@
   + v5.0.0 增加http,email任务调度功能
   + v5.0.0 修复资源更新父节点,层级未修改bug
   + v5.0.0 增加自助SQL查询服务
+  + v5.0.0 开启druid监控
+  + v5.0.0 优化controller层所有接口,增加请求类型
   
   
   + v5.0.1 增加用户黑名单限制【开发中】
   + v5.0.1 增加接口黑名单限制【开发中】
   + v5.0.1 权限单独出SDK及分配身份码(身份码和产品id加密解密绑定)【开发中】
   + v5.0.1 数据资产-申请组信息【开发中】
-  + v5.0.1 增加HTTP,EMAIL调度对象 【开发中】
   + v5.0.1 wemock 【开发中】
   + v5.0.1 flink增加手动checkpoint功能 【开发中】
   
@@ -1146,6 +1147,17 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
     VALUES(965206803035983872, '964797665709658112', '执行SQL', '3', '1', 'fa fa-coffee', '', '7', '1', '2022-04-17 11:07:15', '2022-04-17 11:07:15', 'self_service_execute', '5', '', '', 'zdh');
 
+    CREATE TABLE `self_history` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `history_context` varchar(200) DEFAULT NULL COMMENT '说明',
+      `etl_sql` text COMMENT 'sql',
+      `data_sources_choose_input` varchar(100) DEFAULT NULL COMMENT '输入数据源id',
+      `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

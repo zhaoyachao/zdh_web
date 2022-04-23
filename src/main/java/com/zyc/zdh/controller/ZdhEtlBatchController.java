@@ -101,7 +101,7 @@ public class ZdhEtlBatchController extends BaseController {
      * @param file_name
      * @return
      */
-    @RequestMapping(value = "/etl_task_batch_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_batch_list(String etl_context, String file_name) {
         List<EtlTaskBatchInfo> list = new ArrayList<>();

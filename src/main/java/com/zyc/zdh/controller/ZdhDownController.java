@@ -45,7 +45,7 @@ public class ZdhDownController extends BaseController{
         return "etl/download_index";
     }
 
-    @RequestMapping(value = "/download_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/download_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String download_list(String file_name) {
         List<ZdhDownloadInfo> list = new ArrayList<>();

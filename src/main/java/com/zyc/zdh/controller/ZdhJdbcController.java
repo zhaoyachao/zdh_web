@@ -58,7 +58,7 @@ public class ZdhJdbcController extends BaseController {
      * @param id          jdbc任务id
      * @return
      */
-    @RequestMapping(value = "/etl_task_jdbc_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_jdbc_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_jdbc_list(String etl_context, String id) {
 

@@ -165,6 +165,7 @@ function buildTable($el, cells, rows) {
 
 
     $('#exampleTableEvents').bootstrapTable({
+      method: "POST",
       url: server_context+"/download_list",
       search: true,
       pagination: true,

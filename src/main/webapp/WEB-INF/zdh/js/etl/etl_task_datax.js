@@ -55,7 +55,7 @@
             });
         }
 
-    })
+    });
 
       function deleteMs(ids) {
           $.ajax({
@@ -199,6 +199,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
+      method: "POST",
       url: server_context+"/etl_task_datax_list",
       search: true,
       pagination: true,

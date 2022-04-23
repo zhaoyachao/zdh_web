@@ -102,7 +102,8 @@ public class ZdhMonitorController extends BaseController {
         return echartsList;
     }
 
-    @RequestMapping(value = "/task_logs", produces = "text/html;charset=UTF-8")
+    @Deprecated
+    @RequestMapping(value = "/task_logs", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String task_logs(String start_time, String end_time, String status) {
 
@@ -374,7 +375,7 @@ public class ZdhMonitorController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/task_log_instance_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/task_log_instance_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String task_log_instance_list(String status, String group_id) {
 
@@ -384,7 +385,7 @@ public class ZdhMonitorController extends BaseController {
         return JSON.toJSONString(list);
     }
 
-    @RequestMapping(value = "/task_group_log_instance_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/task_group_log_instance_list",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String task_group_log_instance_list(String start_time, String end_time, String status, String job_id) {
 
@@ -396,7 +397,7 @@ public class ZdhMonitorController extends BaseController {
         return JSON.toJSONString(list);
     }
 
-    @RequestMapping(value = "/task_group_log_instance_list2", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/task_group_log_instance_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String task_group_log_instance_list2(String start_time, String end_time, String status) {
 

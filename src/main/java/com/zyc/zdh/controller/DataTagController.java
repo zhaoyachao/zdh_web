@@ -43,7 +43,7 @@ public class DataTagController extends BaseController {
         return "admin/data_tag_index";
     }
 
-    @RequestMapping(value = "/data_tag_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_tag_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_tag_list(String tag_context) {
         Example example=new Example(DataTagInfo.class);

@@ -60,7 +60,7 @@ public class ZdhDataSourcesController extends BaseController{
      * 获取当前用户下的所有数据源
      * @return
      */
-    @RequestMapping(value = "/data_sources_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_sources_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_sources_list() {
         //获取数据权限
@@ -81,7 +81,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param url 连接串
      * @return
      */
-    @RequestMapping(value = "/data_sources_list2", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_sources_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_sources_list2(String data_source_context, String data_source_type, String url) {
 

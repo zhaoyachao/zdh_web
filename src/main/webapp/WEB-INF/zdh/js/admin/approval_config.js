@@ -98,7 +98,8 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: server_context+"/approval_config_list",
+          method: "POST",
+          url: server_context+"/approval_config_list",
       search: true,
       pagination: true,
       showRefresh: true,

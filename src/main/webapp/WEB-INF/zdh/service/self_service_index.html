@@ -70,7 +70,7 @@
                         <div class="row content-tabs">
                             <nav class="page-tabs J_menuTabs">
                                 <div class="page-tabs-content" id="page_tabs">
-                                    <a href="javascript:void(0);" class="active J_menuTab" onclick="menu_click(this);return false;" history_id="">新建</a>
+                                    <a id="first" href="javascript:void(0);" class="active J_menuTab" onclick="menu_click(this);return false;" history_id="">新建</a>
                                 </div>
 <!--                                <div class="page-tabs-content">-->
 <!--                                    <a href="javascript:void(0);" class=" J_menuTab"><i class="fa fa-plus" onclick="add_click(this);return false;"></i></a>-->
@@ -320,7 +320,7 @@
                 //此处从系统中拉取
             }
             var is_exists = false;
-            var template = " <a href=\"javascript:void(0);\" class=\" J_menuTab\" id=\""+history_id+"\" onclick=\"menu_click(this);return false;\" history_id=\""+history_id+"\">"+text+"<i class=\"fa fa-times-circle\" onclick=\"close_click2(this)\"></i></a>";
+            var template = " <a href=\"javascript:void(0);\" class=\" J_menuTab\" id=\""+history_id+"\" onclick=\"menu_click(this);return false;\" history_id=\""+history_id+"\">"+text+"<i class=\"fa fa-times-circle\" onclick=\"close_click2(this);return false\"></i></a>";
             $('.J_menuTab').each(function (index, domEle) {
                 if($(domEle).attr("history_id") == history_id){
                     is_exists = true;
@@ -338,12 +338,20 @@
             $(obj).parent('a').remove();
         }
 
+        var is_close = false;
         function close_click2(obj) {
             $(obj).parent('a').remove();
-            window.editor.setValue("");
+            window.editor.setValue('');
+            is_close = true;
+            return ;
         }
 
         function menu_click(obj) {
+            if(is_close==true){
+                is_close = false;
+                $('#first').click();
+                return ;
+            }
             //校验之前是否是新建
             var old_history_id = "";
             $(".J_menuTab").each(function(){
@@ -371,6 +379,7 @@
                 localStorage.setItem("history_tmp_sql", window.editor.getValue());
                 localStorage.setItem("history_tmp_source", $("#data_sources_choose_input").val());
             }
+
 
             $.ajax({
                 type: 'POST',

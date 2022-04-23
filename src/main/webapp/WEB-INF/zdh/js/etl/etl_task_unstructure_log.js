@@ -154,6 +154,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
+      method: "POST",
       url: server_context+"/etl_task_unstructure_log_list",
       search: true,
       pagination: true,

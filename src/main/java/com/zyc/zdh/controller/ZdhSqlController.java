@@ -63,7 +63,7 @@ public class ZdhSqlController extends BaseController {
      * @param id          sql任务id
      * @return
      */
-    @RequestMapping(value = "/sql_task_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/sql_task_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String sql_task_list(String sql_context, String id) {
 

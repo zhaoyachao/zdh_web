@@ -200,6 +200,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
+            method: "POST",
             url: server_context+"/dispatch_executor_list",
             search: true,
             pagination: true,
@@ -275,6 +276,7 @@
         });
 
         $('#exampleTableEvents2').bootstrapTable({
+            method: 'POST',
             url: server_context+"/dispatch_system_task_list",
             search: true,
             pagination: true,

@@ -47,7 +47,7 @@ public class ZdhApprovalController extends BaseController{
     }
 
 
-    @RequestMapping(value = "/approval_config_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/approval_config_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String approve_config_list(String approval_context) {
         try{
@@ -125,7 +125,7 @@ public class ZdhApprovalController extends BaseController{
         return "admin/approval_auditor_index";
     }
 
-    @RequestMapping(value = "/approval_auditor_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/approval_auditor_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String approval_auditor_list(String approval_context) {
         try{
@@ -245,7 +245,7 @@ public class ZdhApprovalController extends BaseController{
         }
     }
 
-    @RequestMapping(value = "/approval_event_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/approval_event_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String approval_event_list(String event_context) {
         try{

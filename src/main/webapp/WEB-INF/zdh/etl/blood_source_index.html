@@ -187,6 +187,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
+            method: 'POST',
             url: server_context+"/blood_source_list?" + $("#blood_source_form").serialize(),
             contentType: "application/json;charset=utf-8",
             dataType: "json",

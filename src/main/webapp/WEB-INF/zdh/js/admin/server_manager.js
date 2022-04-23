@@ -255,6 +255,7 @@
             return num;
         }
         $('#exampleTableEvents').bootstrapTable({
+            method: "POST",
             url: server_context+"/server_manager_list",
             search: true,
             pagination: true,
@@ -341,6 +342,7 @@
         });
 
         $('#exampleTableEvents2').bootstrapTable({
+            method: "POST",
             url: server_context+"/server_manager_online_list",
             search: true,
             pagination: true,

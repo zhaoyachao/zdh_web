@@ -199,6 +199,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
+      method: "POST",
       url: server_context+"/etl_task_flink_list",
       search: true,
       pagination: true,

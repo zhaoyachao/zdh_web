@@ -10,6 +10,7 @@ import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -24,6 +25,7 @@ import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -34,6 +36,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -94,7 +97,8 @@ public class AspectConfig implements Ordered{
 
 			//校验ip黑名单
 			boolean is_ipbacklist = is_ipblacklist(ipAddr);
-			if(is_ipbacklist){
+			boolean is_userbacklist =  is_blacklist();
+			if(is_ipbacklist || is_userbacklist){
 				UserOperateLogMapper userOperateLogMapper= (UserOperateLogMapper)SpringContext.getBean("userOperateLogMapper");
 				UserOperateLogInfo userOperateLogInfo=new UserOperateLogInfo();
 				userOperateLogInfo.setOwner(getUser().getId());
@@ -103,7 +107,12 @@ public class AspectConfig implements Ordered{
 				userOperateLogInfo.setOperate_input(reqParam);
 				userOperateLogInfo.setTime(String.valueOf((System.currentTimeMillis()-start)/1000.0));
 				userOperateLogInfo.setIp(ipAddr);
-				String output = String.format("用户:%s命中IP黑名单,IP地址:%s", getUser().getUserName(), ipAddr);
+				String output = "";
+				if(is_ipbacklist){
+					 output = String.format("用户:%s命中IP黑名单,IP地址:%s", getUser().getUserName(), ipAddr);
+				}else if(is_userbacklist){
+					output = String.format("用户:%s命中用户黑名单,IP地址:%s", getUser().getUserName(), ipAddr);
+				}
 				userOperateLogInfo.setOperate_output(output);
 
 				userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
@@ -112,7 +121,7 @@ public class AspectConfig implements Ordered{
 				if (request.getMethod().equalsIgnoreCase("get")){
 					return "redirect:403";
 				}else{
-					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "命中ip黑名单,禁止访问", "命中ip黑名单,禁止访问");
+					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "命中IP/用户黑名单,禁止访问", "命中IP/用户黑名单,禁止访问");
 				}
 			}
 
@@ -138,10 +147,10 @@ public class AspectConfig implements Ordered{
 					return "redirect:login";
 				}
 			}
-			//此处校验用户是否在黑名单中,有则不允许访问
-			if(getUser()!=null && is_blacklist(getUser().getUserName())){
-				return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前用户为黑名单用户,请联系管理员解封", null);
-			}
+//			//此处校验用户是否在黑名单中,有则不允许访问
+//			if(getUser()!=null && is_blacklist(getUser().getUserName())){
+//				return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前用户为黑名单用户,请联系管理员解封", null);
+//			}
 
 			try{
 				reqParam = preHandle(pjp,request);
@@ -265,6 +274,20 @@ public class AspectConfig implements Ordered{
 		for (Annotation annotation : annotations) {
 			//此处可以改成自定义的注解
 			if (annotation.annotationType().equals(RequestMapping.class)) {
+				RequestMethod[] requestMethods = ((RequestMapping)annotation).method();
+				if(requestMethods != null && requestMethods.length>0){
+					//校验请求类型和注解是否一致
+					if(requestMethods.length>1){
+						logger.error(getUrl(request)+"请求类型: "+request.getMethod()+", 注解类型: "+JSON.toJSONString(requestMethods));
+					}else{
+						if(!request.getMethod().equalsIgnoreCase(requestMethods[0].toString())){
+							logger.error(getUrl(request)+"请求类型: "+request.getMethod()+", 注解类型: "+JSON.toJSONString(requestMethods));
+						}
+
+					}
+				}else{
+					//logger.error(getUrl(request)+"请求类型: "+request.getMethod()+", 注解类型: "+JSON.toJSONString(requestMethods));
+				}
 				reqParam = JSON.toJSONString(request.getParameterMap());
 				//验证权限
 				String url =getUrl(request);
@@ -350,11 +373,25 @@ public class AspectConfig implements Ordered{
 
 	/**
 	 * 查询是否命中用户名单,命中则不许访问
-	 * @param userName
 	 * @return
 	 */
-	private boolean is_blacklist(String userName){
+	private boolean is_blacklist(){
+		if(getUser()==null){
+			return false;
+		}
 		//查询黑名单
+		if(StringUtils.isEmpty(getUser().getUserName())){
+			return false;
+		}
+		RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+		Object o = redisUtil.get(Const.ZDH_USER_BACKLIST);
+		if(o == null){
+			return false;
+		}
+
+		if(Arrays.asList(o.toString().split(",")).contains(getUser().getUserName())){
+			return true;
+		}
 
 		return false;
 	}

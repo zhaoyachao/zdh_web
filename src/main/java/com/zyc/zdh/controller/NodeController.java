@@ -59,7 +59,7 @@ public class NodeController extends BaseController{
         return "admin/server_manager_index";
     }
 
-    @RequestMapping(value = "/server_manager_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/server_manager_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String server_manager_list(String id,String context) {
         if(!StringUtils.isEmpty(context)){
@@ -71,7 +71,7 @@ public class NodeController extends BaseController{
 
     }
 
-    @RequestMapping(value = "/server_manager_online_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/server_manager_online_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String server_manager_online_list(String online,String context) {
         if(!StringUtils.isEmpty(context)){

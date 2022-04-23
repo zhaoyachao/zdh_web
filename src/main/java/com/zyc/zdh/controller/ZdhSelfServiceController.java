@@ -1,8 +1,5 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.SelfHistoryMapper;
@@ -29,8 +26,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import static com.alibaba.druid.sql.SQLUtils.parseStatements;
 
 /**
  * 自助服务

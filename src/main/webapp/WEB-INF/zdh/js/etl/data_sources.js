@@ -207,6 +207,7 @@ function buildTable($el, cells, rows) {
 
 
     $('#exampleTableEvents').bootstrapTable({
+      method: 'POST',
       url: server_context+"/data_sources_list2",
       search: true,
       pagination: true,

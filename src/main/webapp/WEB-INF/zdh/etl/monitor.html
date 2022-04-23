@@ -640,6 +640,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
+            method: 'POST',
             url: server_context+"/task_group_log_instance_list2?" + $("#task_logs_form").serialize(),
             contentType: "application/json;charset=utf-8",
             dataType: "json",

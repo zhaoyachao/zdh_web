@@ -130,6 +130,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
+      method: "POST",
       url: server_context+"/data_ware_house_list2",
       search: false,
       pagination: false,

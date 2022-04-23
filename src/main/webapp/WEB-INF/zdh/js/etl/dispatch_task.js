@@ -398,6 +398,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
+            method: "POST",
             url: server_context+"/dispatch_task_list2",
             search: true,
             pagination: true,

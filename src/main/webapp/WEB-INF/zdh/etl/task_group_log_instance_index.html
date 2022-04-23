@@ -401,6 +401,7 @@
         }
 
         $('#exampleTableEvents').bootstrapTable({
+            method: 'POST',
             url: server_context+"/task_group_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
             contentType: "application/json;charset=utf-8",
             dataType: "json",

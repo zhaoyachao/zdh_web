@@ -199,6 +199,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
+      method: "POST",
       url: server_context+"/sql_task_list",
       search: true,
       pagination: true,

@@ -121,6 +121,7 @@
                 }
                 $('#msg').val(data.result.msg);
                 $('#show_type').val(data.result.show_type);
+                $('#show_type').trigger("chosen:updated");
             },
             //处理完成
             complete: function () {

@@ -260,7 +260,7 @@ public class ZdhSshController extends BaseController{
      * @param id
      * @return
      */
-    @RequestMapping(value = "/etl_task_ssh_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_ssh_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_ssh_list(String ssh_context, String id) {
 

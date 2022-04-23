@@ -97,7 +97,7 @@ public class ZdhUnstructureController extends BaseController{
      * @param id
      * @return
      */
-    @RequestMapping(value = "/etl_task_unstructure_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_unstructure_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_unstructure_list(String unstructure_context, String id) {
 

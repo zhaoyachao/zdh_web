@@ -176,7 +176,8 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: server_context+"/data_tag_group_list",
+          method: "POST",
+          url: server_context+"/data_tag_group_list",
       search: true,
       pagination: true,
       showRefresh: true,

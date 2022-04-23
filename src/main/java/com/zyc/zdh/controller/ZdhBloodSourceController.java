@@ -61,7 +61,7 @@ public class ZdhBloodSourceController extends BaseController{
      * @param input 表名/文件名
      * @return
      */
-    @RequestMapping(value = "/blood_source_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/blood_source_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String blood_source_list(String input) {
 

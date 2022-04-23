@@ -61,7 +61,7 @@ public class ZdhQualityController extends BaseController {
         return "etl/quality_rule_add_index";
     }
 
-    @RequestMapping(value = "/quality_rule_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_rule_list",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String quality_rule_list(QualityRuleInfo qualityRuleInfo) {
 
@@ -146,7 +146,7 @@ public class ZdhQualityController extends BaseController {
         return "etl/quality_task_add_index";
     }
 
-    @RequestMapping(value = "/quality_task_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_task_list",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String quality_task_list(QualityTaskInfo qualityTaskInfo, String rule_code) {
 
@@ -305,7 +305,7 @@ public class ZdhQualityController extends BaseController {
      * @param status
      * @return
      */
-    @RequestMapping(value = "/quality_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String quality_list(String job_context, String etl_context, String status) {
 

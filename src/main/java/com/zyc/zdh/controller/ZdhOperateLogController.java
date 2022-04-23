@@ -43,7 +43,7 @@ public class ZdhOperateLogController extends BaseController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/user_operate_log_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/user_operate_log_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String user_operate_log_list(String log_context, String id, String start_time, String end_time) {
         UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();

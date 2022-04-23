@@ -71,7 +71,7 @@ public class PermissionController extends BaseController {
         return "admin/permission_index";
     }
 
-    @RequestMapping(value = "/user_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/user_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String user_list(String user_context) {
         if(!StringUtils.isEmpty(user_context)){
@@ -208,7 +208,7 @@ public class PermissionController extends BaseController {
         return "admin/role_add_index";
     }
 
-    @RequestMapping(value = "/role_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/role_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String role_list(String role_context, String enable) {
         if(!StringUtils.isEmpty(role_context)){

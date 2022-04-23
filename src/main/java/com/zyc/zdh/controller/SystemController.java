@@ -274,7 +274,7 @@ public class SystemController extends BaseController{
         return "admin/notice_index";
     }
 
-    @RequestMapping(value = "/notice_list2", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/notice_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String notice2(String message) {
         //System.out.println("加载缓存中通知事件");

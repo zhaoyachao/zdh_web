@@ -69,7 +69,7 @@ public class ZdhMoreEtlController extends BaseController {
      * @param file_name   输出文件名/表名
      * @return
      */
-    @RequestMapping(value = "/etl_task_more_list2", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_more_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_more_list2(String etl_context, String file_name) {
         List<EtlMoreTaskInfo> etlMoreTaskInfos = new ArrayList<EtlMoreTaskInfo>();

@@ -61,7 +61,7 @@ public class ZdhDataxController extends BaseController{
      * @param id
      * @return
      */
-    @RequestMapping(value = "/etl_task_datax_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_datax_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_datax_list(String datax_context, String id) {
         EtlTaskDataxInfo etlTaskDataxInfo=new EtlTaskDataxInfo();

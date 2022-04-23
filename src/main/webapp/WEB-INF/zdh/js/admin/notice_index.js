@@ -214,7 +214,8 @@ function buildTable($el, cells, rows) {
       }
 
     $('#exampleTableEvents').bootstrapTable({
-      url: server_context+"/notice_list2",
+        method: "POST",
+        url: server_context+"/notice_list2",
       search: true,
       pagination: true,
       showRefresh: true,

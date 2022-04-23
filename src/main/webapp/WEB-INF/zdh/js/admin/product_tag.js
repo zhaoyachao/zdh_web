@@ -176,7 +176,8 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: server_context+"/product_tag_list",
+          method: "POST",
+          url: server_context+"/product_tag_list",
       search: true,
       pagination: true,
       showRefresh: true,

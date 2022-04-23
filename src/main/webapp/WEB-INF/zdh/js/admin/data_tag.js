@@ -175,7 +175,8 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: server_context+"/data_tag_list",
+          method: "POST",
+          url: server_context+"/data_tag_list",
       search: true,
       pagination: true,
       showRefresh: true,

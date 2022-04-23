@@ -95,7 +95,7 @@ public class ZdhDispatchController extends BaseController {
      * @param etl_context
      * @return
      */
-    @RequestMapping(value = "/dispatch_task_list2", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/dispatch_task_list2",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String dispatch_task_list2(String job_context, String etl_context, String status, String last_status) {
         List<QuartzJobInfo> list = new ArrayList<>();
@@ -492,7 +492,7 @@ public class ZdhDispatchController extends BaseController {
         return JSON.toJSONString(instances);
     }
 
-    @RequestMapping(value="/dispatch_executor_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/dispatch_executor_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String dispatch_executor_list(QrtzSchedulerState qrtzSchedulerState) {
         try{
@@ -543,7 +543,7 @@ public class ZdhDispatchController extends BaseController {
         return "etl/dispatch_system_task_add_index";
     }
 
-    @RequestMapping(value="/dispatch_system_task_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/dispatch_system_task_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String dispatch_system_task_list(String instance_name) {
         try{

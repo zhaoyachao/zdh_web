@@ -77,7 +77,8 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
-      url: server_context+"/user_operate_log_list",
+          method: "POST",
+          url: server_context+"/user_operate_log_list",
       search: true,
       pagination: true,
       showRefresh: true,

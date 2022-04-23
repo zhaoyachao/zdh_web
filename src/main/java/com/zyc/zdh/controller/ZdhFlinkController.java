@@ -62,7 +62,7 @@ public class ZdhFlinkController extends BaseController {
      * @param id          sql任务id
      * @return
      */
-    @RequestMapping(value = "/etl_task_flink_list", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_flink_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_flink_list(String sql_context, String id) {
 

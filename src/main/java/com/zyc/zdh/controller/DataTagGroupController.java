@@ -47,7 +47,7 @@ public class DataTagGroupController extends BaseController {
         return "admin/data_tag_group_index";
     }
 
-    @RequestMapping(value = "/data_tag_group_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_tag_group_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_tag_group_list(String tag_context) {
         Example example=new Example(DataTagGroupInfo.class);
