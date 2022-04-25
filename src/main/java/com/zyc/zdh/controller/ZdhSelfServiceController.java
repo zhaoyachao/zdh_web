@@ -46,7 +46,7 @@ public class ZdhSelfServiceController extends BaseController {
         return "service/self_service_index";
     }
 
-    @RequestMapping(value = "/self_service_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/self_service_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String self_service_list(String history_context) {
         Example example=new Example(SelfHistory.class);

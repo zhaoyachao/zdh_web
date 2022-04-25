@@ -123,7 +123,7 @@ function buildTable($el, cells, rows) {
           $.ajax({
               url : server_context+"/notice_delete",
               data : "ids=" + ids,
-              type : "get",
+              type : "post",
               dataType : "json",
               success : function(data) {
                   console.info("success");

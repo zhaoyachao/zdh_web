@@ -287,7 +287,7 @@ public class SystemController extends BaseController{
         return JSON.toJSONString(noticeInfos);
     }
 
-    @RequestMapping(value = "/notice_delete", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/notice_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public String notice_delete(String[] ids) {
