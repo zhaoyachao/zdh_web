@@ -60,7 +60,7 @@ public class ZdhProcessFlowController extends BaseController {
         return "etl/process_flow_index2";
     }
 
-    @RequestMapping(value = "/process_flow_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/process_flow_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String process_flow_list(String context) {
 
@@ -78,7 +78,7 @@ public class ZdhProcessFlowController extends BaseController {
      * @param context
      * @return
      */
-    @RequestMapping(value = "/process_flow_list2", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/process_flow_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String process_flow_list2(String context) {
         if(!StringUtils.isEmpty(context)){

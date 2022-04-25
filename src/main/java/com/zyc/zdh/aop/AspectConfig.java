@@ -283,7 +283,6 @@ public class AspectConfig implements Ordered{
 						if(!request.getMethod().equalsIgnoreCase(requestMethods[0].toString())){
 							logger.error(getUrl(request)+"请求类型: "+request.getMethod()+", 注解类型: "+JSON.toJSONString(requestMethods));
 						}
-
 					}
 				}else{
 					//logger.error(getUrl(request)+"请求类型: "+request.getMethod()+", 注解类型: "+JSON.toJSONString(requestMethods));
@@ -303,6 +302,9 @@ public class AspectConfig implements Ordered{
 
 				break;
 			}
+		}
+		if(getUrl(request).contains("list") && request.getMethod().equalsIgnoreCase("get")){
+			logger.error(getUrl(request)+"============检测属于get请求,请检查是否合法");
 		}
 		return reqParam;
 	}

@@ -161,7 +161,7 @@
             $('#auditor_group').chosen();
 
             $.ajax({
-                type: 'get',
+                type: 'POST',
                 url: server_context+"/user_group_list?enable=true",
                 async:false,
                 dataType: 'json',
@@ -189,7 +189,7 @@
             });
 
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: server_context+"/approval_config_list",
                 async:false,
                 dataType: 'json',

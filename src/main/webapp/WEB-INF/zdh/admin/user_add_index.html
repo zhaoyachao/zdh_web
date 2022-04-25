@@ -191,7 +191,7 @@
             $('#tag_group_code').chosen();
 
             $.ajax({
-                type: 'get',
+                type: 'POST',
                 url: server_context+"/user_group_list?enable=true",
                 async:false,
                 dataType: 'json',
@@ -218,7 +218,7 @@
             });
 
             $.ajax({
-                type: 'get',
+                type: 'POST',
                 url: server_context+"/role_list?enable=true",
                 async:false,
                 dataType: 'json',
@@ -245,7 +245,7 @@
             });
 
             $.ajax({
-                type: 'get',
+                type: 'post',
                 url: server_context+"/data_tag_group_list",
                 async:false,
                 dataType: 'json',

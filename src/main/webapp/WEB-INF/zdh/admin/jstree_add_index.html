@@ -372,7 +372,7 @@
             $('#event_code2').chosen();
             //获取事件列表
             $.ajax({
-                type: 'get',
+                type: 'POST',
                 url: server_context+"/approval_event_list",
                 dataType: 'json',
                 async:'false',

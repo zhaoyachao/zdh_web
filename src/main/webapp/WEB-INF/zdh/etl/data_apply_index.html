@@ -177,6 +177,7 @@
 
             //初始化 bootstrap table
             $('#exampleTableEvents').bootstrapTable({
+                method: 'POST',
                 url: server_context+"/data_apply_list",
                 search: true,
                 clickEdit: true,

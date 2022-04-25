@@ -205,6 +205,7 @@
 
             //初始化 bootstrap table
             $('#exampleTableEvents').bootstrapTable({
+                method: 'POST',
                 url: server_context+"/process_flow_list2",
                 search: true,
                 clickEdit: true,

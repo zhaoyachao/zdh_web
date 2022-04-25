@@ -73,7 +73,7 @@ public class ZdhEnumController extends BaseController{
      * @param enum_context 关键字
      * @return
      */
-    @RequestMapping(value = "/enum_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/enum_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String enum_list(String enum_context) {
         List<EnumInfo> list = new ArrayList<>();

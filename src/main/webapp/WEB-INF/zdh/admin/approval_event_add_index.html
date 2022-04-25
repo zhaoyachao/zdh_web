@@ -142,7 +142,7 @@
             $('#code').chosen();
 
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: server_context+"/approval_config_list",
                 async:false,
                 dataType: 'json',

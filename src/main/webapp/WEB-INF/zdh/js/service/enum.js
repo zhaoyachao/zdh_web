@@ -204,6 +204,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
+          method: 'POST',
       url: server_context+"/enum_list",
       search: true,
       pagination: true,

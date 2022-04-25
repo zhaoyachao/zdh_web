@@ -180,7 +180,7 @@ public class PermissionController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/user_group_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/user_group_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public String user_group_list(String enable) {

@@ -406,7 +406,7 @@ public class ZdhIssueDataController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/data_apply_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_apply_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_apply_list(String apply_context) {
 
