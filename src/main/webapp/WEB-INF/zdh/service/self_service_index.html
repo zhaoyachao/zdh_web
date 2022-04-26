@@ -99,13 +99,18 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
+                                <div class="example-wrap">
+                                    <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                                        <button id="export" type="button" class="btn btn-outline btn-default">
+                                            <i class="fa fa-download" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                    <table id="exampleTableEvents" name="exampleTableEvents" data-height="100%"
+                                           data-mobile-responsive="false">
 
-                                <table id="exampleTableEvents" name="exampleTableEvents" data-height="100%"
-                                       data-mobile-responsive="false">
-
-                                </table>
-                                <!-- End Example Events -->
-
+                                    </table>
+                                    <!-- End Example Events -->
+                                </div>
                             </div>
                         </div>
 
@@ -165,6 +170,21 @@
             });
 
 
+            $('#export').click(function () {
+                if(is_all){
+                    var etl_sql = window.editor.getValue();
+                    if(is_empty(etl_sql)){
+                        layer.msg("未找到可执行的sql")
+                    }
+                    export_csv(etl_sql, $("#data_sources_choose_input").val());
+                }else{
+                    var etl_sql = window.editor.getModel().getValueInRange(window.editor.getSelection());
+                    if(is_empty(etl_sql)){
+                        layer.msg("未找到可执行的sql")
+                    }
+                    export_csv(etl_sql, $("#data_sources_choose_input").val());
+                }
+            });
         });
 
         function init_data_sources() {
@@ -481,7 +501,9 @@
 
         history_list();
 
+        var is_all=false;
         function execute_all() {
+            is_all=true;
             var etl_sql = window.editor.getValue();
             if(is_empty(etl_sql)){
                 layer.msg("未找到可执行的sql")
@@ -489,6 +511,7 @@
             execute(etl_sql, $("#data_sources_choose_input").val());
         }
         function execute_select() {
+            is_all=false;
             var etl_sql = window.editor.getModel().getValueInRange(window.editor.getSelection());
             if(is_empty(etl_sql)){
                 layer.msg("未找到可执行的sql")
@@ -533,7 +556,7 @@
                             showColumns: true,
                             useRowAttrFunc: true,
                             iconSize: 'outline',
-                            //toolbar: '#exampleTableEventsToolbar',
+                            toolbar: '#exampleTableEventsToolbar',
                             icons: {
                                 refresh: 'glyphicon-repeat',
                                 toggle: 'glyphicon-list-alt',
@@ -567,6 +590,9 @@
             window.editor.setValue("");
         }
 
+        function export_csv(etl_sql, data_sources_choose_input) {
+            window.open(server_context+"/self_service_export?etl_sql="+etl_sql+"&data_sources_choose_input="+data_sources_choose_input);
+        }
 
         //判断浏览器是否支持html5本地存储
         function localStorageSupport() {

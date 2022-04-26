@@ -7,6 +7,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
+import com.zyc.zdh.util.ExportUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -21,11 +22,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 自助服务
@@ -163,6 +166,31 @@ public class ZdhSelfServiceController extends BaseController {
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "执行失败", e.getMessage());
         }
     }
+
+    @RequestMapping(value = "/self_service_export", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @White
+    public String data_ware_house_export(String etl_sql, String data_sources_choose_input,HttpServletResponse response) {
+
+        try {
+            if(StringUtils.isEmpty(etl_sql)|| StringUtils.isEmpty(data_sources_choose_input)){
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "执行失败", "数据源或者sql为空");
+            }
+            DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
+            List<Map<String,Object>> result = new DBUtil().R5(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
+                    etl_sql);
+            String column = "";
+            if(result!=null && result.size()>=1){
+                column = StringUtils.join(result.get(0).keySet(),",");
+            }
+            ExportUtil.responseSetProperties(UUID.randomUUID().toString(),response);
+            ExportUtil.doExport(result, column, column,response.getOutputStream());
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "执行成功", result);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "执行失败", e.getMessage());
+        }
+    }
+
 
     public User getUser() {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
