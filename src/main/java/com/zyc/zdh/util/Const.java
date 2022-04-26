@@ -52,6 +52,8 @@ public class Const {
 
     public static String ZDH_IS_PASS = "zdh_is_pass";//系统是否可访问
 
+    public static String ZDH_IS_PASS_USER = "zdh_is_pass_user";//系统可访问用户
+
     public static String ZDH_IP_BACKLIST= "zdh_ip_backlist";//IP黑名单参数
 
     public static String ZDH_USER_BACKLIST= "zdh_user_backlist";//用户黑名单参数

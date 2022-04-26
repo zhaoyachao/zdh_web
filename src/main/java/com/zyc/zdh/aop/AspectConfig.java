@@ -21,6 +21,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
@@ -35,10 +36,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /***
@@ -76,6 +74,12 @@ public class AspectConfig implements Ordered{
 	@Around(value = "pointcutMethod3()")
 	public Object aroundLog(ProceedingJoinPoint pjp) throws Exception {
 		try {
+			if(getUser()==null){
+				MDC.put("user_id", UUID.randomUUID().toString());
+			}else{
+				MDC.put("user_id", getUser().getUserName());
+			}
+
 			long start = System.currentTimeMillis();
 			String classType = pjp.getTarget().getClass().getName();
 			Signature sig = pjp.getSignature();
@@ -84,6 +88,7 @@ public class AspectConfig implements Ordered{
 			LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
 			Method currentMethod = target.getClass().getMethod(msig.getName(), msig.getParameterTypes());
 			if(currentMethod.getName().contains("initBinder")){
+				MDC.remove("user_id");
 				return pjp.proceed();
 			}
 
@@ -118,6 +123,7 @@ public class AspectConfig implements Ordered{
 				userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
 				userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
 				userOperateLogMapper.insert(userOperateLogInfo);
+				MDC.remove("user_id");
 				if (request.getMethod().equalsIgnoreCase("get")){
 					return "redirect:403";
 				}else{
@@ -129,6 +135,7 @@ public class AspectConfig implements Ordered{
 			boolean is_pass = is_pass(getUrl(request));
 			if(!is_pass){
 				logger.warn("系统维护中,只有admin用户和zyc用户可访问....");
+				MDC.remove("user_id");
 				if (request.getMethod().equalsIgnoreCase("get")){
 					return "redirect:503";
 				}else{
@@ -144,6 +151,7 @@ public class AspectConfig implements Ordered{
 				//SecurityUtils.getSecurityManager().logout(subject);
 				String whiteUrl =getUrl(request);
 				if(!white().contains(whiteUrl)){
+					MDC.remove("user_id");
 					return "redirect:login";
 				}
 			}
@@ -178,13 +186,16 @@ public class AspectConfig implements Ordered{
 				}
 
 				if(e.getMessage().contains("没有权限")){
+					MDC.remove("user_id");
 					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "无权限", e);
 				}
 				if (request.getMethod().equalsIgnoreCase("get")){
+					MDC.remove("user_id");
 					return "404";
 				}
 				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 				logger.error(error, e);
+				MDC.remove("user_id");
 				return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统错误", e);
 			}
             String uid = getUser() == null? "":getUser().getId();
@@ -217,11 +228,12 @@ public class AspectConfig implements Ordered{
 				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
                 logger.error(error, e);
 			}
-
+			MDC.remove("user_id");
 			return o;
 		} catch (Throwable e) {
 			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
+			MDC.remove("user_id");
 			return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统错误", e);
 		}
 	}
@@ -409,6 +421,12 @@ public class AspectConfig implements Ordered{
 		RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
 		if(getUser()==null){
 			return true;
+		}
+		Object pass_user = redisUtil.get(Const.ZDH_IS_PASS_USER);
+		if(pass_user!=null){
+			if(Arrays.asList(pass_user.toString().split(",")).contains(getUser().getUserName())){
+				return true;
+			}
 		}
 		if(getUser().getUserName().equalsIgnoreCase("admin") || getUser().getUserName().equalsIgnoreCase("zyc") ){
 			return true;

@@ -233,6 +233,7 @@
 
 
       $('#exampleTableEvents').bootstrapTable({
+          method: 'POST',
       url: server_context+"/param_list",
       search: true,
       pagination: true,

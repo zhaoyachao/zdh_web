@@ -53,7 +53,7 @@ public class ZdhParamController extends BaseController {
         return "service/param_add_index";
     }
 
-    @RequestMapping(value = "/param_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/param_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String param_list(String param_context) {
 

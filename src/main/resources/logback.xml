@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="true">
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg %n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -19,7 +19,7 @@
             <maxFileSize>100MB</maxFileSize>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -35,7 +35,7 @@
             <maxFileSize>100MB</maxFileSize>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -54,7 +54,7 @@
             <maxFileSize>100MB</maxFileSize>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -63,13 +63,37 @@
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
+    <appender name="SQL_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
+            <fileNamePattern>logs/stdsql.%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <charset>UTF-8</charset> <!-- 此处设置字符集 -->
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>debug</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
 
     <logger name="com.zyc.zdh.shiro" level="info" />
     <logger name="com.zyc.zdh.dao" level="debug"></logger>
-    <logger name="com.zyc.zdh.dao.ZdhHaInfoMapper" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao.ZdhHaInfoMapper" level="debug">
+        <appender-ref ref="SQL_DEBUG"></appender-ref>
+    </logger>
+    <logger name="com.zyc.zdh.dao.TaskLogInstanceMapper" level="debug">
+        <appender-ref ref="SQL_DEBUG"></appender-ref>
+    </logger>
+    <logger name="com.zyc.zdh.dao.TaskGroupLogInstanceMapper" level="debug">
+        <appender-ref ref="SQL_DEBUG"></appender-ref>
+    </logger>
     <logger name="com.zyc.zdh.dao.ZdhDownloadMapper" level="debug"></logger>
-    <logger name="com.zyc.zdh.dao.TaskLogInstanceMapper" level="debug"></logger>
-    <logger name="com.zyc.zdh.dao.TaskGroupLogInstanceMapper" level="debug"></logger>
     <logger name="com.zyc.zdh.dao.PermissionMapper" level="debug"></logger>
     <logger name="com.zyc.zdh.util.SpringLoadInit" level="info"></logger>
     <logger name="com.zyc.zdh.dao.QuartzJobMapper" level="debug"></logger>
@@ -78,9 +102,11 @@
     <logger name="com.zyc.zdh.netty" level="info"></logger>
     <logger name="com.zyc.zdh.aop" level="debug"></logger>
 
-    <root level="DEBUG">
+
+    <root level="debug">
         <appender-ref ref="CONSOLE"></appender-ref>
-        <appender-ref ref="FILE"></appender-ref>
+        <appender-ref ref="FILE_INFO"></appender-ref>
         <appender-ref ref="FILE_ERROR"></appender-ref>
+        <appender-ref ref="FILE"></appender-ref>
     </root>
 </configuration>  
