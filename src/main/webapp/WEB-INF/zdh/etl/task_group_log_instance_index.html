@@ -254,8 +254,8 @@
                     $(rows).each(function () {// 通过获得别选中的来进行遍历
                         ids.push(this.id);// cid为获得到的整条数据中的一列
                     });
-                    console.log(ids)
-                    deleteMs(ids)
+                    console.log(ids);
+                    deleteMs(ids);
                     layer.close(layer.index);
                 }, function(){
 
@@ -264,7 +264,7 @@
 
             }
 
-        })
+        });
 
         function deleteMs(ids) {
             $.ajax({
@@ -273,7 +273,7 @@
                 type: "post",
                 dataType: "json",
                 success: function (data) {
-                    console.info("success")
+                    console.info("success");
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url: server_context+"/task_group_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
                         contentType: "application/json;charset=utf-8",
@@ -291,7 +291,7 @@
         window.operateEvents = {
             'click #log_txt': function (e, value, row, index) {
                 row.job_context
-                window.open(server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time);
+                window.open(server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.run_time + "&update_time=" + row.update_time);
                 //openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
             },
             'click #sub_task_log_instance': function (e, value, row, index) {
@@ -309,7 +309,7 @@
                     fixed: false,
                     maxmin: true,
                     shade: 0.1,
-                    area : ['45%', '60%'],
+                    area : ['60%', '80%'],
                     //area: ['450px', '500px'],
                     content: server_context+"/task_group_retry_detail_index?id="+row.id+"&job_id="+row.job_id, //iframe的url
                     end : function () {

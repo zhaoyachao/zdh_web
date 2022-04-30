@@ -151,7 +151,6 @@ public class ZdhSelfServiceController extends BaseController {
     @RequestMapping(value = "/self_service_execute", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public String self_service_execute(String etl_sql, String data_sources_choose_input) {
         try {
             if(StringUtils.isEmpty(etl_sql)|| StringUtils.isEmpty(data_sources_choose_input)){
@@ -168,7 +167,6 @@ public class ZdhSelfServiceController extends BaseController {
     }
 
     @RequestMapping(value = "/self_service_export", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
-    @White
     public String data_ware_house_export(String etl_sql, String data_sources_choose_input,HttpServletResponse response) {
 
         try {

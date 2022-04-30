@@ -13,10 +13,10 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
-            <fileNamePattern>logs/stdout.%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/stdout.%d{yyyyMMddHH}.%i.log</fileNamePattern>
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
-            <maxFileSize>100MB</maxFileSize>
+            <maxFileSize>1024MB</maxFileSize>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
@@ -29,10 +29,10 @@
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
-            <fileNamePattern>logs/stderr.%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/stderr.%d{yyyyMMddHH}.%i.log</fileNamePattern>
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
-            <maxFileSize>100MB</maxFileSize>
+            <maxFileSize>1024MB</maxFileSize>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
@@ -48,10 +48,10 @@
     <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
-            <fileNamePattern>logs/stdinfo.%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/stdinfo.%d{yyyyMMddHH}.%i.log</fileNamePattern>
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
-            <maxFileSize>100MB</maxFileSize>
+            <maxFileSize>1024MB</maxFileSize>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
@@ -66,10 +66,10 @@
     <appender name="SQL_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
-            <fileNamePattern>logs/stdsql.%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/stdsql.%d{yyyyMMddHH}.%i.log</fileNamePattern>
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
-            <maxFileSize>100MB</maxFileSize>
+            <maxFileSize>1024MB</maxFileSize>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>

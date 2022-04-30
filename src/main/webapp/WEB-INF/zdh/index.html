@@ -361,8 +361,8 @@
                 dataType : "json",
                 async:'false',
                 success : function(data) {
-                //当前最大支持层级数是5级
-                for(var j=2;j<=5;j++){
+                //当前最大支持层级数是10级
+                for(var j=2;j<=10;j++){
                     for(var i=0;i<data.length;i++){
                             if(data[i].level == j) {
                                 var level_tmp = data[i].level;
@@ -372,8 +372,25 @@
                                     span_notice_title = "<span class=\"label label-danger pull-right\">"+data[i].notice_title+"</span>";
                                 }
 
+                                ul_class = "nav nav-second-level";
+                                li_class = '';
+                                //获取level
+                                if(data[i].level == "3"){
+                                    ul_class = "nav nav-third-level";
+                                }
+                                if(data[i].level == "4"){
+                                    ul_class = "nav nav-four-level";
+                                }
+                                if(data[i].level == "5"){
+                                    ul_class = "nav nav-five-level";
+
+                                }
+                                if(data[i].level >= "6"){
+                                    ul_class = "nav nav-five-level";
+                                }
+
                                 var li_tmplete =
-                                    "<li>" +
+                                    "<li class=\""+li_class+"\">" +
                                     "<a class=\"J_menuItem\" href=\"" + data[i].url + "\"><i class=\""+ data[i].icon+"\"></i>" +
                                     "<span class=\"nav-label\">"+data[i].text+"</span>"+span_notice_title+"</a>" +
                                     "</li>";
@@ -382,11 +399,6 @@
                                 //目录
                                 if(data[i].resource_type == "1"){
 
-                                    ul_class = "nav nav-second-level";
-                                    //获取level
-                                    if(data[i].level >= "3"){
-                                        ul_class = "nav nav-third-level";
-                                    }
                                     var ul_tmplate =
                                         "<li>"+
                                         "<a href=\"\#\"><i class=\""+data[i].icon+"\"></i><span class=\"nav-label\">"+data[i].text+"</span>"+span_notice_title+"</a>"+

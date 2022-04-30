@@ -21,6 +21,7 @@
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
 
 </head>
 
@@ -48,6 +49,20 @@
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks" id="sub_task_div">
 
+                                </div>
+                            </div>
+
+                            <div  class="col-sm-12">
+                                <div class="container device col-sm-12">
+                                    <div class="deviceLeft">
+                                        <!--                                <div class="deviceLeft_box">-->
+                                        <!--                                    <div class="node node1css" data-type="tasks">ETL任务</div>-->
+                                        <!--                                    <div class="node node1css" data-type="shell">SHELL</div>-->
+                                        <!--                                </div>-->
+                                    </div>
+                                    <div id="deviceRight">
+                                        <div id="m1"></div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -85,6 +100,8 @@
 <script src="js/zdh_common.js"></script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
 
 <!-- Bootstrap table -->
@@ -112,6 +129,8 @@
 <script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -151,7 +170,6 @@
                     //成功返回
                     success: function (data) {
 
-
                        if(data.length=1){
 
                            $('#sub_task_div').empty();
@@ -164,8 +182,8 @@
                                if(jsplumb_json.tasks[i].is_disenable == "true"){
                                    continue;
                                }
-                               $('#sub_task_div').append('<label class="no-padding">')
-                               $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' checked=""><i></i>'+jsplumb_json.tasks[i].etl_context+'</label>')
+                               $('#sub_task_div').append('<label class="no-padding">');
+                               $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' id="checkbox_'+divId+'"><i></i>'+jsplumb_json.tasks[i].etl_context+'</label>')
                            }
 
                            // for(var i=0;i<jsplumb_json.tasks.length;i++){
@@ -296,6 +314,227 @@
 
     })
 
+</script>
+
+<script>
+    $(document).ready(function () {
+        var i=0;
+
+    });
+    //基本连接线样式
+    var connectorPaintStyle = {
+        lineWidth: 2,
+        strokeStyle: "#61b8d0"
+    };
+
+    // 鼠标悬浮在连接线上的样式
+    var connectorHoverStyle = {
+        lineWidth: 2,
+        strokeStyle: "green"
+    };
+
+    //端点的颜色样式
+    var paintStyle = {
+        fillStyle: "#ccc",
+        radius: 10,
+        lineWidth:6
+    };
+
+    // 鼠标悬浮在端点上的样式
+    var hoverPaintStyle = {
+        fillStyle: "#aaa"
+    };
+
+
+    var hollowCircle = {
+        endpoint: ["Dot", { radius: 3 }],  //端点的形状
+        connectorStyle: connectorPaintStyle,
+        connectorHoverStyle: connectorHoverStyle,
+        paintStyle: paintStyle,
+        hoverPaintStyle: hoverPaintStyle ,
+        isSource: true,    //是否可以拖动（作为连线起点）
+        connector: ["StateMachine", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],  //连接线的样式种类有[Bezier],[Flowchart],[StateMachine ],[Straight ]
+        isTarget: true,    //是否可以放置（连线终点）
+        maxConnections: -1,    // 设置连接点最多可以连接几条线
+        connectorOverlays:[
+            [ "Arrow", { width:10, length:20, location:1, id:"arrow" } ],
+            ["Custom", {
+                create:function(component) {
+                    return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
+                },
+                location:0.5,
+                id:"customOverlay"
+            }]
+        ]
+    };
+
+    function get_color_by_status(status){
+        //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+        if(status=='create'  ){
+            return "#C2DFFF"
+        }
+        // value == "etl"  || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch"
+        if(status=="etl"|| status=="kill" || status=="sub_task_dispatch" || status == "dispatch" || status=="check_dep" || status=="wait_retry"){
+            return "#00bb00"
+        }
+        if(status=="finish"){
+            return "#2B65EC"
+        }
+
+        if(status=="error" || status=="killed"){
+            return "#ec4758"
+        }
+        if(status == "skip"){
+            return "LightGrey"
+        }
+
+        return "#f7a54a"
+
+
+    }
+
+    function open_json(json,group_id) {
+        var jsplumb_json=JSON.parse(json);
+        var ids = new Array();// 声明一个数组
+        var map = new Map();
+        var map2 = new Map();
+        var map3 = new Map();
+        //获取任务运行状态
+        var run_data=jsplumb_json.run_data;
+        if (run_data.length >= 1 ){
+            console.info("run_data is not null");
+            for(var i=0;i<run_data.length;i++){
+                var id=run_data[i].task_log_instance_id;
+                var divId=run_data[i].divId;
+                map.set(divId,id);
+                map2.set(id,divId);
+            }
+            //请求状态
+            $.ajax({
+                url : server_context+"/task_log_instance_list",
+                data : "group_id=" +group_id,
+                type : "post",
+                dataType : "json",
+                async: false,
+                success : function(data) {
+                    console.info("task_log_instance_list success");
+                    for(var j=0;j<data.length;j++){
+                        //divId->status
+                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id));
+                        map3.set(map2.get(data[j].id),data[j].status)
+                    }
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+
+        //添加div 数据
+
+        for(var i=0;i< jsplumb_json.tasks.length;i++){
+            var rs=jsplumb_json.tasks[i];
+            var divId=rs.divId;
+            var etl_context=rs.etl_context;
+            var positionX=rs.positionX;
+            var positionY=rs.positionY;
+            var tp=rs.type;
+            var task_log_instance_id=map.get(divId);
+            cls_str="node node"+tp+"css tasks";
+            var color=get_color_by_status(map3.get(divId));
+            console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color);
+            if(map3.get(divId) == "error"){
+                $('#checkbox_'+divId).iCheck('check');
+            }
+
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="'+tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type",tp);
+            $("#" + divId).attr("etl_context",rs.etl_context);
+
+
+            if(tp == "tasks"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("more_task",rs.more_task);
+            }
+
+            if(tp == "shell"){
+                $("#" + divId).attr("command",rs.command);
+                $("#" + divId).attr("is_script",rs.is_script);
+            }
+
+            if(tp == "group"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+            }
+            //div.width(etl_task_info.etl_context.length*16)
+            $("#" + divId).css("width","auto");
+            $("#" + divId).css("display","inline-block");
+            $("#" + divId).css("*display","inline");
+            $("#" + divId).css("*zoom","1");
+            $("#" + divId).html(rs.etl_context);
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous"
+            });
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+            doubleclick("#" + divId,task_log_instance_id,etl_context);
+        }
+
+        for(var i=0;i< jsplumb_json.line.length;i++){
+            jsPlumb.connect({
+                uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
+            })
+        }
+
+    }
+
+    //双击节点内容区域时的事件
+    function doubleclick(divId,task_log_instance_id,etl_context) {
+        $(divId).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this);
+            var etl_task_id=div.attr("etl_task_id");
+            var checkbox_id = "checkbox_"+$(this).attr('id');
+            if( $('#'+checkbox_id).is(":checked")){
+                $('#'+checkbox_id).iCheck('uncheck');
+            }else{
+                $('#'+checkbox_id).iCheck('check');
+            }
+        });
+    }
+    function init(){
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        $.ajax({
+            url : server_context+"/task_group_log_instance_list3",
+            data : "ids=" + s.id,
+            type : "post",
+            dataType : "json",
+            success : function(data) {
+                console.info("success");
+                //初始化输入数据源select 组件
+                var run_jsmind_data=data[0].run_jsmind_data;
+                open_json(run_jsmind_data,s.id)
+
+            },
+            error: function (data) {
+                console.info("error: " + data.responseText);
+            }
+
+        });
+    }
+    init();
 </script>
 
 </body>

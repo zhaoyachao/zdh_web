@@ -294,18 +294,17 @@
     <p>调度参数api</p>
     <ul>
         <li>在此处配置动态日期
-            </br>日期参数zdh.date => yyyy-MM-dd 模式
-            </br>日期参数zdh.date.nodash=> yyyyMMdd 模式
+            </br>日期参数zdh_date => yyyy-MM-dd 模式
+            </br>日期参数zdh_date_nodash=> yyyyMMdd 模式
+            </br>日期参数zdh_date_time=> yyyy-MM-dd HH:mm:ss 模式
+            </br>日期参数zdh_year=> yyyy 模式
+            </br>日期参数zdh_month=> 月 模式
+            </br>日期参数zdh_day=>  天 模式
+            </br>日期参数zdh_hour=> 24小时 模式
+            </br>日期参数zdh_minute=> 分钟 模式
+            </br>日期参数zdh_second=> 秒 模式
+            </br>日期参数zdh_time=> 时间戳 模式
         </li>
-
-        <li>任务类型选择JDBC 时必须配置 url,driver,username,password基础信息
-        </br>example:
-            </br> {"zdh.jdbc.url":"jdbc:mysql://127.0.0.1:3306/mydb?serverTimezone=GMT%2B8&useSSL=false"}
-            </br> {"zdh.jdbc.driver":"com.mysql.cj.jdbc.Driver"}
-            </br> {"zdh.jdbc.username":"zyc"}
-            </br> {"zdh.jdbc.password":"123456"}
-        </li>
-
     </ul>
 </div>
 

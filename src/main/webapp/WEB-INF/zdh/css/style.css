@@ -285,9 +285,19 @@ body.body-small .navbar-top-links li:last-child {
 }
 
 .nav-second-level li,
+.nav-third-level li,
+.nav-four-level li,
+.nav-five-level li,
 .nav-third-level li {
     border-bottom: none !important;
 }
+.nav-four-level li {
+    border-bottom: none !important;
+}
+.nav-five-level li {
+    border-bottom: none !important;
+}
+
 
 .nav-second-level li a {
     padding: 7px 15px 7px 10px;
@@ -298,7 +308,24 @@ body.body-small .navbar-top-links li:last-child {
     padding-left: 62px;
 }
 
+.nav-four-level li a {
+    padding-left: 62px;
+}
+.nav-five-level li a {
+    padding-left: 62px;
+}
+
 .nav-second-level li:last-child {
+    margin-bottom: 10px;
+}
+.nav-third-level li:last-child {
+    margin-bottom: 10px;
+}
+
+.nav-four-level li:last-child {
+    margin-bottom: 10px;
+}
+.nav-five-level li:last-child {
     margin-bottom: 10px;
 }
 
