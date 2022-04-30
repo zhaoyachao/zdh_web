@@ -13,7 +13,7 @@
 - [主要功能](#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD)
 - [用到的技术体系](#%E7%94%A8%E5%88%B0%E7%9A%84%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB)
 - [下载修改基础配置](#%E4%B8%8B%E8%BD%BD%E4%BF%AE%E6%94%B9%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE)
-- [下载编译好的包](#%E4%B8%8B%E8%BD%BD%E7%BC%96%E8%AF%91%E5%A5%BD%E7%9A%84%E5%8C%85)
+- [基础环境](#%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83)
 - [源码自定义打包](#%E6%BA%90%E7%A0%81%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%93%E5%8C%85)
 - [运行](#%E8%BF%90%E8%A1%8C)
 - [FAQ](#faq)
@@ -153,11 +153,9 @@
     依赖
      1 必须提前安装redis 
 
-# 下载编译好的包
-
-    1 找到项目目录下的release 目录 直接将release 目录拷贝
-    2 到relase的bin 目录下执行start 脚本(启动脚本必须到bin 目录下执行)
-    3 执行编译好的包需要提前安装mysql8,redis
+# 基础环境
+    1 执行编译好的包需要提前安装mysql8,redis
+    2 jdk1.8
 
 # 源码自定义打包
     
@@ -526,9 +524,9 @@
   + v5.0.0 优化重试任务组页面-增加图关系展示
   + v5.0.0 修复组日志查看时时间为空问题
   + v5.0.0 优化日志打印-增加用户名,拆分sql日志
+  + v5.0.0 增加用户黑名单限制
   
-  + v5.0.1 增加用户黑名单限制【开发中】
-  + v5.0.1 增加接口黑名单限制【开发中】
+  + v5.0.1 增加接口黑名单限制【废弃】
   + v5.0.1 权限单独出SDK及分配身份码(身份码和产品id加密解密绑定)【开发中】
   + v5.0.1 数据资产-申请组信息【开发中】
   + v5.0.1 wemock 【开发中】
@@ -1162,6 +1160,17 @@
       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+    VALUES(967380640318099456, '802852358580080640', '日志采集', '3', '1', 'non', '', '13', '1', '2022-04-23 11:05:18', '2022-04-23 11:05:52', 'etl_task_log_index.html', '2', '', '', 'zdh');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+    VALUES(967465655009808384, '926763179978002432', '数据库监控', '3', '1', 'fa fa-coffee', '', '5', '1', '2022-04-23 16:43:07', '2022-04-23 16:43:07', 'druid', '2', '', '', 'zdh');
+    INSERT INTO zdh.resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+    VALUES(969710130591436800, '964797665709658112', '导出', '3', '1', 'fa fa-coffee', '', '8', '1', '2022-04-29 21:21:51', '2022-04-29 21:21:51', 'self_service_export', '5', '', '', 'zdh');
+
 
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
