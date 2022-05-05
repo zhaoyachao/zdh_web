@@ -399,7 +399,7 @@ public class ZdhDispatchController extends BaseController {
 
         dti.setCount(0);
 
-        String result= ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"调度开启成功",null);
+        String result= "";
         //ZdhInfo zdhInfo = create_zhdInfo(quartzJobInfo);
         //重置次数,清除上次运行日志id
         if(reset.equalsIgnoreCase("1")){
@@ -416,6 +416,7 @@ public class ZdhDispatchController extends BaseController {
         try {
             //添加调度器并更新quartzjobinfo
             quartzManager2.addTaskToQuartz(dti);
+            result = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"调度开启成功",null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);

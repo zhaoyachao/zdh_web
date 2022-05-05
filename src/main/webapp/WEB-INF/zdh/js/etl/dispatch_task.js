@@ -131,7 +131,7 @@
                 layer.msg("任务状态未启动,或者不是处于暂停状态 无法完成暂停或恢复");
                 return false;
             }
-            var status = "pause"
+            var status = "pause";
             if (row_status == 'pause') {
                 status = "running"
             }

@@ -58,7 +58,7 @@ public class AspectConfig implements Ordered{
 	@Pointcut("execution(* com.zyc.zdh.controller.*.*.*(..)) || (execution(* com.zyc.zdh.controller.*.*(..)) && !execution(* com.zyc.zdh.controller.LoginController.login1(..)) && !execution(* com.zyc.zdh.controller.LoginController.getIndex(..)))")
 	public void pointcutMethod3(){}
 
-	@Around(value = "pointcutMethod()")
+	//@Around(value = "pointcutMethod()")
 	public Object around(ProceedingJoinPoint pjp){
 		try {
 			logger.info("start run aop method around ");
