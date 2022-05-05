@@ -106,7 +106,7 @@ public class ZdhSelfServiceController extends BaseController {
 
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -130,7 +130,7 @@ public class ZdhSelfServiceController extends BaseController {
 
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
@@ -143,7 +143,7 @@ public class ZdhSelfServiceController extends BaseController {
             selfHistoryMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
     }
@@ -161,7 +161,7 @@ public class ZdhSelfServiceController extends BaseController {
                     etl_sql);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "执行成功", result);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "执行失败", e.getMessage());
         }
     }
@@ -184,7 +184,7 @@ public class ZdhSelfServiceController extends BaseController {
             ExportUtil.doExport(result, column, column,response.getOutputStream());
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "执行成功", result);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "执行失败", e.getMessage());
         }
     }
@@ -213,12 +213,12 @@ public class ZdhSelfServiceController extends BaseController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             }
         }
     }

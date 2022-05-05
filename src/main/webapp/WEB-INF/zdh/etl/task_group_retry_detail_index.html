@@ -445,7 +445,7 @@
             cls_str="node node"+tp+"css tasks";
             var color=get_color_by_status(map3.get(divId));
             console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color);
-            if(map3.get(divId) == "error"){
+            if(map3.get(divId) == "error" || map3.get(divId) == "killed"){
                 $('#checkbox_'+divId).iCheck('check');
             }
 

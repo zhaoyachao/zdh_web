@@ -277,6 +277,7 @@ public class ZdhMonitorController extends BaseController {
             if (new_version.equalsIgnoreCase("true")) {
                 tgli.setIs_script(qji.getIs_script());
                 tgli.setJob_ids(qji.getJob_ids());
+                tgli.setJsmind_data(qji.getJsmind_data());
                 tgli.setJump_script(qji.getJump_script());
                 tgli.setJump_dep(qji.getJump_dep());
                 tgli.setInterval_time(qji.getInterval_time());
@@ -572,7 +573,7 @@ public class ZdhMonitorController extends BaseController {
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             }
         }
     }

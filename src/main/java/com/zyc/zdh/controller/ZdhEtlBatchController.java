@@ -323,7 +323,7 @@ public class ZdhEtlBatchController extends BaseController {
             return new DBUtil().R4(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
                     "select * from " + table_name + " where 1=2 limit 1", table_name);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             return new ArrayList<String>();
         }
     }
@@ -345,12 +345,12 @@ public class ZdhEtlBatchController extends BaseController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             }
         }
     }

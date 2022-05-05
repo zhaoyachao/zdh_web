@@ -758,7 +758,7 @@ public class JobCommon2 {
             return zdhFlinkSqlInfo;
 
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             throw e;
         }
 
@@ -841,7 +841,7 @@ public class JobCommon2 {
             return zdhJdbcInfo;
 
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             throw e;
         }
 
@@ -892,7 +892,7 @@ public class JobCommon2 {
             return zdhDataxInfo;
 
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             throw e;
         }
 
@@ -1209,7 +1209,7 @@ public class JobCommon2 {
             }
 
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             throw e;
         }
 
@@ -1233,7 +1233,7 @@ public class JobCommon2 {
 
             return new_str;
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             throw e;
         }
 
@@ -1623,7 +1623,7 @@ public class JobCommon2 {
                 }
             }
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             String msg = "[调度平台]:" + model_log + " JOB ,处理" + tli.getMore_task() + " 请求,异常请检查zdh_server服务是否正常运行,或者检查网络情况,如果是本地任务,请检查本地任务执行,错误信息如下:" + e.getMessage();
             logger.info(msg);
             insertLog(tli, "ERROR", msg);
@@ -1702,7 +1702,7 @@ public class JobCommon2 {
                                 sftpUtil.upload(script_path, jarFileInfo.getFile_name(), in);
 
                             } catch (Exception e) {
-                                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
                                 throw e;
                             } finally {
                                 if (in != null) in.close();
@@ -1737,7 +1737,7 @@ public class JobCommon2 {
             return true;
 
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             throw e;
         }
 
@@ -1836,7 +1836,7 @@ public class JobCommon2 {
 
 
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             throw e;
         }
 
@@ -2406,7 +2406,7 @@ public class JobCommon2 {
                 }
 
             } catch (Exception e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
                 insertLog(tli, "error", "JDBC依赖检查异常," + e.getMessage());
                 jobFail(tli.getJob_type(), tli);
                 return false;
@@ -2479,18 +2479,18 @@ public class JobCommon2 {
             return result;
 
         } catch (IOException e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             insertLog(tli, "ERROR", e.getMessage());
             JobCommon2.jobFail(jobType, tli);
         } catch (InterruptedException e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             insertLog(tli, "ERROR", e.getMessage());
             JobCommon2.jobFail(jobType, tli);
         } catch (URISyntaxException e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             insertLog(tli, "ERROR", e.getMessage());
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             insertLog(tli, "ERROR", e.getMessage());
         }
 
@@ -2707,9 +2707,9 @@ public class JobCommon2 {
                         //复制quartzjobinfo到tli,任务基础信息完成复制
                         BeanUtils.copyProperties(tgli, quartzJobInfo);
                     } catch (IllegalAccessException e) {
-                        logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                        logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
                     } catch (InvocationTargetException e) {
-                        logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                        logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
                     }
                     //逻辑发送错误代码捕获发生自动重试(retry_job) 不重新生成实例id,使用旧的实例id
                     String last_task_id = "";
@@ -2805,7 +2805,7 @@ public class JobCommon2 {
                 try {
                     seconds = Integer.parseInt(quartzJobInfo.getTime_diff());
                 } catch (NumberFormatException e) {
-                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
                 }
                 return DateUtil.add(quartzJobInfo.getQuartz_time(), Calendar.SECOND, -seconds);
             }
@@ -2947,7 +2947,7 @@ public class JobCommon2 {
             }
 
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
         } finally {
             JobCommon2.chm.remove(tk);
         }
@@ -3318,7 +3318,7 @@ public class JobCommon2 {
                 // debugInfo(tli);
             }
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             JobCommon2.insertLog(tgli, "ERROR", "生成子任务失败," + e.getMessage());
         }
         return tliList;
@@ -3350,7 +3350,7 @@ public class JobCommon2 {
                 }
             }
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             logger.error(e.getMessage());
             JobCommon2.insertLog(tli, "ERROR", e.getMessage());
         }

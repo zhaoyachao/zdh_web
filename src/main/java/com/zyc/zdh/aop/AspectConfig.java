@@ -55,7 +55,7 @@ public class AspectConfig implements Ordered{
 	//在方法上的自定义注解使用@annotation,类上自定义注解使用@within(com.zyc.springboot.类名)
 	@Pointcut("@annotation(com.zyc.zdh.aop.Log)")
 	public void pointcutMethod2(){}
-	@Pointcut("execution(* com.zyc.zdh.controller.*.*(..)) && !execution(* com.zyc.zdh.controller.LoginController.login1(..)) && !execution(* com.zyc.zdh.controller.LoginController.getIndex(..))")
+	@Pointcut("execution(* com.zyc.zdh.controller.*.*.*(..)) || (execution(* com.zyc.zdh.controller.*.*(..)) && !execution(* com.zyc.zdh.controller.LoginController.login1(..)) && !execution(* com.zyc.zdh.controller.LoginController.getIndex(..)))")
 	public void pointcutMethod3(){}
 
 	@Around(value = "pointcutMethod()")

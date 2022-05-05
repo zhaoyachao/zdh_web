@@ -190,7 +190,7 @@ public class ZdhMoreEtlController extends BaseController {
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" + e);
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             }
         }
     }
