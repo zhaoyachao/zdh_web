@@ -20,10 +20,13 @@ public interface RoleDao extends BaseMapper<RoleInfo> {
             "<when test='enable!=null and enable !=\"\"'>",
             "and enable = #{enable}",
             "</when>",
+            "<when test='product_code!=null and product_code !=\"\"'>",
+            "and product_code = #{product_code}",
+            "</when>",
             "</script>"
 
     })
-    public List<RoleInfo> selectByContext(@Param("role_context") String role_context,@Param("enable") String enable);
+    public List<RoleInfo> selectByContext(@Param("role_context") String role_context,@Param("enable") String enable,@Param("product_code") String product_code);
 
     @Update(
             {

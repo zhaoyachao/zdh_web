@@ -9,6 +9,7 @@ import javax.servlet.Filter;
 import com.zyc.zdh.shiro.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.session.SessionListener;
 import org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler;
@@ -69,9 +70,16 @@ public class ShiroConfig {
 	public HashedCredentialsMatcher hashedCredentialsMatcher() {
 		HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
 		hashedCredentialsMatcher.setHashAlgorithmName("md5");// 散列算法:这里使用MD5算法;
-		hashedCredentialsMatcher.setHashIterations(1);// 散列的次数，比如散列两次，相当于md5(md5(""));
+		hashedCredentialsMatcher.setHashIterations(2);// 散列的次数，比如散列两次，相当于md5(md5(""));
 		hashedCredentialsMatcher.setStoredCredentialsHexEncoded(true);
 		return hashedCredentialsMatcher;
+	}
+
+	@Bean
+	public SimpleCredentialsMatcher simpleCredentialsMatcher(){
+		SimpleCredentialsMatcher simpleCredentialsMatcher=new MySimpleCredentialsMatcher();
+		return simpleCredentialsMatcher;
+
 	}
 	
 	@Bean(name = "defaultWebSecurityManager")
@@ -125,7 +133,9 @@ public class ShiroConfig {
 		myRealm.setAuthenticationCachingEnabled(true);
 		myRealm.setAuthenticationCacheName("shiro-AuthenticationCache");
 		myRealm.setCacheManager(shiroRedisCacheManager);
+		//认证加密方式,配合FormAuthenticationFilter使用
 		//myRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+		myRealm.setCredentialsMatcher(simpleCredentialsMatcher());
 		return myRealm;
 	}
 
@@ -259,6 +269,7 @@ public class ShiroConfig {
 		filterMap.put(project_pre+"/swagger**", "anon");
 		filterMap.put(project_pre+"/api-docs/**", "anon");
 		filterMap.put(project_pre+"/get_platform_name", "anon");
+		filterMap.put(project_pre+"/get_error_msg", "anon");
 
 		filterMap.put(project_pre+"/**", "authc");
 

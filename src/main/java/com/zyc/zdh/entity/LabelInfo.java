@@ -23,9 +23,14 @@ public class LabelInfo {
     private String label_context;
 
     /**
-     * 标签可用参数
+     * 标签分类
      */
-    private String param_json;
+    private String label_type;
+
+    /**
+     * 联系人
+     */
+    private String label_person;
 
     /**
      * 账号
@@ -47,10 +52,30 @@ public class LabelInfo {
      */
     private Timestamp update_time;
 
+    /**
+     * 标签计算引擎,mysql,hive,spark,presto
+     */
+    private String label_engine;
+
+    /**
+     * 标签可用参数
+     */
+    private String param_json;
+
+    /**
+     * 运算表达式,仅支持sql
+     */
+    private String label_expression;
+
     @Transient
     private JSONArray param_json_object;
 
-
+    public JSONArray getParam_json_object() {
+        if(!StringUtils.isEmpty(param_json)){
+            return JSON.parseArray(param_json);
+        }
+        return param_json_object;
+    }
     /**
      * @return id
      */
@@ -102,21 +127,39 @@ public class LabelInfo {
     }
 
     /**
-     * 获取标签可用参数
+     * 获取标签分类
      *
-     * @return param_json - 标签可用参数
+     * @return label_type - 标签分类
      */
-    public String getParam_json() {
-        return param_json;
+    public String getLabel_type() {
+        return label_type;
     }
 
     /**
-     * 设置标签可用参数
+     * 设置标签分类
      *
-     * @param param_json 标签可用参数
+     * @param label_type 标签分类
      */
-    public void setParam_json(String param_json) {
-        this.param_json = param_json;
+    public void setLabel_type(String label_type) {
+        this.label_type = label_type;
+    }
+
+    /**
+     * 获取联系人
+     *
+     * @return label_person - 联系人
+     */
+    public String getLabel_person() {
+        return label_person;
+    }
+
+    /**
+     * 设置联系人
+     *
+     * @param label_person 联系人
+     */
+    public void setLabel_person(String label_person) {
+        this.label_person = label_person;
     }
 
     /**
@@ -191,14 +234,57 @@ public class LabelInfo {
         this.update_time = update_time;
     }
 
-    public JSONArray getParam_json_object() {
-        if(!StringUtils.isEmpty(param_json)){
-            return JSON.parseArray(param_json);
-        }
-        return new JSONArray();
+    /**
+     * 获取标签计算引擎,mysql,hive,spark,presto
+     *
+     * @return label_engine - 标签计算引擎,mysql,hive,spark,presto
+     */
+    public String getLabel_engine() {
+        return label_engine;
     }
 
-    public void setParam_json_object(JSONArray param_json_object) {
-        this.param_json_object = param_json_object;
+    /**
+     * 设置标签计算引擎,mysql,hive,spark,presto
+     *
+     * @param label_engine 标签计算引擎,mysql,hive,spark,presto
+     */
+    public void setLabel_engine(String label_engine) {
+        this.label_engine = label_engine;
+    }
+
+    /**
+     * 获取标签可用参数
+     *
+     * @return param_json - 标签可用参数
+     */
+    public String getParam_json() {
+        return param_json;
+    }
+
+    /**
+     * 设置标签可用参数
+     *
+     * @param param_json 标签可用参数
+     */
+    public void setParam_json(String param_json) {
+        this.param_json = param_json;
+    }
+
+    /**
+     * 获取运算表达式,仅支持sql
+     *
+     * @return label_expression - 运算表达式,仅支持sql
+     */
+    public String getLabel_expression() {
+        return label_expression;
+    }
+
+    /**
+     * 设置运算表达式,仅支持sql
+     *
+     * @param label_expression 运算表达式,仅支持sql
+     */
+    public void setLabel_expression(String label_expression) {
+        this.label_expression = label_expression;
     }
 }

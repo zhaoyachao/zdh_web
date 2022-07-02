@@ -116,14 +116,11 @@ public class HttpUtil {
 
   public static void main(String[] args) throws Exception{
 
-    String url="http://127.0.0.1:60001/api/v1/zdh";
+    String url="http://127.0.0.1:8081/api/call_back_test";
     EtlTaskInfo etlTaskInfo=new EtlTaskInfo();
     etlTaskInfo.setId("1111111111");
     String json=JSON.toJSONString(etlTaskInfo);
-    postJSON(url,json);
-    while (true){
-
-    }
+    System.out.println(postJSON(url,json));
 
   }
 

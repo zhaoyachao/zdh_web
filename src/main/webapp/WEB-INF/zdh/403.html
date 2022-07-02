@@ -45,7 +45,16 @@
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
     <script>
         function open_index() {
-            parent.location.href=server_context+"/index";
+            try{
+                if (server_context == "" || typeof(server_context)=="undefined") {
+                    parent.location.href="/index";
+                    return true;
+                }
+                parent.location.href=server_context+"/index";
+            }catch (e) {
+                parent.location.href="/index";
+            }
+
         }
     </script>
 

@@ -119,9 +119,9 @@ public class SystemCommandLineRunner implements CommandLineRunner {
             @Override
             public void run() {
                 while(true){
-                    //此处设置10s 超时 ,quartz 故障检测时间为30s
-                    redisUtil.set(instance+"_"+myid,JobCommon2.web_application_id,10L, TimeUnit.SECONDS);
                     try {
+                        //此处设置10s 超时 ,quartz 故障检测时间为30s
+                        redisUtil.set(instance+"_"+myid,JobCommon2.web_application_id,10L, TimeUnit.SECONDS);
                         //此处设置2s 每2秒向redis 设置一个当前服务,作为一个心跳检测使用
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {

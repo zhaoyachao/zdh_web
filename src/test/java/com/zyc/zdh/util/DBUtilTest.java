@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -80,6 +81,56 @@ public class DBUtilTest {
         }
 
     }
+
+    @Test
+    public void dbConnectionGreenPlum(){
+
+        String driver="com.pivotal.jdbc.GreenplumDriver";
+        String url = "jdbc:pivotal:greenplum://192.168.110.10:5432;DatabaseName=postgres";
+        String username = "zyc";
+        String password = "123456";
+        try {
+            List<Map<String,Object>> re=new DBUtil().R5(driver,url,username,password,"select * from  public.t1 ");
+
+            System.out.println(JSON.toJSONString(re));
+            List<Map<String,Object>> re2=new DBUtil().R5(driver,url,username,password,"select * from information_schema.tables ");
+
+            System.out.println(JSON.toJSONString(re2));
+
+            List<String> list=new DBUtil().R3(driver,url,username,password,"");
+
+            for(String table:list){
+                System.out.println("表名:"+table);
+            }
+
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+        }
+
+    }
+
+    @Test
+    public void dbConnectionGBase(){
+
+        String driver="com.gbase.jdbc.Driver";
+        String url = "jdbc:gbase://192.168.110.10:5258/gbase";
+        String username = "root";
+        String password = "";
+        try {
+            List<String> list=new DBUtil().R3(driver,url,username,password,"");
+
+            for(String table:list){
+                System.out.println("表名:"+table);
+            }
+
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+        }
+
+    }
+
 
     @Test
     public void a(){

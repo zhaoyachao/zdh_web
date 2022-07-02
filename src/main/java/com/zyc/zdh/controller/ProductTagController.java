@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -93,6 +94,9 @@ public class ProductTagController extends BaseController {
             productTagInfo.setCreate_time(oldProductTagInfo.getCreate_time());
             productTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             productTagInfo.setIs_delete(Const.NOT_DELETE);
+            productTagInfo.setAk(oldProductTagInfo.getAk());
+            productTagInfo.setSk(oldProductTagInfo.getSk());
+            productTagInfo.setStatus(oldProductTagInfo.getStatus());
             productTagMapper.updateByPrimaryKey(productTagInfo);
 
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
@@ -118,15 +122,15 @@ public class ProductTagController extends BaseController {
             }
 
             productTagInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
+            productTagInfo.setStatus(Const.PRODUCT_ENABLE);
+            productTagInfo.setAk(DigestUtils.md5DigestAsHex((SnowflakeIdWorker.getInstance().nextId()+"").getBytes()));
+            productTagInfo.setSk(DigestUtils.md5DigestAsHex((SnowflakeIdWorker.getInstance().nextId()+"").getBytes()));
             productTagInfo.setOwner(getUser().getId());
             productTagInfo.setIs_delete(Const.NOT_DELETE);
             productTagInfo.setCreate_time(new Timestamp(new Date().getTime()));
             productTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             productTagMapper.insert(productTagInfo);
-
             //创建产品资源
-
-
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
@@ -139,7 +143,7 @@ public class ProductTagController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public String product_tag_delete(String[] ids) {
         try {
-            productTagMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
+            productTagMapper.deleteLogicByIds("",ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

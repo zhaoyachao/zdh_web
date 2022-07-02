@@ -6,7 +6,8 @@ public enum JobType {
     EMAIL("EMAIL","EMAIL","告警任务"),
     CHECK("CHECK","CHECK","检查任务依赖"),
     RETRY("RETRY","RETRY","检查失败需要重试的任务"),
-    BLOOD("BLOOD","BLOOD","血缘任务");
+    BLOOD("BLOOD","BLOOD","血缘任务"),
+    DIGITALMARKET("DIGITALMARKET","DIGITALMARKET","智能营销任务");
 
 
     private String value;

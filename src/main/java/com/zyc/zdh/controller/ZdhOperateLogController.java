@@ -50,7 +50,6 @@ public class ZdhOperateLogController extends BaseController {
         Example example = new Example(userOperateLogInfo.getClass());
         List<UserOperateLogInfo> userOperateLogInfos = new ArrayList<>();
         Example.Criteria cri = example.createCriteria();
-        cri.andEqualTo("owner", getUser().getId());
         cri.andBetween("create_time", start_time, end_time);
         if (!StringUtils.isEmpty(log_context)) {
             cri.andLike("user_name", getLikeCondition(log_context));

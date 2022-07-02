@@ -127,12 +127,12 @@ public class ZdhApprovalController extends BaseController{
 
     @RequestMapping(value = "/approval_auditor_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String approval_auditor_list(String approval_context) {
+    public String approval_auditor_list(String approval_context, String auditor_id) {
         try{
             if(!StringUtils.isEmpty(approval_context)){
                 approval_context = getLikeCondition(approval_context);
             }
-            List<ApprovalAuditorInfo> approvalAuditorInfos=approvalAuditorMapper.selectByContext(approval_context);
+            List<ApprovalAuditorInfo> approvalAuditorInfos=approvalAuditorMapper.selectByContext(approval_context, auditor_id);
             return JSON.toJSONString(approvalAuditorInfos);
         }catch (Exception e){
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);

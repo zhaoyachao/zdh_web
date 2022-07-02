@@ -5,7 +5,7 @@
 
     <groupId>com.zyc</groupId>
     <artifactId>zdh</artifactId>
-    <version>5.0.0-RELEASE</version>
+    <version>5.1.0-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>zdh_web</name>
@@ -523,6 +523,13 @@
             <artifactId>elasticsearch</artifactId>
             <version>7.6.1</version>
         </dependency>
+
+        <!-- urule规则引擎 -->
+<!--        <dependency>-->
+<!--            <groupId>com.bstek.urule</groupId>-->
+<!--            <artifactId>urule-console</artifactId>-->
+<!--            <version>2.1.6</version>-->
+<!--        </dependency>-->
 
     </dependencies>
 

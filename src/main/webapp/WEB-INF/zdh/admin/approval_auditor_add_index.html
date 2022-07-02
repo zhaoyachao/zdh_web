@@ -72,6 +72,18 @@
                                 </div>
                             </div>
 
+
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">产品</label>
+                                <div class="col-sm-8">
+                                    <select id="product_code" name="product_code"
+                                            data-placeholder="产品code...."
+                                            class="chosen-select form-control m-b" >
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label class="col-sm-3 control-label">审批人ID：</label>
                                 <div class="col-sm-8">
@@ -160,33 +172,67 @@
             $('#auditor_id').chosen();
             $('#auditor_group').chosen();
 
+
             $.ajax({
                 type: 'POST',
-                url: server_context+"/user_group_list?enable=true",
+                url: server_context+"/product_tag_list",
                 async:false,
                 dataType: 'json',
-                data: '',
+                data: "",
                 //成功返回
                 success: function (data) {
-
-                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                    for (var i = 0; i < data.result.length; i++) {
-                        str += '<option value=\"' + data.result[i].id + '\" hassubinfo=\"true\">' + data.result[i].name + '</option>'
+                    var str = '';
+                    for (var i = 0; i < data.length; i++) {
+                        str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
                     }
-                    $('#auditor_group').html(str);
-                    $("#auditor_group").trigger("chosen:updated");
-                    $('#auditor_group').chosen();
-
+                    $('#product_code').html(str);
+                    $("#product_code").trigger("chosen:updated");
+                    $('#product_code').chosen().on("change", function (evt, params) {
+                        //更新用户组和角色
+                        init_user_group($("#product_code").val());
+                        init_user($("#product_code").val());
+                        //init_jstree($("#product_code").val());
+                    });
+                    init_user_group($("#product_code").val());
+                    init_user($("#product_code").val());
                 },
                 //处理完成
                 complete: function () {
-                    console.info("complete getUserInfo")
                 },
                 //报错
                 error: function (data) {
-                    console.info("error: " + data.responseText);
                 }
             });
+
+            function init_user_group(product_code){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/user_group_list?enable=true&product_code="+product_code,
+                    async:false,
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+
+                        var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].id + '\" hassubinfo=\"true\">' + data.result[i].name + '</option>'
+                        }
+                        $('#auditor_group').html(str);
+                        $("#auditor_group").trigger("chosen:updated");
+                        $('#auditor_group').chosen();
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete getUserInfo")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
 
             $.ajax({
                 type: 'POST',
@@ -212,33 +258,40 @@
                 }
             });
 
-            $.ajax({
-                type: 'POST',
-                url: "user_list",
-                async:false,
-                dataType: 'json',
-                data: "",
-                //成功返回
-                success: function (data) {
-                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                    for (var i = 0; i < data.length; i++) {
-                        str += '<option value=\"' + data[i].id + '\"user_group\"=\"'+data[i].user_group+'\"' + '\" hassubinfo=\"true\">' + data[i].userName + '</option>';
+            function init_user(product_code){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/user_list?product_code="+product_code,
+                    async:false,
+                    dataType: 'json',
+                    data: "",
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].user_account + '\" user_group=\"'+data.result[i].user_group+'\"' + '\" hassubinfo=\"true\">' + data.result[i].user_name + '</option>';
+                        }
+                        $('#auditor_id').html(str);
+                        $("#auditor_id").trigger("chosen:updated");
+                        $('#auditor_id').chosen().on("change", function (evt, params) {
+                            var user_group = $('#auditor_id').find("option:selected").attr("user_group");
+                            console.info("哟农户组："+user_group);
+                            $("#auditor_group").val(user_group);
+                            $("#auditor_group").trigger("chosen:updated");
+                        });
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
                     }
-                    $('#auditor_id').html(str);
-                    $("#auditor_id").trigger("chosen:updated");
-                    $('#auditor_id').chosen().on("change", function (evt, params) {
-                        var user_group = $('#auditor_id').attr('user_group');
-                        $("#auditor_group").val(user_group);
-                        $("#auditor_group").trigger("chosen:updated");
-                    });
-                },
-                //处理完成
-                complete: function () {
-                },
-                //报错
-                error: function (data) {
-                }
-            });
+                });
+            }
 
 
             if(s.id != '-1'){

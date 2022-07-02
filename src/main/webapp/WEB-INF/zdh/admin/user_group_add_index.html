@@ -44,6 +44,16 @@
                         <form class="form-horizontal m-t" id="signupForm">
 
                             <div class="form-group">
+                                <label class="col-sm-3 control-label">产品</label>
+                                <div class="col-sm-8">
+                                    <select id="product_code" name="product_code"
+                                            data-placeholder="产品code...."
+                                            class="chosen-select form-control m-b" >
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="col-sm-3 control-label">用户组名：</label>
                                 <div class="col-sm-8">
                                     <input id="name" name="name" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
@@ -95,6 +105,37 @@
             for (var i = 0; i < pa.length; i++) {
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
+
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/product_tag_list",
+                async:false,
+                dataType: 'json',
+                data: "",
+                //成功返回
+                success: function (data) {
+                    var str = '';
+                    for (var i = 0; i < data.length; i++) {
+                        str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+                    }
+                    $('#product_code').html(str);
+                    $("#product_code").trigger("chosen:updated");
+                    $('#product_code').chosen().on("change", function (evt, params) {
+                        //更新用户组和角色
+                        init_user_group($("#product_code").val());
+                        init_user($("#product_code").val());
+                        //init_jstree($("#product_code").val());
+                    });
+                    init_user_group($("#product_code").val());
+                    init_user($("#product_code").val());
+                },
+                //处理完成
+                complete: function () {
+                },
+                //报错
+                error: function (data) {
+                }
+            });
 
             $('#btn_up').click(function () {
 

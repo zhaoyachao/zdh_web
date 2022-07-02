@@ -2,8 +2,10 @@ package com.zyc.zdh.job;
 
 import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.QuartzJobMapper;
+import com.zyc.zdh.dao.StrategyGroupMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
+import com.zyc.zdh.entity.StrategyGroupInfo;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.shiro.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +17,9 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 
 @DisallowConcurrentExecution
@@ -29,6 +33,7 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 	private static final long serialVersionUID = -8509585011462529939L;
 
 	public static final String TASK_ID = "task_id";
+	public static final String TASK_TYPE = "task_type";
 	
 	@Autowired
 	private QuartzJobMapper quartzJobMapper;
@@ -47,6 +52,10 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 	@Autowired
 	private RedisUtil redisUtil;
 
+	@Autowired
+	private StrategyGroupMapper sgm;
+
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void executeInternal(JobExecutionContext context)
@@ -54,6 +63,7 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 		try {
 			JobDataMap jobDataMap = context.getTrigger().getJobDataMap();
 			String taskId = jobDataMap.getString(TASK_ID);
+			String taskType = jobDataMap.getString(TASK_TYPE);
 
 			if (taskId == null || taskId.trim().equals("")) {
 				throw new Exception("任务id为空");
@@ -61,17 +71,25 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 			// 记录当前时间更新任务最后执行时间
 			Date currentTime =context.getScheduledFireTime();
 
-			QuartzJobMapper quartzJobMapper2 = this.quartzJobMapper;
-			QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
-			quartzJobInfo = quartzJobMapper2.selectByPrimaryKey(taskId);
-			if(quartzJobInfo==null){
-				logger.info("调度任务发现空的任务,任务id"+taskId);
-				return ;
+			List<String> taskTypes=Arrays.asList(new String[]{"email","check","retry","etl", "blood"});
+			if(StringUtils.isEmpty(taskType) || taskTypes.contains(taskType.toLowerCase())){
+				QuartzJobMapper quartzJobMapper2 = this.quartzJobMapper;
+				QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
+				quartzJobInfo = quartzJobMapper2.selectByPrimaryKey(taskId);
+				if(quartzJobInfo==null){
+					logger.info("调度任务发现空的任务,任务id"+taskId);
+					return ;
+				}
+				quartzJobInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
+
+				JobCommon2.chooseJobBean(quartzJobInfo,0,null,null);
+			}else if(!StringUtils.isEmpty(taskType) && taskType.equalsIgnoreCase("DIGITALMARKET")){
+				//智能营销调度任务
+				StrategyGroupInfo strategyGroupInfo=new StrategyGroupInfo();
+				strategyGroupInfo = sgm.selectByPrimaryKey(taskId);
+				JobDigitalMarket.chooseJobBean(strategyGroupInfo, 0, null, null);
 			}
-			quartzJobInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
 
-
-			JobCommon2.chooseJobBean(quartzJobInfo,0,null,null);
 
 //下方故障转移删除
 //			if(!StringUtils.isEmpty(quartzJobInfo.getTask_log_id())){
@@ -95,9 +113,6 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 //				//正常运行情况
 //				JobCommon2.chooseJobBean(quartzJobInfo,0,null);
 //			}
-
-
-
 
 		} catch (Exception e) {
 			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

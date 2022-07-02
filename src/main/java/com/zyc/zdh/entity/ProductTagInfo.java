@@ -39,6 +39,21 @@ public class ProductTagInfo {
     private Timestamp update_time;
 
     /**
+     * 0:启用,1:不可申请,2:禁用
+     */
+    private String status;
+
+    /**
+     * 产品ak
+     */
+    private String ak;
+
+    /**
+     * 产品sk
+     */
+    private String sk;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -158,5 +173,59 @@ public class ProductTagInfo {
      */
     public void setUpdate_time(Timestamp update_time) {
         this.update_time = update_time;
+    }
+
+    /**
+     * 获取0:启用,1:不可申请,2:禁用
+     *
+     * @return status - 0:启用,1:不可申请,2:禁用
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * 设置0:启用,1:不可申请,2:禁用
+     *
+     * @param status 0:启用,1:不可申请,2:禁用
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    /**
+     * 获取产品ak
+     *
+     * @return ak - 产品ak
+     */
+    public String getAk() {
+        return ak;
+    }
+
+    /**
+     * 设置产品ak
+     *
+     * @param ak 产品ak
+     */
+    public void setAk(String ak) {
+        this.ak = ak;
+    }
+
+    /**
+     * 获取产品sk
+     *
+     * @return sk - 产品sk
+     */
+    public String getSk() {
+        return sk;
+    }
+
+    /**
+     * 设置产品sk
+     *
+     * @param sk 产品sk
+     */
+    public void setSk(String sk) {
+        this.sk = sk;
     }
 }

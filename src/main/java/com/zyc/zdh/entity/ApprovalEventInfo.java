@@ -18,7 +18,8 @@ public class ApprovalEventInfo {
     private String event_context;//事件说明,
     private Timestamp create_time;//'创建时间',
     private Timestamp update_time;//'更新时间',
-    private String skip_account;
+    private String skip_account;//跳过审批用户
+    private String call_back;//回调接口
 
     @Transient
     private String code_name;
@@ -118,5 +119,13 @@ public class ApprovalEventInfo {
 
     public void setUpdate_time(Timestamp update_time) {
         this.update_time = update_time;
+    }
+
+    public String getCall_back() {
+        return call_back;
+    }
+
+    public void setCall_back(String call_back) {
+        this.call_back = call_back;
     }
 }

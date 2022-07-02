@@ -78,9 +78,9 @@ public interface ProcessFlowMapper extends BaseMapper<ProcessFlowInfo> {
 
     @Select({
             "<script>",
-            "select pfi.*,acc.user_name as by_person_name from process_flow_info pfi left join account_info acc on pfi.owner=acc.id where pfi.flow_id=#{flow_id} and find_in_set(acc.id, auditor_id) ",
+            "select pfi.*,'${auditor_id}' as by_person_name from process_flow_info pfi where pfi.flow_id=#{flow_id} and find_in_set('${auditor_id}', auditor_id) ",
             "</script>"
 
     })
-    public List<ProcessFlowInfo> selectByFlowId(@Param("flow_id") String flow_id);
+    public List<ProcessFlowInfo> selectByFlowId(@Param("flow_id") String flow_id, @Param("auditor_id") String auditor_id);
 }

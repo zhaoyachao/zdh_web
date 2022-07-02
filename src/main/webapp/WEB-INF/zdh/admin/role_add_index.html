@@ -200,6 +200,7 @@
                     $("#product_code").val(data.result.product_code);
                     $("#product_code").prop("disabled","true");
                     $("#product_code").trigger("chosen:updated");
+                    $('#code').attr("readonly", "true");
                     init_jstree(data.result.product_code);
                 }
             });

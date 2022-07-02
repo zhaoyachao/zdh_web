@@ -88,7 +88,7 @@
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
-              $("#id").val(row.id)
+              $("#id").val(row.id);
               openTabPage(server_context+"/user_add_index.html?id="+ row.id, "用户权限配置")
           }
       };
@@ -205,68 +205,79 @@
 
       $('#exampleTableEvents').bootstrapTable({
           method: "POST",
-          url: server_context+"/user_list",
-      search: true,
-      pagination: true,
-      showRefresh: true,
-      showToggle: true,
-      showColumns: true,
-      iconSize: 'outline',
-      toolbar: '#exampleTableEventsToolbar',
-      icons: {
-        refresh: 'glyphicon-repeat',
-        toggle: 'glyphicon-list-alt',
-        columns: 'glyphicon-list'
-      },
-        columns: [{
-            checkbox: true,
-            field:'state',
-            sortable:true
-        }, {
-            field: 'id',
-            title: 'ID',
-            sortable:true
-        }, {
-            field: 'userName',
-            title: '用户账号',
-            sortable:false
-        },{
-            field: 'email',
-            title: '邮箱',
-            sortable:false
-        }, {
-            field: 'phone',
-            title: '手机号',
-            sortable:false
+          url: "",
+          search: true,
+          pagination: true,
+          showRefresh: true,
+          showToggle: true,
+          showColumns: true,
+          iconSize: 'outline',
+          responseHandler:function (res) {
+              if(!Array.isArray(res)){
+                  layer.msg(res.msg);
+                  return res.result;
+              }
+              return res;
+          },
+          toolbar: '#exampleTableEventsToolbar',
+          icons: {
+            refresh: 'glyphicon-repeat',
+            toggle: 'glyphicon-list-alt',
+            columns: 'glyphicon-list'
+          },
+            columns: [{
+                checkbox: true,
+                field:'state',
+                sortable:true
+            }, {
+                field: 'id',
+                title: 'ID',
+                sortable:true
+            }, {
+                field: 'user_account',
+                title: '用户账号',
+                sortable:false
+            },{
+                field: 'user_name',
+                title: '用户名',
+                sortable:false
+            },{
+                field: 'email',
+                title: '邮箱',
+                sortable:false
+            }, {
+                field: 'phone',
+                title: '手机号',
+                sortable:false
 
-        },{
-            field: 'enable',
-            title: '状态',
-            sortable:false,
-            events: operateEvents2,//给按钮注册事件
-            formatter: function (value, row, index){
-                var context = "未启用"
-                var class_str = "btn-danger btn-xs"
+            },{
+                field: 'enable',
+                title: '状态',
+                sortable:false,
+                events: operateEvents2,//给按钮注册事件
+                formatter: function (value, row, index){
+                    var context = "未启用";
+                    var class_str = "btn-danger btn-xs";
 
-                if (value == "true") {
-                    context = "启用"
-                    class_str = "btn-primary  btn-xs"
+                    if (value == "true") {
+                        context = "启用";
+                        class_str = "btn-primary  btn-xs"
+                    }
+                    return [
+                        '<div style="text-align:center" >'+
+                        '<div class="btn-group">'+
+                        '<button id="btn_enable" type="button" class="btn '+class_str+'">'+context+'</button>'+
+                        '</div>'+
+                        '</div>'
+                    ].join('');
                 }
-                return [
-                    '<div style="text-align:center" >'+
-                    '<div class="btn-group">'+
-                    '<button id="btn_enable" type="button" class="btn '+class_str+'">'+context+'</button>'+
-                    '</div>'+
-                    '</div>'
-                ].join('');
-            }
-        },{
-            field: 'operate',
-            title: '操作',
-            events: operateEvents,//给按钮注册事件
-            width:150,
-            formatter: operateFormatter //表格中增加按钮
-        }]
+            },{
+                field: 'operate',
+                title: '操作',
+                events: operateEvents,//给按钮注册事件
+                width:150,
+                formatter: operateFormatter //表格中增加按钮
+            }]
     });
 
     function openTabPage(url, title) {
@@ -298,6 +309,5 @@
 
       }
 
-    var $result = $('#examplebtTableEventsResult');
   })();
 })(document, window, jQuery);

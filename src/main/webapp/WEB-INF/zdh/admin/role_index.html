@@ -12,6 +12,7 @@
     <meta name="description" content="ZDH 角色首页">
 
     <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
@@ -36,6 +37,15 @@
             <div class="ibox-content">
 
                 <form role="form" class="form-inline" id="user_form">
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code...."
+                                    class="chosen-select form-control m-b" >
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <div class="input-group" >
@@ -89,10 +99,10 @@
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
 
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
     <!-- Bootstrap table -->
     <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
-    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
     <!-- Peity -->
@@ -102,13 +112,39 @@
 
     $(document).ready(function () {
 
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/product_tag_list",
+            async:false,
+            dataType: 'json',
+            data: "",
+            //成功返回
+            success: function (data) {
+                var str = '';
+                for (var i = 0; i < data.length; i++) {
+                    str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+                }
+                $('#product_code').html(str);
+                $("#product_code").trigger("chosen:updated");
+                $('#product_code').chosen();
+            },
+            //处理完成
+            complete: function () {
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
                 url: server_context+"/role_list?"+$("#user_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
-        })
+        });
+
+        $('#search').click();
 
     })
 

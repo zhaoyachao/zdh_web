@@ -245,7 +245,7 @@
                     fixed: false,
                     maxmin: true,
                     shade: 0.1,
-                    area : ['45%', '60%'],
+                    area : ['60%', '80%'],
                     //area: ['450px', '500px'],
                     content: server_context+"/task_group_exe_detail_index?id="+row.job_id, //iframe的url
                     end : function () {

@@ -41,7 +41,6 @@ public class LabelController extends BaseController {
     private LabelMapper labelMapper;
 
     @RequestMapping(value = "/label_index", method = RequestMethod.GET)
-    @White
     public String label_index() {
 
         return "digitalmarket/label_index";
@@ -49,7 +48,6 @@ public class LabelController extends BaseController {
 
     @RequestMapping(value = "/label_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @White
     public String label_list(String label_context) {
         Example example=new Example(LabelInfo.class);
         Example.Criteria criteria=example.createCriteria();
@@ -68,7 +66,6 @@ public class LabelController extends BaseController {
     }
 
     @RequestMapping(value = "/label_add_index", method = RequestMethod.GET)
-    @White
     public String label_add_index() {
 
         return "digitalmarket/label_add_index";
@@ -77,7 +74,6 @@ public class LabelController extends BaseController {
 
     @RequestMapping(value = "/label_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @White
     public String label_detail(String id) {
         try {
             LabelInfo labelInfo = labelMapper.selectByPrimaryKey(id);
@@ -87,10 +83,23 @@ public class LabelController extends BaseController {
         }
     }
 
+    @RequestMapping(value = "/label_detail_by_code", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String label_detail_by_code(String label_code) {
+        try {
+
+            LabelInfo labelInfo = new LabelInfo();
+            labelInfo.setLabel_code(label_code);
+            labelInfo = labelMapper.selectOne(labelInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", labelInfo);
+        } catch (Exception e) {
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
     @RequestMapping(value = "/label_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public String label_update(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_operate, String[] param_value) {
         try {
             if(param_code==null || param_code.length<1){
@@ -102,7 +111,11 @@ public class LabelController extends BaseController {
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
-                jsonObject.put("param_value", param_value[i]);
+                if(i>=param_value.length){
+                    jsonObject.put("param_value", "");
+                }else{
+                    jsonObject.put("param_value", param_value[i]);
+                }
                 jsonArray.add(jsonObject);
             }
 
@@ -127,7 +140,6 @@ public class LabelController extends BaseController {
     @RequestMapping(value = "/label_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public String label_add(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_operate, String[] param_value) {
         try {
             if(param_code==null || param_code.length<1){
@@ -139,7 +151,12 @@ public class LabelController extends BaseController {
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
-                jsonObject.put("param_value", param_value[i]);
+                if(i>=param_value.length){
+                    jsonObject.put("param_value", "");
+                }else{
+                    jsonObject.put("param_value", param_value[i]);
+                }
+
                 jsonArray.add(jsonObject);
             }
             labelInfo.setParam_json(jsonArray.toJSONString());
@@ -159,10 +176,9 @@ public class LabelController extends BaseController {
     @RequestMapping(value = "/label_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public String label_delete(String[] ids) {
         try {
-            labelMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
+            labelMapper.deleteLogicByIds("label_info",ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

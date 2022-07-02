@@ -1,22 +1,25 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.AccountMapper;
-import com.zyc.zdh.entity.AccountInfo;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.User;
+import com.zyc.zdh.dao.PermissionMapper;
+import com.zyc.zdh.dao.RoleDao;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.service.RoleService;
 import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.MyRealm;
+import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.Encrypt;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.cache.Cache;
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
@@ -26,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +42,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -49,16 +54,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 public class LoginController {
 
     private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 
-    public static ApplicationContext context=null;
+    public static ApplicationContext context = null;
 
-    @Autowired
-    private RoleService roleService;
     @Autowired
     AccountService accountService;
     @Autowired
@@ -67,6 +72,14 @@ public class LoginController {
     JemailService jemailService;
     @Autowired
     AccountMapper accountMapper;
+    @Autowired
+    PermissionMapper permissionMapper;
+    @Autowired
+    RoleDao roleDao;
+    @Autowired
+    Environment ev;
+    @Autowired
+    RedisUtil redisUtil;
 
     @RequestMapping("/")
     public String getLogin() {
@@ -81,29 +94,53 @@ public class LoginController {
     @Operation(summary = "register", description = "user register")
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @Transactional(propagation= Propagation.NESTED)
+    @Transactional(propagation = Propagation.NESTED)
     public String register2(User user) {
         JSONObject json = new JSONObject();
-        try{
-            //散列hash 算法和shiro 的算法保持一致
-            //user.setPassword(new SimpleHash("md5", new String(user.getPassword()), null, 1).toString());
+        try {
+            //自定义加密 算法和shiro 的算法保持一致
+            //user.setPassword(new SimpleHash("md5", new String(user.getPassword()), null, 2).toString());
+            user.setPassword(Encrypt.AESencrypt(user.getPassword()));
 
             //判断是否存在用户
-            List<User> users=accountService.findByUserName(user);
+            List<User> users = accountService.findByUserName(user);
 
-            if(users.size()>0){
+            if (users.size() > 0) {
                 json.put("error", "账户已存在");
                 return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "账户以存在", null);
             }
+
+            //增加特别信息校验
+            Pattern pattern = Pattern.compile("(;|\\*|expr \\s*|delete \\s*)", Pattern.CASE_INSENSITIVE);
+            if (pattern.matcher(user.getUserName()).find() || pattern.matcher(user.getPassword()).find()) {
+                //此处可做校验判断,是否加入ip黑名单
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "账户包含不合法字符,请修改后提交", null);
+            }
             user.setEnable(Const.TRUR);
             int result = accountService.insert(user);
+            PermissionUserInfo pui = new PermissionUserInfo();
+            pui.setUser_account(user.getUserName());
+            pui.setUser_name(user.getUserName());
+            String product_code = ev.getProperty("zdh.product", "zdh");
+            pui.setProduct_code(product_code);
+            pui.setEnable(Const.TRUR);
+
+            RoleInfo roleInfo = new RoleInfo();
+            roleInfo.setProduct_code(product_code);
+            roleInfo.setCode("role_base");//此角色code 不可变
+            roleInfo = roleDao.selectOne(roleInfo);
+            if (roleInfo != null) {
+                pui.setRoles(roleInfo.getId());
+            }
+            pui.setTag_group_code("");
+            permissionMapper.insert(pui);
             if (result > 0) {
                 return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "注册成功", null);
             } else {
                 return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "注册失败", null);
             }
-        }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "注册失败", e);
@@ -111,56 +148,86 @@ public class LoginController {
     }
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
-    public String login1(Model model, HttpServletRequest request, HttpServletResponse response){
-        model.addAttribute("msg","登陆");
+    public String login1(Model model, HttpServletRequest request, HttpServletResponse response) {
+        model.addAttribute("msg", "登陆");
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated()) {
-                //WebUtils.issueRedirect(request, response, "/index");
-                //SecurityUtils.getSecurityManager().logout(subject);
-                return "redirect:index";
-            }
+            logger.info("用户已登录,跳转到首页");
+            //WebUtils.issueRedirect(request, response, "/index");
+            //SecurityUtils.getSecurityManager().logout(subject);
+            return "redirect:index";
+        }
         return "login";
     }
 
+    /**
+     * 2022-06-18 因登录时提示不友好,删除ResponseBody注解,并在session中存储错误信息
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping(value = "login", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    @ResponseBody
+    //@ResponseBody
     public String login(Model model, HttpServletRequest request, HttpServletResponse response) {
-        try{
+        try {
             Subject subject = SecurityUtils.getSubject();
-            String captcha=WebUtils.getCleanParam(request, "captcha");
-            String username=WebUtils.getCleanParam(request, "username");
-            String password=WebUtils.getCleanParam(request, "password");
-            boolean rememberMe=WebUtils.isTrue(request, "rememberMe");
-            String session_captcha = (String)((HttpServletRequest) request).getSession().getAttribute(MyAuthenticationToken.captcha_key);
-            MyAuthenticationToken token=new MyAuthenticationToken(username,password,rememberMe,"",captcha,"",session_captcha);
+            String captcha = WebUtils.getCleanParam(request, "captcha");
+            String username = WebUtils.getCleanParam(request, "username");
+            String password = WebUtils.getCleanParam(request, "password");
+            boolean rememberMe = WebUtils.isTrue(request, "rememberMe");
+            String session_captcha = (String) ((HttpServletRequest) request).getSession().getAttribute(MyAuthenticationToken.captcha_key);
+            MyAuthenticationToken token = new MyAuthenticationToken(username, password, rememberMe, "", captcha, "", session_captcha);
             subject.login(token);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"登陆成功","index.html");
-        }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            return "index";
+            //return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"登陆成功","index.html");
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),"login.html");
+            ((HttpServletRequest) request).getSession().setAttribute("error", e.getMessage());
+            return "login";
+            //return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),"login.html");
+        }
+    }
+
+    @RequestMapping(value = "/get_error_msg", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String get_error_msg(HttpServletRequest request, HttpServletResponse response, String captcha) {
+        try {
+            if (((HttpServletRequest) request).getSession().getAttribute("error") != null) {
+                String msg = ((HttpServletRequest) request).getSession().getAttribute("error").toString();
+                ((HttpServletRequest) request).getSession().removeAttribute("error");
+                if (!StringUtils.isEmpty(msg)) {
+                    return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), msg, "login.html");
+                }
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "", "login.html");
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), "login.html");
         }
     }
 
     @RequestMapping(value = "/check_captcha", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String check_captcha(HttpServletRequest request, HttpServletResponse response, String captcha) {
-        try{
+        try {
 
-            String session_captcha = (String)((HttpServletRequest) request).getSession().getAttribute(MyAuthenticationToken.captcha_key);
+            String session_captcha = (String) ((HttpServletRequest) request).getSession().getAttribute(MyAuthenticationToken.captcha_key);
 
-            if(!session_captcha.equalsIgnoreCase(captcha)){
+            if (!session_captcha.equalsIgnoreCase(captcha)) {
                 throw new Exception("验证码错误");
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"登陆成功","index.html");
-        }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "登陆成功", "index.html");
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),"login.html");
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), "login.html");
         }
     }
 
-    @RequestMapping("index")
+    @RequestMapping(value = "index", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     public String getIndex() {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated()) {
@@ -168,11 +235,11 @@ public class LoginController {
             //SecurityUtils.getSecurityManager().logout(subject);
             return "index";
         }
-        return "login";
+        return "redirect:login";
     }
 
     @RequestMapping(value = "shutdown", method = RequestMethod.GET)
-    public String shutdown(){
+    public String shutdown() {
         ConfigurableApplicationContext ctx = (ConfigurableApplicationContext) context;
         ctx.close();
         System.exit(0);
@@ -181,32 +248,32 @@ public class LoginController {
 
 
     @RequestMapping(value = "user", method = RequestMethod.GET)
-    public String updateUser(){
+    public String updateUser() {
 
         return "user";
     }
 
-    @RequestMapping(value = "user", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "user", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String updateUser2(User user){
-        try{
+    public String updateUser2(User user) {
+        try {
             debugInfo(user);
             JSONObject json = new JSONObject();
             User user_old = (User) SecurityUtils.getSubject().getPrincipal();
-            if(user.getPassword().equals("")){
+            if (user.getPassword().equals("")) {
                 user.setPassword(user_old.getPassword());
             }
 
             user.setId(user_old.getId());
-            if(!user_old.getUserName().equals(user.getUserName())){
-                List<User> users= accountService.findByUserName(user);
-                if(users.size()>0){
-                    json.put("status","已经存在相同用户名");
+            if (!user_old.getUserName().equals(user.getUserName())) {
+                List<User> users = accountService.findByUserName(user);
+                if (users.size() > 0) {
+                    json.put("status", "已经存在相同用户名");
                     return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "已经存在相同用户名", null);
                 }
             }
             User user_old2 = accountService.selectByPrimaryKey(user.getId());
-            if(StringUtils.isEmpty(user.getSignature())){
+            if (StringUtils.isEmpty(user.getSignature())) {
                 user.setSignature(user_old2.getSignature());
             }
 
@@ -214,8 +281,8 @@ public class LoginController {
 
             Subject subject = SecurityUtils.getSubject();
 
-            Cache<Object,AuthenticationInfo> cache=myRealm.getAuthenticationCache();
-            if (cache!=null){
+            Cache<Object, AuthenticationInfo> cache = myRealm.getAuthenticationCache();
+            if (cache != null) {
                 cache.remove(user.getUserName());
             }
 
@@ -226,17 +293,17 @@ public class LoginController {
                     new SimplePrincipalCollection(user, realmName);
             subject.runAs(newPrincipalCollection);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
-        }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
 
-    @RequestMapping(value="getUserInfo", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "getUserInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String getUserInfo(){
+    public String getUserInfo() {
 
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         user.setPassword("");
@@ -249,45 +316,51 @@ public class LoginController {
 //        json.put("phone",user.getPhone());
 //        json.put("is_use_phone",user.getIs_use_phone());
 
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"获取用户信息", user);
+        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取用户信息", user);
 
     }
+
     @RequestMapping(value = "retrieve_password", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String retrieve_password(String username){
-        User user=new User();
-        user.setUserName(username);
-        List<User> users=accountService.findByUserName(user);
+    public String retrieve_password(String username) {
+        try{
+            User user = new User();
+            user.setUserName(username);
+            List<User> users = accountService.findByUserName(user);
 
-        if(users.size()!=1){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"请检查用户名是否正确", null );
-        }else{
-            System.out.println("username:"+username);
-            jemailService.sendEmail(new String[]{users.get(0).getEmail()},"找回密码","你好,你正在使用大数据采集平台zdh,您的密码是:"
-                    +users.get(0).getPassword());
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"密码已发送到注册邮箱,如果你已忘记注册邮箱,请联系管理员解决", null );
+            if (users.size() != 1) {
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "请检查用户名是否正确", null);
+            } else {
+                System.out.println("username:" + username);
+                jemailService.sendEmail(new String[]{users.get(0).getEmail()}, "找回密码", "你好,你正在使用大数据采集平台zdh,您的密码是:"
+                        + Encrypt.AESdecrypt(users.get(0).getPassword()));
+                return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "密码已发送到注册邮箱,如果你已忘记注册邮箱,请联系管理员解决", null);
+            }
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "找回密码异常", e);
         }
+
     }
 
     @RequestMapping(value = "user_names", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String user_names(String username){
+    public String user_names(String username) {
 
-        AccountInfo accountInfo=new AccountInfo();
-        Example example=new Example(accountInfo.getClass());
-        Example.Criteria criteria=example.createCriteria();
-        if(!StringUtils.isEmpty(username)){
-            criteria.andLike("user_name", "%"+username+"%");
+        AccountInfo accountInfo = new AccountInfo();
+        Example example = new Example(accountInfo.getClass());
+        Example.Criteria criteria = example.createCriteria();
+        if (!StringUtils.isEmpty(username)) {
+            criteria.andLike("user_account", "%" + username + "%");
         }
-        List<AccountInfo> accountInfos=accountMapper.selectByExample(example);
-        List<JSONObject> user_names=new ArrayList<>();
-        for (AccountInfo acc:accountInfos){
-            JSONObject js=new JSONObject();
-            js.put("id", acc.getUser_name());
-            js.put("name", acc.getUser_name());
+
+        List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
+        List<JSONObject> user_names = new ArrayList<>();
+        for (PermissionUserInfo acc : permissionUserInfos) {
+            JSONObject js = new JSONObject();
+            js.put("id", acc.getUser_account());
+            js.put("name", acc.getUser_account());
             user_names.add(js);
         }
-
 
         return JSONObject.toJSONString(user_names);
     }
@@ -298,8 +371,8 @@ public class LoginController {
             throws ServletException, IOException {
         Subject subject = SecurityUtils.getSubject();
         User user = (User) SecurityUtils.getSubject().getPrincipal();
-        Cache<Object,AuthenticationInfo> cache=myRealm.getAuthenticationCache();
-        if (cache!=null && user !=null){
+        Cache<Object, AuthenticationInfo> cache = myRealm.getAuthenticationCache();
+        if (cache != null && user != null) {
             cache.remove(user.getUserName());
         }
 
@@ -313,77 +386,72 @@ public class LoginController {
     public void captcha(HttpServletRequest request,
                         HttpServletResponse response) throws IOException {
 
-        response.setHeader("Pragma","No-cache");
-        response.setHeader("Cache-Control","no-cache");
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("image/jpeg");
         BufferedImage image = new BufferedImage
-                (IMG_WIDTH , IMG_HEIGTH , BufferedImage.TYPE_INT_RGB);
+                (IMG_WIDTH, IMG_HEIGTH, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         Random random = new Random();
-        g.setColor(getRandColor(200 , 250));
+        g.setColor(getRandColor(200, 250));
         g.fillRect(1, 1, IMG_WIDTH - 1, IMG_HEIGTH - 1);
-        g.setColor(new Color(102 , 102 , 102));
+        g.setColor(new Color(102, 102, 102));
         g.drawRect(0, 0, IMG_WIDTH - 1, IMG_HEIGTH - 1);
-        g.setColor(getRandColor(160,200));
-        for (int i = 0 ; i < 30 ; i++)
-        {
+        g.setColor(getRandColor(160, 200));
+        for (int i = 0; i < 30; i++) {
             int x = random.nextInt(IMG_WIDTH - 1);
             int y = random.nextInt(IMG_HEIGTH - 1);
             int xl = random.nextInt(6) + 1;
             int yl = random.nextInt(12) + 1;
-            g.drawLine(x , y , x + xl , y + yl);
+            g.drawLine(x, y, x + xl, y + yl);
         }
-        g.setColor(getRandColor(160,200));
-        for (int i = 0 ; i < 30 ; i++)
-        {
+        g.setColor(getRandColor(160, 200));
+        for (int i = 0; i < 30; i++) {
             int x = random.nextInt(IMG_WIDTH - 1);
             int y = random.nextInt(IMG_HEIGTH - 1);
             int xl = random.nextInt(12) + 1;
             int yl = random.nextInt(6) + 1;
-            g.drawLine(x , y , x - xl , y - yl);
+            g.drawLine(x, y, x - xl, y - yl);
         }
         g.setFont(mFont);
         String sRand = "";
-        for (int i = 0 ; i < 4 ; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             String tmp = getRandomChar();
             //去除有歧义的字母数字
-            while(Arrays.asList(new String[]{"0","1","i", "I","l","L", "o","O"}).contains(tmp)){
+            while (Arrays.asList(new String[]{"0", "1", "i", "I", "l", "L", "o", "O"}).contains(tmp)) {
                 tmp = getRandomChar();
             }
 
             sRand += tmp;
             g.setColor(new Color(20 + random.nextInt(110)
-                    ,20 + random.nextInt(110)
-                    ,20 + random.nextInt(110)));
-            g.drawString(tmp , 15 * i + 10,15);
+                    , 20 + random.nextInt(110)
+                    , 20 + random.nextInt(110)));
+            g.drawString(tmp, 15 * i + 10, 15);
         }
         HttpSession session = request.getSession(true);
-        session.setAttribute(MyAuthenticationToken.captcha_key , sRand);
+        session.setAttribute(MyAuthenticationToken.captcha_key, sRand);
 //			System.out.println("写入session"+sRand);
         g.dispose();
         ImageIO.write(image, "JPEG", response.getOutputStream());
     }
 
-    private String getRandomChar()
-    {
-        int rand = (int)Math.round(Math.random() * 2);
+    private String getRandomChar() {
+        int rand = (int) Math.round(Math.random() * 2);
         long itmp = 0;
         char ctmp = '\u0000';
-        switch (rand)
-        {
+        switch (rand) {
             case 1:
                 itmp = Math.round(Math.random() * 25 + 65);
-                ctmp = (char)itmp;
+                ctmp = (char) itmp;
                 return String.valueOf(ctmp);
             case 2:
                 itmp = Math.round(Math.random() * 25 + 97);
-                ctmp = (char)itmp;
+                ctmp = (char) itmp;
                 return String.valueOf(ctmp);
-            default :
+            default:
                 itmp = Math.round(Math.random() * 9);
-                return  itmp + "";
+                return itmp + "";
         }
     }
 
@@ -391,15 +459,15 @@ public class LoginController {
             new Font("Arial Black", Font.PLAIN, 16);
     private final int IMG_WIDTH = 100;
     private final int IMG_HEIGTH = 18;
-    private Color getRandColor(int fc,int bc)
-    {
+
+    private Color getRandColor(int fc, int bc) {
         Random random = new Random();
-        if(fc > 255) fc = 255;
-        if(bc > 255) bc=255;
+        if (fc > 255) fc = 255;
+        if (bc > 255) bc = 255;
         int r = fc + random.nextInt(bc - fc);
         int g = fc + random.nextInt(bc - fc);
         int b = fc + random.nextInt(bc - fc);
-        return new Color(r , g , b);
+        return new Color(r, g, b);
     }
 
     private void debugInfo(Object obj) {
@@ -419,13 +487,13 @@ public class LoginController {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
                     logger.error(error, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}", e);
             }
         }
     }

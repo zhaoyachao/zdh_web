@@ -1,14 +1,20 @@
 package com.zyc.zdh.shiro;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 	public Logger logger= LoggerFactory.getLogger(this.getClass());
@@ -30,6 +36,7 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 		}
 		return super.onLoginFailure(token, e, request, response);
 	}
+
 
 	// 重写认证通过后的页面跳转，shiro会默认跳转到上一次请求的页面，不适用于iframe的框架
 	@Override
@@ -85,5 +92,42 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 		System.out.println("session_captcha: "+session_captcha);
 		return new MyAuthenticationToken(username, password, remberMe, host,
 				captcha, ipAddr, session_captcha);
+	}
+
+	@Override
+	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+		logger.warn("shifor onAccessDenied");
+		return super.onAccessDenied(request,response);
+
+//		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+//		if (isAjax( ((HttpServletRequest) request))) {
+//			if(isLoginRequest(request,response) && ((HttpServletRequest) request).getMethod().equalsIgnoreCase("post") && ((HttpServletRequest) request).getRequestURL().toString().contains("login")){
+//				System.out.println("认证通过后的跳转地址2"+getSuccessUrl());
+//				System.out.println(JSON.toJSONString(((HttpServletRequest) request).getHeader("Referer")));
+//				System.out.println(JSON.toJSONString(((HttpServletRequest) request).getHeader("Origin")));
+//				System.out.println(JSON.toJSONString(((HttpServletRequest) request).getContextPath()));
+//				System.out.println(((HttpServletRequest) request).getHeader("Origin")+ ((HttpServletRequest) request).getContextPath()+getSuccessUrl());
+//				httpServletResponse.setHeader("REDIRECT","REDIRECT");//告诉ajax要重定向
+//				httpServletResponse.setHeader("PATH","http://127.0.0.1"+getSuccessUrl());//ip为服务器ip地址，在此用ip代指
+//			}
+//			if(isLoginRequest(request,response)){
+//				return true;
+//			}
+//		} else {
+//			if(!isLoginRequest(request,response)){
+//				httpServletResponse.sendRedirect("/login");
+//			}else{
+//				return true;
+//			}
+//		}
+//		return false;
+	}
+
+	private boolean isAjax(HttpServletRequest request) {
+
+		String requestedWithHeader = request.getHeader("X-Requested-With");
+
+		return "XMLHttpRequest".equals(requestedWithHeader);
+
 	}
 }

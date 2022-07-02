@@ -8,6 +8,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.User;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,23 +50,30 @@ public class DataTagGroupController extends BaseController {
 
     @RequestMapping(value = "/data_tag_group_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String data_tag_group_list(String tag_context) {
-        Example example=new Example(DataTagGroupInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        criteria.andEqualTo("product_code", ev.getProperty("zdp.product", "zdh"));
-        Example.Criteria criteria2=example.createCriteria();
-        if(!org.apache.commons.lang3.StringUtils.isEmpty(tag_context)){
-            criteria2.orLike("tag_codes", getLikeCondition(tag_context));
-            criteria2.orLike("tag_group_name", getLikeCondition(tag_context));
-            criteria2.orLike("tag_group_code", getLikeCondition(tag_context));
-            criteria2.orLike("product_code", getLikeCondition(tag_context));
+    public String data_tag_group_list(String tag_context, String product_code) {
+        try{
+            checkParam(product_code, "product_code");
+            Example example=new Example(DataTagGroupInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("product_code", product_code);
+            Example.Criteria criteria2=example.createCriteria();
+            if(!org.apache.commons.lang3.StringUtils.isEmpty(tag_context)){
+                criteria2.orLike("tag_codes", getLikeCondition(tag_context));
+                criteria2.orLike("tag_group_name", getLikeCondition(tag_context));
+                criteria2.orLike("tag_group_code", getLikeCondition(tag_context));
+                criteria2.orLike("product_code", getLikeCondition(tag_context));
+            }
+            example.and(criteria2);
+
+            List<DataTagGroupInfo> dataTagGroupInfos = dataTagGroupMapper.selectByExample(example);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", dataTagGroupInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
-        example.and(criteria2);
 
-        List<DataTagGroupInfo> dataTagGroupInfos = dataTagGroupMapper.selectByExample(example);
-
-        return JSONObject.toJSONString(dataTagGroupInfos);
     }
 
 

@@ -26,6 +26,8 @@ public class UserGroupInfo implements Serializable {
 
 	private Timestamp update_time;
 
+	private String product_code;
+
 	public String getId() {
 		return id;
 	}
@@ -64,5 +66,13 @@ public class UserGroupInfo implements Serializable {
 
 	public void setUpdate_time(Timestamp update_time) {
 		this.update_time = update_time;
+	}
+
+	public String getProduct_code() {
+		return product_code;
+	}
+
+	public void setProduct_code(String product_code) {
+		this.product_code = product_code;
 	}
 }

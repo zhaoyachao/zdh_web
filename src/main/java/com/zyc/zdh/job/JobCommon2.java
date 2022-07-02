@@ -294,21 +294,21 @@ public class JobCommon2 {
                     dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                     if (etlMoreTaskInfo.getData_sources_params_output() != null && !etlMoreTaskInfo.getData_sources_params_output().trim().equals("")) {
                         JSONObject jsonObject = JSON.parseObject(etlMoreTaskInfo.getData_sources_params_output());
-                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlMoreTaskInfo.getOwner());
                         etlMoreTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     } else {
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlMoreTaskInfo.getOwner());
                         etlMoreTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     }
                 } else {
                     if (etlMoreTaskInfo.getData_sources_params_output() != null && !etlMoreTaskInfo.getData_sources_params_output().trim().equals("")) {
                         JSONObject jsonObject = JSON.parseObject(etlMoreTaskInfo.getData_sources_params_output());
-                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlMoreTaskInfo.getOwner());
                         etlMoreTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     } else {
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlMoreTaskInfo.getOwner());
                         etlMoreTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     }
                 }
@@ -401,21 +401,21 @@ public class JobCommon2 {
                     dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                     if (sqlTaskInfo.getData_sources_params_output() != null && !sqlTaskInfo.getData_sources_params_output().trim().equals("")) {
                         JSONObject jsonObject = JSON.parseObject(sqlTaskInfo.getData_sources_params_output());
-                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + sqlTaskInfo.getOwner());
                         sqlTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     } else {
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" +  sqlTaskInfo.getOwner());
                         sqlTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     }
                 } else {
                     if (sqlTaskInfo.getData_sources_params_output() != null && !sqlTaskInfo.getData_sources_params_output().trim().equals("")) {
                         JSONObject jsonObject = JSON.parseObject(sqlTaskInfo.getData_sources_params_output());
-                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" +  sqlTaskInfo.getOwner());
                         sqlTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     } else {
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" +  sqlTaskInfo.getOwner());
                         sqlTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     }
                 }
@@ -506,21 +506,21 @@ public class JobCommon2 {
                     dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                     if (etlDroolsTaskInfo.getData_sources_params_output() != null && !etlDroolsTaskInfo.getData_sources_params_output().trim().equals("")) {
                         JSONObject jsonObject = JSON.parseObject(etlDroolsTaskInfo.getData_sources_params_output());
-                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" +  etlDroolsTaskInfo.getOwner());
                         etlDroolsTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     } else {
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlDroolsTaskInfo.getOwner());
                         etlDroolsTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     }
                 } else {
                     if (etlDroolsTaskInfo.getData_sources_params_output() != null && !etlDroolsTaskInfo.getData_sources_params_output().trim().equals("")) {
                         JSONObject jsonObject = JSON.parseObject(etlDroolsTaskInfo.getData_sources_params_output());
-                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlDroolsTaskInfo.getOwner());
                         etlDroolsTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     } else {
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlDroolsTaskInfo.getOwner());
                         etlDroolsTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     }
                 }
@@ -701,21 +701,21 @@ public class JobCommon2 {
                 dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                 if (etlApplyTaskInfo.getData_sources_params_output() != null && !etlApplyTaskInfo.getData_sources_params_output().trim().equals("")) {
                     JSONObject jsonObject = JSON.parseObject(etlApplyTaskInfo.getData_sources_params_output());
-                    jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + getUser().getId());
+                    jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlApplyTaskInfo.getOwner());
                     etlApplyTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                 } else {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + getUser().getId());
+                    jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlApplyTaskInfo.getOwner());
                     etlApplyTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                 }
             } else {
                 if (etlApplyTaskInfo.getData_sources_params_output() != null && !etlApplyTaskInfo.getData_sources_params_output().trim().equals("")) {
                     JSONObject jsonObject = JSON.parseObject(etlApplyTaskInfo.getData_sources_params_output());
-                    jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + getUser().getId());
+                    jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlApplyTaskInfo.getOwner());
                     etlApplyTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                 } else {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + getUser().getId());
+                    jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlApplyTaskInfo.getOwner());
                     etlApplyTaskInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                 }
             }
@@ -815,21 +815,21 @@ public class JobCommon2 {
                     dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                     if (etlTaskJdbcInfo.getData_sources_params_output() != null && !etlTaskJdbcInfo.getData_sources_params_output().trim().equals("")) {
                         JSONObject jsonObject = JSON.parseObject(etlTaskJdbcInfo.getData_sources_params_output());
-                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlTaskJdbcInfo.getOwner());
                         etlTaskJdbcInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     } else {
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlTaskJdbcInfo.getOwner());
                         etlTaskJdbcInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     }
                 } else {
                     if (etlTaskJdbcInfo.getData_sources_params_output() != null && !etlTaskJdbcInfo.getData_sources_params_output().trim().equals("")) {
                         JSONObject jsonObject = JSON.parseObject(etlTaskJdbcInfo.getData_sources_params_output());
-                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlTaskJdbcInfo.getOwner());
                         etlTaskJdbcInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     } else {
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + getUser().getId());
+                        jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlTaskJdbcInfo.getOwner());
                         etlTaskJdbcInfo.setData_sources_params_output(JSON.toJSONString(jsonObject));
                     }
                 }
@@ -2160,8 +2160,7 @@ public class JobCommon2 {
      * @param tli
      */
     public static boolean checkDep(String jobType, TaskLogInstance tli) {
-        logger.info("[" + jobType + "] JOB ,开始检查当前任务上游任务依赖");
-        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查当前任务上游任务依赖");
+        logger.info("[" + jobType + "] JOB ,初步检查当前任务是否可检查上游依赖");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         //检查任务依赖
@@ -2200,7 +2199,7 @@ public class JobCommon2 {
                             || tni.getStatus().equalsIgnoreCase(JobStatus.CHECK_DEP.getValue()) || tni.getStatus().equalsIgnoreCase(JobStatus.ETL.getValue())
                             || tni.getStatus().equalsIgnoreCase(JobStatus.NON.getValue())) {
                         if (tni.getNum() > 0)
-                            insertLog(tli, "INFO", "所有的父级,祖先级任务存在未完成,跳过当前任务检查");
+                            //insertLog(tli, "INFO", "所有的父级,祖先级任务存在未完成,跳过当前任务检查");
                         return false;
                     }
                 }
@@ -2209,6 +2208,8 @@ public class JobCommon2 {
                 insertLog(tli, "INFO", "所有的父级,祖先级任务:" + parents);
             }
 
+            logger.info("[" + jobType + "] JOB ,开始检查当前任务上游任务依赖");
+            insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查当前任务上游任务依赖");
 
             StringBuilder finish_id = new StringBuilder();
             StringBuilder error_id = new StringBuilder();
@@ -2356,6 +2357,7 @@ public class JobCommon2 {
         insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务中的JDBC依赖,目前jdbc依赖只支持单条sql语句检查");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
+        DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
         String etl_date = tli.getEtl_date();
 
         if (!checkDep(jobType, tli)) {
@@ -2372,6 +2374,15 @@ public class JobCommon2 {
             String username = jdbc.getString("username");
             String password = jdbc.getString("password");
             String jdbc_sql = jdbc.getString("jdbc_sql");
+            if(!StringUtils.isEmpty(jdbc.getString("data_sources_choose_input"))){
+                DataSourcesInfo dsi = dataSourcesMapper.selectByPrimaryKey(jdbc.getString("data_sources_choose_input"));
+                if(dsi!=null){
+                    driver = dsi.getDriver();
+                    url = dsi.getUrl();
+                    username = dsi.getUsername();
+                    password = dsi.getPassword();
+                }
+            }
             Map<String, Object> map = (Map<String, Object>) JSON.parseObject(tli.getParams());
 
             if (StringUtils.isEmpty(jdbc_sql)) {
@@ -2658,10 +2669,10 @@ public class JobCommon2 {
 //        }
     }
 
-    public static User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
-    }
+//    public static User getUser() {
+//        User user = (User) SecurityUtils.getSubject().getPrincipal();
+//        return user;
+//    }
 
     /**
      * 选择具体的job执行引擎,只有调度和手动重试触发(手动执行部分请参见其他方法)

@@ -15,7 +15,7 @@ public class ApprovalAuditorInfo {
 
     private String code;//'审批流程code'
     private String level;//'审批节点',
-    private String auditor_id;//'审批人id',
+    private String auditor_id;//'审批人账号',
     private String auditor_group;//'审批人所在组',
     private Timestamp create_time;//'创建时间',
 

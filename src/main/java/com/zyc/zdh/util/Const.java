@@ -1,5 +1,8 @@
 package com.zyc.zdh.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Const {
 
     public static String TRUR="true";
@@ -23,6 +26,11 @@ public class Const {
     public static String STATUS_FAIL="2";
     public static String STATUS_RECALL="3";
 
+    public static String PROCESS_OTHER_STATUS_INIT="0";//未处理
+    public static String PROCESS_OTHER_STATUS_SUCCESS="1";//处理成功
+    public static String PROCESS_OTHER_STATUS_FAIL="2";//处理失败
+
+
     public static String DELETE="1";
     public static String NOT_DELETE="0";
 
@@ -37,8 +45,8 @@ public class Const {
     public static String BATCH_FAIL = "2";//执行失败
     public static String BATCH_SUCCESS = "3";//执行成功
 
-    public static String ENABLE = "1";//是否启用
-    public static String UN_ENABLE = "2";//是否启用
+    public static String ENABLE = "1";//启用
+    public static String UN_ENABLE = "2";//未启用
 
     public static String NOTHING="0";//无操作
     public static String ALL_HISTORY="1";//所有历史
@@ -65,4 +73,41 @@ public class Const {
 
     public static String EMAIL_TXT = "0";
     public static  String EMAIL_HTML = "1";
+
+    public static String PRODUCT_ENABLE = "0";
+    public static String PRODUCT_NOT_APPLY = "1";
+    public static String PRODUCT_UN_ENABLE = "2";
+
+    //权限申请
+    public static String PERMISSION_APPLY_INIT="0";//未处理
+    public static String PERMISSION_APPLY_RUNNING="1";//处理中
+    public static String PERMISSION_APPLY_FAIL="2";//申请失败
+    public static String PERMISSION_APPLY_SUCCESS="3";//申请通过
+    public static String PERMISSION_APPLY_RECALL="4";//申请撤销
+
+
+    public static String getEnumName(String type,String code){
+        Map<String, Map<String, String>> enumMap=new HashMap<>();
+
+        Map<String,String> permission=new HashMap<>();
+        permission.put(PERMISSION_APPLY_INIT, "未处理");
+        permission.put(PERMISSION_APPLY_RUNNING, "处理中");
+        permission.put(PERMISSION_APPLY_FAIL, "申请失败");
+        permission.put(PERMISSION_APPLY_SUCCESS, "申请通过");
+        permission.put(PERMISSION_APPLY_RECALL, "申请撤销");
+
+        enumMap.put("PERMISSION_APPLY", permission);
+
+
+        if(enumMap.containsKey(type)){
+            if(enumMap.get(type).containsKey(code)){
+                return enumMap.get(type).get(code);
+            }else{
+                return "";
+            }
+        }
+
+        return "";
+
+    }
 }

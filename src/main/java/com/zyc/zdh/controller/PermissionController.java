@@ -1,7 +1,9 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
@@ -63,6 +65,10 @@ public class PermissionController extends BaseController {
 
     @Autowired
     DataTagGroupMapper dataTagGroupMapper;
+    @Autowired
+    PermissionApplyMapper permissionApplyMapper;
+    @Autowired
+    ZdhProcessFlowController zdhProcessFlowController;
 
 
     @RequestMapping(value = "/permission_index", method = RequestMethod.GET)
@@ -73,13 +79,31 @@ public class PermissionController extends BaseController {
 
     @RequestMapping(value = "/user_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String user_list(String user_context) {
+    public String user_list(String product_code,String user_context) {
+        if(StringUtils.isEmpty(product_code)){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", "");
+        }
+
+        Example example=new Example(PermissionUserInfo.class);
+        Example.Criteria criteria=example.createCriteria();
+
+        criteria.andEqualTo("product_code", product_code);
+
         if(!StringUtils.isEmpty(user_context)){
             user_context = getLikeCondition(user_context);
+            Example.Criteria criteria2=example.createCriteria();
+            criteria2.andLike("user_account", user_context);
+            criteria2.orLike("user_name", user_context);
+            criteria2.orLike("email", user_context);
+            criteria2.orLike("phone", user_context);
+            criteria2.orLike("signature", user_context);
+            criteria2.orLike("tag_group_code", user_context);
+            example.and(criteria2);
         }
-        List<PermissionUserInfo> users = permissionMapper.findAll(user_context);
 
-        return JSONObject.toJSONString(users);
+        List<PermissionUserInfo> users = permissionMapper.selectByExample(example);
+
+        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", users);
     }
 
     @RequestMapping(value = "/user_enable", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -114,7 +138,7 @@ public class PermissionController extends BaseController {
     public String user_detail(String id) {
         try {
             PermissionUserInfo user = permissionMapper.selectByPrimaryKey(id);
-            user.setPassword("");
+            user.setUser_password("");
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", user);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -131,19 +155,20 @@ public class PermissionController extends BaseController {
 
             if (user.getId().equalsIgnoreCase("-1")) {
                 //新增用户
-                if (StringUtils.isEmpty(user.getPassword())) {
+                if (StringUtils.isEmpty(user.getUser_password())) {
                     throw new Exception("新增用户密码不可为空");
                 }
-                user.setEnable("false");
+                user.setEnable(Const.FALSE);
                 user.setId(null);
                 permissionMapper.insert(user);
             } else {
                 PermissionUserInfo pui = permissionMapper.selectByPrimaryKey(user.getId());
-                if (user.getPassword().equalsIgnoreCase("")) {
-                    user.setPassword(pui.getPassword());
+                if (user.getUser_password().equalsIgnoreCase("")) {
+                    user.setUser_password(pui.getUser_password());
                     user.setEnable(pui.getEnable());
                 }
                 permissionMapper.updateByPrimaryKey(user);
+                //
             }
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
@@ -165,6 +190,8 @@ public class PermissionController extends BaseController {
     public String user_group_add(UserGroupInfo ugi) {
         try {
 
+            checkParam(ugi.getProduct_code(), "product_code");
+
             List<UserGroupInfo> ugis = userGroupMapper.select(ugi);
             if (ugis != null && ugis.size() > 0) {
                 throw new Exception("组名已经存在");
@@ -183,10 +210,12 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/user_group_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String user_group_list(String enable) {
+    public String user_group_list(String enable, String product_code) {
         try {
+            checkParam(product_code, "product_code");
             UserGroupInfo ugi = new UserGroupInfo();
             ugi.setEnable(enable);
+            ugi.setProduct_code(product_code);
             List<UserGroupInfo> ugis = userGroupMapper.select(ugi);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", ugis);
         } catch (Exception e) {
@@ -210,11 +239,11 @@ public class PermissionController extends BaseController {
 
     @RequestMapping(value = "/role_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String role_list(String role_context, String enable) {
+    public String role_list(String role_context, String enable, String product_code) {
         if(!StringUtils.isEmpty(role_context)){
             role_context = getLikeCondition(role_context);
         }
-        List<RoleInfo> users = roleDao.selectByContext(role_context, enable);
+        List<RoleInfo> users = roleDao.selectByContext(role_context, enable, product_code);
         return JSONObject.toJSONString(users);
     }
 
@@ -241,6 +270,22 @@ public class PermissionController extends BaseController {
         try {
             RoleInfo role = roleDao.selectByPrimaryKey(id);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", role);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+    @RequestMapping(value = "/role_by_code", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String role_by_code(String code, String product_code) {
+        try {
+            RoleInfo roleInfo=new RoleInfo();
+            roleInfo.setProduct_code(product_code);
+            roleInfo.setCode(code);
+            roleInfo = roleDao.selectOne(roleInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", roleInfo);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
@@ -377,13 +422,31 @@ public class PermissionController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/jstree_add_permission", method = RequestMethod.POST)
+    /**
+     * 新增角色
+     * @param id
+     * @param resource_id
+     * @param code
+     * @param name
+     * @param product_code
+     * @return
+     */
+    @RequestMapping(value = "/jstree_add_permission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public String jstree_add_permission(String id, String[] resource_id, String code, String name,String product_code) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
             if (id.equalsIgnoreCase("-1")) {
+                //检查code是否已经存在
+                RoleInfo roleInfo=new RoleInfo();
+                roleInfo.setProduct_code(product_code);
+                roleInfo.setCode(code);
+                roleInfo = roleDao.selectOne(roleInfo);
+                if(roleInfo != null){
+                    throw new Exception("角色code已经存在");
+                }
+
                 id = SnowflakeIdWorker.getInstance().nextId() + "";
                 //新增角色
                 RoleInfo role = new RoleInfo();
@@ -391,8 +454,19 @@ public class PermissionController extends BaseController {
                 role.setName(name);
                 role.setId(id);
                 role.setProduct_code(product_code);
+                role.setCreate_time(new Timestamp(new Date().getTime()));
+                role.setUpdate_time(new Timestamp(new Date().getTime()));
                 roleDao.insert(role);
+            }else{
+                //获取旧角色信息
+                RoleInfo roleInfo=roleDao.selectByPrimaryKey(id);
+                roleInfo.setName(name);
+                if(!roleInfo.getProduct_code().equalsIgnoreCase(product_code)){
+                    throw new Exception("无法更新产品");
+                }
+                roleDao.updateByPrimaryKey(roleInfo);
             }
+
             debugInfo(resource_id);
             List<RoleResourceInfo> rris = new ArrayList<>();
             for (String rid : resource_id) {
@@ -403,7 +477,7 @@ public class PermissionController extends BaseController {
                 rri.setUpdate_time(new Timestamp(new Date().getTime()));
                 rris.add(rri);
             }
-            resourceTreeMapper.deleteById(id);
+            resourceTreeMapper.deleteByRoleId(id);
             resourceTreeMapper.updateUserResource(rris);
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
@@ -415,23 +489,33 @@ public class PermissionController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/jstree_permission_list", method = RequestMethod.POST)
+    /**
+     * 通过角色id获取资源
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/jstree_permission_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String jstree_permission_list(String id) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         List<RoleResourceInfo> uris = new ArrayList<>();
 
-        uris = resourceTreeMapper.selectByUserId(id);
+        uris = resourceTreeMapper.selectByRoleId(id);
 
         return JSON.toJSONString(uris);
     }
 
+    /**
+     * 通过用户id获取资源
+     * @return
+     */
     @RequestMapping(value = "/jstree_permission_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String jstree_permission_list2() {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         List<UserResourceInfo2> uris = new ArrayList<>();
-        uris = resourceTreeMapper.selectResourceByUserId(getUser().getId());
+        String user_account = getUser().getUserName();
+        uris = resourceTreeMapper.selectResourceByUserAccount(user_account);
         uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
 
         return JSON.toJSONString(uris);
@@ -448,9 +532,22 @@ public class PermissionController extends BaseController {
     @ResponseBody
     public String user_tag_group_code() {
         try {
-            String tag_group_code = getUser().getTag_group_code();
+            String tag_group_code = "";
 
-            if(org.apache.commons.lang3.StringUtils.isEmpty(tag_group_code)){
+            PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
+            permissionUserInfo.setUser_account(getUser().getUserName());
+            Example example2=new Example(PermissionUserInfo.class);
+            Example.Criteria criteria2 = example2.createCriteria();
+            criteria2.andEqualTo("user_account",getUser().getUserName());
+            criteria2.andEqualTo("product_code", ev.getProperty("zdp.product", "zdh"));
+            criteria2.andEqualTo("enable",Const.TRUR);
+            List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example2);
+
+            if(permissionUserInfos!=null && permissionUserInfos.size()>=1){
+                tag_group_code = permissionUserInfos.get(0).getTag_group_code();
+            }
+
+            if(StringUtils.isEmpty(tag_group_code)){
                 return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", new ArrayList<DataTagGroupInfo>());
             }
             Example example=new Example(DataTagGroupInfo.class);
@@ -468,6 +565,196 @@ public class PermissionController extends BaseController {
         }
     }
 
+    @RequestMapping(value = "/permission_apply_index", method = RequestMethod.GET)
+    public String permission_apply_index() {
+
+        return "admin/permission_apply_index";
+    }
+
+    @RequestMapping(value = "/permission_apply_add_index", method = RequestMethod.GET)
+    public String permission_apply_add_index() {
+
+        return "admin/permission_apply_add_index";
+    }
+
+    @RequestMapping(value = "/permission_apply_by_product_code", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String permission_apply_by_product_code(String product_code, String apply_type) {
+
+        Object result=null;
+        if(apply_type.equalsIgnoreCase("role")){
+            //请求角色
+            result = get_role_by_product_code(product_code);
+        }else if(apply_type.equalsIgnoreCase("user_group")){
+            result = get_user_group_by_product_code(product_code);
+        }else if(apply_type.equalsIgnoreCase("data_group")){
+            result = get_group_by_product_code(product_code);
+        }else{
+
+        }
+
+        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", result);
+    }
+
+    @RequestMapping(value = "/permission_apply_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String permission_apply_list(String permission_context){
+        try{
+            Example example=new Example(PermissionApplyInfo.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("owner", getUser().getUserName());
+
+            if(!StringUtils.isEmpty(permission_context)){
+                Example.Criteria criteria2 = example.createCriteria();
+                criteria2.andLike("product_code", getLikeCondition(permission_context));
+                criteria2.orLike("apply_type", getLikeCondition(permission_context));
+                criteria2.orLike("apply_code", getLikeCondition(permission_context));
+                criteria2.orLike("reason", getLikeCondition(permission_context));
+
+                example.and(criteria2);
+            }
+
+            List<PermissionApplyInfo> permissionApplyInfos = permissionApplyMapper.selectByExample(example);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionApplyInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+        }
+    }
+
+    /**
+     * 新建申请,并创建审批流
+     * @param permissionApplyInfo
+     * @return
+     */
+    @RequestMapping(value = "/permission_apply_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @Transactional
+    public String permission_apply_add(PermissionApplyInfo permissionApplyInfo, String apply_context) {
+        try{
+            permissionApplyInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            permissionApplyInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            permissionApplyInfo.setOwner(getUser().getUserName());
+            permissionApplyInfo.setIs_delete(Const.NOT_DELETE);
+            permissionApplyInfo.setStatus(Const.PERMISSION_APPLY_INIT);
+            permissionApplyInfo.setFlow_id("0");
+            int result = permissionApplyMapper.insert(permissionApplyInfo);
+            debugInfo(permissionApplyInfo);
+            //开始审批流
+            //校验账号是否有效
+            PermissionUserInfo pui=new PermissionUserInfo();
+            pui.setUser_account(getUser().getUserName());
+            pui=permissionMapper.selectOne(pui);
+            if(pui == null){
+                throw new Exception("user_account无效,请检查user_account是否正确,若无user_account可在权限管理->用户配置模块增加用户信息");
+            }
+            if(StringUtils.isEmpty(pui.getUser_group())){
+                throw new Exception("无法找到用户对应的组信息,请检查权限管理->用户配置模块中,用户组信息是否未配置");
+            }
+            String event_code=EventCode.PERMISSION_APPLY.getCode();
+            String event_context="权限申请-"+permissionApplyInfo.getApply_type()+'-'+apply_context;
+            String event_id=permissionApplyInfo.getId();
+            String flow_id = zdhProcessFlowController.createProcess(getUser().getUserName(),pui.getUser_group(),event_code, event_context, event_id);
+            permissionApplyInfo.setFlow_id(flow_id);
+            permissionApplyMapper.updateByPrimaryKey(permissionApplyInfo);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", permissionApplyInfo);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+        }
+    }
+
+    /**
+     * 删除申请,并撤销审批流
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/permission_apply_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String permission_apply_delete(String[] id){
+        try{
+            Example example=new Example(PermissionApplyInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andIn("id", Arrays.asList(id));
+            List<PermissionApplyInfo> permissionApplyInfos=permissionApplyMapper.selectByExample(example);
+            int result = permissionApplyMapper.deleteLogicByIds("permission_apply_info",id,new Timestamp(new Date().getTime()));
+            //取消流程
+            for (PermissionApplyInfo pai:permissionApplyInfos){
+                ProcessFlowInfo pfi=new ProcessFlowInfo();
+                pfi.setFlow_id(pai.getFlow_id());
+                pfi.setStatus(Const.STATUS_RECALL);
+                zdhProcessFlowController.process_flow_status2(pfi);
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionApplyInfos);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/permission_apply_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String permission_apply_detail(String id){
+        try{
+            PermissionApplyInfo pai = permissionApplyMapper.selectByPrimaryKey(id);
+            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", pai);
+        }catch (Exception e){
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+        }
+    }
+
+    private  JSONArray get_role_by_product_code(String product_code){
+        RoleInfo roleInfo=new RoleInfo();
+        roleInfo.setProduct_code(product_code);
+        List<RoleInfo> roleInfos = roleDao.select(roleInfo);
+        JSONArray jsonArray=new JSONArray();
+        if(roleInfos != null){
+            for (RoleInfo ri: roleInfos){
+                JSONObject jsonObject=new JSONObject();
+                jsonObject.put("code", ri.getId());
+                jsonObject.put("name", ri.getName());
+                jsonArray.add(jsonObject);
+            }
+        }
+        return jsonArray;
+    }
+
+    private JSONArray get_user_group_by_product_code(String product_code){
+        UserGroupInfo userGroupInfo=new UserGroupInfo();
+        userGroupInfo.setProduct_code(product_code);
+
+        List<UserGroupInfo> userGroupInfos = userGroupMapper.select(userGroupInfo);
+        JSONArray jsonArray=new JSONArray();
+        if(userGroupInfos != null){
+            for (UserGroupInfo ri: userGroupInfos){
+                JSONObject jsonObject=new JSONObject();
+                jsonObject.put("code", ri.getId());
+                jsonObject.put("name", ri.getName());
+                jsonArray.add(jsonObject);
+            }
+        }
+        return jsonArray;
+    }
+
+    private JSONArray get_group_by_product_code(String product_code){
+        DataTagGroupInfo dataTagGroupInfo=new DataTagGroupInfo();
+        dataTagGroupInfo.setProduct_code(product_code);
+
+        List<DataTagGroupInfo> dataTagGroupInfos = dataTagGroupMapper.select(dataTagGroupInfo);
+        JSONArray jsonArray=new JSONArray();
+        if(dataTagGroupInfos != null){
+            for (DataTagGroupInfo ri: dataTagGroupInfos){
+                JSONObject jsonObject=new JSONObject();
+                jsonObject.put("code", ri.getTag_group_code());
+                jsonObject.put("name", ri.getTag_group_name());
+                jsonArray.add(jsonObject);
+            }
+        }
+        return jsonArray;
+    }
 
     public User getUser() {
         User user = (User) SecurityUtils.getSubject().getPrincipal();

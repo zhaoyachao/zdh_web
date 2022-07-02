@@ -2,6 +2,7 @@ package com.zyc.zdh.controller;
 
 import com.zyc.zdh.config.DateConverter;
 import com.zyc.zdh.entity.User;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -35,5 +36,20 @@ public class BaseController {
      */
     public String getLikeCondition(String condition){
         return "%"+condition+"%";
+    }
+
+
+    /**
+     * 检查参数是否为空,为空直接抛出异常
+     * @param param
+     * @param name
+     * @return
+     * @throws Exception
+     */
+    public boolean checkParam(String param, String name) throws Exception {
+        if(StringUtils.isEmpty(param)){
+            throw  new Exception(name+"参数不可为空");
+        }
+        return true;
     }
 }

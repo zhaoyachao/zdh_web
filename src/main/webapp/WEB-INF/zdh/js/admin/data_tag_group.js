@@ -177,13 +177,20 @@
 
       $('#exampleTableEvents').bootstrapTable({
           method: "POST",
-          url: server_context+"/data_tag_group_list",
+          url: "",
       search: true,
       pagination: true,
       showRefresh: true,
       showToggle: true,
       showColumns: true,
       iconSize: 'outline',
+          responseHandler:function (res) {
+              if(!Array.isArray(res)){
+                  layer.msg(res.msg);
+                  return res.result;
+              }
+              return res;
+          },
       toolbar: '#exampleTableEventsToolbar',
       icons: {
         refresh: 'glyphicon-repeat',

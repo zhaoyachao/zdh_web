@@ -2,7 +2,9 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.DataSourcesMapper;
+import com.zyc.zdh.dao.PermissionMapper;
 import com.zyc.zdh.entity.DataSourcesInfo;
+import com.zyc.zdh.entity.PermissionUserInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.DispatchTaskService;
@@ -14,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +48,10 @@ public class ZdhDataSourcesController extends BaseController{
     DispatchTaskService dispatchTaskService;
     @Autowired
     ZdhLogsService zdhLogsService;
+    @Autowired
+    PermissionMapper permissionMapper;
+    @Autowired
+    Environment ev;
 
     /**
      * 返回数据源列表首页
@@ -64,13 +71,29 @@ public class ZdhDataSourcesController extends BaseController{
     @ResponseBody
     public String data_sources_list() {
         //获取数据权限
-        String[] tag_group_code = getUser().getTag_group_code().split(",");
+        String[] tag_group_code = "".split(",");
 
+        PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
+        permissionUserInfo.setUser_account(getUser().getUserName());
+        Example example=new Example(PermissionUserInfo.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("user_account",getUser().getUserName());
+        criteria.andEqualTo("product_code", ev.getProperty("zdp.product", "zdh"));
+        criteria.andEqualTo("enable",Const.TRUR);
+        List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
+
+        if(permissionUserInfos!=null && permissionUserInfos.size()>=1){
+            tag_group_code = permissionUserInfos.get(0).getTag_group_code().split(",");
+        }
         DataSourcesInfo dataSourcesInfo = new DataSourcesInfo();
         dataSourcesInfo.setOwner(getUser().getId());
         dataSourcesInfo.setIs_delete(Const.NOT_DELETE);
         List<DataSourcesInfo> list = dataSourcesMapper.selectByParams(getUser().getId(), tag_group_code);
-
+        if(list != null && list.size()>0){
+            for (DataSourcesInfo dsi: list){
+                dsi.setPassword("");
+            }
+        }
         return JSON.toJSONString(list);
     }
 
@@ -99,7 +122,21 @@ public class ZdhDataSourcesController extends BaseController{
         if(!StringUtils.isEmpty(url)){
             criteria.andLike("url", getLikeCondition(url));
         }
-        String[] tag_group_code = getUser().getTag_group_code().split(",");
+        String[] tag_group_code = "".split(",");
+
+        PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
+        permissionUserInfo.setUser_account(getUser().getUserName());
+        Example example2=new Example(PermissionUserInfo.class);
+        Example.Criteria criteria2 = example2.createCriteria();
+        criteria2.andEqualTo("user_account",getUser().getUserName());
+        criteria2.andEqualTo("product_code", ev.getProperty("zdp.product", "zdh"));
+        criteria2.andEqualTo("enable",Const.TRUR);
+        List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example2);
+
+        if(permissionUserInfos!=null && permissionUserInfos.size()>=1){
+            tag_group_code = permissionUserInfos.get(0).getTag_group_code().split(",");
+        }
+
         if(!StringUtils.isEmpty(data_source_context)){
             data_source_context = getLikeCondition(data_source_context);
         }

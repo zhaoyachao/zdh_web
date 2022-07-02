@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 人群规则新增首页</title>
+    <meta name="keywords" content="ZDH 人群规则新增首页">
+    <meta name="description" content="ZDH 人群规则新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
+
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="js/plugins/magicsuggest/magicsuggest.css" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>人群规则配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <input type="hidden" id="etl_task_text" name="etl_task_text" value="">
+                    <input type="hidden" id="jdbc_url_text" name="jdbc_url_text" value="">
+                    <input type="hidden" id="jdbc_sql_text" name="jdbc_sql_text" value="">
+                    <input type="hidden" id="shell_text" name="shell_text" value="">
+                    <input type="hidden" id="hdfs_url_text" name="hdfs_url_text" value="">
+                    <input type="hidden" id="hdfs_path_text" name="hdfs_path_text" value="">
+                    <input type="hidden" id="http_params" name="http_params" value="">
+                    <input type="hidden" id="http_url_text" name="http_url_text" value="">
+                    <input type="hidden" id="to_emails" name="to_emails" value="">
+                    <input type="hidden" id="email_context" name="email_context" value="">
+                    <input type="hidden" id="rule_param" name="rule_param" value="">
+
+                    <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
+                          action="">
+                        <input type="hidden" id="rule_json" name="rule_json" value="">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">人群规则说明</label>
+                            <div class="col-sm-10">
+                                <input id="rule_context" name="rule_context" type="text"
+                                       placeholder="人群规则说明,不可为空" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">规则类型</label>
+                            <div  class="col-sm-10">
+                                <div class="container device col-sm-12">
+                                    <div class="deviceLeft">
+                                        <div class="deviceLeft_box">
+                                            <div class="node nodelabelcss" data-type="label">标签</div>
+                                            <div class="node nodecrowd_filecss" data-type="crowd_file">人群文件</div>
+                                        </div>
+                                    </div>
+                                    <div id="deviceRight">
+                                        <div id="m1"></div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">规则表达式</label>
+                            <div class="col-sm-10">
+                                <input id="rule_expression_cn" name="rule_expression_cn" type="text"
+                                       placeholder="规则表达式" class="form-control" aria-required="true" readonly value=""> </span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">优先级</label>
+                            <div class="col-sm-10">
+                                <input id="priority" name="priority" type="text"
+                                       placeholder="优先级 默认5,最高级100,example:25" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!--<script type="text/javascript" src="js/plugins/suggest/bootstrap-suggest.min.js"></script>-->
+<script type="text/javascript" src="js/plugins/magicsuggest/magicsuggest.js"></script>
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
+<script type="text/javascript" src="js/digitalmarket/crowd_rule_add.js"></script>
+
+
+<script type="text/javascript">
+
+    function add_node_zdh(more_task,etl_id,etl_context){
+        var id = "div"+etl_id;
+    }
+
+    //基本连接线样式
+    var connectorPaintStyle = {
+        lineWidth: 2,
+        strokeStyle: "#61b8d0"
+    };
+
+    // 鼠标悬浮在连接线上的样式
+    var connectorHoverStyle = {
+        lineWidth: 2,
+        strokeStyle: "green"
+    };
+
+    //端点的颜色样式
+    var paintStyle = {
+        fillStyle: "#ccc",
+        radius: 10,
+        lineWidth:6
+    };
+
+    // 鼠标悬浮在端点上的样式
+    var hoverPaintStyle = {
+        fillStyle: "#aaa"
+    };
+
+
+    var hollowCircle = {
+        endpoint: ["Dot", { radius: 3 }],  //端点的形状
+        connectorStyle: connectorPaintStyle,
+        connectorHoverStyle: connectorHoverStyle,
+        paintStyle: paintStyle,
+        hoverPaintStyle: hoverPaintStyle ,
+        isSource: true,    //是否可以拖动（作为连线起点）
+        connector: ["StateMachine", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],  //连接线的样式种类有[Bezier],[Flowchart],[StateMachine ],[Straight ]
+        isTarget: true,    //是否可以放置（连线终点）
+        maxConnections: -1,    // 设置连接点最多可以连接几条线
+        connectorOverlays:[
+            [ "Arrow", { width:10, length:20, location:1, id:"arrow" } ],
+            ["Custom", {
+                create:function(component) {
+                    return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
+                },
+                location:0.5,
+                id:"customOverlay"
+            }]
+        ]
+    };
+
+    function get_color_by_status(is_disenable){
+        //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+        if(is_disenable=='true'){
+            return "LightGrey"
+        }
+        return ""
+    }
+
+    function open_json(json) {
+        var jsplumb_json=JSON.parse(json);
+        //添加div 数据
+        for(var i=0;i< jsplumb_json.tasks.length;i++){
+            var rs=jsplumb_json.tasks[i];
+            var tp=rs.type;
+            var divId=rs.divId;
+            var etl_context=rs.etl_context;
+            var positionX=rs.positionX;
+            var positionY=rs.positionY;
+            cls_str="node node"+tp+"css tasks";
+            var color=get_color_by_status(rs.is_disenable);
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background: '+color+'" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type",tp);
+            $("#" + divId).attr("rule_context",rs.rule_context);
+            $("#" + divId).attr("is_disenable",rs.is_disenable);
+            $("#" + divId).attr("depend_level",rs.depend_level);
+            $("#" + divId).attr("time_out",rs.time_out);
+
+            $("#" + divId).attr("more_task",rs.more_task);
+            $("#" + divId).attr("zdh_instance",rs.zdh_instance);
+
+            $("#" + divId).attr("rule_param",rs.rule_param);
+            $("#" + divId).attr("operate",rs.operate);
+            $("#" + divId).attr("rule_expression_cn", rs.rule_expression_cn);
+            $("#" + divId).attr("title", rs.rule_expression_cn);
+            //div.width(etl_task_info.etl_context.length*16)
+            $("#" + divId).css("width","auto");
+            $("#" + divId).css("display","inline-block");
+            $("#" + divId).css("*display","inline");
+            $("#" + divId).css("*zoom","1");
+
+            if(tp == "label"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html(rs.rule_context);
+            }
+            if(tp == "crowd_file"){
+                $("#" + divId).attr("crowd_file",rs.crowd_file);
+                $("#" + divId).attr("crowd_file_context",rs.crowd_file_context);
+                $("#" + divId).html(rs.crowd_file_context);
+            }
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous"
+            });
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+
+            doubleclick("#" + divId,tp);
+
+        }
+
+        for(var i=0;i< jsplumb_json.line.length;i++){
+                jsPlumb.connect({
+                    uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
+                })
+        }
+
+
+    }
+
+    //双击节点内容区域时的事件
+    function doubleclick(id,tp) {
+        switch (tp) {
+            case "label"://服务器
+                doubleclick_label(id);
+                break;
+            case "crowd_file":
+                doubleclick_crowd_file(id);
+                break;
+        }
+    }
+
+    function doubleclick_tasks(id) {
+        $(id).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this);
+            var rule_id=div.attr("rule_id");
+            var url=server_context+'/rule_detail.html';
+            if( div.attr("rule_id") == "" || div.attr("rule_id") == undefined ){
+                url=url+"?rule_id=-1"
+            }else{
+                var more_task=div.attr("more_task");
+                var depend_level = div.attr("depend_level");
+                var time_out = div.attr("time_out");
+                var operate = div.attr("operate");
+                $("#rule_param").val(div.attr("rule_param"));
+                url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate
+            }
+            layer.open({
+                type: 2,
+                area: ['100%', '100%'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: encodeURI(url),
+                end: function () {
+                    if($("#etl_task_text").val()==""){
+                        console.info("无修改-不更新");
+                        return ;
+                    }
+
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
+                    div.attr("operate",etl_task_info.operate);
+                    div.attr("rule_id",etl_task_info.rule_id);
+                    div.attr("rule_context",etl_task_info.rule_context);
+                    div.attr("more_task",etl_task_info.more_task);
+                    div.attr("is_disenable",etl_task_info.is_disenable);
+                    div.attr("time_out",etl_task_info.time_out);
+                    div.attr("rule_param",etl_task_info.rule_param);
+                    div.attr("rule_expression_cn",etl_task_info.rule_expression_cn);
+                    div.attr("title", etl_task_info.rule_expression_cn);
+                    //div.width(etl_task_info.etl_context.length*16)
+                    div.css("width","auto");
+                    div.css("display","inline-block");
+                    div.css("*display","inline");
+                    div.css("*zoom","1");
+                    div.html(etl_task_info.rule_context);
+                    //自动生成规则表达式
+                    create_rule_expression_cn();
+                }
+            });
+        });
+    }
+
+    function jsplumb_data(){
+        var ojson={
+            tasks:[],
+            line:[]
+        };
+        //服务器
+        $("#m1 .tasks").each(function (idx, elem) {
+            var $elem = $(elem);
+            var param={
+
+                more_task:$elem.attr('more_task'),
+                zdh_instance:$elem.attr('zdh_instance'),
+                is_disenable: $elem.attr('is_disenable'),
+                depend_level: $elem.attr('depend_level'),
+                time_out: $elem.attr('time_out'),
+
+                id: $elem.attr('id'),
+                rule_id: $elem.attr('rule_id'),
+                rule_context:$elem.attr('rule_context'),
+                rule_param: $elem.attr('rule_param'),
+                operate: $elem.attr('operate'),
+                rule_expression_cn: $elem.attr('rule_expression_cn'),
+                rule_expression: $elem.attr('rule_expression'),
+
+                crowd_file_context: $elem.attr('crowd_file_context'),
+                crowd_file: $elem.attr('crowd_file'),
+
+                divId:$elem.attr('id'),
+                name: $elem[0].innerText,
+                positionX: parseInt($elem.css("left"), 10),
+                positionY: parseInt($elem.css("top"), 10),
+                type:$elem.data('type')
+            };
+            ojson.tasks.push(param)
+        });
+
+        $.each(jsPlumb.getConnections(), function (idx, connection) {
+            var param={
+                connectionId: connection.id,
+                pageSourceId: connection.sourceId,
+                pageTargetId: connection.targetId
+            };
+            ojson.line.push(param)
+        });
+        return ojson
+    }
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+    function closeTab() {
+        // var currentWidth = $(this).parents('.J_menuTab').width();
+        var wpd = $(window.parent.document);
+        var mainContent = wpd.find('.J_mainContent');
+        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
+        var currentTab=pageTabs.find(".J_menuTab.active");
+        var closeTabId = currentTab.data('id');
+        mainContent.find('.J_iframe');
+
+        // 当前元素处于活动状态
+        if (currentTab.hasClass('active')) {
+
+            // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
+            if (pageTabs.next('.J_menuTab').size()) {
+
+                var activeId = currentTab.next('.J_menuTab:eq(0)').data('id');
+                currentTab.next('.J_menuTab:eq(0)').addClass('active');
+
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == activeId) {
+                        $(e).show().siblings('.J_iframe').hide();
+                        return false;
+                    }
+                });
+
+                var marginLeftVal = parseInt($('.page-tabs-content').css('margin-left'));
+                if (marginLeftVal < 0) {
+                    pageTabs.animate({
+                        marginLeft: (marginLeftVal + currentTab.width()) + 'px'
+                    }, "fast");
+                }
+
+                //  移除当前选项卡
+                currentTab.remove();
+
+                // 移除tab对应的内容区
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == closeTabId) {
+                        $(e).remove();
+                        return false;
+                    }
+                });
+            }
+
+            // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
+            if (currentTab.prev('.J_menuTab').size()) {
+                var activeId = currentTab.prev('.J_menuTab:last').data('id');
+                currentTab.prev('.J_menuTab:last').addClass('active');
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == activeId) {
+                        $(e).show().siblings('.J_iframe').hide();
+                        return false;
+                    }
+                });
+
+                //  移除当前选项卡
+                currentTab.remove();
+
+                // 移除tab对应的内容区
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == closeTabId) {
+                        $(e).remove();
+                        return false;
+                    }
+                });
+
+            }
+        }
+        // 当前元素不处于活动状态
+        else {
+
+            //  移除当前选项卡
+            currentTab.remove();
+
+            // 移除相应tab对应的内容区
+            mainContent.find('.J_iframe').each(function (index,e) {
+                if ($(e).data('id') == closeTabId) {
+                    $(e).remove();
+                    return false;
+                }
+            });
+            // scrollToTab($('.J_menuTab.active'));
+        }
+        return false;
+    }
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+
+            //init_job_sources();
+            //s.id=-1 表示新增,否则表示更新
+            if(s.id==-1){
+                $('#update_dispatch_task').hide();
+                $('#save_dispatch_task').show();
+            }else{
+                if(s.is_copy == "true"){
+                    console.info("拷贝按钮触发");
+                    $('#update_dispatch_task').hide();
+                    $('#save_dispatch_task').show();
+                }else{
+                    console.info("更新按钮触发");
+                    $('#save_dispatch_task').hide();
+                    $('#update_dispatch_task').show();
+                }
+
+            }
+            // ------------------------------------------------------------------
+
+
+            function getCurrentDate(){
+                var oDate = new Date(),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            function getMyDate(str){
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+            //补0操作
+            function getzf(num){
+                if(parseInt(num) < 10){
+                    num = '0'+num;
+                }
+                return num;
+            }
+
+            if(s.id !='-1'){
+                console.info("更新-拷贝按钮触发");
+                //开始赋值
+                $.ajax({
+                    url : server_context+"/crowd_rule_detail",
+                    data : "id=" + s.id,
+                    type : "post",
+                    dataType : "json",
+                    success : function(data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        console.info("success");
+                       // layer.alert(JSON.stringify(data[0]))
+                        //获取调度任务说明
+                        var rule_context=data.result.rule_context;
+                        $("#rule_context").val(rule_context);
+
+                        var rule_json=data.result.rule_json;
+                        open_json(rule_json);
+
+                        //表达式expr
+                        var rule_expression_cn=data.result.rule_expression_cn;
+                        $("#rule_expression_cn").val(rule_expression_cn);
+
+                        var priority=data.result.priority;
+                        $("#priority").val(priority);
+
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+            }
+
+
+
+        })();
+
+
+
+    })(document, window, jQuery);
+
+
+
+    $('#save_dispatch_task').click(function () {
+
+        if($('#rule_context').val()==''){
+            layer.msg("人群规则说明不可为空");
+            return false
+        }
+
+        var ojson=jsplumb_data();
+        $('#rule_json').val(JSON.stringify(ojson));
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/crowd_rule_add",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize(),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#save_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+                //closeTab();
+            },
+            //处理完成
+            complete: function () {
+                $("#save_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    });
+
+    $('#update_dispatch_task').click(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+
+        if($('#rule_context').val()==''){
+            layer.msg("人群规则说明不可为空");
+            return false
+        }
+
+        var ojson=jsplumb_data();
+        $('#rule_json').val(JSON.stringify(ojson));
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/crowd_rule_update",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+'&id='+s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+               // closeTab()
+            },
+            //处理完成
+            complete: function () {
+                $("#update_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+</script>
+
+
+</body>
+
+</html>

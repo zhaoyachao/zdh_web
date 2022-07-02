@@ -78,6 +78,13 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="col-sm-3 control-label">回调接口：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="call_back" name="call_back" placeholder="http://ip:port/xxx">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <div class="col-sm-8 col-sm-offset-3">
                                     <button class="btn btn-primary" type="button" id="btn_up" οnsubmit='return false'>保存</button>
                                 </div>
@@ -184,6 +191,7 @@
                             $('#event_context').val(data.result.event_context);
                             var skip_account=data.result.skip_account;
                             window.addressIdMagicSuggest.setValue(skip_account.split(','));
+                            $('#call_back').val(data.result.call_back);
                             layer.msg('查询成功');
                         }else{
                             layer.msg('查询失败,'+data.result);

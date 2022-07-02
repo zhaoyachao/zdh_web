@@ -121,18 +121,6 @@
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="../html/graph_flot.html#">
-                            <i class="fa fa-wrench"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-user">
-                            <li><a href="../html/graph_flot.html#">选项1</a>
-                            </li>
-                            <li><a href="../html/graph_flot.html#">选项2</a>
-                            </li>
-                        </ul>
-                        <a class="close-link">
-                            <i class="fa fa-times"></i>
-                        </a>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -277,7 +265,7 @@
             $.ajax({
                 type: "post",
                 url: server_context+"/etlEcharts",
-                data: {},
+                data: "",
                 dataType: "json",
                 success: function (res) {
                     var etl_date_datas = new Array();// 声明一个数组
@@ -356,11 +344,11 @@
                 dataType: "json",
                 success: function (data) {
                     $('#allTaskNum').text(data.allTaskNum);
-                    $('#allDispatchNum').text(data.allDispatchNum)
-                    $('#allDispatchRunNum').text(data.allDispatchRunNum)
-                    $('#successNum').text(data.successNum)
-                    $('#errorNum').text(data.errorNum)
-                    $('#alarmNum').text(data.alarmNum)
+                    $('#allDispatchNum').text(data.allDispatchNum);
+                    $('#allDispatchRunNum').text(data.allDispatchRunNum);
+                    $('#successNum').text(data.successNum);
+                    $('#errorNum').text(data.errorNum);
+                    $('#alarmNum').text(data.alarmNum);
                 },
                 error: function (errorMsg) {
                     //请求失败时执行该函数
@@ -376,11 +364,10 @@
             allTotalNum();
         }, 60000);
 
-
         var day2 = new Date();
         day2.setTime(day2.getTime());
         var s2 = day2.getFullYear() + "-" + (day2.getMonth() + 1) + "-" + day2.getDate();
-        $('#current_status').html(s2 + "任务状态")
+        $('#current_status').html(s2 + "任务状态");
 
         function openTabPage(url, title) {
             var wpd = $(window.parent.document);
@@ -861,12 +848,6 @@
 
         })
     });
-
-    (function (document, window, $) {
-
-    })(document, window, jQuery);
-
-
 </script>
 </body>
 

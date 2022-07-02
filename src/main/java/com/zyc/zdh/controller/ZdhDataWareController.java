@@ -114,7 +114,6 @@ public class ZdhDataWareController extends BaseController {
         return jsonObject.toJSONString();
     }
 
-    @White
     @RequestMapping(value = "/data_ware_house_label", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_ware_house_label() {

@@ -74,6 +74,14 @@ public class AspectConfig implements Ordered{
 	@Around(value = "pointcutMethod3()")
 	public Object aroundLog(ProceedingJoinPoint pjp) throws Exception {
 		try {
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+
+			//IP地址
+			String ipAddr = getRemoteHost(request);
+			String url = request.getRequestURL().toString();
+
+
 			if(getUser()==null){
 				MDC.put("user_id", UUID.randomUUID().toString());
 			}else{
@@ -92,12 +100,7 @@ public class AspectConfig implements Ordered{
 				return pjp.proceed();
 			}
 
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-			HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
 
-			//IP地址
-			String ipAddr = getRemoteHost(request);
-			String url = request.getRequestURL().toString();
 			String reqParam = "";
 
 			//校验ip黑名单
@@ -136,6 +139,8 @@ public class AspectConfig implements Ordered{
 			if(!is_pass){
 				logger.warn("系统维护中,只有admin用户和zyc用户可访问....");
 				MDC.remove("user_id");
+				String uid = getUser() == null? "":getUser().getUserName();
+				logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】请求参数:【{}】",ipAddr,uid,url,request.getMethod(),reqParam);
 				if (request.getMethod().equalsIgnoreCase("get")){
 					return "redirect:503";
 				}else{
@@ -152,6 +157,7 @@ public class AspectConfig implements Ordered{
 				String whiteUrl =getUrl(request);
 				if(!white().contains(whiteUrl)){
 					MDC.remove("user_id");
+					logger.error("用户未登录");
 					return "redirect:login";
 				}
 			}
@@ -187,10 +193,14 @@ public class AspectConfig implements Ordered{
 
 				if(e.getMessage().contains("没有权限")){
 					MDC.remove("user_id");
+					String uid = getUser() == null? "":getUser().getUserName();
+					logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】, 当前请求无权限",ipAddr,uid,url,request.getMethod(),reqParam);
 					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "无权限", e);
 				}
 				if (request.getMethod().equalsIgnoreCase("get")){
 					MDC.remove("user_id");
+					String uid = getUser() == null? "":getUser().getUserName();
+					logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】,当前请求异常,强制跳转404",ipAddr,uid,url,request.getMethod(),reqParam);
 					return "404";
 				}
 				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -198,8 +208,8 @@ public class AspectConfig implements Ordered{
 				MDC.remove("user_id");
 				return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统错误", e);
 			}
-            String uid = getUser() == null? "":getUser().getId();
-			logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】请求参数:【{}】",ipAddr,uid,url,request.getMethod(),reqParam);
+            String uid = getUser() == null? "":getUser().getUserName();
+			logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】",ipAddr,uid,url,request.getMethod(),reqParam);
 			Object o=pjp.proceed();
 			logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,结束",ipAddr,uid,url);
 			try{
@@ -374,13 +384,14 @@ public class AspectConfig implements Ordered{
 		permissions.add("zdh_version");
 		permissions.add("zdh_download_index");
 		permissions.add("favicon");
-		permissions.add("index");
+		//permissions.add("index");
 		permissions.add("every_day_notice");
 		permissions.add("notice_list");
 		permissions.add("readme");
 		permissions.add("zdh_help");
 		permissions.add("check_captcha");
 		permissions.add("get_platform_name");
+		permissions.add("get_error_msg");
 
 		return permissions;
 	}

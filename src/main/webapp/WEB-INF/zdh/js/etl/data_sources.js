@@ -105,7 +105,7 @@ function buildTable($el, cells, rows) {
               content: server_context+'/data_sources_add_index?id=-1', //iframe的url
               end:function () {
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : server_context+'/data_sources_list'
+                      url : server_context+'/data_sources_list2'
                   });
               }
           });
@@ -148,7 +148,7 @@ function buildTable($el, cells, rows) {
                       return
                   }
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : server_context+'/data_sources_list'
+                      url : server_context+'/data_sources_list2'
                   });
               },
               error: function (data) {
@@ -170,7 +170,7 @@ function buildTable($el, cells, rows) {
                   content: server_context+"/data_sources_add_index?id="+row.id,
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/data_sources_list'
+                          url : server_context+'/data_sources_list2'
                       });
                   }
               });

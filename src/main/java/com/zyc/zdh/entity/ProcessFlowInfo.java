@@ -46,6 +46,9 @@ public class ProcessFlowInfo {
     @Transient
     private String by_person_name;
 
+    //外部系统使用审批流,外部事件处理标识
+    private String other_handle;
+
     public String getId() {
         return id;
     }
@@ -164,5 +167,13 @@ public class ProcessFlowInfo {
 
     public void setEvent_id(String event_id) {
         this.event_id = event_id;
+    }
+
+    public String getOther_handle() {
+        return other_handle;
+    }
+
+    public void setOther_handle(String other_handle) {
+        this.other_handle = other_handle;
     }
 }

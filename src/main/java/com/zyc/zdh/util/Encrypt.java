@@ -23,7 +23,7 @@ public class Encrypt {
      *  AES加密
      * @param data
      * @return String
-     * @author anson
+     * @author zhaoyachao
      * @date   2019-8-24 18:43:07
      */
     public static String AESencrypt(String data) throws Exception
@@ -40,7 +40,7 @@ public class Encrypt {
      * AES解密
      * @param data
      * @return String
-     * @author anson
+     * @author zhaoyachao
      * @date   2019-8-24 18:46:07
      */
     public static String AESdecrypt(String data) throws Exception

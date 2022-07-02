@@ -1,7 +1,9 @@
 package com.zyc.zdh.quartz;
 
 import com.zyc.zdh.dao.QuartzJobMapper;
+import com.zyc.zdh.dao.StrategyGroupMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
+import com.zyc.zdh.entity.StrategyGroupInfo;
 import com.zyc.zdh.entity.TaskGroupLogInstance;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.job.JobType;
@@ -32,6 +34,9 @@ public class QuartzManager2 {
 	
 	@Autowired
 	private QuartzJobMapper quartzJobMapper;
+
+	@Autowired
+	private StrategyGroupMapper strategyGroupMapper;
 
 	/**
 	 * 根据任务名，对应的表名，表达式创建任务
@@ -74,6 +79,7 @@ public class QuartzManager2 {
 	}
 	
 	/**
+	 * 添加任务到调度器
 	 * 执行定时任务
 	 * 
 	 * @param quartzJobInfo
@@ -95,6 +101,9 @@ public class QuartzManager2 {
 					recovery=true;
 					break;
 				case "check":
+					recovery=true;
+					break;
+				case "blood":
 					recovery=true;
 					break;
 				default:
@@ -137,10 +146,80 @@ public class QuartzManager2 {
 			jobDataMap.put(MyJobBean.TASK_ID, quartzJobInfo.getJob_id());
 			quartzJobInfo.setStatus("running");
 			schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
-			if (!schedulerFactoryBean.getScheduler().isStarted()) {
-				schedulerFactoryBean.getScheduler().start();
-			}
+			//调度器,关闭自动启动
+//			if (!schedulerFactoryBean.getScheduler().isStarted()) {
+//				schedulerFactoryBean.getScheduler().start();
+//			}
 			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
+		} catch (SecurityException e) {
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+			logger.error(error, e);
+			throw e;
+		} catch (SchedulerException e) {
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+			logger.error(error, e);
+			throw e;
+		} catch (Exception e) {
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+			logger.error(error, e);
+			throw e;
+		}
+
+	}
+
+	/**
+	 * 添加策略组任务到调度器
+	 * @param strategyGroupInfo
+	 * @throws Exception
+	 */
+	public void addTaskToQuartz(StrategyGroupInfo strategyGroupInfo) throws Exception {
+		try {
+			//根据调度id 和etl任务id 确定唯一的triggerkey
+			if(schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(strategyGroupInfo.getId(), strategyGroupInfo.getGroup_context()))!=null){
+				logger.info("已经存在同名的triggerkey,请重新创建");
+				throw new Exception("已经存在同名的triggerkey,请重新创建");
+			}
+
+			boolean recovery = false;
+
+			JobDetail jobDetail = JobBuilder
+					.newJob(MyJobBean.class)
+					.requestRecovery(recovery) // quartz 自动故障转移
+					.withDescription(strategyGroupInfo.getGroup_context())
+					.withIdentity(strategyGroupInfo.getId(), strategyGroupInfo.getGroup_context()).build();
+			Trigger trigger = null;
+
+			String expression = strategyGroupInfo.getExpr();
+			if (expression.contains("s") || expression.contains("m")
+					|| expression.contains("h") || expression.contains("d")) {
+				SimpleScheduleBuilder simpleScheduleBuilder = getSimpleScheduleBuilder(
+						expression, -1,strategyGroupInfo.getMisfire());
+
+
+
+				trigger = TriggerBuilder
+						.newTrigger()
+						.withPriority(Integer.valueOf(StringUtils.isEmpty(strategyGroupInfo.getPriority())?"5":strategyGroupInfo.getPriority())) //设置优先级
+						.withIdentity(strategyGroupInfo.getId(), strategyGroupInfo.getGroup_context()).startNow()
+						.withSchedule(simpleScheduleBuilder).build();
+			} else {
+				CronScheduleBuilder cronScheduleBuilder = getCronScheduleBuilder(expression,strategyGroupInfo.getMisfire());
+				trigger = TriggerBuilder
+						.newTrigger()
+						.withPriority(Integer.valueOf(StringUtils.isEmpty(strategyGroupInfo.getPriority())?"5":strategyGroupInfo.getPriority())) //设置优先级
+						.withIdentity(strategyGroupInfo.getId(), strategyGroupInfo.getGroup_context()).startNow()
+						.withSchedule(cronScheduleBuilder).build();
+			}
+
+			logger.debug("任务的trigger创建完成triggerkey is {}", trigger.getKey()
+					.toString());
+			JobDataMap jobDataMap = trigger.getJobDataMap();
+			jobDataMap.put(MyJobBean.TASK_ID, strategyGroupInfo.getId());
+			jobDataMap.put(MyJobBean.TASK_TYPE, "DIGITALMARKET");//智能营销
+			strategyGroupInfo.setStatus("running");
+			schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
+
+			strategyGroupMapper.updateByPrimaryKey(strategyGroupInfo);
 		} catch (SecurityException e) {
 			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);

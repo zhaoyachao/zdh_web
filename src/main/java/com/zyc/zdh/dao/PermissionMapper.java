@@ -15,34 +15,10 @@ import java.util.List;
  */
 public interface PermissionMapper extends BaseMapper<PermissionUserInfo> {
 
-
-	@Select({
-			"<script>",
-			"select * from account_info ",
-			"<when test='user_context!=null and user_context !=\"\"'>",
-			"where user_name like #{user_context}",
-			"or email like #{user_context}",
-			"or phone like #{user_context}",
-			"</when>",
-			"</script>"
-
-	})
-	@Results(value = {@Result(column="id",property="id"),
-			@Result(column="user_name",property="userName"),
-			//@Result(column="user_password",property="password"),
-			@Result(column="email",property="email"),
-			@Result(column="is_use_email",property="is_use_email"),
-			@Result(column="phone",property="phone"),
-			@Result(column="is_use_phone",property="is_use_phone"),
-			@Result(column="user_group",property="user_group"),
-			@Result(column="enable",property="enable")
-	})
-	public List<PermissionUserInfo> findAll(@Param("user_context") String user_context);
-
 	@Update(
 			{
 					"<script>",
-					"update account_info set enable=#{enable} where id in",
+					"update permission_user_info set enable=#{enable} where id in",
 					"<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
 					"#{id}",
 					"</foreach>",
@@ -51,14 +27,41 @@ public interface PermissionMapper extends BaseMapper<PermissionUserInfo> {
 	)
 	public int updateEnable(@Param("ids") String[] ids, @Param("enable") String enable);
 
-	@Select({
-			"<script>",
-			"select * from account_info where id in ",
-			"<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
-			"#{id}",
-			"</foreach>",
-			"</script>"
 
-	})
-	public List<PermissionUserInfo> selectByKeys(@Param("ids") String[] ids);
+	@Update(
+			{
+					"<script>",
+					"update permission_user_info set roles=#{roles} where product_code =",
+					"<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+					"#{id}",
+					"</foreach>",
+					"</script>"
+			}
+	)
+	public int updateRoles(@Param("product_code") String product_code,@Param("user_account") String user_account, @Param("roles") String roles);
+
+	@Update(
+			{
+					"<script>",
+					"update permission_user_info set user_group=#{user_group} where id in",
+					"<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+					"#{id}",
+					"</foreach>",
+					"</script>"
+			}
+	)
+	public int updateUserGroup(@Param("ids") String[] ids, @Param("user_group") String user_group);
+
+	@Update(
+			{
+					"<script>",
+					"update permission_user_info set tag_group_code=#{tag_group_code} where id in",
+					"<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+					"#{id}",
+					"</foreach>",
+					"</script>"
+			}
+	)
+	public int updateDataTagGroup(@Param("ids") String[] ids, @Param("tag_group_code") String tag_group_code);
+
 }

@@ -201,6 +201,7 @@ $(document).ready(function(){
                             div.css("*display","inline");
                             div.css("*zoom","1");
                             div.html(etl_task_info.etl_context);
+                            div.css('background', get_color_by_status(etl_task_info.is_disenable));
                         }
                     });
                 });
@@ -230,7 +231,7 @@ $(document).ready(function(){
                 end: function () {
                     console.info("index:doubleclick:"+$("#etl_task_text").val());
                     if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新")
+                        console.info("无修改-不更新");
                         return ;
                     }
 
@@ -245,6 +246,7 @@ $(document).ready(function(){
                     div.css("*display","inline");
                     div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
+                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 }
             });
         });
@@ -288,6 +290,7 @@ $(document).ready(function(){
                     div.css("*display","inline");
                     div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
+                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 }
             });
         });
@@ -310,9 +313,11 @@ $(document).ready(function(){
                 var jdbc_sql=div.attr("jdbc_sql");
                 var depend_level = div.attr("depend_level");
                 var time_out = div.attr("time_out");
+                var data_sources_choose_input = div.attr("data_sources_choose_input");
                 $("#jdbc_url_text").val(jdbc_url);
                 $("#jdbc_sql_text").val(jdbc_sql);
                 url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level +"&time_out="+time_out
+                    +"&data_sources_choose_input="+data_sources_choose_input
             }
             layer.open({
                 type: 2,
@@ -337,12 +342,14 @@ $(document).ready(function(){
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("depend_level",etl_task_info.depend_level);
                     div.attr("time_out",etl_task_info.time_out);
+                    div.attr("data_sources_choose_input",etl_task_info.data_sources_choose_input);
                     //div.width(etl_task_info.etl_context.length*16)
                     div.css("width","auto");
                     div.css("display","inline-block");
                     div.css("*display","inline");
                     div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
+                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 }
             });
         });
@@ -401,6 +408,7 @@ $(document).ready(function(){
                     div.css("*display","inline");
                     div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
+                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 }
             });
         });
@@ -453,6 +461,7 @@ $(document).ready(function(){
                     div.css("*display","inline");
                     div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
+                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 }
             });
         });
@@ -506,6 +515,7 @@ $(document).ready(function(){
                     div.css("*display","inline");
                     div.css("*zoom","1");
                     div.html(etl_task_info.etl_context);
+                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 }
             });
         });

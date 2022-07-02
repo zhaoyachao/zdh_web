@@ -56,11 +56,11 @@ public class SystemController extends BaseController{
     @Autowired
     NoticeMapper noticeMapper;
 
-    @RequestMapping(value = "/{url}", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
-    public String dynApiDemo2(@PathVariable("url") String url) {
-        System.out.println(url);
-        return "404";
-    }
+//    @RequestMapping(value = "/{url}", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+//    public String dynApiDemo2(@PathVariable("url") String url) {
+//        System.out.println(url);
+//        return "404";
+//    }
 
     @RequestMapping(value = "/get_platform_name", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody

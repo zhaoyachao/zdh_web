@@ -188,7 +188,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
           method: "POST",
-          url: server_context+"/role_list",
+          url: "",
       search: true,
       pagination: true,
       showRefresh: true,

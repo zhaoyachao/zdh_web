@@ -24,15 +24,18 @@ public interface ApprovalAuditorMapper extends BaseMapper<ApprovalAuditorInfo> {
      */
     @Select({"<script>",
             "SELECT a.*,b.code_name,b.type,c.name as auditor_group_name,d.user_name FROM approval_auditor_info a inner join approval_config_info b on a.code=b.code left join user_group_info c on a.auditor_group=c.id",
-            " left join account_info d on a.auditor_id=d.id",
+            " left join permission_user_info d on a.auditor_id=d.user_account",
             "WHERE 1=1",
             "<when test='approval_context!=null and approval_context !=\"\"'>",
             "AND (a.code like #{approval_context}",
             "or auditor_group like #{approval_context}",
             "or a.id like #{approval_context})",
             "</when>",
+            "<when test='auditor_id!=null and auditor_id !=\"\"'>",
+            "AND auditor_id=#{auditor_id}",
+            "</when>",
             "</script>"})
-    public List<ApprovalAuditorInfo> selectByContext(@Param("approval_context") String approval_context);
+    public List<ApprovalAuditorInfo> selectByContext(@Param("approval_context") String approval_context,@Param("auditor_id") String auditor_id);
 
     @Select({"<script>",
             "SELECT a.*,b.code_name,b.type FROM approval_auditor_info a inner join approval_config_info b on a.code=b.code",

@@ -1,6 +1,7 @@
 package com.zyc.zdh.util;
 
 
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,10 +157,20 @@ public class DBUtil{
             connection = getConnection(driver,url,username,password);
 
             if(url.startsWith("jdbc:clickhouse")){
-                preparedStatement=connection.prepareStatement("select database,name from system.tables where database != 'system'");
+                preparedStatement=connection.prepareStatement("select database,`name` from system.tables where database != 'system'");
                 resultSet=preparedStatement.executeQuery();
                 while (resultSet.next()) {
                     result.add(resultSet.getString("database")+"."+resultSet.getString("name"));
+                }
+
+                return result;
+            }
+            if(url.startsWith("jdbc:pivotal:greenplum")){
+                preparedStatement=connection.prepareStatement("select * from information_schema.tables t where table_type='BASE TABLE' and table_schema not in ('pg_catalog', 'information_schema', 'gp_toolkit')");
+                resultSet=preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    //System.out.println(resultSet.getString("table_schema")+"."+resultSet.getString("table_name")+"==>"+resultSet.getString("table_type"));
+                    result.add(resultSet.getString("table_schema")+"."+resultSet.getString("table_name"));
                 }
 
                 return result;

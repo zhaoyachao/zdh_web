@@ -198,7 +198,7 @@
       }
 
 
-      $('#exampleTableEvents').bootstrapTable({
+      $('#exampleTableEvents').bootstrapTable('destroy').bootstrapTable({
       method: "POST",
       url: server_context+"/label_list",
       search: true,
@@ -263,6 +263,5 @@
         }]
     });
 
-    var $result = $('#examplebtTableEventsResult');
   })();
 })(document, window, jQuery);

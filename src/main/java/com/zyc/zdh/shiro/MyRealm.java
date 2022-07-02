@@ -1,10 +1,13 @@
 package com.zyc.zdh.shiro;
 
+import com.zyc.zdh.dao.PermissionMapper;
 import com.zyc.zdh.dao.ResourceTreeMapper;
+import com.zyc.zdh.entity.PermissionUserInfo;
 import com.zyc.zdh.entity.User;
 import com.zyc.zdh.entity.UserResourceInfo2;
 import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.Encrypt;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -14,8 +17,10 @@ import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.cache.CacheManager;
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +47,7 @@ public class MyRealm extends AuthorizingRealm {
 		// 从数据库中获取对应权限字符串并存储permissions
 		//System.out.println(user.getUserName());
 		List<UserResourceInfo2> uris=new ArrayList<>();
-		uris=( (ResourceTreeMapper)SpringContext.getBean("resourceTreeMapper")).selectResourceByUserId(user.getId());
+		uris=( (ResourceTreeMapper)SpringContext.getBean("resourceTreeMapper")).selectResourceByUserAccount(user.getUserName());
         for(UserResourceInfo2 uri2:uris){
         	if(!StringUtils.isEmpty(uri2.getUrl())){
 				String url = uri2.getUrl();
@@ -69,8 +74,6 @@ public class MyRealm extends AuthorizingRealm {
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(
 			AuthenticationToken arg0) throws AuthenticationException {
-		System.out.println("认证=====");
-
 		//验证码验证
 		String captcha = ((MyAuthenticationToken) arg0).getCaptcha();
 		String session_captcha = ((MyAuthenticationToken) arg0).getSession_captcha();
@@ -82,17 +85,41 @@ public class MyRealm extends AuthorizingRealm {
 		String userName = ((MyAuthenticationToken) arg0).getUsername();
 		char[] password = ((MyAuthenticationToken) arg0).getPassword();
 		User user = new User();// 根据用户名密码获取user
-		//Object obj = new SimpleHash("md5", new String(password), null, 1);
-		user.setPassword(new String(password));
+		//Object obj = new SimpleHash("md5", new String(password), null, 2);
+		try {
+			user.setPassword(Encrypt.AESencrypt(new String(password)));
+		} catch (Exception e) {
+			throw new AuthenticationException("密码解析异常");
+		}
 		user.setUserName(userName);
 		user = ((AccountService) SpringContext.getBean("accountService"))
 				.findByPw(user);
 
-		if(user.getEnable()==null || user.getEnable().equalsIgnoreCase(Const.FALSE)){
-			throw new AuthenticationException("当前用户未启用,请联系管理员");
-		}
 		if (user == null) {
 			throw new AuthenticationException("用户名密码错误");
+		}
+
+		//同步权限信息
+		PermissionMapper permissionMapper = ((PermissionMapper) SpringContext.getBean("permissionMapper"));
+		Environment environment= (Environment) SpringContext.getBean("environment");
+		String product_code = environment.getProperty("zdh.product", "zdh");
+		PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
+		permissionUserInfo.setUser_account(userName);
+		permissionUserInfo.setProduct_code(product_code);
+		List<PermissionUserInfo> permissionUserInfos = permissionMapper.select(permissionUserInfo);
+
+		if(permissionUserInfos == null || permissionUserInfos.size()<1){
+			throw new AuthenticationException("当前用户为配置权限,请联系管理员配置权限");
+		}
+
+		user.setEnable(permissionUserInfos.get(0).getEnable());
+		user.setRoles(permissionUserInfos.get(0).getRoles());
+		user.setUser_group(permissionUserInfos.get(0).getUser_group());
+		user.setTag_group_code(permissionUserInfos.get(0).getTag_group_code());
+		user.setSignature(permissionUserInfos.get(0).getSignature());
+
+		if(user.getEnable()==null || user.getEnable().equalsIgnoreCase(Const.FALSE)){
+			throw new AuthenticationException("当前用户未启用,请联系管理员");
 		}
 
 		SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(

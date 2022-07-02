@@ -529,9 +529,53 @@
   + v5.0.0 优化调度重试界面,杀死任务增加默认重试
   + v5.0.0 重试最新执行,增加任务信息最新版
   
+  + v5.0.1 [zdh_web] 修复greenplum链接时无法获取表名问题
+  + v5.0.1 [zdh_web] 验证gbase链接时是否获取表名问题
+  + v5.0.1 [zdh_web] 新增达梦jdbc驱动
+  + v5.0.1 [zdh_web] 验证kingbase链接时是否获取表名问题【为完成】
+  + v5.0.1 [zdh_web] 验证sqlserver链接时是否获取表名问题【为完成】
+  + v5.0.1 [zdh_web] 历史遗留支持spark-greenplum 链接器【为完成】
   
-  + v5.1.0 增加标签模块(为用户画像,智能营销做基础)
+  + v5.1.0 [zdh_web]增加标签模块(为用户画像,智能营销做基础)
+  + v5.1.0 [zdh_web]优化数据源查询,区分下拉框和列表
+  + v5.1.0 [zdh_web]新增权限用户信息表和用户表分离、
+  + v5.1.0 [zdh_web]分离用户认证和权限校验
+  + v5.1.0 [zdh_web]修复审批管理-审批人配置用户组刷新问题
+  + v5.1.0 [zdh_web]审批人配置-用户id改为用户账户
+  + v5.1.0 [zdh_web]生成审批流和获取审批信息改为通过账户获取
+  + v5.1.0 [zdh_web]数据源用户组获取逻辑重构
+  + v5.1.0 [zdh_web]用户验证后同步权限信息
+  + v5.1.0 [zdh_web]权限管理-角色资源增加更新时间
+  + v5.1.0 [zdh_web]增加权限接口-方便其他系统使用权限管理
+  + v5.1.0 [zdh_web]获取账号逻辑变更,改为从权限系统获取
+  + v5.1.0 [zdh_spark]修复配置文件名错误
+  + v5.1.0 [zdh_web]优化调度ETL配置时禁用实时反显
+  + v5.1.0 [zdh_web]更换登录和注册页背景图,删除多余图片
+  + v5.1.0 [zdh_web]调度手动执行增加图展示
+  + v5.1.0 [zdh_web]调度模块jdbc增加数据源选择
+  + v5.1.0 [zdh_web]新增通用角色
+  + v5.1.0 [zdh_web]新增流程审批api-方便其他系统使用流程管理
+  + v5.1.0 [zdh_web]流程管理owner 由用户id改为用户名
+  + v5.1.0 [zdh_web]新增人群规则模块[标签+人群文件]
+  + v5.1.0 [zdh_web]删除检查任务依赖时,多余日志
+  + v5.1.0 [zdh_web]新增分流模块[定义多种分流规则]
+  + v5.1.0 [zdh_web]注册时自动关联权限模块,并使用默认基础角色
+  + v5.1.0 [zdh_web]修复查询操作日志时,部分日志获取失败
+  + v5.1.0 [zdh_web]通知模块增加不展示功能
+  + v5.1.0 [zdh_web]认证模块增加加密方式-自定义加密
+  + v5.1.0 [zdh_web]优化登录失败提示
+  + v5.1.0 [zdh_web]审批流-新增外部系统处理标识
+  + v5.1.0 [zdh_web]新增权限申请功能
+  + v5.1.0 [zdh_web]修复数据权限-数据标识和数据组标识前端异常bug
+  + v5.1.0 [zdh_web]优化角色编辑模块-角色code不可更改
+  + v5.1.0 [zdh_web]策略组增加过滤分流组实现,禁用分流code,这样下游就不用关心分流code,只需按流程图走向进行处理即可
+  + v5.1.0 [zdh_web]aop日志记录404跳转日志未打印日志修复
   
+  + v5.1.0 新增过滤模块【过滤列表待开发】【进行中】
+  
+  + v5.1.0 新增策略组模块【开发中】
+  + v5.1.0 数据标识 增加产品过滤【开发中】
+  + v5.1.0 新增组增加产品标识【开发中】
   
   + v5.0.1 增加接口黑名单限制【废弃】
   + v5.0.1 权限单独出SDK及分配身份码(身份码和产品id加密解密绑定)【开发中】
@@ -1178,6 +1222,226 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
     VALUES(969710130591436800, '964797665709658112', '导出', '3', '1', 'fa fa-coffee', '', '8', '1', '2022-04-29 21:21:51', '2022-04-29 21:21:51', 'self_service_export', '5', '', '', 'zdh');
 
+# 5.0.0迁移5.1.0
+
+
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(974986583612592128, '963926116140060672', '查询', '4', '1', 'fa fa-coffee', '', '1', '1', '2022-05-14 10:48:36', '2022-05-14 10:48:36', 'label_list', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(974987038673604608, '963926116140060672', '新增页面', '4', '1', 'fa fa-coffee', '', '2', '1', '2022-05-14 10:50:24', '2022-05-14 10:50:24', 'label_add_index', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(974987097733599232, '963926116140060672', '新增', '4', '1', 'fa fa-coffee', '', '3', '1', '2022-05-14 10:50:38', '2022-05-14 10:50:38', 'label_add', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(974987174132846592, '963926116140060672', '更新', '4', '1', 'fa fa-coffee', '', '4', '1', '2022-05-14 10:50:57', '2022-05-14 10:50:57', 'label_update', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(974987256076963840, '963926116140060672', '删除', '4', '1', 'fa fa-coffee', '', '5', '1', '2022-05-14 10:51:16', '2022-05-14 10:51:16', 'label_delete', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(974987629709758464, '963933821948923904', '查询', '4', '1', 'fa fa-coffee', '', '1', '1', '2022-05-14 10:52:45', '2022-05-14 10:52:45', 'crowd_rule_list', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(974987770135056384, '963933821948923904', '新增页面', '4', '1', 'fa fa-coffee', '', '2', '1', '2022-05-14 10:53:19', '2022-05-14 10:53:19', 'crowd_rule_add_index', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(974987840259624960, '963933821948923904', '新增', '4', '1', 'fa fa-coffee', '', '3', '1', '2022-05-14 10:53:36', '2022-05-14 10:53:36', 'crowd_rule_add', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(974987907989245952, '963933821948923904', '更新', '4', '1', 'fa fa-coffee', '', '4', '1', '2022-05-14 10:53:52', '2022-05-14 10:53:52', 'crowd_rule_update', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(974988002122010624, '963933821948923904', '删除', '4', '1', 'fa fa-coffee', '', '5', '1', '2022-05-14 10:54:14', '2022-05-14 10:54:14', 'crowd_rule_delete', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(987426332449181696, '802932548165439488', '权限申请', '3', '1', 'fa fa-coffee', '', '4', '1', '2022-06-17 18:39:43', '2022-06-18 14:30:39', 'permission_apply_index', '2', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988020939167895552, '963926116140060672', '明细', '4', '1', 'fa fa-coffee', '', '6', '1', '2022-06-19 10:02:28', '2022-06-19 10:02:28', 'label_detail', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988021168218836992, '963926116140060672', '标签code查询标签信息', '4', '1', 'fa fa-coffee', '', '7', '1', '2022-06-19 10:03:23', '2022-06-19 10:03:23', 'label_detail_by_code', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988023428319547392, '963933821948923904', '明细', '4', '1', 'fa fa-coffee', '', '6', '1', '2022-06-19 10:12:22', '2022-06-19 10:12:22', 'crowd_rule_detail', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988023698587914240, '963933821948923904', '标签规则明细页面', '4', '1', 'fa fa-coffee', '', '7', '1', '2022-06-19 10:13:26', '2022-06-19 10:17:09', 'rule_detail', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988023855152893952, '963933821948923904', '规则手动执行页', '4', '1', 'fa fa-coffee', '', '9', '1', '2022-06-19 10:14:04', '2022-06-19 10:14:04', 'crowd_task_exe_detail_index', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988024141342838784, '963933821948923904', '规则手动执行', '4', '1', 'fa fa-coffee', '', '10', '1', '2022-06-19 10:15:12', '2022-06-19 10:15:12', 'crowd_task_execute', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988024587952328704, '963932648793706496', '人群文件页面', '4', '1', 'fa fa-coffee', '', '11', '1', '2022-06-19 10:16:58', '2022-06-19 10:16:58', 'crowd_file_detail', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988025722125684736, '963932648793706496', '人群规则页面', '4', '1', 'fa fa-coffee', '', '12', '1', '2022-06-19 10:21:29', '2022-06-19 10:21:29', 'crowd_rule_detail', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988025838093996032, '963932648793706496', '过滤页面', '4', '1', 'fa fa-coffee', '', '13', '1', '2022-06-19 10:21:56', '2022-06-19 10:21:56', 'filter_detail', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988027167994548224, '963932648793706496', '分流页面', '4', '1', 'fa fa-coffee', '', '15', '1', '2022-06-19 10:27:14', '2022-06-19 10:27:14', 'filter_detail', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988027328611225600, '963932648793706496', '人群文件查询', '4', '1', 'fa fa-coffee', '', '16', '1', '2022-06-19 10:27:52', '2022-06-19 10:27:52', 'crowd_file_list', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988027429379379200, '963932648793706496', '过滤查询', '4', '1', 'fa fa-coffee', '', '17', '1', '2022-06-19 10:28:16', '2022-06-19 10:28:16', 'filter_list', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988027741334933504, '963932648793706496', '查询', '4', '1', 'fa fa-coffee', '', '1', '1', '2022-06-19 10:29:30', '2022-06-19 10:29:30', 'strategy_group_list', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988027835996180480, '963932648793706496', '新增页面', '4', '1', 'fa fa-coffee', '', '2', '1', '2022-06-19 10:29:53', '2022-06-19 10:29:53', 'strategy_group_add_index', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988027976589250560, '963932648793706496', '新增', '4', '1', 'fa fa-coffee', '', '3', '1', '2022-06-19 10:30:26', '2022-06-19 10:30:26', 'strategy_group_add', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988028025406754816, '963932648793706496', '更新', '4', '1', 'fa fa-coffee', '', '4', '1', '2022-06-19 10:30:38', '2022-06-19 10:30:38', 'strategy_group_update', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988028086198996992, '963932648793706496', '删除', '4', '1', 'fa fa-coffee', '', '5', '1', '2022-06-19 10:30:52', '2022-06-19 10:30:52', 'strategy_group_delete', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988028170500313088, '963932648793706496', '明细', '4', '1', 'fa fa-coffee', '', '6', '1', '2022-06-19 10:31:13', '2022-06-19 10:31:13', 'strategy_group_detail', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988028688685600768, '802848818109353984', '获取登录页错误信息', '2', '1', 'fa fa-coffee', '', '111', '1', '2022-06-19 10:33:16', '2022-06-19 10:33:16', 'get_error_msg', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988029269500235776, '802848818109353984', '获取系统名', '2', '1', 'fa fa-coffee', '', '111', '1', '2022-06-19 10:35:35', '2022-06-19 10:35:35', 'get_platform_name', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988029562510118912, '987426332449181696', '查询', '4', '1', 'fa fa-coffee', '', '1', '1', '2022-06-19 10:36:44', '2022-06-19 10:36:44', 'permission_apply_list', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988029673092943872, '987426332449181696', '新增页面', '4', '1', 'fa fa-coffee', '', '2', '1', '2022-06-19 10:37:11', '2022-06-19 10:37:11', 'permission_apply_add_index', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988029759902453760, '987426332449181696', '新增', '4', '1', 'fa fa-coffee', '', '3', '1', '2022-06-19 10:37:31', '2022-06-19 10:37:31', 'permission_apply_add', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988029991528697856, '987426332449181696', '删除', '4', '1', 'fa fa-coffee', '', '4', '1', '2022-06-19 10:38:27', '2022-06-19 10:38:27', 'permission_apply_delete', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988030101989888000, '987426332449181696', '明细', '4', '1', 'fa fa-coffee', '', '5', '1', '2022-06-19 10:38:53', '2022-06-19 10:38:53', 'permission_apply_detail', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988030254691913728, '987426332449181696', '获取申请对象参数', '4', '1', 'fa fa-coffee', '', '6', '1', '2022-06-19 10:39:29', '2022-06-19 10:39:29', 'permission_apply_by_product_code', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(988031774011428864, '934820298253930496', '根据code查询枚举', '3', '1', 'fa fa-coffee', '', '7', '1', '2022-06-19 10:45:32', '2022-06-19 10:45:32', 'enum_by_code', '5', '', '', 'zdh');
+
+     CREATE TABLE `permission_user_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `user_account` varchar(50) DEFAULT NULL COMMENT '用户账号',
+       `user_name` varchar(50) DEFAULT NULL COMMENT '用户名',
+       `user_password` varchar(100) DEFAULT NULL COMMENT '密码',
+       `email` varchar(100) DEFAULT NULL COMMENT '电子邮箱',
+       `is_use_email` varchar(10) DEFAULT NULL COMMENT '是否开启邮箱告警',
+       `phone` varchar(11) DEFAULT NULL COMMENT '手机号',
+       `is_use_phone` varchar(10) DEFAULT NULL COMMENT '是否开启手机告警',
+       `enable` varchar(8) DEFAULT 'false' COMMENT '是否启用true/false',
+       `user_group` varchar(8) DEFAULT '' COMMENT '用户所在组',
+       `product_code` varchar(128) DEFAULT '' COMMENT '用户所属产品',
+       `roles` text COMMENT '角色列表',
+       `signature` varchar(64) DEFAULT NULL COMMENT '签名',
+       `tag_group_code` varchar(512) NOT NULL DEFAULT '' COMMENT '数据组标识,多个逗号分割',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     ALTER TABLE product_tag_info add COLUMN status varchar(128) not null default '0' COMMENT '0:启用,1:不可申请,2:禁用';
+     ALTER TABLE product_tag_info add COLUMN ak varchar(128) not null default '' COMMENT '产品ak';
+     ALTER TABLE product_tag_info add COLUMN sk varchar(128) not null default '' COMMENT '产品sk';
+     
+    INSERT INTO permission_user_info
+    (id, user_account, user_name, user_password, email, is_use_email, phone, is_use_phone, enable, user_group, product_code, roles, signature, tag_group_code)
+    VALUES(1, 'zyc', 'zyc', '123456', '1209687056@qq.com', NULL, '', NULL, 'true', '6', 'zdh', '894201076759138304', '', 'test_group1');
+    INSERT INTO permission_user_info
+    (id, user_account, user_name, user_password, email, is_use_email, phone, is_use_phone, enable, user_group, product_code, roles, signature, tag_group_code)
+    VALUES(2, 'admin', 'admin', '1', '', NULL, '', NULL, 'true', '6', 'zdh', '894201076759138304', '', 'test_group1');
+
+
+     ALTER TABLE user_group_info add COLUMN product_code varchar(128) not null default '' COMMENT '所属产品';
+     ALTER TABLE approval_auditor_info modify COLUMN auditor_id varchar(128) not null default '' COMMENT '用户账户';
+     
+     update user_group_info set product_code = 'zdh';
+     
+     update process_flow_info set auditor_id = 'zyc' where auditor_id =1;
+     update process_flow_info set owner = 'zyc' where owner  ='1';
+     update process_flow_info set owner = "admin" where owner='2';
+     
+     CREATE TABLE `strategy_group_info` (
+       `id` bigint NOT NULL AUTO_INCREMENT,
+       `group_context` varchar(256) DEFAULT NULL COMMENT '策略组说明',
+       `start_time` DATETIME DEFAULT NULL COMMENT '开始时间',
+       `end_time` DATETIME DEFAULT NULL COMMENT '结束时间',
+       `jsmind_data` text  COMMENT '策略关系',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     
+     CREATE TABLE `crowd_file_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `file_name` varchar(256) DEFAULT NULL COMMENT '文件名',
+       `file_url` varchar(2048) DEFAULT NULL COMMENT '文件地址',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     update account_info set `user_password`='4280d89a5a03f812751f504cc10ee8a5' where `user_password`='123456';
+     
+     
+     CREATE TABLE `permission_apply_info` (
+       `id` bigint NOT NULL AUTO_INCREMENT,
+       `product_code` varchar(100) DEFAULT NULL COMMENT '产品code',
+       `apply_type` varchar(512) DEFAULT NULL COMMENT '申请类型',
+       `apply_code` varchar(200) DEFAULT NULL COMMENT '申请对象标识',
+       `reason` varchar(512) DEFAULT NULL COMMENT '申请原因',
+       `status` varchar(8) DEFAULT '0' COMMENT '状态,0:未处理,1:处理中,2:不通过,3:通过,4:撤销',
+       `flow_id` varchar(64) NOT NULL DEFAULT '0' COMMENT '流程标识id',
+       `owner` varchar(64) default null COMMENT '拥有者',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+       `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     
+     ALTER TABLE process_flow_info add COLUMN other_handle varchar(128) default '0' COMMENT '外部系统接入审批流-事件触发标识,0:未处理,1:已处理,2:处理失败';
+     
+     update process_flow_info set `other_handle`='0' where `other_handle`='' or other_handle is null;
+     
+     ALTER TABLE process_flow_info modify COLUMN context varchar(1024) not null default '' COMMENT '事件说明';
+     
+     CREATE TABLE `filter_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `filter_code` varchar(256) DEFAULT NULL COMMENT '过滤code',
+       `filter_name` varchar(2048) DEFAULT NULL COMMENT '过滤名称',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     
 
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
@@ -1198,6 +1462,7 @@
    + kafka
    + http
    + sftp
+   + ftp
    + cassandra
    + redis
    + flume

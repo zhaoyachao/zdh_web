@@ -3,6 +3,7 @@ package com.zyc.zdh.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.EnumMapper;
 import com.zyc.zdh.entity.EnumInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -135,6 +136,14 @@ public class ZdhEnumController extends BaseController{
             enumInfo.setOwner(owner);
             debugInfo(enumInfo);
 
+            //校验枚举code是否唯一
+            EnumInfo ei = new EnumInfo();
+            ei.setEnum_code(enumInfo.getEnum_code());
+            EnumInfo enumInfo1 = enumMapper.selectOne(ei);
+            if(enumInfo1!=null){
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"枚举code不唯一", enumInfo);
+            }
+
             JSONArray jsonArray=new JSONArray();
 
             for(int i=0;i<enum_value.length;i++){
@@ -195,6 +204,38 @@ public class ZdhEnumController extends BaseController{
 			logger.error(error, e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
+    }
+
+    /**
+     * @param enum_code 枚举code
+     * @return
+     */
+    @RequestMapping(value = "/enum_by_code", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    @White
+    public String enum_by_code(String enum_code) {
+        try{
+            if(StringUtils.isEmpty(enum_code)){
+                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"枚举code不可为空", null);
+            }
+
+            List<EnumInfo> list = new ArrayList<>();
+            Example example=new Example(EnumInfo.class);
+            Example.Criteria criteria= example.createCriteria();
+            criteria.andEqualTo("enum_code", enum_code);
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            list = enumMapper.selectByExample(example);
+
+            if(list!=null && list.size()==1){
+                return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"查询成功", list.get(0));
+            }
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", "未找到对应枚举值");
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", e.getMessage());
+        }
+
     }
 
 

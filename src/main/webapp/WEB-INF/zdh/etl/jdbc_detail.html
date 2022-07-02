@@ -81,6 +81,16 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数据源</label>
+                            <div class="col-sm-10">
+                                <select id="data_sources_choose_input" name="data_sources_choose_input" data-placeholder="选择数据源..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">数据源...</option>
+                                </select>
+                            </div>
+                        </div>
+
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">SQL检查</label>
@@ -214,6 +224,35 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
+
+            function init_data_sources() {
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/data_sources_list2",
+                    dataType: 'json',
+                    async: false,
+                    data: {'data_source_type': "JDBC"},
+                    //成功返回
+                    success: function (data) {
+                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
+                        for (let i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        }
+                        //输入数据源类型下拉框
+                        $('#data_sources_choose_input').html(str);
+                        $('#data_sources_choose_input').chosen()
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+            init_data_sources();
             $('#depend_level').chosen();
             if(s["etl_context"] != '-1'){
                 console.info("更新触发");
@@ -227,6 +266,10 @@
                 if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
                     $("#time_out").val(s["time_out"]);
                 }
+
+                $("#data_sources_choose_input").val(s["data_sources_choose_input"]);
+                $("#data_sources_choose_input").trigger("chosen:updated");
+
                 window.editor.setValue($("#jdbc_sql_text",window.parent.document).val());
                 var is_disenable=s['is_disenable'];
                 if(is_disenable=="true"){
@@ -250,6 +293,7 @@
         var jdbc_sql=window.editor.getValue();
         var depend_level=$('#depend_level').find("option:selected").val();
         var time_out=$('#time_out').val();
+        var data_sources_choose_input = $('#data_sources_choose_input').find("option:selected").val();
         var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -263,8 +307,9 @@
             "is_disenable":is_disenable,
             "jdbc_sql":jdbc_sql,
             "depend_level":depend_level,
-            "time_out": time_out
-        }
+            "time_out": time_out,
+            "data_sources_choose_input": data_sources_choose_input
+        };
         console.info("job_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引

@@ -85,7 +85,7 @@ public class CheckDepJob {
 
                     int tmp_size=tglim.selectByIds(tgli.getPre_tasks().split(","),JobStatus.FINISH.getValue()).size();
                     if(tgli.getPre_tasks().split(",").length!=tmp_size){
-                        JobCommon2.insertLog(tgli,"INFO","上游依赖任务组未完成,稍后再次检测");
+                        //JobCommon2.insertLog(tgli,"INFO","上游依赖任务组未完成,稍后再次检测");
                         continue;
                     }
                 }

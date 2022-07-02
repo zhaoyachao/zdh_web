@@ -176,7 +176,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
           method: "POST",
-          url: server_context+"/data_tag_list",
+          url: "",
       search: true,
       pagination: true,
       showRefresh: true,
@@ -218,7 +218,7 @@
           var wpd = $(window.parent.document);
           var mainContent = wpd.find('.J_mainContent');
           var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-          var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ')
+          var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
           pageTabs.find(".J_menuTab.active").removeClass("active");
           mainContent.find("iframe").css("display", "none");
           if (thisIframe.length > 0) {	// 选项卡已打开
