@@ -74,6 +74,11 @@
      +  [zdh_web_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_web.tar)
      +  [zdh_server_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_server.tar)
      +  [zdh_flink_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_flink.tar)
+     
+   + 5.0.1
+     +  [zdh_web_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_web.tar)
+     +  [zdh_server_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_server.tar)
+     +  [zdh_flink_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_flink.tar)     
            
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包,也可登陆ZDH预览页面下载
 
@@ -525,6 +530,14 @@
   + v5.0.0 修复组日志查看时时间为空问题
   + v5.0.0 优化日志打印-增加用户名,拆分sql日志
   + v5.0.0 增加用户黑名单限制
+  + v5.0.0 删除quartz模块切面
+  + v5.0.0 优化调度重试界面,杀死任务增加默认重试
+  + v5.0.0 重试最新执行,增加任务信息最新版
+  
+  + v5.0.1 修复greenplum数据源读取表信息bug
+  
+  + v5.1.0 增加标签模块(为用户画像,智能营销做基础)【开发中】
+  
   
   + v5.0.1 增加接口黑名单限制【废弃】
   + v5.0.1 权限单独出SDK及分配身份码(身份码和产品id加密解密绑定)【开发中】
