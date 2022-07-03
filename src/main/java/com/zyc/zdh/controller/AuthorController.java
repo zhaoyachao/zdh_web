@@ -71,6 +71,7 @@ public class AuthorController extends BaseController{
             versions.add("4.7.17");
             versions.add("4.7.18");
             versions.add("5.0.0");
+            versions.add("5.0.1");
             return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", versions);
         }catch (Exception e){
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);

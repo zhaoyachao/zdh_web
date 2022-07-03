@@ -74,7 +74,13 @@
      +  [zdh_web_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_web.tar)
      +  [zdh_server_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_server.tar)
      +  [zdh_flink_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_flink.tar)
-           
+        
+   + 5.0.1
+     +  [zdh_web_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_web.tar)
+     +  [zdh_server_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_server.tar)
+     +  [zdh_flink_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_flink.tar)  
+     
+                
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包,也可登陆ZDH预览页面下载
 
 #  在线预览
@@ -531,10 +537,6 @@
   
   + v5.0.1 [zdh_web] 修复greenplum链接时无法获取表名问题
   + v5.0.1 [zdh_web] 验证gbase链接时是否获取表名问题
-  + v5.0.1 [zdh_web] 新增达梦jdbc驱动
-  + v5.0.1 [zdh_web] 验证kingbase链接时是否获取表名问题【为完成】
-  + v5.0.1 [zdh_web] 验证sqlserver链接时是否获取表名问题【为完成】
-  + v5.0.1 [zdh_web] 历史遗留支持spark-greenplum 链接器【为完成】
   
   + v5.1.0 [zdh_web]增加标签模块(为用户画像,智能营销做基础)
   + v5.1.0 [zdh_web]优化数据源查询,区分下拉框和列表
@@ -571,6 +573,11 @@
   + v5.1.0 [zdh_web]策略组增加过滤分流组实现,禁用分流code,这样下游就不用关心分流code,只需按流程图走向进行处理即可
   + v5.1.0 [zdh_web]aop日志记录404跳转日志未打印日志修复
   
+  + v5.1.0 [zdh_web]新增达梦jdbc驱动
+  + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【为完成】
+  + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【为完成】
+  + v5.1.0 [zdh_web]历史遗留支持spark-greenplum 链接器【为完成】
+    
   + v5.1.0 新增过滤模块【过滤列表待开发】【进行中】
   
   + v5.1.0 新增策略组模块【开发中】
