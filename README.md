@@ -65,11 +65,6 @@
    + 4.7.18版本全部采用maven管理,并重构quartz源码,4.7.18不可和之前任何历史版本重用
    + 4.7.18为4.x最后一个版本,5.x版本会重构所有代码,自2022-02-06~2022-06-01不进行新功能开发,此段时间会完善使用文档
  
-   + 4.7.18
-     +  [zdh_web_4.7.18](http://zycblog.cn:8080/zdh/download/4.7.18/zdh_web.tar)
-     +  [zdh_server_4.7.18](http://zycblog.cn:8080/zdh/download/4.7.18/zdh_server.tar)
-     +  [zdh_flink_4.7.18](http://zycblog.cn:8080/zdh/download/4.7.18/zdh_flink.tar)     
-      
    + 5.0.0
      +  [zdh_web_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_web.tar)
      +  [zdh_server_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_server.tar)
@@ -80,7 +75,11 @@
      +  [zdh_server_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_server.tar)
      +  [zdh_flink_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_flink.tar)  
      
-                
+   + 5.1.0
+     +  [zdh_web_5.1.0](http://zycblog.cn:8080/zdh/download/5.1.0/zdh_web.tar)
+     +  [zdh_server_5.1.0](http://zycblog.cn:8080/zdh/download/5.1.0/zdh_server.tar)
+     +  [zdh_flink_5.1.0](http://zycblog.cn:8080/zdh/download/5.1.0/zdh_flink.tar)
+                     
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包,也可登陆ZDH预览页面下载
 
 #  在线预览
@@ -572,17 +571,41 @@
   + v5.1.0 [zdh_web]优化角色编辑模块-角色code不可更改
   + v5.1.0 [zdh_web]策略组增加过滤分流组实现,禁用分流code,这样下游就不用关心分流code,只需按流程图走向进行处理即可
   + v5.1.0 [zdh_web]aop日志记录404跳转日志未打印日志修复
+  + v5.1.0 [zdh_web]参数配置模块-优化owner,增加日志存储类型参数
+  + v5.1.0 [zdh_web]新增redis_params配置文件,用于系统恢复系统级参数
+  + v5.1.0 [zdh_web][zdh_spark]支持mongodb日志
+  + v5.1.0 [zdh_web]操作日志增加分页
+  + v5.1.0 [zdh_web]修复redis接口权限认证
+  + v5.1.0 [zdh_web]优化owner为用户名
+  + v5.1.0 [zdh_web]任务实例表增加索引
+  + v5.1.0 [zdh_web]二次重构审批流-增加图形可视化配置,废弃【审批人配置】,新增【审批流配置】,新增默认审批人
+  + v5.1.0 [zdh_web]审批人配置表增加产品代码,审批说明信息,产品和审批code不可更改
+  + v5.1.0 [zdh_web]数据资产-新增通知下游功能(邮件通知)
+  + v5.1.0 [zdh_web]修复403页面显示问题
+  + v5.1.0 [zdh_web]数据标识 增加产品过滤功能
+  + v5.1.0 [zdh_web]新增组增加产品标识
+  + v5.1.0 [zdh_web]调度模块-http组件增加header,cookie参数
+  + v5.1.0 [zdh_web]多源ETL增加雪花算法生成唯一ID
+  + v5.1.0 [zdh_web]ssh类型任务,优化杀死算法
+  + v5.1.0 [zdh_web]修复查询数据标识-增加产品代码限制
+  + v5.1.0 [zdh_web]人群规则使用流程图可多父/多子节点实现
+  + v5.1.0 [zdh_web]整合优先级队列
+  + v5.1.0 [zdh_web]新增任务手动跳过功能
+  + v5.1.0 [zdh_web]日志采集-flume【待优化】
+  + v5.1.0 [zdh_web]接口文档生成功能
   
   + v5.1.0 [zdh_web]新增达梦jdbc驱动
-  + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【为完成】
-  + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【为完成】
-  + v5.1.0 [zdh_web]历史遗留支持spark-greenplum 链接器【为完成】
-    
-  + v5.1.0 新增过滤模块【过滤列表待开发】【进行中】
+  + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
+  + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
+  + v5.1.0 [zdh_web]历史遗留支持spark-greenplum 链接器【未完成】
   
-  + v5.1.0 新增策略组模块【开发中】
-  + v5.1.0 数据标识 增加产品过滤【开发中】
-  + v5.1.0 新增组增加产品标识【开发中】
+  
+  + v5.1.0 新增过滤模块【过滤列表待开发】【进行中】
+  + v5.1.0 新增策略组模块【进行中】
+  
+  + v5.1.0 标签模块-增加标签加工任务【开发中】
+ 
+  
   
   + v5.0.1 增加接口黑名单限制【废弃】
   + v5.0.1 权限单独出SDK及分配身份码(身份码和产品id加密解密绑定)【开发中】
@@ -1448,6 +1471,279 @@
        PRIMARY KEY (`id`)
      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
      
+     alter table approval_event_info add column `call_back` text  comment '回调接口';
+     
+     alter table strategy_group_info add column `expr` varchar(100) DEFAULT NULL COMMENT 'cron表达式/自定义表达式';
+     alter table strategy_group_info add column misfire varchar(8) not null default '0' comment '恢复策略，0:无操作,1:所有历史重新执行,2:最近一次历史重新执行';
+     alter table strategy_group_info add column `priority` varchar(4) DEFAULT NULL COMMENT '任务优先级';
+     alter table strategy_group_info add column `status` varchar(100) DEFAULT NULL COMMENT '调度任务状态,create,running,pause,finish,remove,error';
+     
+     alter table strategy_group_info add column `quartz_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例触发时间';
+     alter table strategy_group_info add column  `use_quartz_time` varchar(5) DEFAULT NULL COMMENT '是否使用quartz 调度时间';
+     alter table strategy_group_info add column   `time_diff` varchar(50) DEFAULT NULL COMMENT '后退时间差';
+     
+     alter table strategy_group_info add column `schedule_source` varchar(64) NOT NULL DEFAULT '1' COMMENT '调度来源,1:例行,2:手动';
+     alter table strategy_group_info add column `cur_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例逻辑调度时间';
+     alter table strategy_group_info add column `run_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例开始执行时间';
+     
+     -- zdh.strategy_group_info definition
+     drop table strategy_group_instance;
+     drop table strategy_instance;
+     CREATE TABLE `strategy_group_instance` (
+       `id` bigint NOT NULL AUTO_INCREMENT,
+       `group_context` varchar(256) DEFAULT NULL COMMENT '策略组说明',
+       `start_time` datetime DEFAULT NULL COMMENT '开始时间',
+       `end_time` datetime DEFAULT NULL COMMENT '结束时间',
+       `jsmind_data` text COMMENT '策略关系',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       `expr` varchar(100) DEFAULT NULL COMMENT 'cron表达式/自定义表达式',
+       `misfire` varchar(8) NOT NULL DEFAULT '0' COMMENT '恢复策略，0:无操作,1:所有历史重新执行,2:最近一次历史重新执行',
+       `priority` varchar(4) DEFAULT NULL COMMENT '任务优先级',
+       `status` varchar(100) DEFAULT NULL COMMENT '调度任务状态,create,running,pause,finish,remove,error',
+       `quartz_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例触发时间',
+       `use_quartz_time` varchar(5) DEFAULT NULL COMMENT '是否使用quartz 调度时间',
+       `time_diff` varchar(50) DEFAULT NULL COMMENT '后退时间差',
+       `schedule_source` varchar(64) NOT NULL DEFAULT '1' COMMENT '调度来源,1:例行,2:手动',
+       `cur_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例逻辑调度时间',
+       `run_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例开始执行时间',
+       `run_jsmind_data` text COMMENT '生成实例血源关系',
+       `next_tasks` text COMMENT '下游任务组实例id',
+       `pre_tasks` text COMMENT '上游任务组实例id',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     CREATE TABLE `strategy_instance` (
+       `id` bigint NOT NULL AUTO_INCREMENT,
+       `strategy_context` varchar(100) DEFAULT NULL COMMENT '策略说明',
+       `group_id` varchar(100) DEFAULT NULL COMMENT '组实例id',
+       `group_context` varchar(100) DEFAULT NULL COMMENT '组实例说明',
+       `start_time` datetime DEFAULT NULL COMMENT '开始时间',
+       `end_time` datetime DEFAULT NULL COMMENT '结束时间',
+       `jsmind_data` text COMMENT '策略关系',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       `expr` varchar(100) DEFAULT NULL COMMENT 'cron表达式/自定义表达式',
+       `misfire` varchar(8) NOT NULL DEFAULT '0' COMMENT '恢复策略，0:无操作,1:所有历史重新执行,2:最近一次历史重新执行',
+       `priority` varchar(4) DEFAULT NULL COMMENT '任务优先级',
+       `status` varchar(100) DEFAULT NULL COMMENT '调度任务状态,create,running,pause,finish,remove,error',
+       `quartz_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例触发时间',
+       `use_quartz_time` varchar(5) DEFAULT NULL COMMENT '是否使用quartz 调度时间',
+       `time_diff` varchar(50) DEFAULT NULL COMMENT '后退时间差',
+       `schedule_source` varchar(64) NOT NULL DEFAULT '1' COMMENT '调度来源,1:例行,2:手动',
+       `cur_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例逻辑调度时间',
+       `run_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例开始执行时间',
+       `run_jsmind_data` text COMMENT '生成实例血源关系',
+       `next_tasks` text COMMENT '下游任务实例id',
+       `pre_tasks` text COMMENT '上游任务实例id',
+       `is_disenable` varchar(10) DEFAULT NULL COMMENT '是否禁用true:禁用,false:启用',
+       `depend_level` varchar(10) NOT NULL DEFAULT '0' COMMENT '判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     
+     
+     alter table label_info add column `label_expression` text  COMMENT '运算表达式,仅支持sql';
+     alter table label_info add column `label_engine` varchar(16)  default '' COMMENT '标签计算引擎,mysql,hive,spark,presto';
+     
+     -- 标签依赖数据
+     CREATE TABLE `label_depend_data_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `data_code` varchar(256) DEFAULT NULL COMMENT '过滤code',
+       `data_name` varchar(2048) DEFAULT NULL COMMENT '过滤名称',
+       `data_time` varchar(2048) DEFAULT NULL COMMENT '过滤名称',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     -- 标签计算信息表
+     CREATE TABLE `label_compute_info` (
+       `id` int NOT NULL AUTO_INCREMENT,u
+       `label_code` varchar(256) DEFAULT NULL COMMENT '过滤code',
+       `filter_name` varchar(2048) DEFAULT NULL COMMENT '过滤名称',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     
+     alter table quartz_job_info add column update_time DATETIME default CURRENT_TIMESTAMP comment '更新时间';
+     alter table quartz_job_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+     
+     update etl_task_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update zdh_nginx a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update etl_more_task_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update sql_task_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update etl_task_update_logs a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update meta_database_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update jar_file_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update ssh_task_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update etl_task_flink_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update etl_task_jdbc_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update etl_task_datax_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update etl_task_unstructure_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update etl_task_unstructure_log_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update etl_apply_task_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update etl_drools_task_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update quartz_job_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update data_sources_info a ,account_info  b set a.owner = b.user_name where a.owner = cast(b.id as char) ;
+     update quality_rule_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update quality_task_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update etl_task_batch_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update enum_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update notice_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update zdh_download_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update data_tag_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update data_tag_group_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update product_tag_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update approval_config_info a ,account_info  b set a.employee_id = b.user_name where a.employee_id =cast(b.id as char) ;
+     
+     update issue_data_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update apply_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update apply_info a ,account_info  b set a.approve_id = b.user_name where a.approve_id =cast(b.id as char) ;
+     
+     update resource_tree_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     
+     update label_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update crowd_rule_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     update strategy_group_info a ,account_info  b set a.owner = b.user_name where a.owner =cast(b.id as char) ;
+     
+     alter table account_info add column `create_time` datetime  default CURRENT_TIMESTAMP COMMENT '创建时间';
+     
+     alter table task_group_log_instance add index idx_date_job_id(etl_date, job_id);
+     alter table task_group_log_instance add index idx_status(status);
+     
+     alter table task_log_instance add index idx_group_id(group_id);
+     alter table task_log_instance add index idx_status(status);
+     alter table task_log_instance add index idx_notice(is_notice);
+     
+     ALTER TABLE approval_auditor_info add COLUMN product_code varchar(128) not null default '' COMMENT '所属产品';
+     ALTER TABLE approval_auditor_info add COLUMN auditor_context varchar(128) not null default '' COMMENT '环节说明';
+     
+     drop table approval_auditor_flow_info;
+     CREATE TABLE `approval_auditor_flow_info` (
+       `id` bigint NOT NULL AUTO_INCREMENT,
+       `flow_context` varchar(256) DEFAULT NULL COMMENT '审批流说明',
+       `flow_code` varchar(64) DEFAULT NULL COMMENT '审批流code',
+       `product_code` varchar(64) DEFAULT NULL COMMENT '产品代码',
+       `jsmind_data` text COMMENT '审批关系',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     CREATE TABLE `etl_task_log_info` (
+       `id` bigint NOT NULL AUTO_INCREMENT,
+       `log_code` varchar(256) DEFAULT NULL COMMENT '日志唯一标识code',
+       `log_context` varchar(256) DEFAULT NULL COMMENT '日志说明',
+       `flume_command` varchar(1024) DEFAULT NULL COMMENT 'flume启动命令',
+       `flume_path` varchar(256) DEFAULT NULL COMMENT 'flume地址',
+       `job_config` text COMMENT '任务配置',
+       `host` varchar(100) DEFAULT null COMMENT '主机地址',
+       `port` varchar(100) DEFAULT null COMMENT '主机端口',
+       `user_name` varchar(500) DEFAULT null COMMENT '用户名',
+       `password` varchar(100) DEFAULT null COMMENT '密码',
+       `log_example` text COMMENT '日志样例',
+       `log_resovle_type` varchar(256) DEFAULT NULL COMMENT '日志解析类型,1:正则解析',
+       `log_resovle_expr` varchar(256) DEFAULT NULL COMMENT '日志解析表达式',
+       `log_output_type` varchar(256) DEFAULT NULL COMMENT '日志输出类型,string,json',
+       `log_output_config` text COMMENT '日志输出配置',
+       `data_sources_choose_output` varchar(100) DEFAULT NULL COMMENT '输出数据源id',
+       `data_source_type_output` varchar(100) DEFAULT NULL COMMENT '输出数据源类型',
+       `data_sources_output` varchar(100) DEFAULT NULL COMMENT '输出数据源表名,文件名,topic',  
+       `data_sources_output_columns` text COMMENT '输出数据字段',
+       
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(997677161387134976, '891283647431184384', '审批流配置', '3', 'zyc', 'fa fa-coffee', '', '2', '1', '2022-07-16 01:32:51', '2022-07-16 01:32:51', 'approval_auditor_flow_index', '2', '审批流', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1003258949274701824, '802848818109353984', '优先级队列', '2', 'zyc', 'fa fa-coffee', '', '', '1', '2022-07-31 11:12:53', '2022-07-31 11:12:53', 'zdh_queue_index', '2', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1003281904503361536, '1003258949274701824', '查询', '3', 'zyc', 'fa fa-coffee', '', '1', '1', '2022-07-31 12:44:06', '2022-07-31 12:44:06', 'zdh_queue_list', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1003299570198777856, '1003258949274701824', '新增页面', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-07-31 13:54:18', '2022-07-31 13:54:18', 'zdh_queue_add_index', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1003300888858595328, '1003258949274701824', '更新', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-07-31 13:59:32', '2022-07-31 13:59:32', 'zdh_queue_update', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1007983687721029632, '997677161387134976', '审批流-查询', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2022-08-13 12:07:19', '2022-08-13 12:07:19', 'approval_auditor_flow_list', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1007983949596594176, '997677161387134976', '审批流-新增页面', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2022-08-13 12:08:21', '2022-08-13 12:08:21', 'approval_auditor_flow_add_index', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1007984086867775488, '997677161387134976', '审批流-新增', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2022-08-13 12:08:54', '2022-08-13 12:08:54', 'approval_auditor_flow_add', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1007984170279899136, '997677161387134976', '审批流-删除', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2022-08-13 12:09:14', '2022-08-13 12:09:14', 'approval_auditor_flow_delete', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1007984244334530560, '997677161387134976', '审批流-更新', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2022-08-13 12:09:31', '2022-08-13 12:09:31', 'approval_auditor_flow_update', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1007984327604047872, '997677161387134976', '审批流-明细', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2022-08-13 12:09:51', '2022-08-13 12:09:51', 'approval_auditor_flow_detail', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1007993626464096256, '937123552732123136', '通知下游页面', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2022-08-13 12:46:48', '2022-08-13 12:46:48', 'notice_downstream_email_index', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1007993710824132608, '937123552732123136', '通知下游', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2022-08-13 12:47:08', '2022-08-13 12:47:08', 'notice_downstream_email', '5', '', '', 'zdh');
+     
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1008151332059615232, '904053585896017920', '子任务-跳过', '6', 'zyc', 'fa fa-coffee', '', '6', '1', '2022-08-13 23:13:28', '2022-08-13 23:13:28', 'skip', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1013053374364389376, '963925904835219456', '人群文件', '3', 'zyc', 'fa fa-coffee', '', '6', '1', '2022-08-27 11:52:26', '2022-08-27 11:52:26', 'crowd_file_index', '2', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1013053483735060480, '963925904835219456', '过滤规则', '3', 'zyc', 'fa fa-coffee', '', '7', '1', '2022-08-27 11:52:52', '2022-08-27 11:52:52', 'filter_index', '2', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1015583013045538816, '967380640318099456', '查询', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2022-09-03 11:24:19', '2022-09-03 11:24:19', 'etl_task_log_list', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1015583094641528832, '967380640318099456', '明细', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2022-09-03 11:24:38', '2022-09-03 11:24:38', 'etl_task_log_detail', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1015583234529955840, '967380640318099456', '新增页面', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2022-09-03 11:25:12', '2022-09-03 11:25:12', 'etl_task_log_add_index', '3', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1015583353778212864, '967380640318099456', '新增', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2022-09-03 11:25:40', '2022-09-03 11:25:40', 'etl_task_log_add', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1015583426222231552, '967380640318099456', '删除', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2022-09-03 11:25:57', '2022-09-03 11:25:57', 'etl_task_log_delete', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1015583512050274304, '967380640318099456', '更新', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2022-09-03 11:26:18', '2022-09-03 11:26:18', 'etl_task_log_update', '5', '', '', 'zdh');
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1015585046146322432, '904058054746574848', 'FLUME页面', '5', 'zyc', 'fa fa-coffee', '', '9', '1', '2022-09-03 11:32:24', '2022-09-03 11:32:24', 'flume_detail', '3', '', '', 'zdh');
+     
+
      
 
 # 未完成的功能

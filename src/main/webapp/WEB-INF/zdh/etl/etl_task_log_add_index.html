@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 日志任务新增</title>
+    <meta name="keywords" content="ZDH 日志任务新增">
+    <meta name="description" content="ZDH 日志任务新增">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/fileinput.js" type="text/javascript"></script>
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>日志任务配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="etl_task_ssh_add_form" name="etl_task_ssh_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">日志任务说明</label>
+                            <div class="col-sm-10">
+                                <input id="log_context" name="log_context" type="text"
+                                       placeholder="日志任务说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">创建时间</label>
+                            <div class="col-sm-10">
+                                <input id="create_time" name="create_time" type="text" readonly
+                                       placeholder="创建时间" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输入数据源开始-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">主机</label>
+                            <div id="using_json" class="col-sm-10">
+                                <input id="host" name="host" type="text"
+                                       placeholder="主机地址" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">端口</label>
+                            <div class="col-sm-10">
+                                <input id="port" name="port" type="text"
+                                       placeholder="主机端口" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户名</label>
+                            <div class="col-sm-10">
+                                <input id="user_name" name="user_name" type="text"
+                                       placeholder="用户名" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">密码</label>
+                            <div  class="col-sm-10">
+                                <input id="password" name="password" type="password"
+                                       placeholder="密码" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">FLUME命令</label>
+                            <div class="col-sm-10">
+                                <input id="flume_command" name="flume_command"
+                                       type="text"
+                                       placeholder="flume命令" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">FLUME路径</label>
+                            <div class="col-sm-10">
+                                <input id="flume_path" name="flume_path"
+                                       type="text"
+                                       placeholder="flume路径" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">JOB_CONFIG</label>
+                            <div class="col-sm-10">
+                                <div id="job_config" name="job_config" class="monaco_div"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">日志样例</label>
+                            <div class="col-sm-10">
+                                <div id="log_example" name="log_example" class="monaco_div_100"></div>
+                            </div>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">正则表达式</label>
+                            <div class="col-sm-10">
+                                <div id="log_resovle_expr" name="log_resovle_expr" class="monaco_div_100"></div>
+                            </div>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">日志输出</label>
+                            <div class="col-sm-10">
+                                <div id="log_output_config" name="log_output_config" class="monaco_div_100"></div>
+                            </div>
+                            <div class="form-group"></div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">输出数据源选择</label>
+                            <div class="col-sm-10">
+                                <select id="data_sources_choose_output" name="data_sources_choose_output"
+                                        data-placeholder="选择数据源..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">选择数据源...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数据源类型</label>
+                            <div class="col-sm-10">
+                                <input id="data_source_type_output" name="data_source_type_output" type="text" readonly
+                                       placeholder="数据源类型" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">输出数据源</label>
+                            <div class="col-sm-10">
+                                <input id="data_sources_output" name="data_sources_output" type="text"
+                                       placeholder="输出数据源" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">其他参数</label>
+                            <div class="col-sm-10" id="div_data_sources_params">
+                                <textarea id="ssh_params_input" name="ssh_params_input"
+                                          class="form-control" rows="2"
+                                          placeholder="参数使用固定格式{&#34;k&#34;:&#34;v&#34;,&#34;k1&#34;:&#34;v1&#34;}"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 元信息 业务相关-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属公司</label>
+                            <div class="col-sm-10">
+                                <input id="company" name="company"
+                                       type="text"
+                                       placeholder="填写公司" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属部门</label>
+                            <div class="col-sm-10">
+                                <input id="section" name="section"
+                                       type="text"
+                                       placeholder="填写部门" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属业务</label>
+                            <div class="col-sm-10">
+                                <input id="service" name="service"
+                                       type="text"
+                                       placeholder="填写业务" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">更新说明</label>
+                            <div class="col-sm-10">
+                                <textarea id="update_context" name="update_context" class="form-control" rows="2"
+                                          placeholder="更新说明"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输出数据源结束-->
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+
+<!-- jsTree plugin javascript -->
+<script src="js/plugins/jsTree/jstree.min.js"></script>
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/shell/shell.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+
+    (function (document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            window.editor_job_config = monaco.editor.create(document.getElementById('job_config'), {
+                value: 'flume job 配置',
+                language: 'shell',
+                theme:'vs-dark'
+            });
+
+            window.editor_log_example = monaco.editor.create(document.getElementById('log_example'), {
+                value: '',
+                language: 'shell',
+                theme:'vs-dark'
+            });
+
+            window.editor_log_resovle_expr = monaco.editor.create(document.getElementById('log_resovle_expr'), {
+                value: '',
+                language: 'shell',
+                theme:'vs-dark'
+            });
+
+            window.editor_log_output_config = monaco.editor.create(document.getElementById('log_output_config'), {
+                value: '',
+                language: 'shell',
+                theme:'vs-dark'
+            });
+
+
+            window.operateEvents = {
+                'click #del': function (e, value, row, index) {
+                    $('#exampleTableEvents').bootstrapTable('remove', {field: 'column_md5', values: [row.column_md5]});
+                }
+            };
+
+            function operateFormatter(value, row, index) {
+                return [
+                    ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm">\n' +
+                    '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+                    '                                    </button>'
+                ].join('');
+            }
+
+            function init_data_sources() {
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/data_sources_list",
+                    dataType: 'json',
+                    async: false,
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
+                        for (let i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        }
+                        //输出数据源类型下拉框
+                        $('#data_sources_choose_output').html(str);
+
+                        $('#data_sources_choose_output').chosen().on("change", function (evt, params) {
+                            $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
+                            $("#data_sources_choose_output").trigger("chosen:updated");
+
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+
+            init_data_sources();
+
+            //s.id=-1 表示新增,否则表示更新
+            if (s.id == -1) {
+                console.info("新增按钮触发");
+                //$('#data_sources_table_name_input').chosen();
+                //$('#data_sources_table_name_output').chosen();
+                $('#update_etl_task').hide();
+                $('#save_etl_task').show();
+            } else {
+                if (s.is_copy == "true") {
+                    console.info("拷贝按钮触发");
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').show()
+                } else {
+                    console.info("更新按钮触发");
+                    $('#save_etl_task').hide();
+                    $('#update_etl_task').show();
+                }
+
+                if (s.only_read == "true") {
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').hide();
+                    $('#reset').hide();
+                }
+                buildParam()
+            }
+
+            function getMyDate(str) {
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth() + 1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + " " + getzf(oHour) + ":" + getzf(oMin) + ":" + getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            //补0操作
+            function getzf(num) {
+                if (parseInt(num) < 10) {
+                    num = '0' + num;
+                }
+                return num;
+            }
+
+
+            function buildParam() {
+                $('#enable_quality').prop("checked", false);
+                if (s.id != '-1') {
+                    console.info("更新按钮触发--开始赋值对应参数");
+                    //开始赋值
+
+                    $.ajax({
+                        url: server_context+"/etl_task_log_detail",
+                        data: "id=" + s.id,
+                        type: "post",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            console.info("success");
+                            // layer.alert(JSON.stringify(data[0]))
+
+                            //获取输入数据源id
+                            //var data_sources_choose_input = data[0].data_sources_choose_input
+                            //console.info("参数赋值:输入数据源id:" + data_sources_choose_input)
+
+
+                            //获取ETL 说明
+                            var log_context = data.result.log_context;
+                            $("#log_context").val(log_context);
+
+                            var create_time = data.result.create_time;
+                            $("#create_time").val(getMyDate(create_time));
+
+
+
+                            //获取输入数据源类型
+                            var host = data.result.host;
+                            $("#host").val(host);
+
+                            var port = data.result.port;
+                            $("#port").val(port);
+
+                            var user_name = data.result.user_name;
+                            $("#user_name").val(user_name);
+
+                            var password = data.result.password;
+                            $("#password").val(password);
+
+                            var flume_command = data.result.flume_command;
+                            $("#flume_command").val(flume_command);
+
+
+                            var flume_path = data.result.flume_path;
+                            $("#flume_path").val(flume_path);
+
+                            var job_config = data.result.job_config;
+                            //$("#ssh_cmd").val(ssh_cmd);
+                            window.editor_job_config.setValue(job_config);
+
+                            var log_example = data.result.log_example;
+                            window.editor_log_example.setValue(log_example);
+
+
+                            var log_resovle_expr = data.result.log_resovle_expr;
+                            //$("#ssh_script_context").val(ssh_script_context);
+                            window.editor_log_resovle_expr.setValue(log_resovle_expr);
+
+                            //获取元数据信息
+                            var log_output_config = data.result.log_output_config;
+                            window.editor_log_output_config.setValue(log_output_config);
+
+                            // 获取输出数据源
+                            var data_sources_choose_output = data.result.data_sources_choose_output;
+                            //初始化输入数据源select 组件
+                            $("#data_sources_choose_output").val(data_sources_choose_output);
+                            $("#data_sources_choose_output").trigger("chosen:updated");
+
+                            //获取输出数据源类型
+                            var data_source_type_output = data.result.data_source_type_output;
+                            $("#data_source_type_output").val(data_source_type_output);
+
+                            var data_sources_output = data.result.data_sources_output;
+                            $("#data_sources_output").val(data_sources_output);
+
+                            //获取元数据信息
+                            var company = data.result.company;
+                            $('#company').val(company);
+
+                            var section = data.result.section;
+                            $('#section').val(section);
+
+                            var service = data.result.service;
+                            $('#service').val(service);
+
+                            var update_context = data.result.update_context;
+                            $('#update_context').val(update_context)
+
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+
+
+                }
+            }
+
+        })();
+
+
+    })(document, window, jQuery);
+
+
+    $('#save_etl_task').click(function () {
+
+        if ($('#log_context').val() == '') {
+            layer.msg("日志任务说明不能为空！");
+            return;
+        }
+
+
+        var formData = new FormData($("#etl_task_ssh_add_form")[0]);//获取表单中的文件
+
+        formData.append("job_config",window.editor_job_config.getValue());
+        formData.append("log_example",window.editor_log_example.getValue());
+        formData.append("log_resovle_expr",window.editor_log_resovle_expr.getValue());
+        formData.append("log_output_config",window.editor_log_output_config.getValue());
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/etl_task_log_add",
+            async: false,
+            data:formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return;
+                }
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                $("#save_etl_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+
+    $('#update_etl_task').click(function () {
+
+        if ($('#log_context').val() == '') {
+            layer.msg("SSH任务说明不能为空！");
+            return;
+        }
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var formData = new FormData($("#etl_task_ssh_add_form")[0]);//获取表单中的文件
+        formData.append('id',s.id);
+        formData.append("job_config",window.editor_job_config.getValue());
+        formData.append("log_example",window.editor_log_example.getValue());
+        formData.append("log_resovle_expr",window.editor_log_resovle_expr.getValue());
+        formData.append("log_output_config",window.editor_log_output_config.getValue());
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/etl_task_log_update",
+            data: formData,
+            dataType: 'JSON',
+            processData: false,
+            contentType: false,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                $("#update_etl_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
+
+</script>
+
+</body>
+
+</html>

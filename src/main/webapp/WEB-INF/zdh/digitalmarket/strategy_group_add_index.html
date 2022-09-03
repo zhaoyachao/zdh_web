@@ -236,13 +236,20 @@
         return ""
     }
 
-    function open_json(json) {
+    function open_json(json,is_copy) {
         var jsplumb_json=JSON.parse(json);
+        // 创建新的 Map
+        const newDivIds = new Map();
         //添加div 数据
         for(var i=0;i< jsplumb_json.tasks.length;i++){
             var rs=jsplumb_json.tasks[i];
             var tp=rs.type;
             var divId=rs.divId;
+            if(is_copy == "true"){
+                divId = guid2();
+                newDivIds.set(rs.divId, divId);
+            }
+
             var etl_context=rs.etl_context;
             var positionX=rs.positionX;
             var positionY=rs.positionY;
@@ -316,8 +323,14 @@
         }
 
         for(var i=0;i< jsplumb_json.line.length;i++){
+            var source = jsplumb_json.line[i].pageSourceId;
+            var target = jsplumb_json.line[i].pageTargetId;
+            if(is_copy == "true"){
+                source = newDivIds.get(source);
+                target = newDivIds.get(target)
+            }
             jsPlumb.connect({
-                uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
+                uuids:[source+"_bottom",target+"_top"]
             })
         }
 
@@ -568,7 +581,7 @@
                         $("#group_context").val(group_context);
 
                         var jsmind_data=data.result.jsmind_data;
-                        open_json(jsmind_data);
+                        open_json(jsmind_data,s.is_copy);
 
                         var priority=data.result.priority;
                         $("#priority").val(priority);

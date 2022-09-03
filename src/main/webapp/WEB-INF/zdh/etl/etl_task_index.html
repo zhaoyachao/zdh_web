@@ -108,11 +108,13 @@
     $(document).ready(function () {
 
         $('#search').click(function () {
+            loadIndex = layer.load(1);
             $('#exampleTableEvents').bootstrapTable('refresh', {
                 url: server_context+"/etl_task_list2?"+$("#etl_task_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
+            layer.close(loadIndex);
         });
 
         $('#update_zdh').click(function () {

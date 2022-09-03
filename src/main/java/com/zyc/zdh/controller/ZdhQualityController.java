@@ -27,6 +27,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 质量检测服务
+ */
 @Controller
 public class ZdhQualityController extends BaseController {
 
@@ -55,12 +58,21 @@ public class ZdhQualityController extends BaseController {
         return "etl/quality_rule_index";
     }
 
+    /**
+     * 质量检测规则新增首页
+     * @return
+     */
     @RequestMapping("/quality_rule_add_index")
     public String quality_rule_add_index() {
 
         return "etl/quality_rule_add_index";
     }
 
+    /**
+     * 质量检测规则列表
+     * @param qualityRuleInfo
+     * @return
+     */
     @RequestMapping(value = "/quality_rule_list",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String quality_rule_list(QualityRuleInfo qualityRuleInfo) {
@@ -79,53 +91,62 @@ public class ZdhQualityController extends BaseController {
         }
 
         qualityRuleInfos = qualityRuleMapper.selectByExample(example);
-        //etlTaskInfos = etlTaskService.selectByColumn(getUser().getId(), column_desc, column_alias, company, section, service);
         return JSON.toJSONString(qualityRuleInfos);
     }
 
-    @RequestMapping(value = "/quality_rule_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 质量检测规则新增
+     * @param qualityRuleInfo
+     * @return
+     */
+    @RequestMapping(value = "/quality_rule_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String quality_rule_add(QualityRuleInfo qualityRuleInfo) {
+    public ReturnInfo quality_rule_add(QualityRuleInfo qualityRuleInfo) {
         try {
             if (StringUtils.isEmpty(qualityRuleInfo.getRule_code())) {
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", "规则code不可为空");
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", "规则code不可为空");
             }
             Example example = new Example(qualityRuleInfo.getClass());
             Example.Criteria criteria = example.createCriteria();
             criteria.andEqualTo("rule_code", qualityRuleInfo.getRule_code());
             int count = qualityRuleMapper.selectCountByExample(example);
             if (count > 0) {
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", "规则code已存在,不可重复");
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", "规则code已存在,不可重复");
             }
             qualityRuleInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             qualityRuleInfo.setCreate_time(new Timestamp(new Date().getTime()));
             qualityRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            qualityRuleInfo.setOwner(getUser().getId());
+            qualityRuleInfo.setOwner(getOwner());
             qualityRuleMapper.insert(qualityRuleInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
-    @RequestMapping(value = "/quality_rule_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 质量检测规则更新
+     * @param qualityRuleInfo
+     * @return
+     */
+    @RequestMapping(value = "/quality_rule_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String quality_rule_update(QualityRuleInfo qualityRuleInfo) {
+    public ReturnInfo quality_rule_update(QualityRuleInfo qualityRuleInfo) {
         try {
             qualityRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            qualityRuleInfo.setOwner(getUser().getId());
+            qualityRuleInfo.setOwner(getOwner());
             qualityRuleMapper.updateByPrimaryKey(qualityRuleInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -140,13 +161,23 @@ public class ZdhQualityController extends BaseController {
         return "etl/quality_task_index";
     }
 
+    /**
+     * 质量检测任务新增首页
+     * @return
+     */
     @RequestMapping("/quality_task_add_index")
     public String quality_task_add_index() {
 
         return "etl/quality_task_add_index";
     }
 
-    @RequestMapping(value = "/quality_task_list",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 质量检测列表
+     * @param qualityTaskInfo
+     * @param rule_code 规则code
+     * @return
+     */
+    @RequestMapping(value = "/quality_task_list",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String quality_task_list(QualityTaskInfo qualityTaskInfo, String rule_code) {
 
@@ -170,19 +201,25 @@ public class ZdhQualityController extends BaseController {
         }
 
         qualityTaskInfos = qualityTaskMapper.selectByExample(example);
-        //etlTaskInfos = etlTaskService.selectByColumn(getUser().getId(), column_desc, column_alias, company, section, service);
         return JSON.toJSONString(qualityTaskInfos);
     }
 
-    @RequestMapping(value = "/quality_task_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 质量检测任务新增
+     * @param qualityTaskInfo
+     * @param quality_rule 质量检测规则
+     * @param quality_columns 质量检测字段
+     * @return
+     */
+    @RequestMapping(value = "/quality_task_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String quality_task_add(QualityTaskInfo qualityTaskInfo, String[] quality_rule, String[] quality_columns) {
+    public ReturnInfo quality_task_add(QualityTaskInfo qualityTaskInfo, String[] quality_rule, String[] quality_columns) {
         try {
             qualityTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             qualityTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
             qualityTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            qualityTaskInfo.setOwner(getUser().getId());
+            qualityTaskInfo.setOwner(getOwner());
 
             JSONArray jsonArray = new JSONArray();
             for (int i = 0; i < quality_rule.length; i++) {
@@ -193,22 +230,29 @@ public class ZdhQualityController extends BaseController {
             }
             qualityTaskInfo.setQuality_rule_config(jsonArray.toJSONString());
             qualityTaskMapper.insert(qualityTaskInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
-    @RequestMapping(value = "/quality_task_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 质量检测任务更新
+     * @param qualityTaskInfo
+     * @param quality_rule 质量检测规则
+     * @param quality_columns 质量检测字段
+     * @return
+     */
+    @RequestMapping(value = "/quality_task_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String quality_task_update(QualityTaskInfo qualityTaskInfo, String[] quality_rule, String[] quality_columns) {
+    public ReturnInfo quality_task_update(QualityTaskInfo qualityTaskInfo, String[] quality_rule, String[] quality_columns) {
         try {
             qualityTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            qualityTaskInfo.setOwner(getUser().getId());
+            qualityTaskInfo.setOwner(getOwner());
             JSONArray jsonArray = new JSONArray();
             for (int i = 0; i < quality_rule.length; i++) {
                 JSONObject jsonObject = new JSONObject();
@@ -218,30 +262,35 @@ public class ZdhQualityController extends BaseController {
             }
             qualityTaskInfo.setQuality_rule_config(jsonArray.toJSONString());
             qualityTaskMapper.updateByPrimaryKey(qualityTaskInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
-    @RequestMapping(value = "/quality_task_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 质量检测任务删除
+     * @param ids id数组
+     * @return
+     */
+    @RequestMapping(value = "/quality_task_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String quality_task_delete(String[] ids) {
+    public ReturnInfo quality_task_delete(String[] ids) {
         try {
             Example example = new Example(QualityTaskInfo.class);
             Example.Criteria criteria = example.createCriteria();
             criteria.andIn("id", Arrays.asList(ids));
             qualityTaskMapper.deleteByExample(example);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
@@ -256,6 +305,10 @@ public class ZdhQualityController extends BaseController {
         return "etl/quality_index";
     }
 
+    /**
+     * 指标首页
+     * @return
+     */
     @RequestMapping("/quota_index")
     public String quota_index() {
 
@@ -276,24 +329,31 @@ public class ZdhQualityController extends BaseController {
     @ResponseBody
     public String quota_list(String column_desc, String column_alias, String company, String section, String service) {
 
-        List<QuotaInfo> etlTaskInfos = new ArrayList<>();
-        if(!StringUtils.isEmpty(column_desc)){
-            column_desc = getLikeCondition(column_desc);
+        try{
+            List<QuotaInfo> etlTaskInfos = new ArrayList<>();
+            if(!StringUtils.isEmpty(column_desc)){
+                column_desc = getLikeCondition(column_desc);
+            }
+            if(!StringUtils.isEmpty(column_alias)){
+                column_alias = getLikeCondition(column_alias);
+            }
+            if(!StringUtils.isEmpty(company)){
+                company = getLikeCondition(company);
+            }
+            if(!StringUtils.isEmpty(section)){
+                section = getLikeCondition(section);
+            }
+            if(!StringUtils.isEmpty(service)){
+                service = getLikeCondition(service);
+            }
+            etlTaskInfos = etlTaskMapper.selectByColumn(getOwner(), column_desc, column_alias, company, section, service);
+            return JSON.toJSONString(etlTaskInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
         }
-        if(!StringUtils.isEmpty(column_alias)){
-            column_alias = getLikeCondition(column_alias);
-        }
-        if(!StringUtils.isEmpty(company)){
-            company = getLikeCondition(company);
-        }
-        if(!StringUtils.isEmpty(section)){
-            section = getLikeCondition(section);
-        }
-        if(!StringUtils.isEmpty(service)){
-            service = getLikeCondition(service);
-        }
-        etlTaskInfos = etlTaskMapper.selectByColumn(getUser().getId(), column_desc, column_alias, company, section, service);
-        return JSON.toJSONString(etlTaskInfos);
+
     }
 
 
@@ -309,25 +369,31 @@ public class ZdhQualityController extends BaseController {
     @ResponseBody
     public String quality_list(String job_context, String etl_context, String status) {
 
-        List<QualityInfo> qualities = new ArrayList<>();
+        try{
+            List<QualityInfo> qualities = new ArrayList<>();
 
-        Example example = new Example(QualityInfo.class);
-        Example.Criteria criteria = example.createCriteria();
-        if (!StringUtils.isEmpty(job_context)) {
-            criteria.andLike("job_context", "%" + job_context + "%");
+            Example example = new Example(QualityInfo.class);
+            Example.Criteria criteria = example.createCriteria();
+            if (!StringUtils.isEmpty(job_context)) {
+                criteria.andLike("job_context", "%" + job_context + "%");
+            }
+            if (!StringUtils.isEmpty(etl_context)) {
+                criteria.andLike("etl_context", "%" + etl_context + "%");
+            }
+            if (!StringUtils.isEmpty(status)) {
+                criteria.andEqualTo("status", status);
+            }
+
+            criteria.andEqualTo("owner", getOwner());
+
+            qualities = qualityMapper.selectByExample(example);
+
+            return JSON.toJSONString(qualities);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
         }
-        if (!StringUtils.isEmpty(etl_context)) {
-            criteria.andLike("etl_context", "%" + etl_context + "%");
-        }
-        if (!StringUtils.isEmpty(status)) {
-            criteria.andEqualTo("status", status);
-        }
-
-        criteria.andEqualTo("owner", getUser().getId());
-
-        qualities = qualityMapper.selectByExample(example);
-
-        return JSON.toJSONString(qualities);
     }
 
 
@@ -337,22 +403,22 @@ public class ZdhQualityController extends BaseController {
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/quality_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String quality_delete(String[] ids) {
+    public ReturnInfo quality_delete(String[] ids) {
 
         try {
             Example example = new Example(QualityInfo.class);
             Example.Criteria criteria = example.createCriteria();
             criteria.andIn("id", Arrays.asList(ids));
             qualityMapper.deleteByExample(example);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 

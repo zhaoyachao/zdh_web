@@ -63,14 +63,10 @@ public class ZdhEtlBatchController extends BaseController {
     /**
      * 批量任务新增首页
      *
-     * @param request
-     * @param response
-     * @param id
-     * @param edit
      * @return
      */
     @RequestMapping("/etl_task_batch_add_index")
-    public String etl_task_batch_add_index(HttpServletRequest request, HttpServletResponse response, Long id, String edit) {
+    public String etl_task_batch_add_index() {
         return "etl/etl_task_batch_add_index";
     }
 
@@ -80,16 +76,16 @@ public class ZdhEtlBatchController extends BaseController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/etl_task_batch_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_batch_detail(String id) {
+    public ReturnInfo etl_task_batch_detail(String id) {
         try {
             EtlTaskBatchInfo eti = etlTaskBatchMapper.selectByPrimaryKey(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
     }
@@ -97,49 +93,55 @@ public class ZdhEtlBatchController extends BaseController {
     /**
      * 根据条件模糊查询批量任务信息
      *
-     * @param etl_context
-     * @param file_name
+     * @param etl_context 关键字
      * @return
      */
     @RequestMapping(value = "/etl_task_batch_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String etl_task_batch_list(String etl_context, String file_name) {
-        List<EtlTaskBatchInfo> list = new ArrayList<>();
-        Example example = new Example(EtlTaskBatchInfo.class);
+    public String etl_task_batch_list(String etl_context) {
+        try{
+            List<EtlTaskBatchInfo> list = new ArrayList<>();
+            Example example = new Example(EtlTaskBatchInfo.class);
 
 
-        Example.Criteria criteria2 = example.createCriteria();
-        criteria2.andEqualTo("owner", getUser().getId());
-        criteria2.andEqualTo("is_delete", Const.NOT_DELETE);
+            Example.Criteria criteria2 = example.createCriteria();
+            criteria2.andEqualTo("owner", getOwner());
+            criteria2.andEqualTo("is_delete", Const.NOT_DELETE);
 
-        Example.Criteria criteria = example.createCriteria();
-        if (!StringUtils.isEmpty(etl_context)) {
-            criteria.andLike("etl_pre_context", getLikeCondition(etl_context));
-            criteria.orLike("etl_suffix_context", getLikeCondition(etl_context));
+            Example.Criteria criteria = example.createCriteria();
+            if (!StringUtils.isEmpty(etl_context)) {
+                criteria.andLike("etl_pre_context", getLikeCondition(etl_context));
+                criteria.orLike("etl_suffix_context", getLikeCondition(etl_context));
+            }
+            example.and(criteria);
+            list = etlTaskBatchMapper.selectByExample(example);
+            return JSON.toJSONString(list);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
         }
-        example.and(criteria);
-        list = etlTaskBatchMapper.selectByExample(example);
-        return JSON.toJSONString(list);
+
     }
 
     /**
-     * 批量删除'批量任务信息'
+     * 批量删除'批量任务信息
      *
-     * @param ids
+     * @param ids id数组
      * @return
      */
-    @RequestMapping(value = "/etl_task_batch_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_batch_delete(String[] ids) {
+    public ReturnInfo etl_task_batch_delete(String[] ids) {
         try {
             etlTaskBatchMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
     }
 
@@ -150,13 +152,13 @@ public class ZdhEtlBatchController extends BaseController {
      * @param etlTaskBatchInfo
      * @return
      */
-    @RequestMapping(value = "/etl_task_batch_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_batch_add(EtlTaskBatchInfo etlTaskBatchInfo) {
+    public ReturnInfo etl_task_batch_add(EtlTaskBatchInfo etlTaskBatchInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskBatchInfo.setOwner(owner);
             debugInfo(etlTaskBatchInfo);
 
@@ -173,16 +175,16 @@ public class ZdhEtlBatchController extends BaseController {
                 etlTaskUpdateLogs.setId(etlTaskBatchInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskBatchInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
 
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
     }
 
@@ -193,12 +195,12 @@ public class ZdhEtlBatchController extends BaseController {
      * @param etlTaskBatchInfo
      * @return
      */
-    @RequestMapping(value = "/etl_task_batch_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_batch_update(EtlTaskBatchInfo etlTaskBatchInfo) {
+    public ReturnInfo etl_task_batch_update(EtlTaskBatchInfo etlTaskBatchInfo) {
         try {
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskBatchInfo.setOwner(owner);
             etlTaskBatchInfo.setIs_delete(Const.NOT_DELETE);
             etlTaskBatchInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -217,35 +219,40 @@ public class ZdhEtlBatchController extends BaseController {
                 etlTaskUpdateLogs.setId(etlTaskBatchInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskBatchInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
     }
 
 
-    @RequestMapping(value = "/etl_task_batch_create", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 批量任务新增
+     * @param etlTaskBatchInfo
+     * @return
+     */
+    @RequestMapping(value = "/etl_task_batch_create", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_batch_create(EtlTaskBatchInfo etlTaskBatchInfo) {
+    public ReturnInfo etl_task_batch_create(EtlTaskBatchInfo etlTaskBatchInfo) {
         try {
-            String owner = getUser().getId();
+            String owner = getOwner();
             debugInfo(etlTaskBatchInfo);
             EtlTaskBatchInfo etbi = etlTaskBatchMapper.selectByPrimaryKey(etlTaskBatchInfo);
 
             //校验状态
             if (!etbi.getStatus().equalsIgnoreCase(Const.BATCH_INIT) && !etbi.getStatus().equalsIgnoreCase(Const.BATCH_FAIL)) {
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "批量任务状态必须是未执行或失败", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "批量任务状态必须是未执行或失败", null);
             }
             //校验数据源是否JDBC类型
             if (!etbi.getData_source_type_input().equalsIgnoreCase("jdbc")) {
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "批量任务输入数据源必须是JDBC类型", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "批量任务输入数据源必须是JDBC类型", null);
             }
 
             //拉取JDBC下满足的表
@@ -303,7 +310,7 @@ public class ZdhEtlBatchController extends BaseController {
             etbi.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskBatchMapper.updateByPrimaryKey(etbi);
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), tab);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), tab);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
@@ -311,7 +318,7 @@ public class ZdhEtlBatchController extends BaseController {
             etlTaskBatchInfo.setStatus(Const.BATCH_FAIL);
             etlTaskBatchInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskBatchMapper.updateByPrimaryKey(etlTaskBatchInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }
     }
 

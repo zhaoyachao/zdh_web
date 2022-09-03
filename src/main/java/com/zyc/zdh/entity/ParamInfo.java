@@ -1,5 +1,7 @@
 package com.zyc.zdh.entity;
 
+import com.zyc.zdh.util.Const;
+
 import java.sql.Timestamp;
 import javax.persistence.*;
 
@@ -57,6 +59,13 @@ public class ParamInfo {
      * 参数名称
      */
     private String param_value;
+
+    @Transient
+    private String param_type_name;
+
+    public String getParam_type_name(){
+        return Const.getEnumName("PARAM_TYPE", getParam_type());
+    }
 
     /**
      * @return id

@@ -43,4 +43,16 @@ public class DAGTest {
     @Test
     public void getChildren() {
     }
+
+    @Test
+    public void getSources() {
+        DAG dag=new DAG();
+        dag.addEdge(823139834678743047L,823139834682937344L);
+        dag.addEdge(823139834674548736L,823139834678743041L);
+        dag.addEdge(823139834678743041L,823139834678743040L);
+        dag.addEdge(823139834678743040L,823139834682937344L);
+        System.out.println(dag.getSources());
+
+    }
+
 }

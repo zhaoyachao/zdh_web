@@ -11,14 +11,25 @@ public class ApprovalConfigInfo {
     @Id
     @Column
     private String id;
-
-    //审批流程code
+    /**
+     * 审批流程code
+     */
     private String code;
-    //审批流程名称
+    /**
+     * 审批流程名称
+     */
     private String code_name ;
-    //0 单人审批；1 多人审批。单人审批，意思是同一级审批只要有审批人审批后，其他人默认审批。多人审批，必须是同一级所以人审批，才进行下一步审批节点
+    /**
+     * 0 单人审批；1 多人审批。单人审批，意思是同一级审批只要有审批人审批后，其他人默认审批。多人审批，必须是同一级所以人审批，才进行下一步审批节点
+     */
     private String type;
+    /**
+     * 创建时间
+     */
     private Timestamp create_time ;
+    /**
+     *拥有者
+     */
     private String employee_id ;
 
     public String getId() {

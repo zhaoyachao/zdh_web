@@ -15,65 +15,205 @@ import java.util.Date;
 @Table
 public class QuartzJobInfo implements Serializable {
 
+    /**
+     * 调度任务ID
+     */
     @Id
     @Column
     private String job_id;//任务id,
-    private String job_context;//任务说明
-    private String more_task;//多源任务 值：多源ETL,单源ETL,SQL
+    /**
+     * 任务说明
+     */
+    private String job_context;//
+    /**
+     * 多源任务 值：多源ETL,单源ETL,SQL
+     */
+    private String more_task;//
+    /**
+     * 任务类型,EMAIL,RETRY,CHECK,ETL
+     */
     @Column
     private String job_type;// 任务类型,EMAIL,RETRY,CHECK,ETL
+    /**
+     * 开始时间
+     */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Timestamp start_time;// 起始时间
+    /**
+     * 结束时间
+     */
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp end_time;// 结束时间
+    /**
+     * 步长(自定义调度间隔)
+     */
     private String step_size;
+    /**
+     * 执行模式(顺时间执行1，执行一次2，重复执行3)
+     */
     private String job_model;// 执行模式(顺时间执行1，执行一次2，重复执行3),
+    /**
+     * 重试次数
+     */
     private String plan_count;//计划执行次数
     private long count=0;//执行次数
+    /**
+     * 废弃
+     */
     private String command;// command,
+    /**
+     * 自定义参数
+     */
     private String params;// 参数,
+    /**
+     * 上次任务执行状态(废弃)
+     */
     private String last_status;// 上次任务是否执行完必,dispatch,finish,etl,error,wait_retry,retry用来记录异步采集程序的状态
+    /**
+     * 上次任务执行时间
+     */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Timestamp last_time;// 上次任务执行时间,
+    /**
+     * 下次执行时间
+     */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Timestamp next_time;// 下次任务执行时间,
+    /**
+     * quartz表达式
+     */
     private String expr;// quartz 表达式
+    /**
+     * 任务状态,create,running,pause,finish,remove,error
+     */
     private String status;// 任务状态,create,running,pause,finish,remove,error
+    /**
+     * 废弃
+     */
     private String ip;//服务器地址,
+    /**
+     * 废弃
+     */
     private String user;//用户名,
+    /**
+     * 废弃
+     */
     private String password;//密码
+    /**
+     * 废弃
+     */
     private String etl_task_id;
+    /**
+     * 废弃
+     */
     private String etl_context;
+    /**
+     * 拥有者
+     */
     private String owner;
+    /**
+     * 废弃
+     */
     private String is_script;
+    /**
+     * 废弃
+     */
     private String job_ids;
+    /**
+     * 废弃
+     */
     private String jump_dep;
+    /**
+     * 废弃
+     */
     private String jump_script;
+    /**
+     * 失败重试间隔
+     */
     private String interval_time;
+    /**
+     * 废弃
+     */
     private String alarm_enabled;
+    /**
+     * 废弃
+     */
     private String email_and_sms;
+    /**
+     * 告警账号
+     */
     private String alarm_account;
+    /**
+     * 废弃
+     */
     private String task_log_id;
+    /**
+     * 超时时间
+     */
     private String time_out="86400";
+    /**
+     * 优先级
+     */
     private String priority="5";//优先级
+    /**
+     * quartz时间
+     */
     private Timestamp quartz_time;
+    /**
+     * 是否使用quartz触发时间,on,off,null
+     */
     private String use_quartz_time= Const.OFF;//是否使用quartz触发时间,on,off,null
+    /**
+     * 回退时间差,单位秒
+     */
     private String time_diff;//单位秒example 10 表示回退10s
+    /**
+     * 任务信息json字符串
+     */
     private String jsmind_data;//json 形式,作业直接的关系
 
+    /**
+     * 开启邮箱告警, on/off
+     */
     private String alarm_email=Const.OFF;
+    /**
+     * 开启短信告警, on/off
+     */
     private String alarm_sms=Const.OFF;
+    /**
+     * 开启zdh告警, on/off
+     */
     private String alarm_zdh=Const.OFF;
 
+    /**
+     * 开启失败通知,on/off
+     */
     private String notice_error=Const.OFF;
+    /**
+     * 开启完成通知,on/off
+     */
     private String notice_finish=Const.OFF;
+    /**
+     * 开启超时通知, on/off
+     */
     private String notice_timeout=Const.OFF;
 
+    /**
+     * quartz失败重启模式,0:无操作,1:执行错过的所有历史,2:执行最近一次历史
+     */
     private String misfire=Const.NOTHING;
+    /**
+     * 更新时间
+     */
+    private Timestamp update_time;
+    /**
+     * 是否删除0:否,1:是
+     */
+    private String is_delete="0";
 
     public String getNotice_error() {
         return notice_error;
@@ -434,5 +574,21 @@ public class QuartzJobInfo implements Serializable {
 
     public void setMisfire(String misfire) {
         this.misfire = misfire;
+    }
+
+    public Timestamp getUpdate_time() {
+        return update_time;
+    }
+
+    public void setUpdate_time(Timestamp update_time) {
+        this.update_time = update_time;
+    }
+
+    public String getIs_delete() {
+        return is_delete;
+    }
+
+    public void setIs_delete(String is_delete) {
+        this.is_delete = is_delete;
     }
 }

@@ -96,7 +96,7 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-		logger.warn("shifor onAccessDenied");
+		//logger.warn("shifor onAccessDenied");
 		return super.onAccessDenied(request,response);
 
 //		HttpServletResponse httpServletResponse = (HttpServletResponse) response;

@@ -140,7 +140,7 @@
 
               });
           },
-          'click #crowd_make': function (e, value, row, index) {
+          'click #strategy_group_execute': function (e, value, row, index) {
               parent.layer.open({
                   type: 2,
                   title: '手动执行配置',
@@ -151,7 +151,7 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: server_context+"/crowd_task_exe_detail_index?id="+row.id, //iframe的url
+                  content: server_context+"/strategy_group_task_exe_detail_index?id="+row.id, //iframe的url
                   end : function () {
                       console.info("弹框结束")
                   }
@@ -169,7 +169,7 @@
               ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="crowd_make" name="crowd_make" type="button" class="btn btn-outline btn-sm" title="生成人群"><i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
+              ' <button id="strategy_group_execute" name="strategy_group_execute" type="button" class="btn btn-outline btn-sm" title="执行策略"><i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +
               '</div>'

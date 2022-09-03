@@ -194,11 +194,11 @@
         </dependency>
 
         <!--netty -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>5.0.0.Alpha2</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.netty</groupId>-->
+<!--            <artifactId>netty-all</artifactId>-->
+<!--            <version>5.0.0.Alpha2</version>-->
+<!--        </dependency>-->
         <!-- disruptor -->
         <dependency>
             <groupId>com.lmax</groupId>
@@ -427,6 +427,14 @@
             <systemPath>${basedir}/lib/gbase-connector-java-8.3.81.53-build52.8-bin.jar</systemPath>
         </dependency>
 
+        <dependency>
+            <groupId>com.zyc</groupId>
+            <artifactId>zdh_queue</artifactId>
+            <scope>system</scope>
+            <version>1.0-SNAPSHOT</version>
+            <systemPath>${basedir}/lib/zdh_queue.jar</systemPath>
+        </dependency>
+
         <!-- jinjava 模板 https://github.com/HubSpot/jinjava -->
         <dependency>
             <groupId>com.hubspot.jinjava</groupId>
@@ -530,6 +538,17 @@
 <!--            <artifactId>urule-console</artifactId>-->
 <!--            <version>2.1.6</version>-->
 <!--        </dependency>-->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver</artifactId>
+            <version>3.12.11</version>
+        </dependency>
 
     </dependencies>
 
@@ -646,6 +665,22 @@
                                 </resource>
                             </resources>
                             <outputDirectory>${version}/doc</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>copy-api-doc</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/webapp/WEB-INF/zdh/smart_doc</directory>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${version}/smart_doc</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -777,6 +812,40 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>com.github.shalousun</groupId>
+                <artifactId>smart-doc-maven-plugin</artifactId>
+                <version>2.4.8</version>
+                <configuration>
+                    <!--指定生成文档的使用的配置文件,配置文件放在自己的项目中-->
+                    <configFile>./src/main/resources/smart-doc.json</configFile>
+                    <!--指定项目名称-->
+                    <projectName>ZDH接口文档</projectName>
+                    <!--smart-doc实现自动分析依赖树加载第三方依赖的源码，如果一些框架依赖库加载不到导致报错，这时请使用excludes排除掉-->
+                    <excludes>
+                        <!--格式为：groupId:artifactId;参考如下-->
+                        <!--1.0.7版本开始你还可以用正则匹配排除,如：poi.* -->
+                        <exclude>com.zyc:zdh_queue</exclude>
+                    </excludes>
+                    <!--自1.0.8版本开始，插件提供includes支持,配置了includes后插件会按照用户配置加载而不是自动加载，因此使用时需要注意-->
+                    <!--smart-doc能自动分析依赖树加载所有依赖源码，原则上会影响文档构建效率，因此你可以使用includes来让插件加载你配置的组件-->
+                    <includes>
+                        <!--格式为：groupId:artifactId;参考如下-->
+                        <include>com.alibaba:fastjson</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!--如果不需要在执行编译时启动smart-doc，则将phase注释掉-->
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>html</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
         <resources>

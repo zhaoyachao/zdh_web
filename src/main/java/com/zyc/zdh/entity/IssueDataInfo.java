@@ -14,49 +14,93 @@ import java.util.List;
 @Table
 public class IssueDataInfo implements Serializable {
 
+    /**
+     * 主键ID
+     */
     @Id
     @Column
     private String id;
+    /**
+     * 发布说明
+     */
     @Column
     private String issue_context;
 
-    //输入数据源id
+    /**
+     * 输入数据源id
+     */
     private String data_sources_choose_input;
-    //输入数据源类型
+    /**
+     * 输入数据源类型
+     */
     private String data_source_type_input;
-    //输入数据源表名
+    /**
+     * 输入数据源表名
+     */
     private String data_sources_table_name_input;
-    //输入数据源文件名
+    /**
+     * 输入数据源文件名
+     */
     private String data_sources_file_name_input;
-    //输入数据源文件中字段名
+    /**
+     * 输入数据源文件中字段名
+     */
     private String data_sources_file_columns;
-    //输入数据源表字段名
+    /**
+     * 输入数据源表字段名
+     */
     private String data_sources_table_columns;
 
-    //输入-输出 字段映射关系json
+    /**
+     * 输入-输出 字段映射关系json
+     */
     private String column_datas;
 
     //输入-输出 字段映射关系class
     @Transient
     private List<column_data> column_data_list;
 
+    /**
+     * 拥有者
+     */
     private String owner;
 
+    /**
+     * 创建时间
+     */
     private Timestamp create_time;
 
+    /**
+     * 公司
+     */
     private String company;
 
+    /**
+     * 部门
+     */
     private String section;
 
+    /**
+     * 业务
+     */
     private String service;
 
+    /**
+     * 更新内容
+     */
     private String update_context;
 
     @Transient
     private String user_name;
 
-    private String status;//状态：1：已发布, 2:未发布
+    /**
+     * 状态：1：已发布, 2:未发布
+     */
+    private String status;//
 
+    /**
+     * 数据标签
+     */
     private String label_params="";
 
     public String getIssue_context() {

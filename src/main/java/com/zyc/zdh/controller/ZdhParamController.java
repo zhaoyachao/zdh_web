@@ -41,18 +41,31 @@ public class ZdhParamController extends BaseController {
     @Autowired
     ParamMapper paramMapper;
 
+    /**
+     * 系统参数首页
+     * @return
+     */
     @RequestMapping("/param_index")
     public String param_index() {
 
         return "service/param_index";
     }
 
+    /**
+     * 系统参数新增首页
+     * @return
+     */
     @RequestMapping("/param_add_index")
     public String param_add_index() {
 
         return "service/param_add_index";
     }
 
+    /**
+     * 系统参数列表
+     * @param param_context 关键字
+     * @return
+     */
     @RequestMapping(value = "/param_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String param_list(String param_context) {
@@ -72,71 +85,96 @@ public class ZdhParamController extends BaseController {
         return JSON.toJSONString(paramInfos);
     }
 
-    @RequestMapping(value = "/param_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 系统参数明细
+     * @param id id主键
+     * @return
+     */
+    @RequestMapping(value = "/param_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String param_detail(String id) {
+    public ReturnInfo param_detail(String id) {
         try{
             ParamInfo paramInfo = paramMapper.selectByPrimaryKey(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", paramInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", paramInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
-    @RequestMapping(value = "/param_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 系统参数新增
+     * @param paramInfo
+     * @return
+     */
+    @RequestMapping(value = "/param_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String param_add(ParamInfo paramInfo) {
+    public ReturnInfo param_add(ParamInfo paramInfo) {
         try{
             paramInfo.setIs_delete(Const.NOT_DELETE);
-            paramInfo.setOwner(getUser().getId());
+            paramInfo.setOwner(getUser().getUserName());
             paramInfo.setCreate_time(new Timestamp(new Date().getTime()));
             paramInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             paramMapper.insert(paramInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
-    @RequestMapping(value = "/param_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 系统参数更新
+     * @param paramInfo
+     * @return
+     */
+    @RequestMapping(value = "/param_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String param_update(ParamInfo paramInfo) {
+    public ReturnInfo param_update(ParamInfo paramInfo) {
         try{
             debugInfo(paramInfo);
             paramInfo.setIs_delete(Const.NOT_DELETE);
-            paramInfo.setOwner(getUser().getId());
+            paramInfo.setOwner(getUser().getUserName());
             paramInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             paramMapper.updateByPrimaryKey(paramInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
-    @RequestMapping(value = "/param_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 系统参数删除
+     * @param ids id数组
+     * @return
+     */
+    @RequestMapping(value = "/param_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String param_delete(String[] ids) {
+    public ReturnInfo param_delete(String[] ids) {
         try {
-            paramMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            paramMapper.deleteLogicByIds("param_info",ids, new Timestamp(new Date().getTime()));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
-    @RequestMapping(value = "/param_to_redis", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 系统参数写入缓存
+     * @param ids id数组
+     * @return
+     */
+    @RequestMapping(value = "/param_to_redis", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String param_to_redis(String[] ids) {
+    public ReturnInfo param_to_redis(String[] ids) {
         try{
             Example example=new Example(ParamInfo.class);
             Example.Criteria criteria=example.createCriteria();
@@ -149,11 +187,11 @@ public class ZdhParamController extends BaseController {
                     redisUtil.set(paramInfo.getParam_name(),  paramInfo.getParam_value(), StringUtils.isEmpty(paramInfo.getParam_timeout())?300L:Long.parseLong(paramInfo.getParam_timeout()), TimeUnit.SECONDS);
                 }
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 

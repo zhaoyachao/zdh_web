@@ -212,7 +212,7 @@ function buildTable($el, cells, rows) {
           }
           return num;
       }
-
+      var loadIndex;
     $('#exampleTableEvents').bootstrapTable({
         method: "POST",
         url: server_context+"/notice_list2",
@@ -221,6 +221,28 @@ function buildTable($el, cells, rows) {
       showRefresh: true,
       showToggle: true,
       showColumns: true,
+        pageList:[10,50,100,200,500],
+        sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+        pageNumber: 1,                       //初始化加载第一页，默认第一页
+        pageSize: 10,                       //每页的记录行数（*）
+      queryParams: function (params) {
+             // 此处使用了LayUi组件 是为加载层
+             loadIndex = layer.load(1);
+             let resRepor = {
+                         //服务端分页所需要的参数
+                         limit: params.limit,
+                         offset: params.offset
+                     };
+             return resRepor;
+             },
+      responseHandler: res => {
+             // 关闭加载层
+             layer.close(loadIndex);
+             return {                            //return bootstrap-table能处理的数据格式
+                     "total":res.result.total,
+                     "rows": res.result.rows
+                     }
+      },
       iconSize: 'outline',
       toolbar: '#exampleTableEventsToolbar',
       icons: {

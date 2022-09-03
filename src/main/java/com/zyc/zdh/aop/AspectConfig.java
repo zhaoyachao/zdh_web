@@ -109,7 +109,7 @@ public class AspectConfig implements Ordered{
 			if(is_ipbacklist || is_userbacklist){
 				UserOperateLogMapper userOperateLogMapper= (UserOperateLogMapper)SpringContext.getBean("userOperateLogMapper");
 				UserOperateLogInfo userOperateLogInfo=new UserOperateLogInfo();
-				userOperateLogInfo.setOwner(getUser().getId());
+				userOperateLogInfo.setOwner(getUser().getUserName());
 				userOperateLogInfo.setUser_name(getUser().getUserName());
 				userOperateLogInfo.setOperate_url(url);
 				userOperateLogInfo.setOperate_input(reqParam);
@@ -172,7 +172,7 @@ public class AspectConfig implements Ordered{
 				try{
 					UserOperateLogMapper userOperateLogMapper= (UserOperateLogMapper)SpringContext.getBean("userOperateLogMapper");
 					UserOperateLogInfo userOperateLogInfo=new UserOperateLogInfo();
-					userOperateLogInfo.setOwner(getUser().getId());
+					userOperateLogInfo.setOwner(getUser().getUserName());
 					userOperateLogInfo.setUser_name(getUser().getUserName());
 					userOperateLogInfo.setOperate_url(url);
 					userOperateLogInfo.setOperate_input(reqParam);
@@ -195,6 +195,10 @@ public class AspectConfig implements Ordered{
 					MDC.remove("user_id");
 					String uid = getUser() == null? "":getUser().getUserName();
 					logger.info("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】, 当前请求无权限",ipAddr,uid,url,request.getMethod(),reqParam);
+					if (request.getMethod().equalsIgnoreCase("get")){
+						//get请求无权限,返回403
+						return "403";
+					}
 					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "无权限", e);
 				}
 				if (request.getMethod().equalsIgnoreCase("get")){
@@ -218,7 +222,7 @@ public class AspectConfig implements Ordered{
 					if(o instanceof String){
 						UserOperateLogMapper userOperateLogMapper= (UserOperateLogMapper)SpringContext.getBean("userOperateLogMapper");
 						UserOperateLogInfo userOperateLogInfo=new UserOperateLogInfo();
-						userOperateLogInfo.setOwner(getUser().getId());
+						userOperateLogInfo.setOwner(getUser().getUserName());
 						userOperateLogInfo.setUser_name(getUser().getUserName());
 						userOperateLogInfo.setOperate_url(url);
 						userOperateLogInfo.setOperate_input(reqParam);
@@ -313,10 +317,17 @@ public class AspectConfig implements Ordered{
 				//验证权限
 				String url =getUrl(request);
 				String method = request.getMethod();
-				if(white().contains(url) || is_white){
+				if(white().contains(url) || is_white || url.contains("smart_doc")){
 					break;
 				}
-				if(!SecurityUtils.getSubject().isPermitted(url)){
+				String url_tmp = url;
+				if(url.startsWith("redis/get")){
+					url_tmp = "redis/get";
+				}
+				if(url.startsWith("redis/del")){
+					url_tmp = "redis/del";
+				}
+				if(!SecurityUtils.getSubject().isPermitted(url_tmp)){
 					//此处增加zdh通知
 					send_notice(getUser(),"接口权限通知", "用户名:"+getUser().getUserName()+", 时间:"+ DateUtil.getCurrentTime()+", "+url+"没有权限");
 					throw new ZdhException(url+"没有权限");
@@ -348,7 +359,7 @@ public class AspectConfig implements Ordered{
 			ni.setMsg_url("");
 			ni.setMsg(msg);
 			ni.setIs_see(Const.FALSE);
-			ni.setOwner(user.getId());
+			ni.setOwner(user.getUserName());
 			ni.setCreate_time(new Timestamp(new Date().getTime()));
 			ni.setUpdate_time(new Timestamp(new Date().getTime()));
 			noticeMapper.insert(ni);

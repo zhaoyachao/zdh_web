@@ -99,6 +99,7 @@ public class SSHUtil {
             logger.info("Session is connected");
                  
             ChannelExec channel = (ChannelExec) session.openChannel("exec");
+            channel.setPty(true);
             exec =channel;
             logger.info(String.format("ssh server host:[%s] port:[%s] is connect successfull", host, port));
         } catch (JSchException e) {
@@ -133,6 +134,7 @@ public class SSHUtil {
             InputStream error_in=exec.getErrStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(error_in, StandardCharsets.UTF_8));
+            exec.setPty(true);
             exec.connect();
             String buf;
             StringBuilder sb = new StringBuilder();

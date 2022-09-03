@@ -57,20 +57,20 @@ public class ZdhEtlApplyController extends BaseController{
 
     /**
      * 申请源明细
-     * @param id
+     * @param id 数据发布ID
      * @return
      */
-    @RequestMapping(value = "/etl_task_apply_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_apply_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_apply_detail(String id) {
+    public ReturnInfo etl_task_apply_detail(String id) {
 
         try{
             EtlApplyTaskInfo etlApplyTaskInfo=etlApplyTaskMapper.selectByPrimaryKey(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlApplyTaskInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlApplyTaskInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -83,15 +83,22 @@ public class ZdhEtlApplyController extends BaseController{
     @RequestMapping(value = "/etl_task_apply_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_list2(String etl_context, String file_name) {
-        List<EtlTaskInfo> list = new ArrayList<>();
-        if(!StringUtils.isEmpty(etl_context)){
-            etl_context=getLikeCondition(etl_context);
+        try{
+            List<EtlTaskInfo> list = new ArrayList<>();
+            if(!StringUtils.isEmpty(etl_context)){
+                etl_context=getLikeCondition(etl_context);
+            }
+            if(!StringUtils.isEmpty(file_name)){
+                file_name=getLikeCondition(file_name);
+            }
+            list = etlApplyTaskMapper.selectByParams(getOwner(), etl_context, file_name);
+            return JSON.toJSONString(list);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
         }
-        if(!StringUtils.isEmpty(file_name)){
-            file_name=getLikeCondition(file_name);
-        }
-        list = etlApplyTaskMapper.selectByParams(getUser().getId(), etl_context, file_name);
-        return JSON.toJSONString(list);
+
     }
 
     /**
@@ -99,18 +106,18 @@ public class ZdhEtlApplyController extends BaseController{
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/etl_task_apply_delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/etl_task_apply_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_apply_task_delete(String[] ids) {
+    public ReturnInfo etl_apply_task_delete(String[] ids) {
         try{
-            etlApplyTaskMapper.deleteBatchByIds2(ids);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+            etlApplyTaskMapper.deleteLogicByIds("etl_apply_task_info",ids, new Timestamp(new Date().getTime()));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
     }
 
@@ -136,13 +143,13 @@ public class ZdhEtlApplyController extends BaseController{
      * @param etlApplyTaskInfo
      * @return
      */
-    @RequestMapping(value = "/etl_task_apply_add", method = RequestMethod.POST)
+    @RequestMapping(value = "/etl_task_apply_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_apply_task_add(EtlApplyTaskInfo etlApplyTaskInfo) {
+    public ReturnInfo etl_apply_task_add(EtlApplyTaskInfo etlApplyTaskInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlApplyTaskInfo.setOwner(owner);
             debugInfo(etlApplyTaskInfo);
 
@@ -158,15 +165,15 @@ public class ZdhEtlApplyController extends BaseController{
                 etlTaskUpdateLogs.setId(etlApplyTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlApplyTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
 
@@ -179,12 +186,12 @@ public class ZdhEtlApplyController extends BaseController{
      * @param etlApplyTaskInfo
      * @return
      */
-    @RequestMapping(value = "/etl_task_apply_update", method = RequestMethod.POST)
+    @RequestMapping(value = "/etl_task_apply_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_apply_update(EtlApplyTaskInfo etlApplyTaskInfo) {
+    public ReturnInfo etl_task_apply_update(EtlApplyTaskInfo etlApplyTaskInfo) {
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlApplyTaskInfo.setOwner(owner);
             etlApplyTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlApplyTaskInfo.setIs_delete(Const.NOT_DELETE);
@@ -216,15 +223,15 @@ public class ZdhEtlApplyController extends BaseController{
                 etlTaskUpdateLogs.setId(etlApplyTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlApplyTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
     }
 

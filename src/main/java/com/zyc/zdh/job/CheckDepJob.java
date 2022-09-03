@@ -143,6 +143,9 @@ public class CheckDepJob {
             List<TaskLogInstance> dep_tlis=taskLogInstanceMapper.selectTaskByJobType(new String[] {JobStatus.DISPATCH.getValue(),JobStatus.CREATE.getValue(),
                     JobStatus.CHECK_DEP.getValue()},new String[]{"JDBC","GROUP","HDFS"});
             for(TaskLogInstance tli :dep_tlis) {
+                if(tli.getStatus()!=null && tli.getStatus().equalsIgnoreCase("skip")){
+                    continue;
+                }
                 //如果上游任务kill,killed 设置本实例为killed
                 String pre_tasks=tli.getPre_tasks();
                 if(!StringUtils.isEmpty(pre_tasks)){
@@ -202,6 +205,9 @@ public class CheckDepJob {
             //获取所有可执行的非依赖类型子任务
             List<TaskLogInstance> taskLogInstanceList=taskLogInstanceMapper.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()});
             for(TaskLogInstance tl :taskLogInstanceList){
+                if(tl.getStatus()!=null && tl.getStatus().equalsIgnoreCase("skip")){
+                    continue;
+                }
                 //如果上游任务kill,killed 设置本实例为killed
                 String pre_tasks=tl.getPre_tasks();
                 if(!StringUtils.isEmpty(pre_tasks)){

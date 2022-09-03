@@ -10,25 +10,79 @@ import java.sql.Timestamp;
 @Table
 public class SshTaskInfo {
 
+    /**
+     * 主键ID
+     */
     @Id
     @Column
     private String id ;
+    /**
+     * ssh说明
+     */
     private String ssh_context ;
+    /**
+     * 参数
+     */
     private String ssh_params_input ;
+    /**
+     * 命令
+     */
     private String ssh_cmd ;
+    /**
+     * 执行路径
+     */
     private String ssh_script_path;
+    /**
+     * 脚本内容
+     */
     private String ssh_script_context;
+    /**
+     * host
+     */
     private String host ;
+    /**
+     * port
+     */
     private String port;
+    /**
+     * 用户名
+     */
     private String user_name;
+    /**
+     * 密码
+     */
     private String password;
+    /**
+     * 拥有者
+     */
     private String owner ;
+    /**
+     * 创建时间
+     */
     private Timestamp create_time ;
+    /**
+     * 公司
+     */
     private String company  ;
+    /**
+     * 部门
+     */
     private String section  ;
+    /**
+     * 业务
+     */
     private String service  ;
+    /**
+     * 更新内容
+     */
     private String update_context ;
+    /**
+     * 更新时间
+     */
     private Timestamp update_time;
+    /**
+     * 是否删除,0:否,1:删除
+     */
     private String is_delete= Const.NOT_DELETE;
 
 

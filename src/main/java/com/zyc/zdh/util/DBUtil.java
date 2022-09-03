@@ -249,6 +249,56 @@ public class DBUtil{
                 for (int i = 1; i <= columnCount; i++) {
                     rmap.put(resultSetMetaData.getColumnName(i),resultSet.getString(i));
                 }
+
+
+                result.add(rmap);
+            }
+
+            return result;
+
+        } catch (Exception e) {
+            // logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            throw e;
+        }finally {
+            release(connection, preparedStatement, resultSet);
+        }
+    }
+
+    /**
+     * 针对as别名问题实现查询
+     * @param driver
+     * @param url
+     * @param username
+     * @param password
+     * @param sql
+     * @param asParams
+     * @return
+     * @throws Exception
+     */
+    public List<Map<String,Object>> R6(String driver,String url,String username,String password,String sql, Map<String,String> asParams) throws Exception{
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = getConnection(driver,url,username,password);
+            preparedStatement = connection.prepareStatement(sql);
+
+            resultSet = preparedStatement.executeQuery();
+
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+            int columnCount = resultSetMetaData.getColumnCount();
+            List<Map<String,Object>> result=new ArrayList<>();
+            while(resultSet.next()!=false){
+                //这里可以执行一些其他的操作
+                Map<String,Object> rmap=new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    rmap.put(resultSetMetaData.getColumnName(i),resultSet.getString(i));
+                }
+                if(asParams != null && asParams.size()>0){
+                    for(String key :asParams.keySet()){
+                        rmap.put(asParams.get(key), rmap.get(key));
+                    }
+                }
                 result.add(rmap);
             }
 

@@ -16,104 +16,208 @@ import java.util.List;
 @Table
 public class EtlTaskInfo {
 
+    /**
+     * 主键ID
+     */
     @Id
     @Column
     private String id;
 
+    /**
+     * 任务说明
+     */
     @Column
     private String etl_context;
 
-    //输入数据源id
+    /**
+     * 输入数据源id
+     */
     private String data_sources_choose_input;
-    //输入数据源类型
+    /**
+     * 输入数据源类型
+     */
     private String data_source_type_input;
-    //输入数据源表名
+    /**
+     * 输入数据源表名
+     */
     private String data_sources_table_name_input;
-    //输入数据源文件名
+    /**
+     * 输入数据源文件名
+     */
     private String data_sources_file_name_input;
-    //输入数据源文件中字段名
+    /**
+     * 输入数据源文件中字段名
+     */
     private String data_sources_file_columns;
-    //输入数据源表字段名
+    /**
+     * 输入数据源表字段名
+     */
     private String data_sources_table_columns;
-    //文件类型
+    /**
+     * 文件类型
+     */
     private String file_type_input;
-    //文件编码
+    /**
+     * 文件编码
+     */
     private String encoding_input;
-    //是否有头标题
+    /**
+     * 是否有头标题
+     */
     private String header_input;
-    //重新洗牌个数
+    /**
+     * 重新洗牌个数
+     */
     private String repartition_num_input;
-    //重新洗牌字段
+    /**
+     * 重新洗牌字段
+     */
     private String repartition_cols_input;
-    //文件分割符
+    /**
+     * 文件分割符
+     */
     private String sep_input;
-    //输入数据源其他参数
+    /**
+     * 输入数据源其他参数
+     */
     private String data_sources_params_input;
 
-    //输入数据源过滤条件
+    /**
+     * 输入数据源过滤条件
+     */
     private String data_sources_filter_input;
 
-    //输出数据源id
+    /**
+     * 输出数据源id
+     */
     private String data_sources_choose_output;
-    //输出数据源类型
+    /**
+     * 输出数据源类型
+     */
     private String data_source_type_output;
-    //输出数据源表名
+    /**
+     * 输出数据源表名
+     */
     private String data_sources_table_name_output;
-    //输出数据源文件名
+    /**
+     * 输出数据源文件名
+     */
     private String data_sources_file_name_output;
-    //文件类型
+    /**
+     * 文件类型
+     */
     private String file_type_output;
-    //文件编码
+    /**
+     * 文件编码
+     */
     private String encoding_output;
-    //是否有头标题
+    /**
+     * 是否有头标题
+     */
     private String header_output;
-    //文件分割符
+    /**
+     * 文件分割符
+     */
     private String sep_output;
-    //写入模式
+    /**
+     * 写入模式
+     */
     private String model_output;
-    //分区字段
+    /**
+     * 分区字段
+     */
     private String partition_by_output;
-    //合并小文件个数
+    /**
+     * 合并小文件个数
+     */
     private String merge_output;
 
-    //输出数据源其他参数
+    /**
+     * 输出数据源其他参数
+     */
     private String data_sources_params_output;
 
-    //输入-输出 字段映射关系json
+    /**
+     * 输入-输出 字段映射关系json
+     */
     private String column_datas;
-    //输出数据源删除条件
+    /**
+     * 输出数据源删除条件
+     */
     private String data_sources_clear_output;
 
     //输入-输出 字段映射关系class
     @Transient
     private List<column_data> column_data_list;
 
+    /**
+     * 拥有者
+     */
     private String owner;
 
+    /**
+     * 创建时间
+     */
     private Timestamp create_time;
 
+    /**
+     * 公司
+     */
     private String company;
 
+    /**
+     * 部门
+     */
     private String section;
 
+    /**
+     * 业务
+     */
     private String service;
 
+    /**
+     * 更新内容
+     */
     private String update_context;
 
+    /**
+     * 主键字段,多个逗号分割
+     */
     private String primary_columns;
 
+    /**
+     * 字段量
+     */
     private String column_size;
 
+    /**
+     * 行范围xxx-xxx
+     */
     private String rows_range;//xxx-xxx
 
+    /**
+     * 容错率
+     */
     private String error_rate;//容错率
 
+    /**
+     * 开启质量检测
+     */
     private String enable_quality;
 
+    /**
+     * 去重字段
+     */
     private String duplicate_columns;//去重字段
 
+    /**
+     * 更新时间
+     */
     private Timestamp update_time;
 
+    /**
+     * 是否删除,0:否,1:删除
+     */
     private String is_delete= Const.NOT_DELETE;
 
     @Transient

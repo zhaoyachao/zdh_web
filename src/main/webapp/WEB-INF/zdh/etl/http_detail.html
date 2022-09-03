@@ -69,6 +69,23 @@
                                 <input id="url" name="url" type="text" class="form-control" placeholder="http://127.0.0.1:8081/xxxx">
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Header</label>
+                            <div class="col-sm-10">
+                                <div id="header" name="header"
+                                     class="monaco_div_100"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Cookie</label>
+                            <div class="col-sm-10">
+                                <div id="cookie" name="cookie"
+                                     class="monaco_div_100"></div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label">请求参数</label>
                             <div class="col-sm-10">
@@ -193,6 +210,18 @@
                 theme:'vs-dark'
             });
 
+            window.editor_header = monaco.editor.create(document.getElementById('header'), {
+                value: 'Key:Value格式,每行一个,多个请换行',
+                language: 'shell',
+                theme:'vs-dark'
+            });
+
+            window.editor_cookie = monaco.editor.create(document.getElementById('cookie'), {
+                value: 'Key:Value格式,每行一个,多个请换行',
+                language: 'shell',
+                theme:'vs-dark'
+            });
+
             var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
             var params = url.substr(1);//去掉问号
             var pa = params.split("&");
@@ -211,6 +240,8 @@
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
                 window.editor_params.setValue($("#http_params",window.parent.document).val());
+                window.editor_header.setValue($("#http_header",window.parent.document).val());
+                window.editor_cookie.setValue($("#http_cookie",window.parent.document).val());
 
                 if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
                     $("#time_out").val(s["time_out"]);
@@ -233,6 +264,8 @@
         var url_type=$('#url_type').find("option:selected").val();
         var etl_context=$('#etl_context').val();
         var params=window.editor_params.getValue();
+        var header=window.editor_header.getValue();
+        var cookie=window.editor_cookie.getValue();
         var depend_level=$('#depend_level').find("option:selected").val();
         var time_out=$('#time_out').val();
 
@@ -247,7 +280,9 @@
             "is_disenable":is_disenable,
             "params":params,
             "depend_level":depend_level,
-            "time_out": time_out
+            "time_out": time_out,
+            "header": header,
+            "cookie": cookie
         };
         console.info("http_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

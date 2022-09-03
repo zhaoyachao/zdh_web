@@ -234,7 +234,12 @@
                                         <div class="panel-body">
                                             <div class="row">
                                                 <div class="col-sm-12">
-
+                                                    <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                                                        <button id="notice_downstream" type="button" class="btn btn-outline btn-default">
+                                                            通知下游
+<!--                                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>-->
+                                                        </button>
+                                                    </div>
                                                     <table id="exampleTableEvents3" name="exampleTableEvents3" data-height="100%"
                                                            data-mobile-responsive="false">
 
@@ -463,6 +468,11 @@
                                     columns: 'glyphicon-list'
                                 },
                                 columns: columnsArray,
+                                // 请求完成回调 可处理请求到的数据
+                                responseHandler: res => {
+                                    // 关闭加载层
+                                    return res.result;
+                                },
                                 onLoadSuccess: function (ee)
                                 {
                                     //查询数据成功
@@ -675,6 +685,24 @@
         });
         $('#export').click(function () {
             window.open(server_context+"/data_ware_house_export?id="+s.id,);
+        });
+
+        $('#notice_downstream').click(function () {
+            parent.layer.open({
+                type: 2,
+                title: '通知下游',
+                shadeClose: false,
+                resize: true,
+                fixed: false,
+                maxmin: true,
+                shade: 0.1,
+                area : ['45%', '60%'],
+                //area: ['450px', '500px'],
+                content: server_context+"/notice_downstream_email_index?id="+s.id, //iframe的url
+                end : function () {
+                    console.info("弹框结束");
+                }
+            });
         })
 
     })

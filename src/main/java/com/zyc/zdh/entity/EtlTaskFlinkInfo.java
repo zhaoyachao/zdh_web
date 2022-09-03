@@ -10,26 +10,83 @@ import java.sql.Timestamp;
 @Table
 public class EtlTaskFlinkInfo {
 
+    /**
+     * 主键ID
+     */
     @Id
     @Column
     private String id ;
+    /**
+     * 任务说明
+     */
     private String sql_context ;
+    /**
+     * 参数
+     */
     private String data_sources_params_input ;
+    /**
+     * flink sql
+     */
     private String etl_sql ;
+    /**
+     * flink 客户端host
+     */
     private String host ;
+    /**
+     * flink 客户端port
+     */
     private String port;
+    /**
+     * 用户名
+     */
     private String user_name;
+    /**
+     * 密码
+     */
     private String password;
+    /**
+     * 拥有者
+     */
     private String owner ;
+    /**
+     * 创建时间
+     */
     private Timestamp create_time ;
+    /**
+     * 公司
+     */
     private String company  ;
+    /**
+     * 部门
+     */
     private String section  ;
+    /**
+     * 业务
+     */
     private String service  ;
+    /**
+     * 更新内容
+     */
     private String update_context ;
+    /**
+     * 检查点path
+     */
     private String checkpoint;
+    /**
+     * 服务器类型 windows,linux
+     */
     private String server_type;//windows,linux
+    /**
+     * flink任务启动命令行
+     */
     private String command;
+    /**
+     * 更新时间
+     */
     private Timestamp update_time;
+    /**
+     * 是否删除，0:否,1:删除
+     */
     private String is_delete= Const.NOT_DELETE;
 
     public String getId() {

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
+import com.zyc.zdh.job.EmailJob;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
 import com.zyc.zdh.util.ExportUtil;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +45,10 @@ public class ZdhDataWareController extends BaseController {
     @Autowired
     ApplyMapper applyMapper;
 
+    /**
+     * 数据资产首页
+     * @return
+     */
     @RequestMapping("/data_ware_house_index_plus")
     public String data_ware_house_index_plus() {
 
@@ -50,6 +56,14 @@ public class ZdhDataWareController extends BaseController {
     }
 
 
+    /**
+     * 获取已发布的数据
+     * @param issue_context 关键字
+     * @param current_page 当前页
+     * @param label_params 数据标签,多个逗号分割
+     * @param page_size 分页大小
+     * @return
+     */
     @RequestMapping(value = "/data_ware_house_list6", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String data_ware_house_list6(String issue_context,String current_page,String label_params,Integer  page_size) {
@@ -114,9 +128,13 @@ public class ZdhDataWareController extends BaseController {
         return jsonObject.toJSONString();
     }
 
-    @RequestMapping(value = "/data_ware_house_label", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 获取数据仓库标签参数
+     * @return
+     */
+    @RequestMapping(value = "/data_ware_house_label", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_label() {
+    public ReturnInfo data_ware_house_label() {
 
         Example example=new Example(EnumInfo.class);
         Example.Criteria criteria = example.createCriteria();
@@ -126,14 +144,20 @@ public class ZdhDataWareController extends BaseController {
         //criteria.andLike("enum_code", "data_ware_house_label_%");
         List<EnumInfo> enumInfos = enumMapper.selectByExample(example);
 
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"查询成功", enumInfos);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"查询成功", enumInfos);
     }
 
 
-
-    @RequestMapping(value = "/data_ware_house_sample", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 数据抽样
+     * @param context
+     * @param id 数据仓库发布唯一ID
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/data_ware_house_sample", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_sample(String context, String id) {
+    public ReturnInfo data_ware_house_sample(String context, String id) throws Exception {
 
         IssueDataInfo idi = issueDataMapper.selectById(id);
 
@@ -147,7 +171,7 @@ public class ZdhDataWareController extends BaseController {
         List<AccountInfo> accountInfos=accountMapper.selectByExample(example);
         List<String> owners = new ArrayList<>();
         for (AccountInfo accountInfo: accountInfos){
-            owners.add(accountInfo.getId().toString());
+            owners.add(accountInfo.getUser_name());
         }
 
         Example example2=new Example(ApplyInfo.class);
@@ -156,12 +180,12 @@ public class ZdhDataWareController extends BaseController {
         criteria2.andEqualTo("status", Const.APPLY_STATUS_SUCCESS);
         criteria2.andIn("owner", owners);
         int count = applyMapper.selectCountByExample(example2);
-        if(count<=0 && !idi.getOwner().equalsIgnoreCase(getUser().getId())){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", "当前表无操作权限");
+        if(count<=0 && !idi.getOwner().equalsIgnoreCase(getOwner())){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", "当前表无操作权限");
         }
 
         if(!idi.getData_source_type_input().equalsIgnoreCase("jdbc")){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", "只支持JDBC类型数据查询");
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", "只支持JDBC类型数据查询");
         }
         String sources_id = idi.getData_sources_choose_input();
         String table = idi.getData_sources_table_name_input();
@@ -177,19 +201,26 @@ public class ZdhDataWareController extends BaseController {
         try {
             List<Map<String,Object>> result = new DBUtil().R5(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
                     sql);
-            return JSON.toJSONString(result);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"查询成功",result);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
         }
 
-        return JSON.toJSONString("");
+        return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", null);
     }
 
 
-    @RequestMapping(value = "/data_ware_house_export", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 导出数据
+     * @param id
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/data_ware_house_export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_export(String id, HttpServletResponse response) {
+    public ReturnInfo data_ware_house_export(String id, HttpServletResponse response) throws Exception {
 
         IssueDataInfo idi = issueDataMapper.selectById(id);
         //验证权限,验证当前数据是否同一个组下的人申请
@@ -210,12 +241,12 @@ public class ZdhDataWareController extends BaseController {
         criteria2.andEqualTo("status", Const.APPLY_STATUS_SUCCESS);
         criteria2.andIn("owner", owners);
         int count = applyMapper.selectCountByExample(example2);
-        if(count<=0 && !idi.getOwner().equalsIgnoreCase(getUser().getId())){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"导出失败", "当前表无操作权限");
+        if(count<=0 && !idi.getOwner().equalsIgnoreCase(getOwner())){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"导出失败", "当前表无操作权限");
         }
 
         if(!idi.getData_source_type_input().equalsIgnoreCase("jdbc")){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"导出失败", "只支持JDBC类型数据查询");
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"导出失败", "只支持JDBC类型数据查询");
         }
         String sources_id = idi.getData_sources_choose_input();
         String table = idi.getData_sources_table_name_input();
@@ -238,7 +269,7 @@ public class ZdhDataWareController extends BaseController {
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", e);
         }
         return null;
     }
@@ -248,16 +279,60 @@ public class ZdhDataWareController extends BaseController {
      * @param issue_id
      * @return
      */
-    @RequestMapping(value = "/data_ware_house_apply", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_ware_house_apply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_apply(String issue_id){
+    public ReturnInfo data_ware_house_apply(String issue_id){
 
         List<ApplyAlarmInfo> applyAlarmInfos = applyMapper.selectByIssueId(issue_id);
 
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", applyAlarmInfos);
-
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", applyAlarmInfos);
 
     }
+
+    /**
+     * 通知下游页面
+     * @return
+     */
+    @RequestMapping("/notice_downstream_email_index")
+    public String notice_downstream_email_index() {
+
+        return "etl/notice_downstream_email_index";
+    }
+
+
+    /**
+     * 通知
+     * @param id 发布数据唯一ID
+     * @param subject 主题
+     * @param context 内容
+     * @return
+     */
+    @RequestMapping(value = "/notice_downstream_email", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo notice_downstream_email(String id, String subject, String context){
+
+        try{
+            List<ApplyAlarmInfo> applyAlarmInfos = applyMapper.selectByIssueId(id);
+
+            //发送通知邮件
+
+            List<String> to=new ArrayList<>();
+            for (ApplyAlarmInfo aai:applyAlarmInfos){
+                if(!StringUtils.isEmpty(aai.getEmail())){
+                    to.add(aai.getEmail());
+                }
+            }
+
+            EmailJob.sendHtmlEmail(to.toArray(new String[]{}), subject, context);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "发送成功", applyAlarmInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "发送失败", e.getMessage());
+        }
+
+    }
+
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (int i = 0, len = fields.length; i < len; i++) {

@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * MPP jdbc服务
+ */
 @Controller
 public class ZdhJdbcController extends BaseController {
 
@@ -38,12 +41,20 @@ public class ZdhJdbcController extends BaseController {
     EtlTaskJdbcMapper etlTaskJdbcMapper;
 
 
+    /**
+     * jdbc任务首页
+     * @return
+     */
     @RequestMapping("/etl_task_jdbc_index")
     public String etl_task_jdbc_index() {
 
         return "etl/etl_task_jdbc_index";
     }
 
+    /**
+     * jdbc任务新增首页
+     * @return
+     */
     @RequestMapping("/etl_task_jdbc_add_index")
     public String etl_task_jdbc_add_index() {
 
@@ -62,34 +73,41 @@ public class ZdhJdbcController extends BaseController {
     @ResponseBody
     public String etl_task_jdbc_list(String etl_context, String id) {
 
-        List<EtlTaskJdbcInfo> etlTaskJdbcInfos = new ArrayList<>();
-        if(!StringUtils.isEmpty(etl_context)){
-            etl_context=getLikeCondition(etl_context);
-        }
-        etlTaskJdbcInfos = etlTaskJdbcMapper.selectByParams(getUser().getId(), etl_context, id);
+        try{
+            List<EtlTaskJdbcInfo> etlTaskJdbcInfos = new ArrayList<>();
+            if(!StringUtils.isEmpty(etl_context)){
+                etl_context=getLikeCondition(etl_context);
+            }
+            etlTaskJdbcInfos = etlTaskJdbcMapper.selectByParams(getOwner(), etl_context, id);
 
-        return JSON.toJSONString(etlTaskJdbcInfos);
+            return JSON.toJSONString(etlTaskJdbcInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
+        }
+
     }
 
     /**
      * 批量删除sql任务
      *
-     * @param ids
+     * @param ids id数组
      * @return
      */
-    @RequestMapping(value = "/etl_task_jdbc_delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/etl_task_jdbc_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_jdbc_delete(String[] ids) {
+    public ReturnInfo etl_task_jdbc_delete(String[] ids) {
         try {
-            etlTaskJdbcMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
+            etlTaskJdbcMapper.deleteLogicByIds("etl_task_jdbc_info",ids, new Timestamp(new Date().getTime()));
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
@@ -99,13 +117,13 @@ public class ZdhJdbcController extends BaseController {
      * @param etlTaskJdbcInfo
      * @return
      */
-    @RequestMapping(value = "/etl_task_jdbc_add", method = RequestMethod.POST)
+    @RequestMapping(value = "/etl_task_jdbc_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_jdbc_add(EtlTaskJdbcInfo etlTaskJdbcInfo) {
+    public ReturnInfo etl_task_jdbc_add(EtlTaskJdbcInfo etlTaskJdbcInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskJdbcInfo.setOwner(owner);
             etlTaskJdbcInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTaskJdbcInfo.setCreate_time(new Timestamp(new Date().getTime()));
@@ -122,15 +140,15 @@ public class ZdhJdbcController extends BaseController {
                 etlTaskUpdateLogs.setId(etlTaskJdbcInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskJdbcInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
@@ -140,12 +158,12 @@ public class ZdhJdbcController extends BaseController {
      * @param etlTaskJdbcInfo
      * @return
      */
-    @RequestMapping(value = "/etl_task_jdbc_update", method = RequestMethod.POST)
+    @RequestMapping(value = "/etl_task_jdbc_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_jdbc_update(EtlTaskJdbcInfo etlTaskJdbcInfo) {
+    public ReturnInfo etl_task_jdbc_update(EtlTaskJdbcInfo etlTaskJdbcInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskJdbcInfo.setOwner(owner);
             etlTaskJdbcInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskJdbcInfo.setIs_delete(Const.NOT_DELETE);
@@ -162,15 +180,15 @@ public class ZdhJdbcController extends BaseController {
                 etlTaskUpdateLogs.setId(etlTaskJdbcInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskJdbcInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(getOwner());
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
 
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 

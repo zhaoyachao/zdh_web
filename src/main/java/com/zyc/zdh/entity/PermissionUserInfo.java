@@ -12,28 +12,70 @@ public class PermissionUserInfo implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -6409904097473655093L;
+	/**
+	 * ID
+	 */
 	@Id
 	@Column
 	private String id;
+	/**
+	 * 用户账号
+	 */
 	private String user_account;
+	/**
+	 * 用户名
+	 */
 	private String user_name;
+	/**
+	 * 密码
+	 */
 	@Column(name="user_password")
 	private String user_password;
+	/**
+	 * 邮箱
+	 */
 	private String email;
+	/**
+	 * 是否开启邮箱on/off
+	 */
 	private String is_use_email;
+	/**
+	 * 手机号
+	 */
 	private String phone;
+	/**
+	 * 是否开启手机
+	 */
 	private String is_use_phone;
 
+	/**
+	 * 用户组
+	 */
 	private String user_group;
 
+	/**
+	 * 是否启用true/false
+	 */
 	private String enable;
 
+	/**
+	 * 角色ID,多个逗号分割
+	 */
 	private String roles;
 
+	/**
+	 * 签名
+	 */
 	private String signature;
 
+	/**
+	 * 数据标识组
+	 */
 	private String tag_group_code;
 
+	/**
+	 * 产品代码
+	 */
 	private String product_code;
 
 	public String getId() {

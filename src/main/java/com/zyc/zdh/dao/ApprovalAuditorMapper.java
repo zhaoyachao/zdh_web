@@ -47,10 +47,13 @@ public interface ApprovalAuditorMapper extends BaseMapper<ApprovalAuditorInfo> {
             "<script>",
             "select auditor.* from approval_auditor_info auditor inner join approval_config_info config on auditor.code = config.code ",
             " inner join approval_event_info event on event.code=config.code and event.event_code=#{event}",
+            "<when test='product_code!=null and product_code !=\"\"'>",
+            " AND product_code=#{product_code}",
+            "</when>",
             " where FIND_IN_SET('${auditor_group}', auditor.auditor_group)>0",
             "</script>"
     })
-    public List<ApprovalAuditorInfo> selectByEvent(@Param("event") String event, @Param("auditor_group") String auditor_group);
+    public List<ApprovalAuditorInfo> selectByEvent(@Param("event") String event, @Param("auditor_group") String auditor_group, @Param("product_code") String product_code);
 
     @Delete({
             "<script>",

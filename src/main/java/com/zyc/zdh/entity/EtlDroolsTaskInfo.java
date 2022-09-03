@@ -8,42 +8,87 @@ import java.sql.Timestamp;
 @Table
 public class EtlDroolsTaskInfo {
 
+    /**
+     * 主键ID
+     */
     @Id
     @Column
     private String id;
 
+    /**
+     * etl任务ID
+     */
     private String etl_id;
 
+    /**
+     * 任务模板,单源ETL,多源ETL,SQL
+     */
     private String more_task;
 
+    /**
+     * drools任务说明
+     */
     private String etl_context;
 
+    /**
+     * drools逻辑
+     */
     private String etl_drools;
+    /**
+     * 输入源过滤
+     */
     private String data_sources_filter_input;
 
+    /**
+     * 删除临时表名,多个逗号分割
+     */
     private String drop_tmp_tables;
 
-    //输出数据源id
+    /**
+     * 输出数据源id
+     */
     private String data_sources_choose_output;
-    //输出数据源类型
+    /**
+     * 输出数据源类型
+     */
     private String data_source_type_output;
-    //输出数据源表名
+    /**
+     * 输出数据源表名
+     */
     private String data_sources_table_name_output;
-    //输出数据源文件名
+    /**
+     * 输出数据源文件名
+     */
     private String data_sources_file_name_output;
-    //文件类型
+    /**
+     * 文件类型
+     */
     private String file_type_output;
-    //文件编码
+    /**
+     * 文件编码
+     */
     private String encoding_output;
-    //文件分割符
+    /**
+     * 文件分割符
+     */
     private String sep_output;
-    //输出数据源其他参数
+    /**
+     * 输出数据源其他参数
+     */
     private String data_sources_params_output;
-    //输出数据源删除条件
+    /**
+     * 输出数据源删除条件
+     */
     private String data_sources_clear_output;
 
+    /**
+     * 拥有者
+     */
     private String owner;
 
+    /**
+     * 创建时间
+     */
     private Timestamp create_time;
 
 

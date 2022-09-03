@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * ClassName: MyErrorConroller   
+ * 异常页面服务
  * @author zyc-admin
  * @date 2018年3月2日  
  * @Description: TODO  
@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class MyErrorConroller {
 
+	/**
+	 * 404页面
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/404", produces = "text/html;charset=UTF-8")
 	public String  error(HttpServletRequest request){
 		Map<String, String[]> parameterMap = request.getParameterMap();
@@ -27,6 +32,11 @@ public class MyErrorConroller {
 		return "404";
 	}
 
+	/**
+	 * 403页面
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value="/403", produces = "text/html;charset=UTF-8")
 	public String  permission(HttpServletRequest request){
 		Map<String, String[]> parameterMap = request.getParameterMap();
@@ -34,6 +44,11 @@ public class MyErrorConroller {
 		return "403";
 	}
 
+	/**
+	 * 503页面
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value="/503", produces = "text/html;charset=UTF-8")
 	public String  manager(HttpServletRequest request){
 		return "503";

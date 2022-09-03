@@ -1,9 +1,12 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.UserOperateLogMapper;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.UserOperateLogInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +16,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.servlet.ServletRequest;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 操作日志服务
+ */
 @Controller
 public class ZdhOperateLogController extends BaseController {
 
@@ -37,31 +44,69 @@ public class ZdhOperateLogController extends BaseController {
 
 
     /**
-     * datax任务明细
+     * 操作日志列表
      *
+     * bootstrap-table 分页
+     *  设置
+     *           sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+     *           pageNumber: 1,                       //初始化加载第一页，默认第一页
+     *           pageSize: 10,                       //每页的记录行数（*）
+     *          queryParams: function (params) {
+     *               // 此处使用了LayUi组件 是为加载层
+     *               loadIndex = layer.load(1);
+     *               let resRepor = {
+     *                   //服务端分页所需要的参数
+     *                   limit: params.limit,
+     *                   offset: params.offset
+     *               };
+     *               return resRepor;
+     *           },
+     *           responseHandler: res => {
+     *               // 关闭加载层
+     *               layer.close(loadIndex);
+     *               return {                            //return bootstrap-table能处理的数据格式
+     *                   "total":res.total,
+     *                   "rows": res.rows
+     *               }
+     *           },
+     *           data-content-type="application/x-www-form-urlencoded" data-query-params="queryParams"
      * @param log_context
      * @param id
      * @return
      */
-    @RequestMapping(value = "/user_operate_log_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/user_operate_log_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String user_operate_log_list(String log_context, String id, String start_time, String end_time) {
-        UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();
-        Example example = new Example(userOperateLogInfo.getClass());
-        List<UserOperateLogInfo> userOperateLogInfos = new ArrayList<>();
-        Example.Criteria cri = example.createCriteria();
-        cri.andBetween("create_time", start_time, end_time);
-        if (!StringUtils.isEmpty(log_context)) {
-            cri.andLike("user_name", getLikeCondition(log_context));
-            cri.orLike("operate_input", getLikeCondition(log_context));
-            cri.orLike("operate_output", getLikeCondition(log_context));
-            cri.orLike("operate_context", getLikeCondition(log_context));
-            cri.orLike("operate_url", getLikeCondition(log_context));
-        }
-        example.setOrderByClause("update_time desc");
-        userOperateLogInfos = userOperateLogMapper.selectByExample(example);
+    public ReturnInfo user_operate_log_list(String log_context, String id, String start_time, String end_time,int limit, int offset, ServletRequest request) {
 
-        return JSON.toJSONString(userOperateLogInfos);
+        try{
+            UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();
+            Example example = new Example(userOperateLogInfo.getClass());
+            List<UserOperateLogInfo> userOperateLogInfos = new ArrayList<>();
+            Example.Criteria cri = example.createCriteria();
+            cri.andBetween("create_time", start_time, end_time);
+            if (!StringUtils.isEmpty(log_context)) {
+                cri.andLike("user_name", getLikeCondition(log_context));
+                cri.orLike("operate_input", getLikeCondition(log_context));
+                cri.orLike("operate_output", getLikeCondition(log_context));
+                cri.orLike("operate_context", getLikeCondition(log_context));
+                cri.orLike("operate_url", getLikeCondition(log_context));
+            }
+            example.setOrderByClause("update_time desc");
+            RowBounds rowBounds=new RowBounds(offset,limit);
+            int total = userOperateLogMapper.selectCountByExample(example);
+
+            userOperateLogInfos = userOperateLogMapper.selectByExampleAndRowBounds(example, rowBounds);
+
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("total", total);
+            jsonObject.put("rows", userOperateLogInfos);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonObject);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+
     }
 
     private void debugInfo(Object obj) {

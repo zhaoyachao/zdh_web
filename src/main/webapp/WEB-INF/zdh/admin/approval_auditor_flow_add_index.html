@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 审批流新增首页</title>
+    <meta name="keywords" content="ZDH 审批流新增首页">
+    <meta name="description" content="ZDH 审批流新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
+
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="js/plugins/magicsuggest/magicsuggest.css" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>策略组配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <input type="hidden" id="etl_task_text" name="etl_task_text" value="">
+
+                    <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
+                          action="">
+                        <input type="hidden" id="jsmind_data" name="jsmind_data" value="">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">流程说明</label>
+                            <div class="col-sm-10">
+                                <input id="flow_context" name="flow_context" type="text"
+                                       placeholder="流程说明,不可为空" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">审批节点</label>
+                            <div class="col-sm-10">
+                                <select id="flow_code" name="flow_code"
+                                        data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="产品code...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">流程配置</label>
+                            <div  class="col-sm-10">
+                                <div class="container device col-sm-12">
+                                    <div class="deviceLeft2">
+                                        <div class="deviceLeft_box">
+                                            <div class="node nodeflowcss" data-type="flow">审批人</div>
+                                        </div>
+                                    </div>
+                                    <div id="deviceRight">
+                                        <div id="m1"></div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+
+
+<!--                        <div class="form-group">-->
+<!--                            <label class="col-sm-2 control-label">优先级</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <input id="priority" name="priority" type="text"-->
+<!--                                       placeholder="优先级 默认5,最高级100,example:25" class="form-control" aria-required="true"> </span>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+                        <div class="hr-line-dashed"></div>
+
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!--<script type="text/javascript" src="js/plugins/suggest/bootstrap-suggest.min.js"></script>-->
+<script type="text/javascript" src="js/plugins/magicsuggest/magicsuggest.js"></script>
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
+<script type="text/javascript" src="js/admin/approval_auditor_flow_add.js"></script>
+
+
+<script type="text/javascript">
+
+    function add_node_zdh(more_task,etl_id,etl_context){
+        var id = "div"+etl_id;
+    }
+
+    //基本连接线样式
+    var connectorPaintStyle = {
+        lineWidth: 2,
+        strokeStyle: "#61b8d0"
+    };
+
+    // 鼠标悬浮在连接线上的样式
+    var connectorHoverStyle = {
+        lineWidth: 2,
+        strokeStyle: "green"
+    };
+
+    //端点的颜色样式
+    var paintStyle = {
+        fillStyle: "#ccc",
+        radius: 10,
+        lineWidth:6
+    };
+
+    // 鼠标悬浮在端点上的样式
+    var hoverPaintStyle = {
+        fillStyle: "#aaa"
+    };
+
+
+    var hollowCircle = {
+        endpoint: ["Dot", { radius: 3 }],  //端点的形状
+        connectorStyle: connectorPaintStyle,
+        connectorHoverStyle: connectorHoverStyle,
+        paintStyle: paintStyle,
+        hoverPaintStyle: hoverPaintStyle ,
+        isSource: true,    //是否可以拖动（作为连线起点）
+        connector: ["StateMachine", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],  //连接线的样式种类有[Bezier],[Flowchart],[StateMachine ],[Straight ]
+        isTarget: true,    //是否可以放置（连线终点）
+        maxConnections: -1,    // 设置连接点最多可以连接几条线
+        connectorOverlays:[
+            [ "Arrow", { width:10, length:20, location:1, id:"arrow" } ],
+            ["Custom", {
+                create:function(component) {
+                    return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
+                },
+                location:0.5,
+                id:"customOverlay"
+            }]
+        ]
+    };
+
+    function get_color_by_status(is_disenable){
+        //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+        if(is_disenable=='true'){
+            return "LightGrey"
+        }
+        return ""
+    }
+
+    function open_json(json) {
+        var jsplumb_json=JSON.parse(json);
+        //添加div 数据
+        for(var i=0;i< jsplumb_json.tasks.length;i++){
+            var rs=jsplumb_json.tasks[i];
+            var tp=rs.type;
+            var divId=rs.divId;
+            var etl_context=rs.etl_context;
+            var positionX=rs.positionX;
+            var positionY=rs.positionY;
+            cls_str="node node"+tp+"css tasks";
+            var color=get_color_by_status(rs.is_disenable);
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background: '+color+'" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type",tp);
+            $("#" + divId).attr("level",rs.level);
+            $("#" + divId).attr("level_name",rs.level_name);
+
+            $("#" + divId).attr("auditor_context",rs.auditor_context);
+            $("#" + divId).attr("auditor_id",rs.auditor_id);
+
+            $("#" + divId).attr("title", rs.level);
+            //div.width(etl_task_info.etl_context.length*16)
+            $("#" + divId).css("width","auto");
+            $("#" + divId).css("display","inline-block");
+            $("#" + divId).css("*display","inline");
+            $("#" + divId).css("*zoom","1");
+
+            $("#" + divId).html(rs.auditor_context);
+
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous"
+            });
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+
+            doubleclick("#" + divId,tp);
+
+        }
+
+        for(var i=0;i< jsplumb_json.line.length;i++){
+            jsPlumb.connect({
+                uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
+            })
+        }
+
+
+    }
+
+    function jsplumb_data(){
+        var ojson={
+            tasks:[],
+            line:[]
+        };
+        //服务器
+        $("#m1 .tasks").each(function (idx, elem) {
+            var $elem = $(elem);
+            var param={
+                auditor_id:$elem.attr('auditor_id'),
+                level:$elem.attr('level'),
+                level_name:$elem.attr('level_name'),
+                auditor_context:$elem.attr('auditor_context'),
+                id: $elem.attr('id'),
+
+                divId:$elem.attr('id'),
+                name: $elem[0].innerText,
+                positionX: parseInt($elem.css("left"), 10),
+                positionY: parseInt($elem.css("top"), 10),
+                type:$elem.data('type')
+            };
+            ojson.tasks.push(param)
+        });
+
+        $.each(jsPlumb.getConnections(), function (idx, connection) {
+            var param={
+                connectionId: connection.id,
+                pageSourceId: connection.sourceId,
+                pageTargetId: connection.targetId
+            };
+            ojson.line.push(param)
+        });
+        return ojson
+    }
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+    function closeTab() {
+        // var currentWidth = $(this).parents('.J_menuTab').width();
+        var wpd = $(window.parent.document);
+        var mainContent = wpd.find('.J_mainContent');
+        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
+        var currentTab=pageTabs.find(".J_menuTab.active");
+        var closeTabId = currentTab.data('id');
+        mainContent.find('.J_iframe');
+
+        // 当前元素处于活动状态
+        if (currentTab.hasClass('active')) {
+
+            // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
+            if (pageTabs.next('.J_menuTab').size()) {
+
+                var activeId = currentTab.next('.J_menuTab:eq(0)').data('id');
+                currentTab.next('.J_menuTab:eq(0)').addClass('active');
+
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == activeId) {
+                        $(e).show().siblings('.J_iframe').hide();
+                        return false;
+                    }
+                });
+
+                var marginLeftVal = parseInt($('.page-tabs-content').css('margin-left'));
+                if (marginLeftVal < 0) {
+                    pageTabs.animate({
+                        marginLeft: (marginLeftVal + currentTab.width()) + 'px'
+                    }, "fast");
+                }
+
+                //  移除当前选项卡
+                currentTab.remove();
+
+                // 移除tab对应的内容区
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == closeTabId) {
+                        $(e).remove();
+                        return false;
+                    }
+                });
+            }
+
+            // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
+            if (currentTab.prev('.J_menuTab').size()) {
+                var activeId = currentTab.prev('.J_menuTab:last').data('id');
+                currentTab.prev('.J_menuTab:last').addClass('active');
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == activeId) {
+                        $(e).show().siblings('.J_iframe').hide();
+                        return false;
+                    }
+                });
+
+                //  移除当前选项卡
+                currentTab.remove();
+
+                // 移除tab对应的内容区
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == closeTabId) {
+                        $(e).remove();
+                        return false;
+                    }
+                });
+
+            }
+        }
+        // 当前元素不处于活动状态
+        else {
+
+            //  移除当前选项卡
+            currentTab.remove();
+
+            // 移除相应tab对应的内容区
+            mainContent.find('.J_iframe').each(function (index,e) {
+                if ($(e).data('id') == closeTabId) {
+                    $(e).remove();
+                    return false;
+                }
+            });
+            // scrollToTab($('.J_menuTab.active'));
+        }
+        return false;
+    }
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            $('#flow_code').chosen();
+            function init_code(){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/approval_config_list",
+                    async:false,
+                    dataType: 'json',
+                    data: "",
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].code + '\" hassubinfo=\"true\">' + data[i].code_name + '</option>'
+                        }
+                        $('#flow_code').html(str);
+                        $("#flow_code").trigger("chosen:updated");
+                        $('#flow_code').chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
+                    }
+                });
+            }
+            init_code();
+
+
+            $('#product_code').chosen();
+            function init_product_code(){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/product_tag_list",
+                    async:false,
+                    dataType: 'json',
+                    data: "",
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"' + '\" hassubinfo=\"true\">空</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+                        }
+                        $('#product_code').html(str);
+                        $("#product_code").trigger("chosen:updated");
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
+                    }
+                });
+            }
+            init_product_code();
+
+            //init_job_sources();
+            //s.id=-1 表示新增,否则表示更新
+            if(s.id==-1){
+                $('#update_dispatch_task').hide();
+                $('#save_dispatch_task').show();
+            }else{
+                if(s.is_copy == "true"){
+                    console.info("拷贝按钮触发");
+                    $('#update_dispatch_task').hide();
+                    $('#save_dispatch_task').show();
+                }else{
+                    console.info("更新按钮触发");
+                    $('#save_dispatch_task').hide();
+                    $('#update_dispatch_task').show();
+                }
+
+            }
+            // ------------------------------------------------------------------
+
+
+            function getCurrentDate(){
+                var oDate = new Date(),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            function getMyDate(str){
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+            //补0操作
+            function getzf(num){
+                if(parseInt(num) < 10){
+                    num = '0'+num;
+                }
+                return num;
+            }
+
+            if(s.id !='-1'){
+                console.info("更新-拷贝按钮触发");
+                //开始赋值
+                $.ajax({
+                    url : server_context+"/approval_auditor_flow_detail",
+                    data : "id=" + s.id,
+                    type : "post",
+                    dataType : "json",
+                    success : function(data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        console.info("success");
+                       // layer.alert(JSON.stringify(data[0]))
+                        //获取调度任务说明
+                        var flow_context=data.result.flow_context;
+                        $("#flow_context").val(flow_context);
+
+                        var flow_code=data.result.flow_code;
+                        $("#flow_code").val(flow_code);
+                        $("#flow_code").trigger("chosen:updated");
+
+                        var product_code=data.result.product_code;
+                        $("#product_code").val(product_code);
+                        $("#product_code").trigger("chosen:updated");
+
+                        var jsmind_data=data.result.jsmind_data;
+                        open_json(jsmind_data);
+
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+            }
+
+
+
+        })();
+
+
+
+    })(document, window, jQuery);
+
+
+
+    $('#save_dispatch_task').click(function () {
+
+        if($('#flow_context').val()==''){
+            layer.msg("流程说明不可为空");
+            return false
+        }
+
+        var ojson=jsplumb_data();
+        $('#jsmind_data').val(JSON.stringify(ojson));
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/approval_auditor_flow_add",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize(),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#save_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+                //closeTab();
+            },
+            //处理完成
+            complete: function () {
+                $("#save_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    });
+
+    $('#update_dispatch_task').click(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+
+        if($('#flow_context').val()==''){
+            layer.msg("流程说明不可为空");
+            return false
+        }
+
+        var ojson=jsplumb_data();
+        $('#jsmind_data').val(JSON.stringify(ojson));
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/approval_auditor_flow_update",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+'&id='+s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+               // closeTab()
+            },
+            //处理完成
+            complete: function () {
+                $("#update_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+</script>
+
+
+</body>
+
+</html>

@@ -88,6 +88,9 @@ public class ShellJob extends JobCommon2 {
                         if (!file2.exists()) {
                             file2.createNewFile();
                         }
+                        file2.setExecutable(true,false);
+                        file2.setExecutable(true,false);
+                        file2.setWritable(true,false);
                         logger.info("生成脚本临时文件:" + file2.getAbsolutePath());
                         logger.info("脚本内容:" + line + newcommand);
                         BufferedWriter fileWritter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file2.getAbsolutePath(), true), "UTF-8"));

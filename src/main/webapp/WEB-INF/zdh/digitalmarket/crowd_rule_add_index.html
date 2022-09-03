@@ -73,6 +73,7 @@
                                         <div class="deviceLeft_box">
                                             <div class="node nodelabelcss" data-type="label">标签</div>
                                             <div class="node nodecrowd_filecss" data-type="crowd_file">人群文件</div>
+                                            <div class="node nodecrowd_operatecss" data-type="crowd_operate">运算符</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight">
@@ -268,13 +269,17 @@
 
             if(tp == "label"){
                 $("#" + divId).attr("rule_id",rs.rule_id);
-                $("#" + divId).html(rs.rule_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "crowd_file"){
                 $("#" + divId).attr("crowd_file",rs.crowd_file);
                 $("#" + divId).attr("crowd_file_context",rs.crowd_file_context);
-                $("#" + divId).html(rs.crowd_file_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.crowd_file_context);
             }
+            if(tp == "crowd_operate"){
+                $("#" + divId).html("("+ rs.operate +")"+rs.crowd_operate_context);
+            }
+
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
             jsPlumb.draggable(divId);
@@ -304,6 +309,9 @@
                 break;
             case "crowd_file":
                 doubleclick_crowd_file(id);
+                break;
+            case "crowd_operate":
+                doubleclick_crowd_operate(id);
                 break;
         }
     }
@@ -385,6 +393,8 @@
 
                 crowd_file_context: $elem.attr('crowd_file_context'),
                 crowd_file: $elem.attr('crowd_file'),
+
+                crowd_operate_context: $elem.attr('crowd_operate_context'),
 
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,

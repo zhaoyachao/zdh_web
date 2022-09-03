@@ -66,7 +66,7 @@ public interface IssueDataMapper extends BaseMapper<IssueDataInfo> {
 
     @Select({"<script>",
             "SELECT issue.*,acc.user_name FROM issue_data_info issue, account_info acc",
-            "WHERE issue.owner=acc.id and issue.id=#{id}" ,
+            "WHERE issue.owner=acc.user_name and issue.id=#{id}" ,
             "</script>"})
     public IssueDataInfo selectById(@Param("id") String id);
 

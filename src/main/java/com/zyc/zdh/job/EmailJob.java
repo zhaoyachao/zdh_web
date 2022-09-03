@@ -185,7 +185,7 @@ public class EmailJob {
                     ni.setMsg_url("log_txt.html?job_id="+tli.getJob_id()+"&task_log_id="+tli.getId());
                     ni.setMsg(msg);
                     ni.setIs_see(Const.FALSE);
-                    ni.setOwner(user.getId());
+                    ni.setOwner(user.getUserName());
                     ni.setCreate_time(new Timestamp(new Date().getTime()));
                     ni.setUpdate_time(new Timestamp(new Date().getTime()));
                     noticeMapper.insert(ni);
@@ -257,7 +257,7 @@ public class EmailJob {
                     ni.setMsg_url("");
                     ni.setMsg(msg);
                     ni.setIs_see(Const.FALSE);
-                    ni.setOwner(user.getId());
+                    ni.setOwner(user.getUserName());
                     ni.setCreate_time(new Timestamp(new Date().getTime()));
                     ni.setUpdate_time(new Timestamp(new Date().getTime()));
                     noticeMapper.insert(ni);
@@ -365,11 +365,11 @@ public class EmailJob {
         }
     }
 
-    public static void send_notice(String owner, String title, String msg){
+    public static void send_notice(String owner, String title, String msg, String msg_type){
         try{
             NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
             NoticeInfo ni=new NoticeInfo();
-            ni.setMsg_type("告警");
+            ni.setMsg_type(msg_type);
             ni.setMsg_title(title);
             ni.setMsg_url("");
             ni.setMsg(msg);

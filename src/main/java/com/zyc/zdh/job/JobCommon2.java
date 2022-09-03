@@ -33,6 +33,8 @@ import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.*;
@@ -184,7 +186,7 @@ public class JobCommon2 {
             throw new Exception("无法找到对应的[单源]ETL任务,任务id:" + etl_task_id);
         }
 
-        Map<String, Object> map = (Map<String, Object>) JSON.parseObject(tli.getParams());
+        Map<String, Object> map = (Map<String, Object>)JSON.parseObject(tli.getParams());
         //此处做参数匹配转换
         if (map != null) {
             logger.info("单源,自定义参数不为空,开始替换:" + tli.getParams());
@@ -222,7 +224,11 @@ public class JobCommon2 {
         if (dataSourcesInfoOutput.getData_source_type() != null && dataSourcesInfoOutput.getData_source_type().equals("外部下载")) {
             //获取文件服务器信息 配置到数据源选项
             ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoOutput.getOwner());
-            if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
+            if(zdhNginx == null){
+                logger.info("当前用户未配置文件服务器信息");
+                throw new Exception("当前用户未配置文件服务器信息");
+            }
+            if (!zdhNginx.getHost().equals("")) {
                 dataSourcesInfoOutput.setUrl(zdhNginx.getHost() + ":" + zdhNginx.getPort());
                 dataSourcesInfoOutput.setUsername(zdhNginx.getUsername());
                 dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
@@ -288,7 +294,11 @@ public class JobCommon2 {
             if (dataSourcesInfoOutput.getData_source_type() != null && dataSourcesInfoOutput.getData_source_type().equals("外部下载")) {
                 //获取文件服务器信息 配置到数据源选项
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoOutput.getOwner());
-                if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
+                if(zdhNginx == null){
+                    logger.info("当前用户未配置文件服务器信息");
+                    throw new Exception("当前用户未配置文件服务器信息");
+                }
+                if (!zdhNginx.getHost().equals("")) {
                     dataSourcesInfoOutput.setUrl(zdhNginx.getHost() + ":" + zdhNginx.getPort());
                     dataSourcesInfoOutput.setUsername(zdhNginx.getUsername());
                     dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
@@ -1276,8 +1286,18 @@ public class JobCommon2 {
         zdhLogs.setMsg(msg);
         zdhLogs.setLevel(level.toUpperCase());
         //linkedBlockingDeque.add(zdhLogs);
-        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-        zdhLogsService.insert(zdhLogs);
+
+        RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
+        Object logType=redisUtil.get("zdh_log_type");
+
+        if(logType == null || logType.toString().equalsIgnoreCase(Const.LOG_MYSQL)){
+            ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+            zdhLogsService.insert(zdhLogs);
+        }else if(logType.toString().equalsIgnoreCase(Const.LOG_MONGODB)){
+            MongoTemplate mongoTemplate = (MongoTemplate) SpringContext.getBean("mongoTemplate");
+            mongoTemplate.insert(zdhLogs);
+        }
+
     }
 
     /**
@@ -1297,8 +1317,18 @@ public class JobCommon2 {
         zdhLogs.setMsg(msg);
         zdhLogs.setLevel(level.toUpperCase());
         //linkedBlockingDeque.add(zdhLogs);
-        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-        zdhLogsService.insert(zdhLogs);
+//        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+//        zdhLogsService.insert(zdhLogs);
+        RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
+        Object logType=redisUtil.get("zdh_log_type");
+
+        if(logType == null || logType.toString().equalsIgnoreCase(Const.LOG_MYSQL)){
+            ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+            zdhLogsService.insert(zdhLogs);
+        }else if(logType.toString().equalsIgnoreCase(Const.LOG_MONGODB)){
+            MongoTemplate mongoTemplate = (MongoTemplate) SpringContext.getBean("mongoTemplate");
+            mongoTemplate.insert(zdhLogs);
+        }
     }
 
     public static void insertLog(TaskGroupLogInstance tli, String level, String msg) {
@@ -1311,8 +1341,19 @@ public class JobCommon2 {
         zdhLogs.setMsg(msg);
         zdhLogs.setLevel(level.toUpperCase());
         //linkedBlockingDeque.add(zdhLogs);
-        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-        zdhLogsService.insert(zdhLogs);
+//        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+//        zdhLogsService.insert(zdhLogs);
+
+        RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
+        Object logType=redisUtil.get("zdh_log_type");
+
+        if(logType == null || logType.toString().equalsIgnoreCase(Const.LOG_MYSQL)){
+            ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+            zdhLogsService.insert(zdhLogs);
+        }else if(logType.toString().equalsIgnoreCase(Const.LOG_MONGODB)){
+            MongoTemplate mongoTemplate = (MongoTemplate) SpringContext.getBean("mongoTemplate");
+            mongoTemplate.insert(zdhLogs);
+        }
     }
 
 
@@ -2701,6 +2742,7 @@ public class JobCommon2 {
         } else if (quartzJobInfo.getJob_type().equals("CHECK")) {
             logger.debug("调度任务[CHECK],开始调度");
             CheckDepJob.run(quartzJobInfo);
+            //CheckStrategyDepJob.run();
             return;
         } else if (quartzJobInfo.getJob_type().equals("BLOOD")) {
             logger.debug("调度任务[BLOOD],开始调度");
@@ -2751,7 +2793,7 @@ public class JobCommon2 {
                     if (is_retry == 0 && tgli.getUse_quartz_time().equalsIgnoreCase(Const.OFF) && tgli.getCur_time().getTime() > quartzJobInfo.getEnd_time().getTime()) {
                         //通知信息
                         logger.info("当前任务超过日期控制,无法生成任务组信息,自动结束");
-                        EmailJob.send_notice(tgli.getOwner(), "调度任务结束", "当前任务超过日期控制,无法生成任务组信息,自动结束,请调整调度任务组中结束时间");
+                        EmailJob.send_notice(tgli.getOwner(), "调度任务结束", "当前任务超过日期控制,无法生成任务组信息,自动结束,请调整调度任务组中结束时间", "告警");
                         return;
                     }
 
@@ -2893,6 +2935,7 @@ public class JobCommon2 {
      */
     private static void run_sub_task_log_instance(String jobType, TaskLogInstance tli) {
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+        EtlTaskLogMapper etlm = (EtlTaskLogMapper) SpringContext.getBean("etlTaskLogMapper");
         logger.info("开始执行[" + jobType + "] JOB");
         insertLog(tli, "INFO", "开始执行[" + jobType + "] JOB");
 
@@ -2949,6 +2992,30 @@ public class JobCommon2 {
                 tli.setStatus(JobStatus.ETL.getValue());
                 updateTaskLog(tli, tlim);
                 exe_status = EmailJob.run(tli);
+                if (exe_status) {
+                    //设置任务状态为finish
+                    tli.setStatus(JobStatus.FINISH.getValue());
+                    tli.setProcess("100");
+                    updateTaskLog(tli, tlim);
+                }
+            } else if (jobType.equalsIgnoreCase("FLUME")) {
+                tli.setStatus(JobStatus.ETL.getValue());
+                //更新内容
+                EtlTaskLogInfo etlTaskLogInfo=etlm.selectByPrimaryKey(tli.getEtl_task_id());
+                //调用jinJava构造内容
+                Map<String, Object> param = getJinJavaParam(tli);
+
+                Jinjava jinjava=new Jinjava();
+                String job_config = jinjava.render(etlTaskLogInfo.getJob_config(), param);
+                //todo 此处增加自定义channel配置
+
+                String flume_path = jinjava.render(etlTaskLogInfo.getFlume_path(), param);
+                etlTaskLogInfo.setJob_config(job_config);
+                etlTaskLogInfo.setFlume_path(flume_path);
+                tli.setEtl_info(JSON.toJSONString(etlTaskLogInfo));
+
+                updateTaskLog(tli, tlim);
+                exe_status = FlumeJob.flumeCommand(tli);
                 if (exe_status) {
                     //设置任务状态为finish
                     tli.setStatus(JobStatus.FINISH.getValue());
@@ -3202,6 +3269,12 @@ public class JobCommon2 {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type("HTTP");
                 }
+                if (((JSONObject) job).getString("type").equalsIgnoreCase("flume")) {
+                    taskLogInstance.setMore_task("");
+                    taskLogInstance.setJob_type("FLUME");
+
+                }
+
 
                 taskLogInstance.setJsmind_data("");
                 taskLogInstance.setRun_jsmind_data("");
@@ -3231,6 +3304,12 @@ public class JobCommon2 {
                     taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type("EMAIL");
+                }
+                if (((JSONObject) job).getString("type").equalsIgnoreCase("flume")) {
+                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setMore_task("");
+                    taskLogInstance.setJob_type("FLUME");
                 }
 
 

@@ -1,6 +1,7 @@
 package com.zyc.zdh.api;
 
 import com.zyc.zdh.ZdhApplication;
+import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.monitor.Sys;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +27,7 @@ public class PermissionApiTest {
     public void get_user_list_by_product_role() {
 
         String role_code="admin";
-        String result = permissionApi.get_user_list_by_product_role(product_code,role_code ,ak, sk);
+        ReturnInfo result = permissionApi.get_user_list_by_product_role(product_code,role_code ,ak, sk);
 
         System.out.println(result);
     }

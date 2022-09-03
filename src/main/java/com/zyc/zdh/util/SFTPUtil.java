@@ -83,13 +83,14 @@ public class SFTPUtil {
                    
             session.setConfig(config);   
             session.connect();   
-            log.info("Session is connected");   
-                 
-            Channel channel = session.openChannel("sftp");
-            channel.connect();   
+            log.info("Session is connected");
+
+            ChannelSftp channel = (ChannelSftp)session.openChannel("sftp");
+            channel.setPty(true);
+            channel.connect();
             log.info("channel is connected");   
        
-            sftp = (ChannelSftp) channel;   
+            sftp = channel;
             log.info(String.format("sftp server host:[%s] port:[%s] is connect successfull", host, port));   
         } catch (JSchException e) {
             log.error("Cannot connect to specified sftp server : {}:{} \n Exception message is: {}", new Object[]{host, port, e.getMessage()});     

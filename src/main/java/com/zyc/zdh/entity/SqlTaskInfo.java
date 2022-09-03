@@ -10,43 +10,116 @@ import java.sql.Timestamp;
 @Table
 public class SqlTaskInfo {
 
+    /**
+     * 主键ID
+     */
     @Id
     @Column
     private String id ;
+    /**
+     * sql说明
+     */
     private String sql_context ;
+    /**
+     * 数据源ID
+     */
     private String data_sources_choose_input ;
+    /**
+     * 数据源类型
+     */
     private String data_source_type_input ;
+    /**
+     * 输入参数
+     */
     private String data_sources_params_input ;
+    /**
+     * sql逻辑
+     */
     private String etl_sql ;
+    /**
+     * 输出数据源ID
+     */
     private String data_sources_choose_output ;
-    //文件类型
+    /**
+     * 文件类型
+     */
     private String file_type_output;
-    //文件编码
+    /**
+     * 文件编码
+     */
     private String encoding_output;
-    //是否有头标题
+    /**
+     * 是否有头标题
+     */
     private String header_output;
-    //文件分割符
+    /**
+     * 文件分割符
+     */
     private String sep_output;
-    //写入模式
+    /**
+     * 写入模式
+     */
     private String model_output;
-    //分区字段
+    /**
+     * 分区字段
+     */
     private String partition_by_output;
-    //合并小文件个数
+    /**
+     * 合并小文件个数
+     */
     private String merge_output;
 
+    /**
+     * 输出数据源类型
+     */
     private String data_source_type_output ;
+    /**
+     * 输出数据源表名
+     */
     private String data_sources_table_name_output ;
+    /**
+     * 输出数据源文件名
+     */
     private String data_sources_file_name_output ;
+    /**
+     * 输出参数
+     */
     private String data_sources_params_output ;
+    /**
+     * 输出前清理逻辑
+     */
     private String data_sources_clear_output;
+    /**
+     * 拥有者
+     */
     private String owner ;
+    /**
+     * 创建时间
+     */
     private Timestamp create_time ;
+    /**
+     * 公司
+     */
     private String company  ;
+    /**
+     * 部门
+     */
     private String section  ;
+    /**
+     * 业务
+     */
     private String service  ;
+    /**
+     * 更新内容
+     */
     private String update_context ;
+    /**
+     * 更新时间
+     */
     private Timestamp update_time;
-
+    /**
+     * 是否删除,0:否,1:删除
+     */
     private String is_delete= Const.NOT_DELETE;
 
     public String getId() {

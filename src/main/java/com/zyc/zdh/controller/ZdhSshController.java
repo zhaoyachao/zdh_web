@@ -35,6 +35,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * SSH服务
+ */
 @Controller
 public class ZdhSshController extends BaseController{
     public Logger logger= LoggerFactory.getLogger(this.getClass());
@@ -60,18 +63,30 @@ public class ZdhSshController extends BaseController{
         return "etl/etl_task_ssh_index";
     }
 
+    /**
+     * SSH任务新增首页
+     * @return
+     */
     @RequestMapping("/etl_task_ssh_add_index")
     public String etl_task_ssh_add_index() {
 
         return "etl/etl_task_ssh_add_index";
     }
 
+    /**
+     * 文件上传(废弃)
+     * @param jar_files
+     * @param jarTaskInfo
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/etl_task_jar_add_file")
     @ResponseBody
     @Deprecated
-    public String etl_task_jar_add_file(MultipartFile[] jar_files, JarTaskInfo jarTaskInfo, HttpServletRequest request) {
+    public String etl_task_jar_add_file(MultipartFile[] jar_files, JarTaskInfo jarTaskInfo, HttpServletRequest request) throws Exception {
         String json_str = JSON.toJSONString(request.getParameterMap());
-        String owner = getUser().getId();
+        String owner = getOwner();
         String id = SnowflakeIdWorker.getInstance().nextId() + "";
         jarTaskInfo.setId(id);
         jarTaskInfo.setOwner(owner);
@@ -128,6 +143,13 @@ public class ZdhSshController extends BaseController{
     }
 
 
+    /**
+     * 文件更新(废弃)
+     * @param jar_files
+     * @param jarTaskInfo
+     * @param request
+     * @return
+     */
     @RequestMapping("/etl_task_jar_update")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -135,7 +157,7 @@ public class ZdhSshController extends BaseController{
     public String etl_task_jar_update(MultipartFile[] jar_files, JarTaskInfo jarTaskInfo, HttpServletRequest request){
         try{
             String json_str = JSON.toJSONString(request.getParameterMap());
-            String owner = getUser().getId();
+            String owner = getOwner();
             String id =jarTaskInfo.getId();
             jarTaskInfo.setOwner(owner);
             debugInfo(jarTaskInfo);
@@ -199,12 +221,19 @@ public class ZdhSshController extends BaseController{
     }
 
 
+    /**
+     * 文件删除(废弃)
+     * @param ids id数组
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/etl_task_jar_del_file")
     @ResponseBody
     @Deprecated
-    public String etl_task_jar_del_file(String[] ids, HttpServletRequest request) {
+    public String etl_task_jar_del_file(String[] ids, HttpServletRequest request) throws Exception {
         String json_str = JSON.toJSONString(request.getParameterMap());
-        String owner = getUser().getId();
+        String owner = getOwner();
 
         List<JarFileInfo> jarFileInfos= jarFileMapper.selectByParams(owner,ids);
         ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
@@ -239,12 +268,19 @@ public class ZdhSshController extends BaseController{
         return json.toJSONString();
     }
 
+    /**
+     * 获取文件列表(废弃)
+     * @param id
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/etl_task_jar_file_list")
     @ResponseBody
     @Deprecated
-    public List<JarFileInfo> etl_task_jar_file_list(String id, HttpServletRequest request) {
+    public List<JarFileInfo> etl_task_jar_file_list(String id, HttpServletRequest request) throws Exception {
         String json_str = JSON.toJSONString(request.getParameterMap());
-        String owner = getUser().getId();
+        String owner = getOwner();
         JarFileInfo jarFileInfo = new JarFileInfo();
         jarFileInfo.setOwner(owner);
         jarFileInfo.setJar_etl_id(id);
@@ -256,57 +292,63 @@ public class ZdhSshController extends BaseController{
 
     /**
      * ssh任务明细
-     * @param ssh_context
-     * @param id
+     * @param ssh_context 关键字
+     * @param id 主键ID
      * @return
      */
     @RequestMapping(value = "/etl_task_ssh_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_ssh_list(String ssh_context, String id) {
+        try{
+            List<SshTaskInfo> sshTaskInfos = new ArrayList<>();
+            if(!StringUtils.isEmpty(ssh_context)){
+                ssh_context=getLikeCondition(ssh_context);
+            }
+            sshTaskInfos = sshTaskMapper.selectByParams(getOwner(), ssh_context, id);
 
-        List<SshTaskInfo> sshTaskInfos = new ArrayList<>();
-        if(!StringUtils.isEmpty(ssh_context)){
-            ssh_context=getLikeCondition(ssh_context);
+            return JSON.toJSONString(sshTaskInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
         }
-        sshTaskInfos = sshTaskMapper.selectByParams(getUser().getId(), ssh_context, id);
 
-        return JSON.toJSONString(sshTaskInfos);
     }
 
     /**
      * 删除ssh任务
-     * @param ids
+     * @param ids id数组
      * @return
      */
-    @RequestMapping(value = "/etl_task_ssh_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_ssh_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_ssh_delete(String[] ids) {
+    public ReturnInfo etl_task_ssh_delete(String[] ids) {
 
         try{
-            sshTaskMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+            sshTaskMapper.deleteLogicByIds("ssh_task_info", ids, new Timestamp(new Date().getTime()));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
     }
 
     /**
      * 新增ssh任务
      * @param sshTaskInfo
-     * @param jar_files
+     * @param jar_files 文件
      * @return
      */
-    @RequestMapping(value="/etl_task_ssh_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/etl_task_ssh_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_ssh_add(SshTaskInfo sshTaskInfo,MultipartFile[] jar_files) {
+    public ReturnInfo etl_task_ssh_add(SshTaskInfo sshTaskInfo,MultipartFile[] jar_files) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             sshTaskInfo.setOwner(owner);
             String id=SnowflakeIdWorker.getInstance().nextId() + "";
             sshTaskInfo.setId(id);
@@ -324,7 +366,7 @@ public class ZdhSshController extends BaseController{
                 etlTaskUpdateLogs.setId(sshTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(sshTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
 
@@ -372,28 +414,28 @@ public class ZdhSshController extends BaseController{
                     }
                 }
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
 
     /**
      * 更新ssh任务
      * @param sshTaskInfo
-     * @param jar_files
+     * @param jar_files 文件
      * @return
      */
-    @RequestMapping(value = "/etl_task_ssh_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_ssh_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String sql_task_update(SshTaskInfo sshTaskInfo,MultipartFile[] jar_files) {
+    public ReturnInfo sql_task_update(SshTaskInfo sshTaskInfo,MultipartFile[] jar_files) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             sshTaskInfo.setOwner(owner);
             sshTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             sshTaskInfo.setIs_delete(Const.NOT_DELETE);
@@ -410,7 +452,7 @@ public class ZdhSshController extends BaseController{
                 etlTaskUpdateLogs.setId(sshTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(sshTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
 
@@ -460,13 +502,13 @@ public class ZdhSshController extends BaseController{
                     }
                 }
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
 
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
     }
 
@@ -476,13 +518,13 @@ public class ZdhSshController extends BaseController{
      * @param request
      * @return
      */
-    @RequestMapping(value = "/etl_task_ssh_del_file", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_ssh_del_file", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_ssh_del_file(String[] ids, HttpServletRequest request) {
+    public ReturnInfo etl_task_ssh_del_file(String[] ids, HttpServletRequest request) {
         try{
             String json_str = JSON.toJSONString(request.getParameterMap());
-            String owner = getUser().getId();
+            String owner = getOwner();
 
             List<JarFileInfo> jarFileInfos= jarFileMapper.selectByParams(owner,ids);
             ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
@@ -509,12 +551,12 @@ public class ZdhSshController extends BaseController{
                 }
                 jarFileMapper.deleteByPrimaryKey(jarFileInfo.getId());
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除文件成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除文件成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除文件失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除文件失败", e);
         }
     }
 
@@ -526,9 +568,9 @@ public class ZdhSshController extends BaseController{
      */
     @RequestMapping(value = "/etl_task_ssh_file_list", method = RequestMethod.POST)
     @ResponseBody
-    public List<JarFileInfo> etl_task_ssh_file_list(String id, HttpServletRequest request) {
+    public List<JarFileInfo> etl_task_ssh_file_list(String id, HttpServletRequest request) throws Exception {
         String json_str = JSON.toJSONString(request.getParameterMap());
-        String owner = getUser().getId();
+        String owner = getOwner();
         JarFileInfo jarFileInfo = new JarFileInfo();
         jarFileInfo.setOwner(owner);
         jarFileInfo.setJar_etl_id(id);

@@ -14,18 +14,36 @@ public class UserGroupInfo implements Serializable {
 	 */
 	private static final long serialVersionUID = -6409904097473655093L;
 
+	/**
+	 * 主键ID
+	 */
 	@Id
 	@Column
 	private String id;
+	/**
+	 * 用户组名
+	 */
 	@Column
 	private String name;
+	/**
+	 * 是否启用 true/false
+	 */
 	@Column
 	private String enable;
 
+	/**
+	 * 创建时间
+	 */
 	private Timestamp create_time;
 
+	/**
+	 * 更新时间
+	 */
 	private Timestamp update_time;
 
+	/**
+	 * 产品代码
+	 */
 	private String product_code;
 
 	public String getId() {

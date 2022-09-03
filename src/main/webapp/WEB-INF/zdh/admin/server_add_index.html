@@ -295,7 +295,7 @@
                 $.ajax({
                     url: server_context+"/server_manager_list",
                     data: "id=" + s.id,
-                    type: "get",
+                    type: "post",
                     async: false,
                     dataType: "json",
                     success: function (data) {

@@ -164,13 +164,13 @@
 <!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--            </table>-->
-                <table tableName="label_info" domainObjectName="LabelInfo" mapperName="LabelMapper">
-                    <property name="useActualColumnNames" value="true" />
-                    <columnOverride column="id" property="id" javaType="java.lang.String"/>
-                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
-                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
-                    <columnOverride column="id" property="param_json_object" javaType="com.alibaba.fastjson.JSONArray"/>
-                </table>
+<!--                <table tableName="label_info" domainObjectName="LabelInfo" mapperName="LabelMapper">-->
+<!--                    <property name="useActualColumnNames" value="true" />-->
+<!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--                    <columnOverride column="id" property="param_json_object" javaType="com.alibaba.fastjson.JSONArray"/>-->
+<!--                </table>-->
 <!--                    <table tableName="crowd_rule_info" domainObjectName="CrowdRuleInfo" mapperName="CrowdRuleMapper">-->
 <!--                        <property name="useActualColumnNames" value="true" />-->
 <!--                        <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
@@ -220,6 +220,20 @@
 <!--            <columnOverride column="cur_time" property="cur_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="quartz_time" property="quartz_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
+
+<!--                <table tableName="approval_auditor_flow_info" domainObjectName="ApprovalAuditorFlowInfo" mapperName="ApprovalAuditorFlowMapper">-->
+<!--                    <property name="useActualColumnNames" value="true" />-->
+<!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--                </table>-->
+
+        <table tableName="etl_task_log_info" domainObjectName="EtlTaskLogInfo" mapperName="EtlTaskLogMapper">
+            <property name="useActualColumnNames" value="true" />
+            <columnOverride column="id" property="id" javaType="java.lang.String"/>
+            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
+            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
+        </table>
 
     </context>
 </generatorConfiguration>

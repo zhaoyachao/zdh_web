@@ -10,6 +10,7 @@ import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.RowBounds;
 import org.apache.shiro.SecurityUtils;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -33,6 +34,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * 系统服务
+ */
 @Controller
 public class SystemController extends BaseController{
 
@@ -62,49 +66,76 @@ public class SystemController extends BaseController{
 //        return "404";
 //    }
 
-    @RequestMapping(value = "/get_platform_name", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 获取平台名称
+     * @return
+     */
+    @RequestMapping(value = "/get_platform_name", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public String get_platform_name() {
+    public ReturnInfo get_platform_name() {
         Object o = redisUtil.get(Const.ZDH_PLATFORM_NAME);
         if(o==null){
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", "ZDH数据平台");
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", "ZDH数据平台");
         }
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", o);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", o);
     }
 
 
+    /**
+     * 帮助页
+     * @return
+     */
     @RequestMapping(value = "/zdh_help", method = RequestMethod.GET)
     public String zdh_help() {
 
         return "etl/zdh_help";
     }
 
+    /**
+     * quartz表达式页面
+     * @return
+     */
     @RequestMapping(value = "/cron", method = RequestMethod.GET)
     public String cron() {
 
         return "cron/cron";
     }
 
+    /**
+     * 文件服务器设置页面
+     * @return
+     */
     @RequestMapping(value = "/file_manager", method = RequestMethod.GET)
     public String file_manager() {
 
         return "file_manager";
     }
 
+    /**
+     * 获取文件服务器
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/getFileManager", method = RequestMethod.POST )
     @ResponseBody
-    public ZdhNginx getFileManager() {
-        ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(getUser().getId());
+    public ZdhNginx getFileManager() throws Exception {
+        ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(getOwner());
         return zdhNginx;
     }
 
+    /**
+     * 文件服务器信息更新
+     * @param zdhNginx
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/file_manager_up", method = RequestMethod.POST)
     @ResponseBody
-    public String file_manager_up(ZdhNginx zdhNginx) {
+    public String file_manager_up(ZdhNginx zdhNginx) throws Exception {
 
-        ZdhNginx zdhNginx1 = zdhNginxMapper.selectByOwner(getUser().getId());
-        zdhNginx.setOwner(getUser().getId());
+        ZdhNginx zdhNginx1 = zdhNginxMapper.selectByOwner(getOwner());
+        zdhNginx.setOwner(getOwner());
         if (zdhNginx.getPort().equals("")) {
             zdhNginx.setPort("22");
         }
@@ -120,15 +151,20 @@ public class SystemController extends BaseController{
         return json.toJSONString();
     }
 
-    @RequestMapping(value = "/notice_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 系统通知信息
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/notice_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String notice() {
+    public ReturnInfo notice() throws Exception {
         //System.out.println("加载缓存中通知事件");
         List<NoticeInfo> noticeInfos = new ArrayList<>();
 
         NoticeInfo ni=new NoticeInfo();
         ni.setIs_see("false");
-        ni.setOwner(getUser().getId());
+        ni.setOwner(getOwner());
         noticeInfos=noticeMapper.select(ni);
 
 
@@ -141,7 +177,7 @@ public class SystemController extends BaseController{
         }
 
 
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"查询完成", map);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"查询完成", map);
 
         //return JSON.toJSONString(noticeInfos);
 
@@ -187,12 +223,16 @@ public class SystemController extends BaseController{
        // return JSON.toJSONString(noticeInfos);
     }
 
-    @RequestMapping(value = "/del_system_job", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 删除系统任务
+     * @return
+     */
+    @RequestMapping(value = "/del_system_job", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Deprecated
-    public String del_system_job(){
+    public ReturnInfo del_system_job(){
 
-        return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前功能已废弃,可使用调度管理=>调度器功能代替", "当前功能已废弃");
+        return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前功能已废弃,可使用调度管理=>调度器功能代替", "当前功能已废弃");
 //        JSONObject js=new JSONObject();
 //        if(!SecurityUtils.getSubject().isPermitted("function:del_system_job()")){
 //            js.put("data","您没有权限访问,请联系管理员添加权限");
@@ -237,16 +277,25 @@ public class SystemController extends BaseController{
 
     }
 
+    /**
+     * 通知信息详情页面
+     * @return
+     */
     @RequestMapping(value = "/notice_detail_index", method = RequestMethod.GET)
     public String notice_detail_index() {
 
         return "admin/notice_detail_index";
     }
 
-    @RequestMapping(value = "/notice_message", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 通知信息明细
+     * @param id 主键ID
+     * @return
+     */
+    @RequestMapping(value = "/notice_message", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String notice_message(String id) {
+    public ReturnInfo notice_message(String id) {
         //System.out.println("加载缓存中通知事件");
 
         try{
@@ -258,64 +307,106 @@ public class SystemController extends BaseController{
                 ni.setUpdate_time(new Timestamp(new Date().getTime()));
                 noticeMapper.updateByPrimaryKey(ni);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", ni);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", ni);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
     }
 
+    /**
+     * 通知首页
+     * @return
+     */
     @RequestMapping(value = "/notice_index", method = RequestMethod.GET)
     public String notice_index() {
 
         return "admin/notice_index";
     }
 
-    @RequestMapping(value = "/notice_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 通知信息列表
+     * @param message 关键字
+     * @param limit 分页大小
+     * @param offset 分页开始下标
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/notice_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String notice2(String message) {
+    public ReturnInfo notice2(String message, int limit, int offset) throws Exception {
         //System.out.println("加载缓存中通知事件");
-        List<NoticeInfo> noticeInfos = new ArrayList<>();
-        if(!StringUtils.isEmpty(message)){
-            message=getLikeCondition(message);
-        }
-        noticeInfos = noticeMapper.selectByMessage(message, getUser().getId());
+        try{
+            NoticeInfo ni = new NoticeInfo();
+            Example example = new Example(NoticeInfo.class);
+            List<NoticeInfo> noticeInfos = new ArrayList<>();
+            Example.Criteria cri = example.createCriteria();
+            //cri.andBetween("create_time", start_time, end_time);
+            if (!StringUtils.isEmpty(message)) {
+                cri.andLike("msg_type", getLikeCondition(message));
+                cri.orLike("msg_title", getLikeCondition(message));
+                cri.orLike("msg", getLikeCondition(message));
+            }
+            example.setOrderByClause("update_time desc");
+            RowBounds rowBounds=new RowBounds(offset,limit);
+            int total = noticeMapper.selectCountByExample(example);
 
-        return JSON.toJSONString(noticeInfos);
+            noticeInfos = noticeMapper.selectByExampleAndRowBounds(example, rowBounds);
+
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("total", total);
+            jsonObject.put("rows", noticeInfos);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonObject);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
     }
 
-    @RequestMapping(value = "/notice_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 删除通知信息
+     * @param ids id数组
+     * @return
+     */
+    @RequestMapping(value = "/notice_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String notice_delete(String[] ids) {
+    public ReturnInfo notice_delete(String[] ids) {
         try{
             for (String id :ids){
                 noticeMapper.deleteByPrimaryKey(id);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
-    @RequestMapping(value = "/notice_update_see", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 通知信息标记已读
+     * @param ids id数组
+     * @param is_see 是否已读 true/false
+     * @return
+     */
+    @RequestMapping(value = "/notice_update_see", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String notice_update_see(String[] ids, String is_see) {
+    public ReturnInfo notice_update_see(String[] ids, String is_see) {
         try{
             noticeMapper.updateIsSeeByIds(ids, is_see);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -336,6 +427,12 @@ public class SystemController extends BaseController{
         return user;
     }
 
+    /**
+     * 解析quartz表达式
+     * @param crontab
+     * @return
+     * @throws ParseException
+     */
     @RequestMapping(value = "quartz-cron", method = RequestMethod.POST)
     @ResponseBody
     public String cronExpression2executeDates(String crontab) throws ParseException {
@@ -354,32 +451,47 @@ public class SystemController extends BaseController{
     }
 
 
+    /**
+     * 系统登录通知页面
+     * @return
+     */
     @RequestMapping("/notice_update_index")
     public String notice_update_index() {
 
         return "admin/notice_update_index";
     }
 
-    @RequestMapping(value = "/every_day_notice", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 系统登录通知
+     * @return
+     */
+    @RequestMapping(value = "/every_day_notice", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String every_day_notice() {
+    public ReturnInfo every_day_notice() {
 
         try{
             EveryDayNotice everyDayNotice=new EveryDayNotice();
             everyDayNotice.setIs_delete(Const.NOT_DELETE);
             List<EveryDayNotice> list=everyDayNoticeMapper.select(everyDayNotice);
             if(list != null && list.size()>0){
-                return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "", list.get(0));
+                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "", list.get(0));
             }
 
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "暂无通知", null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "暂无通知", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询通知失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询通知失败", e.getMessage());
         }
     }
 
+
+    /**
+     * 更新系统登录通知
+     * @param msg 通知内容
+     * @param show_type 1弹框,2文字,3不展示
+     * @return
+     */
     @RequestMapping(value = "/notice_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String notice_update(String msg, String show_type) {
@@ -402,11 +514,15 @@ public class SystemController extends BaseController{
     }
 
 
-    @RequestMapping(value = "/version", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    /**
+     * 获取当前系统版本
+     * @return
+     */
+    @RequestMapping(value = "/version", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String version() {
+    public ReturnInfo version() {
         String version=ev.getProperty("version","");
-        return  ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", "当前版本:"+version);
+        return  ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", "当前版本:"+version);
     }
 
 }

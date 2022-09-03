@@ -270,6 +270,7 @@ public class ShiroConfig {
 		filterMap.put(project_pre+"/api-docs/**", "anon");
 		filterMap.put(project_pre+"/get_platform_name", "anon");
 		filterMap.put(project_pre+"/get_error_msg", "anon");
+		filterMap.put(project_pre+"/smart_doc/**", "anon");
 
 		filterMap.put(project_pre+"/**", "authc");
 

@@ -131,11 +131,13 @@
         });
 
         $('#search').click(function () {
+            loadIndex = layer.load(1);
             $('#exampleTableEvents').bootstrapTable('refresh', {
                 url: server_context+"/data_sources_list2?"+$("#data_sources_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
+            layer.close(loadIndex);
 
         })
 

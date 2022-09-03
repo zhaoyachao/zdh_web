@@ -49,6 +49,8 @@
                     <input type="hidden" id="hdfs_url_text" name="hdfs_url_text" value="">
                     <input type="hidden" id="hdfs_path_text" name="hdfs_path_text" value="">
                     <input type="hidden" id="http_params" name="http_params" value="">
+                    <input type="hidden" id="http_header" name="http_header" value="">
+                    <input type="hidden" id="http_cookie" name="http_cookie" value="">
                     <input type="hidden" id="http_url_text" name="http_url_text" value="">
                     <input type="hidden" id="to_emails" name="to_emails" value="">
                     <input type="hidden" id="email_context" name="email_context" value="">
@@ -77,6 +79,7 @@
                                             <div class="node nodehdfscss" data-type="hdfs">HDFS</div>
                                             <div class="node nodehttpcss" data-type="http">HTTP</div>
                                             <div class="node nodeemailcss" data-type="email">EMAIL</div>
+                                            <div class="node nodeflumecss" data-type="flume">日志采集</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight">
@@ -403,14 +406,6 @@
         ]
     };
 
-    function get_color_by_status(is_disenable){
-        //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
-        if(is_disenable=='true'){
-            return "LightGrey"
-        }
-        return ""
-    }
-
     function open_json(json) {
         var jsplumb_json=JSON.parse(json);
         //添加div 数据
@@ -470,6 +465,8 @@
                 $("#" + divId).attr("url",rs.url);
                 $("#" + divId).attr("url_type",rs.url_type);
                 $("#" + divId).attr("params",rs.params);
+                $("#" + divId).attr("header",rs.header);
+                $("#" + divId).attr("cookie",rs.cookie);
             }
             if(tp == "email"){
                 $("#" + divId).attr("etl_task_id",rs.etl_task_id);
@@ -478,6 +475,10 @@
                 $("#" + divId).attr("subject",rs.subject);
                 $("#" + divId).attr("email_type",rs.email_type);
             }
+            if(tp == "flume"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+            }
+
 
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto");
@@ -507,401 +508,407 @@
     }
 
     //双击节点内容区域时的事件
-    function doubleclick(id,tp) {
-        switch (tp) {
-            case "tasks"://服务器
-                doubleclick_tasks(id);
-                break;
-            case "shell":
-                doubleclick_shell(id);
-                break;
-            case "group":
-                doubleclick_group(id);
-                break;
-            case "jdbc":
-                doubleclick_jdbc(id);
-                break;
-            case "hdfs":
-                doubleclick_hdfs(id);
-                break;
-            case "http":
-                doubleclick_http(id);
-                break;
-            case "email":
-                doubleclick_email(id);
-                break;
-        }
-    }
-
-    function doubleclick_tasks(id) {
-        $(id).dblclick(function () {
-            var text = $(this).text();
-            var div = $(this);
-            var etl_task_id=div.attr("etl_task_id");
-            var url=server_context+'/job_detail.html';
-            if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
-                url=url+"?etl_task_id=-1"
-            }else{
-                var more_task=div.attr("more_task");
-                var is_disenable = div.attr("is_disenable");
-                var depend_level = div.attr("depend_level");
-                var zdh_instance = div.attr("zdh_instance");
-                var time_out = div.attr("time_out");
-                url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&is_disenable="+is_disenable+"&depend_level="+depend_level
-                    +"&zdh_instance="+zdh_instance +"&time_out="+time_out
-            }
-            layer.open({
-                type: 2,
-                area: ['700px', '450px'],
-                fixed: false, //不固定
-                maxmin: true,
-                content: encodeURI(url),
-                end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val());
-                    if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新");
-                        return ;
-                    }
-
-                    var etl_task_info=JSON.parse($("#etl_task_text").val());
-                    div.attr("etl_task_id",etl_task_info.etl_task_id);
-                    div.attr("etl_context",etl_task_info.etl_context);
-                    div.attr("more_task",etl_task_info.more_task);
-                    div.attr("is_disenable",etl_task_info.is_disenable);
-                    div.attr("depend_level",etl_task_info.depend_level);
-                    div.attr("zdh_instance",etl_task_info.zdh_instance);
-                    div.attr("time_out",etl_task_info.time_out);
-                    //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto");
-                    div.css("display","inline-block");
-                    div.css("*display","inline");
-                    div.css("*zoom","1");
-                    div.html(etl_task_info.etl_context);
-                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
-                }
-            });
-        });
-    }
-
-    function doubleclick_shell(id) {
-        $(id).dblclick(function () {
-            var etl_context = $(this).text();
-            var div = $(this);
-            var command=div.attr("command");
-            var url=server_context+'/shell_detail.html';
-            if( command == "" || command == undefined ){
-                url=url+"?command=-1"
-            }else{
-                var is_script=div.attr("is_script");
-                var is_disenable = div.attr("is_disenable");
-                var depend_level = div.attr("depend_level");
-                var time_out = div.attr("time_out");
-                $("#shell_text").val(command);
-                url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&is_disenable="+is_disenable+"&depend_level="+depend_level
-                    +"&time_out="+time_out
-
-            }
-            layer.open({
-                type: 2,
-                area: ['700px', '450px'],
-                fixed: false, //不固定
-                maxmin: true,
-                content: encodeURI(url),
-                end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val());
-                    if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新");
-                        return ;
-                    }
-
-                    var etl_task_info=JSON.parse($("#etl_task_text").val());
-                    div.attr("command",etl_task_info.command);
-                    div.attr("is_script",etl_task_info.is_script);
-                    div.attr("etl_context",etl_task_info.etl_context);
-                    div.attr("is_disenable",etl_task_info.is_disenable);
-                    div.attr("depend_level",etl_task_info.depend_level);
-                    div.attr("time_out",etl_task_info.time_out);
-                    div.css("width","auto");
-                    div.css("display","inline-block");
-                    div.css("*display","inline");
-                    div.css("*zoom","1");
-                    div.html(etl_task_info.etl_context);
-                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
-                }
-            });
-        });
-    }
-
-    function doubleclick_group(id) {
-        $(id).dblclick(function () {
-            var text = $(this).text();
-            var div = $(this);
-            var etl_task_id=div.attr("etl_task_id");
-            var url=server_context+'/group_detail.html';
-            if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
-                url=url+"?etl_task_id=-1"
-            }else{
-                var is_disenable = div.attr("is_disenable");
-                var depend_level = div.attr("depend_level");
-                var time_out = div.attr("time_out");
-                url=url+"?etl_task_id="+etl_task_id+"&is_disenable="+is_disenable+"&depend_level="+depend_level
-                    +"&time_out="+time_out
-            }
-            layer.open({
-                type: 2,
-                area: ['700px', '450px'],
-                fixed: false, //不固定
-                maxmin: true,
-                content: encodeURI(url),
-                end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val());
-                    if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新");
-                        return ;
-                    }
-
-                    var etl_task_info=JSON.parse($("#etl_task_text").val());
-                    div.attr("etl_task_id",etl_task_info.etl_task_id);
-                    div.attr("etl_context",etl_task_info.etl_context);
-                    div.attr("is_disenable",etl_task_info.is_disenable);
-                    div.attr("depend_level",etl_task_info.depend_level);
-                    div.attr("time_out",etl_task_info.time_out);
-                    //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto");
-                    div.css("display","inline-block");
-                    div.css("*display","inline");
-                    div.css("*zoom","1");
-                    div.html(etl_task_info.etl_context);
-                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
-                }
-            });
-        });
-    }
-
-    function doubleclick_jdbc(id) {
-        $(id).dblclick(function () {
-            var text = $(this).text();
-            var div = $(this);
-            var etl_context=div.attr("etl_context");
-            var url=server_context+'/jdbc_detail.html';
-            if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
-                url=url+"?etl_context=-1"
-            }else{
-                var is_disenable = div.attr("is_disenable");
-                var jdbc_url=div.attr("url");
-                var driver=div.attr("driver");
-                var username=div.attr("username");
-                var password=div.attr("password");
-                var jdbc_sql=div.attr("jdbc_sql");
-                var depend_level = div.attr("depend_level");
-                var time_out = div.attr("time_out");
-                var data_sources_choose_input = div.attr("data_sources_choose_input");
-                $("#jdbc_url_text").val(jdbc_url);
-                $("#jdbc_sql_text").val(jdbc_sql);
-                url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level
-                    +"&is_disenable="+is_disenable+"&time_out="+time_out+"&data_sources_choose_input="+data_sources_choose_input
-            }
-            layer.open({
-                type: 2,
-                area: ['700px', '450px'],
-                fixed: false, //不固定
-                maxmin: true,
-                content: encodeURI(url),
-                end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val());
-                    if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新");
-                        return ;
-                    }
-
-                    var etl_task_info=JSON.parse($("#etl_task_text").val());
-                    div.attr("url",etl_task_info.url);
-                    div.attr("driver",etl_task_info.driver);
-                    div.attr("username",etl_task_info.username);
-                    div.attr("password",etl_task_info.password);
-                    div.attr("jdbc_sql",etl_task_info.jdbc_sql);
-                    div.attr("etl_context",etl_task_info.etl_context);
-                    div.attr("is_disenable",etl_task_info.is_disenable);
-                    div.attr("depend_level",etl_task_info.depend_level);
-                    div.attr("time_out",etl_task_info.time_out);
-                    div.attr("data_sources_choose_input",etl_task_info.data_sources_choose_input);
-                    //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto");
-                    div.css("display","inline-block");
-                    div.css("*display","inline");
-                    div.css("*zoom","1");
-                    div.html(etl_task_info.etl_context);
-                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
-                }
-            });
-        });
-    }
-
-    function doubleclick_hdfs(id) {
-        $(id).dblclick(function () {
-            var text = $(this).text();
-            var div = $(this);
-            var etl_context=div.attr("etl_context");
-            var url=server_context+'/hdfs_detail.html';
-            if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
-                url=url+"?etl_context=-1"
-            }else{
-                var is_disenable = div.attr("is_disenable");
-                var hdfs_url=div.attr("url");
-                var url_type=div.attr("url_type");
-                var username=div.attr("username");
-                var password=div.attr("password");
-                var hdfs_path=div.attr("hdfs_path");
-                var depend_level = div.attr("depend_level");
-                var hdfs_mode=div.attr("hdfs_mode");
-                var time_out = div.attr("time_out");
-                $("#hdfs_url_text").val(hdfs_url);
-                $("#hdfs_path_text").val(hdfs_path);
-                url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&username="+username+"&password="+password+"&depend_level="+depend_level
-                    +"&is_disenable="+is_disenable+"&hdfs_mode="+hdfs_mode+"&time_out="+time_out
-            }
-            layer.open({
-                type: 2,
-                area: ['700px', '450px'],
-                fixed: false, //不固定
-                maxmin: true,
-                content: encodeURI(url),
-                end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val());
-                    if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新");
-                        return ;
-                    }
-
-                    var etl_task_info=JSON.parse($("#etl_task_text").val());
-                    div.attr("url",etl_task_info.url);
-                    div.attr("url_type",etl_task_info.url_type);
-                    div.attr("username",etl_task_info.username);
-                    div.attr("password",etl_task_info.password);
-                    div.attr("hdfs_path",etl_task_info.hdfs_path);
-                    div.attr("etl_context",etl_task_info.etl_context);
-                    div.attr("is_disenable",etl_task_info.is_disenable);
-                    div.attr("depend_level",etl_task_info.depend_level);
-                    div.attr("hdfs_mode",etl_task_info.hdfs_mode);
-                    div.attr("time_out",etl_task_info.time_out);
-                    //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto");
-                    div.css("display","inline-block");
-                    div.css("*display","inline");
-                    div.css("*zoom","1");
-                    div.html(etl_task_info.etl_context);
-                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
-                }
-            });
-        });
-    }
-
-    function doubleclick_http(id) {
-        $(id).dblclick(function () {
-            var text = $(this).text();
-            var div = $(this);
-            var etl_context=div.attr("etl_context");
-            var url=server_context+'/http_detail.html';
-            if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
-                url=url+"?etl_context=-1"
-            }else{
-                var is_disenable = div.attr("is_disenable");
-                var http_url=div.attr("url");
-                var url_type=div.attr("url_type");
-                var depend_level = div.attr("depend_level");
-                var params=div.attr("params");
-                var time_out = div.attr("time_out");
-                $("#http_params").val(params);
-                $("#http_url_text").val(http_url);
-                url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&depend_level="+depend_level
-                    +"&is_disenable="+is_disenable+"&time_out="+time_out
-            }
-            layer.open({
-                type: 2,
-                area: ['700px', '450px'],
-                fixed: false, //不固定
-                maxmin: true,
-                content: encodeURI(url),
-                end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val());
-                    if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新");
-                        return ;
-                    }
-
-                    var etl_task_info=JSON.parse($("#etl_task_text").val());
-                    div.attr("url",etl_task_info.url);
-                    div.attr("url_type",etl_task_info.url_type);
-                    div.attr("params",etl_task_info.params);
-                    div.attr("etl_context",etl_task_info.etl_context);
-                    div.attr("is_disenable",etl_task_info.is_disenable);
-                    div.attr("depend_level",etl_task_info.depend_level);
-                    div.attr("time_out",etl_task_info.time_out);
-                    //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto");
-                    div.css("display","inline-block");
-                    div.css("*display","inline");
-                    div.css("*zoom","1");
-                    div.html(etl_task_info.etl_context);
-                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
-                }
-            });
-        });
-    }
-
-    function doubleclick_email(id) {
-        $(id).dblclick(function () {
-            var text = $(this).text();
-            var div = $(this);
-            var etl_context=div.attr("etl_context");
-            var url=server_context+'/email_detail.html';
-            if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
-                url=url+"?etl_context=-1"
-            }else{
-                var is_disenable = div.attr("is_disenable");
-                var to_emails=div.attr("to_emails");
-                var email_context=div.attr("email_context");
-                var subject=div.attr("subject");
-                var email_type=div.attr("email_type");
-                var depend_level = div.attr("depend_level");
-                var time_out = div.attr("time_out");
-                $("#to_emails").val(to_emails);
-                $("#email_context").val(email_context);
-                url=url+"?etl_context="+etl_context+"&email_type="+email_type+"&depend_level="+depend_level
-                    +"&is_disenable="+is_disenable+"&time_out="+time_out+"&subject="+subject
-            }
-            layer.open({
-                type: 2,
-                area: ['700px', '450px'],
-                fixed: false, //不固定
-                maxmin: true,
-                content: encodeURI(url),
-                end: function () {
-                    console.info("index:doubleclick:"+$("#etl_task_text").val());
-                    if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新");
-                        return ;
-                    }
-
-                    var etl_task_info=JSON.parse($("#etl_task_text").val());
-                    div.attr("to_emails",etl_task_info.to_emails);
-                    div.attr("email_type",etl_task_info.email_type);
-                    div.attr("email_context",etl_task_info.email_context);
-                    div.attr("subject",etl_task_info.subject);
-                    div.attr("etl_context",etl_task_info.etl_context);
-                    div.attr("is_disenable",etl_task_info.is_disenable);
-                    div.attr("depend_level",etl_task_info.depend_level);
-                    div.attr("time_out",etl_task_info.time_out);
-                    div.css("width","auto");
-                    div.css("display","inline-block");
-                    div.css("*display","inline");
-                    div.css("*zoom","1");
-                    div.html(etl_task_info.etl_context);
-                    div.css('background', get_color_by_status(etl_task_info.is_disenable));
-                }
-            });
-        });
-    }
+    // function doubleclick(id,tp) {
+    //     switch (tp) {
+    //         case "tasks"://服务器
+    //             doubleclick_tasks(id);
+    //             break;
+    //         case "shell":
+    //             doubleclick_shell(id);
+    //             break;
+    //         case "group":
+    //             doubleclick_group(id);
+    //             break;
+    //         case "jdbc":
+    //             doubleclick_jdbc(id);
+    //             break;
+    //         case "hdfs":
+    //             doubleclick_hdfs(id);
+    //             break;
+    //         case "http":
+    //             doubleclick_http(id);
+    //             break;
+    //         case "email":
+    //             doubleclick_email(id);
+    //             break;
+    //     }
+    // }
+    //
+    // function doubleclick_tasks(id) {
+    //     $(id).dblclick(function () {
+    //         var text = $(this).text();
+    //         var div = $(this);
+    //         var etl_task_id=div.attr("etl_task_id");
+    //         var url=server_context+'/job_detail.html';
+    //         if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
+    //             url=url+"?etl_task_id=-1"
+    //         }else{
+    //             var more_task=div.attr("more_task");
+    //             var is_disenable = div.attr("is_disenable");
+    //             var depend_level = div.attr("depend_level");
+    //             var zdh_instance = div.attr("zdh_instance");
+    //             var time_out = div.attr("time_out");
+    //             url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&is_disenable="+is_disenable+"&depend_level="+depend_level
+    //                 +"&zdh_instance="+zdh_instance +"&time_out="+time_out
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 console.info("index:doubleclick:"+$("#etl_task_text").val());
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新");
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val());
+    //                 div.attr("etl_task_id",etl_task_info.etl_task_id);
+    //                 div.attr("etl_context",etl_task_info.etl_context);
+    //                 div.attr("more_task",etl_task_info.more_task);
+    //                 div.attr("is_disenable",etl_task_info.is_disenable);
+    //                 div.attr("depend_level",etl_task_info.depend_level);
+    //                 div.attr("zdh_instance",etl_task_info.zdh_instance);
+    //                 div.attr("time_out",etl_task_info.time_out);
+    //                 //div.width(etl_task_info.etl_context.length*16)
+    //                 div.css("width","auto");
+    //                 div.css("display","inline-block");
+    //                 div.css("*display","inline");
+    //                 div.css("*zoom","1");
+    //                 div.html(etl_task_info.etl_context);
+    //                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
+    //             }
+    //         });
+    //     });
+    // }
+    //
+    // function doubleclick_shell(id) {
+    //     $(id).dblclick(function () {
+    //         var etl_context = $(this).text();
+    //         var div = $(this);
+    //         var command=div.attr("command");
+    //         var url=server_context+'/shell_detail.html';
+    //         if( command == "" || command == undefined ){
+    //             url=url+"?command=-1"
+    //         }else{
+    //             var is_script=div.attr("is_script");
+    //             var is_disenable = div.attr("is_disenable");
+    //             var depend_level = div.attr("depend_level");
+    //             var time_out = div.attr("time_out");
+    //             $("#shell_text").val(command);
+    //             url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&is_disenable="+is_disenable+"&depend_level="+depend_level
+    //                 +"&time_out="+time_out
+    //
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 console.info("index:doubleclick:"+$("#etl_task_text").val());
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新");
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val());
+    //                 div.attr("command",etl_task_info.command);
+    //                 div.attr("is_script",etl_task_info.is_script);
+    //                 div.attr("etl_context",etl_task_info.etl_context);
+    //                 div.attr("is_disenable",etl_task_info.is_disenable);
+    //                 div.attr("depend_level",etl_task_info.depend_level);
+    //                 div.attr("time_out",etl_task_info.time_out);
+    //                 div.css("width","auto");
+    //                 div.css("display","inline-block");
+    //                 div.css("*display","inline");
+    //                 div.css("*zoom","1");
+    //                 div.html(etl_task_info.etl_context);
+    //                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
+    //             }
+    //         });
+    //     });
+    // }
+    //
+    // function doubleclick_group(id) {
+    //     $(id).dblclick(function () {
+    //         var text = $(this).text();
+    //         var div = $(this);
+    //         var etl_task_id=div.attr("etl_task_id");
+    //         var url=server_context+'/group_detail.html';
+    //         if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
+    //             url=url+"?etl_task_id=-1"
+    //         }else{
+    //             var is_disenable = div.attr("is_disenable");
+    //             var depend_level = div.attr("depend_level");
+    //             var time_out = div.attr("time_out");
+    //             url=url+"?etl_task_id="+etl_task_id+"&is_disenable="+is_disenable+"&depend_level="+depend_level
+    //                 +"&time_out="+time_out
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 console.info("index:doubleclick:"+$("#etl_task_text").val());
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新");
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val());
+    //                 div.attr("etl_task_id",etl_task_info.etl_task_id);
+    //                 div.attr("etl_context",etl_task_info.etl_context);
+    //                 div.attr("is_disenable",etl_task_info.is_disenable);
+    //                 div.attr("depend_level",etl_task_info.depend_level);
+    //                 div.attr("time_out",etl_task_info.time_out);
+    //                 //div.width(etl_task_info.etl_context.length*16)
+    //                 div.css("width","auto");
+    //                 div.css("display","inline-block");
+    //                 div.css("*display","inline");
+    //                 div.css("*zoom","1");
+    //                 div.html(etl_task_info.etl_context);
+    //                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
+    //             }
+    //         });
+    //     });
+    // }
+    //
+    // function doubleclick_jdbc(id) {
+    //     $(id).dblclick(function () {
+    //         var text = $(this).text();
+    //         var div = $(this);
+    //         var etl_context=div.attr("etl_context");
+    //         var url=server_context+'/jdbc_detail.html';
+    //         if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
+    //             url=url+"?etl_context=-1"
+    //         }else{
+    //             var is_disenable = div.attr("is_disenable");
+    //             var jdbc_url=div.attr("url");
+    //             var driver=div.attr("driver");
+    //             var username=div.attr("username");
+    //             var password=div.attr("password");
+    //             var jdbc_sql=div.attr("jdbc_sql");
+    //             var depend_level = div.attr("depend_level");
+    //             var time_out = div.attr("time_out");
+    //             var data_sources_choose_input = div.attr("data_sources_choose_input");
+    //             $("#jdbc_url_text").val(jdbc_url);
+    //             $("#jdbc_sql_text").val(jdbc_sql);
+    //             url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level
+    //                 +"&is_disenable="+is_disenable+"&time_out="+time_out+"&data_sources_choose_input="+data_sources_choose_input
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 console.info("index:doubleclick:"+$("#etl_task_text").val());
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新");
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val());
+    //                 div.attr("url",etl_task_info.url);
+    //                 div.attr("driver",etl_task_info.driver);
+    //                 div.attr("username",etl_task_info.username);
+    //                 div.attr("password",etl_task_info.password);
+    //                 div.attr("jdbc_sql",etl_task_info.jdbc_sql);
+    //                 div.attr("etl_context",etl_task_info.etl_context);
+    //                 div.attr("is_disenable",etl_task_info.is_disenable);
+    //                 div.attr("depend_level",etl_task_info.depend_level);
+    //                 div.attr("time_out",etl_task_info.time_out);
+    //                 div.attr("data_sources_choose_input",etl_task_info.data_sources_choose_input);
+    //                 //div.width(etl_task_info.etl_context.length*16)
+    //                 div.css("width","auto");
+    //                 div.css("display","inline-block");
+    //                 div.css("*display","inline");
+    //                 div.css("*zoom","1");
+    //                 div.html(etl_task_info.etl_context);
+    //                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
+    //             }
+    //         });
+    //     });
+    // }
+    //
+    // function doubleclick_hdfs(id) {
+    //     $(id).dblclick(function () {
+    //         var text = $(this).text();
+    //         var div = $(this);
+    //         var etl_context=div.attr("etl_context");
+    //         var url=server_context+'/hdfs_detail.html';
+    //         if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
+    //             url=url+"?etl_context=-1"
+    //         }else{
+    //             var is_disenable = div.attr("is_disenable");
+    //             var hdfs_url=div.attr("url");
+    //             var url_type=div.attr("url_type");
+    //             var username=div.attr("username");
+    //             var password=div.attr("password");
+    //             var hdfs_path=div.attr("hdfs_path");
+    //             var depend_level = div.attr("depend_level");
+    //             var hdfs_mode=div.attr("hdfs_mode");
+    //             var time_out = div.attr("time_out");
+    //             $("#hdfs_url_text").val(hdfs_url);
+    //             $("#hdfs_path_text").val(hdfs_path);
+    //             url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&username="+username+"&password="+password+"&depend_level="+depend_level
+    //                 +"&is_disenable="+is_disenable+"&hdfs_mode="+hdfs_mode+"&time_out="+time_out
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 console.info("index:doubleclick:"+$("#etl_task_text").val());
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新");
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val());
+    //                 div.attr("url",etl_task_info.url);
+    //                 div.attr("url_type",etl_task_info.url_type);
+    //                 div.attr("username",etl_task_info.username);
+    //                 div.attr("password",etl_task_info.password);
+    //                 div.attr("hdfs_path",etl_task_info.hdfs_path);
+    //                 div.attr("etl_context",etl_task_info.etl_context);
+    //                 div.attr("is_disenable",etl_task_info.is_disenable);
+    //                 div.attr("depend_level",etl_task_info.depend_level);
+    //                 div.attr("hdfs_mode",etl_task_info.hdfs_mode);
+    //                 div.attr("time_out",etl_task_info.time_out);
+    //                 //div.width(etl_task_info.etl_context.length*16)
+    //                 div.css("width","auto");
+    //                 div.css("display","inline-block");
+    //                 div.css("*display","inline");
+    //                 div.css("*zoom","1");
+    //                 div.html(etl_task_info.etl_context);
+    //                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
+    //             }
+    //         });
+    //     });
+    // }
+    //
+    // function doubleclick_http(id) {
+    //     $(id).dblclick(function () {
+    //         var text = $(this).text();
+    //         var div = $(this);
+    //         var etl_context=div.attr("etl_context");
+    //         var url=server_context+'/http_detail.html';
+    //         if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
+    //             url=url+"?etl_context=-1"
+    //         }else{
+    //             var is_disenable = div.attr("is_disenable");
+    //             var http_url=div.attr("url");
+    //             var url_type=div.attr("url_type");
+    //             var depend_level = div.attr("depend_level");
+    //             var params=div.attr("params");
+    //             var header=div.attr("header");
+    //             var cookie=div.attr("cookie");
+    //             var time_out = div.attr("time_out");
+    //             $("#http_params").val(params);
+    //             $("#http_header").val(header);
+    //             $("#http_cookie").val(cookie);
+    //             $("#http_url_text").val(http_url);
+    //             url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&depend_level="+depend_level
+    //                 +"&is_disenable="+is_disenable+"&time_out="+time_out
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 console.info("index:doubleclick:"+$("#etl_task_text").val());
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新");
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val());
+    //                 div.attr("url",etl_task_info.url);
+    //                 div.attr("url_type",etl_task_info.url_type);
+    //                 div.attr("params",etl_task_info.params);
+    //                 div.attr("header",etl_task_info.header);
+    //                 div.attr("cookie",etl_task_info.cookie);
+    //                 div.attr("etl_context",etl_task_info.etl_context);
+    //                 div.attr("is_disenable",etl_task_info.is_disenable);
+    //                 div.attr("depend_level",etl_task_info.depend_level);
+    //                 div.attr("time_out",etl_task_info.time_out);
+    //                 //div.width(etl_task_info.etl_context.length*16)
+    //                 div.css("width","auto");
+    //                 div.css("display","inline-block");
+    //                 div.css("*display","inline");
+    //                 div.css("*zoom","1");
+    //                 div.html(etl_task_info.etl_context);
+    //                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
+    //             }
+    //         });
+    //     });
+    // }
+    //
+    // function doubleclick_email(id) {
+    //     $(id).dblclick(function () {
+    //         var text = $(this).text();
+    //         var div = $(this);
+    //         var etl_context=div.attr("etl_context");
+    //         var url=server_context+'/email_detail.html';
+    //         if( div.attr("etl_context") == "" || div.attr("etl_context") == undefined ){
+    //             url=url+"?etl_context=-1"
+    //         }else{
+    //             var is_disenable = div.attr("is_disenable");
+    //             var to_emails=div.attr("to_emails");
+    //             var email_context=div.attr("email_context");
+    //             var subject=div.attr("subject");
+    //             var email_type=div.attr("email_type");
+    //             var depend_level = div.attr("depend_level");
+    //             var time_out = div.attr("time_out");
+    //             $("#to_emails").val(to_emails);
+    //             $("#email_context").val(email_context);
+    //             url=url+"?etl_context="+etl_context+"&email_type="+email_type+"&depend_level="+depend_level
+    //                 +"&is_disenable="+is_disenable+"&time_out="+time_out+"&subject="+subject
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['700px', '450px'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 console.info("index:doubleclick:"+$("#etl_task_text").val());
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新");
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val());
+    //                 div.attr("to_emails",etl_task_info.to_emails);
+    //                 div.attr("email_type",etl_task_info.email_type);
+    //                 div.attr("email_context",etl_task_info.email_context);
+    //                 div.attr("subject",etl_task_info.subject);
+    //                 div.attr("etl_context",etl_task_info.etl_context);
+    //                 div.attr("is_disenable",etl_task_info.is_disenable);
+    //                 div.attr("depend_level",etl_task_info.depend_level);
+    //                 div.attr("time_out",etl_task_info.time_out);
+    //                 div.css("width","auto");
+    //                 div.css("display","inline-block");
+    //                 div.css("*display","inline");
+    //                 div.css("*zoom","1");
+    //                 div.html(etl_task_info.etl_context);
+    //                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
+    //             }
+    //         });
+    //     });
+    // }
 
     function jsplumb_data(){
         var ojson={
@@ -932,10 +939,13 @@
                 hdfs_mode: $elem.attr('hdfs_mode'),
                 time_out: $elem.attr('time_out'),
                 params: $elem.attr('params'),
+                header: $elem.attr('header'),
+                cookie: $elem.attr('cookie'),
                 to_emails: $elem.attr('to_emails'),
                 email_type: $elem.attr('email_type'),
                 email_context: $elem.attr('email_context'),
                 subject: $elem.attr('subject'),
+
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,
                 positionX: parseInt($elem.css("left"), 10),
@@ -1121,43 +1131,43 @@
             }
 
             //初始化数据源
-            function init_etl_task_sources(){
-                $.ajax({
-                    type: 'POST',
-                    async: false,
-                    url: server_context+"/etl_task_list2",
-                    dataType: 'json',
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
-                        }
-                        $('#etl_task_id').empty();
-                        $("#etl_task_id").chosen("destroy");
-                        $('#etl_task_id').html(str);
-                        $('#etl_task_id').chosen();
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("etl_task_complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("etl_task_error: " + data.responseText);
-                    }
-                });
-            }
+            // function init_etl_task_sources(){
+            //     $.ajax({
+            //         type: 'POST',
+            //         async: false,
+            //         url: server_context+"/etl_task_list2",
+            //         dataType: 'json',
+            //         data: '',
+            //         //成功返回
+            //         success: function (data) {
+            //             var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+            //             for (var i = 0; i < data.length; i++) {
+            //                 str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].etl_context + "\" hassubinfo=\"true\">" + data[i].etl_context + "</option>"
+            //             }
+            //             $('#etl_task_id').empty();
+            //             $("#etl_task_id").chosen("destroy");
+            //             $('#etl_task_id').html(str);
+            //             $('#etl_task_id').chosen();
+            //
+            //         },
+            //         //处理完成
+            //         complete: function () {
+            //             console.info("etl_task_complete")
+            //         },
+            //         //报错
+            //         error: function (data) {
+            //             console.info("etl_task_error: " + data.responseText);
+            //         }
+            //     });
+            // }
 
             //启动数据源select 初始化函数
-            $('#etl_task_id').chosen().on("change", function (evt, params) {
-                var etl_context=$('#etl_task_id').find("option:selected").attr("mytype");
-                var etl_id=$('#etl_task_id').val();
-                addRow($('#more_task').val(),etl_id,etl_context);
-                add_node_zdh($('#more_task').val(),etl_id,etl_context)
-                });
+            // $('#etl_task_id').chosen().on("change", function (evt, params) {
+            //     var etl_context=$('#etl_task_id').find("option:selected").attr("mytype");
+            //     var etl_id=$('#etl_task_id').val();
+            //     addRow($('#more_task').val(),etl_id,etl_context);
+            //     add_node_zdh($('#more_task').val(),etl_id,etl_context)
+            //     });
             //init_etl_task_sources();
 
             //init_job_sources();
@@ -1649,101 +1659,101 @@
     });
 
 
-    window.operateEvents = {
-        'click #del': function (e, value, row, index) {
-            $('#exampleTableEvents').bootstrapTable('remove', {field: 'column_md5', values: [row.column_md5]});
-        }
-    };
+    // window.operateEvents = {
+    //     'click #del': function (e, value, row, index) {
+    //         $('#exampleTableEvents').bootstrapTable('remove', {field: 'column_md5', values: [row.column_md5]});
+    //     }
+    // };
 
-    function operateFormatter(value, row, index) {
-        return [
-            ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm">\n' +
-            '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
-            '                                    </button>'
-        ].join('');
-    }
+    // function operateFormatter(value, row, index) {
+    //     return [
+    //         ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm">\n' +
+    //         '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+    //         '                                    </button>'
+    //     ].join('');
+    // }
 
     //初始化 bootstrap table
-    $('#exampleTableEvents').bootstrapTable({
-        url: "",
-        search: false,
-        clickEdit: true,
-        pagination: false,
-        showRefresh: false,
-        showToggle: false,
-        showColumns: false,
-        useRowAttrFunc: true,
-        iconSize: 'outline',
-        //toolbar: '#exampleTableEventsToolbar',
-        icons: {
-            refresh: 'glyphicon-repeat',
-            toggle: 'glyphicon-list-alt',
-            columns: 'glyphicon-list'
-        },
-        columns: [
-            {
-                field: 'nu',
-                title: '序号',
-                formatter: function (value, row, index) {
-                    return index + 1;
-                }
-            }, {
-                field: 'column_md5',
-                title: '字段序列码'
-            }, {
-                field: 'more_task',
-                title: '任务模板',
-                sortable: false
-            }, {
-                field: 'etl_id',
-                title: '任务id',
-                sortable: false
-            }, {
-                field: 'etl_context',
-                title: '任务说明',
-                sortable: false
-            }, {
-                field: 'operate',
-                title: '操作',
-                events: operateEvents,//给按钮注册事件
-                width: 45,
-                formatter: operateFormatter //表格中增加按钮
-            }],
-        onDblClickCell: function (field, value, row, $element) {
-            $element.attr('contenteditable', true);
-            $element.blur(function () {
-                var index = $element.parent().data('index');
-                var tdValue = $element.html().replace("<br>", "");
-                saveData(index, field, tdValue);
-            })
-        }
-    });
+    // $('#exampleTableEvents').bootstrapTable({
+    //     url: "",
+    //     search: false,
+    //     clickEdit: true,
+    //     pagination: false,
+    //     showRefresh: false,
+    //     showToggle: false,
+    //     showColumns: false,
+    //     useRowAttrFunc: true,
+    //     iconSize: 'outline',
+    //     //toolbar: '#exampleTableEventsToolbar',
+    //     icons: {
+    //         refresh: 'glyphicon-repeat',
+    //         toggle: 'glyphicon-list-alt',
+    //         columns: 'glyphicon-list'
+    //     },
+    //     columns: [
+    //         {
+    //             field: 'nu',
+    //             title: '序号',
+    //             formatter: function (value, row, index) {
+    //                 return index + 1;
+    //             }
+    //         }, {
+    //             field: 'column_md5',
+    //             title: '字段序列码'
+    //         }, {
+    //             field: 'more_task',
+    //             title: '任务模板',
+    //             sortable: false
+    //         }, {
+    //             field: 'etl_id',
+    //             title: '任务id',
+    //             sortable: false
+    //         }, {
+    //             field: 'etl_context',
+    //             title: '任务说明',
+    //             sortable: false
+    //         }, {
+    //             field: 'operate',
+    //             title: '操作',
+    //             events: operateEvents,//给按钮注册事件
+    //             width: 45,
+    //             formatter: operateFormatter //表格中增加按钮
+    //         }],
+    //     onDblClickCell: function (field, value, row, $element) {
+    //         $element.attr('contenteditable', true);
+    //         $element.blur(function () {
+    //             var index = $element.parent().data('index');
+    //             var tdValue = $element.html().replace("<br>", "");
+    //             saveData(index, field, tdValue);
+    //         })
+    //     }
+    // });
 
-    function addRow(more_task,etl_id,etl_context) {
-
-        var index = $('#exampleTableEvents').bootstrapTable('getData').length;
-
-        function guid() {
-            return 'xxx-4xxx-yxxx-xx'.replace(/[xy]/g, function (c) {
-                var r = Math.random() * 16 | 0,
-                    v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
-
-
-        var guid_str = guid();
-        // newFlag == 1的数据为新规的数据
-        $('#exampleTableEvents').bootstrapTable('insertRow', {
-            index: index,
-            row: {
-                column_md5: guid_str,
-                more_task: more_task,
-                etl_id: etl_id,
-                etl_context: etl_context
-            }
-        });
-    }
+    // function addRow(more_task,etl_id,etl_context) {
+    //
+    //     var index = $('#exampleTableEvents').bootstrapTable('getData').length;
+    //
+    //     function guid() {
+    //         return 'xxx-4xxx-yxxx-xx'.replace(/[xy]/g, function (c) {
+    //             var r = Math.random() * 16 | 0,
+    //                 v = c == 'x' ? r : (r & 0x3 | 0x8);
+    //             return v.toString(16);
+    //         });
+    //     }
+    //
+    //
+    //     var guid_str = guid();
+    //     // newFlag == 1的数据为新规的数据
+    //     $('#exampleTableEvents').bootstrapTable('insertRow', {
+    //         index: index,
+    //         row: {
+    //             column_md5: guid_str,
+    //             more_task: more_task,
+    //             etl_id: etl_id,
+    //             etl_context: etl_context
+    //         }
+    //     });
+    // }
 </script>
 
 

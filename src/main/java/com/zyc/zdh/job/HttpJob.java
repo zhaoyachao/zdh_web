@@ -12,10 +12,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class HttpJob extends JobCommon2 {
@@ -46,6 +43,8 @@ public class HttpJob extends JobCommon2 {
             String url_type = JSON.parseObject(run_jsmind).getString("url_type");
             String params = JSON.parseObject(run_jsmind).getString("params");
             params = jj.render(params, jinJavaParam);
+            String header = JSON.parseObject(run_jsmind).getString("header");
+            String cookie = JSON.parseObject(run_jsmind).getString("cookie");
 
             if(StringUtils.isEmpty(url_type)){
                 throw new Exception("http任务请求类型为空");
@@ -57,17 +56,43 @@ public class HttpJob extends JobCommon2 {
                     throw new Exception("请求参数必须是json格式");
                 }
             }
+            Map<String,String> header_map=new HashMap<>();
+            if(!StringUtils.isEmpty(header)){
+                try{
+                    String[] headers = header.split("\\r?\\n");
+                    for (String h:headers){
+                        if(h.contains(":")){
+                            header_map.put(h.split(":",1)[0], h.split(":")[1]);
+                        }
+                    }
+                }catch (Exception e){
+                    throw new Exception("header参数必须是kv格式");
+                }
+            }
+            Map<String,String> cookie_map=new HashMap<>();
+            if(!StringUtils.isEmpty(cookie)){
+                try{
+                    String[] cookies = cookie.split("\\r?\\n");
+                    for (String c:cookies){
+                        if(c.contains(":")){
+                            cookie_map.put(c.split(":",1)[0], c.split(":",1)[1]);
+                        }
+                    }
+                }catch (Exception e){
+                    throw new Exception("cookie参数必须是kv格式");
+                }
+            }
             //post请求
             if(url_type.equalsIgnoreCase(Const.HTTP_POST)){
-                logger.info("[" + jobType + "] JOB ,开始执行["+Const.HTTP_POST+"]请求");
-                insertLog(tli, "info", "[" + jobType + "] JOB ,开始执行["+Const.HTTP_POST+"]请求,请求地址: "+url+" ,参数: "+params);
+                logger.info("[" + jobType + "] JOB ,开始执行[post]请求");
+                insertLog(tli, "info", "[" + jobType + "] JOB ,开始执行[post]请求,请求地址: "+url+" ,参数: "+params);
                 //校验是否有参数
-                String result = HttpUtil.postJSON(url, params);
+                String result = HttpUtil.postJSON(url, params, header_map, cookie_map);
                 insertLog(tli, "info", "[" + jobType + "] JOB ,请求结果: "+result);
             }
             if(url_type.equalsIgnoreCase(Const.HTTP_GET)){
-                logger.info("[" + jobType + "] JOB ,开始执行["+Const.HTTP_GET+"]请求");
-                insertLog(tli, "info", "[" + jobType + "] JOB ,开始执行["+Const.HTTP_GET+"]请求");
+                logger.info("[" + jobType + "] JOB ,开始执行[get]请求");
+                insertLog(tli, "info", "[" + jobType + "] JOB ,开始执行[get]请求");
                 List<NameValuePair> npl=new ArrayList<>();
                 if(!StringUtils.isEmpty(params)){
                     JSONObject jsonObject = JSON.parseObject(params);
@@ -80,7 +105,7 @@ public class HttpJob extends JobCommon2 {
                         npl.add(new BasicNameValuePair(key,value.toString()));
                     }
                 }
-                String result = HttpUtil.getRequest(url, npl);
+                String result = HttpUtil.getRequest(url, npl, header_map, cookie_map);
                 insertLog(tli, "info", "[" + jobType + "] JOB ,请求结果: "+result);
             }
         } catch (Exception e) {

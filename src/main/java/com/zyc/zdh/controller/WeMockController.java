@@ -14,18 +14,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * mock数据服务
+ */
 @Controller
 public class WeMockController extends BaseController{
 
     @Autowired
     Environment ev;
 
+    /**
+     * mock数据首页
+     * @return
+     */
     @RequestMapping("/wemock_index")
     public String wemock_index() {
 
         return "wemock/wemock_index";
     }
 
+    /**
+     * mock数据新增页面
+     * @return
+     */
     @RequestMapping("/wemock_add_index")
     public String wemock_add_index() {
 
@@ -33,38 +44,57 @@ public class WeMockController extends BaseController{
     }
 
 
-    @RequestMapping(value = "/wemock_update", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    /**
+     * mock数据更新
+     * @param context
+     * @param receiver
+     * @param subject
+     * @return
+     */
+    @RequestMapping(value = "/wemock_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String wemock_update(String context,String receiver,String subject) {
+    public ReturnInfo wemock_update(String context,String receiver,String subject) {
 
         try{
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "发送成功", "请检查邮箱是否收到发送成功通知,如果5分钟内没由收到邮件,则可能发送邮件失败,请尝试再次发信");
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "发送成功", "请检查邮箱是否收到发送成功通知,如果5分钟内没由收到邮件,则可能发送邮件失败,请尝试再次发信");
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "发送失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "发送失败", e);
         }
     }
 
-    @RequestMapping(value = "/wemock_add", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    /**
+     * mock数据新增
+     * @param context
+     * @param receiver
+     * @param subject
+     * @return
+     */
+    @RequestMapping(value = "/wemock_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String wemock_add(String context,String receiver,String subject) {
+    public ReturnInfo wemock_add(String context,String receiver,String subject) {
 
         try{
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "发送成功", "请检查邮箱是否收到发送成功通知,如果5分钟内没由收到邮件,则可能发送邮件失败,请尝试再次发信");
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "发送成功", "请检查邮箱是否收到发送成功通知,如果5分钟内没由收到邮件,则可能发送邮件失败,请尝试再次发信");
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "发送失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "发送失败", e);
         }
     }
 
-    @RequestMapping(value = "/wemock_delete", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    /**
+     * mock数据删除
+     * @param id 主键ID
+     * @return
+     */
+    @RequestMapping(value = "/wemock_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String wemock_delete(String[] id) {
+    public ReturnInfo wemock_delete(String[] id) {
 
         try{
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "发送成功", "请检查邮箱是否收到发送成功通知,如果5分钟内没由收到邮件,则可能发送邮件失败,请尝试再次发信");
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "发送成功", "请检查邮箱是否收到发送成功通知,如果5分钟内没由收到邮件,则可能发送邮件失败,请尝试再次发信");
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "发送失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "发送失败", e);
         }
     }
 

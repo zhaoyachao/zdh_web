@@ -68,6 +68,12 @@ public class Const {
 
     public static String ZDH_PLATFORM_NAME = "zdh_platform_name";//系统名称,登录页显示
 
+    public static String ZDH_SYSTEM_DNS = "zdh_system_dns";//系统dns
+
+    public static String ZDH_LOG_TYPE = "zdh_log_type";//日志存储类型
+
+    public static String ZDH_FLOW_DEFAULT_USER = "zdh_flow_default_user";//审批流默认user
+
     public static String HTTP_POST = "0";
     public static  String HTTP_GET = "1";
 
@@ -86,6 +92,13 @@ public class Const {
     public static String PERMISSION_APPLY_RECALL="4";//申请撤销
 
 
+    public static String LOG_MYSQL="mysql";//
+    public static String LOG_MONGODB="mongodb";//
+
+    public static String PARAM_TYPE_STRING="1";//参数类型,字符串
+    public static String PARAM_TYPE_JSON="2";//参数类型,json
+
+
     public static String getEnumName(String type,String code){
         Map<String, Map<String, String>> enumMap=new HashMap<>();
 
@@ -96,8 +109,12 @@ public class Const {
         permission.put(PERMISSION_APPLY_SUCCESS, "申请通过");
         permission.put(PERMISSION_APPLY_RECALL, "申请撤销");
 
-        enumMap.put("PERMISSION_APPLY", permission);
+        Map<String,String> paramType=new HashMap<>();
+        paramType.put(PARAM_TYPE_STRING, "字符串");
+        paramType.put(PARAM_TYPE_JSON, "JSON");
 
+        enumMap.put("PERMISSION_APPLY", permission);
+        enumMap.put("PARAM_TYPE", paramType);
 
         if(enumMap.containsKey(type)){
             if(enumMap.get(type).containsKey(code)){

@@ -49,6 +49,20 @@ public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
     })
     public int updateStatusById2(@Param("id") String id);
 
+    /**
+     * 跳过任务
+     * @param id
+     * @return
+     */
+    @Update({
+            "<script>",
+            "update task_log_instance ",
+            " set status= 'skip' ",
+            " where id=#{id} ",
+            "</script>",
+    })
+    public int updateSkipById(@Param("id") String id);
+
     // value = "update task_log_instance set status=#{status} where id=#{id} and status not in ('kill','killed')")
     /**
      * 更新状态避免杀死后继续更新

@@ -44,6 +44,14 @@
                         <form class="form-horizontal m-t" id="signupForm">
 
                             <div class="form-group">
+                                <label class="col-sm-3 control-label">环节说明：</label>
+                                <div class="col-sm-8">
+                                    <input id="auditor_context" name="auditor_context" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
                                 <label class="col-sm-3 control-label">节点code：</label>
                                 <div class="col-sm-8">
                                     <select id="code" name="code"
@@ -164,45 +172,88 @@
             for (var i = 0; i < pa.length; i++) {
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
-
+            //删除历史数据
+            $("#etl_task_text",window.parent.document).val('');
+            if(is_empty(s['id'])){
+                //通过审批流而来
+                s['id'] = s['auditor_id'];
+            }
             $('#type').chosen();
+            $('#level').chosen();
 
             $('#code').chosen();
-            $('#level').chosen();
+            //$('#level').chosen();
             $('#auditor_id').chosen();
             $('#auditor_group').chosen();
 
-
-            $.ajax({
-                type: 'POST',
-                url: server_context+"/product_tag_list",
-                async:false,
-                dataType: 'json',
-                data: "",
-                //成功返回
-                success: function (data) {
-                    var str = '';
-                    for (var i = 0; i < data.length; i++) {
-                        str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+            function init_product_code(){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/product_tag_list",
+                    async:false,
+                    dataType: 'json',
+                    data: "",
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"' + '\" hassubinfo=\"true\">空</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+                        }
+                        $('#product_code').html(str);
+                        $("#product_code").trigger("chosen:updated");
+                        $('#product_code').chosen().on("change", function (evt, params) {
+                            //更新用户组和角色
+                            init_user_group($("#product_code").val());
+                            init_user($("#product_code").val());
+                        });
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
                     }
-                    $('#product_code').html(str);
-                    $("#product_code").trigger("chosen:updated");
-                    $('#product_code').chosen().on("change", function (evt, params) {
-                        //更新用户组和角色
-                        init_user_group($("#product_code").val());
-                        init_user($("#product_code").val());
-                        //init_jstree($("#product_code").val());
-                    });
-                    init_user_group($("#product_code").val());
-                    init_user($("#product_code").val());
-                },
-                //处理完成
-                complete: function () {
-                },
-                //报错
-                error: function (data) {
-                }
-            });
+                });
+            }
+
+            init_product_code();
+
+            $("#product_code").val(s.product_code);
+            $("#product_code").prop("disabled","true");
+            $("#product_code").trigger("chosen:updated");
+
+
+            function init_code(){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/approval_config_list",
+                    async:false,
+                    dataType: 'json',
+                    data: "",
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].code + '\" hassubinfo=\"true\">' + data[i].code_name + '</option>'
+                        }
+                        $('#code').html(str);
+                        $("#code").trigger("chosen:updated");
+                        $('#code').chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
+                    }
+                });
+            }
+
+            init_code();
+
+            $("#code").val(s.flow_code);
+            $("#code").prop("disabled","true");
+            $("#code").trigger("chosen:updated");
 
             function init_user_group(product_code){
                 $.ajax({
@@ -233,31 +284,6 @@
                     }
                 });
             }
-
-            $.ajax({
-                type: 'POST',
-                url: server_context+"/approval_config_list",
-                async:false,
-                dataType: 'json',
-                data: "",
-                //成功返回
-                success: function (data) {
-                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                    for (var i = 0; i < data.length; i++) {
-                        str += '<option value=\"' + data[i].code + '\" hassubinfo=\"true\">' + data[i].code_name + '</option>'
-                    }
-                    $('#code').html(str);
-                    $("#code").trigger("chosen:updated");
-                    $('#code').chosen();
-                },
-                //处理完成
-                complete: function () {
-                },
-                //报错
-                error: function (data) {
-                }
-            });
-
             function init_user(product_code){
                 $.ajax({
                     type: 'POST',
@@ -279,7 +305,6 @@
                         $("#auditor_id").trigger("chosen:updated");
                         $('#auditor_id').chosen().on("change", function (evt, params) {
                             var user_group = $('#auditor_id').find("option:selected").attr("user_group");
-                            console.info("哟农户组："+user_group);
                             $("#auditor_group").val(user_group);
                             $("#auditor_group").trigger("chosen:updated");
                         });
@@ -293,6 +318,8 @@
                 });
             }
 
+            init_user_group($('#product_code').val());
+            init_user($('#product_code').val());
 
             if(s.id != '-1'){
                 $.ajax({
@@ -308,10 +335,14 @@
                     success: function (data) {
                         if(data.code == "200"){
 
+                            $('#auditor_context').val(data.result.auditor_context);
                             $('#code').val(data.result.code);
                             $("#code").trigger("chosen:updated");
                             $('#level').val(data.result.level);
                             $("#level").trigger("chosen:updated");
+                            $('#product_code').val(data.result.product_code);
+                            $("#product_code").trigger("chosen:updated");
+
                             $('#auditor_id').val(data.result.auditor_id);
                             $("#auditor_id").trigger("chosen:updated");
                             $('#auditor_group').val(data.result.auditor_group.split(","));
@@ -362,7 +393,11 @@
                                     time: 5000, //20s后自动关闭
                                     btn: ['更新成功,5s后自动关闭']
                                 },function () {
-                                    parent.layer.closeAll();
+                                    $("#etl_task_text",window.parent.document).val(JSON.stringify(data.result));
+                                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                    console.info("index: "+index);
+                                    parent.layer.close(index); //再执行关闭
+                                    //parent.layer.closeAll();
                                 });
 
                             }else{
@@ -410,14 +445,17 @@
                         success: function (data) {
                             $("#btn_up").removeAttr('disabled');
                             if(data.code == "200"){
-                                layer.msg('更新成功', {
+                                layer.msg('新增成功', {
                                     time: 5000, //20s后自动关闭
                                     btn: ['明白了,5s后自动关闭']
                                 },function () {
-
+                                    $("#etl_task_text",window.parent.document).val(JSON.stringify(data.result));
+                                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                    console.info("index: "+index);
+                                    parent.layer.close(index); //再执行关闭
                                 });
                             }else{
-                                layer.msg('更新失败,'+data.result, {
+                                layer.msg('新增失败,'+data.result, {
                                     time: 5000, //20s后自动关闭
                                     btn: ['明白了,5s后自动关闭']
                                 },function () {
@@ -441,8 +479,6 @@
 
                 })
             }
-
-
 
         })(document, window, jQuery);
 

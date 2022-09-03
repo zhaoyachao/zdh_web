@@ -167,10 +167,11 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                     String msg="杀死线程:线程名:"+td.getName()+",线程id:"+td.getId();
                                     logger.info(msg);
                                     JobCommon2.insertLog(tl,"INFO",msg);
-                                    if(tl.getMore_task().equalsIgnoreCase("ssh") || tl.getMore_task().equalsIgnoreCase("datax")){
+                                    if(tl.getMore_task().equalsIgnoreCase("ssh") || tl.getMore_task().equalsIgnoreCase("datax") || tl.getJob_type().equalsIgnoreCase("flume")){
                                         SSHUtil sshUtil =JobCommon2.chm_ssh.get(tl.getId());
                                         if(sshUtil!=null){
                                             String[] connectUri= sshUtil.createUri();
+                                            sshUtil.logout();
                                             JobCommon2.chm_ssh.get(tl.getId()).logout();
                                             JobCommon2.chm_ssh.remove(tl.getId());
                                             if(connectUri.length==2 && !StringUtils.isEmpty(connectUri[1])){

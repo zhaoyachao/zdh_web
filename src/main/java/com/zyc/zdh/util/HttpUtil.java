@@ -3,11 +3,14 @@ package com.zyc.zdh.util;
 import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.entity.EtlTaskInfo;
 import org.apache.commons.codec.Charsets;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
@@ -15,12 +18,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 
 public class HttpUtil {
@@ -39,10 +45,51 @@ public class HttpUtil {
       return EntityUtils.toString(response.getEntity());
     }
     catch (ClientProtocolException e) {
-      throw new Exception("postRequest -- Client protocol exception!", e);
+      throw new Exception("getRequest -- Client protocol exception!", e);
     }
     catch (IOException e) {
-      throw new Exception("postRequest -- IO error!", e);
+      throw new Exception("getRequest -- IO error!", e);
+    }
+    finally {
+      get.releaseConnection();
+    }
+  }
+  public static String getRequest(String path, List<NameValuePair> parametersBody, Map<String,String> header, Map<String,String> cookie) throws Exception, URISyntaxException {
+    URIBuilder uriBuilder = new URIBuilder(path);
+    uriBuilder.setParameters(parametersBody);
+    HttpGet get = new HttpGet(uriBuilder.build());
+    if(header!=null){
+      for(String key: header.keySet()){
+        get.addHeader(key, header.get(key));
+      }
+    }
+    CookieStore cookieStore = new BasicCookieStore();;
+    if(cookie!=null){
+      for(String key: header.keySet()){
+        //添加cookie
+        BasicClientCookie ck = new BasicClientCookie(key, header.get(key));
+        //放入cookiestore
+        cookieStore.addCookie(ck);
+      }
+    }
+
+    // 设置超时时间
+    RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5000).setConnectionRequestTimeout(1000)
+            .setSocketTimeout(5000).build();
+
+    HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).setDefaultCookieStore(cookieStore).build();
+    try {
+      HttpResponse response = client.execute(get);
+      int code = response.getStatusLine().getStatusCode();
+      if (code >= 400)
+        throw new RuntimeException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
+      return EntityUtils.toString(response.getEntity());
+    }
+    catch (ClientProtocolException e) {
+      throw new Exception("getRequest -- Client protocol exception!", e);
+    }
+    catch (IOException e) {
+      throw new Exception("getRequest -- IO error!", e);
     }
     finally {
       get.releaseConnection();
@@ -61,6 +108,11 @@ public class HttpUtil {
     return postRequest(path, "application/json", entity);
   }
 
+  public static String postJSON(String path, String json, Map<String,String> header, Map<String,String> cookie) throws Exception {
+    StringEntity entity = new StringEntity(json, Charsets.UTF_8);
+    return postRequest(path, entity, header, cookie);
+  }
+
   // 发送POST请求
   public static String postRequest(String path, String mediaType, HttpEntity entity) throws Exception {
     //logger.debug("[postRequest] resourceUrl: {}", path);
@@ -70,6 +122,52 @@ public class HttpUtil {
     post.setEntity(entity);
     try {
       HttpClient client = HttpClientBuilder.create().build();
+      HttpResponse response = client.execute(post);
+      int code = response.getStatusLine().getStatusCode();
+      if (code >= 400)
+        throw new Exception(EntityUtils.toString(response.getEntity()));
+      return EntityUtils.toString(response.getEntity());
+    }
+    catch (ClientProtocolException e) {
+      throw new Exception("postRequest -- Client protocol exception!", e);
+    }
+    catch (IOException e) {
+      throw new Exception("postRequest -- IO error!", e);
+    }
+    finally {
+      post.releaseConnection();
+    }
+  }
+
+  public static String postRequest(String path, HttpEntity entity, Map<String,String> header, Map<String,String> cookie) throws Exception {
+    //logger.debug("[postRequest] resourceUrl: {}", path);
+    HttpPost post = new HttpPost(path);
+
+    //默认
+    //post.addHeader("Content-Type", "application/json");
+    //post.addHeader("Accept", "application/json");
+
+    if(header!=null){
+      for(String key: header.keySet()){
+        post.addHeader(key, header.get(key));
+      }
+    }
+    CookieStore cookieStore = new BasicCookieStore();
+    if(cookie!=null){
+      for(String key: header.keySet()){
+        //添加cookie
+        BasicClientCookie ck = new BasicClientCookie(key, header.get(key));
+        //放入cookiestore
+        cookieStore.addCookie(ck);
+      }
+    }
+    // 设置超时时间
+    RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5000).setConnectionRequestTimeout(1000)
+            .setSocketTimeout(5000).build();
+
+    post.setEntity(entity);
+    try {
+      HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).setDefaultCookieStore(cookieStore).build();
       HttpResponse response = client.execute(post);
       int code = response.getStatusLine().getStatusCode();
       if (code >= 400)

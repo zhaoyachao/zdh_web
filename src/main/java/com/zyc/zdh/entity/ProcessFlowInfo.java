@@ -13,39 +13,81 @@ public class ProcessFlowInfo {
     @Column
     private String id;
 
+    /**
+     * 流程ID
+     */
     private String flow_id;
 
+    /**
+     * 事件code
+     */
     private String event_code;
 
+    /**
+     *配置code
+     */
     private String config_code;
 
+    /**
+     * 流程名称
+     */
     //流程名称
     private String context;
 
+    /**
+     * 审批人账号
+     */
     //审批人id
     private String auditor_id;
 
+    /**
+     * 是否可见
+     */
     private String is_show;
 
+    /**
+     * 上游审批ID
+     */
     private String pre_id;
 
+    /**
+     * 拥有者
+     */
     private String owner;
 
+    /**
+     * 创建时间
+     */
     private Timestamp create_time;
 
+    /**
+     * 状态,0:未审批,1:审批完成,2:不通过,3:撤销
+     */
     private String status;
 
+    /**
+     * 是否最后一的审批0:否,1:最后一个审批节点
+     */
     private String is_end; //0:否,1:最后一个审批节点
 
+    /**
+     * 审批环节
+     */
     //审批节点
     private String level;
 
+    /**
+     * 外部事件ID
+     */
     private String event_id;
 
 
     @Transient
     private String by_person_name;
 
+    /**
+     * 外部系统处理标志,0:未处理,1:已处理,2:处理失败
+     */
     //外部系统使用审批流,外部事件处理标识
     private String other_handle;
 

@@ -30,6 +30,9 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 升级扩容服务
+ */
 @Controller
 public class NodeController extends BaseController{
     public Logger logger= LoggerFactory.getLogger(this.getClass());
@@ -51,14 +54,22 @@ public class NodeController extends BaseController{
     @Autowired
     Environment ev;
 
-
-
+    /**
+     * server构建首页
+     * @return
+     */
     @RequestMapping(value = "/server_manager_index", method = RequestMethod.GET)
-    public String permission_index() {
+    public String server_manager_index() {
 
         return "admin/server_manager_index";
     }
 
+    /**
+     * server构建列表
+     * @param id id,非必填
+     * @param context 关键字
+     * @return
+     */
     @RequestMapping(value = "/server_manager_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String server_manager_list(String id,String context) {
@@ -71,6 +82,12 @@ public class NodeController extends BaseController{
 
     }
 
+    /**
+     * server服务列表
+     * @param online 0下线/1在线
+     * @param context 关键字
+     * @return
+     */
     @RequestMapping(value = "/server_manager_online_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String server_manager_online_list(String online,String context) {
@@ -83,55 +100,75 @@ public class NodeController extends BaseController{
 
     }
 
-    @RequestMapping(value = "/server_manager_online_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * server服务更新上下线
+     * @param id 主键ID
+     * @param online 0:逻辑下线,1:逻辑上线,2:物理下线
+     * @return
+     */
+    @RequestMapping(value = "/server_manager_online_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String server_manager_online_update(String id,String online) {
+    public ReturnInfo server_manager_online_update(String id,String online) {
         try{
             zdhHaInfoMapper.updateOnline(online,id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
+    /**
+     * server新增模板首页
+     * @return
+     */
     @RequestMapping(value = "/server_add_index", method = RequestMethod.GET)
     public String server_add_index() {
 
         return "admin/server_add_index";
     }
 
-    @RequestMapping(value = "/server_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * server新增
+     * @param serverTaskInfo
+     * @return
+     */
+    @RequestMapping(value = "/server_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String server_add(ServerTaskInfo serverTaskInfo) {
+    public ReturnInfo server_add(ServerTaskInfo serverTaskInfo) {
         try{
-            serverTaskInfo.setOwner(getUser().getId());
+            serverTaskInfo.setOwner(getOwner());
             serverTaskInfo.setCreate_time(new Date());
             serverTaskInfo.setUpdate_time(new Date());
             serverTaskMappeer.insert(serverTaskInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
 
     }
 
-    @RequestMapping(value = "/server_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * server模板更新
+     * @param serverTaskInfo
+     * @return
+     */
+    @RequestMapping(value = "/server_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String server_update(ServerTaskInfo serverTaskInfo) {
+    public ReturnInfo server_update(ServerTaskInfo serverTaskInfo) {
         try{
-            serverTaskInfo.setOwner(getUser().getId());
+            serverTaskInfo.setOwner(getOwner());
             serverTaskInfo.setCreate_time(new Date());
             serverTaskInfo.setUpdate_time(new Date());
             serverTaskMappeer.updateByPrimaryKey(serverTaskInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
 
     }
@@ -149,10 +186,10 @@ public class NodeController extends BaseController{
     /**
      * server 一键部署
      */
-    @RequestMapping(value = "/server_setup", method = RequestMethod.GET)
+    @RequestMapping(value = "/server_setup", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String server_setup(String id,String build_branch){
+    public ReturnInfo server_setup(String id,String build_branch){
 
         //第一步：登陆构建服务器
         //第二步：拉取git
@@ -190,14 +227,14 @@ public class NodeController extends BaseController{
         } catch (IllegalAccessException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"一键部署失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"一键部署失败", e);
         } catch (InvocationTargetException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"一键部署失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"一键部署失败", e);
         }
 
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"一键部署任务已生成", sti);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"一键部署任务已生成", sti);
 
     }
 
@@ -226,19 +263,19 @@ public class NodeController extends BaseController{
     }
 
 
-    @RequestMapping(value = "/server_logs_delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/server_logs_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String server_logs_delete(String[] ids){
+    public ReturnInfo server_logs_delete(String[] ids){
 
         try{
             serverTaskInstanceMappeer.deleteById(ids);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
 
     }

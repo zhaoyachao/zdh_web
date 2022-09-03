@@ -38,12 +38,21 @@ public class ProductTagController extends BaseController {
     @Autowired
     ProductTagMapper productTagMapper;
 
+    /**
+     * 产品列表首页
+     * @return
+     */
     @RequestMapping(value = "/product_tag_index", method = RequestMethod.GET)
     public String product_tag_index() {
 
         return "admin/product_tag_index";
     }
 
+    /**
+     * 产品列表
+     * @param tag_context 关键字
+     * @return
+     */
     @RequestMapping(value = "/product_tag_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String product_tag_list(String tag_context) {
@@ -57,12 +66,19 @@ public class ProductTagController extends BaseController {
         }
         example.and(criteria2);
 
-        List<ProductTagInfo> dataTagInfos = productTagMapper.selectByExample(example);
+        List<ProductTagInfo> productTagInfos = productTagMapper.selectByExample(example);
 
-        return JSONObject.toJSONString(dataTagInfos);
+        for (ProductTagInfo pti: productTagInfos){
+            pti.setSk("");
+            pti.setAk("");
+        }
+        return JSONObject.toJSONString(productTagInfos);
     }
 
-
+    /**
+     * 产品新增首页
+     * @return
+     */
     @RequestMapping(value = "/product_tag_add_index", method = RequestMethod.GET)
     public String product_tag_add_index() {
 
@@ -70,23 +86,35 @@ public class ProductTagController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/product_tag_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 产品明细
+     * @param id 主键ID
+     * @return
+     */
+    @RequestMapping(value = "/product_tag_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String product_tag_detail(String id) {
+    public ReturnInfo product_tag_detail(String id) {
         try {
-            ProductTagInfo dataTagInfo = productTagMapper.selectByPrimaryKey(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", dataTagInfo);
+            ProductTagInfo productTagInfo = productTagMapper.selectByPrimaryKey(id);
+            productTagInfo.setAk("");
+            productTagInfo.setSk("");
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", productTagInfo);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
-    @RequestMapping(value = "/product_tag_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 产品更新
+     * @param productTagInfo
+     * @return
+     */
+    @RequestMapping(value = "/product_tag_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String product_tag_update(ProductTagInfo productTagInfo) {
+    public ReturnInfo product_tag_update(ProductTagInfo productTagInfo) {
         try {
             ProductTagInfo oldProductTagInfo = productTagMapper.selectByPrimaryKey(productTagInfo.getId());
 
@@ -99,55 +127,65 @@ public class ProductTagController extends BaseController {
             productTagInfo.setStatus(oldProductTagInfo.getStatus());
             productTagMapper.updateByPrimaryKey(productTagInfo);
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
 
-    @RequestMapping(value = "/product_tag_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 产品新增
+     * @param productTagInfo
+     * @return
+     */
+    @RequestMapping(value = "/product_tag_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String product_tag_add(ProductTagInfo productTagInfo) {
+    public ReturnInfo product_tag_add(ProductTagInfo productTagInfo) {
         try {
             //检查code是否存在
             ProductTagInfo pti=new ProductTagInfo();
             pti.setProduct_code(productTagInfo.getProduct_code());
             List<ProductTagInfo> productTagInfos = productTagMapper.select(pti);
             if(productTagInfos.size()>0){
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", productTagInfo.getProduct_code()+",产品code已存在");
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", productTagInfo.getProduct_code()+",产品code已存在");
             }
 
             productTagInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             productTagInfo.setStatus(Const.PRODUCT_ENABLE);
             productTagInfo.setAk(DigestUtils.md5DigestAsHex((SnowflakeIdWorker.getInstance().nextId()+"").getBytes()));
             productTagInfo.setSk(DigestUtils.md5DigestAsHex((SnowflakeIdWorker.getInstance().nextId()+"").getBytes()));
-            productTagInfo.setOwner(getUser().getId());
+            productTagInfo.setOwner(getOwner());
             productTagInfo.setIs_delete(Const.NOT_DELETE);
             productTagInfo.setCreate_time(new Timestamp(new Date().getTime()));
             productTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             productTagMapper.insert(productTagInfo);
             //创建产品资源
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
 
-    @RequestMapping(value = "/product_tag_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 产品删除
+     * @param ids id数组
+     * @return
+     */
+    @RequestMapping(value = "/product_tag_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String product_tag_delete(String[] ids) {
+    public ReturnInfo product_tag_delete(String[] ids) {
         try {
             productTagMapper.deleteLogicByIds("",ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
     }
 

@@ -14,6 +14,11 @@
             }, function(index){
                 openTabPage(server_context+"/dispatch_task_group_add_index.html?id=-1", "创建调度任务");
                 layer.close(layer.index);
+                $('#exampleTableEvents').bootstrapTable('refresh', {
+                    url: server_context+"/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json"
+                });
             }, function(){
 
             });
@@ -219,7 +224,11 @@
 
                 $("#id").val(row.job_id);
                 openTabPage(server_context+"/dispatch_task_group_add_index.html?id="+ row.job_id, "修改调度任务");
-
+                $('#exampleTableEvents').bootstrapTable('refresh', {
+                    url: server_context+"/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json"
+                });
 
             },
             'click #del': function (e, value, row, index) {

@@ -44,12 +44,21 @@ public class CrowdRuleController extends BaseController {
     @Autowired
     private FilterMapper filterMapper;
 
+    /**
+     * 人群规则列表首页
+     * @return
+     */
     @RequestMapping(value = "/crowd_rule_index", method = RequestMethod.GET)
     public String label_index() {
 
         return "digitalmarket/crowd_rule_index";
     }
 
+    /**
+     * 人群规则列表
+     * @param rule_context 关键字
+     * @return
+     */
     @RequestMapping(value = "/crowd_rule_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String crowd_rule_list(String rule_context) {
@@ -68,6 +77,10 @@ public class CrowdRuleController extends BaseController {
         return JSONObject.toJSONString(crowdRuleInfos);
     }
 
+    /**
+     * 人群规则新增首页
+     * @return
+     */
     @RequestMapping(value = "/crowd_rule_add_index", method = RequestMethod.GET)
     public String crowd_rule_add_index() {
 
@@ -75,21 +88,31 @@ public class CrowdRuleController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/crowd_rule_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 人群规则明细
+     * @param id 主键ID
+     * @return
+     */
+    @RequestMapping(value = "/crowd_rule_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String crowd_rule_detail(String id) {
+    public ReturnInfo crowd_rule_detail(String id) {
         try {
             CrowdRuleInfo crowdRuleInfo = crowdRuleMapper.selectByPrimaryKey(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", crowdRuleInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", crowdRuleInfo);
         } catch (Exception e) {
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
-    @RequestMapping(value = "/crowd_rule_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 人群规则更新
+     * @param crowdRuleInfo
+     * @return
+     */
+    @RequestMapping(value = "/crowd_rule_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String crowd_rule_update(CrowdRuleInfo crowdRuleInfo) {
+    public ReturnInfo crowd_rule_update(CrowdRuleInfo crowdRuleInfo) {
         try {
 
             CrowdRuleInfo oldCrowdRuleInfo = crowdRuleMapper.selectByPrimaryKey(crowdRuleInfo.getId());
@@ -101,54 +124,72 @@ public class CrowdRuleController extends BaseController {
             crowdRuleInfo.setIs_delete(Const.NOT_DELETE);
             crowdRuleMapper.updateByPrimaryKey(crowdRuleInfo);
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", crowdRuleInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", crowdRuleInfo);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
 
-    @RequestMapping(value = "/crowd_rule_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 人群规则新增
+     * @param crowdRuleInfo
+     * @return
+     */
+    @RequestMapping(value = "/crowd_rule_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String crowd_rule_add(CrowdRuleInfo crowdRuleInfo) {
+    public ReturnInfo crowd_rule_add(CrowdRuleInfo crowdRuleInfo) {
         try {
 
             crowdRuleInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
-            crowdRuleInfo.setOwner(getUser().getId());
+            crowdRuleInfo.setOwner(getOwner());
             crowdRuleInfo.setIs_delete(Const.NOT_DELETE);
             crowdRuleInfo.setCreate_time(new Timestamp(new Date().getTime()));
             crowdRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             crowdRuleMapper.insert(crowdRuleInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
 
-    @RequestMapping(value = "/crowd_rule_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 人群规则删除
+     * @param ids id数组
+     * @return
+     */
+    @RequestMapping(value = "/crowd_rule_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String crowd_rule_delete(String[] ids) {
+    public ReturnInfo crowd_rule_delete(String[] ids) {
         try {
             crowdRuleMapper.deleteLogicByIds("crowd_rule_info",ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
     }
 
+    /**
+     * 规则模板页面
+     * @return
+     */
     @RequestMapping(value = "/rule_detail", method = RequestMethod.GET)
     public String rule_index() {
 
         return "digitalmarket/rule_detail";
     }
 
+    /**
+     * 人群规则手动执行页面
+     * @return
+     */
     @RequestMapping(value = "/crowd_task_exe_detail_index", method = RequestMethod.GET)
     public String crowd_task_exe_detail_index() {
 
@@ -159,40 +200,74 @@ public class CrowdRuleController extends BaseController {
      * 手动执行人群规则,单独生成人群文件
      * @return
      */
-    @RequestMapping(value = "/crowd_task_execute", method = RequestMethod.GET)
-    public String crowd_task_execute() {
+    @RequestMapping(value = "/crowd_task_execute", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public ReturnInfo crowd_task_execute() {
 
-        return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "功能暂未支持", "功能暂未支持");
+        return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "功能暂未支持", "功能暂未支持");
     }
 
+    /**
+     * 人群文件模板页面
+     * @return
+     */
     @RequestMapping(value = "/crowd_file_detail", method = RequestMethod.GET)
     public String crowd_file_detail() {
         return "digitalmarket/crowd_file_detail";
     }
 
+    /**
+     * 人群运算模板页面
+     * @return
+     */
+    @White()
+    @RequestMapping(value = "/crowd_operate_detail", method = RequestMethod.GET)
+    public String crowd_operate_detail() {
+        return "digitalmarket/crowd_operate_detail";
+    }
+
+    /**
+     * 人群规则模板页面
+     * @return
+     */
     @RequestMapping(value = "/crowd_rule_detail", method = RequestMethod.GET)
     public String crowd_rule_detail() {
         return "digitalmarket/crowd_rule_detail";
     }
 
+    /**
+     * 过滤模板页面
+     * @return
+     */
     @RequestMapping(value = "/filter_detail", method = RequestMethod.GET)
     public String filter_detail() {
         return "digitalmarket/filter_detail";
     }
 
+    /**
+     * 分流模板页面
+     * @return
+     */
     @RequestMapping(value = "/shunt_detail", method = RequestMethod.GET)
     public String shunt_detail() {
         return "digitalmarket/shunt_detail";
     }
 
+    /**
+     * 权益模板页面
+     * @return
+     */
     @RequestMapping(value = "/rights_detail", method = RequestMethod.GET)
     @White
     public String rights_detail() {
         return "digitalmarket/rights_detail";
     }
 
-
-    @RequestMapping(value = "/crowd_file_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 人群文件列表
+     * @param rule_context 关键字
+     * @return
+     */
+    @RequestMapping(value = "/crowd_file_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String crowd_file_list(String rule_context) {
         Example example=new Example(CrowdFileInfo.class);
@@ -206,7 +281,7 @@ public class CrowdRuleController extends BaseController {
 
     /**
      * 过滤列表
-     * @param file_code
+     * @param file_code 关键字
      * @return
      */
     @RequestMapping(value = "/filter_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

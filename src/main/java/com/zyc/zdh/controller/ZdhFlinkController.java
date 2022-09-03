@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * FLINK采集服务
+ */
 @Controller
 public class ZdhFlinkController extends BaseController {
 
@@ -43,12 +46,20 @@ public class ZdhFlinkController extends BaseController {
     @Autowired
     MetaDatabaseMapper metaDatabaseMapper;
 
+    /**
+     * flink任务首页
+     * @return
+     */
     @RequestMapping("/etl_task_flink_index")
     public String etl_task_flink_index() {
 
         return "etl/etl_task_flink_index";
     }
 
+    /**
+     * flink任务新增首页
+     * @return
+     */
     @RequestMapping("/etl_task_flink_add_index")
     public String etl_task_flink_add_index() {
 
@@ -56,7 +67,7 @@ public class ZdhFlinkController extends BaseController {
     }
 
     /**
-     * 模糊查询Sql任务
+     * 模糊查询flink任务
      *
      * @param sql_context sql任务说明
      * @param id          sql任务id
@@ -66,49 +77,56 @@ public class ZdhFlinkController extends BaseController {
     @ResponseBody
     public String etl_task_flink_list(String sql_context, String id) {
 
-        List<EtlTaskFlinkInfo> sqlTaskInfos = new ArrayList<>();
-        if(!StringUtils.isEmpty(sql_context)){
-            sql_context=getLikeCondition(sql_context);
-        }
-        sqlTaskInfos = etlTaskFlinkMapper.selectByParams(getUser().getId(), sql_context, id);
+        try{
+            List<EtlTaskFlinkInfo> sqlTaskInfos = new ArrayList<>();
+            if(!StringUtils.isEmpty(sql_context)){
+                sql_context=getLikeCondition(sql_context);
+            }
+            sqlTaskInfos = etlTaskFlinkMapper.selectByParams(getOwner(), sql_context, id);
 
-        return JSON.toJSONString(sqlTaskInfos);
+            return JSON.toJSONString(sqlTaskInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
+        }
+
     }
 
     /**
      * 批量删除sql任务
      *
-     * @param ids
+     * @param ids id数组
      * @return
      */
-    @RequestMapping(value = "/etl_task_flink_delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/etl_task_flink_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_flink_delete(String[] ids) {
+    public ReturnInfo etl_task_flink_delete(String[] ids) {
         try {
-            etlTaskFlinkMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            etlTaskFlinkMapper.deleteLogicByIds("etl_task_flink_info",ids, new Timestamp(new Date().getTime()));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
     /**
-     * 新增sql 任务
+     * 新增flink任务
      *
      * @param etlTaskFlinkInfo
      * @return
      */
-    @RequestMapping(value = "/etl_task_flink_add", method = RequestMethod.POST)
+    @RequestMapping(value = "/etl_task_flink_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_flink_add(EtlTaskFlinkInfo etlTaskFlinkInfo) {
+    public ReturnInfo etl_task_flink_add(EtlTaskFlinkInfo etlTaskFlinkInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskFlinkInfo.setOwner(owner);
             etlTaskFlinkInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTaskFlinkInfo.setCreate_time(new Timestamp(new Date().getTime()));
@@ -125,31 +143,31 @@ public class ZdhFlinkController extends BaseController {
                 etlTaskUpdateLogs.setId(etlTaskFlinkInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskFlinkInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
     /**
-     * 更新sql 任务
+     * 更新flink任务
      *
      * @param etlTaskFlinkInfo
      * @return
      */
-    @RequestMapping(value = "/etl_task_flink_update", method = RequestMethod.POST)
+    @RequestMapping(value = "/etl_task_flink_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_flink_update(EtlTaskFlinkInfo etlTaskFlinkInfo) {
+    public ReturnInfo etl_task_flink_update(EtlTaskFlinkInfo etlTaskFlinkInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskFlinkInfo.setOwner(owner);
             etlTaskFlinkInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskFlinkInfo.setIs_delete(Const.NOT_DELETE);
@@ -166,15 +184,15 @@ public class ZdhFlinkController extends BaseController {
                 etlTaskUpdateLogs.setId(etlTaskFlinkInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskFlinkInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(getOwner());
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 

@@ -17,18 +17,39 @@ public class PageBase implements Serializable {
 	 */
 	private static final long serialVersionUID = -6764120441628433192L;
 
+	/**
+	 * 每页显示记录数
+	 */
 	@Transient
 	private int pageSize; //每页显示记录数
+	/**
+	 * 总页数
+	 */
 	@Transient
 	private int totalPage;		//总页数
+	/**
+	 * 总记录数
+	 */
 	@Transient
 	private int totalResult;	//总记录数
+	/**
+	 * 当前页
+	 */
 	@Transient
 	private int pageNum;	//当前页
+	/**
+	 * 当前记录起始索引
+	 */
 	@Transient
 	private int currentResult;	//当前记录起始索引
+	/**
+	 * true:需要分页的地方，传入的参数就是Page实体；false:需要分页的地方，传入的参数所代表的实体拥有Page属性
+	 */
 	@Transient
 	private boolean entityOrField;	//true:需要分页的地方，传入的参数就是Page实体；false:需要分页的地方，传入的参数所代表的实体拥有Page属性
+	/**
+	 *
+	 */
 	@Transient
 	private String sortColumn;
 	@Transient

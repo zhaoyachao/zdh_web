@@ -633,6 +633,36 @@
                 });
 
             },
+            'click #skip': function (e, value, row, index) {
+                row.job_context
+//                if (row.status != "running") {
+//                    layer.msg("当前任务状态不支持杀死")
+//                    return
+//                }
+                layer.confirm('确定手动跳过任务吗?', {
+                    btn: ['确定', '取消'] //按钮
+                }, function (index) {
+
+                    $.ajax({
+                        url: server_context+"/skip",
+                        data: "id=" + row.id,
+                        type: "post",
+                        dataType: "json",
+                        success: function (data) {
+                            console.info("success");
+                            layer.close(index)
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+                    layer.msg("跳过成功")
+                }, function () {
+
+                });
+
+            },
             'click #spark_monitor': function (e, value, row, index) {
                 $.ajax({
                     url: server_context+"/getSparkMonitor",
@@ -824,6 +854,7 @@
                     if(row.is_retryed==1){
                         btn_retry_str='<button disabled="disabled" id="retry" type="button" class="btn btn-primary btn-xs">重试</button>'
                     }
+                    var btn_skip_str='';
 
                     var process=100;
 
@@ -837,13 +868,15 @@
                         context = "运行中";
                         class_str = "btn-primary  btn-xs";
                         class_str2= "btn-danger  ";
-                        btn_retry_str=''
+                        btn_retry_str='';
+                        btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
                     }
                     if (value == "error") {
                         context = "失败";
                         class_str = "btn-danger btn-xs";
                         class_str2 = "btn-primary ";
-                        btn_kill_str=''
+                        btn_kill_str='';
+                        btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
                     }
                     if (value == "retry") {
                         context = "重试";
@@ -857,7 +890,8 @@
                     if (value=="killed" ){
                         context = "已杀死";
                         class_str = "btn-danger btn-xs";
-                        btn_kill_str=''
+                        btn_kill_str='';
+                        btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
                     }
 
 
@@ -871,7 +905,8 @@
 
                     if(context=="未运行"){
                         btn_retry_str='';
-                        btn_kill_str=''
+                        btn_kill_str='';
+                        btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
                     }
 
                     var url=server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time
@@ -882,6 +917,7 @@
                         '<button type="button" class="btn '+class_str+'" >'+context+'</button>'+
                         // btn_retry_str +
                         btn_kill_str +
+                        btn_skip_str +
                         '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+
                         '</div>'+
                         '</div>'

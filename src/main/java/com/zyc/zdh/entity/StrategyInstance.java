@@ -15,7 +15,7 @@ public class StrategyInstance {
     private String strategy_context;
 
     /**
-     * 组实例id
+     * 组id
      */
     private String group_id;
 
@@ -23,6 +23,16 @@ public class StrategyInstance {
      * 组实例说明
      */
     private String group_context;
+
+    /**
+     * 组实例id
+     */
+    private String group_instance_id;
+
+    /**
+     * 实例类型
+     */
+    private String instance_type;
 
     /**
      * 开始时间
@@ -167,18 +177,18 @@ public class StrategyInstance {
     }
 
     /**
-     * 获取组实例id
+     * 获取组id
      *
-     * @return group_id - 组实例id
+     * @return group_id - 组id
      */
     public String getGroup_id() {
         return group_id;
     }
 
     /**
-     * 设置组实例id
+     * 设置组id
      *
-     * @param group_id 组实例id
+     * @param group_id 组id
      */
     public void setGroup_id(String group_id) {
         this.group_id = group_id;
@@ -200,6 +210,42 @@ public class StrategyInstance {
      */
     public void setGroup_context(String group_context) {
         this.group_context = group_context;
+    }
+
+    /**
+     * 获取组实例id
+     *
+     * @return group_instance_id - 组实例id
+     */
+    public String getGroup_instance_id() {
+        return group_instance_id;
+    }
+
+    /**
+     * 设置组实例id
+     *
+     * @param group_instance_id 组实例id
+     */
+    public void setGroup_instance_id(String group_instance_id) {
+        this.group_instance_id = group_instance_id;
+    }
+
+    /**
+     * 获取实例类型
+     *
+     * @return instance_type - 实例类型
+     */
+    public String getInstance_type() {
+        return instance_type;
+    }
+
+    /**
+     * 设置实例类型
+     *
+     * @param instance_type 实例类型
+     */
+    public void setInstance_type(String instance_type) {
+        this.instance_type = instance_type;
     }
 
     /**

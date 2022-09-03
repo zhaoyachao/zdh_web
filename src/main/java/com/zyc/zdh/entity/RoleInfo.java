@@ -18,14 +18,26 @@ public class RoleInfo extends PageBase implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -167810728020160686L;
+	/**
+	 * ID
+	 */
 	@SortMark(value=0,column="id")
 	@Id
 	@Column
 	private String id;
+	/**
+	 * 角色code
+	 */
 	@SortMark(value=1,column="role_name")
 	private String code;
+	/**
+	 * 角色名称
+	 */
 	@SortMark(value=2,column = "role_type")
 	private String name;
+	/**
+	 * 是否启用true/false
+	 */
 	private String enable;
 
 	/**

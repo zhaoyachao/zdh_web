@@ -68,71 +68,76 @@ public class ZdhEtlController extends BaseController{
 
     /**
      * 获取单源ETL任务明细
-     * @param id
+     * @param id 主键ID
      * @return
      */
-    @RequestMapping(value = "/etl_task_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_detail(String id) {
+    public ReturnInfo etl_task_detail(String id) {
         try{
             EtlTaskInfo eti=etlTaskService.selectById(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
     }
 
     /**
      * 根据条件模糊查询单源ETL任务信息
-     * @param etl_context
-     * @param file_name
+     * @param etl_context 关键字
+     * @param file_name 数据源关键字
      * @return
      */
-    @RequestMapping(value = "/etl_task_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String etl_task_list2(String etl_context, String file_name) {
-        List<EtlTaskInfo> list = new ArrayList<>();
-        if(!StringUtils.isEmpty(etl_context)){
-            etl_context=getLikeCondition(etl_context);
+        try{
+            List<EtlTaskInfo> list = new ArrayList<>();
+            if(!StringUtils.isEmpty(etl_context)){
+                etl_context=getLikeCondition(etl_context);
+            }
+            if(!StringUtils.isEmpty(file_name)){
+                file_name=getLikeCondition(file_name);
+            }
+            list = etlTaskMapper.selectByParams(getOwner(),etl_context,file_name);
+            return JSON.toJSONString(list);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
         }
-        if(!StringUtils.isEmpty(file_name)){
-            file_name=getLikeCondition(file_name);
-        }
-        list = etlTaskMapper.selectByParams(getUser().getId(),etl_context,file_name);
-        return JSON.toJSONString(list);
+
     }
 
     /**
      * 批量删除单源ETL任务
-     * @param ids
+     * @param ids id数组
      * @return
      */
-    @RequestMapping(value = "/etl_task_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_delete(Long[] ids) {
+    public ReturnInfo etl_task_delete(String[] ids) {
         try{
-            etlTaskService.deleteBatchById(ids);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+            etlTaskMapper.deleteLogicByIds("etl_task_info", ids, new Timestamp(new Date().getTime()));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
-            			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
     }
 
     /**
      * 新增单源ETL任务首页
      * @param request
-     * @param response
-     * @param id
-     * @param edit
+     * @param edit 废弃
      * @return
      */
     @RequestMapping("/etl_task_add_index")
-    public String etl_task_add(HttpServletRequest request, HttpServletResponse response, Long id, String edit) {
+    public String etl_task_add(HttpServletRequest request, String edit) {
 
         System.out.println(edit);
         request.setAttribute("edit", edit);
@@ -146,13 +151,13 @@ public class ZdhEtlController extends BaseController{
      * @param etlTaskInfo
      * @return
      */
-    @RequestMapping(value="/etl_task_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/etl_task_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_add(EtlTaskInfo etlTaskInfo) {
+    public ReturnInfo etl_task_add(EtlTaskInfo etlTaskInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskInfo.setOwner(owner);
             debugInfo(etlTaskInfo);
 
@@ -177,15 +182,15 @@ public class ZdhEtlController extends BaseController{
                 etlTaskUpdateLogs.setId(etlTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
     }
 
@@ -196,12 +201,12 @@ public class ZdhEtlController extends BaseController{
      * @param request 请求回话
      * @return
      */
-    @RequestMapping(value="/etl_task_add_file", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/etl_task_add_file", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_add_file(MultipartFile up_file, HttpServletRequest request) {
+    public ReturnInfo etl_task_add_file(MultipartFile up_file, HttpServletRequest request) {
         try{
             String json_str = JSON.toJSONString(request.getParameterMap());
-            String owner = getUser().getId();
+            String owner = getOwner();
             System.out.println(json_str);
             System.out.println(up_file);
             if (up_file != null) {
@@ -226,11 +231,11 @@ public class ZdhEtlController extends BaseController{
                     sftp.logout();
                 }
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
     }
 
@@ -240,12 +245,12 @@ public class ZdhEtlController extends BaseController{
      * @param etlTaskInfo
      * @return
      */
-    @RequestMapping(value="/etl_task_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/etl_task_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_update(EtlTaskInfo etlTaskInfo) {
+    public ReturnInfo etl_task_update(EtlTaskInfo etlTaskInfo) {
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskInfo.setOwner(owner);
             etlTaskInfo.setIs_delete(Const.NOT_DELETE);
             etlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -277,15 +282,15 @@ public class ZdhEtlController extends BaseController{
                 etlTaskUpdateLogs.setId(etlTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
     }
 
@@ -311,11 +316,8 @@ public class ZdhEtlController extends BaseController{
     }
 
     private String tables(DataSourcesInfo dataSourcesInfo) {
-
         debugInfo(dataSourcesInfo);
-
         String url = dataSourcesInfo.getUrl();
-
 
         try {
             return JSON.toJSONString(new DBUtil().R3(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
@@ -335,7 +337,7 @@ public class ZdhEtlController extends BaseController{
      * @param table_name
      * @return
      */
-    @RequestMapping(value="/etl_task_schema", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/etl_task_schema", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String etl_task_schema(String id, String table_name) {
 

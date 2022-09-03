@@ -25,7 +25,6 @@ public class ZdhApplication {
 	public static String start_time= DateUtil.getCurrentTime();
 	public static void main(String[] args) {
 		SpringApplication springApplication = new SpringApplication(ZdhApplication.class);
-		System.out.println("ZDH......run....");
 		ApplicationContext context=springApplication.run(args);
 		LoginController.context = context;
 	}

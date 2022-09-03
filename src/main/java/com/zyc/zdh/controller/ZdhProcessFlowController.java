@@ -4,13 +4,16 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
+import com.zyc.zdh.job.EmailJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,7 +24,6 @@ import java.sql.Timestamp;
 import java.util.*;
 
 /**
- * 数据仓库服务
  * 审批服务
  */
 @Controller
@@ -43,6 +45,10 @@ public class ZdhProcessFlowController extends BaseController {
     PermissionApplyMapper permissionApplyMapper;
     @Autowired
     PermissionMapper permissionMapper;
+    @Autowired
+    RedisUtil redisUtil;
+    @Autowired
+    Environment ev;
 
     /**
      * 流程审批页面
@@ -66,33 +72,36 @@ public class ZdhProcessFlowController extends BaseController {
         return "etl/process_flow_index2";
     }
 
-    @RequestMapping(value = "/process_flow_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 审批列表
+     * @param context 关键字
+     * @return
+     */
+    @RequestMapping(value = "/process_flow_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String process_flow_list(String context) {
+    public ReturnInfo process_flow_list(String context) {
 
         if(!StringUtils.isEmpty(context)){
             context = getLikeCondition(context);
         }
         List<ProcessFlowInfo> pfis = processFlowMapper.selectByAuditorId(Const.SHOW, getUser().getUserName(), context);
-        String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
-        return json;
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
     }
 
     /**
      * 我的发起流程列表
-     *
-     * @param context
+     * 根据流程表process_flow_info 按用户+flow_id去重
+     * @param context 关键字
      * @return
      */
-    @RequestMapping(value = "/process_flow_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/process_flow_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String process_flow_list2(String context) {
+    public ReturnInfo process_flow_list2(String context) {
         if(!StringUtils.isEmpty(context)){
             context = getLikeCondition(context);
         }
         List<ProcessFlowInfo> pfis = processFlowMapper.selectByOwner(getUser().getUserName(), context);
-        String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
-        return json;
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
     }
 
     /**
@@ -100,9 +109,9 @@ public class ZdhProcessFlowController extends BaseController {
      * @param pfi
      * @return
      */
-    @RequestMapping(value = "/process_flow_status", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/process_flow_status", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String process_flow_status(ProcessFlowInfo pfi) {
+    public ReturnInfo process_flow_status(ProcessFlowInfo pfi) {
         ProcessFlowInfo pfi_old = processFlowMapper.selectByPrimaryKey(pfi.getId());
         processFlowMapper.updateStatus(pfi.getId(), pfi.getStatus());
         pfi_old = processFlowMapper.selectByPrimaryKey(pfi.getId());
@@ -110,22 +119,43 @@ public class ZdhProcessFlowController extends BaseController {
             //设置下游流程可展示
             processFlowMapper.updateIsShow(pfi.getId(), Const.SHOW);
         }
-
         if (pfi.getStatus().equalsIgnoreCase(Const.STATUS_FAIL)) {
             //审批不通过,设置流程结束
             apply(pfi_old);
         }
-
         //最后一个审批,表示审批流程结束 todo 之后新增事件,可在此处处理
         if (pfi_old.getIs_end().equalsIgnoreCase(Const.END)) {
             apply(pfi_old);
         }
 
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "审批", pfi);
+        //获取下游流程审批人-发送邮件通知,此处需要异步发送
+        ProcessFlowInfo flowInfo=new ProcessFlowInfo();
+        flowInfo.setPre_id(pfi.getId());
+        List<ProcessFlowInfo> pfis=processFlowMapper.select(flowInfo);
+        if(pfis!=null && pfis.size()>0){
+            String url = redisUtil.get(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
+
+            for (ProcessFlowInfo f:pfis){
+                // 审批人 flowInfo1.getAuditor_id()
+                // 申请人 flowInfo1.getOwner()
+                String context=f.getContext();
+                if(!StringUtils.isEmpty(f.getAuditor_id())){
+                    String[] auditors = f.getAuditor_id().split(",");
+                    for (String auditor: auditors){
+                        EmailJob.send_notice(auditor, "审批通知", "你有一条审批待处理, 流程名: 【"+context+"】 请登录平台审批, "+url, "通知");
+                    }
+                }
+                EmailJob.send_notice(f.getOwner(), "流程进度", "你的流程【"+context+"】 已到下一环节, 审批人: "+f.getAuditor_id(), "通知");
+
+
+            }
+        }
+
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "审批", pfi);
     }
 
     /**
-     * 审批通过后
+     * 数据审批触发事件
      * @param pfi
      */
     public void apply(ProcessFlowInfo pfi){
@@ -162,7 +192,7 @@ public class ZdhProcessFlowController extends BaseController {
             permissionApplyMapper.updateByPrimaryKey(pai);
         }
 
-        //此处增加回调机制(只有回调才能做到,万能审批流,调度方可以不关系审批流程,但是必须提供一个审批完成/失败后的回调接口(http))
+        //此处增加回调机制(只有回调才能做到,万能审批流,调用方可以不关心审批流程,但是必须提供一个审批完成/失败后的回调接口(http))
 
         if(!StringUtils.isEmpty(pfi.getEvent_code())){
             ApprovalEventInfo approvalEventInfo=new ApprovalEventInfo();
@@ -224,11 +254,11 @@ public class ZdhProcessFlowController extends BaseController {
      * @param pfi
      * @return
      */
-    @RequestMapping(value = "/process_flow_status2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/process_flow_status2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String process_flow_status2(ProcessFlowInfo pfi) {
+    public ReturnInfo process_flow_status2(ProcessFlowInfo pfi) {
         processFlowMapper.updateStatus2(pfi.getFlow_id(), pfi.getStatus());
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "撤销", pfi);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "撤销", pfi);
     }
 
 
@@ -243,37 +273,44 @@ public class ZdhProcessFlowController extends BaseController {
         return "etl/process_flow_detail_index";
     }
 
-    @RequestMapping(value = "/process_flow_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 审批明细
+     * @param flow_id 审批流程ID
+     * @return
+     */
+    @RequestMapping(value = "/process_flow_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String process_flow_detail(String flow_id) {
+    public ReturnInfo process_flow_detail(String flow_id) {
 
         try {
             List<ProcessFlowInfo> pfis = processFlowMapper.selectByFlowId(flow_id, getUser().getUserName());
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取流程进度", pfis);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程进度", pfis);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "获取流程进度", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "获取流程进度", e);
         }
 
     }
 
     /**
      * ZDH创建审批流统一入口
-     *
+     * 在调用处处理异常
      * @param event_code
      * @param context
      * @param event_id
      */
     public void createProcess(String event_code, String context, String event_id) {
         String group = getUser().getUser_group();
+        String product_code = ev.getProperty("zdp.product", "zdh");
         //获取事件对应的审批流code
-        List<ApprovalAuditorInfo> approvalAuditorInfos = approvalAuditorMapper.selectByEvent(event_code, group);
+        List<ApprovalAuditorInfo> approvalAuditorInfos = approvalAuditorMapper.selectByEvent(event_code, group, product_code);
 
         List<ProcessFlowInfo> pfis = new ArrayList<>();
         //生成唯一标识,用于串联审批节点
         String uid = SnowflakeIdWorker.getInstance().nextId() + "";
         String pre_id = "";
+        String auditors = "";
         //遍历层级生成上下游关系
         for (int i = 1; i < 10; i++) {
             ProcessFlowInfo pfi = new ProcessFlowInfo();
@@ -292,10 +329,17 @@ public class ZdhProcessFlowController extends BaseController {
             }
             if (StringUtils.isEmpty(pfi.getConfig_code()))
                 continue;
+
+            String defaultUsers = getDefaultAuditor(product_code);
+            if(!StringUtils.isEmpty(defaultUsers)){
+                sb.addAll(Arrays.asList(defaultUsers.split(",")));
+            }
             //多个审批人,逗号分割
             pfi.setAuditor_id(org.apache.commons.lang3.StringUtils.join(sb, ","));
             if (i == 1) {
                 pfi.setIs_show(Const.SHOW);
+                //发送审批通知
+                auditors = pfi.getAuditor_id();
             } else {
                 pfi.setIs_show(Const.NOT_SHOW);
             }
@@ -311,6 +355,14 @@ public class ZdhProcessFlowController extends BaseController {
             pre_id = id;
         }
         processFlowMapper.updateIsEnd(pre_id, Const.END);
+        String url = redisUtil.get(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
+        if(!StringUtils.isEmpty(auditors)){
+            for (String auditor: auditors.split(",")){
+                EmailJob.send_notice(auditor, "审批通知", "你有一条审批待处理, 流程名: 【"+context+"】 请登录平台审批, "+url, "通知");
+            }
+        }
+        EmailJob.send_notice(getUser().getUserName(), "流程进度", "你的流程【"+context+"】 已到下一环节, 审批人: "+auditors, "通知");
+
     }
 
 
@@ -323,10 +375,10 @@ public class ZdhProcessFlowController extends BaseController {
      * @param event_id
      * @return 返回审批流id
      */
-    public String createProcess(String user_account,String group, String event_code, String context, String event_id) throws Exception {
+    public String createProcess(String user_account,String group, String event_code, String context, String event_id, String product_code) throws Exception {
 
         //获取事件对应的审批流code
-        List<ApprovalAuditorInfo> approvalAuditorInfos = approvalAuditorMapper.selectByEvent(event_code, group);
+        List<ApprovalAuditorInfo> approvalAuditorInfos = approvalAuditorMapper.selectByEvent(event_code, group, product_code);
 
         if(approvalAuditorInfos==null || approvalAuditorInfos.size()==0){
             throw new Exception("无法找到对应事件");
@@ -336,6 +388,7 @@ public class ZdhProcessFlowController extends BaseController {
         //生成唯一标识,用于串联审批节点
         String uid = SnowflakeIdWorker.getInstance().nextId() + "";
         String pre_id = "";
+        String auditors = "";
         //遍历层级生成上下游关系
         for (int i = 1; i < 10; i++) {
             ProcessFlowInfo pfi = new ProcessFlowInfo();
@@ -354,10 +407,17 @@ public class ZdhProcessFlowController extends BaseController {
             }
             if (StringUtils.isEmpty(pfi.getConfig_code()))
                 continue;
+
+            //增加默认审批人
+            String defaultUsers = getDefaultAuditor(product_code);
+            if(!StringUtils.isEmpty(defaultUsers)){
+                sb.addAll(Arrays.asList(defaultUsers.split(",")));
+            }
             //多个审批人,逗号分割
             pfi.setAuditor_id(org.apache.commons.lang3.StringUtils.join(sb, ","));
             if (i == 1) {
                 pfi.setIs_show(Const.SHOW);
+                auditors=pfi.getAuditor_id();
             } else {
                 pfi.setIs_show(Const.NOT_SHOW);
             }
@@ -373,7 +433,18 @@ public class ZdhProcessFlowController extends BaseController {
             pre_id = id;
         }
         processFlowMapper.updateIsEnd(pre_id, Const.END);
+        String url = redisUtil.get(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
+        if(!StringUtils.isEmpty(auditors)){
+            for (String auditor: auditors.split(",")){
+                EmailJob.send_notice(auditor, "审批通知", "你有一条审批待处理, 流程名: 【"+context+"】 请登录平台审批, "+url, "通知");
+            }
+        }
+        EmailJob.send_notice(getUser().getUserName(), "流程进度", "你的流程【"+context+"】 已到下一环节, 审批人: "+auditors, "通知");
         return uid;
+    }
+
+    public String getDefaultAuditor(String product_code){
+        return redisUtil.get(Const.ZDH_FLOW_DEFAULT_USER+"_"+product_code, "").toString();
     }
 
     private void debugInfo(Object obj) {

@@ -268,7 +268,7 @@
             title: '参数值',
             sortable:false
         }, {
-            field: 'param_type',
+            field: 'param_type_name',
             title: '参数类型',
             sortable:false
         }, {

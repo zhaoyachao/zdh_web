@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ClassName: LoginService
+ * api登录服务
  *
  * @author zyc-admin
  * @date 2018年2月5日
@@ -43,6 +43,11 @@ public class LoginService {
     MyRealm myRealm;
 
 
+    /**
+     * 登录
+     * @param user
+     * @return
+     */
     @RequestMapping("login")
     @ResponseBody
     public ResultInfo login(User user) {
@@ -62,6 +67,11 @@ public class LoginService {
         return resultInfo;
     }
 
+    /**
+     * 测试登录
+     * @param token token
+     * @return
+     */
     @RequestMapping("test")
     @ResponseBody
     public ResultInfo test(String token) {
@@ -93,6 +103,11 @@ public class LoginService {
         return resultInfo;
     }
 
+    /**
+     * 退出
+     * @param token  token
+     * @return
+     */
     @RequestMapping("logout")
     @ResponseBody
     public ResultInfo logout(String token) {
@@ -126,8 +141,14 @@ public class LoginService {
         return resultInfo;
     }
 
+    /**
+     * 已废弃
+     * @param user
+     * @return
+     */
     @RequestMapping("report")
     @ResponseBody
+    @Deprecated
     public String report(User user) {
 
        List<EtlEcharts> a= null;//taskLogsMapper.slectByOwner("1");

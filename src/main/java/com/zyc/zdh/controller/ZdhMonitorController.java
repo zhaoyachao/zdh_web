@@ -14,11 +14,16 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.monitor.Server;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhLogsService;
+import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
-import org.quartz.SchedulerException;
+import com.zyc.zdh.util.SpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +36,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
+/**
+ * 监控服务
+ */
 @Controller
 public class ZdhMonitorController extends BaseController {
 
@@ -55,24 +60,34 @@ public class ZdhMonitorController extends BaseController {
     @Autowired
     TaskGroupLogInstanceMapper tglim;
 
+    @Autowired
+    private RedisUtil redisUtil;
 
+
+    /**
+     * 监控首页
+     * @return
+     */
     @RequestMapping("/monitor")
     public String index_v1() {
         return "etl/monitor";
     }
 
 
+    /**
+     * 调度任务监控
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/etlEcharts", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String get1() {
+    public String get1() throws Exception {
 //        调度总任务数：
 //        正在执行任务数：
 //        已完成任务数
 //        失败任务数
 
-        //    int total_task_num = quartzJobMapper.selectCountByOwner(getUser().getId());
-
-        List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwner(getUser().getId());
+        List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwner(getOwner());
         if (echartsList == null || echartsList.size() == 0) {
             echartsList = new ArrayList<>();
             EtlEcharts ee = new EtlEcharts();
@@ -88,16 +103,16 @@ public class ZdhMonitorController extends BaseController {
 
     @RequestMapping(value = "/etlEchartsCurrent", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public List<EtlEcharts> get2() {
+    public List<EtlEcharts> get2() throws Exception {
 //        调度总任务数：
 //        正在执行任务数：
 //        已完成任务数
 //        失败任务数
 
-        int total_task_num = quartzJobMapper.selectCountByOwner(getUser().getId());
+        int total_task_num = quartzJobMapper.selectCountByOwner(getOwner());
 
         String etl_date = DateUtil.format(new Date()) + " 00:00:00";
-        List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwnerEtlDate(getUser().getId(), etl_date);
+        List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwnerEtlDate(getOwner(), etl_date);
 
         return echartsList;
     }
@@ -105,60 +120,70 @@ public class ZdhMonitorController extends BaseController {
     @Deprecated
     @RequestMapping(value = "/task_logs", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String task_logs(String start_time, String end_time, String status) {
+    public String task_logs(String start_time, String end_time, String status) throws Exception {
 
         System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
 
-        List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
+        List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
                 Timestamp.valueOf(end_time + " 23:59:59"), status);
 
         return JSON.toJSONString(list);
     }
 
-    @RequestMapping(value = "/task_logs_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 任务实例删除
+     * @param ids id数组
+     * @return
+     */
+    @RequestMapping(value = "/task_logs_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String task_logs_delete(String[] ids) {
+    public ReturnInfo task_logs_delete(String[] ids) {
 
         try {
             System.out.println("开始删除任务日志");
             taskLogInstanceMapper.deleteByIds(ids);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
 
-    @RequestMapping(value = "/task_group_logs_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 组任务删除
+     * @param ids id数组
+     * @return
+     */
+    @RequestMapping(value = "/task_group_logs_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String task_group_logs_delete(String[] ids) {
+    public ReturnInfo task_group_logs_delete(String[] ids) {
 
         try {
             System.out.println("开始删除任务组日志");
             tglim.deleteByIds(ids);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
     /**
      * 杀死单个任务
      *
-     * @param id
+     * @param id 任务实例ID
      * @return
      */
-    @RequestMapping(value = "/kill", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/kill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String killJob(String id) {
+    public ReturnInfo killJob(String id) {
         // check_dep,wait_retry 状态 直接killed
         // dispatch,etl 状态 kill
         try {
@@ -168,11 +193,30 @@ public class ZdhMonitorController extends BaseController {
             if (tli.getStatus().equalsIgnoreCase("killed")) {
                 JobCommon2.insertLog(tli, "INFO", "任务已杀死");
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "杀死任务成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "杀死任务成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "杀死任务失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "杀死任务失败", e);
+        }
+
+    }
+
+    /**
+     * 手动跳过任务
+     * @param id 任务实例ID
+     * @return
+     */
+    @RequestMapping(value = "/skip", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo skipJob(String id) {
+        try {
+            taskLogInstanceMapper.updateSkipById(id);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "手动跳过任务失败", e);
         }
 
     }
@@ -180,12 +224,12 @@ public class ZdhMonitorController extends BaseController {
     /**
      * 杀死任务组
      *
-     * @param id
+     * @param id 任务组实例ID
      * @return
      */
-    @RequestMapping(value = "/killJobGroup", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/killJobGroup", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String killJobGroup(String id) {
+    public ReturnInfo killJobGroup(String id) {
         // check_dep,wait_retry,create,check_dep_finish 状态 直接killed
         // dispatch,etl 状态 kill
         try {
@@ -196,17 +240,23 @@ public class ZdhMonitorController extends BaseController {
             if (tgli.getStatus().equalsIgnoreCase("killed")) {
                 JobCommon2.insertLog(tgli, "INFO", "任务已杀死");
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "杀死任务组成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "杀死任务组成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "杀死任务组失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "杀死任务组失败", e);
         }
     }
 
-    @RequestMapping(value = "/retryJob", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 重试任务实例(废弃)
+     * @param id 任务实例ID
+     * @param new_version 是否最新版
+     * @return
+     */
+    @RequestMapping(value = "/retryJob", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String retryJob(String id, String new_version) {
+    public ReturnInfo retryJob(String id, String new_version) {
         //taskLogInstanceMapper.updateStatusById2("kill",id);
         try {
             TaskLogInstance tli = taskLogInstanceMapper.selectByPrimaryKey(id);
@@ -244,29 +294,30 @@ public class ZdhMonitorController extends BaseController {
             tli.setUpdate_time(new Timestamp(new Date().getTime()));
             tli.setStatus(JobStatus.CREATE.getValue());
             taskLogInstanceMapper.insert(tli);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "重试任务成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "重试任务成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "重试任务失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "重试任务失败", e);
         }
 
     }
 
     /**
-     * @param id
-     * @param new_version
+     * 重试任务组
+     * @param id 任务组实例ID
+     * @param new_version 是否最新版 true/false
      * @param sub_tasks   重试的子任务,不可为空
      * @return
      */
-    @RequestMapping(value = "/retryJobGroup", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/retryJobGroup", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String retryJobGroup(String id, String new_version, String[] sub_tasks) {
+    public ReturnInfo retryJobGroup(String id, String new_version, String[] sub_tasks) {
         //taskLogInstanceMapper.updateStatusById2("kill",id);
         try {
             if (sub_tasks == null || sub_tasks.length < 1) {
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "重试子任务不可为空", "");
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "重试子任务不可为空", "");
             }
             TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(id);
             tgli.setIs_retryed("1");
@@ -287,7 +338,7 @@ public class ZdhMonitorController extends BaseController {
                 tgli.setCommand(qji.getCommand());
                 tgli.setParams(qji.getParams());
                 tgli.setTime_out(qji.getTime_out());
-                tgli.setOwner(getUser().getId());
+                tgli.setOwner(getOwner());
                 tgli.setAlarm_email(qji.getAlarm_email());
                 tgli.setAlarm_sms(qji.getAlarm_sms());
                 tgli.setAlarm_zdh(qji.getAlarm_zdh());
@@ -295,7 +346,7 @@ public class ZdhMonitorController extends BaseController {
                 tgli.setNotice_finish(qji.getNotice_finish());
                 tgli.setNotice_timeout(qji.getNotice_timeout());
             }
-            tgli.setOwner(getUser().getId());
+            tgli.setOwner(getOwner());
 //        tgli.setStatus(JobStatus.NON.getValue());
 //        tgli.setRun_time(new Timestamp(new Date().getTime()));
 //        tgli.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -304,23 +355,27 @@ public class ZdhMonitorController extends BaseController {
 
             JobCommon2.chooseJobBean(qji, 2, tgli, sub_tasks);
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "重试任务组成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "重试任务组成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "重试任务组失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "重试任务组失败", e);
         }
     }
 
 
-    @RequestMapping(value = "/getScheduleTask", produces = "text/html;charset=UTF-8", method = RequestMethod.GET)
+    /**
+     * 获取正在执行中调度任务
+     * @return
+     */
+    @RequestMapping(value = "/getScheduleTask", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String getScheduleTask() {
-        String owner = getUser().getId();
         try {
+            String owner = getOwner();
             return JSON.toJSONString(quartzManager2.getScheduleTask(owner));
-        } catch (SchedulerException e) {
+        } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             return JSON.toJSONString(new JSONObject());
@@ -328,6 +383,11 @@ public class ZdhMonitorController extends BaseController {
     }
 
 
+    /**
+     * 获取spark历史服务器地址
+     * @param executor
+     * @return
+     */
     @RequestMapping(value = "/getSparkMonitor", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getSparkMonitor(String executor) {
@@ -336,6 +396,10 @@ public class ZdhMonitorController extends BaseController {
         return JSON.toJSONString(zdhHaInfo);
     }
 
+    /**
+     * 获取任务总览
+     * @return
+     */
     @RequestMapping(value = "/getTotalNum", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getTotalNum() {
@@ -360,56 +424,115 @@ public class ZdhMonitorController extends BaseController {
     }
 
 
+    /**
+     * 获取任务组实例首页
+     * @return
+     */
     @RequestMapping("/task_group_log_instance_index")
     public String task_group_log_instance_index() {
         return "etl/task_group_log_instance_index";
     }
 
+    /**
+     * 获取任务实例首页
+     * @return
+     */
     @RequestMapping("/task_log_instance_index")
     public String task_log_instance_index() {
         return "etl/task_log_instance_index";
     }
 
+    /**
+     * 任务组重试页面
+     * @return
+     */
     @RequestMapping("/task_group_retry_detail_index")
     public String task_group_retry_detail_index() {
         return "etl/task_group_retry_detail_index";
     }
 
 
+    /**
+     * 任务实例列表
+     * @param status
+     * @param group_id 调度任务ID
+     * @return
+     */
     @RequestMapping(value = "/task_log_instance_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String task_log_instance_list(String status, String group_id) {
 
-        List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs2(getUser().getId(), null,
-                null, status, group_id);
+        try{
+            List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs2(getOwner(), null,
+                    null, status, group_id);
 
-        return JSON.toJSONString(list);
+            return JSON.toJSONString(list);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
+        }
+
     }
 
+    /**
+     * 任务组实例列表
+     * @param start_time
+     * @param end_time
+     * @param status
+     * @param job_id 必填,调度任务ID
+     * @return
+     */
     @RequestMapping(value = "/task_group_log_instance_list",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String task_group_log_instance_list(String start_time, String end_time, String status, String job_id) {
 
-        System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
+        try{
+            System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
 
-        List<TaskGroupLogInstance> list = tglim.selectByTaskLogs2(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
-                Timestamp.valueOf(end_time + " 23:59:59"), status, job_id);
+            List<TaskGroupLogInstance> list = tglim.selectByTaskLogs2(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
+                    Timestamp.valueOf(end_time + " 23:59:59"), status, job_id);
 
-        return JSON.toJSONString(list);
+            return JSON.toJSONString(list);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
+        }
+
     }
 
+    /**
+     * 任务组实例列表
+     * @param start_time
+     * @param end_time
+     * @param status
+     * @return
+     */
     @RequestMapping(value = "/task_group_log_instance_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String task_group_log_instance_list2(String start_time, String end_time, String status) {
 
-        System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
+        try{
+            System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
 
-        List<TaskGroupLogInstance> list = tglim.selectByTaskLogs3(getUser().getId(), Timestamp.valueOf(start_time + " 00:00:00"),
-                Timestamp.valueOf(end_time + " 23:59:59"), status);
+            List<TaskGroupLogInstance> list = tglim.selectByTaskLogs3(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
+                    Timestamp.valueOf(end_time + " 23:59:59"), status);
 
-        return JSON.toJSONString(list);
+            return JSON.toJSONString(list);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
+        }
+
     }
 
+    /**
+     * 任务组实例列表
+     * @param ids id数组
+     * @return
+     */
     @RequestMapping(value = "/task_group_log_instance_list3", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String task_group_log_instance_list3(String[] ids) {
@@ -451,24 +574,42 @@ public class ZdhMonitorController extends BaseController {
         }
 
         String levels = "'DEBUG','WARN','INFO','ERROR'";
-
+        String levels2 = "DEBUG,WARN,INFO,ERROR";
         if (level != null && level.equals("INFO")) {
             levels = "'WARN','INFO','ERROR'";
+            levels2 = "WARN,INFO,ERROR";
         }
         if (level != null && level.equals("WARN")) {
             levels = "'WARN','ERROR'";
+            levels2 = "WARN,ERROR";
         }
         if (level != null && level.equals("ERROR")) {
             levels = "'ERROR'";
+            levels2 = "ERROR";
         }
 
-        List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id, task_log_id, ts_start, ts_end, levels);
-        Iterator<ZdhLogs> it = zhdLogs.iterator();
         StringBuilder sb = new StringBuilder();
-        while (it.hasNext()) {
-            ZdhLogs next = it.next();
-            String info = "调度任务ID:" + next.getJob_id() + ",任务实例ID:" + task_log_id + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
-            sb.append(info + "\r\n");
+        Object logType=redisUtil.get("zdh_log_type");
+        if(logType==null || logType.toString().equalsIgnoreCase(Const.LOG_MYSQL)){
+            List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id, task_log_id, ts_start, ts_end, levels);
+            Iterator<ZdhLogs> it = zhdLogs.iterator();
+            while (it.hasNext()) {
+                ZdhLogs next = it.next();
+                String info = "调度任务ID:" + next.getJob_id() + ",任务实例ID:" + task_log_id + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
+                sb.append(info + "\r\n");
+            }
+        }
+
+        if(logType!=null && logType.toString().equalsIgnoreCase(Const.LOG_MONGODB)){
+            MongoTemplate mongoTemplate = (MongoTemplate) SpringContext.getBean("mongoTemplate");
+            Query query = new Query(Criteria.where("task_logs_id").is(task_log_id));
+            query.addCriteria(Criteria.where("level").in(Arrays.asList(levels2.split(","))));
+            query.addCriteria(Criteria.where("log_time").gte(ts_start).andOperator(Criteria.where("log_time").lte(ts_end)));
+            List<Map> result= mongoTemplate.find(query, Map.class, "zdhLogs");
+            for (Map m:result){
+                String info = "调度任务ID:" + m.get("job_id") + ",任务实例ID:" + task_log_id + ",任务执行时间:" + m.get("log_time").toString() + ",日志[" + m.get("level") + "]:" + m.get("msg");
+                sb.append(info + "\r\n");
+            }
         }
 
         JSONObject jsonObject = new JSONObject();
@@ -488,6 +629,12 @@ public class ZdhMonitorController extends BaseController {
     }
 
 
+    /**
+     * 下载日志
+     * @param response
+     * @param job_id
+     * @param task_log_id 日志
+     */
     @RequestMapping(value = "/download_log", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     @White
@@ -540,14 +687,19 @@ public class ZdhMonitorController extends BaseController {
 
     }
 
+    /**
+     * 系统监控
+     * @return
+     * @throws Exception
+     */
     @White()
-    @RequestMapping(value = "/system_monitor", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/system_monitor", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String getInfo() throws Exception {
+    public ReturnInfo getInfo() throws Exception {
         Server server = new Server();
         server.copyTo();
 
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "成功", server);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "成功", server);
     }
 
     private void debugInfo(Object obj) {

@@ -13,14 +13,40 @@ public class ApprovalAuditorInfo {
     @Column
     private String id;
 
+    /**
+     * 产品代码
+     */
+    private String product_code;//所属产品code
+    /**
+     * 审批code
+     */
     private String code;//'审批流程code'
-    private String level;//'审批节点',
+    /**
+     * 审批环节
+     */
+    private String level;
+    /**
+     * 审批人账号
+     */
     private String auditor_id;//'审批人账号',
+    /**
+     * 审批人用户组
+     */
     private String auditor_group;//'审批人所在组',
+    /**
+     * 创建时间
+     */
     private Timestamp create_time;//'创建时间',
+    /**
+     * 审批说明
+     */
+    private String auditor_context;//环节说明
 
     @Transient
     private String code_name;
+
+    @Transient
+    private String level_name;
 
     @Transient
     private String type;
@@ -109,5 +135,25 @@ public class ApprovalAuditorInfo {
 
     public void setUser_name(String user_name) {
         this.user_name = user_name;
+    }
+
+    public String getLevel_name() {
+        return "第"+getLevel()+"环节";
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
+    }
+
+    public String getAuditor_context() {
+        return auditor_context;
+    }
+
+    public void setAuditor_context(String auditor_context) {
+        this.auditor_context = auditor_context;
     }
 }

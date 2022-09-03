@@ -28,6 +28,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 文件下载服务
+ */
 @Controller
 public class ZdhDownController extends BaseController{
 
@@ -39,28 +42,48 @@ public class ZdhDownController extends BaseController{
     @Autowired
     ZdhNginxMapper zdhNginxMapper;
 
+    /**
+     * 文件下载首页
+     * @return
+     */
     @RequestMapping(value = "/download_index", method = RequestMethod.GET)
     public String download_index() {
 
         return "etl/download_index";
     }
 
+    /**
+     * 文件下载列表
+     * @param file_name 文件名
+     * @return
+     */
     @RequestMapping(value = "/download_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String download_list(String file_name) {
-        List<ZdhDownloadInfo> list = new ArrayList<>();
-        if(!StringUtils.isEmpty(file_name)){
-            file_name=getLikeCondition(file_name);
+        try{
+            List<ZdhDownloadInfo> list = new ArrayList<>();
+            if(!StringUtils.isEmpty(file_name)){
+                file_name=getLikeCondition(file_name);
+            }
+            list = zdhDownloadMapper.slectByOwner(getOwner(), file_name);
+            return JSON.toJSONString(list);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
         }
-        list = zdhDownloadMapper.slectByOwner(getUser().getId(), file_name);
-        return JSON.toJSONString(list);
+
     }
 
-
-    @RequestMapping(value = "/download_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 删除下载
+     * @param ids
+     * @return
+     */
+    @RequestMapping(value = "/download_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String download_delete(String[] ids) {
+    public ReturnInfo download_delete(String[] ids) {
 
         try{
             System.out.println("开始删除下载数据");
@@ -71,17 +94,22 @@ public class ZdhDownController extends BaseController{
                 zdhDownloadInfo.setId(id);
                 zdhDownloadMapper.deleteByPrimaryKey(zdhDownloadInfo);
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
 
     }
 
 
+    /**
+     * 下载文件
+     * @param response
+     * @param id 下载任务ID
+     */
     @RequestMapping(value = "/download_file", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public void download_file(HttpServletResponse response, String id) {
@@ -101,7 +129,7 @@ public class ZdhDownController extends BaseController{
         BufferedInputStream bis = null;
         OutputStream os = null;
         try {
-            ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(getUser().getId());
+            ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(getOwner());
             if (zdhNginx.getHost() != null && !zdhNginx.getHost().equals("")) {
                 //连接sftp 下载
                 SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
@@ -131,7 +159,7 @@ public class ZdhDownController extends BaseController{
         } catch (IOException e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-        } catch (SftpException e) {
+        } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
         } finally {

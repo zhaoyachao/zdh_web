@@ -11,9 +11,6 @@
       $('#exampleTableEvents').attr("data-height",height);
 
 
-
-
-
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
               openTabPage(server_context+"/role_add_index.html?id="+row.id, "角色配置");
@@ -78,59 +75,83 @@
 
       $('#exampleTableEvents').bootstrapTable({
           method: "POST",
-          url: server_context+"/user_operate_log_list",
-      search: true,
-      pagination: true,
-      showRefresh: true,
-      showToggle: true,
-      showColumns: true,
-      iconSize: 'outline',
-      toolbar: '#exampleTableEventsToolbar',
-      icons: {
-        refresh: 'glyphicon-repeat',
-        toggle: 'glyphicon-list-alt',
-        columns: 'glyphicon-list'
-      },
-        columns: [{
-            checkbox: true,
-            field:'state',
-            sortable:true
-        }, {
-            field: 'id',
-            title: 'ID',
-            sortable:true
-        }, {
-            field: 'user_name',
-            title: '用户名',
-            sortable:true
-        },{
-            field: 'operate_url',
-            title: '操作url',
-            sortable:false
-        },{
-            field: 'operate_context',
-            title: '操作说明',
-            sortable:false
-        },{
-            field: 'create_time',
-            title: '操作时间',
-            formatter: getMyDate,
-            sortable:false
-        },{
-            field: 'time',
-            title: '响应时间(秒)',
-            sortable:false
-        },{
-            field: 'operate_input',
-            title: '输入参数',
-            sortable:false,
-            formatter: paramsMatter
-        },{
-            field: 'operate_output',
-            title: '输出参数',
-            sortable:false,
-            formatter: paramsMatter
-        }]
+          url: server_context+"/user_operate_log_list?random="+new Date().getTime(),
+          dataType: 'json',
+          search: true,
+          pagination: true,
+          showRefresh: true,
+          showToggle: true,
+          showColumns: true,
+          sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+          pageNumber: 1,                       //初始化加载第一页，默认第一页
+          pageSize: 10,                       //每页的记录行数（*）
+          iconSize: 'outline',
+          toolbar: '#exampleTableEventsToolbar',
+          icons: {
+            refresh: 'glyphicon-repeat',
+            toggle: 'glyphicon-list-alt',
+            columns: 'glyphicon-list'
+          },
+          queryParams: function (params) {
+              // 此处使用了LayUi组件 是为加载层
+              loadIndex = layer.load(1);
+              let resRepor = {
+                  //服务端分页所需要的参数
+                  limit: params.limit,
+                  offset: params.offset
+              };
+              return resRepor;
+          },
+          // 请求完成回调 可处理请求到的数据
+          responseHandler: res => {
+              // 关闭加载层
+              layer.close(loadIndex);
+              layer.msg(res.msg);
+              return {
+                  "total":res.result.total,
+                  "rows": res.result.rows
+              }
+          },
+          columns: [{
+              checkbox: true,
+              field:'state',
+              sortable:true
+          }, {
+              field: 'id',
+              title: 'ID',
+              sortable:true
+          }, {
+              field: 'user_name',
+              title: '用户名',
+              sortable:true
+          },{
+              field: 'operate_url',
+              title: '操作url',
+              sortable:false
+          },{
+              field: 'operate_context',
+              title: '操作说明',
+              sortable:false
+          },{
+              field: 'create_time',
+              title: '操作时间',
+              formatter: getMyDate,
+              sortable:false
+          },{
+              field: 'time',
+              title: '响应时间(秒)',
+              sortable:false
+          },{
+              field: 'operate_input',
+              title: '输入参数',
+              sortable:false,
+              formatter: paramsMatter
+          },{
+              field: 'operate_output',
+              title: '输出参数',
+              sortable:false,
+              formatter: paramsMatter
+          }]
     });
 
     function openTabPage(url, title) {

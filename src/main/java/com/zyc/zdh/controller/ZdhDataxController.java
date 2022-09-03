@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * ETL-datax服务
+ */
 @Controller
 public class ZdhDataxController extends BaseController{
 
@@ -48,6 +51,10 @@ public class ZdhDataxController extends BaseController{
         return "etl/etl_task_datax_index";
     }
 
+    /**
+     * datax任务新增首页
+     * @return
+     */
     @RequestMapping("/etl_task_datax_add_index")
     public String etl_task_datax_add_index() {
 
@@ -56,49 +63,56 @@ public class ZdhDataxController extends BaseController{
 
 
     /**
-     * datax任务明细
-     * @param datax_context
-     * @param id
+     * datax任务列表
+     * @param datax_context 关键字
+     * @param id 主键ID
      * @return
      */
     @RequestMapping(value = "/etl_task_datax_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String etl_task_datax_list(String datax_context, String id) {
-        EtlTaskDataxInfo etlTaskDataxInfo=new EtlTaskDataxInfo();
-        Example etlTaskDataxInfoExample= new Example(etlTaskDataxInfo.getClass());
-        List<EtlTaskDataxInfo> etlTaskDataxInfos = new ArrayList<>();
-        Example.Criteria cri=etlTaskDataxInfoExample.createCriteria();
-        if(!StringUtils.isEmpty(datax_context)){
-            cri.andLike("datax_context", getLikeCondition(datax_context));
-        }
-        if(!StringUtils.isEmpty(id)){
-            cri.andEqualTo("id", id);
-        }
-        cri.andEqualTo("owner", getUser().getId());
-        cri.andEqualTo("is_delete", Const.NOT_DELETE);
-        etlTaskDataxInfos = etlTaskDataxMapper.selectByExample(etlTaskDataxInfoExample);
+        try{
+            EtlTaskDataxInfo etlTaskDataxInfo=new EtlTaskDataxInfo();
+            Example etlTaskDataxInfoExample= new Example(etlTaskDataxInfo.getClass());
+            List<EtlTaskDataxInfo> etlTaskDataxInfos = new ArrayList<>();
+            Example.Criteria cri=etlTaskDataxInfoExample.createCriteria();
+            if(!StringUtils.isEmpty(datax_context)){
+                cri.andLike("datax_context", getLikeCondition(datax_context));
+            }
+            if(!StringUtils.isEmpty(id)){
+                cri.andEqualTo("id", id);
+            }
+            cri.andEqualTo("owner", getOwner());
+            cri.andEqualTo("is_delete", Const.NOT_DELETE);
+            etlTaskDataxInfos = etlTaskDataxMapper.selectByExample(etlTaskDataxInfoExample);
 
-        return JSON.toJSONString(etlTaskDataxInfos);
+            return JSON.toJSONString(etlTaskDataxInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
+        }
+
     }
 
     /**
      * 删除datax任务
-     * @param ids
+     * @param ids id数组
      * @return
      */
-    @RequestMapping(value = "/etl_task_datax_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_datax_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_datax_delete(String[] ids) {
+    public ReturnInfo etl_task_datax_delete(String[] ids) {
 
         try{
-            etlTaskDataxMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+            etlTaskDataxMapper.deleteLogicByIds("etl_task_datax_info",ids, new Timestamp(new Date().getTime()));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
     }
 
@@ -107,13 +121,13 @@ public class ZdhDataxController extends BaseController{
      * @param etlTaskDataxInfo
      * @return
      */
-    @RequestMapping(value="/etl_task_datax_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/etl_task_datax_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_datax_add(EtlTaskDataxInfo etlTaskDataxInfo) {
+    public ReturnInfo etl_task_datax_add(EtlTaskDataxInfo etlTaskDataxInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskDataxInfo.setOwner(owner);
             debugInfo(etlTaskDataxInfo);
             String id=SnowflakeIdWorker.getInstance().nextId()+"";
@@ -129,32 +143,31 @@ public class ZdhDataxController extends BaseController{
                 etlTaskUpdateLogs.setId(etlTaskDataxInfo.getId().toString());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskDataxInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
 
     /**
      * 更新datax任务
      * @param etlTaskDataxInfo
-     * @param jar_files
      * @return
      */
-    @RequestMapping(value = "/etl_task_datax_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_datax_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_datax_update(EtlTaskDataxInfo etlTaskDataxInfo,MultipartFile[] jar_files) {
+    public ReturnInfo etl_task_datax_update(EtlTaskDataxInfo etlTaskDataxInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskDataxInfo.setOwner(owner);
             String id=etlTaskDataxInfo.getId();
             etlTaskDataxInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -171,17 +184,17 @@ public class ZdhDataxController extends BaseController{
                 etlTaskUpdateLogs.setId(etlTaskDataxInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskDataxInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
 
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
     }
 

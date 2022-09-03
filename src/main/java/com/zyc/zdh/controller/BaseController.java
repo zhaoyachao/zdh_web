@@ -29,6 +29,14 @@ public class BaseController {
         return user;
     }
 
+    public String getOwner() throws Exception {
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        if(user == null){
+            throw new Exception("获取用户失败,请检查用户是否登录");
+        }
+        return user.getUserName();
+    }
+
     /**
      * 返回 %conditon% 格式
      * @param condition

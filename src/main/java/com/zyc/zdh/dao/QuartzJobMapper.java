@@ -7,10 +7,24 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 
 public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
+
+
+    @Update({
+            "<script>",
+            "update ${table_name} set is_delete=1 , update_time = #{update_time} where job_id in ",
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"
+    }
+    )
+    @Override
+    public int deleteLogicByIds(@Param("table_name") String table_name, @Param("ids") String[] ids, @Param("update_time") Timestamp update_time);
 
     @Update({ "update quartz_job_info set status = #{status} where job_id = #{job_id}" })
     public int updateStatus(@Param("job_id") String job_id,@Param("status") String status);
@@ -25,11 +39,11 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
     public int updateTaskLogId(@Param("job_id") String job_id,@Param("task_log_id") String task_log_id);
 
 
-    @Select(value="select * from quartz_job_info where owner=#{owner}")
+    @Select(value="select * from quartz_job_info where owner=#{owner} and is_delete=0")
     public List<QuartzJobInfo> selectByOwner(@Param("owner") String owner);
 
     //finish,etl,error
-    @Select(value = "select count(1),last_status from quartz_job_info where owner=#{owner} group by last_status")
+    @Select(value = "select count(1),last_status from quartz_job_info where owner=#{owner} and is_delete=0 group by last_status")
     public int selectCountByOwnerStatus(@Param("owner") String owner,@Param("last_status") String last_status);
 
     @Select(value = "select count(1) from quartz_job_info where owner=#{owner}")
@@ -40,7 +54,7 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
             "select",
             "*",
             "from quartz_job_info",
-            "where owner=#{owner}",
+            "where owner=#{owner} and is_delete=0",
             " AND status='running'",
             "<when test='job_ids!=null and job_ids.size > 0'>",
             " and job_id in ",
@@ -55,7 +69,7 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
 
     @Select({"<script>",
             "SELECT * FROM quartz_job_info",
-            "WHERE owner=#{owner}",
+            "WHERE owner=#{owner} and is_delete=0",
             "<when test='etl_context!=null and etl_context !=\"\"'>",
             "AND etl_context like #{etl_context}",
             "</when>",
@@ -85,9 +99,9 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
             "select",
             "*",
             "from quartz_job_info",
-            "where",
+            "where is_delete=0",
             "<when test='last_status!=null and last_status!=\"\"'>",
-            " last_status=#{last_status}",
+            " and last_status=#{last_status}",
             "</when>",
             "</script>"
     })
@@ -105,9 +119,9 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
             "select",
             "*",
             "from quartz_job_info",
-            "where",
+            "where is_delete=0",
             "<when test='job_type!=null and job_type!=\"\"'>",
-            " job_type=#{job_type}",
+            " and job_type=#{job_type}",
             "</when>",
             "</script>"
     })

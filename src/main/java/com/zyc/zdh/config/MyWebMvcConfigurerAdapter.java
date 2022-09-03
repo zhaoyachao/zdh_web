@@ -71,7 +71,7 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 		//registry.addResourceHandler("/**").addResourceLocations("/");
 		String project_pre="";
 		registry.addResourceHandler(project_pre+"/register**",project_pre+"/statics/**",project_pre+"/css/**",project_pre+"/js/**",project_pre+"/fonts/**",
-				project_pre+"/img/**",
+				project_pre+"/img/**",project_pre+"/smart_doc/**",
 				project_pre+"/plugins/**",project_pre+"/zdh_flow/**",project_pre+"/favicon.ico",project_pre+"/etl/js/**",project_pre+"/etl/css/**",
 				project_pre+"/statics/**",project_pre+"/404**",project_pre+"/cron/**",project_pre+"/download/**")
 				.addResourceLocations(ev.getProperty("web.path"))
@@ -82,6 +82,7 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 				.addResourceLocations(ev.getProperty("web.path")+"js/")
 				.addResourceLocations(ev.getProperty("web.path")+"fonts/")
 				.addResourceLocations(ev.getProperty("web.path")+"img/")
+				.addResourceLocations(ev.getProperty("web.path")+"smart_doc/")
 				.addResourceLocations(ev.getProperty("web.path")+"plugins/");
 
 	}

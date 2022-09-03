@@ -1355,7 +1355,7 @@
             //column=guid()
             column = new Date().getTime()
         }
-        var guid_str = guid()
+        var guid_str = guid();
         // newFlag == 1的数据为新规的数据
         $('#exampleTableEvents').bootstrapTable('insertRow', {
             index: index,
@@ -1413,7 +1413,7 @@
                 column_regex: tableData[i].column_regex,
                 column_desc: tableData[i].column_desc,
                 column_alias: tableData[i].column_alias
-            }
+            };
             column_datas.push(column_data)
         }
         //alert($("#etl_task_add_form").serialize()+"&"+"column_datas="+JSON.stringify(column_datas))

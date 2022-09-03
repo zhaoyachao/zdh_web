@@ -73,18 +73,30 @@ public class ZdhUnstructureController extends BaseController{
         return "etl/etl_task_unstructure_index";
     }
 
+    /**
+     * 非结构化任务新增首页
+     * @return
+     */
     @RequestMapping("/etl_task_unstructure_add_index")
     public String etl_task_unstructure_add_index() {
 
         return "etl/etl_task_unstructure_add_index";
     }
 
+    /**
+     * 非结构化任务上传首页
+     * @return
+     */
     @RequestMapping("/etl_task_unstructure_upload_index")
     public String etl_task_unstructure_upload_index() {
 
         return "etl/etl_task_unstructure_upload_index";
     }
 
+    /**
+     * 非结构化任务日志首页
+     * @return
+     */
     @RequestMapping("/etl_task_unstructure_log_index")
     public String etl_task_unstructure_log_index() {
 
@@ -93,66 +105,72 @@ public class ZdhUnstructureController extends BaseController{
 
     /**
      *  非结构化任务列表
-     * @param unstructure_context
-     * @param id
+     * @param unstructure_context 关键字
+     * @param id id
      * @return
      */
-    @RequestMapping(value = "/etl_task_unstructure_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_unstructure_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String etl_task_unstructure_list(String unstructure_context, String id) {
 
-        List<EtlTaskUnstructureInfo> etlTaskUnstructureInfos = new ArrayList<>();
+        try{
+            List<EtlTaskUnstructureInfo> etlTaskUnstructureInfos = new ArrayList<>();
 
-        Example example=new Example(EtlTaskUnstructureInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("owner",getUser().getId());
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        if(!StringUtils.isEmpty(id)){
-            criteria.andEqualTo("id", id);
-        }
-        if(!StringUtils.isEmpty(unstructure_context)){
-            criteria.andLike("unstructure_context", getLikeCondition(unstructure_context));
-        }
-        etlTaskUnstructureInfos = etlTaskUnstructureMapper.selectByExample(example);
+            Example example=new Example(EtlTaskUnstructureInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("owner",getOwner());
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            if(!StringUtils.isEmpty(id)){
+                criteria.andEqualTo("id", id);
+            }
+            if(!StringUtils.isEmpty(unstructure_context)){
+                criteria.andLike("unstructure_context", getLikeCondition(unstructure_context));
+            }
+            etlTaskUnstructureInfos = etlTaskUnstructureMapper.selectByExample(example);
 
-        return JSON.toJSONString(etlTaskUnstructureInfos);
+            return JSON.toJSONString(etlTaskUnstructureInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
+        }
+
     }
 
     /**
      * 删除 非结构化任务
-     * @param ids
+     * @param ids id数组
      * @return
      */
-    @RequestMapping(value = "/etl_task_unstructure_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_unstructure_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_unstructure_delete(String[] ids) {
+    public ReturnInfo etl_task_unstructure_delete(String[] ids) {
 
         try{
-            etlTaskUnstructureMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
-            int i=1/0;
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+            etlTaskUnstructureMapper.deleteLogicByIds("etl_task_unstructure_info",ids, new Timestamp(new Date().getTime()));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
     }
 
     /**
      * 新增 非结构化任务
      * @param etlTaskUnstructureInfo
-     * @param jar_files
+     * @param jar_files 文件
      * @return
      */
-    @RequestMapping(value="/etl_task_unstructure_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/etl_task_unstructure_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_unstructure_add(EtlTaskUnstructureInfo etlTaskUnstructureInfo,MultipartFile[] jar_files) {
+    public ReturnInfo etl_task_unstructure_add(EtlTaskUnstructureInfo etlTaskUnstructureInfo,MultipartFile[] jar_files) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskUnstructureInfo.setOwner(owner);
             String id=SnowflakeIdWorker.getInstance().nextId() + "";
             etlTaskUnstructureInfo.setId(id);
@@ -170,32 +188,32 @@ public class ZdhUnstructureController extends BaseController{
                 etlTaskUpdateLogs.setId(etlTaskUnstructureInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskUnstructureInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
 
     /**
      * 更新 非结构化任务
      * @param etlTaskUnstructureInfo
-     * @param jar_files
+     * @param jar_files 文件
      * @return
      */
-    @RequestMapping(value = "/etl_task_unstructure_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_unstructure_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String sql_task_update(EtlTaskUnstructureInfo etlTaskUnstructureInfo,MultipartFile[] jar_files) {
+    public ReturnInfo sql_task_update(EtlTaskUnstructureInfo etlTaskUnstructureInfo,MultipartFile[] jar_files) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             etlTaskUnstructureInfo.setOwner(owner);
             etlTaskUnstructureInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskUnstructureInfo.setIs_delete(Const.NOT_DELETE);
@@ -212,31 +230,36 @@ public class ZdhUnstructureController extends BaseController{
                 etlTaskUpdateLogs.setId(etlTaskUnstructureInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskUnstructureInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
-                etlTaskUpdateLogs.setOwner(getUser().getId());
+                etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
             }
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
 
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
     }
 
     /**
      * 手动上传文件-生成源信息
      * @param etlTaskUnstructureInfo
-     * @param files
+     * @param files 文件
      * @return
      */
-    @RequestMapping(value="/etl_task_unstructure_upload", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/etl_task_unstructure_upload", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_unstructure_upload(EtlTaskUnstructureInfo etlTaskUnstructureInfo,MultipartFile[] files) {
-        String owner = getUser().getId();
+    public ReturnInfo etl_task_unstructure_upload(EtlTaskUnstructureInfo etlTaskUnstructureInfo,MultipartFile[] files) {
+        String owner = null;
+        try {
+            owner = getOwner();
+        } catch (Exception e) {
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+        }
 
         String id=etlTaskUnstructureInfo.getId();
         etlTaskUnstructureInfo = etlTaskUnstructureMapper.selectByPrimaryKey(id);
@@ -255,7 +278,7 @@ public class ZdhUnstructureController extends BaseController{
             etlTaskUnstructureLogInfo.setOwner(owner);
         } catch (Exception e) {
             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
         try{
 
@@ -323,7 +346,7 @@ public class ZdhUnstructureController extends BaseController{
                     //解析etl模板,目前先支持当前时间
                     TaskLogInstance tli=new TaskLogInstance();
                     tli.setCur_time(new Timestamp(new Date().getTime()));
-                    tli.setOwner(getUser().getId());
+                    tli.setOwner(getOwner());
                     etl_sqls = JobCommon2.getUnstructureEtlSql(tli, etlTaskUnstructureInfo);
 
                 }
@@ -339,34 +362,34 @@ public class ZdhUnstructureController extends BaseController{
                 etlTaskUnstructureLogInfo.setStatus(Const.FALSE);
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 etlTaskUnstructureLogMapper.insert(etlTaskUnstructureLogInfo);
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", result[1]);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", result[1]);
             }
             etlTaskUnstructureLogInfo.setStatus(Const.TRUR);
             etlTaskUnstructureLogMapper.insert(etlTaskUnstructureLogInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             etlTaskUnstructureLogInfo.setStatus(Const.FALSE);
             etlTaskUnstructureLogInfo.setMsg(e.getMessage());
             etlTaskUnstructureLogMapper.insert(etlTaskUnstructureLogInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
 
     /**
      *  非结构化任务删除文件
-     * @param ids
+     * @param ids id数组
      * @param request
      * @return
      */
-    @RequestMapping(value = "/etl_task_unstructure_del_file", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_unstructure_del_file", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_unstructure_del_file(String[] ids, HttpServletRequest request) {
+    public ReturnInfo etl_task_unstructure_del_file(String[] ids, HttpServletRequest request) {
         try{
             String json_str = JSON.toJSONString(request.getParameterMap());
-            String owner = getUser().getId();
+            String owner = getOwner();
 
             List<JarFileInfo> jarFileInfos= jarFileMapper.selectByParams(owner,ids);
             ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
@@ -393,26 +416,26 @@ public class ZdhUnstructureController extends BaseController{
                 }
                 jarFileMapper.deleteByPrimaryKey(jarFileInfo.getId());
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除文件成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除文件成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除文件失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除文件失败", e);
         }
     }
 
     /**
      *  非结构化任务已上传文件明细
-     * @param id
+     * @param id id
      * @param request
      * @return
      */
     @RequestMapping(value = "/etl_task_unstructure_file_list", method = RequestMethod.GET)
     @ResponseBody
-    public List<JarFileInfo> etl_task_unstructure_file_list(String id, HttpServletRequest request) {
+    public List<JarFileInfo> etl_task_unstructure_file_list(String id, HttpServletRequest request) throws Exception {
         String json_str = JSON.toJSONString(request.getParameterMap());
-        String owner = getUser().getId();
+        String owner = getOwner();
         JarFileInfo jarFileInfo = new JarFileInfo();
         jarFileInfo.setOwner(owner);
         jarFileInfo.setJar_etl_id(id);
@@ -430,23 +453,28 @@ public class ZdhUnstructureController extends BaseController{
     @ResponseBody
     public String etl_task_unstructure_log_list(String id, String unstructure_id) {
 
-        List<EtlTaskUnstructureLogInfo> etlTaskUnstructureInfos = new ArrayList<>();
+        try{
+            List<EtlTaskUnstructureLogInfo> etlTaskUnstructureInfos = new ArrayList<>();
 
-        Example example=new Example(EtlTaskUnstructureLogInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("owner",getUser().getId());
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        if(!StringUtils.isEmpty(id)){
-            criteria.andEqualTo("id", id);
+            Example example=new Example(EtlTaskUnstructureLogInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("owner",getOwner());
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            if(!StringUtils.isEmpty(id)){
+                criteria.andEqualTo("id", id);
+            }
+            if(!StringUtils.isEmpty(unstructure_id)){
+                criteria.andEqualTo("unstructure_id", unstructure_id);
+            }
+            etlTaskUnstructureInfos = etlTaskUnstructureLogMapper.selectByExample(example);
+
+            return JSON.toJSONString(etlTaskUnstructureInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return JSON.toJSONString(e.getMessage());
         }
-        if(!StringUtils.isEmpty(unstructure_id)){
-            criteria.andEqualTo("unstructure_id", unstructure_id);
-        }
 
-
-        etlTaskUnstructureInfos = etlTaskUnstructureLogMapper.selectByExample(example);
-
-        return JSON.toJSONString(etlTaskUnstructureInfos);
     }
 
     /**
@@ -454,19 +482,19 @@ public class ZdhUnstructureController extends BaseController{
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/etl_task_unstructure_log_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_unstructure_log_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String etl_task_unstructure_log_delete(String[] ids) {
+    public ReturnInfo etl_task_unstructure_log_delete(String[] ids) {
 
         try{
-            etlTaskUnstructureLogMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+            etlTaskUnstructureLogMapper.deleteLogicByIds("etl_task_unstructure_log_info",ids, new Timestamp(new Date().getTime()));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
     }
 

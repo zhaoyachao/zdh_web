@@ -219,6 +219,19 @@ public class RedisUtil {
 	}
 
 	/**
+	 * 根据key 获取缓存,增加默认值实现
+	 * @param key
+	 * @param default_value
+	 * @return
+	 */
+	public Object get(final String key, final String default_value) {
+		Object value = get(key);
+		if(value==null){
+			return default_value;
+		}
+		return value;
+	}
+	/**
 	 * 根据key获取集合类型 因myRedis~keys
 	 * 的集合是redis自己插入的没有使用序列化，所以不能直接使用redisTemplate.opsForZSet()
 	 * 

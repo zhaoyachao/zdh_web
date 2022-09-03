@@ -13,12 +13,33 @@ public class ApprovalEventInfo {
     @Column
     private String id;
 
-    private String code;//'审批流程code'
-    private String event_code;//事件code,
-    private String event_context;//事件说明,
+    /**
+     * 审批code
+     */
+    private String code;
+    /**
+     * 事件code
+     */
+    private String event_code;
+    /**
+     * 事件说明
+     */
+    private String event_context;
+    /**
+     * 创建时间
+     */
     private Timestamp create_time;//'创建时间',
+    /**
+     * 更新时间
+     */
     private Timestamp update_time;//'更新时间',
+    /**
+     * 跳过的审批账号,多个逗号分割
+     */
     private String skip_account;//跳过审批用户
+    /**
+     * 回调接口
+     */
     private String call_back;//回调接口
 
     @Transient

@@ -1,20 +1,16 @@
 package com.zyc.zdh.api;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.ZdhProcessFlowController;
 import com.zyc.zdh.dao.ApprovalEventMapper;
 import com.zyc.zdh.dao.PermissionMapper;
 import com.zyc.zdh.dao.ProcessFlowMapper;
 import com.zyc.zdh.dao.ProductTagMapper;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.monitor.Sys;
 import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
 import org.apache.shiro.session.Session;
-import org.omg.CORBA.ServerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * ClassName: ProcessFlowApi
+ * api审批流服务
  *
  * @author zyc-admin
  * @date 2022年6月11日
@@ -65,26 +61,26 @@ public class ProcessFlowApi {
      */
     @RequestMapping(value = "call_back_test", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String call_back_test(@RequestBody ProcessFlowInfo processFlowInfo, HttpServletRequest request) {
+    public ReturnInfo call_back_test(@RequestBody ProcessFlowInfo processFlowInfo, HttpServletRequest request) {
         try{
             System.out.println(JSON.toJSONString(request.getParameterMap()));
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "审批流回调成功", processFlowInfo);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "审批流回调成功", processFlowInfo);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "审批流回调失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "审批流回调失败", e.getMessage());
         }
     }
 
     /**
      * 创建审批流
-     * @param user_account
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param user_account 用户账号
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "create_process_by_user", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "create_process_by_user", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String create_process(String user_account, String event_code,String event_context,String event_id,String product_code,String ak, String sk) {
+    public ReturnInfo create_process(String user_account, String event_code,String event_context,String event_id,String product_code,String ak, String sk) {
 
         try{
             check_aksk(product_code,ak,sk);
@@ -116,63 +112,62 @@ public class ProcessFlowApi {
             List<ApprovalEventInfo> approvalEventInfos = approvalEventMapper.selectByExample(example1);
             if(approvalEventInfos!=null && approvalEventInfos.size()>0){
                 if(Arrays.asList(approvalEventInfos.get(0).getSkip_account().split(",")).contains(user_account)){
-                    return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功,且跳过审批", "skip");
+                    return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功,且跳过审批", "skip");
                 }
             }
 
-            String flow_id = zdhProcessFlowController.createProcess(user_account,pui.getUser_group(),event_code, event_context, event_id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "创建审批流成功,返回审批流ID", flow_id);
+            String flow_id = zdhProcessFlowController.createProcess(user_account,pui.getUser_group(),event_code, event_context, event_id, product_code);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "创建审批流成功,返回审批流ID", flow_id);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "创建审批流失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "创建审批流失败", e.getMessage());
         }
     }
 
     /**
      * 获取审批流信息
-     * @param user_account
-     * @param flow_id
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param user_account 用户账号
+     * @param flow_id 审批流ID
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "process_detail_by_flow_id", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "process_detail_by_flow_id", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String process_flow_detail(String user_account,String flow_id,String product_code,String ak, String sk) {
+    public ReturnInfo process_flow_detail(String user_account,String flow_id,String product_code,String ak, String sk) {
         try {
             check_aksk(product_code,ak,sk);
             List<ProcessFlowInfo> pfis = processFlowMapper.selectByFlowId(flow_id, user_account);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取流程进度", pfis);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程进度", pfis);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "获取流程进度", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "获取流程进度", e);
         }
 
     }
 
     /**
      * 审批流-操作,审批,不通过,撤销
-     * @param id
-     * @param status
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param id 流程ID
+     * @param status 状态 0:未审批,1:审批完成,2:不通过,3:撤销
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "process_status_by_flow_status", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "process_status_by_flow_status", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String process_flow_status(String id, String status, String product_code,String ak, String sk) {
+    public ReturnInfo process_flow_status(String id, String status, String product_code,String ak, String sk) {
         ProcessFlowInfo pfi_old = processFlowMapper.selectByPrimaryKey(id);
         processFlowMapper.updateStatus(id, status);
         if (status.equalsIgnoreCase(Const.STATUS_SUCCESS)) {
             //设置下游流程可展示
             processFlowMapper.updateIsShow(id, Const.SHOW);
         }
-
-        //最后一个审批,表示审批流程结束,用户决定审批完成的动作(other_handle 状态给调用方使用,每次用户触发审批,需要检查other_handle)
+        //最后一个审批,表示审批流程结束,用户决定审批完成的动作(other_handle 状态给调用方使用,每次用户触发审批,需要检查other_handle),此处不加回调,因当前属于同步操作,用户可直接感知到审批结果
         ProcessFlowInfo processFlowInfo = processFlowMapper.selectByPrimaryKey(id);
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "审批", processFlowInfo);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "审批", processFlowInfo);
     }
 
 

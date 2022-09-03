@@ -71,12 +71,20 @@ public class ZdhIssueDataController extends BaseController {
     @Autowired
     ApprovalEventMapper approvalEventMapper;
 
+    /**
+     * 数据发布首页
+     * @return
+     */
     @RequestMapping("/data_issue_index")
     public String data_issue_index() {
 
         return "etl/data_issue_index";
     }
 
+    /**
+     * 数据发布新增首页
+     * @return
+     */
     @RequestMapping("/data_issue_add_index")
     public String data_issue_add_index() {
 
@@ -84,7 +92,7 @@ public class ZdhIssueDataController extends BaseController {
     }
 
     /**
-     * 数据查询首页
+     * 数据集市查询首页
      *
      * @return
      */
@@ -95,7 +103,7 @@ public class ZdhIssueDataController extends BaseController {
     }
 
     /**
-     * 申请首页
+     * 数据申请首页
      *
      * @return
      */
@@ -106,7 +114,7 @@ public class ZdhIssueDataController extends BaseController {
     }
 
     /**
-     * 表明细首页
+     * 数据明细首页
      *
      * @return
      */
@@ -120,7 +128,7 @@ public class ZdhIssueDataController extends BaseController {
     /**
      * 根据id获取对应的数据明细
      *
-     * @param id
+     * @param id 发布数据ID
      * @return
      */
     @RequestMapping(value = "/data_ware_house_list", method=RequestMethod.POST,produces = "text/html;charset=UTF-8")
@@ -132,9 +140,9 @@ public class ZdhIssueDataController extends BaseController {
     }
 
     /**
-     * 根据条件模糊查询发布数据源
+     * 根据条件模糊查询发布数据
      *
-     * @param issue_context
+     * @param issue_context 关键字
      * @return
      */
     @RequestMapping(value = "/data_ware_house_list2",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -157,9 +165,9 @@ public class ZdhIssueDataController extends BaseController {
      */
     @RequestMapping(value = "/data_ware_house_list3", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_list3(String issue_context) {
+    public String data_ware_house_list3(String issue_context) throws Exception {
         List<IssueDataInfo> list = new ArrayList<>();
-        String owner = getUser().getId();
+        String owner = getOwner();
         if(!StringUtils.isEmpty(issue_context)){
             issue_context = getLikeCondition(issue_context);
         }
@@ -169,16 +177,21 @@ public class ZdhIssueDataController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/data_ware_house_del", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 发布数据删除
+     * @param id 主键ID
+     * @return
+     */
+    @RequestMapping(value = "/data_ware_house_del", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_del(String id) {
+    public ReturnInfo data_ware_house_del(String id) {
         try {
             int result = issueDataMapper.deleteByPrimaryKey(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
@@ -190,13 +203,13 @@ public class ZdhIssueDataController extends BaseController {
      * @param issueDataInfo
      * @return
      */
-    @RequestMapping(value = "/issue_data_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/issue_data_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String issue_data_add(IssueDataInfo issueDataInfo) {
+    public ReturnInfo issue_data_add(IssueDataInfo issueDataInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
-            String owner = getUser().getId();
+            String owner = getOwner();
             String issue_id = SnowflakeIdWorker.getInstance().nextId() + "";
             issueDataInfo.setId(issue_id);
             issueDataInfo.setOwner(owner);
@@ -234,28 +247,33 @@ public class ZdhIssueDataController extends BaseController {
                     //跳过审批
                     issueDataInfo.setStatus(Const.STATUS_PUB);
                     issueDataMapper.updateByPrimaryKey(issueDataInfo);
-                    return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功,且跳过审批", null);
+                    return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功,且跳过审批", null);
                 }
             }
             zdhProcessFlowController.createProcess(event_code, "发布数据-" + issueDataInfo.getIssue_context(), issue_id);
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功,等待审批", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功,等待审批", null);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("数据发布异常, {} : ", e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
-    @RequestMapping(value = "/issue_data_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 发布数据更新
+     * @param issueDataInfo
+     * @return
+     */
+    @RequestMapping(value = "/issue_data_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String issue_data_update(IssueDataInfo issueDataInfo) {
+    public ReturnInfo issue_data_update(IssueDataInfo issueDataInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
             IssueDataInfo idi = issueDataMapper.selectByPrimaryKey(issueDataInfo);
 
-            String owner = getUser().getId();
+            String owner = getOwner();
             issueDataInfo.setOwner(owner);
             issueDataInfo.setStatus(Const.STATUS_PUB);
             if (!issueDataInfo.getData_source_type_input().equalsIgnoreCase("jdbc") && !StringUtils.isEmpty(issueDataInfo.getData_sources_file_name_input())) {
@@ -285,29 +303,34 @@ public class ZdhIssueDataController extends BaseController {
                 send_email_downstream(issueDataInfo2, change_message);
 
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
 
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
 
     }
 
-    @RequestMapping(value = "/issue_data_delete", method = RequestMethod.POST)
+    /**
+     * 发布数据删除
+     * @param ids id数组
+     * @return
+     */
+    @RequestMapping(value = "/issue_data_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String issue_data_delete(String[] ids) {
+    public ReturnInfo issue_data_delete(String[] ids) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
 
         try {
             issueDataMapper.deleteBatchByIds(ids);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
 
@@ -318,34 +341,31 @@ public class ZdhIssueDataController extends BaseController {
      * @param issue_id 数据仓库发布数据id
      * @return
      */
-    @RequestMapping(value = "/data_apply_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_apply_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String data_apply_add(String issue_id) {
+    public ReturnInfo data_apply_add(String issue_id) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         //根据发布id,获取数据信息,找到对应的管理者
         try {
             IssueDataInfo issueDataInfo = issueDataMapper.selectById(issue_id);
             String owner = issueDataInfo.getOwner();
 
-            String current_owner = getUser().getId();
+            String current_owner = getOwner();
 
             if (owner.equalsIgnoreCase(current_owner)) {
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前数据不用申请,即可使用", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前数据不用申请,即可使用", null);
             }
 
             //判断是否已经申请过
             Example example1=new Example(ApplyInfo.class);
             Example.Criteria criteria1=example1.createCriteria();
-            criteria1.andEqualTo("owner", getUser().getId());
+            criteria1.andEqualTo("owner", owner);
             criteria1.andEqualTo("issue_id", issue_id);
             criteria1.andIn("status", Arrays.asList(new String[]{Const.APPLY_STATUS_INIT,Const.APPLY_STATUS_SUCCESS}));
-//            ApplyInfo app = new ApplyInfo();
-//            app.setOwner(getUser().getId());
-//            app.setIssue_id(issue_id);
             List<ApplyInfo> applyInfos = applyMapper.selectByExample(example1);
             if (applyInfos != null && applyInfos.size() > 0) {
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前数据以申请完成/正在申请中,不可重复申请", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前数据以申请完成/正在申请中,不可重复申请", null);
             }
 
             String id = SnowflakeIdWorker.getInstance().nextId() + "";
@@ -389,111 +409,131 @@ public class ZdhIssueDataController extends BaseController {
                     //跳过审批
                     applyInfo.setStatus(Const.APPLY_STATUS_SUCCESS);
                     applyMapper.updateByPrimaryKey(applyInfo);
-                    return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "申请成功,且跳过审批", null);
+                    return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "申请成功,且跳过审批", null);
                 }
             }
 
             zdhProcessFlowController.createProcess(event_code, "申请数据-" + applyInfo.getApply_context(), applyInfo.getId());
 
             //EmailJob会自动加载通知信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "申请以发起", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "申请以发起", null);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "申请失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "申请失败", e);
         }
 
-    }
-
-    @RequestMapping(value = "/data_apply_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String data_apply_list(String apply_context) {
-
-        ApplyInfo applyInfo = new ApplyInfo();
-        applyInfo.setOwner(getUser().getId());
-        if(!StringUtils.isEmpty(apply_context)){
-            apply_context = getLikeCondition(apply_context);
-        }
-        List<ApplyInfo> applyInfos = applyMapper.selectByParams(apply_context, null, null, getUser().getId());
-        String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取申请明细", applyInfos);
-        return json;
-    }
-
-    @RequestMapping(value = "/data_apply_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String data_apply_list2(String apply_context) {
-
-        ApplyInfo applyInfo = new ApplyInfo();
-        applyInfo.setOwner(getUser().getId());
-        if(!StringUtils.isEmpty(apply_context)){
-            apply_context = getLikeCondition(apply_context);
-        }
-        List<ApplyIssueInfo> applyInfos = applyMapper.selectByParams3(apply_context, "1", null, getUser().getId());
-        String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取申请明细", applyInfos);
-        return json;
-    }
-
-    @RequestMapping(value = "/data_apply_list3", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String data_apply_list3(String id) {
-
-        ApplyInfo applyInfo = new ApplyInfo();
-        applyInfo.setOwner(getUser().getId());
-        ApplyIssueInfo applyInfos = applyMapper.selectByParams4(id, "1", null, getUser().getId());
-        String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取申请明细", applyInfos);
-        return json;
     }
 
     /**
+     * 数据申请列表
+     * @param apply_context 关键字
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/data_apply_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo data_apply_list(String apply_context) throws Exception {
+
+        ApplyInfo applyInfo = new ApplyInfo();
+        applyInfo.setOwner(getOwner());
+        if(!StringUtils.isEmpty(apply_context)){
+            apply_context = getLikeCondition(apply_context);
+        }
+        List<ApplyInfo> applyInfos = applyMapper.selectByParams(apply_context, null, null, getOwner());
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取申请明细", applyInfos);
+    }
+
+    /**
+     * 数据申请
+     * @param apply_context 关键字
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/data_apply_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo data_apply_list2(String apply_context) throws Exception {
+
+        ApplyInfo applyInfo = new ApplyInfo();
+        applyInfo.setOwner(getOwner());
+        if(!StringUtils.isEmpty(apply_context)){
+            apply_context = getLikeCondition(apply_context);
+        }
+        List<ApplyIssueInfo> applyInfos = applyMapper.selectByParams3(apply_context, "1", null, getOwner());
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取申请明细", applyInfos);
+    }
+
+    /**
+     * 根据主键查询数据申请信息
+     * @param id 申请任务主键ID
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/data_apply_list3", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo data_apply_list3(String id) throws Exception {
+
+        ApplyInfo applyInfo = new ApplyInfo();
+        applyInfo.setOwner(getOwner());
+        ApplyIssueInfo applyInfos = applyMapper.selectByParams4(id, "1", null, getOwner());
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取申请明细", applyInfos);
+    }
+
+    /**
+     * 取消申请
      * @param id
      * @return
      */
-    @RequestMapping(value = "/data_apply_cancel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_apply_cancel", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_apply_cancel(String id) {
+    public ReturnInfo data_apply_cancel(String id) {
         try {
             applyMapper.updateStatus(id, Const.STATUS_RECALL);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "撤销申请完成", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "撤销申请完成", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "撤销申请失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "撤销申请失败", e);
         }
     }
 
     /**
-     * 审批明细
+     * 审批列表
      *
-     * @param apply_context
+     * @param apply_context 关键字
      * @return
      */
-    @RequestMapping(value = "/data_approve_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_approve_list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_approve_list(String apply_context) {
+    public ReturnInfo data_approve_list(String apply_context) throws Exception {
 
         ApplyInfo applyInfo = new ApplyInfo();
-        applyInfo.setApprove_id(getUser().getId());
+        applyInfo.setApprove_id(getOwner());
         if(!StringUtils.isEmpty(apply_context)){
             apply_context = getLikeCondition(apply_context);
         }
-        List<ApplyInfo> applyInfos = applyMapper.selectByParams2(apply_context, getUser().getId(), null);
-        String json = ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取审批明细", applyInfos);
-        return json;
+        List<ApplyInfo> applyInfos = applyMapper.selectByParams2(apply_context, getOwner(), null);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取审批明细", applyInfos);
     }
 
-    @RequestMapping(value = "/data_approve", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 数据审批
+     * @param id 申请任务ID
+     * @param status 审批状态
+     * @return
+     */
+    @RequestMapping(value = "/data_approve", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_approve(String id, String status) {
+    public ReturnInfo data_approve(String id, String status) {
         try {
             applyMapper.updateStatus(id, status);
-            //redisUtil.remove("zdhapplyinfos_"+getUser().getId());
             EmailJob.apply_notice();
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "审批流程结束", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "审批流程结束", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "审批失败", e);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "审批失败", e);
         }
 
     }

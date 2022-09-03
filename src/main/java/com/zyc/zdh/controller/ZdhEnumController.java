@@ -55,16 +55,16 @@ public class ZdhEnumController extends BaseController{
      * @param id 主键
      * @return
      */
-    @RequestMapping(value = "/enum_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/enum_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String enum_detail(String id) {
+    public ReturnInfo enum_detail(String id) {
         try{
             EnumInfo enumInfo=enumMapper.selectByPrimaryKey(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", enumInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", enumInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
     }
@@ -95,18 +95,18 @@ public class ZdhEnumController extends BaseController{
      * @param ids 主键数组
      * @return
      */
-    @RequestMapping(value = "/enum_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/enum_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String enum_delete(String[] ids) {
+    public ReturnInfo enum_delete(String[] ids) {
         try{
             enumMapper.deleteBatchByIds(ids);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
     }
 
@@ -124,15 +124,17 @@ public class ZdhEnumController extends BaseController{
     /**
      * 新增枚举
      * @param enumInfo
+     * @param enum_value 枚举code
+     * @param enum_value_context 枚举code说明
      * @return
      */
-    @RequestMapping(value="/enum_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/enum_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String enum_add(EnumInfo enumInfo,String[] enum_value, String[] enum_value_context) {
+    public ReturnInfo enum_add(EnumInfo enumInfo,String[] enum_value, String[] enum_value_context) {
 
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             enumInfo.setOwner(owner);
             debugInfo(enumInfo);
 
@@ -141,7 +143,7 @@ public class ZdhEnumController extends BaseController{
             ei.setEnum_code(enumInfo.getEnum_code());
             EnumInfo enumInfo1 = enumMapper.selectOne(ei);
             if(enumInfo1!=null){
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"枚举code不唯一", enumInfo);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"枚举code不唯一", enumInfo);
             }
 
             JSONArray jsonArray=new JSONArray();
@@ -159,12 +161,12 @@ public class ZdhEnumController extends BaseController{
             enumInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             enumInfo.setIs_delete(Const.NOT_DELETE);
             enumMapper.insert(enumInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
     }
 
@@ -174,14 +176,16 @@ public class ZdhEnumController extends BaseController{
     /**
      * 枚举更新
      * @param enumInfo
+     * @param enum_value 枚举code
+     * @param enum_value_context 枚举code说明
      * @return
      */
-    @RequestMapping(value="/enum_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/enum_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String enum_update(EnumInfo enumInfo,String[] enum_value, String[] enum_value_context) {
+    public ReturnInfo enum_update(EnumInfo enumInfo,String[] enum_value, String[] enum_value_context) {
         try{
-            String owner = getUser().getId();
+            String owner = getOwner();
             enumInfo.setOwner(owner);
             enumInfo.setIs_delete(Const.NOT_DELETE);
             enumInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -197,26 +201,27 @@ public class ZdhEnumController extends BaseController{
             enumInfo.setEnum_json(jsonArray.toJSONString());
             debugInfo(enumInfo);
             enumMapper.updateByPrimaryKey(enumInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
         }
     }
 
     /**
+     * 查询枚举
      * @param enum_code 枚举code
      * @return
      */
-    @RequestMapping(value = "/enum_by_code", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/enum_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public String enum_by_code(String enum_code) {
+    public ReturnInfo enum_by_code(String enum_code) {
         try{
             if(StringUtils.isEmpty(enum_code)){
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"枚举code不可为空", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"枚举code不可为空", null);
             }
 
             List<EnumInfo> list = new ArrayList<>();
@@ -227,13 +232,13 @@ public class ZdhEnumController extends BaseController{
             list = enumMapper.selectByExample(example);
 
             if(list!=null && list.size()==1){
-                return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"查询成功", list.get(0));
+                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"查询成功", list.get(0));
             }
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", "未找到对应枚举值");
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", "未找到对应枚举值");
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", e.getMessage());
         }
 
     }

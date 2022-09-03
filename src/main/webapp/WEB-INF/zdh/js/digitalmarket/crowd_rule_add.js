@@ -144,6 +144,9 @@ $(document).ready(function(){
             case "crowd_file":
                 doubleclick_crowd_file(id);
                 break;
+            case "crowd_operate":
+                doubleclick_crowd_operate(id);
+                break;
         }
     }
 
@@ -154,22 +157,22 @@ $(document).ready(function(){
             return false
         }
 
-        var ojson = jsplumb_rule_expression_data();
+        //var ojson = jsplumb_rule_expression_data();
         //校验是否已经存在父节点
-        var line = ojson.line;
-        for (var i=0;i<line.length;i++){
-            if(line[i].pageTargetId == info.targetId){
-                layer.msg("只能有一个父节点,请重新选择连线");
-                return false;
-            }
-            if(line[i].pageSourceId == info.sourceId){
-                layer.msg("一个父节点只能有一个子节点,请重新选择连线");
-                return false;
-            }
-        }
+        // var line = ojson.line;
+        // for (var i=0;i<line.length;i++){
+        //     if(line[i].pageTargetId == info.targetId){
+        //         layer.msg("只能有一个父节点,请重新选择连线");
+        //         return false;
+        //     }
+        //     if(line[i].pageSourceId == info.sourceId){
+        //         layer.msg("一个父节点只能有一个子节点,请重新选择连线");
+        //         return false;
+        //     }
+        // }
 
         console.info("链接自动建立");
-        create_rule_expression_cn();
+        //create_rule_expression_cn();
         return true // 链接会自动建立
     });
 
@@ -221,9 +224,9 @@ function doubleclick_label(id) {
                 div.css("*display","inline");
                 div.css("*zoom","1");
                 div.attr("title", etl_task_info.rule_expression_cn);
-                div.html(etl_task_info.rule_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
                 //此处更新中文表达式
-                create_rule_expression_cn();
+                //create_rule_expression_cn();
             }
         });
     });
@@ -242,7 +245,8 @@ function doubleclick_crowd_file(id) {
         }else{
             var depend_level = div.attr("depend_level");
             var time_out = div.attr("time_out");
-            url=url+"?crowd_file_context="+crowd_file_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_file="+crowd_file+"&more_task="+more_task
+            var operate = div.attr("operate");
+            url=url+"?crowd_file_context="+crowd_file_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_file="+crowd_file+"&more_task="+more_task+"&operate="+operate
         }
         layer.open({
             type: 2,
@@ -273,9 +277,60 @@ function doubleclick_crowd_file(id) {
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
-                div.html(etl_task_info.crowd_file_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.crowd_file_context);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
-                create_rule_expression_cn();
+                //create_rule_expression_cn();
+            }
+        });
+    });
+}
+
+function doubleclick_crowd_operate(id) {
+    $(id).dblclick(function () {
+        var crowd_operate_context = $(this).text();
+        var div = $(this);
+        var crowd_operate_context=div.attr("crowd_operate_context");
+        var operate=div.attr("operate");
+        var more_task=div.attr("more_task");
+        var url=server_context+'/crowd_operate_detail.html';
+        if( operate == "" || operate == undefined ){
+            url=url+"?crowd_operate=-1"
+        }else{
+            var depend_level = div.attr("depend_level");
+            var time_out = div.attr("time_out");
+            var operate = div.attr("operate");
+            url=url+"?crowd_operate_context="+crowd_operate_context+"&depend_level="+depend_level +"&time_out="+time_out+"&more_task="+more_task+"&operate="+operate
+        }
+        layer.open({
+            type: 2,
+            area: ['700px', '450px'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: encodeURI(url),
+            end: function () {
+                console.info("index:doubleclick:"+$("#etl_task_text").val());
+                if($("#etl_task_text").val()==""){
+                    console.info("无修改-不更新");
+                    return ;
+                }
+
+                var etl_task_info=JSON.parse($("#etl_task_text").val());
+                div.css('is_disenable', etl_task_info.is_disenable);
+                div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("time_out",etl_task_info.time_out);
+                div.attr("more_task",etl_task_info.more_task);
+
+                div.attr("operate",etl_task_info.operate);
+                div.attr("crowd_operate_context",etl_task_info.crowd_operate_context);
+
+
+                div.css("width","auto");
+                div.css("display","inline-block");
+                div.css("*display","inline");
+                div.css("*zoom","1");
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.crowd_operate_context);
+                div.css('background', get_color_by_status(etl_task_info.is_disenable));
+                //create_rule_expression_cn();
             }
         });
     });

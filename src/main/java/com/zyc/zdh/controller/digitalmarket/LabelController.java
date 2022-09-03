@@ -40,13 +40,22 @@ public class LabelController extends BaseController {
     @Autowired
     private LabelMapper labelMapper;
 
+    /**
+     * 标签列表首页
+     * @return
+     */
     @RequestMapping(value = "/label_index", method = RequestMethod.GET)
     public String label_index() {
 
         return "digitalmarket/label_index";
     }
 
-    @RequestMapping(value = "/label_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 标签列表
+     * @param label_context 关键字
+     * @return
+     */
+    @RequestMapping(value = "/label_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String label_list(String label_context) {
         Example example=new Example(LabelInfo.class);
@@ -65,6 +74,10 @@ public class LabelController extends BaseController {
         return JSONObject.toJSONString(labelInfos);
     }
 
+    /**
+     * 标签新增首页
+     * @return
+     */
     @RequestMapping(value = "/label_add_index", method = RequestMethod.GET)
     public String label_add_index() {
 
@@ -72,35 +85,54 @@ public class LabelController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/label_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 标签明细
+     * @param id 主键ID
+     * @return
+     */
+    @RequestMapping(value = "/label_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String label_detail(String id) {
+    public ReturnInfo label_detail(String id) {
         try {
             LabelInfo labelInfo = labelMapper.selectByPrimaryKey(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", labelInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", labelInfo);
         } catch (Exception e) {
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
-    @RequestMapping(value = "/label_detail_by_code", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 根据code查询标签明细
+     * @param label_code
+     * @return
+     */
+    @RequestMapping(value = "/label_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String label_detail_by_code(String label_code) {
+    public ReturnInfo label_detail_by_code(String label_code) {
         try {
 
             LabelInfo labelInfo = new LabelInfo();
             labelInfo.setLabel_code(label_code);
             labelInfo = labelMapper.selectOne(labelInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", labelInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", labelInfo);
         } catch (Exception e) {
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
-    @RequestMapping(value = "/label_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 标签更新
+     * @param labelInfo
+     * @param param_code 参数code
+     * @param param_context 参数说明
+     * @param param_operate 参数操作符
+     * @param param_value 参数可选值
+     * @return
+     */
+    @RequestMapping(value = "/label_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String label_update(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_operate, String[] param_value) {
+    public ReturnInfo label_update(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_operate, String[] param_value) {
         try {
             if(param_code==null || param_code.length<1){
                 throw new Exception("参数不可为空");
@@ -128,19 +160,28 @@ public class LabelController extends BaseController {
             labelInfo.setIs_delete(Const.NOT_DELETE);
             labelMapper.updateByPrimaryKey(labelInfo);
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", labelInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", labelInfo);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
 
-    @RequestMapping(value = "/label_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 标签新增
+     * @param labelInfo
+     * @param param_code 参数code
+     * @param param_context 参数说明
+     * @param param_operate 参数操作符
+     * @param param_value 参数可选值
+     * @return
+     */
+    @RequestMapping(value = "/label_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String label_add(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_operate, String[] param_value) {
+    public ReturnInfo label_add(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_operate, String[] param_value) {
         try {
             if(param_code==null || param_code.length<1){
                throw new Exception("参数不可为空");
@@ -161,29 +202,34 @@ public class LabelController extends BaseController {
             }
             labelInfo.setParam_json(jsonArray.toJSONString());
             labelInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
-            labelInfo.setOwner(getUser().getId());
+            labelInfo.setOwner(getOwner());
             labelInfo.setIs_delete(Const.NOT_DELETE);
             labelInfo.setCreate_time(new Timestamp(new Date().getTime()));
             labelInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             labelMapper.insert(labelInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
 
-    @RequestMapping(value = "/label_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 标签删除
+     * @param ids
+     * @return
+     */
+    @RequestMapping(value = "/label_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String label_delete(String[] ids) {
+    public ReturnInfo label_delete(String[] ids) {
         try {
             labelMapper.deleteLogicByIds("label_info",ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
     }
 

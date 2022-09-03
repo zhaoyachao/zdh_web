@@ -25,6 +25,9 @@ import tk.mybatis.mapper.entity.Example;
 import java.lang.reflect.Field;
 import java.util.*;
 
+/**
+ * 血缘服务
+ */
 @Controller
 public class ZdhBloodSourceController extends BaseController{
 
@@ -37,23 +40,35 @@ public class ZdhBloodSourceController extends BaseController{
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    /**
+     * 血缘首页
+     * @return
+     */
     @RequestMapping("/blood_source_index")
     public String etl_task_jdbc_index() {
 
         return "etl/blood_source_index";
     }
 
+    /**
+     * 血缘分析首页
+     * @return
+     */
     @RequestMapping("/blood_source_detail_index")
     public String blood_source_detail_index() {
 
         return "etl/blood_source_detail_index";
     }
 
-    @RequestMapping(value = "/blood_source_create", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 生成血缘关系
+     * @return
+     */
+    @RequestMapping(value = "/blood_source_create", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String blood_source_create() {
+    public ReturnInfo blood_source_create() {
         CheckBloodSourceJob.Check();
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"生成血源关系", null);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"生成血源关系", null);
     }
 
     /**
@@ -61,13 +76,13 @@ public class ZdhBloodSourceController extends BaseController{
      * @param input 表名/文件名
      * @return
      */
-    @RequestMapping(value = "/blood_source_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/blood_source_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String blood_source_list(String input) {
+    public ReturnInfo blood_source_list(String input) {
 
         List<Map<String,Object>>  rs = jdbcTemplate.queryForList("select max(version) as version from blood_source_info");
         if(rs==null || rs.size()<1){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "未找到任何血源分析数据", "未找到任何血源分析数据");
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "未找到任何血源分析数据", "未找到任何血源分析数据");
         }
 
         String version = rs.get(0).getOrDefault("version", "0").toString();
@@ -107,12 +122,12 @@ public class ZdhBloodSourceController extends BaseController{
             }
 
         }
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonArray);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonArray);
     }
 
     /**
-     *
-     * @param input
+     * 数据血缘明细
+     * @param input 表名/文件名
      * @param level 血源深度
      * @param stream_type 上游/下游  1：上游,2：下游, 3：全部
      * @return

@@ -37,7 +37,10 @@ public class ResourceTreeInfo{
  	*/
    	private String level;
 
-   	private String url="";
+	/**
+	 * 资源url
+	 */
+	private String url="";
 
  	/**
  	* 资源描述
@@ -71,12 +74,24 @@ public class ResourceTreeInfo{
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
    	private Timestamp update_time;
 
+	/**
+	 * 资源类型1:目录,2:页面,3:方法,4:接口
+	 */
 	private String resource_type;//1:目录,2:页面,3:方法,4:接口
 
+	/**
+	 * 提示语
+	 */
 	private String notice_title;//提示语
 
+	/**
+	 * 事件code,审批流使用
+	 */
 	private String event_code;
 
+	/**
+	 * 产品代码
+	 */
 	private String product_code;
 
 	public String getId() {

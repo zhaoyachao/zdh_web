@@ -57,6 +57,9 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 登录服务
+ */
 @Controller
 public class LoginController {
 
@@ -81,21 +84,34 @@ public class LoginController {
     @Autowired
     RedisUtil redisUtil;
 
+    /**
+     * 系统根页面
+     * @return
+     */
     @RequestMapping("/")
     public String getLogin() {
         return "redirect:index";
     }
 
+    /**
+     * 注册页面
+     * @return
+     */
     @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String register() {
         return "register";
     }
 
+    /**
+     * 注册
+     * @param user
+     * @return
+     */
     @Operation(summary = "register", description = "user register")
-    @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation = Propagation.NESTED)
-    public String register2(User user) {
+    public ReturnInfo register2(User user) {
         JSONObject json = new JSONObject();
         try {
             //自定义加密 算法和shiro 的算法保持一致
@@ -107,14 +123,14 @@ public class LoginController {
 
             if (users.size() > 0) {
                 json.put("error", "账户已存在");
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "账户以存在", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "账户以存在", null);
             }
 
             //增加特别信息校验
             Pattern pattern = Pattern.compile("(;|\\*|expr \\s*|delete \\s*)", Pattern.CASE_INSENSITIVE);
             if (pattern.matcher(user.getUserName()).find() || pattern.matcher(user.getPassword()).find()) {
                 //此处可做校验判断,是否加入ip黑名单
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "账户包含不合法字符,请修改后提交", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "账户包含不合法字符,请修改后提交", null);
             }
             user.setEnable(Const.TRUR);
             int result = accountService.insert(user);
@@ -135,18 +151,25 @@ public class LoginController {
             pui.setTag_group_code("");
             permissionMapper.insert(pui);
             if (result > 0) {
-                return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "注册成功", null);
+                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "注册成功", null);
             } else {
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "注册失败", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "注册失败", null);
             }
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "注册失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "注册失败", e);
         }
     }
 
+    /**
+     * 登录页面
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public String login1(Model model, HttpServletRequest request, HttpServletResponse response) {
         model.addAttribute("msg", "登陆");
@@ -161,6 +184,7 @@ public class LoginController {
     }
 
     /**
+     * 登录
      * 2022-06-18 因登录时提示不友好,删除ResponseBody注解,并在session中存储错误信息
      * @param model
      * @param request
@@ -190,28 +214,42 @@ public class LoginController {
         }
     }
 
-    @RequestMapping(value = "/get_error_msg", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 获取错误信息
+     * @param request
+     * @param response
+     * @param captcha
+     * @return
+     */
+    @RequestMapping(value = "/get_error_msg", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String get_error_msg(HttpServletRequest request, HttpServletResponse response, String captcha) {
+    public ReturnInfo get_error_msg(HttpServletRequest request, HttpServletResponse response, String captcha) {
         try {
             if (((HttpServletRequest) request).getSession().getAttribute("error") != null) {
                 String msg = ((HttpServletRequest) request).getSession().getAttribute("error").toString();
                 ((HttpServletRequest) request).getSession().removeAttribute("error");
                 if (!StringUtils.isEmpty(msg)) {
-                    return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), msg, "login.html");
+                    return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), msg, "login.html");
                 }
             }
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "", "login.html");
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "", "login.html");
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), "login.html");
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), "login.html");
         }
     }
 
-    @RequestMapping(value = "/check_captcha", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 校验验证码
+     * @param request
+     * @param response
+     * @param captcha 验证码
+     * @return
+     */
+    @RequestMapping(value = "/check_captcha", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String check_captcha(HttpServletRequest request, HttpServletResponse response, String captcha) {
+    public ReturnInfo check_captcha(HttpServletRequest request, HttpServletResponse response, String captcha) {
         try {
 
             String session_captcha = (String) ((HttpServletRequest) request).getSession().getAttribute(MyAuthenticationToken.captcha_key);
@@ -219,14 +257,18 @@ public class LoginController {
             if (!session_captcha.equalsIgnoreCase(captcha)) {
                 throw new Exception("验证码错误");
             }
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "登陆成功", "index.html");
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "登陆成功", "index.html");
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), e.getMessage(), "login.html");
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), "login.html");
         }
     }
 
+    /**
+     * 首页
+     * @return
+     */
     @RequestMapping(value = "index", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     public String getIndex() {
         Subject subject = SecurityUtils.getSubject();
@@ -238,6 +280,10 @@ public class LoginController {
         return "redirect:login";
     }
 
+    /**
+     * 下线系统
+     * @return
+     */
     @RequestMapping(value = "shutdown", method = RequestMethod.GET)
     public String shutdown() {
         ConfigurableApplicationContext ctx = (ConfigurableApplicationContext) context;
@@ -247,21 +293,32 @@ public class LoginController {
     }
 
 
+    /**
+     * 个人信息页面
+     * @return
+     */
     @RequestMapping(value = "user", method = RequestMethod.GET)
     public String updateUser() {
 
         return "user";
     }
 
-    @RequestMapping(value = "user", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 个人信息更新
+     * @param user
+     * @return
+     */
+    @RequestMapping(value = "user", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String updateUser2(User user) {
+    public ReturnInfo updateUser2(User user) {
         try {
             debugInfo(user);
             JSONObject json = new JSONObject();
             User user_old = (User) SecurityUtils.getSubject().getPrincipal();
             if (user.getPassword().equals("")) {
                 user.setPassword(user_old.getPassword());
+            }else{
+                user.setPassword(Encrypt.AESencrypt(user.getPassword()));
             }
 
             user.setId(user_old.getId());
@@ -269,7 +326,7 @@ public class LoginController {
                 List<User> users = accountService.findByUserName(user);
                 if (users.size() > 0) {
                     json.put("status", "已经存在相同用户名");
-                    return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "已经存在相同用户名", null);
+                    return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "已经存在相同用户名", null);
                 }
             }
             User user_old2 = accountService.selectByPrimaryKey(user.getId());
@@ -292,18 +349,22 @@ public class LoginController {
             PrincipalCollection newPrincipalCollection =
                     new SimplePrincipalCollection(user, realmName);
             subject.runAs(newPrincipalCollection);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
 
-    @RequestMapping(value = "getUserInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 获取用户信息
+     * @return
+     */
+    @RequestMapping(value = "getUserInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String getUserInfo() {
+    public ReturnInfo getUserInfo() {
 
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         user.setPassword("");
@@ -316,32 +377,42 @@ public class LoginController {
 //        json.put("phone",user.getPhone());
 //        json.put("is_use_phone",user.getIs_use_phone());
 
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "获取用户信息", user);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取用户信息", user);
 
     }
 
-    @RequestMapping(value = "retrieve_password", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 找回密码
+     * @param username
+     * @return
+     */
+    @RequestMapping(value = "retrieve_password", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String retrieve_password(String username) {
+    public ReturnInfo retrieve_password(String username) {
         try{
             User user = new User();
             user.setUserName(username);
             List<User> users = accountService.findByUserName(user);
 
             if (users.size() != 1) {
-                return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "请检查用户名是否正确", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "请检查用户名是否正确", null);
             } else {
                 System.out.println("username:" + username);
                 jemailService.sendEmail(new String[]{users.get(0).getEmail()}, "找回密码", "你好,你正在使用大数据采集平台zdh,您的密码是:"
                         + Encrypt.AESdecrypt(users.get(0).getPassword()));
-                return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "密码已发送到注册邮箱,如果你已忘记注册邮箱,请联系管理员解决", null);
+                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "密码已发送到注册邮箱,如果你已忘记注册邮箱,请联系管理员解决", null);
             }
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "找回密码异常", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "找回密码异常", e);
         }
 
     }
 
+    /**
+     * 获取账号名
+     * @param username 关键字
+     * @return
+     */
     @RequestMapping(value = "user_names", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String user_names(String username) {
@@ -366,6 +437,14 @@ public class LoginController {
     }
 
 
+    /**
+     * 退出
+     * @param req
+     * @param resp
+     * @return
+     * @throws ServletException
+     * @throws IOException
+     */
     @RequestMapping("logout")
     public String logout(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -382,6 +461,12 @@ public class LoginController {
         return "redirect:login";
     }
 
+    /**
+     * 验证码
+     * @param request
+     * @param response
+     * @throws IOException
+     */
     @RequestMapping(value = "/captcha", method = RequestMethod.GET)
     public void captcha(HttpServletRequest request,
                         HttpServletResponse response) throws IOException {

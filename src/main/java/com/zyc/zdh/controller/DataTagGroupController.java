@@ -1,6 +1,5 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.DataTagGroupMapper;
 import com.zyc.zdh.entity.DataTagGroupInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -8,7 +7,6 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.User;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,15 +40,25 @@ public class DataTagGroupController extends BaseController {
     Environment ev;
 
 
+    /**
+     * 数据标识组首页
+     * @return
+     */
     @RequestMapping(value = "/data_tag_group_index", method = RequestMethod.GET)
     public String data_tag_group_index() {
 
         return "admin/data_tag_group_index";
     }
 
-    @RequestMapping(value = "/data_tag_group_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 数据标识组列表
+     * @param tag_context 关键字
+     * @param product_code 产品代码
+     * @return
+     */
+    @RequestMapping(value = "/data_tag_group_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_tag_group_list(String tag_context, String product_code) {
+    public ReturnInfo data_tag_group_list(String tag_context, String product_code) {
         try{
             checkParam(product_code, "product_code");
             Example example=new Example(DataTagGroupInfo.class);
@@ -67,16 +75,20 @@ public class DataTagGroupController extends BaseController {
             example.and(criteria2);
 
             List<DataTagGroupInfo> dataTagGroupInfos = dataTagGroupMapper.selectByExample(example);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", dataTagGroupInfos);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", dataTagGroupInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
     }
 
 
+    /**
+     * 数据标识组新增首页
+     * @return
+     */
     @RequestMapping(value = "/data_tag_group_add_index", method = RequestMethod.GET)
     public String data_tag_group_add_index() {
 
@@ -84,23 +96,33 @@ public class DataTagGroupController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/data_tag_group_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 数据标识组明细
+     * @param id 主键ID
+     * @return
+     */
+    @RequestMapping(value = "/data_tag_group_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_tag_group_detail(String id) {
+    public ReturnInfo data_tag_group_detail(String id) {
         try {
             DataTagGroupInfo dataTagGroupInfo = dataTagGroupMapper.selectByPrimaryKey(id);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", dataTagGroupInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", dataTagGroupInfo);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
-    @RequestMapping(value = "/data_tag_group_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 数据标识组更新
+     * @param dataTagGroupInfo
+     * @return
+     */
+    @RequestMapping(value = "/data_tag_group_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String data_tag_group_update(DataTagGroupInfo dataTagGroupInfo) {
+    public ReturnInfo data_tag_group_update(DataTagGroupInfo dataTagGroupInfo) {
         try {
             DataTagGroupInfo oldDataTagGroupInfo = dataTagGroupMapper.selectByPrimaryKey(dataTagGroupInfo.getId());
 
@@ -110,44 +132,54 @@ public class DataTagGroupController extends BaseController {
             dataTagGroupInfo.setIs_delete(Const.NOT_DELETE);
             dataTagGroupMapper.updateByPrimaryKey(dataTagGroupInfo);
 
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
 
-    @RequestMapping(value = "/data_tag_group_add", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 数据标识组新增
+     * @param dataTagGroupInfo
+     * @return
+     */
+    @RequestMapping(value = "/data_tag_group_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String data_tag_group_add(DataTagGroupInfo dataTagGroupInfo) {
+    public ReturnInfo data_tag_group_add(DataTagGroupInfo dataTagGroupInfo) {
         try {
             dataTagGroupInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
-            dataTagGroupInfo.setOwner(getUser().getId());
+            dataTagGroupInfo.setOwner(getOwner());
             dataTagGroupInfo.setIs_delete(Const.NOT_DELETE);
             dataTagGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
             dataTagGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             dataTagGroupMapper.insert(dataTagGroupInfo);
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
 
-    @RequestMapping(value = "/data_tag_group_delete", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    /**
+     * 数据标识组删除
+     * @param ids id数组
+     * @return
+     */
+    @RequestMapping(value = "/data_tag_group_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String data_tag_group_delete(String[] ids) {
+    public ReturnInfo data_tag_group_delete(String[] ids) {
         try {
             dataTagGroupMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
     }
 

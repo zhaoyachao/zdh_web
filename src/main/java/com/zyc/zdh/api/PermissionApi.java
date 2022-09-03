@@ -1,21 +1,11 @@
 package com.zyc.zdh.api;
 
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.shiro.MyAuthenticationToken;
-import com.zyc.zdh.shiro.MyRealm;
 import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.cache.Cache;
 import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.apache.shiro.subject.Subject;
-import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,10 +21,9 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
- * ClassName: PermissionApi
+ * api权限服务
  *
  * @author zyc-admin
  * @date 2018年2月5日
@@ -65,15 +55,15 @@ public class PermissionApi {
 
     /**
      * 申请产品 获取ak,sk, 暂未实现
-     * @param user_account
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param user_account 用户账号
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "apply_product_by_user", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "apply_product_by_user", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String apply_product_by_user(String user_account, String product_code,String ak, String sk) {
+    public ReturnInfo apply_product_by_user(String user_account, String product_code,String ak, String sk) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -84,23 +74,23 @@ public class PermissionApi {
 
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
         }
     }
 
     /**
      * 新增用户
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @param permissionUserInfo
      * @return
      */
-    @RequestMapping(value = "add_user_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "add_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String add_user_by_product(String product_code,String ak, String sk, PermissionUserInfo permissionUserInfo) {
+    public ReturnInfo add_user_by_product(String product_code,String ak, String sk, PermissionUserInfo permissionUserInfo) {
 
         try{
             //检查ak,sk
@@ -117,23 +107,23 @@ public class PermissionApi {
             permissionMapper.insert(permissionUserInfo);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
 
     /**
      * 更新用户信息
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @param permissionUserInfo
      * @return
      */
-    @RequestMapping(value = "update_user_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "update_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String update_user_by_product(String product_code,String ak, String sk, PermissionUserInfo permissionUserInfo) {
+    public ReturnInfo update_user_by_product(String product_code,String ak, String sk, PermissionUserInfo permissionUserInfo) {
 
         try{
             //检查ak,sk
@@ -152,25 +142,25 @@ public class PermissionApi {
             permissionMapper.updateByPrimaryKey(permissionUserInfo);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
         }
     }
 
 
     /**
      * 启用/禁用用户
-     * @param product_code
-     * @param ak
-     * @param sk
-     * @param user_account
-     * @param enable
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @param user_account 用户账号
+     * @param enable 是否启用true/false
      * @return
      */
-    @RequestMapping(value = "enable_user_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "enable_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String update_user_by_product(String product_code,String ak, String sk, String user_account, String enable) {
+    public ReturnInfo update_user_by_product(String product_code,String ak, String sk, String user_account, String enable) {
 
         try{
             //检查ak,sk
@@ -186,24 +176,24 @@ public class PermissionApi {
             permissionMapper.updateByExampleSelective(permissionUserInfo, example);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
         }
     }
 
     /**
      * 批量启用/禁用用户
-     * @param product_code
-     * @param ak
-     * @param sk
-     * @param user_account
-     * @param enable
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @param user_account 用户账号
+     * @param enable 是否启用true/false
      * @return
      */
-    @RequestMapping(value = "update_batch_user_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "update_batch_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String update_batch_user_by_product(String product_code,String ak, String sk, String[] user_account, String enable) {
+    public ReturnInfo update_batch_user_by_product(String product_code,String ak, String sk, String[] user_account, String enable) {
 
         try{
             //检查ak,sk
@@ -219,23 +209,23 @@ public class PermissionApi {
             permissionMapper.updateByExampleSelective(permissionUserInfo, example);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
         }
     }
 
     /**
      * 获取用户信息
-     * @param product_code
-     * @param ak
-     * @param sk
-     * @param user_account
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @param user_account 用户账号
      * @return
      */
-    @RequestMapping(value = "get_user_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "get_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String get_user_by_product(String product_code,String ak, String sk, String user_account) {
+    public ReturnInfo get_user_by_product(String product_code,String ak, String sk, String user_account) {
 
         try{
             //检查ak,sk
@@ -251,24 +241,24 @@ public class PermissionApi {
             List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
         }
     }
 
 
     /**
      * 批量获取用户信息
-     * @param product_code
-     * @param ak
-     * @param sk
-     * @param user_account
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @param user_account 用户账号
      * @return
      */
-    @RequestMapping(value = "get_user_by_product_user", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "get_user_by_product_user", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String get_user_list_by_product_users(String product_code,String ak, String sk, String[] user_account) {
+    public ReturnInfo get_user_list_by_product_users(String product_code,String ak, String sk, String[] user_account) {
 
         try{
             //检查ak,sk
@@ -284,22 +274,22 @@ public class PermissionApi {
             List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
         }
     }
 
     /**
      * 获取产品下所有用户
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "get_user_list_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "get_user_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String get_user_by_product(String product_code,String ak, String sk) {
+    public ReturnInfo get_user_by_product(String product_code,String ak, String sk) {
 
         try{
             //检查ak,sk
@@ -315,24 +305,24 @@ public class PermissionApi {
             List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
         }
     }
 
 
     /**
      * 新增用户组
-     * @param product_code
-     * @param ak
-     * @param sk
-     * @param user_group
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @param user_group 用户组code
      * @return
      */
-    @RequestMapping(value = "add_user_group_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "add_user_group_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String add_user_group_by_product(String product_code,String ak, String sk, String user_group) {
+    public ReturnInfo add_user_group_by_product(String product_code,String ak, String sk, String user_group) {
 
         try{
             //检查ak,sk
@@ -360,16 +350,24 @@ public class PermissionApi {
 
             userGroupMapper.insert(userGroupInfo);
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
         }
     }
 
 
-    @RequestMapping(value = "add_role_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 增加角色
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @param role_info
+     * @return
+     */
+    @RequestMapping(value = "add_role_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String add_role_by_product(String product_code,String ak, String sk, RoleInfo role_info) {
+    public ReturnInfo add_role_by_product(String product_code,String ak, String sk, RoleInfo role_info) {
 
         try{
             //检查ak,sk
@@ -386,23 +384,23 @@ public class PermissionApi {
             roleDao.insert(role_info);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
 
     /**
      * 禁用/启用 角色
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @param role_info
      * @return
      */
-    @RequestMapping(value = "enable_role_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "enable_role_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String enable_role_by_product(String product_code,String ak, String sk, RoleInfo role_info) {
+    public ReturnInfo enable_role_by_product(String product_code,String ak, String sk, RoleInfo role_info) {
 
         try{
             //检查ak,sk
@@ -416,26 +414,26 @@ public class PermissionApi {
             roleDao.updateByPrimaryKey(roleInfo);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
         }
     }
 
     /**
      * 角色增加资源
      * tips: 每次角色增加资源以全量方式增加,会提前删除当前角色下的资源配置
-     * @param product_code
-     * @param ak
-     * @param sk
-     * @param role_id
-     * @param resource_ids
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @param role_id 角色ID
+     * @param resource_ids 资源ID列表
      * @return
      */
-    @RequestMapping(value = "add_resource_in_role_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "add_resource_in_role_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String enable_role_by_product(String product_code,String ak, String sk, String role_id, String[] resource_ids) {
+    public ReturnInfo enable_role_by_product(String product_code,String ak, String sk, String role_id, String[] resource_ids) {
 
         try{
             //检查ak,sk
@@ -453,26 +451,26 @@ public class PermissionApi {
             resourceTreeMapper.deleteByRoleId(role_id);
             resourceTreeMapper.updateUserResource(rris);
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
         }
     }
 
     /**
      * 根据role_code 获取角色
-     * @param product_code
-     * @param ak
-     * @param sk
-     * @param role_code
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @param role_code 角色code
      * @return
      */
-    @RequestMapping(value = "get_role_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "get_role_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String get_role_by_product(String product_code,String ak, String sk, String role_code) {
+    public ReturnInfo get_role_by_product(String product_code,String ak, String sk, String role_code) {
 
         try{
             //检查ak,sk
@@ -485,25 +483,25 @@ public class PermissionApi {
 
             roleInfo = roleDao.selectOne(roleInfo);
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", roleInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", roleInfo);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
         }
     }
 
     /**
      * 获取产品线下所有角色
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "get_role_list_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "get_role_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String get_role_by_product(String product_code,String ak, String sk) {
+    public ReturnInfo get_role_by_product(String product_code,String ak, String sk) {
 
         try{
             //检查ak,sk
@@ -516,17 +514,25 @@ public class PermissionApi {
             List<RoleInfo> roleInfos = roleDao.select(roleInfo);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", roleInfos);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", roleInfos);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
         }
     }
 
-    @RequestMapping(value = "get_user_list_by_product_role", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 获取角色下的用户列表
+     * @param product_code 产品代码
+     * @param role_code 角色code
+     * @param ak ak
+     * @param sk sk
+     * @return
+     */
+    @RequestMapping(value = "get_user_list_by_product_role", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String get_user_list_by_product_role(String product_code,String role_code,String ak, String sk) {
+    public ReturnInfo get_user_list_by_product_role(String product_code,String role_code,String ak, String sk) {
 
         try{
             //检查ak,sk
@@ -549,26 +555,26 @@ public class PermissionApi {
             List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
         }
     }
 
 
     /**
      * 新增资源
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @param resource_tree_info
      * @return
      */
-    @RequestMapping(value = "add_resource_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "add_resource_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String add_resource_by_product(String product_code,String ak, String sk, ResourceTreeInfo resource_tree_info) {
+    public ReturnInfo add_resource_by_product(String product_code,String ak, String sk, ResourceTreeInfo resource_tree_info) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -576,24 +582,24 @@ public class PermissionApi {
             int result = resourceTreeMapper.insert(resource_tree_info);
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
 
     /**
      * 批量增加资源
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @param resource_tree_info
      * @return
      */
-    @RequestMapping(value = "add_batch_resource_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "add_batch_resource_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public String add_batch_resource_by_product(String product_code,String ak, String sk, ResourceTreeInfo[] resource_tree_info) {
+    public ReturnInfo add_batch_resource_by_product(String product_code,String ak, String sk, @RequestBody List<ResourceTreeInfo> resource_tree_info) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -603,27 +609,27 @@ public class PermissionApi {
             }
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
 
 
     /**
      * 通过用户账户 获取资源信息
-     * @param user_account
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param user_account 用户账号
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "resources_by_user", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "resources_by_user", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String resources_by_user(String user_account, String product_code,String ak, String sk) {
+    public ReturnInfo resources_by_user(String user_account, String product_code,String ak, String sk) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -636,23 +642,23 @@ public class PermissionApi {
             }
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", uris);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", uris);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
         }
     }
 
     /**
      * 通过角色code获取资源
-     * @param role_code
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param role_code 角色code
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "resources_by_role", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "resources_by_role", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String resources_by_role(String role_code, String product_code,String ak, String sk) {
+    public ReturnInfo resources_by_role(String role_code, String product_code,String ak, String sk) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -665,23 +671,23 @@ public class PermissionApi {
             }
 
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", uris);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", uris);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
         }
     }
 
     /**
      * 新增数据标识
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @param dataTagInfo
      * @return
      */
-    @RequestMapping(value = "add_data_tag_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "add_data_tag_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String add_data_tag_by_product(String product_code,String ak, String sk, DataTagInfo dataTagInfo) {
+    public ReturnInfo add_data_tag_by_product(String product_code,String ak, String sk, DataTagInfo dataTagInfo) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -698,23 +704,23 @@ public class PermissionApi {
 
             dataTagMapper.insert(dataTagInfo);
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
         }
     }
 
     /**
      * 新增数据标识
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @param dataTagInfo
      * @return
      */
-    @RequestMapping(value = "update_data_tag_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "update_data_tag_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String update_data_tag_by_product(String product_code,String ak, String sk, DataTagInfo dataTagInfo) {
+    public ReturnInfo update_data_tag_by_product(String product_code,String ak, String sk, DataTagInfo dataTagInfo) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -729,23 +735,23 @@ public class PermissionApi {
 
             dataTagMapper.updateByPrimaryKey(dataTagInfo);
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
         }
     }
 
     /**
      * 新增数据组标识
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @param dataTagGroupInfo
      * @return
      */
-    @RequestMapping(value = "add_data_tag_group_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "add_data_tag_group_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String add_data_tag_group_by_product(String product_code,String ak, String sk, DataTagGroupInfo dataTagGroupInfo) {
+    public ReturnInfo add_data_tag_group_by_product(String product_code,String ak, String sk, DataTagGroupInfo dataTagGroupInfo) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -762,23 +768,23 @@ public class PermissionApi {
 
             dataTagGroupMapper.insert(dataTagGroupInfo);
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
 
     /**
      * 新增数据标识
-     * @param product_code
-     * @param ak
-     * @param sk
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @param dataTagGroupInfo
      * @return
      */
-    @RequestMapping(value = "update_data_tag_group_by_product", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "update_data_tag_group_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String update_data_tag_group_by_product(String product_code,String ak, String sk, DataTagGroupInfo dataTagGroupInfo) {
+    public ReturnInfo update_data_tag_group_by_product(String product_code,String ak, String sk, DataTagGroupInfo dataTagGroupInfo) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -793,9 +799,9 @@ public class PermissionApi {
 
             dataTagGroupMapper.updateByPrimaryKey(dataTagGroupInfo);
             //返回统一信息
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
         }
     }
 

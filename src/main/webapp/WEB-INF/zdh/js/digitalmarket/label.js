@@ -139,6 +139,15 @@
               }, function(){
 
               });
+          },
+          'click #tasks': function (e, value, row, index) {
+              layer.confirm('是否编辑加工任务', {
+                  btn: ['确定','取消'] //按钮
+              }, function(index){
+                  layer.close(layer.index)
+              }, function(){
+
+              });
           }
       };
 
@@ -151,6 +160,9 @@
               '                                    </button>',
               ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="tasks" name="tasks" type="button" class="btn btn-outline btn-sm" title="标签加工任务">\n' +
+              '                                        <i class="glyphicon glyphicon-tasks" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +
               '</div>'

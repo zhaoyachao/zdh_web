@@ -86,10 +86,6 @@ public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInsta
     public int updateStatusById3(@Param("status") String status, @Param("process") String process,@Param("update_time") String update_time, @Param("id") String id);
 
 
-
-
-
-
     /**
      * 任务组及子任务创建完成改变状态为create
      * @param ids

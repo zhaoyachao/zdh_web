@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.lang.reflect.Field;
 
 /**
- * 参数配置服务
+ * redis服务
  */
 @Controller
 public class ZdhRedisApiController extends BaseController {
@@ -26,35 +26,55 @@ public class ZdhRedisApiController extends BaseController {
     RedisUtil redisUtil;
 
 
-    @RequestMapping(value = "/redis/get/{key}", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 获取参数
+     * @param key
+     * @return
+     */
+    @RequestMapping(value = "/redis/get/{key}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String get_key(@PathVariable("key") String key) {
+    public ReturnInfo get_key(@PathVariable("key") String key) {
         if (redisUtil.exists(key)) {
-            return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", redisUtil.get(key));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", redisUtil.get(key));
         }
-        return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", "没有找到key: " + key);
+        return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", "没有找到key: " + key);
     }
 
-    @RequestMapping(value = "/redis/del/{key}", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 删除参数
+     * @param key
+     * @return
+     */
+    @RequestMapping(value = "/redis/del/{key}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String del_key(@PathVariable("key") String key) {
+    public ReturnInfo del_key(@PathVariable("key") String key) {
         if (redisUtil.exists(key)) {
             redisUtil.remove(key);
         }
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
     }
 
-    @RequestMapping(value = "/redis/keys", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 获取所有参数名
+     * @return
+     */
+    @RequestMapping(value = "/redis/keys", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String keys() {
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "查询成功", redisUtil.keys());
+    public ReturnInfo keys() {
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", redisUtil.keys());
     }
 
-    @RequestMapping(value = "/redis/add/{key}", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    /**
+     * 新增参数
+     * @param key
+     * @param value
+     * @return
+     */
+    @RequestMapping(value = "/redis/add/{key}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String add_key(@PathVariable("key") String key, String value) {
+    public ReturnInfo add_key(@PathVariable("key") String key, String value) {
         redisUtil.set(key, value);
-        return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
     }
 
 

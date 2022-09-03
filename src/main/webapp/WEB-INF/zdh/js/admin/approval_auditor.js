@@ -19,7 +19,7 @@
               title: '审批人节点配置',
               shadeClose: false,
               shade: 0.8,
-              area: ['450px', '620px'],
+              area: ['100%', '100%'],
               content: server_context+'/approval_auditor_add_index?id=-1', //iframe的url
               end:function () {
                   parent.layer.closeAll();
@@ -176,11 +176,15 @@
             title: '节点中文',
             sortable:false
         },{
+            field: 'auditor_context',
+            title: '审批说明',
+            sortable:true
+        },{
             field: 'user_name',
             title: '审批人',
             sortable:true
         },{
-            field: 'level',
+            field: 'level_name',
             title: '审批环节',
             sortable:true
         },{

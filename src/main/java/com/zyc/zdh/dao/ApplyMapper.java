@@ -136,7 +136,7 @@ public interface ApplyMapper extends BaseMapper<ApplyInfo> {
     @Select({"<script>",
             "SELECT apply.*,acc.email,acc.user_name FROM apply_info apply,account_info acc",
             "WHERE issue_id=${issue_id}",
-            "AND apply.owner=acc.id",
+            "AND apply.owner=acc.user_name",
             "AND status = 1",
             "</script>"})
     public List<ApplyAlarmInfo> selectByIssueId(@Param("issue_id") String issue_id);

@@ -83,7 +83,32 @@ public class JobDigitalMarket {
         }).start();
     }
 
+
+    public static void updateTaskLog(StrategyGroupInstance sgi, StrategyGroupInstanceMapper sgim) {
+        // debugInfo(tgli);
+        sgim.updateByPrimaryKey(sgi);
+    }
+
+    public static void updateTaskLog(StrategyInstance si, StrategyInstanceMapper sim) {
+        // debugInfo(tgli);
+        sim.updateByPrimaryKey(si);
+    }
+
     public static void insertLog(StrategyGroupInstance sgi, String level, String msg) {
+
+//        ZdhLogs zdhLogs = new ZdhLogs();
+//        zdhLogs.setJob_id(tli.getJob_id());
+//        Timestamp lon_time = new Timestamp(new Date().getTime());
+//        zdhLogs.setTask_logs_id(tli.getId());
+//        zdhLogs.setLog_time(lon_time);
+//        zdhLogs.setMsg(msg);
+//        zdhLogs.setLevel(level.toUpperCase());
+//        //linkedBlockingDeque.add(zdhLogs);
+//        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+//        zdhLogsService.insert(zdhLogs);
+    }
+
+    public static void insertLog(StrategyInstance si, String level, String msg) {
 
 //        ZdhLogs zdhLogs = new ZdhLogs();
 //        zdhLogs.setJob_id(tli.getJob_id());
@@ -364,10 +389,10 @@ public class JobDigitalMarket {
                 public void run() {
 
                     StrategyGroupInstance sgi = new StrategyGroupInstance();
-                    sgi.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                     try {
                         //复制quartzjobinfo到tli,任务基础信息完成复制
                         BeanUtils.copyProperties(sgi, strategyGroupInfo);
+                        sgi.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                         //逻辑发送错误代码捕获发生自动重试(retry_job) 不重新生成实例id,使用旧的实例id
                         String last_task_id = "";
                         if (is_retry == 0) {
@@ -667,7 +692,6 @@ public class JobDigitalMarket {
                 StrategyInstance si = new StrategyInstance();
                 BeanUtils.copyProperties(si, sgi);
 
-                String etl_task_id = ((JSONObject) job).getString("etl_task_id");//具体任务id
                 String pageSourceId = ((JSONObject) job).getString("divId");//前端生成的div 标识
                 String more_task = ((JSONObject) job).getString("more_task");
                 String is_disenable = ((JSONObject) job).getString("is_disenable");
@@ -683,52 +707,33 @@ public class JobDigitalMarket {
                     depend_level = "0";
                 }
 
-                String etl_context = ((JSONObject) job).getString("etl_context");
-                String command = ((JSONObject) job).getString("command");//具体任务id
-                String is_script = ((JSONObject) job).getString("is_script");//是否脚本方式执行
-                String async = ((JSONObject) job).getString("async");//同步/异步
                 si.setRun_time(new Timestamp(new Date().getTime()));
 
-                if (((JSONObject) job).getString("type").equalsIgnoreCase("tasks")) {
-//                    si.setMore_task(more_task);
-//                    si.setJob_type("ETL");
-                    String zdh_instance = ((JSONObject) job).getString("zdh_instance");
-//                    if (!StringUtils.isEmpty(zdh_instance) && StringUtils.isEmpty(si.getParams())) {
-//                        JSONObject jsonObject = new JSONObject();
-//                        jsonObject.put("zdh_instance", zdh_instance);
-//                        si.setParams(jsonObject.toJSONString());
-//                    }
-                }
 
                 si.setJsmind_data("");
-                //si.setRun_jsmind_data("");
-                if (((JSONObject) job).getString("type").equalsIgnoreCase("jdbc")) {
-                    si.setJsmind_data(((JSONObject) job).toJSONString());
-                    si.setRun_jsmind_data(((JSONObject) job).toJSONString());
-                    //taskLogInstance.setMore_task("");
-                    //taskLogInstance.setJob_type("JDBC");
-                }
-
+                si.setJsmind_data(JSON.toJSONString(job));
+                //si.setJsmind_data(((JSONObject) job).toJSONString());
+                si.setRun_jsmind_data(((JSONObject) job).toJSONString());
 
                 String t_id = SnowflakeIdWorker.getInstance().nextId() + "";
                 map.put(pageSourceId, t_id);//div标识和任务实例id 对应关系
                 map2.put(t_id, pageSourceId);
 
-                si.setId(t_id);//具体执行任务实例id,每次执行都会重新生成
-                si.setGroup_id(sgi.getId());//调度任务id
-                si.setGroup_context(sgi.getGroup_context());//调度任务说明
-                //taskLogInstance.setEtl_task_id(etl_task_id);//etl任务id
-                //taskLogInstance.setEtl_context(etl_context);//etl任务说明
-                //taskLogInstance.setCommand(command);
-                //taskLogInstance.setIs_script(is_script);
+                si.setId(t_id);//具体执行策略实例id,每次执行都会重新生成
+                si.setInstance_type(more_task);
+                si.setGroup_instance_id(sgi.getId());//策略组实例id
+                si.setGroup_id(sgi.getGroup_context());//策略组id
+                si.setGroup_context(sgi.getGroup_context());//策略组任务说明
 
                 si.setStatus(JobStatus.NON.getValue());
 
-
-                //taskLogInstance.setCount(0);
                 si.setOwner(sgi.getOwner());
                 si.setIs_disenable(is_disenable);
                 si.setDepend_level(depend_level);
+
+                String name = ((JSONObject) job).getString("name");
+                si.setStrategy_context(name);
+
                 siList.add(si);
             }
 
@@ -783,11 +788,10 @@ public class JobDigitalMarket {
                 String sid = si.getId();
                 String next_tasks = StringUtils.join(dag.getChildren(sid).toArray(), ",");
                 String pre_tasks = StringUtils.join(dag.getParent(sid), ",");
-                si.setGroup_id(sgi.getId());
-                si.setGroup_context(sgi.getGroup_context());
                 si.setNext_tasks(next_tasks);
                 si.setPre_tasks(pre_tasks);
                 si.setSchedule_source(sgi.getSchedule_source());
+                si.setMisfire("0");
                 if (sub_tasks == null) {
                     si.setStatus(JobStatus.NON.getValue());
                 } else {
