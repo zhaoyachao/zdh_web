@@ -134,7 +134,7 @@ public class ZdhDataWareController extends BaseController {
      */
     @RequestMapping(value = "/data_ware_house_label", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_ware_house_label() {
+    public ReturnInfo<List<EnumInfo>> data_ware_house_label() {
 
         Example example=new Example(EnumInfo.class);
         Example.Criteria criteria = example.createCriteria();
@@ -157,7 +157,7 @@ public class ZdhDataWareController extends BaseController {
      */
     @RequestMapping(value = "/data_ware_house_sample", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_ware_house_sample(String context, String id) throws Exception {
+    public ReturnInfo<Object> data_ware_house_sample(String context, String id) throws Exception {
 
         IssueDataInfo idi = issueDataMapper.selectById(id);
 
@@ -220,7 +220,7 @@ public class ZdhDataWareController extends BaseController {
      */
     @RequestMapping(value = "/data_ware_house_export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_ware_house_export(String id, HttpServletResponse response) throws Exception {
+    public ReturnInfo<Object> data_ware_house_export(String id, HttpServletResponse response) throws Exception {
 
         IssueDataInfo idi = issueDataMapper.selectById(id);
         //验证权限,验证当前数据是否同一个组下的人申请
@@ -281,7 +281,7 @@ public class ZdhDataWareController extends BaseController {
      */
     @RequestMapping(value = "/data_ware_house_apply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_ware_house_apply(String issue_id){
+    public ReturnInfo<List<ApplyAlarmInfo>> data_ware_house_apply(String issue_id){
 
         List<ApplyAlarmInfo> applyAlarmInfos = applyMapper.selectByIssueId(issue_id);
 
@@ -309,7 +309,7 @@ public class ZdhDataWareController extends BaseController {
      */
     @RequestMapping(value = "/notice_downstream_email", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo notice_downstream_email(String id, String subject, String context){
+    public ReturnInfo<List<ApplyAlarmInfo>> notice_downstream_email(String id, String subject, String context){
 
         try{
             List<ApplyAlarmInfo> applyAlarmInfos = applyMapper.selectByIssueId(id);
@@ -328,7 +328,7 @@ public class ZdhDataWareController extends BaseController {
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "发送失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "发送失败",e);
         }
 
     }

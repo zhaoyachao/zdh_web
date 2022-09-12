@@ -111,7 +111,7 @@ public class LoginController {
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation = Propagation.NESTED)
-    public ReturnInfo register2(User user) {
+    public ReturnInfo<Object> register2(User user) {
         JSONObject json = new JSONObject();
         try {
             //自定义加密 算法和shiro 的算法保持一致
@@ -223,7 +223,7 @@ public class LoginController {
      */
     @RequestMapping(value = "/get_error_msg", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo get_error_msg(HttpServletRequest request, HttpServletResponse response, String captcha) {
+    public ReturnInfo<String> get_error_msg(HttpServletRequest request, HttpServletResponse response, String captcha) {
         try {
             if (((HttpServletRequest) request).getSession().getAttribute("error") != null) {
                 String msg = ((HttpServletRequest) request).getSession().getAttribute("error").toString();
@@ -249,7 +249,7 @@ public class LoginController {
      */
     @RequestMapping(value = "/check_captcha", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo check_captcha(HttpServletRequest request, HttpServletResponse response, String captcha) {
+    public ReturnInfo<String> check_captcha(HttpServletRequest request, HttpServletResponse response, String captcha) {
         try {
 
             String session_captcha = (String) ((HttpServletRequest) request).getSession().getAttribute(MyAuthenticationToken.captcha_key);
@@ -310,7 +310,7 @@ public class LoginController {
      */
     @RequestMapping(value = "user", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo updateUser2(User user) {
+    public ReturnInfo<Object> updateUser2(User user) {
         try {
             debugInfo(user);
             JSONObject json = new JSONObject();
@@ -364,7 +364,7 @@ public class LoginController {
      */
     @RequestMapping(value = "getUserInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo getUserInfo() {
+    public ReturnInfo<User> getUserInfo() {
 
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         user.setPassword("");
@@ -415,7 +415,7 @@ public class LoginController {
      */
     @RequestMapping(value = "user_names", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String user_names(String username) {
+    public  List<JSONObject> user_names(String username) {
 
         AccountInfo accountInfo = new AccountInfo();
         Example example = new Example(accountInfo.getClass());
@@ -433,7 +433,7 @@ public class LoginController {
             user_names.add(js);
         }
 
-        return JSONObject.toJSONString(user_names);
+        return user_names;
     }
 
 

@@ -103,7 +103,7 @@ public class ZdhDataxController extends BaseController{
     @RequestMapping(value = "/etl_task_datax_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo etl_task_datax_delete(String[] ids) {
+    public ReturnInfo<Object> etl_task_datax_delete(String[] ids) {
 
         try{
             etlTaskDataxMapper.deleteLogicByIds("etl_task_datax_info",ids, new Timestamp(new Date().getTime()));

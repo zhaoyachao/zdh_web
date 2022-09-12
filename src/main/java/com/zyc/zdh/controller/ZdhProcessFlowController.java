@@ -79,7 +79,7 @@ public class ZdhProcessFlowController extends BaseController {
      */
     @RequestMapping(value = "/process_flow_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo process_flow_list(String context) {
+    public ReturnInfo<List<ProcessFlowInfo>> process_flow_list(String context) {
 
         if(!StringUtils.isEmpty(context)){
             context = getLikeCondition(context);
@@ -96,7 +96,7 @@ public class ZdhProcessFlowController extends BaseController {
      */
     @RequestMapping(value = "/process_flow_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo process_flow_list2(String context) {
+    public ReturnInfo<List<ProcessFlowInfo>> process_flow_list2(String context) {
         if(!StringUtils.isEmpty(context)){
             context = getLikeCondition(context);
         }
@@ -111,7 +111,7 @@ public class ZdhProcessFlowController extends BaseController {
      */
     @RequestMapping(value = "/process_flow_status", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo process_flow_status(ProcessFlowInfo pfi) {
+    public ReturnInfo<ProcessFlowInfo> process_flow_status(ProcessFlowInfo pfi) {
         ProcessFlowInfo pfi_old = processFlowMapper.selectByPrimaryKey(pfi.getId());
         processFlowMapper.updateStatus(pfi.getId(), pfi.getStatus());
         pfi_old = processFlowMapper.selectByPrimaryKey(pfi.getId());
@@ -256,7 +256,7 @@ public class ZdhProcessFlowController extends BaseController {
      */
     @RequestMapping(value = "/process_flow_status2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo process_flow_status2(ProcessFlowInfo pfi) {
+    public ReturnInfo<ProcessFlowInfo> process_flow_status2(ProcessFlowInfo pfi) {
         processFlowMapper.updateStatus2(pfi.getFlow_id(), pfi.getStatus());
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "撤销", pfi);
     }
@@ -280,7 +280,7 @@ public class ZdhProcessFlowController extends BaseController {
      */
     @RequestMapping(value = "/process_flow_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo process_flow_detail(String flow_id) {
+    public ReturnInfo<List<ProcessFlowInfo>> process_flow_detail(String flow_id) {
 
         try {
             List<ProcessFlowInfo> pfis = processFlowMapper.selectByFlowId(flow_id, getUser().getUserName());

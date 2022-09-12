@@ -2,6 +2,7 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.UserOperateLogMapper;
+import com.zyc.zdh.entity.PageResult;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.UserOperateLogInfo;
@@ -97,10 +98,11 @@ public class ZdhOperateLogController extends BaseController {
 
             userOperateLogInfos = userOperateLogMapper.selectByExampleAndRowBounds(example, rowBounds);
 
-            JSONObject jsonObject=new JSONObject();
-            jsonObject.put("total", total);
-            jsonObject.put("rows", userOperateLogInfos);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonObject);
+            PageResult<List<UserOperateLogInfo>> pageResult=new PageResult<>();
+            pageResult.setTotal(total);
+            pageResult.setRows(userOperateLogInfos);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);

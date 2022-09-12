@@ -167,13 +167,13 @@ public class ZdhDataSourcesController extends BaseController{
      * @param id id
      * @return
      */
-    @RequestMapping(value = "/data_sources_info", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_sources_info", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_sources_info(String id) {
+    public DataSourcesInfo data_sources_info(String id) {
 
         DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
 
-        return JSON.toJSONString(dataSourcesInfo);
+        return dataSourcesInfo;
     }
 
     /**
@@ -184,7 +184,7 @@ public class ZdhDataSourcesController extends BaseController{
     @RequestMapping(value = "/data_sources_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo deleteIds(String[] ids) {
+    public ReturnInfo<Object> deleteIds(String[] ids) {
         try{
             dataSourcesMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
@@ -213,7 +213,7 @@ public class ZdhDataSourcesController extends BaseController{
      */
     @RequestMapping(value = "/data_sources_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_sources_add(DataSourcesInfo dataSourcesInfo) {
+    public ReturnInfo<Object> data_sources_add(DataSourcesInfo dataSourcesInfo) {
         try{
             dataSourcesInfo.setOwner(getOwner());
             dataSourcesInfo.setIs_delete("0");
@@ -234,7 +234,7 @@ public class ZdhDataSourcesController extends BaseController{
      */
     @RequestMapping(value="/data_sources_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_sources_update(DataSourcesInfo dataSourcesInfo) {
+    public ReturnInfo<Object> data_sources_update(DataSourcesInfo dataSourcesInfo) {
         try{
             DataSourcesInfo oldDataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(dataSourcesInfo.getId());
             dataSourcesInfo.setOwner(oldDataSourcesInfo.getOwner());
@@ -270,7 +270,7 @@ public class ZdhDataSourcesController extends BaseController{
      */
     @RequestMapping(value = "/test_connect", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo test_connect(DataSourcesInfo dataSourcesInfo) {
+    public ReturnInfo<Object> test_connect(DataSourcesInfo dataSourcesInfo) {
         try{
             if(!dataSourcesInfo.getData_source_type().equalsIgnoreCase("jdbc")){
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"测试连接失败", "只支持JDBC类型连接测试");
@@ -281,7 +281,7 @@ public class ZdhDataSourcesController extends BaseController{
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"测试连接失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"测试连接失败", e);
         }
     }
 

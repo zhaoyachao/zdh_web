@@ -61,7 +61,7 @@ public class ZdhSelfServiceController extends BaseController {
      */
     @RequestMapping(value = "/self_service_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo self_service_list(String history_context) throws Exception {
+    public ReturnInfo<List<SelfHistory>> self_service_list(String history_context) throws Exception {
         Example example=new Example(SelfHistory.class);
         Example.Criteria criteria=example.createCriteria();
         criteria.andEqualTo("is_delete", Const.NOT_DELETE);
@@ -96,7 +96,7 @@ public class ZdhSelfServiceController extends BaseController {
      */
     @RequestMapping(value = "/self_service_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo self_service_detail(String id) {
+    public ReturnInfo<SelfHistory> self_service_detail(String id) {
         try {
             SelfHistory selfHistory = selfHistoryMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", selfHistory);
@@ -236,11 +236,6 @@ public class ZdhSelfServiceController extends BaseController {
         }
     }
 
-
-    public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
-    }
 
 
     private void debugInfo(Object obj) {

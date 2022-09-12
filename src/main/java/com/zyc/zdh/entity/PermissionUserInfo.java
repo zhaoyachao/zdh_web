@@ -78,6 +78,7 @@ public class PermissionUserInfo implements Serializable {
 	 */
 	private String product_code;
 
+
 	public String getId() {
 		return id;
 	}

@@ -57,7 +57,7 @@ public class ZdhEnumController extends BaseController{
      */
     @RequestMapping(value = "/enum_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo enum_detail(String id) {
+    public ReturnInfo<EnumInfo> enum_detail(String id) {
         try{
             EnumInfo enumInfo=enumMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", enumInfo);
@@ -74,9 +74,9 @@ public class ZdhEnumController extends BaseController{
      * @param enum_context 关键字
      * @return
      */
-    @RequestMapping(value = "/enum_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/enum_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String enum_list(String enum_context) {
+    public List<EnumInfo> enum_list(String enum_context) {
         List<EnumInfo> list = new ArrayList<>();
         Example example=new Example(EnumInfo.class);
         Example.Criteria criteria= example.createCriteria();
@@ -87,7 +87,7 @@ public class ZdhEnumController extends BaseController{
         }
 
         list = enumMapper.selectByExample(example);
-        return JSON.toJSONString(list);
+        return list;
     }
 
     /**
@@ -218,7 +218,7 @@ public class ZdhEnumController extends BaseController{
     @RequestMapping(value = "/enum_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public ReturnInfo enum_by_code(String enum_code) {
+    public ReturnInfo<EnumInfo> enum_by_code(String enum_code) {
         try{
             if(StringUtils.isEmpty(enum_code)){
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"枚举code不可为空", null);
@@ -234,11 +234,11 @@ public class ZdhEnumController extends BaseController{
             if(list!=null && list.size()==1){
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"查询成功", list.get(0));
             }
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", "未找到对应枚举值");
+            throw new Exception("未找到对应枚举值");
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", e);
         }
 
     }

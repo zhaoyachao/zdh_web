@@ -70,7 +70,7 @@ public class ZdhEtlLogController extends BaseController{
      */
     @RequestMapping(value = "/etl_task_log_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo etl_task_log_detail(String id) {
+    public ReturnInfo<EtlTaskLogInfo> etl_task_log_detail(String id) {
         try{
             EtlTaskLogInfo eti=etlTaskLogMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);

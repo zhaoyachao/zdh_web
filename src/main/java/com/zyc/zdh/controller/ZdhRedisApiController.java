@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Set;
 
 /**
  * redis服务
@@ -33,9 +35,9 @@ public class ZdhRedisApiController extends BaseController {
      */
     @RequestMapping(value = "/redis/get/{key}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo get_key(@PathVariable("key") String key) {
+    public ReturnInfo<String> get_key(@PathVariable("key") String key) {
         if (redisUtil.exists(key)) {
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", redisUtil.get(key));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", redisUtil.get(key).toString());
         }
         return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", "没有找到key: " + key);
     }
@@ -60,7 +62,7 @@ public class ZdhRedisApiController extends BaseController {
      */
     @RequestMapping(value = "/redis/keys", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo keys() {
+    public ReturnInfo<Set<String>> keys() {
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", redisUtil.keys());
     }
 

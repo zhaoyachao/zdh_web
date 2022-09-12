@@ -89,9 +89,10 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/user_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo user_list(String product_code,String user_context) {
+    public ReturnInfo<List<PermissionUserInfo>> user_list(String product_code,String user_context) {
+        List<PermissionUserInfo> result = new ArrayList<>();
         if(StringUtils.isEmpty(product_code)){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", "");
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", result);
         }
 
         Example example=new Example(PermissionUserInfo.class);
@@ -125,14 +126,16 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/user_enable", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo user_enable(String[] ids, String enable) {
+    public ReturnInfo<Object> user_enable(String[] ids, String enable) {
 
         try {
             int result = permissionMapper.updateEnable(ids, enable);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", getBaseException());
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", getBaseException(e));
         }
 
     }
@@ -164,7 +167,7 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/user_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo user_detail(String id) {
+    public ReturnInfo<PermissionUserInfo> user_detail(String id) {
         try {
             PermissionUserInfo user = permissionMapper.selectByPrimaryKey(id);
             user.setUser_password("");
@@ -172,7 +175,7 @@ public class PermissionController extends BaseController {
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", getBaseException(e));
         }
     }
 
@@ -184,7 +187,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/user_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo user_update(PermissionUserInfo user) {
+    public ReturnInfo<Object> user_update(PermissionUserInfo user) {
         try {
 
             if (user.getId().equalsIgnoreCase("-1")) {
@@ -204,11 +207,11 @@ public class PermissionController extends BaseController {
                 permissionMapper.updateByPrimaryKey(user);
                 //
             }
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", getBaseException());
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", getBaseException(e));
         }
     }
 
@@ -230,7 +233,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/user_group_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo user_group_add(UserGroupInfo ugi) {
+    public ReturnInfo<Object> user_group_add(UserGroupInfo ugi) {
         try {
 
             checkParam(ugi.getProduct_code(), "product_code");
@@ -246,7 +249,7 @@ public class PermissionController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
@@ -259,7 +262,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/user_group_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo user_group_list(String enable, String product_code) {
+    public ReturnInfo<List<UserGroupInfo>> user_group_list(String enable, String product_code) {
         try {
             checkParam(product_code, "product_code");
             UserGroupInfo ugi = new UserGroupInfo();
@@ -301,14 +304,14 @@ public class PermissionController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
-    @RequestMapping(value = "/role_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/role_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String role_list(String role_context, String enable, String product_code) {
+    public List<RoleInfo> role_list(String role_context, String enable, String product_code) {
         if(!StringUtils.isEmpty(role_context)){
             role_context = getLikeCondition(role_context);
         }
         List<RoleInfo> users = roleDao.selectByContext(role_context, enable, product_code);
-        return JSONObject.toJSONString(users);
+        return users;
     }
 
     /**
@@ -320,16 +323,16 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/role_enable", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo role_enable(String[] ids, String enable) {
+    public ReturnInfo<Object> role_enable(String[] ids, String enable) {
 
         try {
             int result = roleDao.updateEnable(ids, enable);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", getBaseException());
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", getBaseException(e));
         }
 
     }
@@ -341,14 +344,14 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/role_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo role_detail(String id) {
+    public ReturnInfo<RoleInfo> role_detail(String id) {
         try {
             RoleInfo role = roleDao.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", role);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", getBaseException(e));
         }
     }
 
@@ -360,7 +363,7 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/role_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo role_by_code(String code, String product_code) {
+    public ReturnInfo<RoleInfo> role_by_code(String code, String product_code) {
         try {
             RoleInfo roleInfo=new RoleInfo();
             roleInfo.setProduct_code(product_code);
@@ -370,7 +373,7 @@ public class PermissionController extends BaseController {
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", getBaseException(e));
         }
     }
 
@@ -391,7 +394,7 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/jstree_add_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo jstree_add_node(ResourceTreeInfo rti) {
+    public ReturnInfo<Object> jstree_add_node(ResourceTreeInfo rti) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
             if (rti.getNotice_title()!=null && rti.getNotice_title().length() > 4) {
@@ -409,11 +412,11 @@ public class PermissionController extends BaseController {
             rti.setResource_desc("");
             debugInfo(rti);
             resourceTreeMapper.insert(rti);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
         }
 
 
@@ -428,10 +431,10 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/jstree_node",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo jstree_node(String parent_id, String text,String product_code) {
+    public ReturnInfo<List<ResourceTreeInfo>> jstree_node(String parent_id, String text,String product_code) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         if(org.apache.commons.lang3.StringUtils.isEmpty(product_code)){
-            return ReturnInfo.build("201","产品参数不可为空","产品参数不可为空");
+            return ReturnInfo.build("201","产品参数不可为空",getBaseException());
         }
         Example example=new Example(ResourceTreeInfo.class);
         Example.Criteria criteria=example.createCriteria();
@@ -462,7 +465,7 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/jstree_update_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo jstree_update_node(ResourceTreeInfo rti) {
+    public ReturnInfo<Object> jstree_update_node(ResourceTreeInfo rti) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
             rti.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -473,11 +476,11 @@ public class PermissionController extends BaseController {
             debugInfo(rti);
             resourceTreeMapper.updateByPrimaryKey(rti);
 
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
         }
 
     }
@@ -489,15 +492,15 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/jstree_del_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo jstree_del_node(String id) {
+    public ReturnInfo<Object> jstree_del_node(String id) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
             resourceTreeMapper.deleteByPrimaryKey(id);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
         }
 
     }
@@ -512,17 +515,17 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/jstree_update_parent", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo jstree_update_parent(String id, String parent_id, String level) {
+    public ReturnInfo<Object> jstree_update_parent(String id, String parent_id, String level) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
             resourceTreeMapper.updateParentById(id, parent_id, level);
             //递归修改层级
             update_level(id, Integer.parseInt(level));
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
         }
     }
 
@@ -554,7 +557,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/jstree_add_permission", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo jstree_add_permission(String id, String[] resource_id, String code, String name,String product_code) {
+    public ReturnInfo<Object> jstree_add_permission(String id, String[] resource_id, String code, String name,String product_code) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
             if (id.equalsIgnoreCase("-1")) {
@@ -599,12 +602,12 @@ public class PermissionController extends BaseController {
             }
             resourceTreeMapper.deleteByRoleId(id);
             resourceTreeMapper.updateUserResource(rris);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
         }
     }
 
@@ -614,31 +617,31 @@ public class PermissionController extends BaseController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/jstree_permission_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/jstree_permission_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String jstree_permission_list(String id) {
+    public List<RoleResourceInfo> jstree_permission_list(String id) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         List<RoleResourceInfo> uris = new ArrayList<>();
 
         uris = resourceTreeMapper.selectByRoleId(id);
 
-        return JSON.toJSONString(uris);
+        return uris;
     }
 
     /**
      * 通过用户id获取资源
      * @return
      */
-    @RequestMapping(value = "/jstree_permission_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/jstree_permission_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String jstree_permission_list2() {
+    public List<UserResourceInfo2> jstree_permission_list2() {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         List<UserResourceInfo2> uris = new ArrayList<>();
         String user_account = getUser().getUserName();
         uris = resourceTreeMapper.selectResourceByUserAccount(user_account);
         uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
 
-        return JSON.toJSONString(uris);
+        return uris;
     }
 
 
@@ -658,7 +661,7 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/user_tag_group_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo user_tag_group_code() {
+    public ReturnInfo<List<DataTagGroupInfo>> user_tag_group_code() {
         try {
             String tag_group_code = "";
 
@@ -689,7 +692,7 @@ public class PermissionController extends BaseController {
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", getBaseException(e));
         }
     }
 
@@ -721,7 +724,7 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/permission_apply_by_product_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo permission_apply_by_product_code(String product_code, String apply_type) {
+    public ReturnInfo<Object> permission_apply_by_product_code(String product_code, String apply_type) {
 
         Object result=null;
         if(apply_type.equalsIgnoreCase("role")){
@@ -745,7 +748,7 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/permission_apply_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo permission_apply_list(String permission_context){
+    public ReturnInfo<List<PermissionApplyInfo>> permission_apply_list(String permission_context){
         try{
             Example example=new Example(PermissionApplyInfo.class);
             Example.Criteria criteria = example.createCriteria();
@@ -767,7 +770,7 @@ public class PermissionController extends BaseController {
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", getBaseException(e));
         }
     }
 
@@ -780,7 +783,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/permission_apply_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional
-    public ReturnInfo permission_apply_add(PermissionApplyInfo permissionApplyInfo, String apply_context) {
+    public ReturnInfo<PermissionApplyInfo> permission_apply_add(PermissionApplyInfo permissionApplyInfo, String apply_context) {
         try{
             permissionApplyInfo.setCreate_time(new Timestamp(new Date().getTime()));
             permissionApplyInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -813,7 +816,7 @@ public class PermissionController extends BaseController {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", getBaseException(e));
         }
     }
 
@@ -824,7 +827,7 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/permission_apply_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo permission_apply_delete(String[] id){
+    public ReturnInfo<List<PermissionApplyInfo>> permission_apply_delete(String[] id){
         try{
             Example example=new Example(PermissionApplyInfo.class);
             Example.Criteria criteria=example.createCriteria();
@@ -840,7 +843,7 @@ public class PermissionController extends BaseController {
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionApplyInfos);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", getBaseException(e));
         }
     }
 
@@ -851,12 +854,12 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/permission_apply_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo permission_apply_detail(String id){
+    public ReturnInfo<PermissionApplyInfo> permission_apply_detail(String id){
         try{
             PermissionApplyInfo pai = permissionApplyMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pai);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", getBaseException(e));
         }
     }
 

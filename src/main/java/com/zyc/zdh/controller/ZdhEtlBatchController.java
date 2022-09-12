@@ -78,7 +78,7 @@ public class ZdhEtlBatchController extends BaseController {
      */
     @RequestMapping(value = "/etl_task_batch_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo etl_task_batch_detail(String id) {
+    public ReturnInfo<EtlTaskBatchInfo> etl_task_batch_detail(String id) {
         try {
             EtlTaskBatchInfo eti = etlTaskBatchMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
@@ -240,7 +240,7 @@ public class ZdhEtlBatchController extends BaseController {
     @RequestMapping(value = "/etl_task_batch_create", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo etl_task_batch_create(EtlTaskBatchInfo etlTaskBatchInfo) {
+    public ReturnInfo<List<String>> etl_task_batch_create(EtlTaskBatchInfo etlTaskBatchInfo) {
         try {
             String owner = getOwner();
             debugInfo(etlTaskBatchInfo);

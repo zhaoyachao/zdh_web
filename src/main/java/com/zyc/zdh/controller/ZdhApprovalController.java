@@ -62,9 +62,9 @@ public class ZdhApprovalController extends BaseController{
      * @param approval_context 关键字
      * @return
      */
-    @RequestMapping(value = "/approval_config_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/approval_config_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String approve_config_list(String approval_context) {
+    public List<ApprovalConfigInfo> approve_config_list(String approval_context) {
         try{
             Example example=new Example(ApprovalConfigInfo.class);
             Example.Criteria criteria = example.createCriteria();
@@ -74,10 +74,10 @@ public class ZdhApprovalController extends BaseController{
                 criteria.orLike("id", getLikeCondition(approval_context));
             }
             List<ApprovalConfigInfo> approvalConfigInfos=approvalConfigMapper.selectByExample(example);
-            return JSON.toJSONString(approvalConfigInfos);
+            return approvalConfigInfos;
         }catch (Exception e){
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+             return null;
         }
     }
 
@@ -99,7 +99,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_config_detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_config_detail(String id) {
+    public ReturnInfo<ApprovalConfigInfo> approval_config_detail(String id) {
         try{
             ApprovalConfigInfo approvalConfigInfo=approvalConfigMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalConfigInfo);
@@ -117,7 +117,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_config_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_config_add(ApprovalConfigInfo approvalConfigInfo) {
+    public ReturnInfo<Object> approval_config_add(ApprovalConfigInfo approvalConfigInfo) {
         try{
             List<ApprovalConfigInfo> approvalConfigInfos=approvalConfigMapper.select(approvalConfigInfo);
             if(approvalConfigInfos!=null && approvalConfigInfos.size()>0){
@@ -140,7 +140,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_config_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_config_update(ApprovalConfigInfo approvalConfigInfo) {
+    public ReturnInfo<Object> approval_config_update(ApprovalConfigInfo approvalConfigInfo) {
         try{
             ApprovalConfigInfo apc=approvalConfigMapper.selectByPrimaryKey(approvalConfigInfo.getId());
             BeanUtils.copyProperties(apc, approvalConfigInfo);
@@ -223,7 +223,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_auditor_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_auditor_add(ApprovalAuditorInfo approvalAuditorInfo) {
+    public ReturnInfo<ApprovalAuditorInfo> approval_auditor_add(ApprovalAuditorInfo approvalAuditorInfo) {
         try{
             List<ApprovalAuditorInfo> approvalAuditorInfos=approvalAuditorMapper.select(approvalAuditorInfo);
             if(approvalAuditorInfos!=null && approvalAuditorInfos.size()>0){
@@ -247,7 +247,7 @@ public class ZdhApprovalController extends BaseController{
     @RequestMapping(value = "/approval_auditor_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo approval_auditor_delete(String[] ids) {
+    public ReturnInfo<Object> approval_auditor_delete(String[] ids) {
         try{
             approvalAuditorMapper.deleteByPrimaryKeys(ids);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
@@ -265,7 +265,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_auditor_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_auditor_update(ApprovalAuditorInfo approvalAuditorInfo) {
+    public ReturnInfo<ApprovalAuditorInfo> approval_auditor_update(ApprovalAuditorInfo approvalAuditorInfo) {
         try{
             ApprovalAuditorInfo old=approvalAuditorMapper.selectByPrimaryKey(approvalAuditorInfo.getId());
             approvalAuditorInfo.setCreate_time(old.getCreate_time());
@@ -284,7 +284,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_auditor_detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_auditor_detail(String id) {
+    public ReturnInfo<ApprovalAuditorInfo> approval_auditor_detail(String id) {
         try{
             ApprovalAuditorInfo approvalAuditorInfo=approvalAuditorMapper.selectById(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalAuditorInfo);
@@ -329,7 +329,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_auditor_flow_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_auditor_flow_add(ApprovalAuditorFlowInfo approvalAuditorFlowInfo) {
+    public ReturnInfo<ApprovalAuditorFlowInfo> approval_auditor_flow_add(ApprovalAuditorFlowInfo approvalAuditorFlowInfo) {
         try{
             List<ApprovalAuditorFlowInfo> approvalAuditorFlowInfos=approvalAuditorFlowMapper.select(approvalAuditorFlowInfo);
             if(approvalAuditorFlowInfos!=null && approvalAuditorFlowInfos.size()>0){
@@ -356,7 +356,7 @@ public class ZdhApprovalController extends BaseController{
     @RequestMapping(value = "/approval_auditor_flow_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo approval_auditor_flow_delete(String[] ids) {
+    public ReturnInfo<Object> approval_auditor_flow_delete(String[] ids) {
         try{
             approvalAuditorFlowMapper.deleteLogicByIds("approval_auditor_flow_info", ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
@@ -374,7 +374,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_auditor_flow_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_auditor_flow_update(ApprovalAuditorFlowInfo approvalAuditorFlowInfo) {
+    public ReturnInfo<ApprovalAuditorFlowInfo> approval_auditor_flow_update(ApprovalAuditorFlowInfo approvalAuditorFlowInfo) {
         try{
             ApprovalAuditorFlowInfo old = approvalAuditorFlowMapper.selectByPrimaryKey(approvalAuditorFlowInfo.getId());
             approvalAuditorFlowInfo.setCreate_time(old.getCreate_time());
@@ -397,7 +397,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_auditor_flow_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_auditor_flow_detail(String id) {
+    public ReturnInfo<ApprovalAuditorFlowInfo> approval_auditor_flow_detail(String id) {
         try{
             ApprovalAuditorFlowInfo approvalAuditorFlowInfo=approvalAuditorFlowMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalAuditorFlowInfo);
@@ -436,7 +436,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_event_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_event_add(ApprovalEventInfo approvalEventInfo) {
+    public ReturnInfo<Object> approval_event_add(ApprovalEventInfo approvalEventInfo) {
         try{
             List<ApprovalEventInfo> approvalEventInfos=approvalEventMapper.select(approvalEventInfo);
             if(approvalEventInfos!=null && approvalEventInfos.size()>0){
@@ -459,7 +459,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_event_detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_event_detail(String id) {
+    public ReturnInfo<ApprovalEventInfo> approval_event_detail(String id) {
         try{
             ApprovalEventInfo approvalEventInfo=approvalEventMapper.selectById(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalEventInfo);
@@ -496,7 +496,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_event_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo approval_event_update(ApprovalEventInfo approvalEventInfo) {
+    public ReturnInfo<ApprovalEventInfo> approval_event_update(ApprovalEventInfo approvalEventInfo) {
         try{
             ApprovalEventInfo old = approvalEventMapper.selectByPrimaryKey(approvalEventInfo.getId());
             approvalEventInfo.setCreate_time(old.getCreate_time());

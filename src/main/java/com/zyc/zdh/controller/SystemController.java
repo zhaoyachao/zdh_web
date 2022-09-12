@@ -73,12 +73,12 @@ public class SystemController extends BaseController{
     @RequestMapping(value = "/get_platform_name", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public ReturnInfo get_platform_name() {
+    public ReturnInfo<String> get_platform_name() {
         Object o = redisUtil.get(Const.ZDH_PLATFORM_NAME);
         if(o==null){
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", "ZDH数据平台");
         }
-        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", o);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", o.toString());
     }
 
 
@@ -158,7 +158,7 @@ public class SystemController extends BaseController{
      */
     @RequestMapping(value = "/notice_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo notice() throws Exception {
+    public ReturnInfo<Map<String,Object>> notice() throws Exception {
         //System.out.println("加载缓存中通知事件");
         List<NoticeInfo> noticeInfos = new ArrayList<>();
 
@@ -178,49 +178,6 @@ public class SystemController extends BaseController{
 
 
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"查询完成", map);
-
-        //return JSON.toJSONString(noticeInfos);
-
-
-//        if (!redisUtil.exists("zdhdownloadinfos_" + getUser().getId()) && !redisUtil.exists("zdhapplyinfos_" + getUser().getId())) {
-//            //return JSON.toJSONString(noticeInfos);
-//        }
-//        if(redisUtil.exists("zdhdownloadinfos_" + getUser().getId())){
-//            String json = redisUtil.get("zdhdownloadinfos_" + getUser().getId()).toString();
-//            if (json != null && !json.equals("")) {
-//                List<ZdhDownloadInfo> cache = JSON.parseArray(json, ZdhDownloadInfo.class);
-//                Iterator<ZdhDownloadInfo> iterator = cache.iterator();
-//                while (iterator.hasNext()) {
-//                    ZdhDownloadInfo zdhDownloadInfo = iterator.next();
-//                    if (zdhDownloadInfo.getOwner().equals(getUser().getId())) {
-//                        NoticeInfo noticeInfo = new NoticeInfo();
-//                        noticeInfo.setMsg_type("文件下载");
-//                        int last_index = zdhDownloadInfo.getFile_name().lastIndexOf("/");
-//                        noticeInfo.setMsg_title(zdhDownloadInfo.getFile_name().substring(last_index + 1) + "完成下载");
-//                        noticeInfo.setMsg_url("download_index");
-//                        noticeInfos.add(noticeInfo);
-//                    }
-//                }
-//            }
-//        }
-//
-//        if(redisUtil.exists("zdhapplyinfos_" + getUser().getId())){
-//            String json2 = redisUtil.get("zdhapplyinfos_" + getUser().getId()).toString();
-//            if (json2 != null && !json2.equals("")) {
-//                List<ApplyInfo> cache = JSON.parseArray(json2, ApplyInfo.class);
-//                Iterator<ApplyInfo> iterator = cache.iterator();
-//                while (iterator.hasNext()) {
-//                    ApplyInfo applyInfo = iterator.next();
-//                    NoticeInfo noticeInfo = new NoticeInfo();
-//                    noticeInfo.setMsg_type("审批");
-//                    noticeInfo.setMsg_title(applyInfo.getApply_context()+"_数据审批单");
-//                    noticeInfo.setMsg_url("data_approve_index");
-//                    noticeInfos.add(noticeInfo);
-//                }
-//            }
-//        }
-
-       // return JSON.toJSONString(noticeInfos);
     }
 
     /**
@@ -230,7 +187,7 @@ public class SystemController extends BaseController{
     @RequestMapping(value = "/del_system_job", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Deprecated
-    public ReturnInfo del_system_job(){
+    public ReturnInfo<String> del_system_job(){
 
         return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前功能已废弃,可使用调度管理=>调度器功能代替", "当前功能已废弃");
 //        JSONObject js=new JSONObject();
@@ -295,7 +252,7 @@ public class SystemController extends BaseController{
     @RequestMapping(value = "/notice_message", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo notice_message(String id) {
+    public ReturnInfo<NoticeInfo> notice_message(String id) {
         //System.out.println("加载缓存中通知事件");
 
         try{
@@ -337,7 +294,7 @@ public class SystemController extends BaseController{
      */
     @RequestMapping(value = "/notice_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo notice2(String message, int limit, int offset) throws Exception {
+    public ReturnInfo<PageResult<List<NoticeInfo>>> notice2(String message, int limit, int offset) throws Exception {
         //System.out.println("加载缓存中通知事件");
         try{
             NoticeInfo ni = new NoticeInfo();
@@ -356,10 +313,11 @@ public class SystemController extends BaseController{
 
             noticeInfos = noticeMapper.selectByExampleAndRowBounds(example, rowBounds);
 
-            JSONObject jsonObject=new JSONObject();
-            jsonObject.put("total", total);
-            jsonObject.put("rows", noticeInfos);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonObject);
+            PageResult<List<NoticeInfo>> pageResult=new PageResult<>();
+            pageResult.setTotal(total);
+            pageResult.setRows(noticeInfos);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
@@ -375,7 +333,7 @@ public class SystemController extends BaseController{
     @RequestMapping(value = "/notice_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo notice_delete(String[] ids) {
+    public ReturnInfo<Object> notice_delete(String[] ids) {
         try{
             for (String id :ids){
                 noticeMapper.deleteByPrimaryKey(id);
@@ -398,7 +356,7 @@ public class SystemController extends BaseController{
     @RequestMapping(value = "/notice_update_see", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo notice_update_see(String[] ids, String is_see) {
+    public ReturnInfo<Object> notice_update_see(String[] ids, String is_see) {
         try{
             noticeMapper.updateIsSeeByIds(ids, is_see);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
@@ -467,7 +425,7 @@ public class SystemController extends BaseController{
      */
     @RequestMapping(value = "/every_day_notice", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo every_day_notice() {
+    public ReturnInfo<EveryDayNotice> every_day_notice() {
 
         try{
             EveryDayNotice everyDayNotice=new EveryDayNotice();
@@ -481,7 +439,7 @@ public class SystemController extends BaseController{
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询通知失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询通知失败", e);
         }
     }
 
@@ -520,7 +478,7 @@ public class SystemController extends BaseController{
      */
     @RequestMapping(value = "/version", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo version() {
+    public ReturnInfo<String> version() {
         String version=ev.getProperty("version","");
         return  ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", "当前版本:"+version);
     }

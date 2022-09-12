@@ -145,16 +145,16 @@ public class ZdhIssueDataController extends BaseController {
      * @param issue_context 关键字
      * @return
      */
-    @RequestMapping(value = "/data_ware_house_list2",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_ware_house_list2",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_list2(String issue_context) {
+    public List<IssueDataInfo> data_ware_house_list2(String issue_context) {
         List<IssueDataInfo> list = new ArrayList<>();
         if(!StringUtils.isEmpty(issue_context)){
             issue_context = getLikeCondition(issue_context);
         }
         list = issueDataMapper.selectByParams(issue_context,new String[]{});
 
-        return JSON.toJSONString(list);
+        return list;
     }
 
     /**
@@ -163,9 +163,9 @@ public class ZdhIssueDataController extends BaseController {
      * @param issue_context
      * @return
      */
-    @RequestMapping(value = "/data_ware_house_list3", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_ware_house_list3", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_list3(String issue_context) throws Exception {
+    public List<IssueDataInfo> data_ware_house_list3(String issue_context) throws Exception {
         List<IssueDataInfo> list = new ArrayList<>();
         String owner = getOwner();
         if(!StringUtils.isEmpty(issue_context)){
@@ -173,7 +173,7 @@ public class ZdhIssueDataController extends BaseController {
         }
         list = issueDataMapper.selectByOwner(issue_context, owner);
 
-        return JSON.toJSONString(list);
+        return list;
     }
 
 
@@ -434,7 +434,7 @@ public class ZdhIssueDataController extends BaseController {
      */
     @RequestMapping(value = "/data_apply_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_apply_list(String apply_context) throws Exception {
+    public ReturnInfo<List<ApplyInfo>> data_apply_list(String apply_context) throws Exception {
 
         ApplyInfo applyInfo = new ApplyInfo();
         applyInfo.setOwner(getOwner());
@@ -453,7 +453,7 @@ public class ZdhIssueDataController extends BaseController {
      */
     @RequestMapping(value = "/data_apply_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_apply_list2(String apply_context) throws Exception {
+    public ReturnInfo<List<ApplyIssueInfo>> data_apply_list2(String apply_context) throws Exception {
 
         ApplyInfo applyInfo = new ApplyInfo();
         applyInfo.setOwner(getOwner());
@@ -472,7 +472,7 @@ public class ZdhIssueDataController extends BaseController {
      */
     @RequestMapping(value = "/data_apply_list3", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_apply_list3(String id) throws Exception {
+    public ReturnInfo<ApplyIssueInfo> data_apply_list3(String id) throws Exception {
 
         ApplyInfo applyInfo = new ApplyInfo();
         applyInfo.setOwner(getOwner());
@@ -487,7 +487,7 @@ public class ZdhIssueDataController extends BaseController {
      */
     @RequestMapping(value = "/data_apply_cancel", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_apply_cancel(String id) {
+    public ReturnInfo<Object> data_apply_cancel(String id) {
         try {
             applyMapper.updateStatus(id, Const.STATUS_RECALL);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "撤销申请完成", null);
@@ -506,7 +506,7 @@ public class ZdhIssueDataController extends BaseController {
      */
     @RequestMapping(value = "/data_approve_list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_approve_list(String apply_context) throws Exception {
+    public ReturnInfo<List<ApplyInfo>> data_approve_list(String apply_context) throws Exception {
 
         ApplyInfo applyInfo = new ApplyInfo();
         applyInfo.setApprove_id(getOwner());

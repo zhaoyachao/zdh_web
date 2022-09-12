@@ -23,6 +23,7 @@
 - [4.7.16迁移4.7.17](#4716%E8%BF%81%E7%A7%BB4717)
 - [4.7.17迁移4.7.18](#4717%E8%BF%81%E7%A7%BB4718)
 - [4.7.18迁移5.0.0](#4718%E8%BF%81%E7%A7%BB500)
+- [5.0.0迁移5.1.0](#500%E8%BF%81%E7%A7%BB510)
 - [未完成的功能](#%E6%9C%AA%E5%AE%8C%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD)
 - [支持的数据源](#%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E6%BA%90)
 - [支持的调度对象](#%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E5%BA%A6%E5%AF%B9%E8%B1%A1)
@@ -593,8 +594,10 @@
   + v5.1.0 [zdh_web]新增任务手动跳过功能
   + v5.1.0 [zdh_web]日志采集-flume【待优化】
   + v5.1.0 [zdh_web]接口文档生成功能
-  
+  + v5.1.0 [zdh_web]修复pom文件三方jdbc未打包问题
   + v5.1.0 [zdh_web]新增达梦jdbc驱动
+  + v5.1.0 [zdh_web]新增接口文档说明smart-doc
+  
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]历史遗留支持spark-greenplum 链接器【未完成】
@@ -1742,7 +1745,10 @@
      INSERT INTO zdh.resource_tree_info
      (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
      VALUES(1015585046146322432, '904058054746574848', 'FLUME页面', '5', 'zyc', 'fa fa-coffee', '', '9', '1', '2022-09-03 11:32:24', '2022-09-03 11:32:24', 'flume_detail', '3', '', '', 'zdh');
-     
+     INSERT INTO zdh.resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+     VALUES(1019003620370157568, '802848818109353984', 'API文档', '2', 'zyc', 'fa fa-coffee', '', '0', '1', '2022-09-12 21:56:35', '2022-09-12 21:56:35', 'smart_doc/api.html', '2', '接口文档', '', 'zdh');
+
 
      
 

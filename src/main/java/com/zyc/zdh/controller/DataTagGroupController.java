@@ -58,7 +58,7 @@ public class DataTagGroupController extends BaseController {
      */
     @RequestMapping(value = "/data_tag_group_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_tag_group_list(String tag_context, String product_code) {
+    public ReturnInfo<List<DataTagGroupInfo>> data_tag_group_list(String tag_context, String product_code) {
         try{
             checkParam(product_code, "product_code");
             Example example=new Example(DataTagGroupInfo.class);
@@ -103,7 +103,7 @@ public class DataTagGroupController extends BaseController {
      */
     @RequestMapping(value = "/data_tag_group_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_tag_group_detail(String id) {
+    public ReturnInfo<DataTagGroupInfo> data_tag_group_detail(String id) {
         try {
             DataTagGroupInfo dataTagGroupInfo = dataTagGroupMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", dataTagGroupInfo);
@@ -122,7 +122,7 @@ public class DataTagGroupController extends BaseController {
     @RequestMapping(value = "/data_tag_group_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo data_tag_group_update(DataTagGroupInfo dataTagGroupInfo) {
+    public ReturnInfo<Object> data_tag_group_update(DataTagGroupInfo dataTagGroupInfo) {
         try {
             DataTagGroupInfo oldDataTagGroupInfo = dataTagGroupMapper.selectByPrimaryKey(dataTagGroupInfo.getId());
 
@@ -149,7 +149,7 @@ public class DataTagGroupController extends BaseController {
     @RequestMapping(value = "/data_tag_group_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo data_tag_group_add(DataTagGroupInfo dataTagGroupInfo) {
+    public ReturnInfo<Object> data_tag_group_add(DataTagGroupInfo dataTagGroupInfo) {
         try {
             dataTagGroupInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             dataTagGroupInfo.setOwner(getOwner());
@@ -160,7 +160,7 @@ public class DataTagGroupController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败",e);
         }
     }
 
@@ -172,20 +172,15 @@ public class DataTagGroupController extends BaseController {
     @RequestMapping(value = "/data_tag_group_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo data_tag_group_delete(String[] ids) {
+    public ReturnInfo<Object> data_tag_group_delete(String[] ids) {
         try {
             dataTagGroupMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
-    }
-
-    public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
     }
 
 

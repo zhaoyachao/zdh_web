@@ -66,7 +66,7 @@ public class ZdhBloodSourceController extends BaseController{
      */
     @RequestMapping(value = "/blood_source_create", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo blood_source_create() {
+    public ReturnInfo<Object> blood_source_create() {
         CheckBloodSourceJob.Check();
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"生成血源关系", null);
     }
@@ -78,7 +78,7 @@ public class ZdhBloodSourceController extends BaseController{
      */
     @RequestMapping(value = "/blood_source_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo blood_source_list(String input) {
+    public ReturnInfo<Object> blood_source_list(String input) {
 
         List<Map<String,Object>>  rs = jdbcTemplate.queryForList("select max(version) as version from blood_source_info");
         if(rs==null || rs.size()<1){

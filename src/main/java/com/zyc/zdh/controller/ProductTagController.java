@@ -53,9 +53,9 @@ public class ProductTagController extends BaseController {
      * @param tag_context 关键字
      * @return
      */
-    @RequestMapping(value = "/product_tag_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/product_tag_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String product_tag_list(String tag_context) {
+    public List<ProductTagInfo> product_tag_list(String tag_context) {
         Example example=new Example(ProductTagInfo.class);
         Example.Criteria criteria=example.createCriteria();
         criteria.andEqualTo("is_delete", Const.NOT_DELETE);
@@ -72,7 +72,7 @@ public class ProductTagController extends BaseController {
             pti.setSk("");
             pti.setAk("");
         }
-        return JSONObject.toJSONString(productTagInfos);
+        return productTagInfos;
     }
 
     /**
@@ -93,7 +93,7 @@ public class ProductTagController extends BaseController {
      */
     @RequestMapping(value = "/product_tag_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo product_tag_detail(String id) {
+    public ReturnInfo<ProductTagInfo> product_tag_detail(String id) {
         try {
             ProductTagInfo productTagInfo = productTagMapper.selectByPrimaryKey(id);
             productTagInfo.setAk("");
@@ -114,7 +114,7 @@ public class ProductTagController extends BaseController {
     @RequestMapping(value = "/product_tag_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo product_tag_update(ProductTagInfo productTagInfo) {
+    public ReturnInfo<Object> product_tag_update(ProductTagInfo productTagInfo) {
         try {
             ProductTagInfo oldProductTagInfo = productTagMapper.selectByPrimaryKey(productTagInfo.getId());
 
@@ -144,7 +144,7 @@ public class ProductTagController extends BaseController {
     @RequestMapping(value = "/product_tag_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo product_tag_add(ProductTagInfo productTagInfo) {
+    public ReturnInfo<Object> product_tag_add(ProductTagInfo productTagInfo) {
         try {
             //检查code是否存在
             ProductTagInfo pti=new ProductTagInfo();
@@ -167,7 +167,7 @@ public class ProductTagController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
@@ -179,19 +179,14 @@ public class ProductTagController extends BaseController {
     @RequestMapping(value = "/product_tag_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo product_tag_delete(String[] ids) {
+    public ReturnInfo<Object> product_tag_delete(String[] ids) {
         try {
             productTagMapper.deleteLogicByIds("",ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
-    }
-
-    public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
     }
 
 

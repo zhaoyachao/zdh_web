@@ -73,7 +73,7 @@ public class ZdhEtlController extends BaseController{
      */
     @RequestMapping(value = "/etl_task_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo etl_task_detail(String id) {
+    public ReturnInfo<EtlTaskInfo> etl_task_detail(String id) {
         try{
             EtlTaskInfo eti=etlTaskService.selectById(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);

@@ -92,7 +92,7 @@ public class ZdhParamController extends BaseController {
      */
     @RequestMapping(value = "/param_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo param_detail(String id) {
+    public ReturnInfo<ParamInfo> param_detail(String id) {
         try{
             ParamInfo paramInfo = paramMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", paramInfo);

@@ -60,4 +60,13 @@ public class BaseController {
         }
         return true;
     }
+
+    public Exception getBaseException(){
+
+        return getBaseException(null);
+    }
+
+    public Exception getBaseException(Exception e){
+        return e;
+    }
 }

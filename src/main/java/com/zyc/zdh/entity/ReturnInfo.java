@@ -20,6 +20,8 @@ public class ReturnInfo<T> {
      */
     private T result;
 
+    private Exception e;
+
     public String getCode() {
         return code;
     }
@@ -52,11 +54,19 @@ public class ReturnInfo<T> {
         return JSON.toJSONString(ri);
     }
 
-    public static ReturnInfo build(String code,String msg,Object result){
-        ReturnInfo ri=new ReturnInfo();
+    public static <T> ReturnInfo<T> build(String code,String msg,T result){
+        ReturnInfo ri=new ReturnInfo<>();
         ri.code=code;
         ri.msg=msg;
         ri.result=result;
+        return ri;
+    }
+
+    public static <T> ReturnInfo<T> build(String code,String msg,Exception e){
+        ReturnInfo ri=new ReturnInfo<>();
+        ri.code=code;
+        ri.msg=msg;
+        ri.e=e;
         return ri;
     }
 }

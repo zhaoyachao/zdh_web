@@ -399,7 +399,7 @@ public class ZdhDispatchController extends BaseController {
 
     @RequestMapping(value = "/dispatch_task_execute_time",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo dispatch_task_execute_time(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time,String[] sub_tasks) {
+    public ReturnInfo<List<String>> dispatch_task_execute_time(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time,String[] sub_tasks) {
         debugInfo(quartzJobInfo);
         System.out.println(concurrency);
         System.out.println(Arrays.toString(sub_tasks));
@@ -644,7 +644,7 @@ public class ZdhDispatchController extends BaseController {
      */
     @RequestMapping(value="/dispatch_system_task_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo dispatch_system_task_list(String instance_name) {
+    public ReturnInfo<List<QuartzJobInfo>> dispatch_system_task_list(String instance_name) {
         try{
 
             Example example=new Example(QuartzJobInfo.class);

@@ -62,7 +62,7 @@ public class ZdhEtlApplyController extends BaseController{
      */
     @RequestMapping(value = "/etl_task_apply_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo etl_task_apply_detail(String id) {
+    public ReturnInfo<EtlApplyTaskInfo> etl_task_apply_detail(String id) {
 
         try{
             EtlApplyTaskInfo etlApplyTaskInfo=etlApplyTaskMapper.selectByPrimaryKey(id);

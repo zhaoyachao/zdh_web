@@ -53,9 +53,9 @@ public class DataTagController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
-    @RequestMapping(value = "/data_tag_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_tag_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_tag_list(String tag_context, String product_code) {
+    public List<DataTagInfo> data_tag_list(String tag_context, String product_code) {
         Example example=new Example(DataTagInfo.class);
         Example.Criteria criteria=example.createCriteria();
         criteria.andEqualTo("is_delete", Const.NOT_DELETE);
@@ -69,7 +69,7 @@ public class DataTagController extends BaseController {
 
         List<DataTagInfo> dataTagInfos = dataTagMapper.selectByExample(example);
 
-        return JSONObject.toJSONString(dataTagInfos);
+        return dataTagInfos;
     }
 
     /**
@@ -77,9 +77,9 @@ public class DataTagController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
-    @RequestMapping(value = "/data_tag_by_product_code", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_tag_by_product_code", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_tag_by_product_code(String product_code) {
+    public List<DataTagInfo> data_tag_by_product_code(String product_code) {
         Example example=new Example(DataTagInfo.class);
         Example.Criteria criteria=example.createCriteria();
         criteria.andEqualTo("is_delete", Const.NOT_DELETE);
@@ -88,7 +88,7 @@ public class DataTagController extends BaseController {
 
         List<DataTagInfo> dataTagInfos = dataTagMapper.selectByExample(example);
 
-        return JSONObject.toJSONString(dataTagInfos);
+        return dataTagInfos;
     }
 
     /**
@@ -109,7 +109,7 @@ public class DataTagController extends BaseController {
      */
     @RequestMapping(value = "/data_tag_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo data_tag_detail(String id) {
+    public ReturnInfo<DataTagInfo> data_tag_detail(String id) {
         try {
             DataTagInfo dataTagInfo = dataTagMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", dataTagInfo);
@@ -127,7 +127,7 @@ public class DataTagController extends BaseController {
     @RequestMapping(value = "/data_tag_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo data_tag_update(DataTagInfo dataTagInfo) {
+    public ReturnInfo<DataTagInfo> data_tag_update(DataTagInfo dataTagInfo) {
         try {
             DataTagInfo oldDataTagInfo = dataTagMapper.selectByPrimaryKey(dataTagInfo.getId());
 
@@ -154,7 +154,7 @@ public class DataTagController extends BaseController {
     @RequestMapping(value = "/data_tag_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo data_tag_add(DataTagInfo dataTagInfo) {
+    public ReturnInfo<Object> data_tag_add(DataTagInfo dataTagInfo) {
         try {
             dataTagInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             dataTagInfo.setOwner(getOwner());
@@ -165,7 +165,7 @@ public class DataTagController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
@@ -177,7 +177,7 @@ public class DataTagController extends BaseController {
     @RequestMapping(value = "/data_tag_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo data_tag_delete(String[] ids) {
+    public ReturnInfo<Object> data_tag_delete(String[] ids) {
         try {
             dataTagMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
@@ -186,11 +186,6 @@ public class DataTagController extends BaseController {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
-    }
-
-    public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
     }
 
 

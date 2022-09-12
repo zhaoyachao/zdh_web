@@ -46,7 +46,7 @@ public class AuthorController extends BaseController{
      */
     @RequestMapping(value = "/send_email", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo send_email(String context,String receiver,String subject) {
+    public ReturnInfo<String> send_email(String context,String receiver,String subject) {
         try{
             if(StringUtils.isEmpty(context)){
                 throw new Exception("内容不可为空");
@@ -84,7 +84,7 @@ public class AuthorController extends BaseController{
      */
     @RequestMapping(value = "/zdh_version", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo zdh_version() {
+    public ReturnInfo<List<String>> zdh_version() {
         try{
             List<String> versions = new ArrayList<>();
             versions.add("4.7.11");
@@ -97,6 +97,7 @@ public class AuthorController extends BaseController{
             versions.add("4.7.18");
             versions.add("5.0.0");
             versions.add("5.0.1");
+            versions.add("5.1.0");
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", versions);
         }catch (Exception e){
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
