@@ -18,6 +18,8 @@ import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sun.swing.StringUIClientPropertyKey;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -502,30 +505,66 @@ public class ZdhMonitorController extends BaseController {
 
     }
 
+//    /**
+//     * 任务组实例列表
+//     * @param start_time
+//     * @param end_time
+//     * @param status
+//     * @return
+//     */
+//    @RequestMapping(value = "/task_group_log_instance_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+//    @ResponseBody
+//    public String task_group_log_instance_list2(String start_time, String end_time, String status) {
+//
+//        try{
+//            System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
+//
+//            List<TaskGroupLogInstance> list = tglim.selectByTaskLogs3(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
+//                    Timestamp.valueOf(end_time + " 23:59:59"), status);
+//
+//            return JSON.toJSONString(list);
+//        }catch (Exception e){
+//            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+//            logger.error(error, e);
+//            return JSON.toJSONString(e.getMessage());
+//        }
+//    }
+
     /**
-     * 任务组实例列表
+     * 任务组实例列表-分页
      * @param start_time
      * @param end_time
      * @param status
      * @return
      */
-    @RequestMapping(value = "/task_group_log_instance_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @White
+    @RequestMapping(value = "/task_group_log_instance_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String task_group_log_instance_list2(String start_time, String end_time, String status) {
-
+    public ReturnInfo<PageResult<List<TaskGroupLogInstance>>> task_group_log_instance_list2(String start_time, String end_time,
+                                                                                            String status, int limit, int offset) {
         try{
-            System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
-
-            List<TaskGroupLogInstance> list = tglim.selectByTaskLogs3(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
+            if(StringUtils.isEmpty(start_time)){
+                start_time = DateUtil.format(new Date());
+                end_time = DateUtil.format(new Date());
+            }
+            if(status == null){
+                status="";
+            }
+            System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status+",limit:"+limit+",offset:"+offset);
+            List<TaskGroupLogInstance> list = tglim.selectByTaskLogs4(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
+                    Timestamp.valueOf(end_time + " 23:59:59"), status, limit, offset);
+            int total = tglim.selectCountByTaskLogs4(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
                     Timestamp.valueOf(end_time + " 23:59:59"), status);
+            PageResult<List<TaskGroupLogInstance>> pageResult=new PageResult<>();
+            pageResult.setTotal(total);
+            pageResult.setRows(list);
 
-            return JSON.toJSONString(list);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
-
     }
 
     /**

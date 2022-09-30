@@ -145,14 +145,14 @@ function buildTable($el, cells, rows) {
               return;
           } else {
 
-              layer.confirm('标记为已读', {
+              var index = layer.confirm('标记为已读', {
                   btn: ['确定','取消'] //按钮
               }, function(index){
                   var ids = new Array();// 声明一个数组
                   $(rows).each(function() {// 通过获得别选中的来进行遍历
                       ids.push(this.id);// cid为获得到的整条数据中的一列
                   });
-                  console.log(ids)
+                  console.log(ids);
                   $.ajax({
                       url : server_context+"/notice_update_see",
                       data : "ids=" + ids+"&is_see=true",
@@ -169,7 +169,7 @@ function buildTable($el, cells, rows) {
                           console.info("error: " + data.responseText);
                       }
                   });
-                  layer.close(layer.index);
+                  layer.close(index);
               }, function(){
 
               });
