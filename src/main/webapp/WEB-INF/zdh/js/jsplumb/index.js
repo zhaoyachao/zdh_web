@@ -196,7 +196,8 @@ function doubleclick_tasks(id) {
             var more_task=div.attr("more_task");
             var depend_level = div.attr("depend_level");
             var time_out = div.attr("time_out");
-            url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out
+            var zdh_instance = div.attr("zdh_instance");
+            url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&zdh_instance="+zdh_instance
         }
         layer.open({
             type: 2,
@@ -216,6 +217,7 @@ function doubleclick_tasks(id) {
                 div.attr("etl_context",etl_task_info.etl_context);
                 div.attr("more_task",etl_task_info.more_task);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("zdh_instance",etl_task_info.zdh_instance);
                 div.attr("time_out",etl_task_info.time_out);
                 //div.width(etl_task_info.etl_context.length*16)
                 div.css("width","auto");

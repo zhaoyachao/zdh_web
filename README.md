@@ -597,7 +597,12 @@
   + v5.1.0 [zdh_web]修复pom文件三方jdbc未打包问题
   + v5.1.0 [zdh_web]新增达梦jdbc驱动
   + v5.1.0 [zdh_web]新增接口文档说明smart-doc
+  + v5.1.0 [zdh_web]修复v5.10调度任务选择spark集群无效bug
+  + v5.1.0 [zdh_web]增加spark集群任务校验,是否超过最大任务量
+  + v5.1.0 [zdh_web]修复aop记录返回类型
   
+  
+  + v5.1.1 [zdh_web]增加wemock实现【开发中】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]历史遗留支持spark-greenplum 链接器【未完成】

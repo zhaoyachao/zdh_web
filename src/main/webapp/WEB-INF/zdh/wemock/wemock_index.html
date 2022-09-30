@@ -7,115 +7,205 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH WEMOCK首页</title>
-    <meta name="keywords" content="ZDH WEMOCK首页">
-    <meta name="description" content="ZDH WEMOCK首页">
+    <title>ZDH MOCK首页</title>
+
+    <meta name="keywords" content="ZDH MOCK首页">
+    <meta name="description" content="ZDH MOCK首页">
 
     <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
-    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
-    
 
 </head>
 
 <body class="gray-bg">
-    <div class="wrapper wrapper-content animated fadeInRight">
-        <!-- Panel Other -->
-        <div class="ibox float-e-margins">
-            <div class="ibox-title">
-                <h5>WEMOCK列表</h5>
-                <div class="ibox-tools">
-                    <a class="collapse-link">
-                        <i class="fa fa-chevron-up"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="ibox-content">
+    <div class="wrapper wrapper-content  animated fadeInRight">
 
-                <form role="form" class="form-inline" id="label_form">
-
-                    <div class="form-group">
-                        <div class="input-group" >
-                            <input id="label_context" name="label_context" class="form-control" type="text" value="" placeholder="关键字">
-                            <span class="add-on"><i class="icon-remove"></i></span>
-                            <span class="add-on"><i class="icon-calendar"></i></span>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>mock列表</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
                         </div>
                     </div>
+                    <div class="ibox-content">
+                        <div>
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code"
+                                    class="chosen-select form-control m-b" tabindex="2">
+                                <option value="">空</option>
+                            </select>
+                        </div><br />
+                        <div> <input id="search_input" name="search_input" class="form-control" type="text" value="" placeholder="mock信息"></div><br />
+                        <div id="using_json"></div>
 
-                    <div class="form-group">
-                        <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
-                    </div>
-
-                </form>
-
-                <div class="row row-lg">
-
-                    <div class="col-sm-12">
-                        <!-- Example Events -->
-                        <div class="example-wrap">
-                                <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
-                                    <button id="add" type="button" class="btn btn-outline btn-default">
-                                        <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
-                                    </button>
-                                    <button id="remove" type="button" class="btn btn-outline btn-default">
-                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true">
-
-                                </table>
-                            </div>
-                        </div>
-                        <!-- End Example Events -->
                     </div>
                 </div>
             </div>
+
+            <div class="col-sm-9">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>mock配置</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="using_json6" style="width: 100%; height: 800px">
+                            <iframe id="ifm" src="" style="width: 100%; height: 100%" frameBorder="0"></iframe>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <!-- End Panel Other -->
+
+
     </div>
+
 
     <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
 
-    <!-- layer javascript -->
-    <script src="js/plugins/layer/layer.min.js"></script>
+
 
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
 
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
-    <!-- Bootstrap table -->
-    <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <!-- jsTree plugin javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+    <script src="js/plugins/jsTree/jstree.min.js"></script>
 
-<!--    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>-->
-    <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+    <style>
+        .jstree-open > .jstree-anchor > .fa-folder:before {
+            content: "\f07c";
+        }
+
+        .jstree-default .jstree-icon.none {
+            width: 0;
+        }
+    </style>
+
+    <script>
+
+        $('#product_code').chosen();
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/product_tag_list",
+            async:false,
+            dataType: 'json',
+            data: "",
+            //成功返回
+            success: function (data) {
+                var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                for (var i = 0; i < data.length; i++) {
+                    str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+                }
+                $('#product_code').html(str);
+                $("#product_code").trigger("chosen:updated");
+                $('#product_code').chosen().on("change", function (evt, params) {
+                    init_jstree($("#product_code").val());
+                });
+            },
+            //处理完成
+            complete: function () {
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+
+        function init_jstree(product_code){
+            $('#using_json').jstree("destroy");
+            $('#using_json').jstree({
+                "plugins" : [ "types","search"],
+                //'plugins' : ["checkbox"], //出现选择框
+                //'checkbox': { cascade: "", three_state: true }, //不级联
+                'core' : {
+                    "check_callback": true,
+                    'data' :  function (obj, callback){
+                        $.ajax({
+                            type : "post",
+                            url : server_context+"/wemock_jstree_node?product_code="+product_code,//getAreaBuild=getTreeArea
+                            dataType : "json",
+                            async:'false',
+                            success : function(data) {
+                                console.info(data);
+                                if(data.code == "200") {
+                                    callback.call(this, data.result);
+                                }else{
+                                    callback.call(this, []);
+                                    layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    }
 
 
-    <!-- Peity -->
-    <script src="js/digitalmarket/label.js"></script>
+                } })
+                .bind('dblclick.jstree',function(e){
+                    console.info(e.target.id);
+                    var id=e.target.id.split("_anchor")[0];
+                    console.info("event:"+e.target.id.split("_anchor")[0]);
+                    if(!id){
+                        layer.msg("请双击资源名称！");
+                        return ;
+                    }
+                    $('#using_json').jstree("open_node", id);
+                    var node = $('#using_json').jstree("get_node", id);
+                    console.info("id:"+node.id+",parent:"+node.parent+",text:"+node.text);
+                    //$('#jstree').jstree('create_node', $(parent_node), { "text":new_node_text, "id":new_node_id }, position, false, false);
+                    var parent_ary = $('#using_json').jstree("get_path", id);
+                    console.info("level:"+parent_ary.length);
+                    var level=parent_ary.length;
 
-<script>
 
-    $(document).ready(function () {
+                    var is_open = $('#using_json').jstree("is_open", id);
+                    console.info("is_open:"+is_open);
+                    $("#ifm").attr("src", encodeURI(server_context+"/wemock_jstree_add_index?id="+node.id+"&text="+node.text+"&level="+level+"&product_code="+product_code));
 
-        $('#search').click(function () {
-            $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: server_context+"/label_list?"+$("#label_form").serialize(),
-                contentType: "application/json;charset=utf-8",
-                dataType: "json"
+                });
+        }
+
+        $(document).ready(function () {
+
+            $('#search_input').keyup(function () {
+                $('#using_json').jstree(true).search($('#search_input').val());
+
             });
-        })
 
-    })
+        });
 
-
-
-</script>
+        function refash(id){
+            $('#using_json').jstree(true).refresh();
+            $('#using_json').jstree("open_node", id);
+        }
+    </script>
 
 </body>
 

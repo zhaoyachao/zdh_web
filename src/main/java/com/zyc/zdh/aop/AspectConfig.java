@@ -73,6 +73,19 @@ public class AspectConfig implements Ordered{
 	
 	@Around(value = "pointcutMethod3()")
 	public Object aroundLog(ProceedingJoinPoint pjp) throws Exception {
+
+		//获取返回类型
+		Signature signature = pjp.getSignature();
+		String returnName = "";
+		if (signature instanceof MethodSignature) {
+			MethodSignature methodSignature = (MethodSignature) signature;
+			// 被切的方法
+			Method method = methodSignature.getMethod();
+			// 返回类型
+			Class<?> methodReturnType = method.getReturnType();
+			returnName=methodReturnType.getName();
+		}
+
 		try {
 			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 			HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
@@ -130,6 +143,9 @@ public class AspectConfig implements Ordered{
 				if (request.getMethod().equalsIgnoreCase("get")){
 					return "redirect:403";
 				}else{
+					if(returnName.contains("ReturnInfo")){
+						return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "命中IP/用户黑名单,禁止访问", "命中IP/用户黑名单,禁止访问");
+					}
 					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "命中IP/用户黑名单,禁止访问", "命中IP/用户黑名单,禁止访问");
 				}
 			}
@@ -144,9 +160,11 @@ public class AspectConfig implements Ordered{
 				if (request.getMethod().equalsIgnoreCase("get")){
 					return "redirect:503";
 				}else{
+					if(returnName.contains("ReturnInfo")){
+						return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "系统维护中", "系统维护中");
+					}
 					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统维护中", "系统维护中");
 				}
-
 			}
 
 
@@ -199,7 +217,12 @@ public class AspectConfig implements Ordered{
 						//get请求无权限,返回403
 						return "403";
 					}
+					if(returnName.contains("ReturnInfo")){
+                        return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "无权限", e);
+                    }
+
 					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "无权限", e);
+
 				}
 				if (request.getMethod().equalsIgnoreCase("get")){
 					MDC.remove("user_id");
@@ -210,6 +233,9 @@ public class AspectConfig implements Ordered{
 				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 				logger.error(error, e);
 				MDC.remove("user_id");
+				if(returnName.contains("ReturnInfo")){
+					return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "系统错误", e);
+				}
 				return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统错误", e);
 			}
             String uid = getUser() == null? "":getUser().getUserName();
@@ -248,6 +274,9 @@ public class AspectConfig implements Ordered{
 			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
 			MDC.remove("user_id");
+			if(returnName.contains("ReturnInfo")){
+				return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "系统错误", e);
+			}
 			return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统错误", e);
 		}
 	}

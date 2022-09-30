@@ -176,7 +176,15 @@ public class JobCommon2 {
         String date = DateUtil.formatTime(tli.getCur_time());
         json.put("ETL_DATE", date);
         logger.info(" JOB ,单源,处理当前日期,传递参数ETL_DATE 为" + date);
-        tli.setParams(json.toJSONString());
+        String params = tli.getParams();
+        if(StringUtils.isEmpty(params)){
+            tli.setParams(json.toJSONString());
+        }else{
+            json = JSON.parseObject(params);
+            json.put("ETL_DATE", date);
+            tli.setParams(json.toJSONString());
+        }
+
 
         String etl_task_id = tli.getEtl_task_id();
         //获取etl 任务信息
@@ -268,7 +276,14 @@ public class JobCommon2 {
             String date = DateUtil.formatTime(tli.getCur_time());
             json.put("ETL_DATE", date);
             logger.info(" JOB ,多源,处理当前日期,传递参数ETL_DATE 为" + date);
-            tli.setParams(json.toJSONString());
+            String params = tli.getParams();
+            if(StringUtils.isEmpty(params)){
+                tli.setParams(json.toJSONString());
+            }else{
+                json = JSON.parseObject(params);
+                json.put("ETL_DATE", date);
+                tli.setParams(json.toJSONString());
+            }
 
             String etl_task_id = tli.getEtl_task_id();
 
@@ -372,7 +387,15 @@ public class JobCommon2 {
             String date = DateUtil.formatTime(tli.getCur_time());
             json.put("ETL_DATE", date);
             logger.info(" JOB ,SQL,处理当前日期,传递参数ETL_DATE 为" + date);
-            tli.setParams(json.toJSONString());
+            String params = tli.getParams();
+            if(StringUtils.isEmpty(params)){
+                tli.setParams(json.toJSONString());
+            }else{
+                json = JSON.parseObject(params);
+                json.put("ETL_DATE", date);
+                tli.setParams(json.toJSONString());
+            }
+
 
             String etl_task_id = tli.getEtl_task_id();
             //获取etl 任务信息
@@ -454,7 +477,15 @@ public class JobCommon2 {
             String date = DateUtil.formatTime(tli.getCur_time());
             json.put("ETL_DATE", date);
             logger.info(" JOB ,外部JAR,处理当前日期,传递参数ETL_DATE 为" + date);
-            tli.setParams(json.toJSONString());
+            String params = tli.getParams();
+            if(StringUtils.isEmpty(params)){
+                tli.setParams(json.toJSONString());
+            }else{
+                json = JSON.parseObject(params);
+                json.put("ETL_DATE", date);
+                tli.setParams(json.toJSONString());
+            }
+
 
             String etl_task_id = tli.getEtl_task_id();
             //获取etl 任务信息
@@ -491,7 +522,14 @@ public class JobCommon2 {
             String date = DateUtil.formatTime(tli.getCur_time());
             json.put("ETL_DATE", date);
             logger.info(" JOB ,Drools,处理当前日期,传递参数ETL_DATE 为" + date);
-            tli.setParams(json.toJSONString());
+            String params = tli.getParams();
+            if(StringUtils.isEmpty(params)){
+                tli.setParams(json.toJSONString());
+            }else{
+                json = JSON.parseObject(params);
+                json.put("ETL_DATE", date);
+                tli.setParams(json.toJSONString());
+            }
 
             String etl_task_id = tli.getEtl_task_id();
 
@@ -655,7 +693,14 @@ public class JobCommon2 {
         String date = DateUtil.formatTime(tli.getCur_time());
         json.put("ETL_DATE", date);
         logger.info(" JOB ,单源,处理当前日期,传递参数ETL_DATE 为" + date);
-        tli.setParams(json.toJSONString());
+        String params = tli.getParams();
+        if(StringUtils.isEmpty(params)){
+            tli.setParams(json.toJSONString());
+        }else{
+            json = JSON.parseObject(params);
+            json.put("ETL_DATE", date);
+            tli.setParams(json.toJSONString());
+        }
 
         String etl_task_id = tli.getEtl_task_id();
         //获取etl 任务信息
@@ -747,7 +792,15 @@ public class JobCommon2 {
             String date = DateUtil.formatTime(tli.getCur_time());
             json.put("ETL_DATE", date);
             logger.info(" JOB ,SQL,处理当前日期,传递参数ETL_DATE 为" + date);
-            tli.setParams(json.toJSONString());
+            String params = tli.getParams();
+            if(StringUtils.isEmpty(params)){
+                tli.setParams(json.toJSONString());
+            }else{
+                json = JSON.parseObject(params);
+                json.put("ETL_DATE", date);
+                tli.setParams(json.toJSONString());
+            }
+
 
             String etl_task_id = tli.getEtl_task_id();
             //获取etl 任务信息
@@ -782,7 +835,14 @@ public class JobCommon2 {
             String date = DateUtil.formatTime(tli.getCur_time());
             json.put("ETL_DATE", date);
             logger.info(" JOB ,SQL,处理当前日期,传递参数ETL_DATE 为" + date);
-            tli.setParams(json.toJSONString());
+            String params = tli.getParams();
+            if(StringUtils.isEmpty(params)){
+                tli.setParams(json.toJSONString());
+            }else{
+                json = JSON.parseObject(params);
+                json.put("ETL_DATE", date);
+                tli.setParams(json.toJSONString());
+            }
 
             String etl_task_id = tli.getEtl_task_id();
             //获取etl 任务信息
@@ -866,7 +926,14 @@ public class JobCommon2 {
             String date = DateUtil.formatTime(tli.getCur_time());
             json.put("ETL_DATE", date);
             logger.info(" JOB ,DATAX,处理当前日期,传递参数ETL_DATE 为" + date);
-            tli.setParams(json.toJSONString());
+            String params = tli.getParams();
+            if(StringUtils.isEmpty(params)){
+                tli.setParams(json.toJSONString());
+            }else{
+                json = JSON.parseObject(params);
+                json.put("ETL_DATE", date);
+                tli.setParams(json.toJSONString());
+            }
 
             String etl_task_id = tli.getEtl_task_id();
             //获取etl 任务信息
@@ -916,7 +983,14 @@ public class JobCommon2 {
         String date = DateUtil.formatTime(tli.getCur_time());
         json.put("ETL_DATE", date);
         logger.info(" JOB ,单源,处理当前日期,传递参数ETL_DATE 为" + date);
-        tli.setParams(json.toJSONString());
+        String params = tli.getParams();
+        if(StringUtils.isEmpty(params)){
+            tli.setParams(json.toJSONString());
+        }else{
+            json = JSON.parseObject(params);
+            json.put("ETL_DATE", date);
+            tli.setParams(json.toJSONString());
+        }
 
         String etl_task_id = tli.getEtl_task_id();
         //获取etl 任务信息
@@ -984,7 +1058,14 @@ public class JobCommon2 {
         String date = DateUtil.formatTime(tli.getCur_time());
         json.put("ETL_DATE", date);
         logger.info(" JOB ,单源,处理当前日期,传递参数ETL_DATE 为" + date);
-        tli.setParams(json.toJSONString());
+        String params = tli.getParams();
+        if(StringUtils.isEmpty(params)){
+            tli.setParams(json.toJSONString());
+        }else{
+            json = JSON.parseObject(params);
+            json.put("ETL_DATE", date);
+            tli.setParams(json.toJSONString());
+        }
 
         String etl_task_id = tli.getEtl_task_id();
         //获取etl 任务信息
@@ -1403,7 +1484,14 @@ public class JobCommon2 {
         String date = DateUtil.formatTime(tli.getCur_time());
         json.put("ETL_DATE", date);
         logger.info(model_log + " JOB ,处理当前日期,传递参数ETL_DATE 为" + date);
-        tli.setParams(json.toJSONString());
+        if(StringUtils.isEmpty(params)){
+            tli.setParams(json.toJSONString());
+        }else{
+            json = JSON.parseObject(params);
+            json.put("ETL_DATE", date);
+            tli.setParams(json.toJSONString());
+        }
+
 
         logger.info(model_log + " JOB ,获取当前的[url]:" + url);
         JobCommon2.insertLog(tli, "INFO", model_log + " JOB ,获取当前的[url]:" + url);
@@ -3444,6 +3532,62 @@ public class JobCommon2 {
             logger.error(e.getMessage());
             JobCommon2.insertLog(tli, "ERROR", e.getMessage());
         }
+        return false;
+    }
+
+    /**
+     * 检查当前运行spark任务是否超限
+     *
+     * @param tli
+     * @return true:超限,false:未超限
+     */
+    public static boolean check_spark_limit(TaskLogInstance tli){
+
+        try {
+            //检查ssh任务并行限制
+            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+            TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+            int max=10;
+            String zdh_instance="";
+            String redis_key = "zdh_spark_max";
+            if(!StringUtils.isEmpty(tli.getParams())){
+                JSONObject jsonObject=JSONObject.parseObject(tli.getParams());
+                if(jsonObject.containsKey("zdh_instance")){
+                    zdh_instance=jsonObject.getString("zdh_instance");
+                }
+            }
+            if(!StringUtils.isEmpty(zdh_instance)){
+                redis_key=redis_key+"_"+zdh_instance;
+            }
+            TaskLogInstance t = new TaskLogInstance();
+            t.setJob_type("ETL");
+            t.setStatus(JobStatus.ETL.getValue());
+            List<TaskLogInstance> tlis = tlim.selectByTaskLogInstance(t);
+            if (redisUtil.exists(redis_key)) {
+                max = Integer.parseInt(redisUtil.get(redis_key).toString());
+                if (tlis.size() > max) {
+                    String msg = String.format("检查Spark集群: %s,运行任务量: %d, 超过阀值: %d,跳过本次执行,等待下次检查....",zdh_instance,tlis.size(), max);
+                    JobCommon2.insertLog(tli, "INFO", msg);
+                    logger.info(msg);
+                    return true;
+                }
+            }else{
+                //使用默认10个任务并发
+                if (tlis.size() > max) {
+                    String msg = String.format("检查Spark集群: %s,运行任务量: %d, 超过阀值: %d,跳过本次执行,等待下次检查....",zdh_instance,tlis.size(), max);
+                    JobCommon2.insertLog(tli, "INFO", msg);
+                    logger.info(msg);
+                    return true;
+                }
+            }
+            String msg = String.format("检查Spark集群: %s,运行任务量: %d, 未超过阀值: %d",zdh_instance,tlis.size(), max);
+            JobCommon2.insertLog(tli, "INFO", msg);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            logger.error(e.getMessage());
+            JobCommon2.insertLog(tli, "ERROR", e.getMessage());
+        }
+
         return false;
     }
 }

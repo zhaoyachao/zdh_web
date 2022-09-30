@@ -410,6 +410,13 @@ public class PermissionController extends BaseController {
             rti.setIs_enable(Const.ENABLE);
             rti.setOwner(getOwner());
             rti.setResource_desc("");
+            if(StringUtils.isEmpty(rti.getNotice_title())){
+                rti.setNotice_title("");
+            }
+            if(StringUtils.isEmpty(rti.getEvent_code())){
+                rti.setEvent_code("");
+            }
+
             debugInfo(rti);
             resourceTreeMapper.insert(rti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
@@ -419,6 +426,59 @@ public class PermissionController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
         }
 
+    }
+
+    /**
+     * 资源新增根节点
+     * @param rti
+     * @return
+     */
+    @RequestMapping(value = "/jstree_add_root_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<Object> jstree_add_root_node(ResourceTreeInfo rti) {
+        //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
+        try {
+            if (rti.getNotice_title()!=null && rti.getNotice_title().length() > 4) {
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "参数验证不通过-提示语长度不可超过4个汉字", null);
+            }
+            if (org.apache.commons.lang3.StringUtils.isEmpty(rti.getProduct_code())) {
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", null);
+            }
+
+            //校验是否当前产品下已经存在根
+            ResourceTreeInfo resourceTreeInfo=new ResourceTreeInfo();
+            resourceTreeInfo.setProduct_code(rti.getProduct_code());
+            resourceTreeInfo.setParent("#");
+            resourceTreeInfo = resourceTreeMapper.selectOne(resourceTreeInfo);
+            if(resourceTreeInfo != null){
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前产品下已存在根", null);
+            }
+
+            String id = SnowflakeIdWorker.getInstance().nextId() + "";
+            rti.setId(id);
+            rti.setCreate_time(new Timestamp(new Date().getTime()));
+            rti.setUpdate_time(new Timestamp(new Date().getTime()));
+            rti.setIs_enable(Const.ENABLE);
+            rti.setOwner(getOwner());
+            rti.setResource_desc("");
+            if(StringUtils.isEmpty(rti.getNotice_title())){
+                rti.setNotice_title("");
+            }
+            if(StringUtils.isEmpty(rti.getEvent_code())){
+                rti.setEvent_code("");
+            }
+            if(StringUtils.isEmpty(rti.getIcon())){
+                rti.setIcon("fa fa-folder");
+            }
+
+            debugInfo(rti);
+            resourceTreeMapper.insert(rti);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
+        } catch (Exception e) {
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
+        }
 
     }
 

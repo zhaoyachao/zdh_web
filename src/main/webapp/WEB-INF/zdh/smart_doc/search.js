@@ -628,70 +628,74 @@ api[12].list.push({
 });
 api[12].list.push({
     order: '19',
-    desc: '获取资源信息',
+    desc: '资源新增根节点',
 });
 api[12].list.push({
     order: '20',
-    desc: '根据主键获取资源信息',
+    desc: '获取资源信息',
 });
 api[12].list.push({
     order: '21',
-    desc: '更新资源信息',
+    desc: '根据主键获取资源信息',
 });
 api[12].list.push({
     order: '22',
-    desc: '删除资源信息',
+    desc: '更新资源信息',
 });
 api[12].list.push({
     order: '23',
-    desc: '更新资源层级',
+    desc: '删除资源信息',
 });
 api[12].list.push({
     order: '24',
-    desc: '角色绑定资源',
+    desc: '更新资源层级',
 });
 api[12].list.push({
     order: '25',
-    desc: '通过角色id获取资源',
+    desc: '角色绑定资源',
 });
 api[12].list.push({
     order: '26',
-    desc: '通过用户id获取资源',
+    desc: '通过角色id获取资源',
 });
 api[12].list.push({
     order: '27',
-    desc: '权限用户首页',
+    desc: '通过用户id获取资源',
 });
 api[12].list.push({
     order: '28',
-    desc: '获取当前系统的数据组标识',
+    desc: '权限用户首页',
 });
 api[12].list.push({
     order: '29',
-    desc: '权限申请列表首页',
+    desc: '获取当前系统的数据组标识',
 });
 api[12].list.push({
     order: '30',
-    desc: '权限新增申请首页',
+    desc: '权限申请列表首页',
 });
 api[12].list.push({
     order: '31',
-    desc: '权限申请',
+    desc: '权限新增申请首页',
 });
 api[12].list.push({
     order: '32',
-    desc: '权限申请列表',
+    desc: '权限申请',
 });
 api[12].list.push({
     order: '33',
-    desc: '新建申请,并创建审批流',
+    desc: '权限申请列表',
 });
 api[12].list.push({
     order: '34',
-    desc: '删除申请,并撤销审批流',
+    desc: '新建申请,并创建审批流',
 });
 api[12].list.push({
     order: '35',
+    desc: '删除申请,并撤销审批流',
+});
+api[12].list.push({
+    order: '36',
     desc: '权限申请明细',
 });
 api.push({
@@ -848,14 +852,18 @@ api[16].list.push({
 });
 api[16].list.push({
     order: '3',
-    desc: 'mock数据更新',
+    desc: '',
 });
 api[16].list.push({
     order: '4',
-    desc: 'mock数据新增',
+    desc: 'mock数据更新',
 });
 api[16].list.push({
     order: '5',
+    desc: 'mock数据新增',
+});
+api[16].list.push({
+    order: '6',
     desc: 'mock数据删除',
 });
 api.push({

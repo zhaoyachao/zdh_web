@@ -66,7 +66,7 @@ public class CheckDepJob {
             }
 
 
-            //获取可执行的任务组
+            //获取可执行的任务组,并根据优先级排序,数字大小和优先级高低成正比
             List<TaskGroupLogInstance> tglims=tglim.selectTaskGroupByStatus(new String[]{JobStatus.CHECK_DEP.getValue(),JobStatus.CREATE.getValue()});
             // 此处可做任务并发限制,当前未限制并发
             for(TaskGroupLogInstance tgli :tglims){
@@ -269,7 +269,13 @@ public class CheckDepJob {
                             //增加告警通知,每5分钟告警一次
                             continue;
                         }
+                    }
 
+                    //检查spark 任务是否超过限制
+                    if(tl.getJob_type().equalsIgnoreCase("etl")){
+                        if(JobCommon2.check_spark_limit(tl)){
+                            continue ;
+                        }
                     }
 
                     tl.setStatus(JobStatus.DISPATCH.getValue());

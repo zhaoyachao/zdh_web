@@ -228,12 +228,20 @@
 <!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--                </table>-->
 
-        <table tableName="etl_task_log_info" domainObjectName="EtlTaskLogInfo" mapperName="EtlTaskLogMapper">
+<!--        <table tableName="etl_task_log_info" domainObjectName="EtlTaskLogInfo" mapperName="EtlTaskLogMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+        <table tableName="we_mock_tree_info" domainObjectName="WeMockTreeInfo" mapperName="WeMockTreeMapper">
             <property name="useActualColumnNames" value="true" />
             <columnOverride column="id" property="id" javaType="java.lang.String"/>
             <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
             <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
         </table>
+
 
     </context>
 </generatorConfiguration>
