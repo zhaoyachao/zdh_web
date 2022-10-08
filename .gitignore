@@ -44,3 +44,5 @@ quick.bat
 doc/*
 
 smart_doc/*
+
+src/main/webapp/WEB-INF/zdh/smart_doc/*
