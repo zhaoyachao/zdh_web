@@ -125,6 +125,16 @@ public class StrategyInstance {
     private String depend_level;
 
     /**
+     * 推送类型,database,queue
+     */
+    private String touch_type;
+
+    /**
+     * 策略id
+     */
+    private String strategy_id;
+
+    /**
      * 策略关系
      */
     private String jsmind_data;
@@ -570,6 +580,42 @@ public class StrategyInstance {
      */
     public void setDepend_level(String depend_level) {
         this.depend_level = depend_level;
+    }
+
+    /**
+     * 获取推送类型,database,queue
+     *
+     * @return touch_type - 推送类型,database,queue
+     */
+    public String getTouch_type() {
+        return touch_type;
+    }
+
+    /**
+     * 设置推送类型,database,queue
+     *
+     * @param touch_type 推送类型,database,queue
+     */
+    public void setTouch_type(String touch_type) {
+        this.touch_type = touch_type;
+    }
+
+    /**
+     * 获取策略id
+     *
+     * @return strategy_id - 策略id
+     */
+    public String getStrategy_id() {
+        return strategy_id;
+    }
+
+    /**
+     * 设置策略id
+     *
+     * @param strategy_id 策略id
+     */
+    public void setStrategy_id(String strategy_id) {
+        this.strategy_id = strategy_id;
     }
 
     /**

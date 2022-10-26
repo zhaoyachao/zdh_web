@@ -76,6 +76,7 @@
                                             <div class="node nodelabelcss" data-type="label">标签</div>
                                             <div class="node nodecrowd_rulecss" data-type="crowd_rule">人群规则</div>
                                             <div class="node nodecrowd_filecss" data-type="crowd_file">人群文件</div>
+                                            <div class="node nodecrowd_operatecss" data-type="crowd_operate">运算符</div>
                                             <div class="node nodefiltercss" data-type="filter">过滤</div>
                                             <div class="node nodeshuntcss" data-type="shunt">分流器</div>
                                             <div class="node noderightscss" data-type="rights">权益配置</div>
@@ -262,9 +263,13 @@
             $("#" + divId).attr("is_disenable",rs.is_disenable);
             $("#" + divId).attr("depend_level",rs.depend_level);
             $("#" + divId).attr("time_out",rs.time_out);
+            $("#" + divId).attr("is_base",rs.is_base);
+
 
             $("#" + divId).attr("more_task",rs.more_task);
             $("#" + divId).attr("zdh_instance",rs.zdh_instance);
+
+            $("#" + divId).attr("touch_type",rs.touch_type);
 
             $("#" + divId).attr("rule_param",rs.rule_param);
             $("#" + divId).attr("operate",rs.operate);
@@ -278,20 +283,26 @@
 
             if(tp == "label"){
                 $("#" + divId).attr("rule_id",rs.rule_id);
-                $("#" + divId).html(rs.rule_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "crowd_file"){
                 $("#" + divId).attr("crowd_file",rs.crowd_file);
                 $("#" + divId).attr("crowd_file_context",rs.crowd_file_context);
-                $("#" + divId).html(rs.crowd_file_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.crowd_file_context);
             }
             if(tp == "crowd_rule"){
                 $("#" + divId).attr("crowd_rule",rs.crowd_rule);
                 $("#" + divId).attr("crowd_rule_context",rs.crowd_rule_context);
-                $("#" + divId).html(rs.crowd_rule_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.crowd_rule_context);
             }
+            if(tp == "crowd_operate"){
+                $("#" + divId).attr("crowd_operate_context",rs.crowd_operate_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.crowd_operate_context);
+            }
+
             if(tp == "filter"){
                 $("#" + divId).attr("filter",rs.filter);
+                $("#" + divId).attr("title",rs.filter_title);
                 $("#" + divId).attr("filter_context",rs.filter_context);
                 $("#" + divId).html(rs.filter_context);
             }
@@ -351,6 +362,9 @@
                 is_disenable: $elem.attr('is_disenable'),
                 depend_level: $elem.attr('depend_level'),
                 time_out: $elem.attr('time_out'),
+                touch_type: $elem.attr('touch_type'),
+                is_base: $elem.attr('is_base'),
+
 
                 id: $elem.attr('id'),
                 operate: $elem.attr('operate'),
@@ -368,7 +382,10 @@
                 crowd_rule_context: $elem.attr('crowd_rule_context'),
                 crowd_rule: $elem.attr('crowd_rule'),
 
+                crowd_operate_context: $elem.attr('crowd_operate_context'),
+
                 filter_context: $elem.attr('filter_context'),
+                filter_title: $elem.attr('filter_title'),
                 filter: $elem.attr('filter'),
 
                 shunt_context: $elem.attr('shunt_context'),

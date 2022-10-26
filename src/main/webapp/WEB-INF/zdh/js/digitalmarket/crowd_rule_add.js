@@ -191,8 +191,10 @@ function doubleclick_label(id) {
             var depend_level = div.attr("depend_level");
             var time_out = div.attr("time_out");
             var operate = div.attr("operate");
+            var touch_type = div.attr("touch_type");
+            var is_base = div.attr("is_base");
             $("#rule_param").val(div.attr("rule_param"));
-            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate
+            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base
         }
         layer.open({
             type: 2,
@@ -211,6 +213,8 @@ function doubleclick_label(id) {
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
+                div.attr("touch_type",etl_task_info.touch_type);
+                div.attr("is_base",etl_task_info.is_base);
 
                 div.attr("operate",etl_task_info.operate);
                 div.attr("rule_id",etl_task_info.rule_id);
@@ -246,7 +250,9 @@ function doubleclick_crowd_file(id) {
             var depend_level = div.attr("depend_level");
             var time_out = div.attr("time_out");
             var operate = div.attr("operate");
-            url=url+"?crowd_file_context="+crowd_file_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_file="+crowd_file+"&more_task="+more_task+"&operate="+operate
+            var touch_type = div.attr("touch_type");
+            var is_base = div.attr("is_base");
+            url=url+"?crowd_file_context="+crowd_file_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_file="+crowd_file+"&more_task="+more_task+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base
         }
         layer.open({
             type: 2,
@@ -266,6 +272,8 @@ function doubleclick_crowd_file(id) {
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
+                div.attr("touch_type",etl_task_info.touch_type);
+                div.attr("is_base",etl_task_info.is_base);
 
                 div.attr("crowd_file_context",etl_task_info.crowd_file_context);
                 div.attr("crowd_file",etl_task_info.crowd_file);
@@ -299,7 +307,9 @@ function doubleclick_crowd_operate(id) {
             var depend_level = div.attr("depend_level");
             var time_out = div.attr("time_out");
             var operate = div.attr("operate");
-            url=url+"?crowd_operate_context="+crowd_operate_context+"&depend_level="+depend_level +"&time_out="+time_out+"&more_task="+more_task+"&operate="+operate
+            var touch_type = div.attr("touch_type");
+            var is_base = div.attr("is_base");
+            url=url+"?crowd_operate_context="+crowd_operate_context+"&depend_level="+depend_level +"&time_out="+time_out+"&more_task="+more_task+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base
         }
         layer.open({
             type: 2,
@@ -319,6 +329,8 @@ function doubleclick_crowd_operate(id) {
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
+                div.attr("touch_type",etl_task_info.touch_type);
+                div.attr("is_base",etl_task_info.is_base);
 
                 div.attr("operate",etl_task_info.operate);
                 div.attr("crowd_operate_context",etl_task_info.crowd_operate_context);

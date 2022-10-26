@@ -186,6 +186,7 @@ function doubleclick(id,tp) {
 
 function doubleclick_tasks(id) {
     $(id).dblclick(function () {
+        $("#etl_task_text").val("");
         var text = $(this).text();
         var div = $(this);
         var etl_task_id=div.attr("etl_task_id");
@@ -233,6 +234,7 @@ function doubleclick_tasks(id) {
 
 function doubleclick_shell(id) {
     $(id).dblclick(function () {
+        $("#etl_task_text").val("");
         var etl_context = $(this).text();
         var div = $(this);
         var command=div.attr("command");
@@ -278,6 +280,7 @@ function doubleclick_shell(id) {
 
 function doubleclick_group(id) {
     $(id).dblclick(function () {
+        $("#etl_task_text").val("");
         var text = $(this).text();
         var div = $(this);
         var etl_task_id=div.attr("etl_task_id");
@@ -322,6 +325,7 @@ function doubleclick_group(id) {
 
 function doubleclick_jdbc(id) {
     $(id).dblclick(function () {
+        $("#etl_task_text").val("");
         var text = $(this).text();
         var div = $(this);
         var etl_context=div.attr("etl_context");
@@ -381,6 +385,7 @@ function doubleclick_jdbc(id) {
 
 function doubleclick_hdfs(id) {
     $(id).dblclick(function () {
+        $("#etl_task_text").val("");
         var text = $(this).text();
         var div = $(this);
         var etl_context=div.attr("etl_context");
@@ -440,6 +445,7 @@ function doubleclick_hdfs(id) {
 
 function doubleclick_http(id) {
     $(id).dblclick(function () {
+        $("#etl_task_text").val("");
         var text = $(this).text();
         var div = $(this);
         var etl_context=div.attr("etl_context");
@@ -499,6 +505,7 @@ function doubleclick_http(id) {
 
 function doubleclick_email(id) {
     $(id).dblclick(function () {
+        $("#etl_task_text").val("");
         var text = $(this).text();
         var div = $(this);
         var etl_context=div.attr("etl_context");
@@ -553,6 +560,7 @@ function doubleclick_email(id) {
 
 function doubleclick_flume(id) {
     $(id).dblclick(function () {
+        $("#etl_task_text").val("");
         var text = $(this).text();
         var div = $(this);
         var etl_task_id=div.attr("etl_task_id");

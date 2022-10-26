@@ -1,7 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
-import com.zyc.zdh.entity.ServerTaskInfo;
+import com.zyc.notscan.base.BaseServerTaskInstanceMappeer;
 import com.zyc.zdh.entity.ServerTaskInstance;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
@@ -9,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-public interface ServerTaskInstanceMappeer extends BaseMapper<ServerTaskInstance> {
+public interface ServerTaskInstanceMappeer extends BaseServerTaskInstanceMappeer<ServerTaskInstance> {
 
 
     @Select(

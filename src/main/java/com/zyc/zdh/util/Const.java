@@ -68,6 +68,8 @@ public class Const {
 
     public static String ZDH_PLATFORM_NAME = "zdh_platform_name";//系统名称,登录页显示
 
+    public static String ZDH_BACKGROUND_IMAGE = "zdh_background_image";//系统背景页
+
     public static String ZDH_SYSTEM_DNS = "zdh_system_dns";//系统dns
 
     public static String ZDH_LOG_TYPE = "zdh_log_type";//日志存储类型

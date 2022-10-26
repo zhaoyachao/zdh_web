@@ -1,6 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseResourceTreeMapper;
 import com.zyc.zdh.entity.ResourceTreeInfo;
 import com.zyc.zdh.entity.RoleResourceInfo;
 import com.zyc.zdh.entity.UserResourceInfo2;
@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 
-public interface ResourceTreeMapper extends BaseMapper<ResourceTreeInfo> {
+public interface ResourceTreeMapper extends BaseResourceTreeMapper<ResourceTreeInfo> {
 
     @Update(value = "update resource_tree_info  set parent=#{parent},level=#{level} where id=#{id}")
     public int updateParentById(@Param("id") String id, @Param("parent") String parent, @Param("level") String level);

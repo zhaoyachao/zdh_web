@@ -67,7 +67,7 @@ public class SFTPUtil {
     public void login(){   
         try {   
             JSch jsch = new JSch();
-            if (privateKey != null) {   
+            if (privateKey != null) {
                 jsch.addIdentity(privateKey);// 设置私钥   
                 log.info("sftp connect,path of private key file：{}" , privateKey);   
             }   
@@ -75,7 +75,7 @@ public class SFTPUtil {
        
             session = jsch.getSession(username, host, port);   
             log.info("Session is build");   
-            if (password != null) {   
+            if (password != null) {
                 session.setPassword(password);     
             }   
             Properties config = new Properties();
@@ -102,13 +102,13 @@ public class SFTPUtil {
      */   
     public void logout(){   
         if (sftp != null) {   
-            if (sftp.isConnected()) {   
+            if (sftp.isConnected()) {
                 sftp.disconnect();   
                 log.info("sftp is closed already");   
             }   
         }   
-        if (session != null) {   
-            if (session.isConnected()) {   
+        if (session != null) {
+            if (session.isConnected()) {
                 session.disconnect();   
                 log.info("sshSession is closed already");   
             }   
@@ -124,15 +124,15 @@ public class SFTPUtil {
      * @throws Exception  
      */     
     public void upload(String directory, String sftpFileName, InputStream input) throws SftpException{
-        try {     
-            sftp.cd(directory);   
-        } catch (SftpException e) {   
-            log.warn("directory is not exist");   
-            sftp.mkdir(directory);   
-            sftp.cd(directory);   
-        }   
-        sftp.put(input, sftpFileName);   
-        log.info("file:{} is upload successful" , sftpFileName);   
+        try {
+            sftp.cd(directory);
+        } catch (SftpException e) {
+            log.warn("directory is not exist");
+            sftp.mkdir(directory);
+            sftp.cd(directory);
+        }
+        sftp.put(input, sftpFileName);
+        log.info("file:{} is upload successful" , sftpFileName);
     }   
        
     /**  
@@ -171,7 +171,7 @@ public class SFTPUtil {
      * @throws Exception 
      */   
     public void upload(String directory, String sftpFileName, String dataStr, String charsetName) throws UnsupportedEncodingException, SftpException{     
-        upload(directory, sftpFileName, new ByteArrayInputStream(dataStr.getBytes(charsetName)));     
+        upload(directory, sftpFileName, new ByteArrayInputStream(dataStr.getBytes(charsetName)));
     }   
        
     /** 
@@ -184,12 +184,12 @@ public class SFTPUtil {
      * @throws Exception 
      */     
     public void download(String directory, String downloadFile, String saveFile) throws SftpException, FileNotFoundException{   
-        if (directory != null && !"".equals(directory)) {   
-            sftp.cd(directory);   
-        }   
-        File file = new File(saveFile);   
-        sftp.get(downloadFile, new FileOutputStream(file));   
-        log.info("file:{} is download successful" , downloadFile);   
+        if (directory != null && !"".equals(directory)) {
+            sftp.cd(directory);
+        }
+        File file = new File(saveFile);
+        sftp.get(downloadFile, new FileOutputStream(file));
+        log.info("file:{} is download successful" , downloadFile);
     }  
        
     /**  
@@ -202,13 +202,13 @@ public class SFTPUtil {
      * @throws Exception 
      */   
     public byte[] download(String directory, String downloadFile) throws SftpException, IOException{   
-        if (directory != null && !"".equals(directory)) {   
-            sftp.cd(directory);   
-        }   
-        InputStream is = sftp.get(downloadFile); 
+        if (directory != null && !"".equals(directory)) {
+            sftp.cd(directory);
+        }
+        InputStream is = sftp.get(downloadFile);
         byte[] fileData = IOUtils.toByteArray(is);
         log.info("file:{} is download successful" , downloadFile);   
-        return fileData;   
+        return fileData;
     }   
        
     /** 
@@ -219,8 +219,8 @@ public class SFTPUtil {
      * @throws Exception 
      */   
     public void delete(String directory, String deleteFile) throws SftpException{   
-        sftp.cd(directory);   
-        sftp.rm(deleteFile);   
+        sftp.cd(directory);
+        sftp.rm(deleteFile);
     }
 
     /**
@@ -240,18 +240,18 @@ public class SFTPUtil {
      * @throws SftpException 
      */   
     public Vector<?> listFiles(String directory) throws SftpException {
-        return sftp.ls(directory);   
+        return sftp.ls(directory);
     }   
          
     public static void main(String[] args) throws SftpException, IOException {   
-        SFTPUtil sftp = new SFTPUtil("lanhuigu", "123456", "192.168.200.12", 22);   
-        sftp.login();   
-        //byte[] buff = sftp.download("/opt", "start.sh");   
-        //System.out.println(Arrays.toString(buff));   
-        File file = new File("D:\\upload\\index.html");   
-        InputStream is = new FileInputStream(file);   
-             
-        sftp.upload("/data/work", "test_sftp_upload.csv", is);   
-        sftp.logout();   
+        SFTPUtil sftp = new SFTPUtil("lanhuigu", "123456", "192.168.200.12", 22);
+        sftp.login();
+        //byte[] buff = sftp.download("/opt", "start.sh");
+        //System.out.println(Arrays.toString(buff));
+        File file = new File("D:\\upload\\index.html");
+        InputStream is = new FileInputStream(file);
+
+        sftp.upload("/data/work", "test_sftp_upload.csv", is);
+        sftp.logout();
     }   
 }

@@ -95,6 +95,11 @@ public class StrategyGroupInstance {
     private Date run_time;
 
     /**
+     * 策略组id
+     */
+    private String strategy_group_id;
+
+    /**
      * 策略关系
      */
     private String jsmind_data;
@@ -432,6 +437,24 @@ public class StrategyGroupInstance {
      */
     public void setRun_time(Date run_time) {
         this.run_time = run_time;
+    }
+
+    /**
+     * 获取策略组id
+     *
+     * @return strategy_group_id - 策略组id
+     */
+    public String getStrategy_group_id() {
+        return strategy_group_id;
+    }
+
+    /**
+     * 设置策略组id
+     *
+     * @param strategy_group_id 策略组id
+     */
+    public void setStrategy_group_id(String strategy_group_id) {
+        this.strategy_group_id = strategy_group_id;
     }
 
     /**

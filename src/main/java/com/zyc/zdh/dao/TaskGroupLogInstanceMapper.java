@@ -1,17 +1,17 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
-import com.zyc.zdh.entity.EmailTaskLogs;
-import com.zyc.zdh.entity.EtlEcharts;
+import com.zyc.notscan.base.BaseTaskGroupLogInstanceMapper;
 import com.zyc.zdh.entity.TaskGroupLogInstance;
-import com.zyc.zdh.entity.TaskLogInstance;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.sql.Timestamp;
 import java.util.List;
 
 
-public interface TaskGroupLogInstanceMapper extends BaseMapper<TaskGroupLogInstance> {
+public interface TaskGroupLogInstanceMapper extends BaseTaskGroupLogInstanceMapper<TaskGroupLogInstance> {
 
 
     /**

@@ -555,6 +555,11 @@ public class PermissionController extends BaseController {
     public ReturnInfo<Object> jstree_del_node(String id) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
+            //校验是否根节点
+            ResourceTreeInfo rti = resourceTreeMapper.selectByPrimaryKey(id);
+            if(rti.getLevel().equalsIgnoreCase("1")){
+                throw new Exception("根节点不可删除");
+            }
             resourceTreeMapper.deleteByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {

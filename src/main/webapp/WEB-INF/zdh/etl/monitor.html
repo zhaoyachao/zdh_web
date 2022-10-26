@@ -645,7 +645,7 @@
         $('#exampleTableEvents').bootstrapTable({
             method: 'POST',
             url: server_context+"/task_group_log_instance_list2?"+$("#task_logs_form").serialize(),
-            search: true,
+            search: false,//服务端分页,不能使用自带的搜索框
             pagination: true,
             showRefresh: true,
             showToggle: true,

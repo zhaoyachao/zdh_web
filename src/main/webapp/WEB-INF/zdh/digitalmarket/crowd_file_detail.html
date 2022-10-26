@@ -59,6 +59,17 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">是否BASE数据</label>
+                            <div class="col-sm-10">
+                                <select id="is_base" name="is_base" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="true" mytype="">是</option>
+                                    <option value="false" mytype="" selected>否</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">人群文件</label>
                             <div class="col-sm-10">
                                 <select id="crowd_file" name="crowd_file" data-placeholder="选择人群文件..."
@@ -76,6 +87,17 @@
                                     <label class="no-padding">
                                         <input id="is_disenable" name='is_disenable'  type="checkbox"><i></i> 禁用</label>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">推送类型</label>
+                            <div class="col-sm-10">
+                                <select id="touch_type" name="touch_type" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="database" mytype="" selected>数据库</option>
+                                    <option value="queue" mytype="">消息队列</option>
+                                </select>
                             </div>
                         </div>
 
@@ -217,6 +239,12 @@
                 $("#operate").val(s["operate"]);
                 $("#operate").trigger("chosen:updated");
 
+                $("#touch_type").val(s.touch_type);
+                $("#touch_type").trigger("chosen:updated");
+
+                $("#is_base").val(s.is_base);
+                $("#is_base").trigger("chosen:updated");
+
                 $("#crowd_file").val(s["crowd_file"]);
                 $("#crowd_file").trigger("chosen:updated");
 
@@ -238,6 +266,9 @@
         var crowd_file_context= $('#crowd_file').find("option:selected").text();
         var operate=$('#operate').find("option:selected").val();
         var depend_level=$('#depend_level').find("option:selected").val();
+        var touch_type=$('#touch_type').find("option:selected").val();
+        var is_base=$('#is_base').find("option:selected").val();
+
         var time_out=$('#time_out').val();
         var crowd_file = $('#crowd_file').find("option:selected").val();
         var is_disenable = "false";
@@ -249,6 +280,8 @@
             "is_disenable":is_disenable,
             "depend_level":depend_level,
             "time_out": time_out,
+            "touch_type": touch_type,
+            "is_base": is_base,
             "crowd_file_context":crowd_file_context,
             "crowd_file": crowd_file,
             "operate": operate,

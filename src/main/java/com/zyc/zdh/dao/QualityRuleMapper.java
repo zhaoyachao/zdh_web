@@ -1,14 +1,7 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseQualityRuleMapper;
 import com.zyc.zdh.entity.QualityRuleInfo;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
-import org.apache.ibatis.type.JdbcType;
 
-public interface QualityRuleMapper extends BaseMapper<QualityRuleInfo> {
+public interface QualityRuleMapper extends BaseQualityRuleMapper<QualityRuleInfo> {
 }

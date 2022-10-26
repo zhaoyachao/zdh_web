@@ -1,14 +1,12 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseWeMockTreeMapper;
 import com.zyc.zdh.entity.WeMockTreeInfo;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
-import org.apache.ibatis.type.JdbcType;
 
-public interface WeMockTreeMapper extends BaseMapper<WeMockTreeInfo> {
+public interface WeMockTreeMapper extends BaseWeMockTreeMapper<WeMockTreeInfo> {
+
+    @Update(value = "update we_mock_tree_info  set parent=#{parent},level=#{level} where id=#{id}")
+    public int updateParentById(@Param("id") String id, @Param("parent") String parent, @Param("level") String level);
 }

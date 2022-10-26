@@ -1,13 +1,9 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
-import com.zyc.zdh.entity.ApplyAlarmInfo;
-import com.zyc.zdh.entity.ApplyInfo;
-import com.zyc.zdh.entity.ApplyIssueInfo;
+import com.zyc.notscan.base.BaseApprovalConfigMapper;
 import com.zyc.zdh.entity.ApprovalConfigInfo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -17,7 +13,7 @@ import java.util.List;
  * @date 2017年12月26日  
  * @Description: TODO  
  */
-public interface ApprovalConfigMapper extends BaseMapper<ApprovalConfigInfo> {
+public interface ApprovalConfigMapper extends BaseApprovalConfigMapper<ApprovalConfigInfo> {
 
     /**
      * 审批节点信息

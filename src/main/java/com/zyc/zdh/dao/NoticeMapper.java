@@ -1,14 +1,11 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseNoticeMapper;
 import com.zyc.zdh.entity.NoticeInfo;
-import com.zyc.zdh.entity.ZdhLogs;
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -17,7 +14,7 @@ import java.util.List;
  * @date 2021年09月19日
  * @Description: TODO  
  */
-public interface NoticeMapper extends BaseMapper<NoticeInfo> {
+public interface NoticeMapper extends BaseNoticeMapper<NoticeInfo> {
 
 
     @Select({"<script>",

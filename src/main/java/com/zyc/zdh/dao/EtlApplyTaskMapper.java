@@ -1,10 +1,8 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseEtlApplyTaskMapper;
 import com.zyc.zdh.entity.EtlApplyTaskInfo;
 import com.zyc.zdh.entity.EtlTaskInfo;
-import com.zyc.zdh.entity.QuotaInfo;
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -17,7 +15,7 @@ import java.util.List;
  * @date 2017年12月26日  
  * @Description: TODO  
  */
-public interface EtlApplyTaskMapper extends BaseMapper<EtlApplyTaskInfo> {
+public interface EtlApplyTaskMapper extends BaseEtlApplyTaskMapper<EtlApplyTaskInfo> {
 
 
     /**

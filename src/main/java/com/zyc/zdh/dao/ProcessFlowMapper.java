@@ -1,7 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
-import com.zyc.zdh.entity.ApprovalAuditorInfo;
+import com.zyc.notscan.base.BaseProcessFlowMapper;
 import com.zyc.zdh.entity.ProcessFlowInfo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -15,7 +14,7 @@ import java.util.List;
  * @date 2021年10月19日
  * @Description: TODO  
  */
-public interface ProcessFlowMapper extends BaseMapper<ProcessFlowInfo> {
+public interface ProcessFlowMapper extends BaseProcessFlowMapper<ProcessFlowInfo> {
 
     @Select({
             "<script>",

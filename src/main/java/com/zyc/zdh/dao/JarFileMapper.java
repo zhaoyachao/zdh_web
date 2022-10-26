@@ -1,15 +1,14 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseJarFileMapper;
 import com.zyc.zdh.entity.JarFileInfo;
-import com.zyc.zdh.entity.ZdhDownloadInfo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
 
-public interface JarFileMapper extends BaseMapper<JarFileInfo> {
+public interface JarFileMapper extends BaseJarFileMapper<JarFileInfo> {
 
     @Select({"<script>",
             "SELECT * FROM jar_file_info",

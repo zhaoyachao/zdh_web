@@ -1,12 +1,7 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
-import com.zyc.zdh.entity.NoticeInfo;
+import com.zyc.notscan.base.BaseUserGroupMapper;
 import com.zyc.zdh.entity.UserGroupInfo;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-
-import java.util.List;
 
 /**
  * ClassName: NoticeMapper
@@ -14,6 +9,6 @@ import java.util.List;
  * @date 2021年09月19日
  * @Description: TODO  
  */
-public interface UserGroupMapper extends BaseMapper<UserGroupInfo> {
+public interface UserGroupMapper extends BaseUserGroupMapper<UserGroupInfo> {
 
 }

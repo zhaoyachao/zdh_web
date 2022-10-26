@@ -1,13 +1,13 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseSelfHistoryMapper;
 import com.zyc.zdh.entity.SelfHistory;
-import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.sql.Timestamp;
 
-public interface SelfHistoryMapper extends BaseMapper<SelfHistory> {
+public interface SelfHistoryMapper extends BaseSelfHistoryMapper<SelfHistory> {
     @Update(
             {
                     "<script>",

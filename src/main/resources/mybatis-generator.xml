@@ -33,69 +33,69 @@
             和基于注解的Mapper对象 type="MIXEDMAPPER",生成基于注解的Java Model 和相应的Mapper对象 type="XMLMAPPER",生成SQLMap
             XML文件和独立的Mapper接口 -->
         <javaClientGenerator type="ANNOTATEDMAPPER"
-                             targetPackage="com.zyc.zdh.dao" targetProject="src/main/java">
+                             targetPackage="com.zyc.notscan.base" targetProject="src/main/java">
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
         <!--生成对应表及类名 -->
-<!--        <table tableName="blood_source_info" domainObjectName="BloodSourceInfo" mapperName="BloodSourceMapper">-->
+<!--        <table tableName="blood_source_info" domainObjectName="BloodSourceInfo" mapperName="BaseBloodSourceMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--        </table>-->
-<!--        <table tableName="etl_task_datax_info" domainObjectName="EtlTaskDataxInfo" mapperName="EtlTaskDataxMapper">-->
-<!--            <property name="useActualColumnNames" value="true" />-->
-<!--        </table>-->
-
-<!--        <table tableName="account_info" domainObjectName="AccountInfo" mapperName="AccountMapper">-->
+<!--        <table tableName="etl_task_datax_info" domainObjectName="EtlTaskDataxInfo" mapperName="BaseEtlTaskDataxMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--        </table>-->
 
-<!--        <table tableName="quality_rule_info" domainObjectName="QualityRuleInfo" mapperName="QualityRuleMapper">-->
+<!--        <table tableName="account_info" domainObjectName="AccountInfo" mapperName="BaseAccountMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--        </table>-->
+
+<!--        <table tableName="quality_rule_info" domainObjectName="QualityRuleInfo" mapperName="BaseQualityRuleMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
-<!--        <table tableName="quality_task_info" domainObjectName="QualityTaskInfo" mapperName="QualityTaskMapper">-->
-<!--            <property name="useActualColumnNames" value="true" />-->
-<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
-<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
-<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
-<!--        </table>-->
-
-<!--        <table tableName="quality" domainObjectName="QualityInfo" mapperName="QualityMapper">-->
-<!--            <property name="useActualColumnNames" value="true" />-->
-<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
-<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
-<!--        </table>-->
-
-<!--        <table tableName="data_sources_info" domainObjectName="DataSourcesInfo" mapperName="DataSourcesMapper">-->
+<!--        <table tableName="quality_task_info" domainObjectName="QualityTaskInfo" mapperName="BaseQualityTaskMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="alarm_sms_info" domainObjectName="AlarmSmsInfo" mapperName="AlarmSmsMapper">-->
+<!--        <table tableName="quality" domainObjectName="QualityInfo" mapperName="BaseQualityMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="data_sources_info" domainObjectName="DataSourcesInfo" mapperName="BaseDataSourcesMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="user_operate_log" domainObjectName="UserOperateLogInfo" mapperName="UserOperateLogMapper">-->
+<!--        <table tableName="alarm_sms_info" domainObjectName="AlarmSmsInfo" mapperName="BaseAlarmSmsMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="etl_task_batch_info" domainObjectName="EtlTaskBatchInfo" mapperName="EtlTaskBatchMapper">-->
+<!--        <table tableName="user_operate_log" domainObjectName="UserOperateLogInfo" mapperName="BaseUserOperateLogMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="QRTZ_SCHEDULER_STATE" domainObjectName="QrtzSchedulerState" mapperName="QrtzSchedulerStateMapper">-->
+<!--        <table tableName="etl_task_batch_info" domainObjectName="EtlTaskBatchInfo" mapperName="BaseEtlTaskBatchMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="QRTZ_SCHEDULER_STATE" domainObjectName="QrtzSchedulerState" mapperName="BaseQrtzSchedulerStateMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="SCHED_NAME" property="sched_name" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="INSTANCE_NAME" property="instance_name" javaType="java.lang.String"/>-->
@@ -103,107 +103,107 @@
 <!--            <columnOverride column="LAST_CHECKIN_TIME" property="last_checkin_time" javaType="java.lang.Long"/>-->
 <!--        </table>-->
 
-<!--            <table tableName="quartz_executor_info" domainObjectName="QuartzExecutorInfo" mapperName="QuartzExecutorMapper">-->
+<!--            <table tableName="quartz_executor_info" domainObjectName="QuartzExecutorInfo" mapperName="BaseQuartzExecutorMapper">-->
 <!--                <property name="useActualColumnNames" value="true" />-->
 <!--                <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--            </table>-->
-<!--        <table tableName="enum_info" domainObjectName="EnumInfo" mapperName="EnumMapper">-->
+<!--        <table tableName="enum_info" domainObjectName="EnumInfo" mapperName="BaseEnumMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="param_info" domainObjectName="ParamInfo" mapperName="ParamMapper">-->
+<!--        <table tableName="param_info" domainObjectName="ParamInfo" mapperName="BaseParamMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="data_tag_info" domainObjectName="DataTagInfo" mapperName="DataTagMapper">-->
+<!--        <table tableName="data_tag_info" domainObjectName="DataTagInfo" mapperName="BaseDataTagMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="product_tag_info" domainObjectName="ProductTagInfo" mapperName="ProductTagMapper">-->
+<!--        <table tableName="product_tag_info" domainObjectName="ProductTagInfo" mapperName="BaseProductTagMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="data_tag_group_info" domainObjectName="DataTagGroupInfo" mapperName="DataTagGroupMapper">-->
+<!--        <table tableName="data_tag_group_info" domainObjectName="DataTagGroupInfo" mapperName="BaseDataTagGroupMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--            <table tableName="etl_task_unstructure_info" domainObjectName="EtlTaskUnstructureInfo" mapperName="EtlTaskUnstructureMapper">-->
+<!--            <table tableName="etl_task_unstructure_info" domainObjectName="EtlTaskUnstructureInfo" mapperName="BaseEtlTaskUnstructureMapper">-->
 <!--                <property name="useActualColumnNames" value="true" />-->
 <!--                <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--            </table>-->
 
-<!--        <table tableName="etl_task_unstructure_log_info" domainObjectName="EtlTaskUnstructureLogInfo" mapperName="EtlTaskUnstructureLogMapper">-->
+<!--        <table tableName="etl_task_unstructure_log_info" domainObjectName="EtlTaskUnstructureLogInfo" mapperName="BaseEtlTaskUnstructureLogMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--            <table tableName="self_history" domainObjectName="SelfHistory" mapperName="SelfHistoryMapper">-->
+<!--            <table tableName="self_history" domainObjectName="SelfHistory" mapperName="BaseSelfHistoryMapper">-->
 <!--                <property name="useActualColumnNames" value="true" />-->
 <!--                <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--            </table>-->
-<!--                <table tableName="label_info" domainObjectName="LabelInfo" mapperName="LabelMapper">-->
+<!--                <table tableName="label_info" domainObjectName="LabelInfo" mapperName="BaseLabelMapper">-->
 <!--                    <property name="useActualColumnNames" value="true" />-->
 <!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--                    <columnOverride column="id" property="param_json_object" javaType="com.alibaba.fastjson.JSONArray"/>-->
 <!--                </table>-->
-<!--                    <table tableName="crowd_rule_info" domainObjectName="CrowdRuleInfo" mapperName="CrowdRuleMapper">-->
+<!--                    <table tableName="crowd_rule_info" domainObjectName="CrowdRuleInfo" mapperName="BaseCrowdRuleMapper">-->
 <!--                        <property name="useActualColumnNames" value="true" />-->
 <!--                        <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--                        <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                        <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--                    </table>-->
 
-<!--                <table tableName="strategy_group_info" domainObjectName="StrategyGroupInfo" mapperName="StrategyGroupMapper">-->
+<!--                <table tableName="strategy_group_info" domainObjectName="StrategyGroupInfo" mapperName="BaseStrategyGroupMapper">-->
 <!--                    <property name="useActualColumnNames" value="true" />-->
 <!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--                </table>-->
-<!--        <table tableName="crowd_file_info" domainObjectName="CrowdFileInfo" mapperName="CrowdFileMapper">-->
+<!--        <table tableName="crowd_file_info" domainObjectName="CrowdFileInfo" mapperName="BaseCrowdFileMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
-<!--        <table tableName="permission_apply_info" domainObjectName="PermissionApplyInfo" mapperName="PermissionApplyMapper">-->
+<!--        <table tableName="permission_apply_info" domainObjectName="PermissionApplyInfo" mapperName="BasePermissionApplyMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="filter_info" domainObjectName="FilterInfo" mapperName="FilterMapper">-->
+<!--        <table tableName="filter_info" domainObjectName="FilterInfo" mapperName="BaseFilterMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
-<!--        <table tableName="strategy_group_instance" domainObjectName="StrategyGroupInstance" mapperName="StrategyGroupInstanceMapper">-->
+<!--        <table tableName="strategy_group_instance" domainObjectName="StrategyGroupInstance" mapperName="BaseStrategyGroupInstanceMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
@@ -212,7 +212,7 @@
 <!--            <columnOverride column="quartz_time" property="quartz_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="strategy_instance" domainObjectName="StrategyInstance" mapperName="StrategyInstanceMapper">-->
+<!--        <table tableName="strategy_instance" domainObjectName="StrategyInstance" mapperName="BaseStrategyInstanceMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
@@ -221,27 +221,34 @@
 <!--            <columnOverride column="quartz_time" property="quartz_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--                <table tableName="approval_auditor_flow_info" domainObjectName="ApprovalAuditorFlowInfo" mapperName="ApprovalAuditorFlowMapper">-->
+<!--                <table tableName="approval_auditor_flow_info" domainObjectName="ApprovalAuditorFlowInfo" mapperName="BaseApprovalAuditorFlowMapper">-->
 <!--                    <property name="useActualColumnNames" value="true" />-->
 <!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--                </table>-->
 
-<!--        <table tableName="etl_task_log_info" domainObjectName="EtlTaskLogInfo" mapperName="EtlTaskLogMapper">-->
+<!--        <table tableName="etl_task_log_info" domainObjectName="EtlTaskLogInfo" mapperName="BaseEtlTaskLogMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-        <table tableName="we_mock_tree_info" domainObjectName="WeMockTreeInfo" mapperName="WeMockTreeMapper">
-            <property name="useActualColumnNames" value="true" />
-            <columnOverride column="id" property="id" javaType="java.lang.String"/>
-            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
-            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
-        </table>
+<!--        <table tableName="we_mock_tree_info" domainObjectName="WeMockTreeInfo" mapperName="BaseWeMockTreeMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="order" property="order"/>-->
+<!--        </table>-->
 
+<!--            <table tableName="we_mock_data_info" domainObjectName="WeMockDataInfo" mapperName="BaseWeMockDataMapper" >-->
+<!--                <property name="useActualColumnNames" value="true" />-->
+<!--                <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--            </table>-->
 
     </context>
 </generatorConfiguration>

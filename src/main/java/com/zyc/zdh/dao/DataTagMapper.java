@@ -1,13 +1,13 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseDataTagMapper;
 import com.zyc.zdh.entity.DataTagInfo;
-import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.sql.Timestamp;
 
-public interface DataTagMapper extends BaseMapper<DataTagInfo> {
+public interface DataTagMapper extends BaseDataTagMapper<DataTagInfo> {
     @Update(
             {
                     "<script>",

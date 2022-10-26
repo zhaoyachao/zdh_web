@@ -1,7 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
-import com.zyc.zdh.entity.ApprovalAuditorInfo;
+import com.zyc.notscan.base.BaseApprovalEventMapper;
 import com.zyc.zdh.entity.ApprovalEventInfo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -14,7 +13,7 @@ import java.util.List;
  * @date 2021年10月12日
  * @Description: TODO  
  */
-public interface ApprovalEventMapper extends BaseMapper<ApprovalEventInfo> {
+public interface ApprovalEventMapper extends BaseApprovalEventMapper<ApprovalEventInfo> {
 
     /**
      * 审批事件信息

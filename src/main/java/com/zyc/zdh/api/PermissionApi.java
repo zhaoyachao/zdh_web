@@ -4,6 +4,7 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.Encrypt;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.session.Session;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import java.util.*;
 /**
  * api权限服务
  *
+ * ak,sk都是加密后的,接收到ak,sk需要提前解密验证
  * @author zyc-admin
  * @date 2018年2月5日
  * @Description: api包下的服务 不需要通过shiro验证拦截，需要自定义的token验证, 通过此api 提供外部平台权限验证
@@ -858,6 +860,13 @@ public class PermissionApi {
     }
 
 
+    /**
+     * ak,sk 结构md5_秒级时间戳
+     * @param product_code
+     * @param ak
+     * @param sk
+     * @throws Exception
+     */
     private void check_aksk(String product_code,String ak, String sk) throws Exception {
         if(StringUtils.isEmpty(product_code)){
             throw new Exception("产品为空");
@@ -869,11 +878,24 @@ public class PermissionApi {
             throw new Exception("SK为空");
         }
 
+        //解密ak,sk ,根据时间
+        String akdec = Encrypt.AESdecrypt(ak);
+        String[] aks = akdec.split("_");
+        if(aks.length!=2 || (System.currentTimeMillis()/1000 - Integer.parseInt(aks[1])) <= 300 ){
+            throw new Exception("AK异常");
+        }
+
+        String skdec = Encrypt.AESdecrypt(ak);
+        String[] sks = skdec.split("_");
+        if(sks.length!=2 || (System.currentTimeMillis()/1000 - Integer.parseInt(sks[1])) <= 300  ){
+            throw new Exception("SK异常");
+        }
+
         //验证ak,sk
         ProductTagInfo productTagInfo=new ProductTagInfo();
         productTagInfo.setProduct_code(product_code);
-        productTagInfo.setAk(ak);
-        productTagInfo.setSk(sk);
+        productTagInfo.setAk(aks[0]);
+        productTagInfo.setSk(sks[0]);
         productTagInfo.setStatus(Const.PRODUCT_ENABLE);
         ProductTagInfo pti = productTagMapper.selectOne(productTagInfo);
         if(pti == null){

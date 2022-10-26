@@ -1,6 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseQuartzJobMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 
-public interface QuartzJobMapper extends BaseMapper<QuartzJobInfo> {
+public interface QuartzJobMapper extends BaseQuartzJobMapper<QuartzJobInfo> {
 
 
     @Update({

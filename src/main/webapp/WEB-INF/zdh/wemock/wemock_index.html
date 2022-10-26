@@ -48,6 +48,7 @@
                             </select>
                         </div><br />
                         <div> <input id="search_input" name="search_input" class="form-control" type="text" value="" placeholder="mock信息"></div><br />
+                        <div>  <input id="add_root" οnsubmit='return false' onclick="add_root()" type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="新增根" disabled="true"/></div><br />
                         <div id="using_json"></div>
 
                     </div>
@@ -158,6 +159,10 @@
                                 console.info(data);
                                 if(data.code == "200") {
                                     callback.call(this, data.result);
+                                    if(data.result == null || data.result.length<=0){
+                                        //开启新增根
+                                        $('#add_root').removeAttr("disabled")
+                                    }
                                 }else{
                                     callback.call(this, []);
                                     layer.msg(data.msg);
@@ -204,6 +209,45 @@
         function refash(id){
             $('#using_json').jstree(true).refresh();
             $('#using_json').jstree("open_node", id);
+        }
+
+        function add_root() {
+            var product_code = $("#product_code").val();
+            //请求新增根
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/wemock_add_root_node",
+                dataType: 'json',
+                async:'false',
+                data: "product_code="+product_code+"&parent=#&text="+product_code+"&level=1",
+                //发送数据前
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#add_root").attr({disabled: "disabled"});
+                },
+                //成功返回
+                success: function (data) {
+                    if(data.code != '200'){
+                        console.error(data.msg);
+                        layer.msg(data.msg);
+                        $("#add_root").removeAttr('disabled');
+                        return ;
+                    }
+                    layer.msg("执行成功");
+                    init_jstree(product_code);
+                },
+                //处理完成
+                complete: function () {
+                    //layer.close(index1);
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    $("#add_root").removeAttr('disabled');
+                    console.info("error: " + data.responseText);
+                }
+            });
+
         }
     </script>
 

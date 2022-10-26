@@ -55,12 +55,12 @@ $(document).ready(function(){
         fillStyle: "#ccc",
         radius: 10,
         lineWidth:6 ,
-    }
+    };
 
     // 鼠标悬浮在端点上的样式
     var hoverPaintStyle = {
         fillStyle: "#aaa",
-    }
+    };
 
     //设置连接端点和连接线
     var hollowCircle = {
@@ -88,7 +88,7 @@ $(document).ready(function(){
 
     //节点小图标的单击事件
     $("#m1").on("click", "img",function () {
-        var div=$(this).parent()
+        var div=$(this).parent();
         layer.confirm('确定要删除此节点吗', {
             btn: ['确定','取消'] //按钮
         }, function(index){
@@ -102,8 +102,8 @@ $(document).ready(function(){
 
     //连接线中的文字双击事件
     $("#deviceRight").on("click", "._jsPlumb_overlay", function () {
-        var that=$(this)
-        that.removeClass('_jsPlumb_overlay')
+        var that=$(this);
+        that.removeClass('_jsPlumb_overlay');
         var text = that.text();
         that.html("");
         that.append('<input type="text" id="myDropDown" value="' + text + '" />');
@@ -132,11 +132,11 @@ $(document).ready(function(){
     // 当连线建立前
     jsPlumb.bind('beforeDrop', function (info) {
         if(info.sourceId==info.targetId){//判断当开始和终点为一个节点时，不连线。
-            return false
+            return false;
         }
-        console.info("链接自动建立")
-        return true // 链接会自动建立
-    })
+        console.info("链接自动建立");
+        return true; // 链接会自动建立
+    });
 
     //导出json
     $('.btn1').click(function(){
@@ -144,7 +144,7 @@ $(document).ready(function(){
             tasks:[],
             shell:[],
             line:[]
-        }
+        };
 
         //服务器
         $("#m1 .tasks").each(function (idx, elem) {
@@ -159,7 +159,7 @@ $(document).ready(function(){
                 positionX: parseInt($elem.css("left"), 10),
                 positionY: parseInt($elem.css("top"), 10),
                 type:$elem.data('type')
-            }
+            };
             ojson.tasks.push(param)
         });
 
@@ -169,7 +169,7 @@ $(document).ready(function(){
                 connectionId: connection.id,
                 pageSourceId: connection.sourceId,
                 pageTargetId: connection.targetId
-            }
+            };
             ojson.line.push(param)
         });
 
@@ -179,6 +179,6 @@ $(document).ready(function(){
 
     })
 
-})
+});
  
 

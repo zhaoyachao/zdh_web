@@ -1,13 +1,13 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseEtlTaskUnstructureLogMapper;
 import com.zyc.zdh.entity.EtlTaskUnstructureLogInfo;
-import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.sql.Timestamp;
 
-public interface EtlTaskUnstructureLogMapper extends BaseMapper<EtlTaskUnstructureLogInfo> {
+public interface EtlTaskUnstructureLogMapper extends BaseEtlTaskUnstructureLogMapper<EtlTaskUnstructureLogInfo> {
     @Update(
             {
                     "<script>",

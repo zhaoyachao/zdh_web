@@ -253,6 +253,8 @@
             $("#" + divId).attr("is_disenable",rs.is_disenable);
             $("#" + divId).attr("depend_level",rs.depend_level);
             $("#" + divId).attr("time_out",rs.time_out);
+            $("#" + divId).attr("touch_type",rs.touch_type);
+            $("#" + divId).attr("is_base",rs.is_base);
 
             $("#" + divId).attr("more_task",rs.more_task);
             $("#" + divId).attr("zdh_instance",rs.zdh_instance);
@@ -277,6 +279,7 @@
                 $("#" + divId).html("("+ rs.operate +")"+rs.crowd_file_context);
             }
             if(tp == "crowd_operate"){
+                $("#" + divId).attr("crowd_operate_context",rs.crowd_operate_context);
                 $("#" + divId).html("("+ rs.operate +")"+rs.crowd_operate_context);
             }
 
@@ -316,56 +319,56 @@
         }
     }
 
-    function doubleclick_tasks(id) {
-        $(id).dblclick(function () {
-            var text = $(this).text();
-            var div = $(this);
-            var rule_id=div.attr("rule_id");
-            var url=server_context+'/rule_detail.html';
-            if( div.attr("rule_id") == "" || div.attr("rule_id") == undefined ){
-                url=url+"?rule_id=-1"
-            }else{
-                var more_task=div.attr("more_task");
-                var depend_level = div.attr("depend_level");
-                var time_out = div.attr("time_out");
-                var operate = div.attr("operate");
-                $("#rule_param").val(div.attr("rule_param"));
-                url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate
-            }
-            layer.open({
-                type: 2,
-                area: ['100%', '100%'],
-                fixed: false, //不固定
-                maxmin: true,
-                content: encodeURI(url),
-                end: function () {
-                    if($("#etl_task_text").val()==""){
-                        console.info("无修改-不更新");
-                        return ;
-                    }
-
-                    var etl_task_info=JSON.parse($("#etl_task_text").val());
-                    div.attr("operate",etl_task_info.operate);
-                    div.attr("rule_id",etl_task_info.rule_id);
-                    div.attr("rule_context",etl_task_info.rule_context);
-                    div.attr("more_task",etl_task_info.more_task);
-                    div.attr("is_disenable",etl_task_info.is_disenable);
-                    div.attr("time_out",etl_task_info.time_out);
-                    div.attr("rule_param",etl_task_info.rule_param);
-                    div.attr("rule_expression_cn",etl_task_info.rule_expression_cn);
-                    div.attr("title", etl_task_info.rule_expression_cn);
-                    //div.width(etl_task_info.etl_context.length*16)
-                    div.css("width","auto");
-                    div.css("display","inline-block");
-                    div.css("*display","inline");
-                    div.css("*zoom","1");
-                    div.html(etl_task_info.rule_context);
-                    //自动生成规则表达式
-                    create_rule_expression_cn();
-                }
-            });
-        });
-    }
+    // function doubleclick_tasks(id) {
+    //     $(id).dblclick(function () {
+    //         var text = $(this).text();
+    //         var div = $(this);
+    //         var rule_id=div.attr("rule_id");
+    //         var url=server_context+'/rule_detail.html';
+    //         if( div.attr("rule_id") == "" || div.attr("rule_id") == undefined ){
+    //             url=url+"?rule_id=-1"
+    //         }else{
+    //             var more_task=div.attr("more_task");
+    //             var depend_level = div.attr("depend_level");
+    //             var time_out = div.attr("time_out");
+    //             var operate = div.attr("operate");
+    //             $("#rule_param").val(div.attr("rule_param"));
+    //             url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate
+    //         }
+    //         layer.open({
+    //             type: 2,
+    //             area: ['100%', '100%'],
+    //             fixed: false, //不固定
+    //             maxmin: true,
+    //             content: encodeURI(url),
+    //             end: function () {
+    //                 if($("#etl_task_text").val()==""){
+    //                     console.info("无修改-不更新");
+    //                     return ;
+    //                 }
+    //
+    //                 var etl_task_info=JSON.parse($("#etl_task_text").val());
+    //                 div.attr("operate",etl_task_info.operate);
+    //                 div.attr("rule_id",etl_task_info.rule_id);
+    //                 div.attr("rule_context",etl_task_info.rule_context);
+    //                 div.attr("more_task",etl_task_info.more_task);
+    //                 div.attr("is_disenable",etl_task_info.is_disenable);
+    //                 div.attr("time_out",etl_task_info.time_out);
+    //                 div.attr("rule_param",etl_task_info.rule_param);
+    //                 div.attr("rule_expression_cn",etl_task_info.rule_expression_cn);
+    //                 div.attr("title", etl_task_info.rule_expression_cn);
+    //                 //div.width(etl_task_info.etl_context.length*16)
+    //                 div.css("width","auto");
+    //                 div.css("display","inline-block");
+    //                 div.css("*display","inline");
+    //                 div.css("*zoom","1");
+    //                 div.html(etl_task_info.rule_context);
+    //                 //自动生成规则表达式
+    //                 create_rule_expression_cn();
+    //             }
+    //         });
+    //     });
+    // }
 
     function jsplumb_data(){
         var ojson={
@@ -382,6 +385,8 @@
                 is_disenable: $elem.attr('is_disenable'),
                 depend_level: $elem.attr('depend_level'),
                 time_out: $elem.attr('time_out'),
+                touch_type: $elem.attr('touch_type'),
+                is_base: $elem.attr('is_base'),
 
                 id: $elem.attr('id'),
                 rule_id: $elem.attr('rule_id'),

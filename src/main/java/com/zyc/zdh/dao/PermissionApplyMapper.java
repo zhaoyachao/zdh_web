@@ -1,12 +1,12 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BasePermissionApplyMapper;
 import com.zyc.zdh.entity.PermissionApplyInfo;
-import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.annotations.InsertProvider;
+import org.apache.ibatis.annotations.SelectKey;
 import tk.mybatis.mapper.provider.base.BaseInsertProvider;
 
-public interface PermissionApplyMapper extends BaseMapper<PermissionApplyInfo> {
+public interface PermissionApplyMapper extends BasePermissionApplyMapper<PermissionApplyInfo> {
     @Override
     @InsertProvider(
             type = BaseInsertProvider.class,

@@ -1,15 +1,13 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseServerTaskMappeer;
 import com.zyc.zdh.entity.ServerTaskInfo;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-public interface ServerTaskMappeer extends BaseMapper<ServerTaskInfo> {
+public interface ServerTaskMappeer extends BaseServerTaskMappeer<ServerTaskInfo> {
 
     @Select(
             {

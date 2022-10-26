@@ -22,7 +22,10 @@ import java.util.*;
 /**
  * 检查任务及任务组,判定上下游依赖
  */
-public class CheckDepJob {
+public class CheckDepJob implements CheckDepJobInterface{
+
+
+    private Object object;
 
     private final static String task_log_status="etl";
     private static Logger logger = LoggerFactory.getLogger(CheckDepJob.class);
@@ -479,4 +482,13 @@ public class CheckDepJob {
         }
     }
 
+    @Override
+    public void setObject(Object o) {
+        this.object = o;
+    }
+
+    @Override
+    public void run() {
+        run((QuartzJobInfo) object);
+    }
 }

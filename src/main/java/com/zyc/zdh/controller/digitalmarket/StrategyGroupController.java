@@ -49,6 +49,14 @@ public class StrategyGroupController extends BaseController {
     @Autowired
     private StrategyInstanceMapper strategyInstanceMapper;
 
+
+    @RequestMapping(value = "/get_id", method = RequestMethod.GET)
+    @ResponseBody
+    @White
+    public String get_id() {
+        return SnowflakeIdWorker.getInstance().nextId()+"";
+    }
+
     /**
      * 策略组列表首页
      * @return
@@ -217,6 +225,7 @@ public class StrategyGroupController extends BaseController {
 
             strategyGroupInstance.setId(SnowflakeIdWorker.getInstance().nextId() + "");
 
+            strategyGroupInstance.setStrategy_group_id(strategyGroupInfo.getId());
             strategyGroupInstance.setStatus(JobStatus.NON.getValue());
             strategyGroupInstance.setSchedule_source(ScheduleSource.MANUAL.getCode());
             strategyGroupInstance.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间

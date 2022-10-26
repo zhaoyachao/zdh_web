@@ -9,6 +9,7 @@ import com.zyc.zdh.dao.ProductTagMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.Encrypt;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.session.Session;
 import org.slf4j.Logger;
@@ -186,6 +187,13 @@ public class ProcessFlowApi {
     }
 
 
+    /**
+     * ak,sk 结构md5_秒级时间戳
+     * @param product_code
+     * @param ak
+     * @param sk
+     * @throws Exception
+     */
     private void check_aksk(String product_code,String ak, String sk) throws Exception {
         if(StringUtils.isEmpty(product_code)){
             throw new Exception("产品为空");
@@ -197,11 +205,24 @@ public class ProcessFlowApi {
             throw new Exception("SK为空");
         }
 
+        //解密ak,sk ,根据时间
+        String akdec = Encrypt.AESdecrypt(ak);
+        String[] aks = akdec.split("_");
+        if(aks.length!=2 || (System.currentTimeMillis()/1000 - Integer.parseInt(aks[1])) <= 300 ){
+            throw new Exception("AK异常");
+        }
+
+        String skdec = Encrypt.AESdecrypt(ak);
+        String[] sks = skdec.split("_");
+        if(sks.length!=2 || (System.currentTimeMillis()/1000 - Integer.parseInt(sks[1])) <= 300  ){
+            throw new Exception("SK异常");
+        }
+
         //验证ak,sk
         ProductTagInfo productTagInfo=new ProductTagInfo();
         productTagInfo.setProduct_code(product_code);
-        productTagInfo.setAk(ak);
-        productTagInfo.setSk(sk);
+        productTagInfo.setAk(aks[0]);
+        productTagInfo.setSk(sks[0]);
         productTagInfo.setStatus(Const.PRODUCT_ENABLE);
         ProductTagInfo pti = productTagMapper.selectOne(productTagInfo);
         if(pti == null){

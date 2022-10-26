@@ -1,6 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseStrategyInstanceMapper;
 import com.zyc.zdh.entity.StrategyInstance;
 import com.zyc.zdh.entity.task_num_info;
 import org.apache.ibatis.annotations.Param;
@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-public interface StrategyInstanceMapper extends BaseMapper<StrategyInstance> {
+public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<StrategyInstance> {
     @Select("select * from strategy_instance where group_instance_id = ${group_instance_id}")
     public List<StrategyInstance> selectByGroupId(@Param("group_instance_id") String group_instance_id);
 

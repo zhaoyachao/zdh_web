@@ -30,16 +30,21 @@ import java.util.*;
 /**
  * 检查策略及策略组,判定上下游依赖
  */
-public class CheckStrategyDepJob {
+public class CheckStrategyDepJob implements CheckDepJobInterface{
 
     private final static String task_log_status="etl";
     private static Logger logger = LoggerFactory.getLogger(CheckStrategyDepJob.class);
 
     public static List<ZdhDownloadInfo> zdhDownloadInfos = new ArrayList<>();
 
-    public static void run() {
+    @Override
+    public void setObject(Object o) {
+
+    }
+
+    public void run() {
         try {
-            logger.debug("开始检测任务组任务...");
+            logger.debug("开始检测策略组任务...");
             StrategyGroupInstanceMapper sgim=(StrategyGroupInstanceMapper) SpringContext.getBean("strategyGroupInstanceMapper");
             StrategyInstanceMapper sim=(StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
 
@@ -56,8 +61,8 @@ public class CheckStrategyDepJob {
                     }
                     //group.setProcess("100");
                     JobDigitalMarket.updateTaskLog(group,sgim);
-                    logger.info("当前任务组没有子任务可执行,当前任务组设为完成");
-                    JobDigitalMarket.insertLog(group,"INFO","当前任务组没有子任务可执行,当前任务组设为完成");
+                    logger.info("当前策略组没有子任务可执行,当前任务组设为完成");
+                    JobDigitalMarket.insertLog(group,"INFO","当前策略组没有子任务可执行,当前策略组设为完成");
                 }
             }
 
@@ -139,7 +144,6 @@ public class CheckStrategyDepJob {
                             continue;
                         }
                     }
-
                 }
 
                 //根据dag判断是否对当前任务进行
@@ -165,9 +169,11 @@ public class CheckStrategyDepJob {
                     //无父节点直接运行即可
                     System.out.println("根节点模拟发放任务--开始");
                     System.out.println("=======================");
-                    System.out.println("=======================");
                     System.out.println(JSON.toJSONString(tl));
-                    resovleStrategyInstance(tl);
+                    JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
+                    if(tl.getTouch_type()==null || !tl.getTouch_type().equalsIgnoreCase("queue")){
+                        resovleStrategyInstance(tl);
+                    }
                     System.out.println("根节点模拟发放任务--结束");
                     //更新任务状态为检查完成
                     tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
@@ -193,8 +199,10 @@ public class CheckStrategyDepJob {
                     if(is_run){
                         //上游都以完成,可执行,任务发完执行集群 此处建议使用优先级队列 todo
                         System.out.println("模拟发放任务--开始");
-                        resovleStrategyInstance(tl);
-                        System.out.println("=======================");
+                        JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
+                        if(tl.getTouch_type()==null || !tl.getTouch_type().equalsIgnoreCase("queue")){
+                            resovleStrategyInstance(tl);
+                        }
                         System.out.println("=======================");
                         System.out.println(JSON.toJSONString(tl));
                         System.out.println("模拟发放任务--结束");
@@ -230,7 +238,7 @@ public class CheckStrategyDepJob {
             JSONArray jary=JSON.parseObject(sgi.getRun_jsmind_data()).getJSONArray("run_data");
             List<String> tlidList=new ArrayList<>();
             for(Object obj:jary){
-                String tlid=((JSONObject) obj).getString("task_log_instance_id");
+                String tlid=((JSONObject) obj).getString("strategy_instance_id");
                 //System.out.println("task_log_instance_id:"+tlid);
                 if(tlid!=null)
                   tlidList.add(tlid);
@@ -288,6 +296,10 @@ public class CheckStrategyDepJob {
 
         if(strategyInstance==null || StringUtils.isEmpty(strategyInstance.getInstance_type())){
             throw new Exception("策略实例及实例类型信息不可为空");
+        }
+        if(strategyInstance.getTouch_type()==null || !strategyInstance.getTouch_type().equalsIgnoreCase("queue")){
+
+            return ;
         }
 
         ProducerImpl producer=getProduct();

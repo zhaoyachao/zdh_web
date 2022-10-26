@@ -200,7 +200,8 @@ public class CrowdRuleController extends BaseController {
      * 手动执行人群规则,单独生成人群文件
      * @return
      */
-    @RequestMapping(value = "/crowd_task_execute", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/crowd_task_execute", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
     public ReturnInfo crowd_task_execute() {
 
         return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "功能暂未支持", "功能暂未支持");
@@ -278,25 +279,6 @@ public class CrowdRuleController extends BaseController {
 
         return JSONObject.toJSONString(crowdFileInfos);
     }
-
-    /**
-     * 过滤列表
-     * @param file_code 关键字
-     * @return
-     */
-    @RequestMapping(value = "/filter_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String filter_list(String file_code) {
-        Example example=new Example(FilterInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        criteria.andEqualTo("enable", Const.ENABLE);
-        List<FilterInfo> filterInfos = filterMapper.selectByExample(example);
-
-        return JSONObject.toJSONString(filterInfos);
-    }
-
-
 
     public User getUser() {
         User user = (User) SecurityUtils.getSubject().getPrincipal();

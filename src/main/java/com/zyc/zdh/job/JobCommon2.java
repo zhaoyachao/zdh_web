@@ -2816,6 +2816,7 @@ public class JobCommon2 {
         QuartzManager2 quartzManager2 = (QuartzManager2) SpringContext.getBean("quartzManager2");
         TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+        RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
         //手动重试增加重试实例,自动重试在原来的基础上
 
         if (quartzJobInfo.getJob_type().equals("EMAIL")) {
@@ -2829,7 +2830,27 @@ public class JobCommon2 {
             return;
         } else if (quartzJobInfo.getJob_type().equals("CHECK")) {
             logger.debug("调度任务[CHECK],开始调度");
-            CheckDepJob.run(quartzJobInfo);
+            //通过redis获取check接口类,遍历所有接口实现执行任务
+            String checkImpls = redisUtil.get("zdh_check_impls", "").toString();
+            if(!StringUtils.isEmpty(checkImpls)){
+                for (String impl: checkImpls.split(",")){
+
+                    try {
+                        CheckDepJobInterface cdji = (CheckDepJobInterface)Class.forName(impl).newInstance();
+                        cdji.setObject(quartzJobInfo);
+                        cdji.run();
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }else{
+                logger.warn("当前系统未设置默认检查实现,请通过工具箱->参数设置->zdh_check_impls");
+            }
+            //CheckDepJob.run(quartzJobInfo);
             //CheckStrategyDepJob.run();
             return;
         } else if (quartzJobInfo.getJob_type().equals("BLOOD")) {

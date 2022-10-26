@@ -1,6 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseApplyMapper;
 import com.zyc.zdh.entity.ApplyAlarmInfo;
 import com.zyc.zdh.entity.ApplyInfo;
 import com.zyc.zdh.entity.ApplyIssueInfo;
@@ -16,7 +16,7 @@ import java.util.List;
  * @date 2017年12月26日  
  * @Description: TODO  
  */
-public interface ApplyMapper extends BaseMapper<ApplyInfo> {
+public interface ApplyMapper extends BaseApplyMapper<ApplyInfo> {
 
     @Select({"<script>",
             "select * from apply_info where status=0 and is_notice != 'true'",

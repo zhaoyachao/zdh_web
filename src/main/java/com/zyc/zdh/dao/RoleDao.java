@@ -1,6 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseRoleDao;
 import com.zyc.zdh.entity.RoleInfo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
-public interface RoleDao extends BaseMapper<RoleInfo> {
+public interface RoleDao extends BaseRoleDao<RoleInfo> {
 
     @Select({
             "<script>",

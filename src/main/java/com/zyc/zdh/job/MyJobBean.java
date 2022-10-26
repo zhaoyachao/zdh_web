@@ -1,12 +1,10 @@
 package com.zyc.zdh.job;
 
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.StrategyGroupMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.QuartzJobInfo;
 import com.zyc.zdh.entity.StrategyGroupInfo;
-import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.shiro.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;

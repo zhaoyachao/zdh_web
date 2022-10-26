@@ -53,6 +53,17 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">是否BASE数据</label>
+                            <div class="col-sm-10">
+                                <select id="is_base" name="is_base" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="true" mytype="">是</option>
+                                    <option value="false" mytype="" selected>否</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">规则模板</label>
                             <div class="col-sm-10">
                                 <select id="more_task" name="more_task" data-placeholder=""
@@ -88,6 +99,17 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">推送类型</label>
+                            <div class="col-sm-10">
+                                <select id="touch_type" name="touch_type" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="database" mytype="" selected>数据库</option>
+                                    <option value="queue" mytype="">消息队列</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">指定计算集群</label>
                             <div class="col-sm-10">
                                 <select id="zdh_instance" name="zdh_instance" data-placeholder="集群名"
@@ -116,8 +138,6 @@
                         </div>
 
                     </form>
-
-
                 </div>
             </div>
 
@@ -171,6 +191,10 @@
                 '        <div class="col-sm-2">\n' +
                 '            <input name="param_context" type="text"\n' +
                 '                   placeholder="参数说明" class="form-control param_context" aria-required="true" value="zdh_param_context" readonly>\n' +
+                '        </div>\n' +
+                '        <div class="col-sm-2">\n' +
+                '            <input name="param_context" type="text"\n' +
+                '                   placeholder="参数类型" class="form-control param_type" aria-required="true" value="zdh_param_type" readonly>\n' +
                 '        </div>\n' +
                 '        <div class="col-sm-2">\n' +
                 '            <select class=" form-control m-b param_operate" data-live-search="true" name="param_operate" id="zdh_param_operate">\n' +
@@ -327,6 +351,7 @@
                             var tmp = template;
                             tmp = tmp.replace("zdh_param_code", param[i].param_code);
                             tmp = tmp.replace("zdh_param_context", param[i].param_context);
+                            tmp = tmp.replace("zdh_param_type", param[i].param_type);
                             tmp = tmp.replace("zdh_param_operate", "zdh_param_operate_"+i);
                             tmp = tmp.replace("zdh_param_value_id", "zdh_param_value_"+i);
                             tmp = tmp.replace("zdh_param_value", param[i].param_value);
@@ -361,6 +386,10 @@
                 $("#rule_id").trigger("chosen:updated");
                 $("#operate").val(s.operate);
                 $("#operate").trigger("chosen:updated");
+                $("#touch_type").val(s.touch_type);
+                $("#touch_type").trigger("chosen:updated");
+                $("#is_base").val(s.is_base);
+                $("#is_base").trigger("chosen:updated");
 
                 $("#zdh_instance").val(s["zdh_instance"]);
                 $("#zdh_instance").trigger("chosen:updated");
@@ -397,6 +426,8 @@
         var rule_id=$('#rule_id').find("option:selected").val();
         var more_task=$('#more_task').find("option:selected").val();
         var operate=$('#operate').find("option:selected").val();
+        var touch_type=$('#touch_type').find("option:selected").val();
+        var is_base=$('#is_base').find("option:selected").val();
 
         var zdh_instance=$('#zdh_instance').find("option:selected").val();
         var time_out=$('#time_out').val();
@@ -409,6 +440,7 @@
         var ary2 = new Array();
         var ary3 = new Array();
         var ary4 = new Array();
+        var ary5 = new Array();
 
         $(".param_code").each(function(index){
             ary[index] = $(this).val();
@@ -425,6 +457,10 @@
             ary4[index] =  $(this).val();
         });
 
+        $(".param_type").each(function(index){
+            ary5[index] =$(this).val();
+        });
+
         var result = [];
         var rule_expression_cn = "";
         for (var i=0;i<ary.length;i++){
@@ -433,6 +469,7 @@
                 "param_context":ary2[i],
                 "param_operate":ary3[i],
                 "param_value":ary4[i],
+                "param_type":ary5[i],
             };
             if(is_empty(rule_expression_cn)){
                 rule_expression_cn = rule_expression_cn + " ("+ary2[i]+ " " + ary3[i] + " "+ary4[i] + ")";
@@ -445,6 +482,8 @@
 
         let data={
             "operate": operate,
+            "touch_type": touch_type,
+            "is_base": is_base,
             "rule_context":rule_expression_cn,
             "rule_id":rule_id,
             "more_task":more_task,

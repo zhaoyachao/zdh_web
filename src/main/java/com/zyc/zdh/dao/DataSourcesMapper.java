@@ -1,6 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseDataSourcesMapper;
 import com.zyc.zdh.entity.DataSourcesInfo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Update;
 import java.sql.Timestamp;
 import java.util.List;
 
-public interface DataSourcesMapper extends BaseMapper<DataSourcesInfo> {
+public interface DataSourcesMapper extends BaseDataSourcesMapper<DataSourcesInfo> {
 
     @Update(
             {

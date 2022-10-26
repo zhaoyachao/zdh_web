@@ -46,6 +46,13 @@ public class ReturnInfo<T> {
         this.result = result;
     }
 
+    /**
+     * 返回json-string入口
+     * @param code
+     * @param msg
+     * @param result
+     * @return
+     */
     public static String createInfo(String code,String msg,Object result){
         ReturnInfo ri=new ReturnInfo();
         ri.code=code;
@@ -54,6 +61,14 @@ public class ReturnInfo<T> {
         return JSON.toJSONString(ri);
     }
 
+    /**
+     * 正常返回ReturnInfo对象入口
+     * @param code
+     * @param msg
+     * @param result
+     * @param <T>
+     * @return
+     */
     public static <T> ReturnInfo<T> build(String code,String msg,T result){
         ReturnInfo ri=new ReturnInfo<>();
         ri.code=code;
@@ -62,6 +77,14 @@ public class ReturnInfo<T> {
         return ri;
     }
 
+    /**
+     * 异常时返回ReturnInfo对象入口
+     * @param code
+     * @param msg
+     * @param e
+     * @param <T>
+     * @return
+     */
     public static <T> ReturnInfo<T> build(String code,String msg,Exception e){
         ReturnInfo ri=new ReturnInfo<>();
         ri.code=code;

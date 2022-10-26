@@ -1,12 +1,11 @@
 package com.zyc.zdh.dao;
 
-import java.util.List;
-
+import com.zyc.zdh.entity.ProductInfo;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 
-import com.zyc.zdh.entity.ProductInfo;
+import java.util.List;
 
 /**
  * ClassName: ProductDao   

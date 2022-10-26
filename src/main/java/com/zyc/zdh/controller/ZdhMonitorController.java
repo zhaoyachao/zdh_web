@@ -82,7 +82,7 @@ public class ZdhMonitorController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/etlEcharts", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etlEcharts", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String get1() throws Exception {
 //        调度总任务数：
@@ -125,7 +125,7 @@ public class ZdhMonitorController extends BaseController {
     @ResponseBody
     public String task_logs(String start_time, String end_time, String status) throws Exception {
 
-        System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
+        //System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
 
         List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
                 Timestamp.valueOf(end_time + " 23:59:59"), status);
@@ -491,7 +491,7 @@ public class ZdhMonitorController extends BaseController {
     public String task_group_log_instance_list(String start_time, String end_time, String status, String job_id) {
 
         try{
-            System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
+            //System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
 
             List<TaskGroupLogInstance> list = tglim.selectByTaskLogs2(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
                     Timestamp.valueOf(end_time + " 23:59:59"), status, job_id);
@@ -550,7 +550,7 @@ public class ZdhMonitorController extends BaseController {
             if(status == null){
                 status="";
             }
-            System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status+",limit:"+limit+",offset:"+offset);
+            //System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status+",limit:"+limit+",offset:"+offset);
             List<TaskGroupLogInstance> list = tglim.selectByTaskLogs4(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
                     Timestamp.valueOf(end_time + " 23:59:59"), status, limit, offset);
             int total = tglim.selectCountByTaskLogs4(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
@@ -589,10 +589,10 @@ public class ZdhMonitorController extends BaseController {
      * @param level
      * @return
      */
-    @RequestMapping(value = "/zdh_logs", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/zdh_logs", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String zdh_logs(String job_id, String task_log_id, String start_time, String end_time, String del, String level) {
-        System.out.println("id:" + job_id + " ,task_log_id:" + task_log_id + " ,start_time:" + start_time + " ,end_time:" + end_time);
+        //System.out.println("id:" + job_id + " ,task_log_id:" + task_log_id + " ,start_time:" + start_time + " ,end_time:" + end_time);
 
 
         Timestamp ts_start = null;

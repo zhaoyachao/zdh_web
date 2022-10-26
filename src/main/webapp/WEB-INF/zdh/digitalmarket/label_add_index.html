@@ -170,7 +170,7 @@
 
 
     var template = '<div class="ibox-content"  id="template">\n' +
-        '<label class="col-sm-2 control-label">参数</label>\n' +
+        '<label class="col-sm-1 control-label">参数</label>\n' +
         '        <div class="col-sm-2" >\n' +
         '            <input name="param_code" type="text"\n' +
         '                   placeholder="参数code" class="form-control param_code" aria-required="true" value="zdh_param_code">\n' +
@@ -178,6 +178,16 @@
         '        <div class="col-sm-2">\n' +
         '            <input name="param_context" type="text"\n' +
         '                   placeholder="参数说明" class="form-control param_context" aria-required="true" value="zdh_param_context">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-2">\n' +
+        '            <select class="form-control m-b param_type" data-live-search="true" name="param_type" id="zdh_param_type">\n' +
+        '<option value="string">字符串</option>\n'+
+        '<option value="int">数值</option>\n'+
+        '<option value="boolean">布尔</option>\n'+
+        '<option value="date">日期</option>\n'+
+        '<option value="timestamp">日期timestamp</option>\n'+
+        '<option value="ts">日期时间戳</option>\n'+
+        '            </select>\n' +
         '        </div>\n' +
         '        <div class="col-sm-2">\n' +
         '            <select class="form-control m-b param_operate" data-live-search="true" name="param_operate" id="zdh_param_operate">\n' +
@@ -195,7 +205,7 @@
         '            <input name="param_value" type="text"\n' +
         '                   placeholder="参数值,多个分号分割" class="form-control param_value" aria-required="true" value="zdh_param_value">\n' +
         '        </div>\n' +
-        '        <div class="col-sm-2">\n' +
+        '        <div class="col-sm-1">\n' +
         '            <button id="delete" name="delete" class="btn btn-danger"\n' +
         '                    οnsubmit=\'return false\'\n' +
         '                    type="button">删除\n' +
@@ -229,6 +239,7 @@
                 var tmp = template;
                 tmp = tmp.replace("zdh_param_code", "");
                 tmp = tmp.replace("zdh_param_context", "");
+                tmp = tmp.replace("zdh_param_type", "");
                 tmp = tmp.replace("zdh_param_operate", "");
                 tmp = tmp.replace("zdh_param_value", "");
                 $('#label_div').append(tmp);
@@ -355,14 +366,16 @@
                 return num;
             }
 
-            function buildConfig(i,param_code, param_context, param_operate, param_value) {
+            function buildConfig(i,param_code, param_context,param_type, param_operate, param_value) {
                 var tmp=template;
                 tmp = tmp.replace("zdh_param_code", param_code);
                 tmp = tmp.replace("zdh_param_context", param_context);
                 tmp = tmp.replace("zdh_param_value", param_value);
                 tmp = tmp.replace("zdh_param_operate", "zdh_param_operate"+i);
+                tmp = tmp.replace("zdh_param_type", "zdh_param_type"+i);
                 $('#label_div').append(tmp);
                 $("#zdh_param_operate"+i).val(param_operate);
+                $("#zdh_param_type"+i).val(param_type);
                 $('#label_div #delete').click(function () {
                     $(this).parent().parent().remove();
                 });
@@ -411,7 +424,7 @@
                             //解析json
                             if(data.result.param_json_object.length>0){
                                 for(var i=0;i<data.result.param_json_object.length;i++){
-                                    buildConfig(i,data.result.param_json_object[i].param_code, data.result.param_json_object[i].param_context, data.result.param_json_object[i].param_operate, data.result.param_json_object[i].param_value);
+                                    buildConfig(i,data.result.param_json_object[i].param_code, data.result.param_json_object[i].param_context, data.result.param_json_object[i].param_type,data.result.param_json_object[i].param_operate, data.result.param_json_object[i].param_value);
                                 }
                             }
 

@@ -1,11 +1,9 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseZdhHaInfoMapper;
 import com.zyc.zdh.entity.ZdhHaInfo;
-import com.zyc.zdh.entity.ZdhLogs;
 import org.apache.ibatis.annotations.*;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -14,7 +12,7 @@ import java.util.List;
  * @date 2017年12月26日  
  * @Description: TODO  
  */
-public interface ZdhHaInfoMapper extends BaseMapper<ZdhHaInfo> {
+public interface ZdhHaInfoMapper extends BaseZdhHaInfoMapper<ZdhHaInfo> {
 
 
 

@@ -5,7 +5,7 @@
 
     <groupId>com.zyc</groupId>
     <artifactId>zdh</artifactId>
-    <version>5.1.0-RELEASE</version>
+    <version>5.1.1-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>zdh_web</name>
@@ -52,12 +52,12 @@
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <!-- 配置jsp 开始 内置的tomcat 只有添加tomcat-embed-jasper才能支持jsp -->
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
-            <!--idea 在运行时使用provided报错，只有先注释了打包时在打开-->
-           <!-- <scope>provided</scope>-->
-        </dependency>
+            &lt;!&ndash;idea 在运行时使用provided报错，只有先注释了打包时在打开&ndash;&gt;
+           &lt;!&ndash; <scope>provided</scope>&ndash;&gt;
+        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -587,7 +587,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${version}/libs</outputDirectory>
+                            <outputDirectory>${project.version}/libs</outputDirectory>
                             <excludeTransitive>false</excludeTransitive>
                             <stripVersion>false</stripVersion>
                             <includeScope>system</includeScope>
@@ -600,7 +600,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${version}/libs</outputDirectory>
+                            <outputDirectory>${project.version}/libs</outputDirectory>
                             <excludeTransitive>false</excludeTransitive>
                             <stripVersion>false</stripVersion>
                             <includeScope>runtime</includeScope>
@@ -629,7 +629,7 @@
                                     <targetPath>META-INF/resources</targetPath>
                                 </resource>
                             </resources>
-                            <outputDirectory>${version}/conf</outputDirectory>
+                            <outputDirectory>${project.version}/conf</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -645,7 +645,7 @@
                                     <directory>release/bin</directory>
                                 </resource>
                             </resources>
-                            <outputDirectory>${version}/bin</outputDirectory>
+                            <outputDirectory>${project.version}/bin</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -661,7 +661,7 @@
                                     <directory>release/db</directory>
                                 </resource>
                             </resources>
-                            <outputDirectory>${version}/db</outputDirectory>
+                            <outputDirectory>${project.version}/db</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -677,7 +677,7 @@
                                     <directory>doc</directory>
                                 </resource>
                             </resources>
-                            <outputDirectory>${version}/doc</outputDirectory>
+                            <outputDirectory>${project.version}/doc</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -693,7 +693,7 @@
                                     <directory>src/main/webapp/WEB-INF/zdh/smart_doc</directory>
                                 </resource>
                             </resources>
-                            <outputDirectory>${version}/smart_doc</outputDirectory>
+                            <outputDirectory>${project.version}/smart_doc</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -726,7 +726,7 @@
                     <!-- spring-boot:run 中文乱码解决 -->
                     <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
                     <mainClass>com.zyc.zdh.ZdhApplication</mainClass>
-                    <outputDirectory>${version}</outputDirectory>
+                    <outputDirectory>${project.version}</outputDirectory>
                     <includes>
                         <include>
                             <groupId>com.zyc</groupId>

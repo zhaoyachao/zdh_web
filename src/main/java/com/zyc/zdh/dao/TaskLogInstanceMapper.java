@@ -1,7 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
-import com.zyc.zdh.entity.EmailTaskLogs;
+import com.zyc.notscan.base.BaseTaskLogInstanceMapper;
 import com.zyc.zdh.entity.EtlEcharts;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.entity.task_num_info;
@@ -9,10 +8,9 @@ import org.apache.ibatis.annotations.*;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 
-public interface TaskLogInstanceMapper extends BaseMapper<TaskLogInstance> {
+public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLogInstance> {
 
 
     /**

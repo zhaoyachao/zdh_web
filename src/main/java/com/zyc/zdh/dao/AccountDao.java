@@ -1,9 +1,10 @@
 package com.zyc.zdh.dao;
 
-import java.util.List;
-
+import com.zyc.notscan.base.BaseAccountDao;
 import com.zyc.zdh.entity.User;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 
 /**
@@ -12,7 +13,7 @@ import org.apache.ibatis.annotations.*;
  * @date 2018年2月6日  
  * @Description: TODO  
  */
-public interface AccountDao {
+public interface AccountDao extends BaseAccountDao {
 
 	@Select(value="select * from account_info where user_name=#{userName} and user_password=#{password}")
 	@Results({@Result(column="id",property="id"),

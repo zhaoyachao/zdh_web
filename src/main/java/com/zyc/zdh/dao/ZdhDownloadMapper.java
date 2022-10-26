@@ -1,6 +1,6 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseZdhDownloadMapper;
 import com.zyc.zdh.entity.ZdhDownloadInfo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 
-public interface ZdhDownloadMapper extends BaseMapper<ZdhDownloadInfo> {
+public interface ZdhDownloadMapper extends BaseZdhDownloadMapper<ZdhDownloadInfo> {
 
     @Select({"<script>",
             "select * from zdh_download_info where owner=#{owner}",

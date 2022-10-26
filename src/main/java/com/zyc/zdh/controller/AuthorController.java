@@ -98,6 +98,7 @@ public class AuthorController extends BaseController{
             versions.add("5.0.0");
             versions.add("5.0.1");
             versions.add("5.1.0");
+            versions.add("5.1.1");
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", versions);
         }catch (Exception e){
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

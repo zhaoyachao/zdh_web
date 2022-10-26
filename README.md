@@ -602,7 +602,25 @@
   + v5.1.0 [zdh_web]修复aop记录返回类型
   
   
-  + v5.1.1 [zdh_web]增加wemock实现【开发中】
+  + v5.1.1 [zdh_web]增加wemock实现,单独新增zdh_mock模块(基于netty的实现的http服务)
+  + v5.1.1 [zdh_web]增加 资源信息根节点不可删除 校验
+  + v5.1.1 [zdh_web]优化pom文件,删除非必须jar配置
+  + v5.1.1 [zdh_web]优化日志查询开始时间
+  + v5.1.1 [zdh_web]优化登录获取系统名接口,新增系统背景图配置
+  + v5.1.1 [zdh_web]ak,sk增加时间校验
+  + v5.1.1 [zdh_web]调度检查类增加接口CheckDepJobInterface,自定义调度类必须实现此接口
+  + v5.1.1 [zdh_web]优化label项目
+  + v5.1.1 [zdh_web]修复智能营销客群执行接口异常
+  + v5.1.1 [zdh_web]智能营销增加推送类型,可选则数据库,消息队列2种交互方式
+  + v5.1.1 [zdh_web]智能营销-标签参数配置增加参数类型
+  + v5.1.1 [zdh_web]智能营销-策略增加是否base数据(做排除时必须指定一个base数据)
+  + v5.1.1 [zdh_web]智能营销模块-优化策略
+  + v5.1.1 [zdh_web]智能营销模块-新增过滤规则配置,优化策略组配置过滤规则反显
+  + v5.1.1 [zdh_web]jsplumb插件优化,修复部分反显问题(涉及调度可视化,策略组可视化)
+  + v5.1.1 [zdh_web]mybatis generator优化增加mapper继承(主要解决自定义sql覆盖问题,当前方案并非最优)
+  + v5.1.1 [zdh_web]策略组,策略新增字段,优化divId
+  
+  + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]历史遗留支持spark-greenplum 链接器【未完成】
@@ -1259,7 +1277,6 @@
     INSERT INTO zdh.resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
     VALUES(969710130591436800, '964797665709658112', '导出', '3', '1', 'fa fa-coffee', '', '8', '1', '2022-04-29 21:21:51', '2022-04-29 21:21:51', 'self_service_export', '5', '', '', 'zdh');
-
 # 5.0.0迁移5.1.0
 
 
@@ -1756,6 +1773,8 @@
 
 
      
+# 5.1.0迁移5.1.1
+    待补充
 
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

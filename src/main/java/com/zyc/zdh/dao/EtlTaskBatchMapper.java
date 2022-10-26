@@ -1,13 +1,13 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseEtlTaskBatchMapper;
 import com.zyc.zdh.entity.EtlTaskBatchInfo;
-import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.sql.Timestamp;
 
-public interface EtlTaskBatchMapper extends BaseMapper<EtlTaskBatchInfo> {
+public interface EtlTaskBatchMapper extends BaseEtlTaskBatchMapper<EtlTaskBatchInfo> {
     @Update(
             {
                     "<script>",

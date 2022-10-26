@@ -29,6 +29,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -73,12 +76,26 @@ public class SystemController extends BaseController{
     @RequestMapping(value = "/get_platform_name", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public ReturnInfo<String> get_platform_name() {
-        Object o = redisUtil.get(Const.ZDH_PLATFORM_NAME);
-        if(o==null){
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", "ZDH数据平台");
+    public ReturnInfo<LoginBaseInfo> get_platform_name() {
+        LoginBaseInfo loginBaseInfo=new LoginBaseInfo();
+        loginBaseInfo.setPlatform_name("ZDH数据平台");
+        loginBaseInfo.setBackground_image("img/b7.jpeg");
+        try{
+            Object o = redisUtil.get(Const.ZDH_PLATFORM_NAME);
+            if(o!=null){
+                loginBaseInfo.setPlatform_name(o.toString());
+            }
+            Object o1 = redisUtil.get(Const.ZDH_BACKGROUND_IMAGE);
+            if(o1!=null){
+                loginBaseInfo.setBackground_image(o1.toString());
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", loginBaseInfo);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "异常,返回默认配置", loginBaseInfo);
         }
-        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", o.toString());
+
     }
 
 

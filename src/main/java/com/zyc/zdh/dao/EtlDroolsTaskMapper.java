@@ -1,8 +1,7 @@
 package com.zyc.zdh.dao;
 
-import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.base.BaseEtlDroolsTaskMapper;
 import com.zyc.zdh.entity.EtlDroolsTaskInfo;
-import com.zyc.zdh.entity.EtlMoreTaskInfo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -15,7 +14,7 @@ import java.util.List;
  * @date 2017年12月26日  
  * @Description: TODO  
  */
-public interface EtlDroolsTaskMapper extends BaseMapper<EtlDroolsTaskInfo> {
+public interface EtlDroolsTaskMapper extends BaseEtlDroolsTaskMapper<EtlDroolsTaskInfo> {
 
     @Delete("delete from etl_drools_task_info where id = #{ids_str}")
     public int deleteBatchById(@Param("ids_str") String ids_str);

@@ -697,6 +697,7 @@ public class JobDigitalMarket {
                 String is_disenable = ((JSONObject) job).getString("is_disenable");
                 String depend_level = ((JSONObject) job).getString("depend_level");
                 String time_out = ((JSONObject) job).getString("time_out");
+                String touch_type = ((JSONObject) job).getString("touch_type");
                 if (!StringUtils.isEmpty(time_out)) {
                     //si.setTime_out(time_out);
                 }
@@ -722,7 +723,7 @@ public class JobDigitalMarket {
                 si.setId(t_id);//具体执行策略实例id,每次执行都会重新生成
                 si.setInstance_type(more_task);
                 si.setGroup_instance_id(sgi.getId());//策略组实例id
-                si.setGroup_id(sgi.getGroup_context());//策略组id
+                si.setGroup_id(sgi.getStrategy_group_id());//策略组id
                 si.setGroup_context(sgi.getGroup_context());//策略组任务说明
 
                 si.setStatus(JobStatus.NON.getValue());
@@ -730,10 +731,11 @@ public class JobDigitalMarket {
                 si.setOwner(sgi.getOwner());
                 si.setIs_disenable(is_disenable);
                 si.setDepend_level(depend_level);
+                si.setTouch_type(touch_type);
 
                 String name = ((JSONObject) job).getString("name");
                 si.setStrategy_context(name);
-
+                si.setStrategy_id(pageSourceId);
                 siList.add(si);
             }
 

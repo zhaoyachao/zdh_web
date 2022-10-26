@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH wemock数据首页</title>
+    <meta name="keywords" content="ZDH wemock数据首页">
+    <meta name="description" content="ZDH wemock数据首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>WEMOCK配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="wemock_add_form" name="wemock_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">WEMOCK说明</label>
+                            <div class="col-sm-10">
+                                <input id="wemock_context" name="wemock_context" type="text"
+                                       placeholder="WEMOCK说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">请求类型</label>
+                            <div class="col-sm-10">
+                                <select id="req_type" name="req_type" data-placeholder="请求类型"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="post" mytype="" selected="selected">POST</option>
+                                    <option value="get" mytype="">GET</option>
+                                    <option value="put" mytype="">PUT</option>
+                                    <option value="delete" mytype="">DELEE</option>
+                                    <option value="patch" mytype="">PATCH</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">请求地址</label>
+                            <div class="col-sm-10">
+                                <input id="url" name="url" type="text" class="form-control" placeholder="/api/v1/xx/xxx">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">响应Header</label>
+                            <div class="col-sm-10">
+                                <div id="header" name="header"
+                                     class="monaco_div_100"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">解析类型</label>
+                            <div class="col-sm-10">
+                                <select id="resolve_type" name="resolve_type" data-placeholder="解析类型"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="static" mytype="" selected="selected">静态解析</option>
+                                    <option value="dynamics" mytype="">动态解析</option>
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">返回结果</label>
+                            <div class="col-sm-10">
+                                <div id="resp_context" name="resp_context"
+                                     class="monaco_div_100"></div>
+                            </div>
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+
+<!--                        <div class="form-group">-->
+<!--                            <label class="col-sm-2 control-label">超时时间</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <input id="time_out" name="time_out" type="text" value="86400"-->
+<!--                                       placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否禁用</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="is_disenable" name='is_disenable'  type="checkbox"><i></i> 禁用</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_info" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            window.editor_header = monaco.editor.create(document.getElementById('header'), {
+                value: 'Content-Type: application/json;charset=utf-8',
+                language: 'shell',
+                theme:'vs-dark'
+            });
+
+            window.editor_resp_context = monaco.editor.create(document.getElementById('resp_context'), {
+                value: 'json格式',
+                language: 'json',
+                theme:'vs-dark'
+            });
+
+            var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+            $('#url_type').chosen();
+            $('#depend_level').chosen();
+            if(s["id"] != '-1'){
+
+                $.ajax({
+                    url: server_context+"/wemock_data_detail",
+                    data: "id=" + s.id,
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        console.info("success");
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        $('#wemock_context').val(data.result.wemock_context);
+                        $("#req_type").val(data.result.req_type);
+                        $("#req_type").trigger("chosen:updated");
+                        $('#url').val(data.result.url);
+                        window.editor_header.setValue(data.result.header);
+                        window.editor_resp_context.setValue(data.result.resp_context);
+                        $("#resolve_type").val(data.result.resolve_type);
+                        $("#resolve_type").trigger("chosen:updated");
+
+                        layer.msg("查询完成");
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+
+
+                // if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
+                //     $("#time_out").val(s["time_out"]);
+                // }
+                // var is_disenable=s['is_disenable'];
+                // if(is_disenable=="true"){
+                //     $('#is_disenable').iCheck('check');
+                // }
+            }
+        })();
+
+
+    })(document, window, jQuery);
+
+    $('#save_info').click(function () {
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var product_code=s.product_code;
+        var mock_tree_id=s.mock_tree_id;
+
+        var header = window.editor_header.getValue();
+        var resp_context = window.editor_resp_context.getValue();
+        var formData = new FormData($("#wemock_add_form")[0]);
+
+        formData.append("header",header);
+        formData.append("resp_context",resp_context);
+        formData.append("id",s.id);
+        formData.append("product_code",product_code);
+        formData.append("mock_tree_id",s.mock_tree_id);
+
+        if(s['id'] != "-1" && s['is_copy'] != "true"){
+            $.ajax({
+                url: server_context+"/wemock_data_update",
+                data: formData,
+                type: "post",
+                async: false,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.info("success");
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index); //再执行关闭
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }else{
+            $.ajax({
+                url: server_context+"/wemock_data_add",
+                data: formData,
+                type: "post",
+                async: false,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.info("success");
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index); //再执行关闭
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+        //自定义实现
+
+
+    })
+</script>
+
+
+</body>
+
+</html>

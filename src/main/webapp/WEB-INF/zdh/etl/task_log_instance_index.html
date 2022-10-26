@@ -270,6 +270,7 @@
         var map = new Map();
         var map2 = new Map();
         var map3 = new Map();
+        var map4 = new Map();
         //获取任务运行状态
         var run_data=jsplumb_json.run_data;
         if (run_data.length >= 1 ){
@@ -292,7 +293,8 @@
                     for(var j=0;j<data.length;j++){
                         //divId->status
                         console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id));
-                        map3.set(map2.get(data[j].id),data[j].status)
+                        map3.set(map2.get(data[j].id),data[j].status);
+                        map4.set(data[j].id, data[j].run_time);
                     }
                 },
                 error: function (data) {
@@ -313,6 +315,7 @@
             var positionY=rs.positionY;
             var tp=rs.type;
             var task_log_instance_id=map.get(divId);
+            var run_time = map4.get(task_log_instance_id);
             cls_str="node node"+tp+"css tasks";
             var color=get_color_by_status(map3.get(divId));
             console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color);
@@ -349,7 +352,7 @@
                 anchor: "Continuous"
             });
             $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
-            doubleclick("#" + divId,task_log_instance_id,etl_context);
+            doubleclick("#" + divId,task_log_instance_id,run_time);
         }
 
         for(var i=0;i< jsplumb_json.line.length;i++){
@@ -408,13 +411,13 @@
     }
 
     //双击节点内容区域时的事件
-    function doubleclick(divId,task_log_instance_id,etl_context) {
+    function doubleclick(divId,task_log_instance_id,run_time) {
         $(divId).dblclick(function () {
             var text = $(this).text();
             var div = $(this);
             var etl_task_id=div.attr("etl_task_id");
 
-            window.open(server_context+"/log_txt.html?task_log_id="+task_log_instance_id)
+            window.open(server_context+"/log_txt.html?task_log_id="+task_log_instance_id+"&start_time="+run_time)
             //openTabPage("log_txt.html?task_log_id="+task_log_instance_id, etl_context + "日志")
         });
     }

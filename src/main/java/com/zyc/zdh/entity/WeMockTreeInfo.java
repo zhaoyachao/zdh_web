@@ -33,9 +33,9 @@ public class WeMockTreeInfo {
     private String order;
 
     /**
-     * 是否启用
+     * 是否删除,0:未删除,1:删除
      */
-    private String is_enable;
+    private String is_delete;
 
     /**
      * 创建时间
@@ -204,21 +204,21 @@ public class WeMockTreeInfo {
     }
 
     /**
-     * 获取是否启用
+     * 获取是否删除,0:未删除,1:删除
      *
-     * @return is_enable - 是否启用
+     * @return is_delete - 是否删除,0:未删除,1:删除
      */
-    public String getIs_enable() {
-        return is_enable;
+    public String getIs_delete() {
+        return is_delete;
     }
 
     /**
-     * 设置是否启用
+     * 设置是否删除,0:未删除,1:删除
      *
-     * @param is_enable 是否启用
+     * @param is_delete 是否删除,0:未删除,1:删除
      */
-    public void setIs_enable(String is_enable) {
-        this.is_enable = is_enable;
+    public void setIs_delete(String is_delete) {
+        this.is_delete = is_delete;
     }
 
     /**
