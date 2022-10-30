@@ -3,7 +3,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <pattern>[LOGID:%X{logId}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -19,7 +19,7 @@
             <maxFileSize>1024MB</maxFileSize>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <pattern>[LOGID:%X{logId}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -35,7 +35,7 @@
             <maxFileSize>1024MB</maxFileSize>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <pattern>[LOGID:%X{logId}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -54,7 +54,7 @@
             <maxFileSize>1024MB</maxFileSize>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <pattern>[LOGID:%X{logId}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -72,7 +72,7 @@
             <maxFileSize>1024MB</maxFileSize>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <pattern>[LOGID:%X{logId}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -99,6 +99,7 @@
     <logger name="com.zyc.zdh.dao.QuartzJobMapper" level="debug"></logger>
     <logger name="com.zyc.zdh.dao.ServerTaskMapper" level="debug"></logger>
     <logger name="com.zyc.zdh.dao.ApplyMapper" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao.StrategyGroupInstanceMapper" level="debug"></logger>
     <logger name="com.zyc.zdh.netty" level="info"></logger>
     <logger name="com.zyc.zdh.aop" level="debug"></logger>
 

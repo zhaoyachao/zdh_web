@@ -74,6 +74,63 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">请求编码</label>
+                            <div class="col-sm-10">
+                                <select id="req_encode" name="req_encode" data-placeholder="请求编码"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="utf-8" mytype="" selected="selected">UTF-8</option>
+                                    <option value="gbk" mytype="">GBK</option>
+                                    <option value="gb2312" mytype="">GB2312</option>
+                                    <option value="gb18030" mytype="">GB18030</option>
+                                    <option value="unicode" mytype="">UNICODE</option>
+                                    <option value="ascii" mytype="">ASCII</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">超时时间</label>
+                            <div class="col-sm-10">
+                                <select id="req_timeout" name="req_timeout" data-placeholder="超时时间"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="10" mytype="" selected="selected">10秒</option>
+                                    <option value="30" mytype="">30秒</option>
+                                    <option value="60" mytype="">60秒</option>
+                                    <option value="100" mytype="">100秒</option>
+                                    <option value="300" mytype="">300秒</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">ContentType</label>
+                            <div class="col-sm-10">
+                                <select id="resp_content_type" name="resp_content_type" data-placeholder="ContentType"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="text/html" mytype="">text/html</option>
+                                    <option value="application/json" mytype="" selected="selected">application/json</option>
+                                    <option value="text/json" mytype="">text/json</option>
+                                    <option value="application/x-www-form-urlencoded" mytype="">application/x-www-form-urlencoded</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">响应编码</label>
+                            <div class="col-sm-10">
+                                <select id="resp_encode" name="resp_encode" data-placeholder="响应编码"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="utf-8" mytype="" selected="selected">UTF-8</option>
+                                    <option value="gbk" mytype="">GBK</option>
+                                    <option value="gb2312" mytype="">GB2312</option>
+                                    <option value="gb18030" mytype="">GB18030</option>
+                                    <option value="unicode" mytype="">UNICODE</option>
+                                    <option value="ascii" mytype="">ASCII</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">响应Header</label>
                             <div class="col-sm-10">
                                 <div id="header" name="header"
@@ -221,6 +278,12 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
             $('#url_type').chosen();
+            $('#req_encode').chosen();
+            $('#req_timeout').chosen();
+            $('#req_type').chosen();
+            $('#resp_content_type').chosen();
+            $('#resp_encode').chosen();
+
             $('#depend_level').chosen();
             if(s["id"] != '-1'){
 

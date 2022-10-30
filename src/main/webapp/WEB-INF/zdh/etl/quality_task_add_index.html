@@ -566,16 +566,24 @@
                     data: postData,
                     //成功返回
                     success: function (data) {
-                        $('#row_num').val('');
-                        var str = '';
-                        for (var i = 0; i < data.length; i++) {
-                            if (str == '')
-                                str = data[i];
-                            else
-                                str += "," + data[i];
+                        if(data.code == "200"){
+                            $('#row_num').val('');
+                            var str = '';
+                            for (var i = 0; i < data.length; i++) {
+                                if (str == '')
+                                    str = data[i];
+                                else
+                                    str += "," + data[i];
+                            }
+                            $("#data_sources_table_columns").val(str)
+                        }else{
+                            layer.msg(data.msg);
+                            var columns = $("#data_sources_table_columns").val().split(",");
+                            for (var i = 0; i < columns.length; i++) {
+                                if(!is_empty(columns[i])){
+                                }
+                            }
                         }
-
-                        $("#data_sources_table_columns").val(str);
 
                     },
                     //处理完成

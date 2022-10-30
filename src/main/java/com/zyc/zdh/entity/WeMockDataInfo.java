@@ -16,6 +16,26 @@ public class WeMockDataInfo {
     private String req_type;
 
     /**
+     * 请求编码
+     */
+    private String req_encode;
+
+    /**
+     * 超时时间
+     */
+    private String req_timeout;
+
+    /**
+     * 响应content_type
+     */
+    private String resp_content_type;
+
+    /**
+     * 响应编码
+     */
+    private String resp_encode;
+
+    /**
      * url
      */
     private String url;
@@ -109,6 +129,78 @@ public class WeMockDataInfo {
      */
     public void setReq_type(String req_type) {
         this.req_type = req_type;
+    }
+
+    /**
+     * 获取请求编码
+     *
+     * @return req_encode - 请求编码
+     */
+    public String getReq_encode() {
+        return req_encode;
+    }
+
+    /**
+     * 设置请求编码
+     *
+     * @param req_encode 请求编码
+     */
+    public void setReq_encode(String req_encode) {
+        this.req_encode = req_encode;
+    }
+
+    /**
+     * 获取超时时间
+     *
+     * @return req_timeout - 超时时间
+     */
+    public String getReq_timeout() {
+        return req_timeout;
+    }
+
+    /**
+     * 设置超时时间
+     *
+     * @param req_timeout 超时时间
+     */
+    public void setReq_timeout(String req_timeout) {
+        this.req_timeout = req_timeout;
+    }
+
+    /**
+     * 获取响应content_type
+     *
+     * @return resp_content_type - 响应content_type
+     */
+    public String getResp_content_type() {
+        return resp_content_type;
+    }
+
+    /**
+     * 设置响应content_type
+     *
+     * @param resp_content_type 响应content_type
+     */
+    public void setResp_content_type(String resp_content_type) {
+        this.resp_content_type = resp_content_type;
+    }
+
+    /**
+     * 获取响应编码
+     *
+     * @return resp_encode - 响应编码
+     */
+    public String getResp_encode() {
+        return resp_encode;
+    }
+
+    /**
+     * 设置响应编码
+     *
+     * @param resp_encode 响应编码
+     */
+    public void setResp_encode(String resp_encode) {
+        this.resp_encode = resp_encode;
     }
 
     /**

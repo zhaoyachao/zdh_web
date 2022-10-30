@@ -339,14 +339,14 @@ public class ZdhEtlController extends BaseController{
      */
     @RequestMapping(value="/etl_task_schema", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_schema(String id, String table_name) {
+    public ReturnInfo<String> etl_task_schema(String id, String table_name) {
 
         DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
-
         String jsonArrayStr = schema(dataSourcesInfo, table_name);
-
-        System.out.println(jsonArrayStr);
-        return jsonArrayStr;
+        if(StringUtils.isEmpty(jsonArrayStr)){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询结果为空", jsonArrayStr);
+        }
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonArrayStr);
     }
 
 

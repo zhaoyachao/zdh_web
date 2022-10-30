@@ -31,7 +31,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>wemock配置</h5>
+                    <h5 id="node_text"></h5><h5>wemock配置</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -433,6 +433,8 @@
             var node_text=s.text;
             var product_code=s.product_code;
             var tree_id=s.id;
+            $('#node_text').html("【"+node_text+"】");
+            $('#node_text').css("color","red");
             $('#parent_text').attr('node_id',s.id);
             $('#parent_text').val(node_text);
             $('#product_code').val(product_code);

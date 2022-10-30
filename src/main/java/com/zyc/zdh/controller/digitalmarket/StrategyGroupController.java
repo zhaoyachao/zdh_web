@@ -14,6 +14,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.RowBounds;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -246,6 +248,104 @@ public class StrategyGroupController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
+
+
+    /**
+     * 策略组手动执行页面
+     * @return
+     */
+    @White
+    @RequestMapping(value = "/strategy_group_instance_index", method = RequestMethod.GET)
+    public String strategy_group_instance_index() {
+
+        return "digitalmarket/strategy_group_instance_index";
+    }
+
+    /**
+     * 策略组执行列表
+     * @param group_id 关键字
+     * @return
+     */
+    @White
+    @RequestMapping(value = "/strategy_group_instance_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<PageResult<List<StrategyGroupInstance>>> strategy_group_instance_list(String id, String group_id,String group_context, int limit, int offset) {
+        try{
+            StrategyGroupInstance strategyGroupInstance = new StrategyGroupInstance();
+            Example example = new Example(strategyGroupInstance.getClass());
+            List<StrategyGroupInstance> strategyGroupInstances = new ArrayList<>();
+            Example.Criteria cri = example.createCriteria();
+            cri.andEqualTo("strategy_group_id", group_id);
+            if (!StringUtils.isEmpty(group_context)) {
+                Example.Criteria cri2 = example.and();
+                cri2.andLike("group_context", getLikeCondition(group_context));
+                cri2.orLike("jsmind_data", getLikeCondition(group_context));
+                cri2.orLike("run_jsmind_data", getLikeCondition(group_context));
+                cri2.orLike("owner", getLikeCondition(group_context));
+            }
+
+
+            example.setOrderByClause("create_time desc");
+            RowBounds rowBounds=new RowBounds(offset,limit);
+            int total = strategyGroupInstanceMapper.selectCountByExample(example);
+
+            strategyGroupInstances = strategyGroupInstanceMapper.selectByExampleAndRowBounds(example, rowBounds);
+
+            PageResult<List<StrategyGroupInstance>> pageResult=new PageResult<>();
+            pageResult.setTotal(total);
+            pageResult.setRows(strategyGroupInstances);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+
+    @White
+    @RequestMapping(value = "/strategy_group_instance_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<StrategyGroupInstance> strategy_group_instance_list2(String id) {
+        try{
+
+            StrategyGroupInstance strategyGroupInstance = strategyGroupInstanceMapper.selectByPrimaryKey(id);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", strategyGroupInstance);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+
+    /**
+     * 策略实例执行日志首页
+     * @return
+     */
+    @White
+    @RequestMapping(value = "/strategy_instance_index", method = RequestMethod.GET)
+    public String strategy_instance_index() {
+
+        return "digitalmarket/strategy_instance_index";
+    }
+
+    @White
+    @RequestMapping(value = "/strategy_instance_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<StrategyInstance>> strategy_instance_list(String strategy_group_instance_id) {
+        try{
+            List<StrategyInstance> strategyGroupInstances = strategyInstanceMapper.selectByGroupId(strategy_group_instance_id);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", strategyGroupInstances);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

@@ -73,7 +73,7 @@ public class AspectConfig implements Ordered{
 	
 	@Around(value = "pointcutMethod3()")
 	public Object aroundLog(ProceedingJoinPoint pjp) throws Exception {
-
+		MDC.put("logId", UUID.randomUUID().toString());
 		//获取返回类型
 		Signature signature = pjp.getSignature();
 		String returnName = "";

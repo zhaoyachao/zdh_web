@@ -159,6 +159,12 @@
           }
       };
 
+      window.operateEvents3 = {
+          'click #strategy_group_instance': function (e, value, row, index) {
+              window.open(server_context+"/strategy_group_instance_index.html?id=" + row.id);
+          }
+      };
+
       function operateFormatter(value, row, index) {
           return [
               ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
@@ -261,6 +267,46 @@
             formatter: function (value, row, index) {
                 return getMyDate(value);
             }
+        }, {
+            field: 'status',
+            title: '状态及执行记录',
+            sortable: true,
+            width:150,
+            events: operateEvents3,//给按钮注册事件
+            formatter: function (value, row, index) {
+                var context = "未启用";
+                var class_str = "btn-danger btn-xs";
+                if (value == "create") {
+                    context = "未启用";
+                    class_str = "btn-danger  btn-xs"
+                }
+                if (value == "finish") {
+                    context = "已完成";
+                    class_str = "btn-primary  btn-xs"
+                }
+                if (value == "running") {
+                    context = "运行中";
+                    class_str = "btn-primary  btn-xs"
+                }
+                if (value == "remove") {
+                    context = "未启用";
+                    class_str = "btn-danger  btn-xs"
+                }
+                if (value == "pause") {
+                    context = "暂停中";
+                    class_str = "btn-warning btn-xs"
+
+                }
+                return [
+                    '<div style="text-align:center" >'+
+                    '<div class="btn-group">'+
+                    '<button type="button" class="btn '+class_str+'">'+context+'</button>'+
+                    '<button type="button" id="strategy_group_instance" class="btn btn-warning btn-xs">执行记录</button>'+
+                    '</div>'+
+                    '</div>'
+                ].join('');
+            }
+
         },{
             field: 'operate',
             title: '常用操作按钮事件',

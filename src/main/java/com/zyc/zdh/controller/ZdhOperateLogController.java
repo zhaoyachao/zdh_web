@@ -86,11 +86,12 @@ public class ZdhOperateLogController extends BaseController {
             Example.Criteria cri = example.createCriteria();
             cri.andBetween("create_time", start_time, end_time);
             if (!StringUtils.isEmpty(log_context)) {
-                cri.andLike("user_name", getLikeCondition(log_context));
-                cri.orLike("operate_input", getLikeCondition(log_context));
-                cri.orLike("operate_output", getLikeCondition(log_context));
-                cri.orLike("operate_context", getLikeCondition(log_context));
-                cri.orLike("operate_url", getLikeCondition(log_context));
+                Example.Criteria cri2 = example.and();
+                cri2.andLike("user_name", getLikeCondition(log_context));
+                cri2.orLike("operate_input", getLikeCondition(log_context));
+                cri2.orLike("operate_output", getLikeCondition(log_context));
+                cri2.orLike("operate_context", getLikeCondition(log_context));
+                cri2.orLike("operate_url", getLikeCondition(log_context));
             }
             example.setOrderByClause("update_time desc");
             RowBounds rowBounds=new RowBounds(offset,limit);
