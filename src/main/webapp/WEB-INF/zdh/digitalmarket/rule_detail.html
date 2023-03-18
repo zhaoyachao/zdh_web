@@ -48,6 +48,7 @@
                                     <option value="and" mytype="">AND</option>
                                     <option value="or" mytype="">OR</option>
                                     <option value="not" mytype="">NOT</option>
+                                    <option value="not_use" mytype="">NOT_USE</option>
                                 </select>
                             </div>
                         </div>
@@ -206,6 +207,7 @@
                 '<option value="<=">小于等于</option>\n'+
                 '<option value="<">小于</option>\n'+
                 '<option value="between">区间(左闭右开)</option>\n'+
+                '<option value="relative_time">相对时间</option>\n'+
                 '            </select>\n' +
                 '        </div>\n' +
                 '        <div class="col-sm-2">\n' +
@@ -396,8 +398,8 @@
                 if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
                     $("#time_out").val(s["time_out"]);
                 }
-                var is_disenable=s['is_disenable'];
-                if(is_disenable=="true"){
+                var is_disenable=s.is_disenable;
+                if(is_disenable == "true"){
                     $('#is_disenable').iCheck('check');
                 }
 

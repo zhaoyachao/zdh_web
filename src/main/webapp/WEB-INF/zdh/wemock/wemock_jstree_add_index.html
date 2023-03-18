@@ -565,7 +565,10 @@
                     }, function(){
 
                     });
-                }
+                },
+                'click #log_txt': function (e, value, row, index) {
+                    window.open(server_context+"/log_txt.html?job_id=" + row.id+"&task_log_id="+row.id + "&log_type=mock");
+                },
             };
 
             function deleteMs(ids,row) {
@@ -606,6 +609,9 @@
                     '                                    </button>',
                     ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
                     '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+                    '                                    </button>',
+                    ' <button id="log_txt" name="log_txt" type="button" class="btn btn-outline btn-sm" title="日志">\n' +
+                    '                                        <i class="glyphicon glyphicon-file" aria-hidden="true"></i>\n' +
                     '                                    </button>'
                     +
                     '</div>'

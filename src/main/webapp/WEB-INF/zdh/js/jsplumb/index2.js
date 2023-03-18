@@ -179,7 +179,7 @@ $(document).ready(function(){
                         return ;
                     }
 
-                    var etl_task_info=JSON.parse($("#etl_task_text").val())
+                    var etl_task_info=JSON.parse($("#etl_task_text").val());
                     div.attr("etl_task_id",etl_task_info.etl_task_id);
                     div.attr("etl_context",etl_task_info.etl_context);
                     div.attr("more_task",etl_task_info.more_task);
@@ -197,7 +197,7 @@ $(document).ready(function(){
     function doubleclick_shell(id) {
         $(id).dblclick(function () {
             var etl_context = $(this).text();
-            var div = $(this)
+            var div = $(this);
             var command=div.attr("command");
             var url=server_context+'/shell_detail.html';
             if( command == "" || command == undefined ){
@@ -237,8 +237,8 @@ $(document).ready(function(){
         $(id).dblclick(function () {
             var text = $(this).text();
             var div = $(this);
-            var etl_task_id=div.attr("etl_task_id")
-            var url=server_context+'/group_detail.html'
+            var etl_task_id=div.attr("etl_task_id");
+            var url=server_context+'/group_detail.html';
             if( div.attr("etl_task_id") == "" || div.attr("etl_task_id") == undefined ){
                 url=url+"?etl_task_id=-1"
             }else{
@@ -279,7 +279,7 @@ $(document).ready(function(){
         if(info.sourceId==info.targetId){//判断当开始和终点为一个节点时，不连线。
             return false
         }
-        console.info("链接自动建立")
+        console.info("链接自动建立");
         return true // 链接会自动建立
     });
 

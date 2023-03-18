@@ -26,6 +26,11 @@ public class RoleResourceInfo {
  	*/
    	private String resource_id;
 
+	/**
+	 * 角色code
+	 */
+	private String role_code;
+
  	/**
  	* 创建时间
  	*/
@@ -61,6 +66,14 @@ public class RoleResourceInfo {
 
 	public void setResource_id(String resource_id) {
 		this.resource_id = resource_id;
+	}
+
+	public String getRole_code() {
+		return role_code;
+	}
+
+	public void setRole_code(String role_code) {
+		this.role_code = role_code;
 	}
 
 	public Timestamp getCreate_time() {

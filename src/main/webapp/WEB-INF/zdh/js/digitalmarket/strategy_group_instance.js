@@ -47,7 +47,7 @@
                   shade: 0.1,
                   area : ['60%', '80%'],
                   //area: ['450px', '500px'],
-                  content: server_context+"/task_group_retry_detail_index?id="+row.id+"&job_id="+row.job_id, //iframe的url
+                  content: server_context+"/strategy_group_retry_detail_index?id="+row.id, //iframe的url
                   end : function () {
                       console.info("弹框结束")
                   }
@@ -69,9 +69,9 @@
                       type: "post",
                       dataType: "json",
                       success: function (data) {
-                          console.info("success")
+                          console.info("success");
                           if(data.code != "200"){
-                              layer.msg(data.msg)
+                              layer.msg(data.msg);
                               return
                           }
                           layer.close(index)

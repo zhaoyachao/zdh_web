@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class ZdhInstanceIdGenerator implements InstanceIdGenerator {
     @Override
@@ -34,9 +33,9 @@ public class ZdhInstanceIdGenerator implements InstanceIdGenerator {
                    String data2 = null;
                    while((data2 = br2.readLine()) != null) {
                        if(data2.startsWith("myid")){
-                           myid= InetAddress.getLocalHost().getHostName()+"_"+data2.split("=")[1].trim();
+                           myid= data2.split("=")[1].trim();
                        }
-                       if(data2.startsWith("quartz.instancename")){
+                       if(data2.startsWith("zdh.schedule.quartz.scheduler.instanceName")){
                            instancename= data2.split("=")[1].trim();
                        }
                    }

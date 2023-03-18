@@ -72,7 +72,7 @@
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
-              openTabPage(server_context+"/role_add_index.html?id="+row.id, "角色配置");
+              openTabPage(server_context+"/role_add_index.html?id="+row.id+"&code="+row.code, "角色配置");
           }
       };
 

@@ -43,6 +43,20 @@ public class ZdhRedisApiController extends BaseController {
     }
 
     /**
+     * 获取参数
+     * @param key
+     * @return
+     */
+    @RequestMapping(value = "/redis/get2/{key}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<String> get_bound_value(@PathVariable("key") String key) {
+        if (redisUtil.exists(key)) {
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", redisUtil.getBoundValueOps(key).toString());
+        }
+        return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", "没有找到key: " + key);
+    }
+
+    /**
      * 删除参数
      * @param key
      * @return

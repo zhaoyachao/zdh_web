@@ -1,5 +1,8 @@
 package com.zyc.zdh.api;
 
+import cn.hutool.crypto.Mode;
+import cn.hutool.crypto.Padding;
+import cn.hutool.crypto.symmetric.AES;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.SessionDao;
@@ -10,6 +13,7 @@ import org.apache.shiro.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +57,9 @@ public class PermissionApi {
     DataTagMapper dataTagMapper;
     @Autowired
     DataTagGroupMapper dataTagGroupMapper;
+    @Autowired
+    Environment ev;
+
 
 
     /**
@@ -216,6 +223,108 @@ public class PermissionApi {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
         }
     }
+
+
+    /**
+     * 根据用户名密码获取用户信息
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @param user_account 用户账号
+     * @return
+     */
+    @RequestMapping(value = "auth", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo auth(String product_code,String ak, String sk, String user_account,String password, String auth_type,
+                           Map<String,List<String>> in_auths, Map<String,List<String>> out_auths) {
+
+        try{
+            //检查ak,sk
+            check_aksk(product_code, ak, sk);
+
+            //获取产品类型
+            //检查auth_type,密码校验还是权限认证
+            if(auth_type.equalsIgnoreCase("Authen")){
+                //密码验证
+                return password(product_code, ak, sk, user_account, password);
+            }else if(auth_type.equalsIgnoreCase("Author")){
+                return auth_hive(product_code, ak, sk, user_account,in_auths,out_auths);
+            }
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", "不支持的权限校验");
+        }catch (Exception e){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+        }
+    }
+
+    private ReturnInfo password(String product_code,String ak, String sk, String user_account,String password){
+        //password解密
+        String user_password = aes(password, ev.getProperty("zdh.auth.password.key").toString(), ev.getProperty("zdh.auth.password.iv").toString());
+
+        //更新用户
+        Example example=new Example(PermissionUserInfo.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("user_account", user_account);
+        criteria.andEqualTo("user_password", user_password);
+        criteria.andEqualTo("product_code", product_code);
+        criteria.andEqualTo("enable", Const.TRUR);
+
+        List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
+
+        if(permissionUserInfos!=null && permissionUserInfos.size()==1){
+            permissionUserInfos.get(0).setUser_password("");
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos.get(0));
+        }
+        return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", "未找到用户信息");
+    }
+
+    private ReturnInfo auth_hive(String product_code,String ak, String sk, String user_account,
+                                 Map<String,List<String>> in_auths, Map<String,List<String>> out_auths){
+        //验证权限
+
+        //此处待实现
+
+        return null;
+    }
+
+    /**
+     * 根据用户名密码获取用户信息
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @param user_account 用户账号
+     * @return
+     */
+    @RequestMapping(value = "get_user_by_product_password", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo get_user_by_product_password(String product_code,String ak, String sk, String user_account,String password) {
+
+        try{
+            //检查ak,sk
+            check_aksk(product_code, ak, sk);
+
+            //password解密
+            String user_password = aes(password, ev.getProperty("zdh.auth.password.key").toString(), ev.getProperty("zdh.auth.password.iv").toString());
+
+            //更新用户
+            Example example=new Example(PermissionUserInfo.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("user_account", user_account);
+            criteria.andEqualTo("user_password", user_password);
+            criteria.andEqualTo("product_code", product_code);
+            criteria.andEqualTo("enable", Const.TRUR);
+
+            List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
+
+            if(permissionUserInfos!=null && permissionUserInfos.size()==1){
+                permissionUserInfos.get(0).setUser_password("");
+                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos.get(0));
+            }
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", "未找到用户信息");
+        }catch (Exception e){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+        }
+    }
+
 
     /**
      * 获取用户信息
@@ -903,6 +1012,14 @@ public class PermissionApi {
         }
     }
 
+
+    private String aes(String password,String password_key,String iv){
+        AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, password_key.getBytes(), iv.getBytes());
+
+        // 加密并进行Base转码
+        String encrypt = aes.decryptStr(password);
+        return encrypt;
+    }
     /**
      * 验证token 是否有效
      * @param token

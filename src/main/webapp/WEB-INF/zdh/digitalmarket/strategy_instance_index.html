@@ -240,7 +240,7 @@
             return "#C2DFFF"
         }
         // value == "etl"  || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch"
-        if(status=="etl"|| status=="kill" || status=="sub_task_dispatch" || status == "dispatch" || status=="check_dep" || status=="wait_retry"){
+        if(status=="etl"|| status=="kill" || status=="sub_task_dispatch" || status == "dispatch" || status=="check_dep" || status=="wait_retry" || status=="check_dep_finish"){
             return "#00bb00"
         }
         if(status=="finish"){
@@ -285,11 +285,11 @@
                 async: false,
                 success : function(data) {
                     console.info("task_log_instance_list success");
-                    for(var j=0;j<data.length;j++){
+                    for(var j=0;j<data.result.length;j++){
                         //divId->status
-                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id));
-                        map3.set(map2.get(data[j].id),data[j].status);
-                        map4.set(data[j].id, data[j].run_time);
+                        console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
+                        map3.set(map2.get(data.result[j].id),data.result[j].status);
+                        map4.set(data.result[j].id, data.result[j].run_time);
                     }
                 },
                 error: function (data) {
@@ -359,6 +359,17 @@
                 $("#" + divId).attr("rights_context",rs.rights_context);
                 $("#" + divId).attr("rights",rs.rights);
                 $("#" + divId).html(rs.rights_context);
+            }
+
+            if(tp == "touch"){
+                $("#" + divId).attr("touch_id",rs.touch_id);
+                $("#" + divId).attr("touch_context",rs.touch_context);
+                $("#" + divId).attr("touch_task",rs.touch_task);
+                $("#" + divId).html(rs.touch_context);
+            }
+            if(tp == "plugin"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto");
@@ -660,31 +671,8 @@
                 });
 
             },
-            'click #spark_monitor': function (e, value, row, index) {
-                $.ajax({
-                    url: server_context+"/getSparkMonitor",
-                    data: "executor=" + row.executor,
-                    type: "post",
-                    dataType: "json",
-                    success: function (data) {
-                        console.info("success")
-                        if (!data && typeof data != "undefined" && data != 0 || data.length < 1) {
-                            if (typeof row.history_server == "undefined"){
-                                layer.msg("无法找到历史服务器并且应用程序已经死亡");
-                                return;
-                            }
-                            window.open(row.history_server + "/" + row.application_id);
-                            return;
-                        }
-                        console.info("http://" + data.zdh_host + ":" + data.web_port);
-                        window.open("http://" + data.zdh_host + ":" + data.web_port);
-                    },
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-
-                });
-
+            'click #strategy_task_download': function (e, value, row, index) {
+                window.open(server_context+"/strategy_task_download?id="+row.id);
             }
         };
 
@@ -740,7 +728,7 @@
                 title: 'ID',
                 visible: false
             }, {
-                field: 'etl_context',
+                field: 'strategy_context',
                 title: '子任务说明',
                 sortable: true
             }, {
@@ -758,9 +746,12 @@
                 title: '任务组',
                 sortable: true
             }, {
-                field: 'etl_date',
+                field: 'cur_time',
                 title: '数据处理日期',
-                sortable: true
+                sortable: true,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
             }, {
                 field: 'schedule_source',
                 title: '调度来源',
@@ -806,42 +797,7 @@
                 title: '执行器',
                 sortable: true,
                 visible: false
-            }, {
-                field: 'application_id',
-                title: '应用id',
-                sortable: true,
-                visible: false
-            }, {
-                field: 'master',
-                title: '调度模式',
-                sortable: true,
-                visible: false
-            }, {
-                field: 'history_server',
-                title: '历史服务器',
-                sortable: true,
-                visible: false
-            }, {
-                field: 'process',
-                title: '进度',
-                sortable: true,
-                formatter: function (value, row, index) {
-                    var context = row.process_msg;
-
-                    var class_str = "progress-bar progress-bar-success";
-                    if (row.status == "error" || row.status == "killed") {
-                        class_str = "progress-bar progress-bar-danger"
-                        //context = "采集失败"
-                    }
-                    return [
-                        '<small>' + context + value + '%</small>' +
-                        '<div class="progress progress-mini">' +
-                        '<div style="width: ' + value + '%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="35" role="progressbar" class="' + class_str + '">' +
-                        '</div>' +
-                        '</div>'
-                    ].join('');
-                }
-            }, {
+            },{
                 field: 'status',
                 title: '任务执行状态',
                 sortable: true,
@@ -923,16 +879,11 @@
                         btn_skip_str +
                         '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+
                         '</div>'+
+                        '<button type="button" id="strategy_task_download" class="btn btn-warning btn-xs">下载</button>'+
+                        '</div>'+
                         '</div>'
                     ].join('');
                 }
-            }, {
-                field: 'operate',
-                title: '监控',
-                events: operateEvents,//给按钮注册事件
-                align: "center",
-                valign: "middle",
-                formatter: operateFormatter //表格中增加按钮
             }]
         });
 

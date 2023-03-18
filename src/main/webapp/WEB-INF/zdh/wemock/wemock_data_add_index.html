@@ -307,6 +307,10 @@
                         window.editor_resp_context.setValue(data.result.resp_context);
                         $("#resolve_type").val(data.result.resolve_type);
                         $("#resolve_type").trigger("chosen:updated");
+                        var is_disenable = data.result.is_disenable;
+                        if(is_disenable=="true"){
+                            $('#is_disenable').iCheck('check');
+                        }
 
                         layer.msg("查询完成");
                     },
@@ -351,7 +355,10 @@
         formData.append("id",s.id);
         formData.append("product_code",product_code);
         formData.append("mock_tree_id",s.mock_tree_id);
-
+        formData.append("is_disenable","false");
+        if($('#is_disenable').is(':checked')){
+            formData.append("is_disenable","true");
+        }
         if(s['id'] != "-1" && s['is_copy'] != "true"){
             $.ajax({
                 url: server_context+"/wemock_data_update",

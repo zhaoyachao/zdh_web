@@ -32,6 +32,7 @@ release/libs
 
 spark_submit/
 
+src/main/resources/application.properties
 src/main/resources/application-tmp.properties
 
 ssh.sh
@@ -44,5 +45,3 @@ quick.bat
 doc/*
 
 smart_doc/*
-
-src/main/webapp/WEB-INF/zdh/smart_doc/*

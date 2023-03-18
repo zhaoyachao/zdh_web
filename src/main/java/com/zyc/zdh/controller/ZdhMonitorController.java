@@ -591,10 +591,12 @@ public class ZdhMonitorController extends BaseController {
      */
     @RequestMapping(value = "/zdh_logs", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String zdh_logs(String job_id, String task_log_id, String start_time, String end_time, String del, String level) {
+    public String zdh_logs(String job_id, String task_log_id, String start_time, String end_time, String del, String level,String log_type) {
         //System.out.println("id:" + job_id + " ,task_log_id:" + task_log_id + " ,start_time:" + start_time + " ,end_time:" + end_time);
 
-
+        if(!StringUtils.isEmpty(log_type) && log_type.equalsIgnoreCase("mock")){
+            return mockLog(task_log_id);
+        }
         Timestamp ts_start = null;
         Timestamp ts_end = null;
         if (!start_time.equals("")) {
@@ -651,6 +653,20 @@ public class ZdhMonitorController extends BaseController {
             }
         }
 
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("logs", sb.toString());
+        return jsonObject.toJSONString();
+    }
+
+    private String mockLog(String job_id){
+        StringBuilder sb = new StringBuilder();
+        List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id);
+        Iterator<ZdhLogs> it = zhdLogs.iterator();
+        while (it.hasNext()) {
+            ZdhLogs next = it.next();
+            String info = "MOCK ID:" + next.getJob_id() + ",请求ID:" + next.getTask_logs_id() + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
+            sb.append(info + "\r\n");
+        }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("logs", sb.toString());
         return jsonObject.toJSONString();

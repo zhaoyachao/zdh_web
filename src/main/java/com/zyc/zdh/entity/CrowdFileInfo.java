@@ -39,6 +39,11 @@ public class CrowdFileInfo {
     private Timestamp update_time;
 
     /**
+     * 数据类型,phone,email,id_card,可扩展
+     */
+    private String data_type;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -158,5 +163,23 @@ public class CrowdFileInfo {
      */
     public void setUpdate_time(Timestamp update_time) {
         this.update_time = update_time;
+    }
+
+    /**
+     * 获取数据类型,phone,email,id_card,可扩展
+     *
+     * @return data_type - 数据类型,phone,email,id_card,可扩展
+     */
+    public String getData_type() {
+        return data_type;
+    }
+
+    /**
+     * 设置数据类型,phone,email,id_card,可扩展
+     *
+     * @param data_type 数据类型,phone,email,id_card,可扩展
+     */
+    public void setData_type(String data_type) {
+        this.data_type = data_type;
     }
 }

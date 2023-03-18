@@ -72,6 +72,11 @@ public class Const {
 
     public static String ZDH_SYSTEM_DNS = "zdh_system_dns";//系统dns
 
+    public static String ZDH_IP_RATELIMIT = "zdh_ip_ratelimit";//系统IP访问次数限制
+    public static String ZDH_USER_RATELIMIT = "zdh_user_ratelimit";//系统账号访问次数限制
+    public static String ZDH_RATELIMIT_CLEART_TIME = "zdh_ratelimit_cleart_time";//系统IP访问次数限制
+    public static String ZDH_RATELIMIT_KEY_USER_PRE = "zdh_ratelimiter_user_";
+
     public static String ZDH_LOG_TYPE = "zdh_log_type";//日志存储类型
 
     public static String ZDH_FLOW_DEFAULT_USER = "zdh_flow_default_user";//审批流默认user

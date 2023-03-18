@@ -186,7 +186,9 @@
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 <script>
     $(document).ready(function () {
+
         $('#tag_group_code').chosen();
+        $('#data_source_type').chosen();
         $('#data_sources_params').hide();
 
         $.ajax({
@@ -234,10 +236,16 @@
         });
 
         $.get(server_context+'/data_sources_type', function(res) {
-            $('#data_source_type').html("");
+            //$('#data_source_type').html("");
+            var str = '';
             for (i = 0; i < res.length; i++) {
-                $('#data_source_type').append("<option value='"+res[i]+"'>"+res[i]+"</option>");
+                //$('#data_source_type').append("<option value='"+res[i]+"'>"+res[i]+"</option>");
+                str += '<option value=\"' + res[i] + '\" hassubinfo=\"true\">' + res[i] + '</option>'
             }
+
+            $('#data_source_type').html(str);
+            $("#data_source_type").trigger("chosen:updated");
+            $('#data_source_type').chosen();
 
             if (s.id == -1) {
                 console.info("新增按钮触发")
@@ -255,6 +263,8 @@
                         $("#id").val(data.id);
                         $("#data_source_context").val(data.data_source_context);
                         $("#data_source_type").val(data.data_source_type);
+                        $("#data_source_type").trigger("chosen:updated");
+
                         $("#driver").val(data.driver);
                         $("#url").val(data.url);
                         $("#username").val(data.username);

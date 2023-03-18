@@ -84,6 +84,13 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">调度器</label>
+                            <div class="col-sm-10">
+                                <input id="schedule_id" name="schedule_id" type="text" value=""
+                                       placeholder="调度器标识" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">超时时间</label>
                             <div class="col-sm-10">
                                 <input id="time_out" name="time_out" type="text" value="86400"
@@ -198,6 +205,7 @@
                 //$("#command").val($("#shell_text",window.parent.document).val());
                 window.editor.setValue($("#shell_text",window.parent.document).val());
                 $("#etl_context").val(s.etl_context);
+                $("#schedule_id").val(s["schedule_id"]);
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
                 if (s["time_out"]!="" && typeof(s["time_out"])!="undefined"){
@@ -228,6 +236,7 @@
             is_disenable="true"
         }
         var depend_level=$('#depend_level').find("option:selected").val();
+        var schedule_id=$('#schedule_id').val();
         var time_out=$('#time_out').val();
 
         var etl_context=$('#etl_context').val();
@@ -236,6 +245,7 @@
             "is_script":is_script,
             "etl_context":etl_context,
             "is_disenable":is_disenable,
+            "schedule_id": schedule_id,
             "depend_level":depend_level,
             "time_out": time_out
         }

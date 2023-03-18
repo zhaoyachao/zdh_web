@@ -196,9 +196,10 @@ function doubleclick_tasks(id) {
         }else{
             var more_task=div.attr("more_task");
             var depend_level = div.attr("depend_level");
+            var schedule_id = div.attr("schedule_id");
             var time_out = div.attr("time_out");
             var zdh_instance = div.attr("zdh_instance");
-            url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&zdh_instance="+zdh_instance
+            url=url+"?etl_task_id="+etl_task_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&zdh_instance="+zdh_instance+"&schedule_id="+schedule_id
         }
         layer.open({
             type: 2,
@@ -218,6 +219,7 @@ function doubleclick_tasks(id) {
                 div.attr("etl_context",etl_task_info.etl_context);
                 div.attr("more_task",etl_task_info.more_task);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("schedule_id",etl_task_info.schedule_id);
                 div.attr("zdh_instance",etl_task_info.zdh_instance);
                 div.attr("time_out",etl_task_info.time_out);
                 //div.width(etl_task_info.etl_context.length*16)
@@ -244,9 +246,10 @@ function doubleclick_shell(id) {
         }else{
             var is_script=div.attr("is_script");
             var depend_level = div.attr("depend_level");
+            var schedule_id = div.attr("schedule_id");
             var time_out = div.attr("time_out");
             $("#shell_text").val(command);
-            url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&depend_level="+depend_level +"&time_out="+time_out
+            url=url+"?command="+command+"&is_script="+is_script+"&etl_context="+etl_context+"&depend_level="+depend_level +"&time_out="+time_out+"&schedule_id="+schedule_id
         }
         layer.open({
             type: 2,
@@ -266,6 +269,7 @@ function doubleclick_shell(id) {
                 div.attr("is_script",etl_task_info.is_script);
                 div.attr("etl_context",etl_task_info.etl_context);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("schedule_id",etl_task_info.schedule_id);
                 div.attr("time_out",etl_task_info.time_out);
                 div.css("width","auto");
                 div.css("display","inline-block");
@@ -290,8 +294,9 @@ function doubleclick_group(id) {
         }else{
             var more_task=div.attr("more_task");
             var depend_level = div.attr("depend_level");
+            var schedule_id = div.attr("schedule_id");
             var time_out = div.attr("time_out");
-            url=url+"?etl_task_id="+etl_task_id+"&depend_level="+depend_level +"&time_out="+time_out
+            url=url+"?etl_task_id="+etl_task_id+"&depend_level="+depend_level +"&time_out="+time_out+"&schedule_id="+schedule_id
         }
         layer.open({
             type: 2,
@@ -310,6 +315,7 @@ function doubleclick_group(id) {
                 div.attr("etl_task_id",etl_task_info.etl_task_id);
                 div.attr("etl_context",etl_task_info.etl_context);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("schedule_id",etl_task_info.schedule_id);
                 div.attr("time_out",etl_task_info.time_out);
                 //div.width(etl_task_info.etl_context.length*16)
                 div.css("width","auto");
@@ -340,12 +346,13 @@ function doubleclick_jdbc(id) {
             var password=div.attr("password");
             var jdbc_sql=div.attr("jdbc_sql");
             var depend_level = div.attr("depend_level");
+            var schedule_id = div.attr("schedule_id");
             var time_out = div.attr("time_out");
             var data_sources_choose_input = div.attr("data_sources_choose_input");
             $("#jdbc_url_text").val(jdbc_url);
             $("#jdbc_sql_text").val(jdbc_sql);
             url=url+"?etl_context="+etl_context+"&driver="+driver+"&username="+username+"&password="+password+"&depend_level="+depend_level +"&time_out="+time_out
-                +"&data_sources_choose_input="+data_sources_choose_input
+                +"&data_sources_choose_input="+data_sources_choose_input+"&schedule_id="+schedule_id
         }
         layer.open({
             type: 2,
@@ -369,6 +376,7 @@ function doubleclick_jdbc(id) {
                 div.attr("jdbc_sql",etl_task_info.jdbc_sql);
                 div.attr("etl_context",etl_task_info.etl_context);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("schedule_id",etl_task_info.schedule_id);
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("data_sources_choose_input",etl_task_info.data_sources_choose_input);
                 //div.width(etl_task_info.etl_context.length*16)
@@ -400,12 +408,13 @@ function doubleclick_hdfs(id) {
             var password=div.attr("password");
             var hdfs_path=div.attr("hdfs_path");
             var depend_level = div.attr("depend_level");
+            var schedule_id = div.attr("schedule_id");
             var hdfs_mode=div.attr("hdfs_mode");
             var time_out = div.attr("time_out");
             $("#hdfs_url_text").val(hdfs_url);
             $("#hdfs_path_text").val(hdfs_path);
             url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&username="+username+"&password="+password+"&depend_level="+depend_level +"&time_out="+time_out
-                +"$hdfs_mode="+hdfs_mode
+                +"$hdfs_mode="+hdfs_mode+"&schedule_id="+schedule_id
         }
         layer.open({
             type: 2,
@@ -429,6 +438,7 @@ function doubleclick_hdfs(id) {
                 div.attr("hdfs_path",etl_task_info.hdfs_path);
                 div.attr("etl_context",etl_task_info.etl_context);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("schedule_id",etl_task_info.schedule_id);
                 div.attr("hdfs_mode",etl_task_info.hdfs_mode);
                 div.attr("time_out",etl_task_info.time_out);
                 //div.width(etl_task_info.etl_context.length*16)
@@ -457,6 +467,7 @@ function doubleclick_http(id) {
             var http_url=div.attr("url");
             var url_type=div.attr("url_type");
             var depend_level = div.attr("depend_level");
+            var schedule_id = div.attr("schedule_id");
             var params=div.attr("params");
             var header=div.attr("header");
             var cookie=div.attr("cookie");
@@ -466,7 +477,7 @@ function doubleclick_http(id) {
             $("#http_cookie").val(cookie);
             $("#http_url_text").val(http_url);
             url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&depend_level="+depend_level
-                +"&is_disenable="+is_disenable+"&time_out="+time_out
+                +"&is_disenable="+is_disenable+"&time_out="+time_out+"&schedule_id="+schedule_id
         }
         layer.open({
             type: 2,
@@ -490,6 +501,7 @@ function doubleclick_http(id) {
                 div.attr("etl_context",etl_task_info.etl_context);
                 div.attr("is_disenable",etl_task_info.is_disenable);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("schedule_id",etl_task_info.schedule_id);
                 div.attr("time_out",etl_task_info.time_out);
                 //div.width(etl_task_info.etl_context.length*16)
                 div.css("width","auto");
@@ -519,11 +531,12 @@ function doubleclick_email(id) {
             var subject=div.attr("subject");
             var email_type=div.attr("email_type");
             var depend_level = div.attr("depend_level");
+            var schedule_id = div.attr("schedule_id");
             var time_out = div.attr("time_out");
             $("#to_emails").val(to_emails);
             $("#email_context").val(email_context);
             url=url+"?etl_context="+etl_context+"&email_type="+email_type+"&depend_level="+depend_level
-                +"&is_disenable="+is_disenable+"&time_out="+time_out+"&subject="+subject
+                +"&is_disenable="+is_disenable+"&time_out="+time_out+"&subject="+subject+"&schedule_id="+schedule_id
         }
         layer.open({
             type: 2,
@@ -546,6 +559,7 @@ function doubleclick_email(id) {
                 div.attr("etl_context",etl_task_info.etl_context);
                 div.attr("is_disenable",etl_task_info.is_disenable);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("schedule_id",etl_task_info.schedule_id);
                 div.attr("time_out",etl_task_info.time_out);
                 div.css("width","auto");
                 div.css("display","inline-block");
@@ -570,8 +584,9 @@ function doubleclick_flume(id) {
         }else{
             var more_task=div.attr("more_task");
             var depend_level = div.attr("depend_level");
+            var schedule_id = div.attr("schedule_id");
             var time_out = div.attr("time_out");
-            url=url+"?etl_task_id="+etl_task_id+"&depend_level="+depend_level +"&time_out="+time_out
+            url=url+"?etl_task_id="+etl_task_id+"&depend_level="+depend_level +"&time_out="+time_out+"&schedule_id="+schedule_id
         }
         layer.open({
             type: 2,
@@ -590,6 +605,7 @@ function doubleclick_flume(id) {
                 div.attr("etl_task_id",etl_task_info.etl_task_id);
                 div.attr("etl_context",etl_task_info.etl_context);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("schedule_id",etl_task_info.schedule_id);
                 div.attr("time_out",etl_task_info.time_out);
                 //div.width(etl_task_info.etl_context.length*16)
                 div.css("width","auto");

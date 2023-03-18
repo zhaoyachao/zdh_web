@@ -1,6 +1,8 @@
 package com.zyc.zdh.entity;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -93,6 +95,9 @@ public class ResourceTreeInfo{
 	 * 产品代码
 	 */
 	private String product_code;
+
+	@Transient
+	private JSONObject a_attr;
 
 	public String getId() {
 		return id;
@@ -227,5 +232,26 @@ public class ResourceTreeInfo{
 
 	public void setProduct_code(String product_code) {
 		this.product_code = product_code;
+	}
+
+	public JSONObject getA_attr() {
+		JSONObject jsonObject=new JSONObject();
+		if(StringUtils.isEmpty(getResource_type())){
+			return jsonObject;
+		}
+
+
+		if(getResource_type().equalsIgnoreCase("1")){
+			jsonObject.put("title", "目录");
+		}else if(getResource_type().equalsIgnoreCase("2")){
+			jsonObject.put("title", "菜单");
+		}else if(getResource_type().equalsIgnoreCase("3")){
+			jsonObject.put("title", "页面");
+		}else if(getResource_type().equalsIgnoreCase("4")){
+			jsonObject.put("title", "函数");
+		}else if(getResource_type().equalsIgnoreCase("5")){
+			jsonObject.put("title", "接口");
+		}
+		return jsonObject;
 	}
 }

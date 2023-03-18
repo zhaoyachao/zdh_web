@@ -50,6 +50,58 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">使用方式</label>
+                            <div class="col-sm-10">
+                                <select id="label_use_type" name="label_use_type"
+                                        data-placeholder="选择标签使用方式..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                    <option value="batch" mytype="">值查人(批量)</option>
+                                    <option value="single" mytype="">人查值(单个)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数据时效性</label>
+                            <div class="col-sm-10">
+                                <select id="label_data_time_effect" name="label_data_time_effect"
+                                        data-placeholder="选择标签数据时效..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                    <option value="day" mytype="">天级</option>
+                                    <option value="hour" mytype="">小时级</option>
+                                    <option value="second" mytype="">准实时</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数据更新类型</label>
+                            <div class="col-sm-10">
+                                <select id="label_data_update_type" name="label_data_update_type"
+                                        data-placeholder="选择标签更新类型..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                    <option value="overwrite" mytype="">覆盖</option>
+                                    <option value="append" mytype="">追加</option>
+                                    <option value="get_append" mytype="">获取值追加</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">事件时间字段</label>
+                            <div class="col-sm-10">
+                                <input id="label_event_time_column" name="label_event_time_column" type="text"
+                                       placeholder="事件时间字段,默认为空" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数据标识</label>
+                            <div class="col-sm-10">
+                                <input id="label_data_code" name="label_data_code" type="text"
+                                       placeholder="数据标识,在线实时标签使用,kafka数据带此标识,标签处根据此标识查找可以计算的标签" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">标签类别</label>
                             <div class="col-sm-10">
                                 <select id="label_type" name="label_type"
@@ -84,6 +136,15 @@
                                     <option value="hive" mytype="">HIVE</option>
                                     <option value="spark" mytype="">SPARK</option>
                                     <option value="presto" mytype="">PRESTO</option>
+                                </select>
+                            </div>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">数据源</label>
+                            <div class="col-sm-10">
+                                <select id="data_sources_choose_input" name="data_sources_choose_input"
+                                        data-placeholder="选择数据源..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">选择数据源...</option>
                                 </select>
                             </div>
                             <div class="form-group"></div>
@@ -199,6 +260,7 @@
         '<option value="<=">小于等于</option>\n'+
         '<option value="<">小于</option>\n'+
         '<option value="between">区间(左闭右开)</option>\n'+
+        '<option value="relative_time">相对时间</option>\n'+
         '            </select>\n' +
         '        </div>\n' +
         '        <div class="col-sm-2">\n' +
@@ -248,6 +310,9 @@
                 });
             });
             $('#label_type').chosen();
+            $('#label_use_type').chosen();
+            $('#label_data_time_effect').chosen();
+            $('#label_data_update_type').chosen();
             $('#label_engine').chosen();
 
             function init_label_type() {
@@ -318,8 +383,59 @@
                 });
             }
 
+            function init_data_sources() {
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/data_sources_list",
+                    dataType: 'json',
+                    async: false,
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
+                        for (let i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        }
+                        //输入数据源类型下拉框
+                        $('#data_sources_choose_input').html(str);
+                        $('#data_sources_choose_input').chosen();
+
+                        //输出数据源类型下拉框
+                        $('#data_sources_choose_output').html(str);
+
+                        $('#data_sources_choose_output').chosen().on("change", function (evt, params) {
+                            // alert($('#data_sources_choose_input').val())
+                            $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
+                            $("#data_sources_choose_output").trigger("chosen:updated");
+                            if ($('#data_sources_choose_output').find("option:selected").attr("mytype") == 'JDBC') {
+                                init_table_name_output($('#data_sources_choose_output').val());
+
+                                $('#div_data_sources_table_name_output')[0].style.display = 'block';
+                                $('#div_data_sources_file_name_output')[0].style.display = 'block';
+                            } else {
+                                $('#div_data_sources_file_name_output')[0].style.display = 'block';
+                                $('#div_data_sources_table_name_output')[0].style.display = 'none';
+
+                            }
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+
             init_label_type();
             init_label_engine();
+            init_data_sources();
+
+
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
                 console.info("新增按钮触发");
@@ -404,6 +520,23 @@
                             $("#label_type").val(label_type);
                             $("#label_type").trigger("chosen:updated");
 
+                            var label_use_type = data.result.label_use_type;
+                            $("#label_use_type").val(label_use_type);
+                            $("#label_use_type").trigger("chosen:updated");
+
+                            var label_data_time_effect = data.result.label_data_time_effect;
+                            $("#label_data_time_effect").val(label_data_time_effect);
+                            $("#label_data_time_effect").trigger("chosen:updated");
+
+                            var label_data_update_type = data.result.label_data_update_type;
+                            $("#label_data_update_type").val(label_data_update_type);
+                            $("#label_data_update_type").trigger("chosen:updated");
+
+                            var label_event_time_column = data.result.label_event_time_column;
+                            $("#label_event_time_column").val(label_event_time_column);
+
+                            var label_data_code = data.result.label_data_code;
+                            $("#label_data_code").val(label_data_code);
 
                             var label_code = data.result.label_code;
                             $("#label_code").val(label_code);
@@ -414,6 +547,10 @@
                             var label_engine = data.result.label_engine;
                             $("#label_engine").val(label_engine);
                             $("#label_engine").trigger("chosen:updated");
+
+                            var data_sources_choose_input = data.result.data_sources_choose_input;
+                            $("#data_sources_choose_input").val(data_sources_choose_input);
+                            $("#data_sources_choose_input").trigger("chosen:updated");
 
                             var label_expression = data.result.label_expression;
                             $("#label_expression").val(label_expression);

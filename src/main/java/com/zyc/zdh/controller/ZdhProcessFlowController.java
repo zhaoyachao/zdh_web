@@ -2,6 +2,7 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.EmailJob;
@@ -447,6 +448,46 @@ public class ZdhProcessFlowController extends BaseController {
         return redisUtil.get(Const.ZDH_FLOW_DEFAULT_USER+"_"+product_code, "").toString();
     }
 
+    /**
+     * 流程代理首页
+     *
+     * @return
+     */
+    @White
+    @RequestMapping("/process_flow_agent_detail_index")
+    public String process_flow_agent_detail_index() {
+
+        return "etl/process_flow_agent_detail_index";
+    }
+
+    /**
+     * 更新流程代理人
+     * @param flow_id 审批流程ID
+     * @param id 审批流主键
+     * @return
+     */
+    @White
+    @RequestMapping(value = "/process_flow_agent_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<ProcessFlowInfo> process_flow_agent_update(String flow_id, String id, String agent_user) {
+
+        try {
+
+            if(StringUtils.isEmpty(agent_user)){
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "代理人参数不可为空", null);
+            }
+            ProcessFlowInfo pfi = processFlowMapper.selectByPrimaryKey(id);
+
+            processFlowMapper.updateAgentUser(id, agent_user);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", pfi);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新代理失败", e);
+        }
+
+    }
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (int i = 0, len = fields.length; i < len; i++) {

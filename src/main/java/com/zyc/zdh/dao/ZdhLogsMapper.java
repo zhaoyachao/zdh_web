@@ -32,6 +32,17 @@ public interface ZdhLogsMapper extends BaseZdhLogsMapper<ZdhLogs> {
             "</script>"})
     public List<ZdhLogs> selectByTime(@Param("job_id") String etl_task_id,@Param("task_logs_id") String task_logs_id,@Param("start_time") Timestamp start_time, @Param("end_time") Timestamp end_time,@Param("levels") String levels);
 
+
+    @Select({"<script>",
+            "select * from zdh_logs where 1=1",
+            "<when test='job_id!=null and job_id !=\"\"'>",
+            " and job_id=#{job_id}",
+            "</when>",
+            " limit 100",
+            "</script>"})
+    public List<ZdhLogs> selectByJobId(@Param("job_id") String job_id);
+
+
     @Delete({"<script>",
             "delete from zdh_logs where task_logs_id = #{task_logs_id}",
             "<when test='task_logs_id == null and task_logs_id == \"\"'>",

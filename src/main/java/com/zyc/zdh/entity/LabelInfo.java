@@ -58,6 +58,11 @@ public class LabelInfo {
     private String label_engine;
 
     /**
+     * 数据源
+     */
+    private String data_sources_choose_input;
+
+    /**
      * 标签可用参数
      */
     private String param_json;
@@ -66,6 +71,33 @@ public class LabelInfo {
      * 运算表达式,仅支持sql
      */
     private String label_expression;
+
+
+    /**
+     * 使用方式,batch:值查人,single:人查值
+     */
+    private String label_use_type;
+
+    /**
+     * 数据时效性, day:天级,hour:小时级,second:准实时
+     */
+    private String label_data_time_effect;
+
+    /**
+     * 数据更新类型,overwrite:覆盖,append:追加,get_append:值追加
+     */
+    private String label_data_update_type;
+
+    /**
+     * 事件事件字段,默认为空
+     */
+    private String label_event_time_column;
+
+    /**
+     * 数据标识,准实时时使用
+     * 使用场景：从kafka来的数据根据此标识找到可以加工的标签都有哪些
+     */
+    private String label_data_code;
 
     @Transient
     private JSONArray param_json_object;
@@ -252,6 +284,14 @@ public class LabelInfo {
         this.label_engine = label_engine;
     }
 
+    public String getData_sources_choose_input() {
+        return data_sources_choose_input;
+    }
+
+    public void setData_sources_choose_input(String data_sources_choose_input) {
+        this.data_sources_choose_input = data_sources_choose_input;
+    }
+
     /**
      * 获取标签可用参数
      *
@@ -286,5 +326,45 @@ public class LabelInfo {
      */
     public void setLabel_expression(String label_expression) {
         this.label_expression = label_expression;
+    }
+
+    public String getLabel_use_type() {
+        return label_use_type;
+    }
+
+    public void setLabel_use_type(String label_use_type) {
+        this.label_use_type = label_use_type;
+    }
+
+    public String getLabel_data_time_effect() {
+        return label_data_time_effect;
+    }
+
+    public void setLabel_data_time_effect(String label_data_time_effect) {
+        this.label_data_time_effect = label_data_time_effect;
+    }
+
+    public String getLabel_data_update_type() {
+        return label_data_update_type;
+    }
+
+    public void setLabel_data_update_type(String label_data_update_type) {
+        this.label_data_update_type = label_data_update_type;
+    }
+
+    public String getLabel_event_time_column() {
+        return label_event_time_column;
+    }
+
+    public void setLabel_event_time_column(String label_event_time_column) {
+        this.label_event_time_column = label_event_time_column;
+    }
+
+    public String getLabel_data_code() {
+        return label_data_code;
+    }
+
+    public void setLabel_data_code(String label_data_code) {
+        this.label_data_code = label_data_code;
     }
 }

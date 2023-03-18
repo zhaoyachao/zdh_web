@@ -18,7 +18,7 @@ public interface ProcessFlowMapper extends BaseProcessFlowMapper<ProcessFlowInfo
 
     @Select({
             "<script>",
-            "select pfi.*,acc.user_name as by_person_name from process_flow_info pfi left join account_info acc on pfi.owner=acc.id where is_show=#{is_show} and find_in_set(#{auditor_id}, auditor_id) ",
+            "select pfi.*,acc.user_name as by_person_name from process_flow_info pfi left join account_info acc on pfi.owner=acc.id where is_show=#{is_show} and ( find_in_set(#{auditor_id}, auditor_id) or agent_user=#{auditor_id} )",
             "<when test='context!=null and context !=\"\"'>",
             "and context like #{context}",
             "</when>",
@@ -82,4 +82,13 @@ public interface ProcessFlowMapper extends BaseProcessFlowMapper<ProcessFlowInfo
 
     })
     public List<ProcessFlowInfo> selectByFlowId(@Param("flow_id") String flow_id, @Param("auditor_id") String auditor_id);
+
+    @Update(
+            {
+                    "<script>",
+                    "update process_flow_info set agent_user=#{agent_user} where id = #{id}",
+                    "</script>"
+            }
+    )
+    public int updateAgentUser(@Param("id") String id, @Param("agent_user") String agent_user);
 }

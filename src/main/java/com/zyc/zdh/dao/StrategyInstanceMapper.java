@@ -5,12 +5,20 @@ import com.zyc.zdh.entity.StrategyInstance;
 import com.zyc.zdh.entity.task_num_info;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
 public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<StrategyInstance> {
-    @Select("select * from strategy_instance where group_instance_id = #{group_instance_id}")
-    public List<StrategyInstance> selectByGroupId(@Param("group_instance_id") String group_instance_id);
+    @Select({
+            "<script>",
+            "select * from strategy_instance where group_instance_id = #{group_instance_id}",
+            "<when test='status!=null and status !=\"\"'>",
+            "AND status = #{status}",
+            "</when>",
+            "</script>"
+    })
+    public List<StrategyInstance> selectByGroupInstanceId(@Param("group_instance_id") String group_instance_id, @Param("status") String status);
 
 
     /**
@@ -80,4 +88,16 @@ public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<Strat
             }
     )
     public List<task_num_info> selectStatusByIds(@Param("ids") String[] ids);
+
+    @Update(
+            {
+                    "<script>",
+                    "update strategy_instance set status=#{status} where id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public int updateStatusByIds(@Param("ids") String[] ids, @Param("status") String status);
 }

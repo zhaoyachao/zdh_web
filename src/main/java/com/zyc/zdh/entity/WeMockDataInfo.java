@@ -76,6 +76,11 @@ public class WeMockDataInfo {
     private String mock_tree_id;
 
     /**
+     * 是否禁用on,off
+     */
+    private String is_disenable;
+
+    /**
      * 响应信息
      */
     private String header;
@@ -345,6 +350,24 @@ public class WeMockDataInfo {
      */
     public void setMock_tree_id(String mock_tree_id) {
         this.mock_tree_id = mock_tree_id;
+    }
+
+    /**
+     * 获取是否禁用on,off
+     *
+     * @return is_disenable - 是否禁用on,off
+     */
+    public String getIs_disenable() {
+        return is_disenable;
+    }
+
+    /**
+     * 设置是否禁用on,off
+     *
+     * @param is_disenable 是否禁用on,off
+     */
+    public void setIs_disenable(String is_disenable) {
+        this.is_disenable = is_disenable;
     }
 
     /**

@@ -54,7 +54,14 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">用户组名：</label>
+                                <label class="col-sm-3 control-label">用户组</label>
+                                <div class="col-sm-8">
+                                    <input id="group_code" name="group_code" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">用户组名称</label>
                                 <div class="col-sm-8">
                                     <input id="name" name="name" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
                                 </div>
@@ -122,12 +129,8 @@
                     $("#product_code").trigger("chosen:updated");
                     $('#product_code').chosen().on("change", function (evt, params) {
                         //更新用户组和角色
-                        init_user_group($("#product_code").val());
-                        init_user($("#product_code").val());
                         //init_jstree($("#product_code").val());
                     });
-                    init_user_group($("#product_code").val());
-                    init_user($("#product_code").val());
                 },
                 //处理完成
                 complete: function () {
@@ -136,6 +139,29 @@
                 error: function (data) {
                 }
             });
+
+
+            if(s.id != '-1'){
+                $.ajax({
+                    type : "post",
+                    url : server_context+"/user_group_detail?id="+s.id,
+                    dataType : "json",
+                    async:'false',
+                    success : function(data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        $('#group_code').val(data.result.group_code);
+                        $('#name').val(data.result.name);
+                        $("#product_code").val(data.result.product_code);
+                        $("#product_code").prop("disabled","true");
+                        $("#product_code").trigger("chosen:updated");
+                        $('#group_code').attr("readonly", "true");
+                    }
+                });
+
+            }
 
             $('#btn_up').click(function () {
 
@@ -146,7 +172,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: server_context+"/user_group_add",
+                    url: server_context+"/user_group_add?id="+s.id,
                     dataType: 'json',
                     data: $("#signupForm").serialize(),
                     //发送数据前

@@ -35,6 +35,9 @@ public interface QuartzJobMapper extends BaseQuartzJobMapper<QuartzJobInfo> {
     @Update({ "update quartz_job_info set last_status = #{last_status} where job_id = #{job_id}" })
     public int updateLastStatus(@Param("job_id") String job_id,@Param("last_status") String last_status);
 
+    @Update({ "update quartz_job_info set status = #{status},last_time = #{last_time} where job_id = #{job_id}" })
+    public int updateStatusLastTime(@Param("job_id") String job_id,@Param("status") String status,@Param("last_time") Timestamp last_time);
+
     @Update({ "update quartz_job_info set task_log_id = #{task_log_id} where job_id = #{job_id}" })
     public int updateTaskLogId(@Param("job_id") String job_id,@Param("task_log_id") String task_log_id);
 

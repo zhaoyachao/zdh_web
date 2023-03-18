@@ -7,6 +7,7 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
+import com.zyc.zdh.queue.Message;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
@@ -14,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.quartz.Job;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +51,13 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
+        clearQueue();
         runSnowflakeIdWorker();
         runRetryMQ();
         killJobGroup();
         quartzExecutor();
+        init2Ip();
+        scheduleByCurrentServer();
         logger.info("初始化通知事件");
         EmailJob.notice_event();
         logger.info("初始化失败任务监控程序");
@@ -101,6 +107,24 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         }
     }
 
+    public void clearQueue(){
+        logger.info("初始化限流队列");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Message take = IpUtil.queue.take();
+                        if(redisUtil.exists(take.getBody())){
+                            redisUtil.increment(take.getBody(),-1L);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
 
     public void runSnowflakeIdWorker() {
         logger.info("初始化分布式id生成器");
@@ -345,5 +369,45 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                 }
             }
         }).start();
+    }
+
+    public void init2Ip(){
+        logger.info("初始化IP库");
+        String dbPath = ev.getProperty("ip2region.path","");
+        //IpUtil.init(dbPath);
+    }
+
+    public void scheduleByCurrentServer(){
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Scheduler scheduler = (Scheduler) SpringContext.getBean("scheduler");
+                QrtzSchedulerStateMapper qrtzSchedulerStateMapper = (QrtzSchedulerStateMapper) SpringContext.getBean("qrtzSchedulerStateMapper");
+                while (true) {
+                    try {
+                        String instanceId = scheduler.getSchedulerInstanceId();
+
+                        Example example=new Example(QrtzSchedulerState.class);
+                        Example.Criteria criteria=example.createCriteria();
+                        criteria.andEqualTo("instance_name", instanceId);
+                        criteria.andEqualTo("status", "online");
+
+                        List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(example);
+                        if(qrtzSchedulerStates == null || qrtzSchedulerStates.size()<=0){
+                            Thread.sleep(1000*60);
+                            continue;
+                        }
+                        //根据instanceId获取指定调度器任务
+                        CheckDepJob.run_sub_task(instanceId);
+                        Thread.sleep(1000*30);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        t.setName("ScheduleByCurrentServer");
+        t.start();
     }
 }

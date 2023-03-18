@@ -426,6 +426,7 @@
             $("#" + divId).attr("etl_context",rs.etl_context);
             $("#" + divId).attr("is_disenable",rs.is_disenable);
             $("#" + divId).attr("depend_level",rs.depend_level);
+            $("#" + divId).attr("schedule_id",rs.schedule_id);
             $("#" + divId).attr("time_out",rs.time_out);
             if(tp == "tasks"){
                 $("#" + divId).attr("etl_task_id",rs.etl_task_id);
@@ -918,12 +919,16 @@
         //服务器
         $("#m1 .tasks").each(function (idx, elem) {
             var $elem = $(elem);
+            if($elem.attr('schedule_id') == undefined){
+                $elem.attr('schedule_id',"");
+            }
             var param={
                 id: $elem.attr('id'),
                 etl_task_id: $elem.attr('etl_task_id'),
                 etl_context:$elem.attr('etl_context'),
                 more_task:$elem.attr('more_task'),
                 depend_level:$elem.attr('depend_level'),
+                schedule_id:$elem.attr('schedule_id'),
                 zdh_instance:$elem.attr('zdh_instance'),
                 is_script: $elem.attr('is_script'),
                 is_disenable: $elem.attr('is_disenable'),

@@ -13,16 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.TimeoutUtils;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * @author: zhaoyachao
@@ -155,6 +150,29 @@ public class RedisUtil {
 	}
 
 	/**
+	 * scan 实现
+	 * @param pattern       表达式，如：abc*，找出所有以abc开始的键
+	 */
+	public Set<String> scan(String pattern){
+
+		return redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+			Set<String> keysTmp = new HashSet<>();
+			try (Cursor<byte[]> cursor = connection.scan(new ScanOptions.ScanOptionsBuilder()
+					.match(pattern)
+					.count(10000).build())) {
+
+				while (cursor.hasNext()) {
+					keysTmp.add(new String(cursor.next(), "Utf-8"));
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				throw new RuntimeException(e);
+			}
+			return keysTmp;
+		});
+	}
+
+	/**
 	 * 根据缓存数据库索引,获取所有的key
 	 * 
 	 * @param dbIndex
@@ -178,6 +196,9 @@ public class RedisUtil {
 
 	}
 
+	public Object getBoundValueOps(final String key) {
+		return redisTemplate.boundValueOps(key).get(0,-1);
+	}
 	/**
 	 * 读取缓存
 	 * 
@@ -524,6 +545,14 @@ public class RedisUtil {
 
 			}
 		});
+		return result;
+	}
+
+	public Long increment(String key,Long value){
+		ValueOperations<String, Object> operations = redisTemplate
+				.opsForValue();
+		Long result = operations.increment(key,value);
+		redisTemplate.expire(key, 60, TimeUnit.SECONDS);
 		return result;
 	}
 

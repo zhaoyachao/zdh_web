@@ -252,7 +252,7 @@
 
                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
                         for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + '\" hassubinfo=\"true\">' + data[i].name + '</option>'
+                            str += '<option value=\"' + data[i].code + '\" hassubinfo=\"true\">' + data[i].name + '</option>'
                         }
                         $('#roles').html(str);
                         $("#roles").trigger("chosen:updated");
@@ -361,6 +361,12 @@
                                 $('#is_use_phone').prop("checked",false)
                                 //$('#is_use_email').find("input[type='checkbox']").onoff();
                             }
+
+                            if(data.result.product_code != ""){
+                                $("#product_code").val(data.result.product_code);
+                                $("#product_code").trigger("chosen:updated");
+                            }
+
                             if(data.result.user_group != ""){
                                 $("#user_group").val(data.result.user_group);
                                 $("#user_group").trigger("chosen:updated");

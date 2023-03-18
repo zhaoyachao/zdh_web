@@ -268,16 +268,24 @@ public class CrowdRuleController extends BaseController {
      * @param rule_context 关键字
      * @return
      */
-    @RequestMapping(value = "/crowd_file_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/crowd_file_list_by_owner", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String crowd_file_list(String rule_context) {
-        Example example=new Example(CrowdFileInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+    public String crowd_file_list_by_owner(String rule_context) {
+        try{
+            Example example=new Example(CrowdFileInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("owner", getOwner());
 
-        List<CrowdFileInfo> crowdFileInfos = crowdFileMapper.selectByExample(example);
+            List<CrowdFileInfo> crowdFileInfos = crowdFileMapper.selectByExample(example);
 
-        return JSONObject.toJSONString(crowdFileInfos);
+            return JSONObject.toJSONString(crowdFileInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return "";
+        }
+
     }
 
     public User getUser() {

@@ -206,7 +206,7 @@
                 type: 'POST',
                 url: server_context+"/zdh_logs",
                 dataType: 'json',
-                data: $("#form_log").serialize() +"&task_log_id="+s.task_log_id,
+                data: $("#form_log").serialize() +"&task_log_id="+s.task_log_id+"&log_type="+s.log_type,
                 //发送数据前
                 beforeSend: function () {
                     // 禁用按钮防止重复提交

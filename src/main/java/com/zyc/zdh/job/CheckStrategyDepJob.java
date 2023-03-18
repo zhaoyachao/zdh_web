@@ -52,7 +52,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             // 如果当前任务组无子任务则直接设置完成
             List<StrategyGroupInstance> non_group=sgim.selectTaskGroupByStatus(new String[]{JobStatus.SUB_TASK_DISPATCH.getValue(),JobStatus.KILL.getValue()});
             for(StrategyGroupInstance group :non_group){
-                List<StrategyInstance> sub_task=sim.selectByGroupId(group.getId());
+                List<StrategyInstance> sub_task=sim.selectByGroupInstanceId(group.getId(), null);
                 if(sub_task == null || sub_task.size() < 1){
                     if(group.getStatus().trim().equalsIgnoreCase(JobStatus.KILL.getValue())){
                         group.setStatus(JobStatus.KILLED.getValue());
@@ -118,6 +118,10 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             //获取所有可执行的非依赖类型子任务
             List<StrategyInstance> strategyInstanceList=sim.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()});
             for(StrategyInstance tl :strategyInstanceList){
+                //如果skip状态,跳过当前策略实例
+                if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
+                    continue;
+                }
                 //如果上游任务kill,killed 设置本实例为killed
                 String pre_tasks=tl.getPre_tasks();
                 if(!StringUtils.isEmpty(pre_tasks)){
@@ -149,7 +153,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                 //根据dag判断是否对当前任务进行
                 DAG dag=new DAG();
                 String group_instance_id=tl.getGroup_instance_id();
-                List<StrategyInstance> strategyInstanceList2=sim.selectByGroupId(group_instance_id);
+                List<StrategyInstance> strategyInstanceList2=sim.selectByGroupInstanceId(group_instance_id, null);
                 Map<String,StrategyInstance> dagStrategyInstance=new HashMap<>();
                 //此处必须使用group_instance_id实例id查询,因可能有策略实例已完成
                 for(StrategyInstance t2 :strategyInstanceList2){
@@ -170,6 +174,9 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     System.out.println("根节点模拟发放任务--开始");
                     System.out.println("=======================");
                     System.out.println(JSON.toJSONString(tl));
+                    if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
+                        continue;
+                    }
                     JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
                     if(tl.getTouch_type()==null || !tl.getTouch_type().equalsIgnoreCase("queue")){
                         resovleStrategyInstance(tl);
@@ -200,6 +207,9 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                         //上游都以完成,可执行,任务发完执行集群 此处建议使用优先级队列 todo
                         System.out.println("模拟发放任务--开始");
                         JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
+                        if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
+                            continue;
+                        }
                         if(tl.getTouch_type()==null || !tl.getTouch_type().equalsIgnoreCase("queue")){
                             resovleStrategyInstance(tl);
                         }

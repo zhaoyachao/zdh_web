@@ -130,7 +130,7 @@
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
 
-<!--        <table tableName="product_tag_info" domainObjectName="ProductTagInfo" mapperName="BaseProductTagMapper">-->
+<!--        <table tableName="product_tag_info" domainObjectName="ProductTagInfo" mapperName="BaseProductTagMapper"  schema="zdh">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
@@ -169,7 +169,6 @@
 <!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
-<!--                    <columnOverride column="id" property="param_json_object" javaType="com.alibaba.fastjson.JSONArray"/>-->
 <!--                </table>-->
 <!--                    <table tableName="crowd_rule_info" domainObjectName="CrowdRuleInfo" mapperName="BaseCrowdRuleMapper">-->
 <!--                        <property name="useActualColumnNames" value="true" />-->
@@ -250,5 +249,31 @@
 <!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--            </table>-->
 
+<!--            <table tableName="touch_config_info" domainObjectName="TouchConfigInfo" mapperName="BaseTouchConfigMapper" >-->
+<!--                <property name="useActualColumnNames" value="true" />-->
+<!--                <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--            </table>-->
+
+<!--                <table tableName="etl_task_datax_auto_info" domainObjectName="EtlTaskDataxAutoInfo" mapperName="BaseEtlTaskDataxAutoMapper" >-->
+<!--                    <property name="useActualColumnNames" value="true" />-->
+<!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--                </table>-->
+<!--                <table tableName="permission_bigdata_info" domainObjectName="PermissionBigdataInfo" mapperName="BasePermissionBigdataMapper" >-->
+<!--                    <property name="useActualColumnNames" value="true" />-->
+<!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--                </table>-->
+
+                    <table tableName="plugin_info" domainObjectName="PluginInfo" mapperName="BasePluginMapper">
+                        <property name="useActualColumnNames" value="true" />
+                        <columnOverride column="id" property="id" javaType="java.lang.String"/>
+                        <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
+                        <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
+                    </table>
     </context>
 </generatorConfiguration>

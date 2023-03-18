@@ -54,6 +54,11 @@ public class ProductTagInfo {
     private String sk;
 
     /**
+     * 产品类型
+     */
+    private String product_type;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -227,5 +232,23 @@ public class ProductTagInfo {
      */
     public void setSk(String sk) {
         this.sk = sk;
+    }
+
+    /**
+     * 获取产品类型
+     *
+     * @return product_type - 产品类型
+     */
+    public String getProduct_type() {
+        return product_type;
+    }
+
+    /**
+     * 设置产品类型
+     *
+     * @param product_type 产品类型
+     */
+    public void setProduct_type(String product_type) {
+        this.product_type = product_type;
     }
 }

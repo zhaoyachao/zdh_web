@@ -1,0 +1,100 @@
+.selectInput {
+    bottom: auto !important;
+}
+
+.layui-form-danger + .layui-form-selectInput .layui-input, .layui-form-danger:focus {
+    border-color: #FF5722 !important
+}
+
+.layui-form-selectInput .layui-input {
+    padding-right: 30px;
+    cursor: pointer
+}
+
+.layui-form-selectInput .layui-selectInput-edge {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    margin-top: -3px;
+    cursor: pointer;
+    border-width: 6px;
+    border-top-color: #c2c2c2;
+    border-top-style: solid;
+    transition: all .3s;
+    -webkit-transition: all .3s
+}
+
+.layui-form-selected .layui-selectInput-edge {
+    margin-top: -9px;
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+    margin-top: -3px \9;
+}
+
+.layui-selectInput-edge {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-width: 6px;
+    border-style: dashed;
+    border-color: transparent;
+}
+
+.layui-form-selectInput dl {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 42px;
+    padding: 5px 0;
+    z-index: 899;
+    min-width: 100%;
+    border: 1px solid #d2d2d2;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
+    box-sizing: border-box
+}
+
+.layui-form-selectInput dl dd, .layui-form-selectInput dl dt {
+    padding: 0 10px;
+    line-height: 36px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.layui-form-selectInput dl dt {
+    font-size: 12px;
+    color: #999
+}
+
+.layui-form-selectInput dl dd {
+    cursor: pointer;
+    color: #666;
+}
+
+.layui-form-selectInput dl dd:hover {
+    background-color: #f2f2f2;
+    -webkit-transition: .5s all;
+    transition: .5s all
+}
+
+.layui-form-selectInput .layui-select-group dd {
+    padding-left: 20px
+}
+
+.layui-form-selectInput dl dd.layui-select-tips {
+    padding-left: 10px !important;
+    color: #999
+}
+
+.layui-form-selectInput dl dd.layui-this {
+    background-color: #5FB878;
+    color: #fff
+}
+
+.layui-form-checkbox, .layui-form-selectInput dl dd.layui-disabled {
+    background-color: #fff
+}

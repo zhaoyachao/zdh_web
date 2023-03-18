@@ -39,7 +39,7 @@ public class CheckDepJob implements CheckDepJobInterface{
             TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
             RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
             try{
-                Set<String> sets = redisUtil.keys("shiro:cache:shiro-activeSessionCache1*");
+                Set<String> sets = redisUtil.scan("shiro:cache:shiro-activeSessionCache1*");
                 for(String key:sets){
                     if( !((SimpleSession) redisUtil.get(key)).isValid()){
                         logger.info("检测到过期session: "+ JSON.toJSONString(redisUtil.get(key)));
@@ -102,7 +102,7 @@ public class CheckDepJob implements CheckDepJobInterface{
             }
 
             //检查子任务是否可以运行
-            run_sub_task();
+            run_sub_task("");
             //检测任务组是否已经完成
             create_group_final_status();
             //检测flink任务是否已经完成
@@ -136,9 +136,9 @@ public class CheckDepJob implements CheckDepJobInterface{
     /**
      * 检查子任务是否可以运行
      */
-    public static void run_sub_task() {
+    public static void run_sub_task(String scheduleId) {
         try {
-            logger.debug("开始检测子任务依赖...");
+            logger.debug("开始检测子任务依赖,scheduleId: {} ....",scheduleId);
             TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper taskLogInstanceMapper=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
@@ -146,6 +146,10 @@ public class CheckDepJob implements CheckDepJobInterface{
             List<TaskLogInstance> dep_tlis=taskLogInstanceMapper.selectTaskByJobType(new String[] {JobStatus.DISPATCH.getValue(),JobStatus.CREATE.getValue(),
                     JobStatus.CHECK_DEP.getValue()},new String[]{"JDBC","GROUP","HDFS"});
             for(TaskLogInstance tli :dep_tlis) {
+                //调度器不相等跳过
+                if(!tli.getSchedule_id().equalsIgnoreCase(scheduleId)){
+                    continue;
+                }
                 if(tli.getStatus()!=null && tli.getStatus().equalsIgnoreCase("skip")){
                     continue;
                 }
@@ -208,6 +212,9 @@ public class CheckDepJob implements CheckDepJobInterface{
             //获取所有可执行的非依赖类型子任务
             List<TaskLogInstance> taskLogInstanceList=taskLogInstanceMapper.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()});
             for(TaskLogInstance tl :taskLogInstanceList){
+                if(!tl.getSchedule_id().equalsIgnoreCase(scheduleId)){
+                    continue;
+                }
                 if(tl.getStatus()!=null && tl.getStatus().equalsIgnoreCase("skip")){
                     continue;
                 }

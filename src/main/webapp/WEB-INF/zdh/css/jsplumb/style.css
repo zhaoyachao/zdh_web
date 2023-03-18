@@ -31,19 +31,19 @@ html,body{height:100%;}
 .device .deviceLeft2 .deviceLeft_box .node{user-select:none;width:80px;height:40px;line-height:20px;float: left;margin:5px;}
 .device .node{width:80px;height:50px;line-height:30px;box-shadow:2px 2px 10px #aaa;border-radius:3px;text-align:center;z-index:20;background-color:#f1f1f2;color:black;padding:10px;font-size:14px;cursor:pointer;}
 .device .node:hover{box-shadow:2px 2px 19px #444;opacity:.8;filter:alpha(opacity=80);}
-.device .nodelabelcss{border:lightskyblue 1px solid;}
-.device .nodecrowd_rulecss{border:lightskyblue 1px solid;}
-.device .nodecrowd_filecss{border:lightskyblue 1px solid;}
-.device .nodecrowd_operatecss{border:lightskyblue 1px solid;}
+.device .nodelabelcss{border:lightgreen 2px solid;}
+.device .nodecrowd_rulecss{border:green 2px solid;}
+.device .nodecrowd_filecss{border:lightcoral 2px solid;}
+.device .nodecrowd_operatecss{border:black 2px solid;}
 
-.device .nodefiltercss{border:lightskyblue 1px solid;}
-.device .nodeshuntcss{border:lightskyblue 1px solid;}
-.device .noderightscss{border:lightskyblue 1px solid;}
-.device .nodetouchcss{border:lightskyblue 1px solid;}
-.device .nodetncss{border:lightskyblue 1px solid;}
-.device .nodeplugincss{border:lightskyblue 1px solid;}
-.device .nodemessagecss{border:lightskyblue 1px solid;}
-.device .nodeactive_eventcss{border:lightskyblue 1px solid;}
+.device .nodefiltercss{border:dodgerblue 2px solid;}
+.device .nodeshuntcss{border:yellow 2px solid;}
+.device .noderightscss{border:darkred 2px solid;}
+.device .nodetouchcss{border:darkblue 2px solid;}
+.device .nodetncss{border:lightskyblue 2px solid;}
+.device .nodeplugincss{border:greenyellow 2px solid;}
+.device .nodemessagecss{border:lightskyblue 2px solid;}
+.device .nodeactive_eventcss{border:lightskyblue 2px solid;}
 
 .device .nodeflowcss{border:lightskyblue 1px solid;}
 

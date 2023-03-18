@@ -39,7 +39,7 @@ public class FilterController extends BaseController {
     private FilterMapper filterMapper;
 
     /**
-     * 策略组列表首页
+     * 过滤列表首页
      * @return
      */
     @White
@@ -50,7 +50,7 @@ public class FilterController extends BaseController {
     }
 
     /**
-     * 策略组列表
+     * 过滤列表
      * @param filter_name 关键字
      * @return
      */
@@ -81,7 +81,7 @@ public class FilterController extends BaseController {
     }
 
     /**
-     * 策略组新增首页
+     * 过滤新增首页
      * @return
      */
     @White
@@ -93,7 +93,7 @@ public class FilterController extends BaseController {
 
 
     /**
-     * 策略组明细
+     * 过滤明细
      * @param id 主键ID
      * @return
      */
@@ -112,7 +112,7 @@ public class FilterController extends BaseController {
     }
 
     /**
-     * 策略组更新
+     * 过滤更新
      * @param filterInfo
      * @return
      */
@@ -142,7 +142,7 @@ public class FilterController extends BaseController {
 
 
     /**
-     * 策略组新增
+     * 过滤新增
      * @param filterInfo
      * @return
      */
@@ -167,7 +167,7 @@ public class FilterController extends BaseController {
     }
 
     /**
-     * 策略组删除
+     * 过滤删除
      * @param ids id数组
      * @return
      */

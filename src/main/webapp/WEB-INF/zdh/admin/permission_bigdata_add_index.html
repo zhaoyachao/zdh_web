@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 大数据新增首页</title>
+    <meta name="keywords" content="ZDH 大数据新增首页">
+    <meta name="description" content="ZDH 大数据新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/switchery/switchery.css" rel="stylesheet">
+
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+
+        <div class="row">
+
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>权限配置</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" id="signupForm">
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">用户账号</label>
+                                <div class="col-sm-8">
+                                    <input id="user_account" name="user_account" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">路径</label>
+                                <div class="col-sm-8">
+                                    <input id="path" name="path" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">产品</label>
+                                <div class="col-sm-8">
+                                    <select id="product_code" name="product_code"
+                                            data-placeholder="产品code...."
+                                            class="chosen-select form-control m-b" >
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">用户组</label>
+                                <div class="col-sm-8">
+                                    <select id="user_group_code" name="user_group_code"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2">
+                                        <option value="" mytype="">空</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">资源类型</label>
+                                <div class="col-sm-8">
+                                    <select id="resource_type" name="resource_type"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2">
+                                        <option value="" mytype="">空</option>
+                                        <option value="dir" mytype="">目录</option>
+                                        <option value="file" mytype="">文件</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">权限</label>
+                                <div class="col-sm-8">
+                                    <select id="permission_rule" name="permission_rule" multiple
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2" >
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">权限层级</label>
+                                <div class="col-sm-8">
+                                    <select id="permission_depth_level" name="permission_depth_level"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2" >
+                                        <option value="1" mytype="">当前层</option>
+                                        <option value="2" mytype="">二级层</option>
+                                        <option value="3" mytype="">三级层</option>
+                                        <option value="4" mytype="">四级层</option>
+                                        <option value="5" mytype="">五级层</option>
+                                        <option value="10" mytype="">十级层</option>
+                                        <option value="-1" mytype="">所有层</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">是否作为路径管理组</label>
+                                <div class="col-sm-8">
+                                    <select id="resource_manage_group" name="resource_manage_group"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2">
+                                        <option value="false" mytype="">否</option>
+                                        <option value="true" mytype="">是</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-8 col-sm-offset-3">
+                                    <button class="btn btn-primary" type="button" id="btn_save" οnsubmit='return false'>新增</button>
+                                    <button class="btn btn-primary" type="button" id="btn_up" οnsubmit='return false'>更新</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!-- jQuery Validation plugin javascript-->
+    <script src="js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="js/plugins/validate/messages_zh.min.js"></script>
+
+    <!-- Switchery -->
+    <script src="js/plugins/switchery/switchery.js"></script>
+
+    <!-- layer javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <script>
+
+        (function(document, window, $) {
+
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            id = s['id'];
+
+            $('#resource_manage_group').chosen();
+            $('#permission_depth_level').chosen();
+            $('#permission_rule').chosen();
+            $('#resource_type').chosen();
+            $('#user_group_code').chosen();
+
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/product_tag_list",
+                async:false,
+                dataType: 'json',
+                data: "",
+                //成功返回
+                success: function (data) {
+                    var str = '';
+                    for (var i = 0; i < data.length; i++) {
+                        str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\" product_type=\"'+data[i].product_type+'\">' + data[i].product_name + '</option>';
+                    }
+                    $('#product_code').html(str);
+                    $("#product_code").trigger("chosen:updated");
+                    $('#product_code').chosen().on("change", function (evt, params) {
+                        //更新用户组和角色
+                        init_user_group($("#product_code").val());
+                        init_permission_rule($("#product_code").val());
+                        if ($('#product_code').find("option:selected").attr("product_type") == 'hadoop') {
+                            //初始化hadoop相关配置
+
+                        }
+                    });
+                    init_user_group($("#product_code").val());
+                    init_permission_rule($("#product_code").val());
+                },
+                //处理完成
+                complete: function () {
+                },
+                //报错
+                error: function (data) {
+                }
+            });
+
+            function init_user_group(product_code){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/user_group_list?enable=true&product_code="+product_code,
+                    async:false,
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+
+                        var str = '<option value=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].group_code + '\" hassubinfo=\"true\">' + data.result[i].name + '</option>'
+                        }
+                        $('#user_group_code').html(str);
+                        $("#user_group_code").trigger("chosen:updated");
+                        $('#user_group_code').chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete getUserInfo")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+
+            function init_permission_rule(product_code){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/permission_rule_list?enable=true&product_code="+product_code,
+                    async:false,
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+
+                        var str = '<option value=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].enum_value + '\" hassubinfo=\"true\">' + data.result[i].enum_value_context + '</option>'
+                        }
+                        $('#permission_rule').html(str);
+                        $("#permission_rule").trigger("chosen:updated");
+                        $('#permission_rule').chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete getUserInfo")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+
+            if(id != '-1'){
+                $('#btn_save').hide();
+                $('#btn_up').show();
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/permission_bigdata_detail",
+                    async:false,
+                    dataType: 'json',
+                    data: 'id='+id,
+                    //成功返回
+                    success: function (data) {
+
+                        if(data.code != "200"){
+                            layer.msg("查询失败");
+                            return ;
+                        }
+                        if(data.result.user_name !='' ){
+                            $('#user_account').val(data.result.user_account);
+
+                            $("#path").val(data.result.path);
+
+                            $("#resource_type").val(data.result.resource_type);
+                            $("#resource_type").trigger("chosen:updated");
+
+                            $("#product_code").val(data.result.product_code);
+                            $("#product_code").trigger("chosen:updated");
+
+                            init_permission_rule($("#product_code").val());
+                            init_user_group(data.result.product_code);
+
+                            $("#user_group_code").val(data.result.user_group_code);
+                            $("#user_group_code").trigger("chosen:updated");
+
+                            $("#resource_manage_group").val(data.result.resource_manage_group);
+                            $("#resource_manage_group").trigger("chosen:updated");
+
+                            $("#permission_rule").val(data.result.permission_rule.split(","));
+                            $("#permission_rule").trigger("chosen:updated");
+
+                        }
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete getUserInfo")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }else{
+                //新增
+                $('#btn_save').show();
+                $('#btn_up').hide();
+            }
+
+            $('#btn_save').click(function () {
+
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/permission_bigdata_add",
+                    dataType: 'json',
+                    data: $("#signupForm").serialize(),
+                    //发送数据前
+                    beforeSend: function () {
+                        // 禁用按钮防止重复提交
+                        $("#btn_up").attr({disabled: "disabled"});
+                    },
+                    //成功返回
+                    success: function (data) {
+                        $("#btn_up").removeAttr('disabled');
+                        if(data.code == "200"){
+                            layer.msg('更新成功');
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭
+                        }else{
+                            layer.msg('更新失败,'+data.result);
+                        }
+                    },
+                    //处理完成
+                    complete: function () {
+                        $("#btn_up").removeAttr('disabled');
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        $("#btn_up").removeAttr('disabled');
+                        layer.msg(data.responseText);
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+
+            });
+
+            $('#btn_up').click(function () {
+
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/permission_bigdata_update",
+                    dataType: 'json',
+                    data: $("#signupForm").serialize()+"&id="+id,
+                    //发送数据前
+                    beforeSend: function () {
+                        // 禁用按钮防止重复提交
+                        $("#btn_up").attr({disabled: "disabled"});
+                    },
+                    //成功返回
+                    success: function (data) {
+                        $("#btn_up").removeAttr('disabled');
+                        if(data.code == "200"){
+                            layer.msg('更新成功');
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭
+                        }else{
+                            layer.msg('更新失败,'+data.result);
+                        }
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        $("#btn_up").removeAttr('disabled');
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        $("#btn_up").removeAttr('disabled');
+                        layer.msg(data.responseText);
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+
+            })
+
+        })(document, window, jQuery);
+
+
+    </script>
+
+</body>
+
+
+
+</html>

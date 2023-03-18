@@ -226,7 +226,7 @@
                 type : "POST",
                 url : server_context+"/jstree_permission_list",
                 dataType : "json",
-                data : "id="+s.id,
+                data : {"id":s.id, "code": s.code},
                 async:'false',
                 success : function(data) {
                     console.info(data);

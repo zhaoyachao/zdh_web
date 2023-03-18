@@ -137,6 +137,8 @@ public class TaskLogInstance implements Serializable {
     private String notice_finish=Const.OFF;
     private String notice_timeout=Const.OFF;
 
+    private String schedule_id;
+
     public String getNotice_error() {
         return notice_error;
     }
@@ -709,6 +711,14 @@ public class TaskLogInstance implements Serializable {
 
     public void setSchedule_source(String schedule_source) {
         this.schedule_source = schedule_source;
+    }
+
+    public String getSchedule_id() {
+        return schedule_id;
+    }
+
+    public void setSchedule_id(String schedule_id) {
+        this.schedule_id = schedule_id;
     }
 
     public String getProcess_msg() {

@@ -25,6 +25,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static com.zyc.zdh.job.JobCommon2.*;
 
@@ -97,7 +98,7 @@ public class EmailJob {
                 }
             }
 
-            //完成任务后通知
+            //正常完成任务后通知
             List<TaskLogInstance> taskLogInstances3= taskLogInstanceMapper.selectNoNoticeFinish();
             if(taskLogInstances3!=null && taskLogInstances3.size()>0){
                 for(TaskLogInstance tli : taskLogInstances3){
@@ -459,5 +460,32 @@ public class EmailJob {
         messageHelper.setText(context,true);
         messageHelper.setSubject(subject);
         javaMailSender.send(mailMessage);
+    }
+
+    public static void sendAdminAlarmEmail(String subject, String context){
+        RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+        Environment environment= (Environment) SpringContext.getBean("environment");
+        JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean("javaMailSender");
+        String key = "alarm.admin.email_"+subject;
+        if(redisUtil.get(key) == null){
+            redisUtil.set(key, "1", 1L, TimeUnit.HOURS);
+        }else{
+            logger.debug("系统告警,已存在,忽略当前告警, {}", key);
+            return;
+        }
+        try{
+            //多个告警邮箱,逗号分割
+            String to=environment.getProperty("alarm.admin.email");
+            SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
+            simpleMailMessage.setFrom(environment.getProperty("spring.mail.username"));
+            simpleMailMessage.setTo(to.split(","));
+            simpleMailMessage.setText(context);
+            simpleMailMessage.setSubject(subject);
+
+            javaMailSender.send(simpleMailMessage);
+        }catch (Exception e){
+            redisUtil.remove("alarm.admin.email_"+subject);
+        }
+
     }
 }

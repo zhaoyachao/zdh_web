@@ -138,9 +138,6 @@ public class ZdhEtlController extends BaseController{
      */
     @RequestMapping("/etl_task_add_index")
     public String etl_task_add(HttpServletRequest request, String edit) {
-
-        System.out.println(edit);
-        request.setAttribute("edit", edit);
         return "etl/etl_task_add_index";
     }
 
@@ -339,27 +336,27 @@ public class ZdhEtlController extends BaseController{
      */
     @RequestMapping(value="/etl_task_schema", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<String> etl_task_schema(String id, String table_name) {
+    public ReturnInfo<List<String>> etl_task_schema(String id, String table_name) {
 
         DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
-        String jsonArrayStr = schema(dataSourcesInfo, table_name);
-        if(StringUtils.isEmpty(jsonArrayStr)){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询结果为空", jsonArrayStr);
+        List<String> columns = schema(dataSourcesInfo, table_name);
+        if(columns==null || columns.size()==0){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询结果为空", columns);
         }
-        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonArrayStr);
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", columns);
     }
 
 
-    private String schema(DataSourcesInfo dataSourcesInfo, String table_name) {
+    private List<String> schema(DataSourcesInfo dataSourcesInfo, String table_name) {
 
         String url = dataSourcesInfo.getUrl();
 
         try {
-            return JSON.toJSONString(new DBUtil().R4(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
-                    "select * from " + table_name + " where 1=2 limit 1", table_name));
+            return new DBUtil().R4(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
+                    "select * from " + table_name + " where 1=2 limit 1", table_name);
         } catch (Exception e) {
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            return "";
+            return new ArrayList<>();
         }
     }
 

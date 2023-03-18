@@ -36,8 +36,8 @@ public class FlumeJob extends JobCommon2 {
         //执行命令
         try {
             long t1 = System.currentTimeMillis();
-            logger.info("flume任务当前只支持同步方式,异步方式暂不支持");
-            insertLog(tli,"info","flume任务当前只支持同步方式,异步方式暂不支持");
+            logger.info("flume任务当前只支持同步方式,异步方式暂不支持,当前仅支持flume采集,输出数据源暂未实现...");
+            insertLog(tli,"info","flume任务当前只支持同步方式,异步方式暂不支持,当前仅支持flume采集,输出数据源暂未实现...");
             //当前只支持检查文件是否存在 if [ ! -f "/data/filename" ];then echo "文件不存在"; else echo "true"; fi
             //日期替换zdh.date => yyyy-MM-dd 模式
             //日期替换zdh.date.nodash=> yyyyMMdd 模式

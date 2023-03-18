@@ -20,6 +20,9 @@ public class UserGroupInfo implements Serializable {
 	@Id
 	@Column
 	private String id;
+
+	@Column
+	private String group_code;
 	/**
 	 * 用户组名
 	 */
@@ -52,6 +55,14 @@ public class UserGroupInfo implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getGroup_code() {
+		return group_code;
+	}
+
+	public void setGroup_code(String group_code) {
+		this.group_code = group_code;
 	}
 
 	public String getName() {

@@ -112,10 +112,10 @@
                             process_title = "审批完成";
                             my_color = "#18a689";
                         }else if(data.result[i].status == 2){
-                            process_title="不通过"
+                            process_title="不通过";
                             my_color = "#ec4758";
                         }else if(data.result[i].status == 3){
-                            process_title="撤销"
+                            process_title="撤销";
                             my_color = "#ec4758";
                         }
                         var new_str = process_str.replace("my_color", my_color).replace("create_time", getMyDate(data.result[i].create_time)).replace("process_title", process_title).replace("process_context","审批人:"+data.result[i].by_person_name);

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 插件新增首页</title>
+    <meta name="keywords" content="ZDH 插件新增首页">
+    <meta name="description" content="ZDH 插件新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>插件配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="plugin_add_form" name="plugin_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">插件说明</label>
+                            <div class="col-sm-10">
+                                <input id="plugin_name" name="plugin_name" type="text"
+                                       placeholder="插件说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">插件标识</label>
+                            <div class="col-sm-10">
+                                <input id="plugin_code" name="plugin_code" type="text"
+                                       placeholder="插件标识" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">联系人</label>
+                            <div class="col-sm-10">
+                                <input id="plugin_person" name="plugin_person" type="text"
+                                       placeholder="联系人" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">创建时间</label>
+                            <div class="col-sm-10">
+                                <input id="create_time" name="create_time" type="text" readonly
+                                       placeholder="创建时间" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2" style="text-align: right">
+                                <button id="btn_enum" name="btn_enum" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">新增参数
+                                </button>
+                            </div>
+                            <div class="col-sm-2" ></div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group" id="plugin_div">
+
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输出数据源结束-->
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+<script>
+
+
+    var template = '<div class="ibox-content"  id="template">\n' +
+        '<label class="col-sm-1 control-label">参数</label>\n' +
+        '        <div class="col-sm-2" >\n' +
+        '            <input name="param_code" type="text"\n' +
+        '                   placeholder="参数code" class="form-control param_code" aria-required="true" value="zdh_param_code">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-2">\n' +
+        '            <input name="param_context" type="text"\n' +
+        '                   placeholder="参数说明" class="form-control param_context" aria-required="true" value="zdh_param_context">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-2">\n' +
+        '            <select class="form-control m-b param_type" data-live-search="true" name="param_type" id="zdh_param_type">\n' +
+        '<option value="string">字符串</option>\n'+
+        '<option value="int">数值</option>\n'+
+        '<option value="boolean">布尔</option>\n'+
+        '<option value="date">日期</option>\n'+
+        '<option value="timestamp">日期timestamp</option>\n'+
+        '<option value="ts">日期时间戳</option>\n'+
+        '            </select>\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-2">\n' +
+        '            <select class="form-control m-b param_operate" data-live-search="true" name="param_operate" id="zdh_param_operate">\n' +
+        '<option value="=">等于</option>\n'+
+        '<option value="in">包含</option>\n'+
+        '<option value=">">大于</option>\n'+
+        '<option value=">=">大于等于</option>\n'+
+        '<option value="<">小于</option>\n'+
+        '<option value="<=">小于等于</option>\n'+
+        '<option value="<">小于</option>\n'+
+        '<option value="between">区间(左闭右开)</option>\n'+
+        '<option value="relative_time">相对时间</option>\n'+
+        '            </select>\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-2">\n' +
+        '            <input name="param_value" type="text"\n' +
+        '                   placeholder="参数值,多个分号分割" class="form-control param_value" aria-required="true" value="zdh_param_value">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-1">\n' +
+        '            <button id="delete" name="delete" class="btn btn-danger"\n' +
+        '                    οnsubmit=\'return false\'\n' +
+        '                    type="button">删除\n' +
+        '            </button>\n' +
+        '        </div>\n' +
+        '\n' +
+        '    </div>\n' +
+        '</div>';
+
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+    (function (document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            $("#btn_enum").click(function () {
+                var tmp = template;
+                tmp = tmp.replace("zdh_param_code", "");
+                tmp = tmp.replace("zdh_param_context", "");
+                tmp = tmp.replace("zdh_param_type", "");
+                tmp = tmp.replace("zdh_param_operate", "");
+                tmp = tmp.replace("zdh_param_value", "");
+                $('#plugin_div').append(tmp);
+                $('#plugin_div #delete').click(function () {
+                    $(this).parent().parent().remove();
+                });
+            });
+
+
+            //s.id=-1 表示新增,否则表示更新
+            if (s.id == -1) {
+                console.info("新增按钮触发");
+                $('#update_etl_task').hide();
+                $('#save_etl_task').show();
+
+            } else {
+
+                if (s.is_copy == "true") {
+                    console.info("拷贝按钮触发");
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').show();
+                } else {
+                    console.info("更新按钮触发");
+                    $('#save_etl_task').hide();
+                    $('#update_etl_task').show();
+                }
+
+                if (s.only_read == "true") {
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').hide();
+                    $('#reset').hide();
+                }
+                buildParam();
+            }
+
+            function getMyDate(str) {
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth() + 1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + " " + getzf(oHour) + ":" + getzf(oMin) + ":" + getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            //补0操作
+            function getzf(num) {
+                if (parseInt(num) < 10) {
+                    num = '0' + num;
+                }
+                return num;
+            }
+
+            function buildConfig(i,param_code, param_context,param_type, param_operate, param_value) {
+                var tmp=template;
+                tmp = tmp.replace("zdh_param_code", param_code);
+                tmp = tmp.replace("zdh_param_context", param_context);
+                tmp = tmp.replace("zdh_param_value", param_value);
+                tmp = tmp.replace("zdh_param_operate", "zdh_param_operate"+i);
+                tmp = tmp.replace("zdh_param_type", "zdh_param_type"+i);
+                $('#plugin_div').append(tmp);
+                $("#zdh_param_operate"+i).val(param_operate);
+                $("#zdh_param_type"+i).val(param_type);
+                $('#plugin_div #delete').click(function () {
+                    $(this).parent().parent().remove();
+                });
+
+            }
+            function buildParam() {
+                if (s.id != '-1') {
+                    console.info("更新按钮触发--开始赋值对应参数");
+                    //开始赋值
+
+                    $.ajax({
+                        url: server_context+"/plugin_detail",
+                        data: "id=" + s.id,
+                        type: "post",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            console.info("success");
+                            // layer.alert(JSON.stringify(data[0]))
+
+                            //获取ETL 说明
+                            var plugin_name = data.result.plugin_name;
+                            $("#plugin_name").val(plugin_name);
+
+                            var plugin_code = data.result.plugin_code;
+                            $("#plugin_code").val(plugin_code);
+
+                            var create_time = data.result.create_time;
+                            $("#create_time").val(getMyDate(create_time));
+
+                            //解析json
+                            if(data.result.param_json_object.length>0){
+                                for(var i=0;i<data.result.param_json_object.length;i++){
+                                    buildConfig(i,data.result.param_json_object[i].param_code, data.result.param_json_object[i].param_context, data.result.param_json_object[i].param_type,data.result.param_json_object[i].param_operate, data.result.param_json_object[i].param_value);
+                                }
+                            }
+
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+
+
+                }
+            }
+
+        })();
+
+    })(document, window, jQuery);
+
+
+    $('#save_etl_task').click(function () {
+
+        if ($('#plugin_name').val() == '') {
+            layer.msg("插件说明不能为空！");
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/plugin_add",
+            async: false,
+            dataType: 'json',
+            data: $("#plugin_add_form").serialize(),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
+                    return ;
+                }
+                parent.layer.msg("执行成功");
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                $("#save_etl_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+
+    $('#update_etl_task').click(function () {
+
+        if ($('#plugin_name').val() == '') {
+            layer.msg("插件说明不能为空！");
+            return;
+        }
+
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        $.ajax({
+            url: server_context+"/plugin_update",
+            type: 'post',
+            dataType: "json",
+            async: 'false',
+            data: $("#plugin_add_form").serialize()+ "&" + "id=" + s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
+                    return ;
+                }
+                parent.layer.msg(data.msg);
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                layer.error(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
+
+</script>
+
+</body>
+
+</html>

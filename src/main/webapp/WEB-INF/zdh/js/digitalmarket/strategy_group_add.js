@@ -181,6 +181,15 @@ function doubleclick(id,tp) {
         case "rights":
             doubleclick_rights(id);
             break;
+        case "touch":
+            doubleclick_touch(id);
+            break;
+        case "plugin":
+            doubleclick_plugin(id);
+            break;
+        default:
+            $(id).dblclick(function () {layer.msg("不支持的组件");});
+
     }
 }
 
@@ -200,8 +209,9 @@ function doubleclick_label(id) {
             var operate = div.attr("operate");
             var touch_type = div.attr("touch_type");
             var is_base = div.attr("is_base");
+            var is_disenable = div.attr("is_disenable");
             $("#rule_param").val(div.attr("rule_param"));
-            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base
+            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -260,7 +270,8 @@ function doubleclick_crowd_file(id) {
             var time_out = div.attr("time_out");
             var touch_type = div.attr("touch_type");
             var is_base = div.attr("is_base");
-            url=url+"?crowd_file_context="+crowd_file_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_file="+crowd_file+"&more_task="+more_task+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base
+            var is_disenable = div.attr("is_disenable");
+            url=url+"?crowd_file_context="+crowd_file_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_file="+crowd_file+"&more_task="+more_task+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -276,7 +287,7 @@ function doubleclick_crowd_file(id) {
                 }
 
                 var etl_task_info=JSON.parse($("#etl_task_text").val());
-                div.css('is_disenable', etl_task_info.is_disenable);
+                div.attr("is_disenable",etl_task_info.is_disenable);
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
@@ -315,7 +326,8 @@ function doubleclick_crowd_rule(id) {
             var depend_level = div.attr("depend_level");
             var time_out = div.attr("time_out");
             var touch_type = div.attr("touch_type");
-            url=url+"?crowd_rule_context="+crowd_rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_rule="+crowd_rule+"&operate="+operate+"&touch_type="+touch_type
+            var is_disenable = div.attr("is_disenable");
+            url=url+"?crowd_rule_context="+crowd_rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_rule="+crowd_rule+"&operate="+operate+"&touch_type="+touch_type+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -331,7 +343,7 @@ function doubleclick_crowd_rule(id) {
                 }
 
                 var etl_task_info=JSON.parse($("#etl_task_text").val());
-                div.css('is_disenable', etl_task_info.is_disenable);
+                div.attr("is_disenable",etl_task_info.is_disenable);
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
@@ -370,7 +382,8 @@ function doubleclick_crowd_operate(id) {
             var operate = div.attr("operate");
             var touch_type = div.attr("touch_type");
             var is_base = div.attr("is_base");
-            url=url+"?crowd_operate_context="+crowd_operate_context+"&depend_level="+depend_level +"&time_out="+time_out+"&more_task="+more_task+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base
+            var is_disenable = div.attr("is_disenable");
+            url=url+"?crowd_operate_context="+crowd_operate_context+"&depend_level="+depend_level +"&time_out="+time_out+"&more_task="+more_task+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -386,7 +399,7 @@ function doubleclick_crowd_operate(id) {
                 }
 
                 var etl_task_info=JSON.parse($("#etl_task_text").val());
-                div.css('is_disenable', etl_task_info.is_disenable);
+                div.attr("is_disenable",etl_task_info.is_disenable);
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
@@ -424,7 +437,8 @@ function doubleclick_filter(id) {
             var depend_level = div.attr("depend_level");
             var time_out = div.attr("time_out");
             var touch_type = div.attr("touch_type");
-            url=url+"?filter_context="+filter_context+"&depend_level="+depend_level +"&time_out="+time_out+"&filter="+filter+"&operate="+operate+"&touch_type="+touch_type
+            var is_disenable = div.attr("is_disenable");
+            url=url+"?filter_context="+filter_context+"&depend_level="+depend_level +"&time_out="+time_out+"&filter="+filter+"&operate="+operate+"&touch_type="+touch_type+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -440,7 +454,7 @@ function doubleclick_filter(id) {
                 }
 
                 var etl_task_info=JSON.parse($("#etl_task_text").val());
-                div.css('is_disenable', etl_task_info.is_disenable);
+                div.attr("is_disenable",etl_task_info.is_disenable);
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
@@ -478,8 +492,9 @@ function doubleclick_shunt(id) {
             var depend_level = div.attr("depend_level");
             var time_out = div.attr("time_out");
             var touch_type = div.attr("touch_type");
+            var is_disenable = div.attr("is_disenable");
             $('#shunt_param').val(shunt_param);
-            url=url+"?shunt_context="+shunt_context+"&depend_level="+depend_level +"&time_out="+time_out+"&shunt="+shunt+"&touch_type="+touch_type
+            url=url+"?shunt_context="+shunt_context+"&depend_level="+depend_level +"&time_out="+time_out+"&shunt="+shunt+"&touch_type="+touch_type+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -495,7 +510,7 @@ function doubleclick_shunt(id) {
                 }
 
                 var etl_task_info=JSON.parse($("#etl_task_text").val());
-                div.css('is_disenable', etl_task_info.is_disenable);
+                div.attr("is_disenable",etl_task_info.is_disenable);
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
@@ -533,7 +548,8 @@ function doubleclick_rights(id) {
             var time_out = div.attr("time_out");
             $('#rights_param').val(rights_param);
             var touch_type = div.attr("touch_type");
-            url=url+"?rights_context="+rights_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rights="+rights+"&touch_type="+touch_type
+            var is_disenable = div.attr("is_disenable");
+            url=url+"?rights_context="+rights_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rights="+rights+"&touch_type="+touch_type+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -549,7 +565,7 @@ function doubleclick_rights(id) {
                 }
 
                 var etl_task_info=JSON.parse($("#etl_task_text").val());
-                div.css('is_disenable', etl_task_info.is_disenable);
+                div.attr("is_disenable",etl_task_info.is_disenable);
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
@@ -566,6 +582,123 @@ function doubleclick_rights(id) {
                 div.html(etl_task_info.rights_context);
                 div.attr("title", etl_task_info.rights_context);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
+            }
+        });
+    });
+}
+
+function doubleclick_touch(id) {
+    $(id).dblclick(function () {
+        $("#etl_task_text").val("");
+        var text = $(this).text();
+        var div = $(this);
+        var touch_id=div.attr("touch_id");
+        var url=server_context+'/touch_detail.html';
+        if( div.attr("touch_id") == "" || div.attr("touch_id") == undefined ){
+            url=url+"?touch_id=-1"
+        }else{
+            var touch_task=div.attr("touch_task");
+            var depend_level = div.attr("depend_level");
+            var time_out = div.attr("time_out");
+            var operate = div.attr("operate");
+            var touch_type = div.attr("touch_type");
+            var is_base = div.attr("is_base");
+            var is_disenable = div.attr("is_disenable");
+            url=url+"?touch_id="+touch_id+"&touch_task="+touch_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+        }
+        layer.open({
+            type: 2,
+            area: ['100%', '100%'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: encodeURI(url),
+            end: function () {
+                console.info("index:doubleclick:"+$("#etl_task_text").val());
+                if($("#etl_task_text").val()==""){
+                    console.info("无修改-不更新");
+                    return ;
+                }
+                var etl_task_info=JSON.parse($("#etl_task_text").val());
+                div.attr("more_task",etl_task_info.more_task);
+                div.attr("is_disenable",etl_task_info.is_disenable);
+                div.attr("time_out",etl_task_info.time_out);
+                div.attr("touch_type",etl_task_info.touch_type);
+                div.attr("is_base",etl_task_info.is_base);
+
+                div.attr("touch_task",etl_task_info.touch_task);
+                div.attr("operate",etl_task_info.operate);
+                div.attr("touch_id",etl_task_info.touch_id);
+                div.attr("touch_context",etl_task_info.touch_context);
+                div.attr("touch_param",etl_task_info.touch_param);
+                //div.width(etl_task_info.etl_context.length*16)
+                div.css("width","auto");
+                div.css("height","auto");
+                div.css("display","inline-block");
+                div.css("*display","inline");
+                div.css("*zoom","1");
+                div.attr("title", etl_task_info.touch_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.touch_context);
+                div.css('background', get_color_by_status(etl_task_info.is_disenable));
+            }
+        });
+    });
+}
+
+function doubleclick_plugin(id) {
+    $(id).dblclick(function () {
+        $("#etl_task_text").val("");
+        var text = $(this).text();
+        var div = $(this);
+        var rule_id=div.attr("rule_id");
+        var url=server_context+'/plugin_detail.html';
+        if( div.attr("rule_id") == "" || div.attr("rule_id") == undefined ){
+            url=url+"?rule_id=-1"
+        }else{
+            var more_task=div.attr("more_task");
+            var depend_level = div.attr("depend_level");
+            var time_out = div.attr("time_out");
+            var operate = div.attr("operate");
+            var touch_type = div.attr("touch_type");
+            var is_base = div.attr("is_base");
+            var is_disenable = div.attr("is_disenable");
+            $("#rule_param").val(div.attr("rule_param"));
+            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+        }
+        layer.open({
+            type: 2,
+            area: ['100%', '100%'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: encodeURI(url),
+            end: function () {
+                console.info("index:doubleclick:"+$("#etl_task_text").val());
+                if($("#etl_task_text").val()==""){
+                    console.info("无修改-不更新");
+                    return ;
+                }
+                var etl_task_info=JSON.parse($("#etl_task_text").val());
+                div.attr("more_task",etl_task_info.more_task);
+                div.attr("is_disenable",etl_task_info.is_disenable);
+                div.attr("time_out",etl_task_info.time_out);
+                div.attr("touch_type",etl_task_info.touch_type);
+                div.attr("is_base",etl_task_info.is_base);
+
+                div.attr("operate",etl_task_info.operate);
+                div.attr("rule_id",etl_task_info.rule_id);
+                div.attr("rule_context",etl_task_info.rule_context);
+                div.attr("rule_param",etl_task_info.rule_param);
+                div.attr("rule_expression_cn",etl_task_info.rule_expression_cn);
+                //div.width(etl_task_info.etl_context.length*16)
+                div.css("width","auto");
+                div.css("height","auto");
+                div.css("display","inline-block");
+                div.css("*display","inline");
+                div.css("*zoom","1");
+                div.attr("title", etl_task_info.rule_expression_cn);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                div.css('background', get_color_by_status(etl_task_info.is_disenable));
+                //此处更新中文表达式
+                //create_rule_expression_cn();
             }
         });
     });

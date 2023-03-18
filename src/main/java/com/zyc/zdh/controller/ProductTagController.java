@@ -1,14 +1,11 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.ProductTagMapper;
 import com.zyc.zdh.entity.ProductTagInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.User;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

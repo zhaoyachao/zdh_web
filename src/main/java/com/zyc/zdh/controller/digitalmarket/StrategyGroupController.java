@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
@@ -12,6 +13,7 @@ import com.zyc.zdh.job.JobStatus;
 import com.zyc.zdh.job.ScheduleSource;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.DateUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
@@ -28,9 +30,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -231,6 +239,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInstance.setStatus(JobStatus.NON.getValue());
             strategyGroupInstance.setSchedule_source(ScheduleSource.MANUAL.getCode());
             strategyGroupInstance.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
+            strategyGroupInstance.setCreate_time(new Timestamp(new Date().getTime()));
             strategyGroupInstance.setUpdate_time(new Timestamp(new Date().getTime()));
             strategyGroupInstance.setMisfire("0");
 
@@ -304,6 +313,11 @@ public class StrategyGroupController extends BaseController {
     }
 
 
+    /**
+     * 获取组策略实例信息
+     * @param id
+     * @return
+     */
     @White
     @RequestMapping(value = "/strategy_group_instance_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -332,12 +346,17 @@ public class StrategyGroupController extends BaseController {
         return "digitalmarket/strategy_instance_index";
     }
 
+    /**
+     * 获取策略组实例下的所有子策略
+     * @param strategy_group_instance_id
+     * @return
+     */
     @White
     @RequestMapping(value = "/strategy_instance_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<StrategyInstance>> strategy_instance_list(String strategy_group_instance_id) {
+    public ReturnInfo<List<StrategyInstance>> strategy_instance_list(String strategy_group_instance_id,String status) {
         try{
-            List<StrategyInstance> strategyGroupInstances = strategyInstanceMapper.selectByGroupId(strategy_group_instance_id);
+            List<StrategyInstance> strategyGroupInstances = strategyInstanceMapper.selectByGroupInstanceId(strategy_group_instance_id, status);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", strategyGroupInstances);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -346,6 +365,86 @@ public class StrategyGroupController extends BaseController {
         }
     }
 
+    /**
+     * 策略组实例重试首页
+     * @return
+     */
+    @White
+    @RequestMapping(value = "/strategy_group_retry_detail_index", method = RequestMethod.GET)
+    public String strategy_group_retry_detail_index() {
+
+        return "digitalmarket/strategy_group_retry_detail_index";
+    }
+
+    /**
+     * 策略组实例重试
+     * @param strategy_group_instance_id
+     * @param sub_tasks
+     * @return
+     */
+    @White
+    @RequestMapping(value = "/retry_strategy_group_instance", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo<List<StrategyInstance>> retry_strategy_group_instance(String strategy_group_instance_id, String[] sub_tasks) {
+        try{
+            List<StrategyInstance> strategyInstances = strategyInstanceMapper.selectByGroupInstanceId(strategy_group_instance_id, null);
+            List<String> ids=new ArrayList<>();
+            for (StrategyInstance strategyInstance:strategyInstances){
+                String divId = JSON.parseObject(strategyInstance.getRun_jsmind_data()).getString("divId");
+                if(Arrays.asList(sub_tasks).contains(divId)){
+                    ids.add(strategyInstance.getId());
+                }
+            }
+
+            if(ids.size()<=0){
+                throw new Exception("无法找到对应的子策略重试,请检查是否有正确选择策略实例");
+            }
+            strategyInstanceMapper.updateStatusByIds(ids.toArray(new String[]{}), JobStatus.CREATE.getValue());
+
+            strategyGroupInstanceMapper.updateStatusById3(JobStatus.SUB_TASK_DISPATCH.getValue(), DateUtil.getCurrentTime(), strategy_group_instance_id);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", strategyInstances);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+    /**
+     * 获取下载地址
+     * @param id 策略实例任务id
+     */
+    @RequestMapping(value = "/get_strategy_task_download", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<String> get_strategy_task_download(String id) {
+
+        //根据id 获取策略任务信息
+        StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
+        String basePath = "/home/data/label/";
+
+        String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
+
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "",url);
+    }
+
+    /**
+     * 下载地址
+     * @param id 策略实例任务id
+     */
+    @RequestMapping(value = "/strategy_task_download", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<String> strategy_task_download(HttpServletResponse response, String id) {
+
+        //根据id 获取策略任务信息
+        StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
+        String basePath = "/home/data/label/";
+
+        String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
+
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "",url);
+    }
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

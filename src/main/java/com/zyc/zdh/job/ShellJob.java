@@ -1,15 +1,11 @@
 package com.zyc.zdh.job;
 
 import com.hubspot.jinjava.Jinjava;
-import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.util.CommandUtils;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.SpringContext;
 
 import java.io.*;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

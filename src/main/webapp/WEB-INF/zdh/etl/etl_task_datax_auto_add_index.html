@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH etl datax任务新增</title>
+    <meta name="keywords" content="ZDH etl datax任务新增">
+    <meta name="description" content="ZDH etl datax任务新增">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
+    <link rel="stylesheet" href="js/selectInput/selectInput.css"/>
+    <link rel="stylesheet" type="text/css" href="js/layui/lib/layui-v2.5.5/css/layui.css"/>
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>datax任务配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="etl_task_add_form" name="etl_task_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">ETL说明</label>
+                            <div class="col-sm-10">
+                                <input id="etl_context" name="etl_context" type="text"
+                                       placeholder="ETL说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">创建时间</label>
+                            <div class="col-sm-10">
+                                <input id="create_time" name="create_time" type="text" readonly
+                                       placeholder="创建时间" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输入数据源开始-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">输入数据源选择</label>
+                            <div class="col-sm-10">
+                                <select id="data_sources_choose_input" name="data_sources_choose_input"
+                                        data-placeholder="选择数据源..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">选择数据源...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数据源类型</label>
+                            <div class="col-sm-10">
+                                <input id="data_source_type_input" name="data_source_type_input" type="text" readonly
+                                       placeholder="数据源类型" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">常用参数</label>
+                            <div class="col-sm-10">
+                                <select id="file_type_input" name="file_type_input"
+                                        data-placeholder="文件类型"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">文件类型</option>
+                                    <option value="csv" mytype="">CSV</option>
+                                    <option value="csv" mytype="">TXT文本</option>
+                                    <option value="orc" mytype="">ORC</option>
+                                    <option value="parquet" mytype="">PARQUET</option>
+                                    <option value="excel" mytype="">EXCEL</option>
+                                    <option value="json" mytype="">JSON</option>
+                                    <option value="xml" mytype="">XML</option>
+                                    <option value="hudi" mytype="">HUDI</option>
+                                    <option value="delta" mytype="">DELTA</option>
+                                </select>
+                                <select id="encoding_input" name="encoding_input"
+                                        data-placeholder="编码"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">编码</option>
+                                    <option value="GBK" mytype="">GBK</option>
+                                    <option value="GB2312" mytype="">GB2312</option>
+                                    <option value="GB18030" mytype="">GB18030</option>
+                                    <option value="UTF-8" mytype="">UTF-8</option>
+                                    <option value="ISO-8859-1" mytype="">ISO-8859-1</option>
+                                </select>
+                                <select id="header_input" name="header_input"
+                                        data-placeholder="标题"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">标题</option>
+                                    <option value="true" mytype="">有</option>
+                                    <option value="false" mytype="">无</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">分割符</label>
+                            <div class="col-sm-10"><input id="sep_input" name="sep_input" type="text"
+                                        placeholder="分割符" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">洗牌字段</label>
+                            <div class="col-sm-10"><input id="repartition_cols_input" name="repartition_cols_input" type="text"
+                                                          placeholder="洗牌字段,example: name,sex" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">其他参数</label>
+                            <div class="col-sm-10" id="div_data_sources_params">
+                                <div id="data_sources_params_input" name="data_sources_params_input" class="monaco_div_100"></div>
+                                <span class="help-block m-b-none"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+<!--                        <div class="form-group">-->
+<!--                            <label class="col-sm-2 control-label">输入表名/文件名</label>-->
+<!--                            <div class="col-sm-10" id="div_data_sources_table_name_input">-->
+<!--                                <select id="data_sources_table_name_input" name="data_sources_table_name_input"-->
+<!--                                        data-placeholder="选择数据表..."-->
+<!--                                        class="chosen-select form-control m-b" tabindex="2">-->
+<!--                                    <option value="">选择数据表...</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+
+<!--                            <div class="col-sm-10" id="div_data_sources_file_name_input">-->
+<!--                                <input id="data_sources_file_name_input" name="data_sources_file_name_input" type="text"-->
+<!--                                       placeholder="文件全路径" class="form-control" aria-required="true"> </span>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">输入表名/文件名</label>
+                            <div class="col-sm-10">
+                                <div class="layui-input-block" style="margin-left: 0px" id="data_sources_table_name_input" name="data_sources_table_name_input"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">过滤条件</label>
+                            <div class="col-sm-10" id="div_data_sources_filter_input">
+                                <div id="data_sources_filter_input" name="data_sources_filter_input" class="monaco_div_100"></div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">配置选择的列</label>
+                            <div class="col-sm-10" id="div_data_sources_table_columns">
+                                <div class="input-group">
+                                    <input id="data_sources_table_columns" name="data_sources_table_columns" type="text"
+                                           placeholder="配置选择的列逗号分割"
+                                           aria-required="true" class="form-control"> <span class="input-group-btn"> <button
+                                        id="btn_columns" type="button" class="btn btn-primary" οnsubmit='return false'>获取
+                                        </button></span>
+                                </div>
+                                <span class="help-block m-b-none">配置JDBC数据源,选择表,之后点击[获取按钮]自动生成字段映射</span>
+                                <span class="help-block m-b-none">配置HDFS数据源,手动输入列字段,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
+                                <span class="help-block m-b-none">配置HBASE数据源,手动输入列字段格式 列族:列名,逗号分割,之后点击[获取按钮]自动生成字段映射</span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!-- 输入数据源结束-->
+
+                        <!-- 输出数据源开始-->
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">输出数据源选择</label>
+                            <div class="col-sm-10">
+                                <select id="data_sources_choose_output" name="data_sources_choose_output"
+                                        data-placeholder="选择数据源..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">选择数据源...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数据源类型</label>
+                            <div class="col-sm-10">
+                                <input id="data_source_type_output" name="data_source_type_output" type="text" readonly
+                                       placeholder="数据源类型" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">常用参数</label>
+                            <div class="col-sm-10">
+                                <select id="file_type_output" name="file_type_output"
+                                        data-placeholder="文件类型"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">文件类型</option>
+                                    <option value="csv" mytype="">CSV</option>
+                                    <option value="csv" mytype="">TXT文本</option>
+                                    <option value="orc" mytype="">ORC</option>
+                                    <option value="parquet" mytype="">PARQUET</option>
+                                    <option value="excel" mytype="">EXCEL</option>
+                                    <option value="json" mytype="">JSON</option>
+                                    <option value="xml" mytype="">XML</option>
+                                    <option value="hudi" mytype="">HUDI</option>
+                                    <option value="delta" mytype="">DELTA</option>
+                                </select>
+                                <select id="encoding_output" name="encoding_output"
+                                        data-placeholder="编码"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">编码</option>
+                                    <option value="GBK" mytype="">GBK</option>
+                                    <option value="GB2312" mytype="">GB2312</option>
+                                    <option value="GB18030" mytype="">GB18030</option>
+                                    <option value="UTF-8" mytype="">UTF-8</option>
+                                    <option value="ISO-8859-1" mytype="">ISO-8859-1</option>
+                                </select>
+                                <select id="header_output" name="header_output"
+                                        data-placeholder="标题"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">标题</option>
+                                    <option value="true" mytype="">有</option>
+                                    <option value="false" mytype="">无</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">常用参数</label>
+                            <div class="col-sm-10">
+                                <select id="model_output" name="model_output"
+                                        data-placeholder="写入模式"
+                                        class="chosen-select form-control m-b" tabindex="2" style="width: 30%">
+                                    <option value="" mytype="">写入模式</option>
+                                    <option value="append" mytype="">追加</option>
+                                    <option value="overwrite" mytype="">覆盖</option>
+                                    <option value="errorifexists" mytype="">检查存在就报错</option>
+                                    <option value="ignore" mytype="">检查存在忽略</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">分割符</label>
+                            <div class="col-sm-10"><input id="sep_output" name="sep_output" type="text"
+                                                          placeholder="分割符" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">分区字段</label>
+                            <div class="col-sm-10"><input id="partition_by_output" name="partition_by_output" type="text"
+                                                          placeholder="分区字段,example: etl_date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">合并小文件个数</label>
+                            <div class="col-sm-10"><input id="merge_output" name="merge_output" type="text" value="-1"
+                                                          placeholder="合并小文件个数,默认-1,example: 1" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">其他参数</label>
+                            <div class="col-sm-10" id="div_data_sources_params_output">
+                                <div id="data_sources_params_output" name="data_sources_params_output" class="monaco_div_100"></div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+<!--                        <div class="form-group">-->
+<!--                            <div id="div_data_sources_table_name_output">-->
+<!--                                <label class="col-sm-2 control-label">输出表名</label>-->
+<!--                                <div class="col-sm-10">-->
+<!--                                    <select id="data_sources_table_name_output" name="data_sources_table_name_output"-->
+<!--                                            data-placeholder="选择数据表..."-->
+<!--                                            class="chosen-select form-control m-b" tabindex="2">-->
+<!--                                        <option value="">选择数据表...</option>-->
+<!--                                    </select>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            -->
+<!--                            -->
+<!--                            -->
+<!--                            <div class="form-group"></div>-->
+<!--                            <div id="div_data_sources_file_name_output">-->
+<!--                                <label class="col-sm-2 control-label">输出文件名</label>-->
+<!--                                <div class="col-sm-10">-->
+<!--                                    <input id="data_sources_file_name_output" name="data_sources_file_name_output"-->
+<!--                                           type="text"-->
+<!--                                           placeholder="表名/文件全路径" class="form-control" aria-required="true"-->
+<!--                                           onmouseleave="check_tb_name()"> </span>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            -->
+<!--                            -->
+<!--                        </div>-->
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">输出表名/文件名</label>
+                            <div class="col-sm-10">
+                                <div class="layui-input-block" style="margin-left: 0px" id="data_sources_table_name_output" name="data_sources_table_name_output"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">清空条件</label>
+                            <div class="col-sm-10" id="div_data_sources_clear_output">
+                                <div id="data_sources_clear_output" name="data_sources_clear_output"
+                                          class="monaco_div_100"></div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 元信息 业务相关-->
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属公司</label>
+                            <div class="col-sm-10">
+                                <input id="company" name="company"
+                                       type="text"
+                                       placeholder="填写公司" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属部门</label>
+                            <div class="col-sm-10">
+                                <input id="section" name="section"
+                                       type="text"
+                                       placeholder="填写部门" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属业务</label>
+                            <div class="col-sm-10">
+                                <input id="service" name="service"
+                                       type="text"
+                                       placeholder="填写业务" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">更新说明</label>
+                            <div class="col-sm-10">
+                                <textarea id="update_context" name="update_context" class="form-control" rows="2"
+                                          placeholder="更新说明"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输出数据源结束-->
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<div id="data_sources_params" class="ibox-content" style="display: none;">
+    <p>数据源其他参数api</p>
+    <ul>
+        <li>JDBC:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>HDFS:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sep:分割符,特殊字符需要转义,example:{"sep":"|"},{"sep","="}</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fileType:文件类型,可选择parquet,orc,csv,json...,example {"fileType":"csv"}
+        </li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; partitionBy:分区字段,example {"partitionBy":"ETL_DATE"}</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; model:文件写入模式 默认append,overwrite,append,errorifexists,ignore,example
+            {"model":"overwrite"}
+        </li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; encoding:文件编码 默认UTF-8,example {"encoding":"gbk"}</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; merge: 合并小文件 手动填写分区个数example {"merge":"50"}</li>
+        <li>HIVE:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;format:orc,parquet</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;partitionBy:分区字段</li>
+        <li>KAFKA:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msgType:消息类型,支持csv,json 2种格式</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep:分割符 当消息类型选择csv 时使用</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;groupId:消费者组，默认g1</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kafka的topic 在文件名输入框配置</li>
+        <li>HTTP:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>REDIS:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data_type:写入数据类型，可选，string,hash,list,set,table</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key.column:当选择写入数据类型为table 时配置此选项可以生成特定规则key</li>
+        <li>CASSANDRA:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>ES:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>SFTP:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fileType:文件类型默认csv,可选csv,orc,parquet,json</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep:文件分割符,默认逗号分割</li>
+        <li>KUDU:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;primary_key:指定表主键字段,默认会生成一个zdh_auto_md5字段作为主键</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;replicas:指定副本个数,默认1个备份</li>
+    </ul>
+</div>
+<script src="js/zdh_common.js"></script>
+
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+</script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<script src="js/layui/lib/layui-v2.5.5/layui.all.js"></script>
+<script src="js/selectInput/selectInput.js"></script>
+<script>
+
+    selectInput = layui.selectInput;
+    selectInput.render('#data_sources_table_name_input', {
+        // 容器id，必传参数
+        name: 'data_sources_table_name_input', // 渲染的input的name值
+        hasSelectIcon: true,
+        layFilter: 'test', //同layui form参数lay-filter
+        layVerify: 'required', //同layui form参数lay-verify
+        layVerType: '', // 同layui form参数lay-verType
+        layReqText: '请填写文本', //同layui form参数lay-ReqText
+        initValue: '', // 渲染初始化默认值
+        placeholder: '请选择数据源', // 渲染的inputplaceholder值
+        // 联想select的初始化本地值，数组格式，里面的对象属性必须为value，name，value是实际选中值，name是展示值，两者可以一样
+        invisibleMode: true,
+        ignoreCase: true,
+        data: [
+            // {name: 'APPLE', value: 222},
+            // {name: 'XIAOMI', value: 222},
+            // {name: 'HUAWEI', value: 222},
+        ],
+        hasCut: true, // 是否允许剪贴
+        //url: "http://toys.shop.com/site/test", // 异步加载的url，异步加载联想词的数组值，设置url，data参数赋的值将会无效，url和data参数两者不要同时设置
+        remoteSearch: false, // 是否启用远程搜索 默认是false，和远程搜索回调保存同步
+        parseData: function (res) { // 此参数仅在异步加载data数据下或者远程搜索模式下有效，解析回调，如果你的异步返回的data不是上述的data格式，请在此回调格式成对应的数据格式，回调参数是异步加载的数据
+            let data = [];
+            res.map(item => {
+                data.push({name: item.title, value: item.val})
+            });
+            console.log(data);
+            return data;
+        },
+        error: function (error) { // 异步加载出错的回调 回调参数是错误msg
+
+        },
+        done: function (data) { // 异步加载成功后的回调 回调参数加载返回数据
+            console.log(data)
+        },
+        remoteMethod: function (value, cb) { // 远程搜索的回调函数
+            // value 是input实施输入的value值
+            // cb是回调处理函数，请在执行ajax搜索请求成功之后执行此回调函数
+
+            //案例
+            //这里如果val为空, 则不触发搜索
+            if (!value) {
+                return cb([]);
+            }
+        }
+    });
+    selectInput.render('#data_sources_table_name_output', {
+        // 容器id，必传参数
+        name: 'data_sources_table_name_output', // 渲染的input的name值
+        hasSelectIcon: true,
+        layFilter: 'test', //同layui form参数lay-filter
+        layVerify: 'required', //同layui form参数lay-verify
+        layVerType: '', // 同layui form参数lay-verType
+        layReqText: '请填写文本', //同layui form参数lay-ReqText
+        initValue: '', // 渲染初始化默认值
+        placeholder: '请选择数据源', // 渲染的inputplaceholder值
+        // 联想select的初始化本地值，数组格式，里面的对象属性必须为value，name，value是实际选中值，name是展示值，两者可以一样
+        invisibleMode: true,
+        ignoreCase: true,
+        data: [
+            // {name: 'APPLE', value: 222},
+            // {name: 'XIAOMI', value: 222},
+            // {name: 'HUAWEI', value: 222},
+        ],
+        hasCut: true, // 是否允许剪贴
+        //url: "http://toys.shop.com/site/test", // 异步加载的url，异步加载联想词的数组值，设置url，data参数赋的值将会无效，url和data参数两者不要同时设置
+        remoteSearch: false, // 是否启用远程搜索 默认是false，和远程搜索回调保存同步
+        parseData: function (res) { // 此参数仅在异步加载data数据下或者远程搜索模式下有效，解析回调，如果你的异步返回的data不是上述的data格式，请在此回调格式成对应的数据格式，回调参数是异步加载的数据
+            let data = [];
+            res.map(item => {
+                data.push({name: item.title, value: item.val})
+            });
+            console.log(data);
+            return data;
+        },
+        error: function (error) { // 异步加载出错的回调 回调参数是错误msg
+
+        },
+        done: function (data) { // 异步加载成功后的回调 回调参数加载返回数据
+            console.log(data)
+        },
+        remoteMethod: function (value, cb) { // 远程搜索的回调函数
+            // value 是input实施输入的value值
+            // cb是回调处理函数，请在执行ajax搜索请求成功之后执行此回调函数
+
+            //案例
+            //这里如果val为空, 则不触发搜索
+            if (!value) {
+                return cb([]);
+            }
+        }
+    });
+    select_data_sources_table_name_input = selectInput.getInstance("#data_sources_table_name_input");
+    select_data_sources_table_name_output = selectInput.getInstance("#data_sources_table_name_output");
+
+    // 监听input 实时输入事件
+    // ins.on('itemInput(test1)', function (obj) {
+    //     console.log($(obj).val());
+    // });
+
+    // 监听select 选择事件
+    // ins.on('itemSelect(test1)', function (obj) {
+    //     console.log(obj);
+    // });
+</script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/sql/sql.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+
+    (function (document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            window.editor_data_sources_clear_output = monaco.editor.create(document.getElementById('data_sources_clear_output'), {
+                value: '-- 清空条件,使用sql语法 example: delete from user where etl_date=2019-12-01,如果是hbase数据源直接输入start_row_key,end_row_key 通过逗号分割 example: 001,100 ,提交时此语句此提示语必须删除',
+                language: 'sql',
+                theme:'vs-dark'
+            });
+
+            window.editor_data_sources_params_input = monaco.editor.create(document.getElementById('data_sources_params_input'), {
+                value: '{"setting":{"speed":{"channel":3},"errorLimit":{"record":0,"percentage":0.02}}}',
+                language: 'json',
+                theme:'vs-dark'
+            });
+            window.editor_data_sources_params_output = monaco.editor.create(document.getElementById('data_sources_params_output'), {
+                value: 'json参数 ,提交时此语句此提示语必须删除',
+                language: 'json',
+                theme:'vs-dark'
+            });
+
+            window.editor_data_sources_filter_input = monaco.editor.create(document.getElementById('data_sources_filter_input'), {
+                value: '-- 过滤条件,使用sql语法 example: name=zyc and sex=man ,如果是hbase数据源直接输入start_row_key,end_row_key 通过逗号分割 example: 001,100,提交时此语句此提示语必须删除',
+                language: 'sql',
+                theme:'vs-dark'
+            });
+
+
+            $('#file_type_input').chosen();
+            $('#encoding_input').chosen();
+            $('#header_input').chosen();
+            $('#file_type_output').chosen();
+            $('#encoding_output').chosen();
+            $('#header_output').chosen();
+            $('#model_output').chosen();
+
+            //定义特定数据源展示的div
+            function fileShow() {
+                console.info("fileShow");
+                //$('#div_data_sources_table_name_input')[0].style.display = 'none';
+                //$('#div_data_sources_file_name_input')[0].style.display = 'block';
+                //表字段
+                //$('#div_data_sources_table_columns')[0].style.display = 'block';
+
+                //$('#div_data_sources_table_name_output')[0].style.display = 'none';
+                //$('#div_data_sources_file_name_output')[0].style.display = 'block';
+            }
+
+            //初始化数据源--把所有数据源都加载到下拉框
+            function init_data_sources() {
+                layui.form.render("select");
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/data_sources_list",
+                    dataType: 'json',
+                    async: false,
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
+                        for (let i = 0; i < data.length; i++) {
+                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        }
+                        //输入数据源类型下拉框
+                        $('#data_sources_choose_input').html(str);
+                        $('#data_sources_choose_input').chosen().on("change", function (evt, params) {
+                            // alert($('#data_sources_choose_input').val())
+                            $('#data_source_type_input').val($('#data_sources_choose_input').find("option:selected").attr("mytype"));
+                            $("#data_sources_choose_input").trigger("chosen:updated");
+                            if ($('#data_sources_choose_input').find("option:selected").attr("mytype") == 'JDBC') {
+                                //alert("==========="+$('#data_sources_choose_input').val())
+                                init_table_name($('#data_sources_choose_input').val());
+                            } else {
+                                //fileShow()
+                                //表名
+                                //$('#div_data_sources_table_name_input')[0].style.display = 'none';
+                                //表字段
+                                //$('#div_data_sources_table_columns')[0].style.display = 'block';
+                                //$('#div_data_sources_file_name_input')[0].style.display = 'block';
+                            }
+                        });
+
+                        //输出数据源类型下拉框
+                        $('#data_sources_choose_output').html(str);
+
+                        $('#data_sources_choose_output').chosen().on("change", function (evt, params) {
+                            // alert($('#data_sources_choose_input').val())
+                            $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
+                            $("#data_sources_choose_output").trigger("chosen:updated");
+                            if ($('#data_sources_choose_output').find("option:selected").attr("mytype") == 'JDBC') {
+                                init_table_name_output($('#data_sources_choose_output').val());
+
+                                //$('#div_data_sources_table_name_output')[0].style.display = 'block';
+                                //$('#div_data_sources_file_name_output')[0].style.display = 'block';
+                            } else {
+                               // $('#div_data_sources_file_name_output')[0].style.display = 'block';
+                               // $('#div_data_sources_table_name_output')[0].style.display = 'none';
+
+                            }
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+
+            //获取table 中包含的字段函数
+            $("#btn_columns").click(function () {
+                $('#exampleTableEvents').bootstrapTable("removeAll");
+                if (select_data_sources_table_name_input.getValue().value == '') {
+                    layer.msg("表名/文件名不能为空!");
+                }
+
+                var postData = {
+                    id: $("#data_sources_choose_input").val(),
+                    table_name: select_data_sources_table_name_input.getValue().value,
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/etl_task_schema",
+                    dataType: 'json',
+                    async: false,
+                    data: postData,
+                    //成功返回
+                    success: function (data) {
+                        if(data.code == "200"){
+                            $('#row_num').val('');
+                            var str = '';
+                            for (var i = 0; i < data.result.length; i++) {
+                                if (str == '')
+                                    str = data.result[i];
+                                else
+                                    str += "," + data.result[i];
+                            }
+                            $("#data_sources_table_columns").val(str)
+                        }else{
+                            layer.msg(data.msg);
+                        }
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        layer.msg(data.responseText);
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+            });
+
+            //根据数据源id 获取对应的tables
+            function init_table_name(id) {
+
+                //alert("datasourceid:"+id)
+                var postData = {
+                    id: id,
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/etl_task_tables",
+                    dataType: 'json',
+                    async: false,
+                    data: postData,
+                    //成功返回
+                    success: function (data) {
+                        select_data_sources_table_name_input.emptyValue();
+                        var d=new Array();
+
+                        var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            d.push({value: data[i], name: data[i], mytype: data[i]});
+                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        }
+                        select_data_sources_table_name_input.addSelect(d);
+                        select_data_sources_table_name_input.showElem(false);
+                        //alert("fafafa1"+str)
+
+                        //$('#div_data_sources_file_name_input')[0].style.display = 'none';
+
+                        //$('#div_data_sources_table_name_input')[0].style.display = 'block';
+                        //表字段
+                        //$('#div_data_sources_table_columns')[0].style.display = 'block';
+
+                       // $('#data_sources_table_name_input').html(str);
+
+                        //$('#data_sources_table_name_input').trigger("chosen:updated");
+
+                        //$('#data_sources_table_name_input').chosen();
+
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("init_table_name ajax complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+
+            }
+
+            //根据数据源id 获取对应的tables
+            function init_table_name_output(id) {
+
+                var postData = {
+                    id: id,
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/etl_task_tables",
+                    dataType: 'json',
+                    data: postData,
+                    async: false,
+                    //成功返回
+                    success: function (data) {
+                        select_data_sources_table_name_output.emptyValue();
+                        var d=new Array();
+
+                        var str = '<option value=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.length; i++) {
+                            d.push({value: data[i], name: data[i], mytype: data[i]});
+                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        }
+                        select_data_sources_table_name_output.addSelect(d);
+                        select_data_sources_table_name_output.showElem(false);
+
+                        // $('#data_sources_table_name_output').html(str);
+                        // $("#data_sources_table_name_output").trigger("chosen:updated");
+                        // $('#data_sources_table_name_output').chosen().on("change", function (evt, params) {
+                        //     console.info("'data_sources_table_name_output' event change set text 'data_sources_file_name_output'");
+                        //     $('#data_sources_file_name_output').val($('#data_sources_table_name_output').val())
+                        //
+                        // });
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+
+            }
+
+
+            fileShow();
+
+            //启动数据源select 初始化函数
+            init_data_sources();
+            //s.id=-1 表示新增,否则表示更新
+            if (s.id == -1) {
+                console.info("新增按钮触发");
+                //$('#data_sources_table_name_input').chosen();
+                //$('#data_sources_table_name_output').chosen();
+                $('#update_etl_task').hide();
+                $('#save_etl_task').show();
+                $('#enable_quality').prop("checked", false)
+            } else {
+
+                //init_table_name(s.id)
+
+                if (s.is_copy == "true") {
+                    console.info("拷贝按钮触发");
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').show();
+                } else {
+                    console.info("更新按钮触发");
+                    $('#save_etl_task').hide();
+                    $('#update_etl_task').show();
+                }
+
+                if (s.only_read == "true") {
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').hide();
+                    $('#reset').hide();
+                }
+                buildParam()
+            }
+
+            function getMyDate(str) {
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth() + 1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + " " + getzf(oHour) + ":" + getzf(oMin) + ":" + getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            //补0操作
+            function getzf(num) {
+                if (parseInt(num) < 10) {
+                    num = '0' + num;
+                }
+                return num;
+            }
+
+
+            function buildParam() {
+                if (s.id != '-1') {
+                    console.info("更新按钮触发--开始赋值对应参数");
+                    //开始赋值
+
+                    $.ajax({
+                        url: server_context+"/etl_task_datax_auto_detail",
+                        data: "id=" + s.id,
+                        type: "post",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            console.info("success");
+                            // layer.alert(JSON.stringify(data[0]))
+
+                            //获取输入数据源id
+                            var data_sources_choose_input = data.result.data_sources_choose_input;
+                            console.info("参数赋值:输入数据源id:" + data_sources_choose_input);
+
+
+                            //获取ETL 说明
+                            var etl_context = data.result.etl_context;
+                            $("#etl_context").val(etl_context);
+
+                            var create_time = data.result.create_time;
+                            $("#create_time").val(getMyDate(create_time));
+
+
+                            //初始化输入数据源select 组件
+                            $("#data_sources_choose_input").val(data_sources_choose_input);
+                            $("#data_sources_choose_input").trigger("chosen:updated");
+
+                            //获取输入数据源类型
+                            var data_source_type_input = data.result.data_source_type_input;
+                            $("#data_source_type_input").val(data_source_type_input);
+
+                            //输出文件类型参数
+                            var file_type_input = data.result.file_type_input;
+                            $("#file_type_input").val(file_type_input);
+                            $("#file_type_input").trigger("chosen:updated");
+
+                            var encoding_input = data.result.encoding_input;
+                            $("#encoding_input").val(encoding_input);
+                            $("#encoding_input").trigger("chosen:updated");
+
+                            var header_input = data.result.header_input;
+                            $("#header_input").val(header_input);
+                            $("#header_input").trigger("chosen:updated");
+
+                            var sep_input = data.result.sep_input;
+                            $("#sep_input").val(sep_input);
+
+                            var repartition_cols_input = data.result.repartition_cols_input;
+                            $("#repartition_cols_input").val(repartition_cols_input);
+
+                            //获取输入源数据其他参数
+                            var data_sources_params_input = data.result.data_sources_params_input;
+                            //$("#data_sources_params_input").val(data_sources_params_input);
+                            window.editor_data_sources_params_input.setValue(data_sources_params_input);
+                            //获取表名
+                            var data_sources_table_name_input = data.result.data_sources_table_name_input;
+
+                            if (data_source_type_input == "JDBC") {
+                                //初始化数据源对应的表
+                                init_table_name(data_sources_choose_input);
+                            }
+                            select_data_sources_table_name_input.setValue(data_sources_table_name_input);
+
+                            //获取过滤条件
+                            var data_sources_filter_input = data.result.data_sources_filter_input;
+                            //$('#data_sources_filter_input').val(data_sources_filter_input);
+                            window.editor_data_sources_filter_input.setValue(data_sources_filter_input);
+
+
+                            //获取 配置选择的列
+                            var data_sources_table_columns = data.result.data_sources_table_columns;
+                            $('#data_sources_table_columns').val(data_sources_table_columns)
+
+
+                            // 获取输出数据源
+                            var data_sources_choose_output = data.result.data_sources_choose_output;
+                            //初始化输入数据源select 组件
+                            $("#data_sources_choose_output").val(data_sources_choose_output);
+                            $("#data_sources_choose_output").trigger("chosen:updated");
+
+                            //获取输出数据源类型
+                            var data_source_type_output = data.result.data_source_type_output;
+                            $("#data_source_type_output").val(data_source_type_output);
+
+                            //输出文件类型参数
+                            var file_type_output = data.result.file_type_output;
+                            $("#file_type_output").val(file_type_output);
+                            $("#file_type_output").trigger("chosen:updated");
+
+                            var encoding_output = data.result.encoding_output;
+                            $("#encoding_output").val(encoding_output);
+                            $("#encoding_output").trigger("chosen:updated");
+
+                            var header_output = data.result.header_output;
+                            $("#header_output").val(header_output);
+                            $("#header_output").trigger("chosen:updated");
+
+                            var model_output = data.result.model_output;
+                            $("#model_output").val(model_output);
+                            $("#model_output").trigger("chosen:updated");
+
+                            var sep_output = data.result.sep_output;
+                            $("#sep_output").val(sep_output);
+
+
+                            var partition_by_output = data.result.partition_by_output;
+                            $("#partition_by_output").val(partition_by_output);
+
+                            var merge_output = data.result.merge_output;
+                            $("#merge_out").val(merge_output);
+
+                            //获取输入源数据其他参数
+                            var data_sources_params_output = data.result.data_sources_params_output;
+                            //$("#data_sources_params_output").val(data_sources_params_output);
+                            window.editor_data_sources_params_output.setValue(data_sources_params_output);
+
+                            //获取输出数据源表名
+                            var data_sources_table_name_output = data.result.data_sources_table_name_output;
+                            if (data_source_type_output == "JDBC") {
+                                //初始化数据源对应的表
+                                init_table_name_output(data_sources_choose_output);
+                            }
+
+                            select_data_sources_table_name_output.setValue(data_sources_table_name_output);
+
+                            //获取输出删除条件
+                            var data_sources_clear_output = data.result.data_sources_clear_output;
+                            //$('#data_sources_clear_output').val(data_sources_clear_output);
+                            window.editor_data_sources_clear_output.setValue(data_sources_clear_output);
+
+                            //获取元数据信息
+                            var company = data.result.company;
+                            $('#company').val(company);
+
+                            var section = data.result.section;
+                            $('#section').val(section);
+
+                            var service = data.result.service;
+                            $('#service').val(service);
+
+                            var update_context = data.result.update_context;
+                            $('#update_context').val(update_context);
+
+                            parent.layer.msg(data.msg);
+                        },
+                        //处理完成
+                        complete: function (data) {
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+
+
+                }
+            }
+
+        })();
+
+    })(document, window, jQuery);
+
+    //初始化a 标签 弹出具体参数解析功能
+    function resovle_params() {
+
+        layer.open({
+            type: 1,
+            shade: false,
+            title: false, //不显示标题
+            area: ["30%", "40%"],
+            content: $('#data_sources_params'), //捕获的元素
+            cancel: function (index) {
+                layer.close(index);
+                //this.content.show();
+                //layer.msg('捕获就是从页面已经存在的元素上，包裹layer的结构',{time: 5000});
+            }
+        });
+    }
+
+
+    function check_tb_name() {
+        if ($('#data_source_type_output').val() == "JDBC") {
+
+            if ($("#data_sources_table_name_output").html().search('<option value=\"' + $('#data_sources_file_name_output').val() + '\" hassubinfo="true">') == -1) {
+                var op = '<option value=\"' + $('#data_sources_file_name_output').val() + '\" hassubinfo="true">' + $('#data_sources_file_name_output').val() + '</option>'
+
+                $("#data_sources_table_name_output").html($("#data_sources_table_name_output").html() + op)
+                $("#data_sources_table_name_output").trigger("chosen:updated");
+                $("#data_sources_table_name_output").chosen();
+                $("#data_sources_table_name_output").val($('#data_sources_file_name_output').val());
+                $("#data_sources_table_name_output").trigger("chosen:updated");
+            }
+        }
+    }
+
+    function getFileName(o) {
+        var pos = o.lastIndexOf("\\");
+        return o.substring(pos + 1);
+    }
+
+    $('#save_etl_task').click(function () {
+
+        if ($('#etl_context').val() == '') {
+            layer.msg("ETL任务说明不能为空！");
+            return;
+        }
+
+        var editor_str = "&data_sources_params_input="+window.editor_data_sources_params_input.getValue();
+        editor_str = editor_str +"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue();
+        editor_str = editor_str +"&data_sources_params_output="+window.editor_data_sources_params_output.getValue();
+        editor_str = editor_str +"&data_sources_filter_input="+window.editor_data_sources_filter_input.getValue();
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/etl_task_datax_auto_add",
+            async: false,
+            dataType: 'json',
+            data: $("#etl_task_add_form").serialize() +editor_str,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    layer.msg("执行失败");
+                    return ;
+                }
+                layer.msg("执行成功");
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                $("#save_etl_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+
+    $('#update_etl_task').click(function () {
+
+        if ($('#etl_context').val() == '') {
+            layer.msg("ETL任务说明不能为空！");
+            return;
+        }
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+
+
+        var editor_str = "&data_sources_params_input="+window.editor_data_sources_params_input.getValue();
+        editor_str = editor_str +"&data_sources_clear_output="+window.editor_data_sources_clear_output.getValue();
+        editor_str = editor_str +"&data_sources_params_output="+window.editor_data_sources_params_output.getValue();
+        editor_str = editor_str +"&data_sources_filter_input="+window.editor_data_sources_filter_input.getValue();
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/etl_task_datax_auto_update",
+            dataType: 'json',
+            async: false,
+            data: $("#etl_task_add_form").serialize()+editor_str+ "&" + "id=" + s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    layer.msg("执行失败");
+                    return ;
+                }
+                layer.msg("执行成功");
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                layer.error(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
+
+</script>
+
+</body>
+
+</html>

@@ -71,16 +71,16 @@ public class RetryJob {
                 zdhHaMap.put(zdhHaInfo.getId(),"");
             }
             for(TaskLogInstance t2 :taskLogsList2){
-                // 此处表示shell任务在执行中,挂掉需要进行回复
-                if(t2.getJob_type().equalsIgnoreCase("shell") && !StringUtils.isEmpty(t2.getServer_id())
+                // 此处表示shell,datax,data_web任务在执行中,挂掉需要进行回复
+                if((Arrays.asList("shell","email","http").contains(t2.getJob_type().toLowerCase()) || Arrays.asList("datax","datax_web").contains(t2.getMore_task().toLowerCase())) && !StringUtils.isEmpty(t2.getServer_id())
                 && ( !redisUtil.exists(t2.getServer_id().split(":")[0]) || !redisUtil.get(t2.getServer_id().split(":")[0]).toString().equalsIgnoreCase(t2.getServer_id()) )
                 ){
                     if(t2.getJob_type().equalsIgnoreCase("shell")){
                         if(JobCommon2.check_thread_limit(t2))
                             continue;
                     }
-                    logger.info("检测到任务意外死亡,将在本节点自动重试任务");
-                    JobCommon2.insertLog(t2,"INFO","检测到任务意外死亡,将在本节点自动重试任务");
+                    logger.info("检测到任务意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
+                    JobCommon2.insertLog(t2,"INFO","检测到任务意外死亡,将在本节点自动重试任务,任务id: "+t2.getId());
                     t2.setServer_id(JobCommon2.web_application_id);
                     tlim.updateByPrimaryKey(t2);
                     JobCommon2.chooseJobBean(t2);
@@ -92,8 +92,8 @@ public class RetryJob {
                     //判断标识是否有效
                     if(!redisUtil.get(t2.getServer_id().split(":")[0]).toString().equalsIgnoreCase(t2.getServer_id())){
                         //调度异常,进行故障转移,同自动重试
-                        logger.info("检测到执行任务的调度器意外死亡,将在本节点自动重试任务");
-                        JobCommon2.insertLog(t2,"INFO","检测到执行任务的调度器意外死亡,将在本节点自动重试任务");
+                        logger.info("检测到执行任务的调度器意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
+                        JobCommon2.insertLog(t2,"INFO","检测到执行任务的调度器意外死亡,将在本节点自动重试任务,任务id: "+t2.getId());
                         t2.setServer_id(JobCommon2.web_application_id);
                         tlim.updateByPrimaryKey(t2);
                         JobCommon2.chooseJobBean(t2);

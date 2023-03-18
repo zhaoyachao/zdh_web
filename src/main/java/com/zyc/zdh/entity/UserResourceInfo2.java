@@ -38,6 +38,8 @@ public class UserResourceInfo2 {
 
 	private String notice_title;//提示语
 
+	private String role_code;
+
 	public int getOrderN() {
 		if(order==null || order.trim().equals("")){
 			return 1;
@@ -123,5 +125,13 @@ public class UserResourceInfo2 {
 
 	public void setNotice_title(String notice_title) {
 		this.notice_title = notice_title;
+	}
+
+	public String getRole_code() {
+		return role_code;
+	}
+
+	public void setRole_code(String role_code) {
+		this.role_code = role_code;
 	}
 }

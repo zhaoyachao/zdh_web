@@ -67,6 +67,51 @@
                             </div>
                         </div>
 
+                        <div class="form-group" id="div_start_end_time">
+                            <label class="col-sm-2 control-label">起始日期</label>
+                            <div class="col-sm-10">
+                                <input placeholder="开始日期" class="form-control layer-date" id="start_time" name="start_time">
+                                <input placeholder="结束日期" class="form-control layer-date" id="end_time" name="end_time">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">策略组类型</label>
+                            <div class="col-sm-10">
+                                <select id="group_type" name="group_type"
+                                        data-placeholder="选择策略类型..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">选择策略组类型...</option>
+                                    <option value="online" mytype="">实时</option>
+                                    <option value="offline" mytype="">离线</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">表达式</label>
+                            <div class="col-sm-10">
+                                <input id="expr" name="expr" type="text"
+                                       placeholder="example:100s,100m,100h,1d or corn 表达式,默认1d" class="form-control" aria-required="true"> </span>
+                                <span class="help-block m-b-none"><a id="" href="javascript:void(0);" onclick="cron()">生成Cron表达式</a></span>
+                            </div>
+<!--                            <label class="col-sm-2 control-label">调度时间策略</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <div class="checkbox i-checks">-->
+<!--                                    <label class="no-padding">-->
+<!--                                        <input id="use_quartz_time" name="use_quartz_time"  onclick="abc()" type="checkbox"><i></i> 使用调度触发时间</label>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                        </div>
+
+                        <div class="form-group" id="div_time_diff">
+                            <label class="col-sm-2 control-label">回退时间差</label>
+                            <div class="col-sm-10">
+                                <input id="time_diff" name="time_diff" type="text"
+                                       placeholder="时间差 example:1s(1秒),1m(1分钟),1d(1天)" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label">策略配置</label>
                             <div  class="col-sm-10">
@@ -321,6 +366,17 @@
                 $("#" + divId).html(rs.rights_context);
             }
 
+            if(tp == "touch"){
+                $("#" + divId).attr("touch_id",rs.touch_id);
+                $("#" + divId).attr("touch_context",rs.touch_context);
+                $("#" + divId).attr("touch_task",rs.touch_task);
+                $("#" + divId).html(rs.touch_context);
+            }
+            if(tp == "plugin"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
             jsPlumb.draggable(divId);
@@ -395,6 +451,10 @@
                 rights_context: $elem.attr('rights_context'),
                 rights: $elem.attr('rights'),
                 rights_param: $elem.attr('rights_param'),
+
+                touch_context: $elem.attr('touch_context'),
+                touch_id: $elem.attr('touch_id'),
+                touch_task: $elem.attr('touch_task'),
 
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,
@@ -545,7 +605,35 @@
 
             }
             // ------------------------------------------------------------------
+            //日期范围限制
+            var start = {
+                elem: '#start_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59', //最大日期
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    end.min = datas; //开始日选好后，重置结束日的最小日期
+                    end.start = datas //将结束日的初始值设定为开始日
+                }
+            };
+            var end = {
+                elem: '#end_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59',
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    start.max = datas; //结束日选好后，重置开始日的最大日期
+                }
+            };
+            laydate(start);
+            laydate(end);
 
+            $("#start_time").val(getCurrentDate());
+            $("#end_time").val(getCurrentDate());
 
             function getCurrentDate(){
                 var oDate = new Date(),
@@ -597,6 +685,23 @@
                         var group_context=data.result.group_context;
                         $("#group_context").val(group_context);
 
+                        //开始时间
+                        var start_time=data.result.start_time;
+                        if(start_time!='' && typeof(start_time) !="undefined"){
+                            $("#start_time").val(getMyDate(start_time));
+                        }
+
+                        //结束时间
+                        var end_time=data.result.end_time;
+                        if(end_time!='' && typeof(end_time) !="undefined"){
+                            $("#end_time").val(getMyDate(end_time));
+                        }
+                        var expr=data.result.expr;
+                        $("#expr").val(expr);
+
+                        var time_diff=data.result.time_diff;
+                        $("#time_diff").val(time_diff);
+
                         var jsmind_data=data.result.jsmind_data;
                         open_json(jsmind_data,s.is_copy);
 
@@ -620,6 +725,23 @@
     })(document, window, jQuery);
 
 
+    function cron() {
+        parent.layer.open({
+            type: 2,
+            title: 'cron表达式生成',
+            shadeClose: false,
+            resize: true,
+            fixed: false,
+            maxmin: true,
+            shade: 0.1,
+            area : ['45%', '60%'],
+            //area: ['450px', '500px'],
+            content: server_context+"/cron.html", //iframe的url
+            end : function () {
+                console.info("弹框结束")
+            }
+        });
+    }
 
     $('#save_dispatch_task').click(function () {
 

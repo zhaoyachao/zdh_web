@@ -624,8 +624,40 @@
   + v5.1.1 [zdh_web]优化日志格式,增加logId
   + v5.1.1 [zdh_web]修复分流字段错误
   + v5.1.1 [zdh_web]智能营销-实现过滤,分流功能
+  + v5.1.1 [zdh_web]标签筛选实现相对时间
+  + v5.1.1 [zdh_web]智能营销-标签增加数据源
+  + v5.1.1 [zdh_web]智能营销-修复禁用反显问题
+  + v5.1.1 [zdh_web]智能营销-人群文件实现增删改查,文件增加数据类型字段
+  + v5.1.1 [zdh_web]智能营销-增加not_use可截断上游数据操作
+  + v5.1.1 [zdh_web]新增selectInput组件
+  + v5.1.1 [zdh_web]重新规划日志,增加request日志
+  + v5.1.1 [zdh_web]优化数据源下拉框格式
+  + v5.1.1 [zdh_web]datax_web升级版开发
+  + v5.1.1 [zdh_web]修复历史datax任务节点死亡未自动重试bug
+  + v5.1.1 [zdh_web]修复配置文件获取python_home参数自动获取到环境变量问题,修改参数python_home为python_engine(当前解决方案不太合理,使用者尽量避免使用python_engine做环境变量)
+  + v5.1.1 [zdh_web]新增系统管理员邮件告警
+  + v5.1.1 [zdh_web]优化权限管理-用户角色绑定关系-code代替id绑定(影响以下模块模块,角色管理,审批流,权限申请,查询个人资源权限)
+  + v5.1.1 [zdh_web]触达配置-增加短信签名,模板,平台信息
+  + v5.1.1 [zdh_web]智能营销-实现触达模块【开发中】
+  + v5.1.1 [zdh_web]优化pom文件smart-doc插件配置
+  + v5.1.1 [zdh_web]智能营销-人群文件上传优化
+  + v5.1.1 [zdh_web]修复权限管理-用户配置产品线为空异常
+  + v5.1.1 [zdh_web]单独增加用户组配置功能
+  + v5.1.1 [zdh_web]支持hadoop权限可视化配置
+  + v5.1.1 [zdh_web]支持hive权限可视化配置
+  + v5.1.1 [zdh_web][zdh_mock]支持接口禁用,增加mock日志查询
+  + v5.1.1 [zdh_web]增加限流控制(自定义redis实现),优化aop操作日志,增加ip解析
+  + v5.1.1 [zdh_web]修复智能营销-禁用控制,标签任务禁用结果直接设置为空,非标签的其他流程处理任务禁用结果复用上游结果
+  + v5.1.1 [zdh_web]优化标签配置格式,抽象出operate和value
+  + v5.1.1 [zdh_web]修复etl调度状态初始化异常(百万分之一的概率触发)
+  + v5.1.1 [zdh_web]etl调度增加最后一次结束判断
+  + v5.1.1 [zdh_web]修复email,http任务机器挂掉导致未自动重试bug
+  + v5.1.1 [zdh_web]优化用户账号session过期检查
+  + v5.1.1 [zdh_web]调度支持指定调度器执行(需要优化,目前指定调度器执行,如果调度器死亡,则不会使用自动故障转移)
+  + v5.1.1 [zdh_web]审批流增加代理人审批
+  + v5.1.1 [zdh_web]优化quartz配置-采用配置文件替换代码格式
+  + v5.1.1 [zdh_web]权限模块-资源管理增加title提示资源类型
   
-  + v5.1.1 [zdh_web]智能营销-实现触达模块【未完成】
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
@@ -1880,6 +1912,111 @@
     ALTER TABLE strategy_instance add COLUMN strategy_id varchar(128) not null default '0' COMMENT '策略id';
     ALTER TABLE strategy_group_instance add COLUMN strategy_group_id varchar(128) not null default '0' COMMENT '策略组id';
 
+    CREATE TABLE `touch_config_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `touch_context` varchar(128) DEFAULT NULL,
+      `touch_config` text COMMENT '配置json格式',
+      `touch_task` varchar(128) DEFAULT 'email' comment '触达任务类型',
+      `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+      `is_delete` varchar(10) not null DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    
+    ALTER TABLE label_info add COLUMN data_sources_choose_input varchar(128) not null default '0' COMMENT '数据源id';
+    
+    ALTER TABLE crowd_file_info add COLUMN data_type varchar(128) not null default '' COMMENT '数据类型,phone,email,id_card,可扩展';
+    
+    drop table etl_task_datax_auto_info
+    CREATE TABLE `etl_task_datax_auto_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `etl_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+      `data_sources_choose_input` varchar(100) DEFAULT NULL COMMENT '输入数据源id',
+      `data_source_type_input` varchar(100) DEFAULT NULL COMMENT '输入数据源类型',
+      `data_sources_table_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源表名',
+      `data_sources_file_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源文件名',
+      `data_sources_table_columns` text COMMENT '输入数据源表列名',
+      `data_sources_params_input` varchar(500) DEFAULT NULL COMMENT '输入数据源参数',
+      `data_sources_filter_input` varchar(500) DEFAULT NULL COMMENT '输入数据源过滤条件',
+      `data_sources_choose_output` varchar(100) DEFAULT NULL COMMENT '输出数据源id',
+      `data_source_type_output` varchar(100) DEFAULT NULL COMMENT '输出数据源类型',
+      `data_sources_table_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源表名',
+      `data_sources_file_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源文件名',
+      `data_sources_params_output` varchar(500) DEFAULT NULL COMMENT '输出数据源参数',
+      `column_datas` text COMMENT '输入输出自定映射关系',
+      `data_sources_clear_output` varchar(500) DEFAULT NULL COMMENT '数据源数据源删除条件',
+      `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+      `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+      `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+      `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+      `column_size` varchar(100) DEFAULT NULL COMMENT '字段个数',
+      `rows_range` varchar(100) DEFAULT NULL COMMENT '行数范围',
+      `error_rate` varchar(10) DEFAULT NULL COMMENT '错误率',
+      `enable_quality` varchar(10) DEFAULT NULL COMMENT '是否开启质量检测',
+      `duplicate_columns` varchar(200) DEFAULT NULL COMMENT '去重字段',
+      `primary_columns` varchar(100) DEFAULT NULL COMMENT '不可重复字段',
+      `file_type_input` varchar(10) DEFAULT NULL COMMENT '输入文件类型',
+      `encoding_input` varchar(10) DEFAULT NULL COMMENT '输入文件编码',
+      `sep_input` varchar(10) DEFAULT NULL COMMENT '输入分割符',
+      `file_type_output` varchar(10) DEFAULT NULL COMMENT '输出文件类型',
+      `encoding_output` varchar(10) DEFAULT NULL COMMENT '输出文件编码',
+      `sep_output` varchar(10) DEFAULT NULL COMMENT '输出文件分割符',
+      `header_input` varchar(10) DEFAULT NULL COMMENT '输入是否包含表头',
+      `header_output` varchar(10) DEFAULT NULL COMMENT '输出是否包含表头',
+      `repartition_cols_input` varchar(256) NOT NULL DEFAULT '' COMMENT '洗牌字段默认空',
+      `model_output` varchar(64) NOT NULL DEFAULT '' COMMENT '写入模式默认空',
+      `partition_by_output` varchar(256) NOT NULL DEFAULT '' COMMENT '分区字段默认空',
+      `merge_output` varchar(256) NOT NULL DEFAULT '-1' COMMENT '合并小文件默认-1 不合并',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    ALTER TABLE role_resource_info add COLUMN role_code varchar(128) not null default '' COMMENT '角色code';
+    update role_resource_info a left join role_info b on a.role_id =b.id set a.role_code=b.code;
+    update permission_user_info set roles='admin' where user_account ='zyc';
+    
+    alter table touch_config_info add column sign varchar(128) not null default '' comment '签名';
+    alter table touch_config_info add column template_code varchar(256) not null default '' comment '模板code';
+    alter table touch_config_info add column platform varchar(256) not null default '' comment '短信平台';
+    
+    alter table product_tag_info add column product_type varchar(256) not null default '' comment '产品类型';
+    
+    drop table permission_bigdata_info;
+    CREATE TABLE `permission_bigdata_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `user_account` varchar(200) DEFAULT NULL COMMENT '产品code',
+      `product_code` varchar(200) DEFAULT NULL COMMENT '产品code',
+      `product_type` varchar(100) DEFAULT NULL COMMENT '产品类型',
+      `resource_type` varchar(100) DEFAULT NULL COMMENT '资源类型,文件,目录,表',
+      `resource_manage_group` varchar(100) DEFAULT NULL COMMENT '用户组是否作为当前路径管理层',
+      `permission_rule` varchar(100) DEFAULT NULL COMMENT '权限规则',
+      `path` varchar(100) DEFAULT NULL COMMENT '路径',
+      `user_group_code` varchar(100) DEFAULT NULL COMMENT '用户组',
+      `permission_depth_level` varchar(100) DEFAULT NULL COMMENT '权限层级',
+      `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    alter table user_group_info add column group_code varchar(256) not null default '' comment '组code';
+    ALTER TABLE we_mock_data_info add COLUMN is_disenable varchar(128) not null default 'on' COMMENT '是否禁用on,off';
+    
+    alter table task_log_instance add column schedule_id varchar(256) not null default '' comment '调度器标识';
+    alter table process_flow_info add column agent_user varchar(256) not null default '' comment '代理人id';
+    
+    alter table label_info add column label_use_type varchar(16) not null default 'batch' comment '使用方式,batch:值查人,single:人查值';
+    alter table label_info add column label_data_time_effect varchar(16) not null default 'day' comment '数据时效性, day:天级,hour:小时级,second:准实时';
+    alter table label_info add column label_data_update_type varchar(16) not null default 'overwrite' comment '数据更新类型,overwrite:覆盖,append:追加,get_append:值追加';
+    alter table label_info add column label_event_time_column varchar(256) not null default '' comment '事件事件字段,默认为空';
+    alter table label_info add column label_data_code varchar(256) not null default '' comment '数据标识,使用场景：从kafka来的数据根据此标识找到可以加工的标签都有哪些';
+    
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
   + v4.7.x 接入flink引擎,实现流采集 已完成

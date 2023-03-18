@@ -110,16 +110,16 @@ public class JobDigitalMarket {
 
     public static void insertLog(StrategyInstance si, String level, String msg) {
 
-//        ZdhLogs zdhLogs = new ZdhLogs();
-//        zdhLogs.setJob_id(tli.getJob_id());
-//        Timestamp lon_time = new Timestamp(new Date().getTime());
-//        zdhLogs.setTask_logs_id(tli.getId());
-//        zdhLogs.setLog_time(lon_time);
-//        zdhLogs.setMsg(msg);
-//        zdhLogs.setLevel(level.toUpperCase());
-//        //linkedBlockingDeque.add(zdhLogs);
-//        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-//        zdhLogsService.insert(zdhLogs);
+        ZdhLogs zdhLogs = new ZdhLogs();
+        zdhLogs.setJob_id(si.getStrategy_id());
+        Timestamp lon_time = new Timestamp(new Date().getTime());
+        zdhLogs.setTask_logs_id(si.getId());
+        zdhLogs.setLog_time(lon_time);
+        zdhLogs.setMsg(msg);
+        zdhLogs.setLevel(level.toUpperCase());
+        //linkedBlockingDeque.add(zdhLogs);
+        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+        zdhLogsService.insert(zdhLogs);
     }
 
     public static void debugInfo(Object obj) {
@@ -802,8 +802,8 @@ public class JobDigitalMarket {
                         //设置为初始态
                         si.setStatus(JobStatus.NON.getValue());
                     } else {
+                        insertLog(si,"INFO", "当前策略实例设置跳过");
                         si.setStatus(JobStatus.SKIP.getValue());
-                        //si.setProcess("100");
                     }
                 }
 

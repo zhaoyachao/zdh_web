@@ -137,6 +137,10 @@ public class LabelController extends BaseController {
             if(param_code==null || param_code.length<1){
                 throw new Exception("参数不可为空");
             }
+            if(StringUtils.isEmpty(labelInfo.getData_sources_choose_input())){
+                throw new Exception("数据源参数不可为空");
+            }
+
             JSONArray jsonArray=new JSONArray();
             for (int i=0;i<param_code.length;i++){
                 JSONObject jsonObject=new JSONObject();

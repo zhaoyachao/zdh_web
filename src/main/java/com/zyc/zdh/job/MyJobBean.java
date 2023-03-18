@@ -68,7 +68,6 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 			}
 			// 记录当前时间更新任务最后执行时间
 			Date currentTime =context.getScheduledFireTime();
-
 			List<String> taskTypes=Arrays.asList(new String[]{"email","check","retry","etl", "blood"});
 			if(StringUtils.isEmpty(taskType) || taskTypes.contains(taskType.toLowerCase())){
 				QuartzJobMapper quartzJobMapper2 = this.quartzJobMapper;
@@ -79,7 +78,10 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 					return ;
 				}
 				quartzJobInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
-
+				if(context.getTrigger().getNextFireTime()==null){
+					//最后一次触发,设置任务状态为已完成
+					quartzJobInfo.setStatus(JobStatus.FINISH.getValue());
+				}
 				JobCommon2.chooseJobBean(quartzJobInfo,0,null,null);
 			}else if(!StringUtils.isEmpty(taskType) && taskType.equalsIgnoreCase("DIGITALMARKET")){
 				//智能营销调度任务

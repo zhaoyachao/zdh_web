@@ -197,6 +197,28 @@
                     });
 
 
+                },
+                'click #agent': function (e, value, row, index) {
+
+                    if(row.status != 0 ){
+                        layer.msg("流程以结束");
+                        return ;
+                    }
+                    parent.layer.open({
+                        type: 2,
+                        title: '代理人',
+                        shadeClose: false,
+                        resize: true,
+                        fixed: false,
+                        maxmin: true,
+                        shade: 0.1,
+                        area : ['40%', '40%'],
+                        //area: ['450px', '500px'],
+                        content: server_context+"/process_flow_agent_detail_index?id="+row.id, //iframe的url
+                        end : function () {
+                            console.info("弹框结束")
+                        }
+                    });
                 }
             };
 
@@ -204,6 +226,9 @@
                 return [
                     ' <button id="approve" name="approve" type="button" class="btn btn-outline btn-sm"  title="审批">\n' +
                     '                                        <i class="fa fa-gg" aria-hidden="true"></i>\n' +
+                    '                                    </button>',
+                    ' <button id="agent" name="agent" type="button" class="btn btn-outline btn-sm" title="代理">\n' +
+                    '                                        <i class="fa fa-location-arrow" aria-hidden="true"></i>\n' +
                     '                                    </button>'
                 ].join('');
             }
@@ -252,13 +277,13 @@
                         title: '状态',
                         sortable: false,
                         formatter: function (value, row, index) {
-                            var context = "未审批"
+                            var context = "未审批";
                             var class_str = "btn-danger btn-xs";
                             if(value==0){
                                 class_str = "btn-warning btn-xs";
                                 context= "未审批"
                             }else if(value==1){
-                                context= "审批完成"
+                                context= "审批完成";
                                 class_str = "btn-primary  btn-xs"
                             }else if(value==2){
                                 class_str = "btn-danger  btn-xs";
@@ -291,7 +316,7 @@
                         field: 'operate',
                         title: '审批',
                         events: operateEvents,//给按钮注册事件
-                        width: 45,
+                        width: 90,
                         formatter: operateFormatter //表格中增加按钮
                     }]
             });

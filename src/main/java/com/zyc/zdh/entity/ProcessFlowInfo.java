@@ -91,6 +91,8 @@ public class ProcessFlowInfo {
     //外部系统使用审批流,外部事件处理标识
     private String other_handle;
 
+    private String agent_user;
+
     public String getId() {
         return id;
     }
@@ -217,5 +219,13 @@ public class ProcessFlowInfo {
 
     public void setOther_handle(String other_handle) {
         this.other_handle = other_handle;
+    }
+
+    public String getAgent_user() {
+        return agent_user;
+    }
+
+    public void setAgent_user(String agent_user) {
+        this.agent_user = agent_user;
     }
 }

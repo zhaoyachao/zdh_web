@@ -58,6 +58,7 @@
                                     <option value="DATAX" mytype="">DATAX</option>
                                     <option value="QUALITY" mytype="">数据质量</option>
                                     <option value="UNSTRUCTURE" mytype="">非结构化ETL</option>
+                                    <option value="DATAX_WEB" mytype="">DATAX_WEB</option>
                                 </select>
                             </div>
                         </div>
@@ -90,6 +91,14 @@
                                     <option value="1" mytype="">杀死触发</option>
                                     <option value="2" mytype="">失败触发</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">调度器</label>
+                            <div class="col-sm-10">
+                                <input id="schedule_id" name="schedule_id" type="text" value=""
+                                       placeholder="调度器标识" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
 
@@ -519,6 +528,35 @@
                 });
             }
 
+            function init_etl_task_datax_web_sources(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/etl_task_datax_auto_all_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].etl_context + "\" hassubinfo=\"true\">" + data.result[i].etl_context + "</option>"
+                        }
+                        $("#etl_task_id").chosen("destroy");
+                        $('#etl_task_id').html(str);
+                        $('#etl_task_id').chosen()
+
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_datax_list_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_datax_list_error: " + data.responseText);
+                    }
+                });
+            }
             //初始化依赖调度任务数据
             function init_job_sources(){
                 $.ajax({
@@ -624,6 +662,9 @@
             }
 
             $('#more_task').chosen().on("change", function (evt, params) {
+                $("#etl_task_id").chosen("destroy");
+                $('#etl_task_id').html("");
+                $('#etl_task_id').chosen();
                 choseMoreTask($("#more_task").val())
             });
 
@@ -663,6 +704,9 @@
                 } else if(more_task=="UNSTRUCTURE"){
                     console.info("选中UNSTRUCTURE");
                     init_unstructure_task_sources();
+                } else if(more_task=="DATAX_WEB"){
+                    console.info("选中UNSTRUCTURE");
+                    init_etl_task_datax_web_sources();
                 }
             }
 
@@ -685,6 +729,7 @@
                 $("#etl_task_id").val(s["etl_task_id"]);
                 $("#etl_task_id").trigger("chosen:updated");
                 $("#depend_level").val(s["depend_level"]);
+                $("#schedule_id").val(s["schedule_id"]);
                 $("#depend_level").trigger("chosen:updated");
                 $("#zdh_instance").val(s["zdh_instance"]);
                 $("#zdh_instance").trigger("chosen:updated");
@@ -709,9 +754,10 @@
         var etl_task_id=$('#etl_task_id').find("option:selected").val();
         var more_task=$('#more_task').find("option:selected").val();
         var depend_level=$('#depend_level').find("option:selected").val();
+        var schedule_id=$('#schedule_id').val();
         var zdh_instance=$('#zdh_instance').find("option:selected").val();
         var time_out=$('#time_out').val();
-        var is_disenable = "false"
+        var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
         }
@@ -723,6 +769,7 @@
             "more_task":more_task,
             "is_disenable":is_disenable,
             "depend_level":depend_level,
+            "schedule_id": schedule_id,
             "zdh_instance":zdh_instance,
             "time_out": time_out
         };
