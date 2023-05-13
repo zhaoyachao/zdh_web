@@ -417,8 +417,8 @@ CREATE TABLE `process_flow_info` (
   `is_end` varchar(64) NOT NULL DEFAULT '0' COMMENT '0:非最后一个节点,1:最后一个节点',
   `level` varchar(64) NOT NULL DEFAULT '0' COMMENT '审批节点环节',
   `event_id` varchar(64) NOT NULL DEFAULT '' COMMENT '发起流程的具体事件唯一键',
-  `other_handle` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0' COMMENT '外部系统接入审批流-事件触发标识,0:未处理,1:已处理,2:处理失败',
-  `agent_user` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '代理人id',
+  `other_handle` varchar(128) CHARACTER SET utf8mb4  DEFAULT '0' COMMENT '外部系统接入审批流-事件触发标识,0:未处理,1:已处理,2:处理失败',
+  `agent_user` varchar(256) CHARACTER SET utf8mb4  DEFAULT '' COMMENT '代理人id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1089199466730229762 DEFAULT CHARSET=utf8mb4 ;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -539,7 +539,7 @@ CREATE TABLE `label_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `label_expression` text COMMENT '运算表达式,仅支持sql',
   `label_engine` varchar(16) DEFAULT '' COMMENT '标签计算引擎,mysql,hive,spark,presto',
-  `data_sources_choose_input` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0' COMMENT '数据源id',
+  `data_sources_choose_input` varchar(128) CHARACTER SET utf8mb4  NOT NULL DEFAULT '0' COMMENT '数据源id',
   `label_use_type` varchar(16) NOT NULL DEFAULT 'batch' COMMENT '使用方式,batch:值查人,single:人查值',
   `label_data_time_effect` varchar(16) NOT NULL DEFAULT 'day' COMMENT '数据时效性, day:天级,hour:小时级,second:准实时',
   `label_data_update_type` varchar(16) NOT NULL DEFAULT 'overwrite' COMMENT '数据更新类型,overwrite:覆盖,append:追加,get_append:值追加',
@@ -1289,13 +1289,13 @@ CREATE TABLE `strategy_group_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `expr` varchar(100) DEFAULT NULL COMMENT 'cron表达式/自定义表达式',
-  `misfire` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0' COMMENT '恢复策略，0:无操作,1:所有历史重新执行,2:最近一次历史重新执行',
+  `misfire` varchar(8) CHARACTER SET utf8mb4  DEFAULT '0' COMMENT '恢复策略，0:无操作,1:所有历史重新执行,2:最近一次历史重新执行',
   `priority` varchar(4) DEFAULT NULL COMMENT '任务优先级',
   `status` varchar(100) DEFAULT NULL COMMENT '调度任务状态,create,running,pause,finish,remove,error',
   `quartz_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例触发时间',
   `use_quartz_time` varchar(5) DEFAULT NULL COMMENT '是否使用quartz 调度时间',
   `time_diff` varchar(50) DEFAULT NULL COMMENT '后退时间差',
-  `schedule_source` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '1' COMMENT '调度来源,1:例行,2:手动',
+  `schedule_source` varchar(64) CHARACTER SET utf8mb4  DEFAULT '1' COMMENT '调度来源,1:例行,2:手动',
   `cur_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例逻辑调度时间',
   `run_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例开始执行时间',
   `group_type` varchar(256) NOT NULL DEFAULT 'offline' COMMENT '实时online,离线:offline',
@@ -1965,7 +1965,7 @@ CREATE TABLE `strategy_instance` (
   `is_disenable` varchar(10) DEFAULT NULL COMMENT '是否禁用true:禁用,false:启用',
   `depend_level` varchar(10) NOT NULL DEFAULT '0' COMMENT '判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行',
   `touch_type` varchar(128) NOT NULL DEFAULT 'database' COMMENT '推送类型,database,queue',
-  `strategy_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0' COMMENT '策略id',
+  `strategy_id` varchar(128) CHARACTER SET utf8mb4  NOT NULL DEFAULT '0' COMMENT '策略id',
   `group_type` varchar(256) NOT NULL DEFAULT 'offline' COMMENT '实时online,离线:offline',
   `data_node` varchar(1024) NOT NULL DEFAULT '' COMMENT '数据节点',
   PRIMARY KEY (`id`)
@@ -2264,7 +2264,7 @@ CREATE TABLE `strategy_group_instance` (
   `run_jsmind_data` text COMMENT '生成实例血源关系',
   `next_tasks` text COMMENT '下游任务组实例id',
   `pre_tasks` text COMMENT '上游任务组实例id',
-  `strategy_group_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0' COMMENT '策略组id',
+  `strategy_group_id` varchar(128) CHARACTER SET utf8mb4  NOT NULL DEFAULT '0' COMMENT '策略组id',
   `group_type` varchar(256) NOT NULL DEFAULT 'offline' COMMENT '实时online,离线:offline',
   `data_node` varchar(1024) NOT NULL DEFAULT '' COMMENT '数据节点',
   PRIMARY KEY (`id`)
