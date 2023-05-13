@@ -1851,7 +1851,7 @@ public class JobCommon2 {
                 tli.setMaster(zdhHaInfo.getMaster());
                 tli.setApplication_id(zdhHaInfo.getApplication_id());
                 tli.setUpdate_time(new Timestamp(new Date().getTime()));
-                debugInfo(tli);
+                //debugInfo(tli);
                 updateTaskLog(tli, tlim);
 
 
@@ -2588,19 +2588,19 @@ public class JobCommon2 {
      * @param tli
      */
     public static boolean checkDep(String jobType, TaskLogInstance tli) {
-        logger.info("[" + jobType + "] JOB ,初步检查当前任务是否可检查上游依赖");
+        logger.info("[" + jobType + "] JOB ,初步检查当前任务{}依赖", tli.getId());
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         //检查任务依赖
         if (tli.getJump_dep() != null && tli.getJump_dep().equalsIgnoreCase("on")) {
-            String msg2 = "[" + jobType + "] JOB ,跳过依赖任务";
+            String msg2 = "[" + jobType + "] JOB ,跳过依赖任务,任务id: "+tli.getId();
             logger.info(msg2);
             insertLog(tli, "INFO", msg2);
             return true;
         }
 
         if (tli.getPre_tasks() == null || tli.getPre_tasks().equals("") || tli.getPre_tasks().equalsIgnoreCase("root")) {
-            String msg2 = "[" + jobType + "] JOB ,是根节点任务,无依赖,直接执行";
+            String msg2 = "[" + jobType + "] JOB ,是根节点任务,无依赖,直接执行,任务id: "+tli.getId();
             logger.info(msg2);
             insertLog(tli, "INFO", msg2);
             return true;
@@ -2621,7 +2621,7 @@ public class JobCommon2 {
 
                 List<task_num_info> tnis = tlim.selectByIds(parents.toArray(new String[parents.size()]));
                 for (task_num_info tni : tnis) {
-                    debugInfo(tni);
+                    //debugInfo(tni);
                     if (tni.getStatus().equalsIgnoreCase(JobStatus.DISPATCH.getValue()) || tni.getStatus().equalsIgnoreCase(JobStatus.CREATE.getValue())
                             || tni.getStatus().equalsIgnoreCase(JobStatus.WAIT_RETRY.getValue())
                             || tni.getStatus().equalsIgnoreCase(JobStatus.CHECK_DEP.getValue()) || tni.getStatus().equalsIgnoreCase(JobStatus.ETL.getValue())
@@ -2632,12 +2632,12 @@ public class JobCommon2 {
                     }
                 }
                 logger.info("所有的父级,祖先级任务:" + parents);
-                insertLog(tli, "INFO", "目前只判断父级任务是否完成,如果判断祖先级任务是否完成,可在此处做深度处理...");
-                insertLog(tli, "INFO", "所有的父级,祖先级任务:" + parents);
+                insertLog(tli, "INFO", "目前只判断父级任务是否完成,如果判断祖先级任务是否完成,可在此处做深度处理...,任务id: "+tli.getId());
+                insertLog(tli, "INFO", "所有的父级,祖先级任务:" + parents+", 任务id: "+tli.getId());
             }
 
-            logger.info("[" + jobType + "] JOB ,开始检查当前任务上游任务依赖");
-            insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查当前任务上游任务依赖");
+            logger.info("[" + jobType + "] JOB ,开始检查当前任务上游任务依赖,任务id: "+tli.getId());
+            insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查当前任务上游任务依赖,任务id: "+tli.getId());
 
             StringBuilder finish_id = new StringBuilder();
             StringBuilder error_id = new StringBuilder();
@@ -2692,7 +2692,7 @@ public class JobCommon2 {
                 }
             }
 
-            String msg = "[" + jobType + "] JOB ,当前任务依赖上游任务状态:[" + status + "],才会触发";
+            String msg = "[" + jobType + "] JOB ,当前任务依赖上游任务状态:[" + status + "],才会触发,任务id: "+tli.getId();
             logger.info(msg);
             insertLog(tli, "INFO", msg);
             String etl_date = tli.getEtl_date();
@@ -2716,12 +2716,12 @@ public class JobCommon2 {
             updateTaskStatus(JobStatus.CHECK_DEP.getValue(), tli.getId(), "7", tlim);
 
             if (is_pass) {
-                String msg6 = "[" + jobType + "] JOB ,依赖任务状态,满足当前任务触发条件" + ",ETL日期" + etl_date;
+                String msg6 = "[" + jobType + "] JOB ,依赖任务状态,满足当前任务触发条件" + ",ETL日期" + etl_date+" ,任务id: "+tli.getId();
                 logger.info(msg6);
                 insertLog(tli, "INFO", msg6);
                 return true;
             } else {
-                String msg6 = "[" + jobType + "] JOB ,依赖任务状态,未满足当前任务触发条件" + ",ETL日期" + etl_date;
+                String msg6 = "[" + jobType + "] JOB ,依赖任务状态,未满足当前任务触发条件" + ",ETL日期" + etl_date+" ,任务id: "+tli.getId();
                 logger.info(msg6);
                 insertLog(tli, "INFO", msg6);
                 return false;
@@ -2741,8 +2741,8 @@ public class JobCommon2 {
      * @return
      */
     public static boolean checkDep_group(String jobType, TaskLogInstance tli) {
-        logger.info("[" + jobType + "] JOB ,开始检查任务依赖");
-        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务依赖");
+        logger.info("[" + jobType + "] JOB ,开始检查任务依赖, 任务id: "+tli.getId());
+        insertLog(tli, "INFO", "[" + jobType + "] JOB ,开始检查任务依赖, 任务id: "+tli.getId());
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         String dep_job_id = tli.getEtl_task_id();
@@ -2755,7 +2755,7 @@ public class JobCommon2 {
 
         List<TaskGroupLogInstance> taskLogsList = tglim.selectByIdEtlDate(dep_job_id, etl_date);
         if (taskLogsList == null || taskLogsList.size() <= 0) {
-            String msg = "[" + jobType + "] JOB ,依赖任务组:" + dep_job_id + ",ETL日期:" + etl_date + ",未完成";
+            String msg = "[" + jobType + "] JOB ,依赖任务组:" + dep_job_id + ",ETL日期:" + etl_date + ",未完成, 任务id: "+tli.getId();
             logger.info(msg);
             insertLog(tli, "INFO", msg);
             tli.setThread_id(""); //设置为空主要是为了 在检查依赖任务期间杀死
@@ -2765,7 +2765,7 @@ public class JobCommon2 {
             updateTaskLog(tli, tlim);
             return false;
         }
-        String msg2 = "[" + jobType + "] JOB ,依赖任务组:" + dep_job_id + ",ETL日期:" + etl_date + ",已完成";
+        String msg2 = "[" + jobType + "] JOB ,依赖任务组:" + dep_job_id + ",ETL日期:" + etl_date + ",已完成, 任务id: "+tli.getId();
         logger.info(msg2);
         insertLog(tli, "INFO", msg2);
         return true;
@@ -3737,7 +3737,7 @@ public class JobCommon2 {
 
                 taskLogInstance.setId(t_id);//具体执行任务实例id,每次执行都会重新生成
                 taskLogInstance.setJob_id(tgli.getJob_id());//调度任务id
-                taskLogInstance.setJob_context(tgli.getJob_context());//调度任务说明
+                taskLogInstance.setJob_context(etl_context);//调度任务说明
                 taskLogInstance.setEtl_task_id(etl_task_id);//etl任务id
                 taskLogInstance.setEtl_context(etl_context);//etl任务说明
                 taskLogInstance.setCommand(command);

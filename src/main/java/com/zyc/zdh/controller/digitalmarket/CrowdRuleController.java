@@ -93,9 +93,9 @@ public class CrowdRuleController extends BaseController {
      * @param id 主键ID
      * @return
      */
-    @RequestMapping(value = "/crowd_rule_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/crowd_rule_detail2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo crowd_rule_detail(String id) {
+    public ReturnInfo crowd_rule_detail2(String id) {
         try {
             CrowdRuleInfo crowdRuleInfo = crowdRuleMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", crowdRuleInfo);

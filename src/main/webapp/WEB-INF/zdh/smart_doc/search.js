@@ -51,74 +51,82 @@ api[1].list.push({
 });
 api[1].list.push({
     order: '6',
-    desc: '获取用户信息',
+    desc: '根据用户名密码获取用户信息',
 });
 api[1].list.push({
     order: '7',
-    desc: '批量获取用户信息',
+    desc: '根据用户名密码获取用户信息',
 });
 api[1].list.push({
     order: '8',
-    desc: '获取产品下所有用户',
+    desc: '获取用户信息',
 });
 api[1].list.push({
     order: '9',
-    desc: '新增用户组',
+    desc: '批量获取用户信息',
 });
 api[1].list.push({
     order: '10',
-    desc: '增加角色',
+    desc: '获取产品下所有用户',
 });
 api[1].list.push({
     order: '11',
-    desc: '禁用/启用 角色',
+    desc: '新增用户组',
 });
 api[1].list.push({
     order: '12',
-    desc: '角色增加资源  tips: 每次角色增加资源以全量方式增加,会提前删除当前角色下的资源配置',
+    desc: '增加角色',
 });
 api[1].list.push({
     order: '13',
-    desc: '根据role_code 获取角色',
+    desc: '禁用/启用 角色',
 });
 api[1].list.push({
     order: '14',
-    desc: '获取产品线下所有角色',
+    desc: '角色增加资源  tips: 每次角色增加资源以全量方式增加,会提前删除当前角色下的资源配置',
 });
 api[1].list.push({
     order: '15',
-    desc: '获取角色下的用户列表',
+    desc: '根据role_code 获取角色',
 });
 api[1].list.push({
     order: '16',
-    desc: '新增资源',
+    desc: '获取产品线下所有角色',
 });
 api[1].list.push({
     order: '17',
-    desc: '批量增加资源',
+    desc: '获取角色下的用户列表',
 });
 api[1].list.push({
     order: '18',
-    desc: '通过用户账户 获取资源信息',
+    desc: '新增资源',
 });
 api[1].list.push({
     order: '19',
-    desc: '通过角色code获取资源',
+    desc: '批量增加资源',
 });
 api[1].list.push({
     order: '20',
-    desc: '新增数据标识',
+    desc: '通过用户账户 获取资源信息',
 });
 api[1].list.push({
     order: '21',
-    desc: '新增数据标识',
+    desc: '通过角色code获取资源',
 });
 api[1].list.push({
     order: '22',
-    desc: '新增数据组标识',
+    desc: '新增数据标识',
 });
 api[1].list.push({
     order: '23',
+    desc: '新增数据标识',
+});
+api[1].list.push({
+    order: '24',
+    desc: '新增数据组标识',
+});
+api[1].list.push({
+    order: '25',
     desc: '新增数据标识',
 });
 api.push({
@@ -426,555 +434,651 @@ api[9].list.push({
     desc: '标签删除',
 });
 api.push({
-    alias: 'StrategyGroupController',
+    alias: 'PluginController',
     order: '11',
+    desc: '智能营销-插件服务',
+    link: '智能营销-插件服务',
+    list: []
+})
+api[10].list.push({
+    order: '1',
+    desc: '插件列表首页',
+});
+api[10].list.push({
+    order: '2',
+    desc: '插件列表',
+});
+api[10].list.push({
+    order: '3',
+    desc: '插件新增首页',
+});
+api[10].list.push({
+    order: '4',
+    desc: '插件明细页面',
+});
+api[10].list.push({
+    order: '5',
+    desc: '插件明细',
+});
+api[10].list.push({
+    order: '6',
+    desc: '根据code查询插件明细',
+});
+api[10].list.push({
+    order: '7',
+    desc: '插件更新',
+});
+api[10].list.push({
+    order: '8',
+    desc: '插件新增',
+});
+api[10].list.push({
+    order: '9',
+    desc: '插件删除',
+});
+api.push({
+    alias: 'StrategyGroupController',
+    order: '12',
     desc: '智能营销-策略组服务',
     link: '智能营销-策略组服务',
     list: []
 })
-api[10].list.push({
+api[11].list.push({
     order: '1',
     desc: '',
 });
-api[10].list.push({
+api[11].list.push({
     order: '2',
     desc: '策略组列表首页',
 });
-api[10].list.push({
+api[11].list.push({
     order: '3',
     desc: '策略组列表',
 });
-api[10].list.push({
+api[11].list.push({
     order: '4',
     desc: '策略组新增首页',
 });
-api[10].list.push({
+api[11].list.push({
     order: '5',
     desc: '策略组明细',
 });
-api[10].list.push({
+api[11].list.push({
     order: '6',
     desc: '策略组更新',
 });
-api[10].list.push({
+api[11].list.push({
     order: '7',
     desc: '策略组新增',
 });
-api[10].list.push({
+api[11].list.push({
     order: '8',
     desc: '策略组删除',
 });
-api[10].list.push({
+api[11].list.push({
     order: '9',
     desc: '策略组手动执行页面',
 });
-api[10].list.push({
+api[11].list.push({
     order: '10',
     desc: '策略组手动执行',
 });
-api[10].list.push({
+api[11].list.push({
     order: '11',
     desc: '策略组手动执行页面',
 });
-api[10].list.push({
+api[11].list.push({
     order: '12',
     desc: '策略组执行列表',
 });
-api[10].list.push({
+api[11].list.push({
     order: '13',
     desc: '获取组策略实例信息',
 });
-api[10].list.push({
+api[11].list.push({
     order: '14',
     desc: '策略实例执行日志首页',
 });
-api[10].list.push({
+api[11].list.push({
     order: '15',
     desc: '获取策略组实例下的所有子策略',
 });
-api[10].list.push({
+api[11].list.push({
     order: '16',
     desc: '策略组实例重试首页',
 });
-api[10].list.push({
+api[11].list.push({
     order: '17',
     desc: '策略组实例重试',
 });
+api[11].list.push({
+    order: '18',
+    desc: '获取下载地址',
+});
+api[11].list.push({
+    order: '19',
+    desc: '下载地址',
+});
+api[11].list.push({
+    order: '20',
+    desc: '杀死单个任务',
+});
 api.push({
     alias: 'TouchController',
-    order: '12',
+    order: '13',
     desc: '智能营销-过滤规则服务',
     link: '智能营销-过滤规则服务',
     list: []
 })
-api[11].list.push({
+api[12].list.push({
     order: '1',
+    desc: '在线节点配置首页',
+});
+api[12].list.push({
+    order: '2',
     desc: '触达配置首页',
 });
-api[11].list.push({
-    order: '2',
+api[12].list.push({
+    order: '3',
     desc: '触达配置列表',
 });
-api[11].list.push({
-    order: '3',
+api[12].list.push({
+    order: '4',
     desc: '触达配置新增首页',
 });
-api[11].list.push({
-    order: '4',
+api[12].list.push({
+    order: '5',
     desc: '触达明细',
 });
-api[11].list.push({
-    order: '5',
+api[12].list.push({
+    order: '6',
     desc: '触达配置更新',
 });
-api[11].list.push({
-    order: '6',
+api[12].list.push({
+    order: '7',
     desc: '触达配置新增',
 });
-api[11].list.push({
-    order: '7',
+api[12].list.push({
+    order: '8',
     desc: '触达配置删除',
 });
-api[11].list.push({
-    order: '8',
+api[12].list.push({
+    order: '9',
     desc: '触达组件明细页',
 });
-api[11].list.push({
-    order: '9',
+api[12].list.push({
+    order: '10',
     desc: '触达配置明细',
 });
 api.push({
     alias: 'LoginController',
-    order: '13',
+    order: '14',
     desc: '登录服务',
     link: '登录服务',
     list: []
 })
-api[12].list.push({
+api[13].list.push({
     order: '1',
     desc: '系统根页面',
 });
-api[12].list.push({
+api[13].list.push({
     order: '2',
     desc: '注册页面',
 });
-api[12].list.push({
+api[13].list.push({
     order: '3',
     desc: '注册',
 });
-api[12].list.push({
+api[13].list.push({
     order: '4',
     desc: '登录页面',
 });
-api[12].list.push({
+api[13].list.push({
     order: '5',
     desc: '登录  2022-06-18 因登录时提示不友好,删除ResponseBody注解,并在session中存储错误信息',
 });
-api[12].list.push({
+api[13].list.push({
     order: '6',
     desc: '获取错误信息',
 });
-api[12].list.push({
+api[13].list.push({
     order: '7',
     desc: '校验验证码',
 });
-api[12].list.push({
+api[13].list.push({
     order: '8',
     desc: '首页',
 });
-api[12].list.push({
+api[13].list.push({
     order: '9',
     desc: '下线系统',
 });
-api[12].list.push({
+api[13].list.push({
     order: '10',
     desc: '个人信息页面',
 });
-api[12].list.push({
+api[13].list.push({
     order: '11',
     desc: '个人信息更新',
 });
-api[12].list.push({
+api[13].list.push({
     order: '12',
     desc: '获取用户信息',
 });
-api[12].list.push({
+api[13].list.push({
     order: '13',
     desc: '找回密码',
 });
-api[12].list.push({
+api[13].list.push({
     order: '14',
     desc: '获取账号名',
 });
-api[12].list.push({
+api[13].list.push({
     order: '15',
     desc: '退出',
 });
-api[12].list.push({
+api[13].list.push({
     order: '16',
     desc: '验证码',
 });
 api.push({
     alias: 'MyErrorConroller',
-    order: '14',
+    order: '15',
     desc: '异常页面服务',
     link: '异常页面服务',
     list: []
 })
-api[13].list.push({
+api[14].list.push({
     order: '1',
     desc: '404页面',
 });
-api[13].list.push({
+api[14].list.push({
     order: '2',
     desc: '403页面',
 });
-api[13].list.push({
+api[14].list.push({
     order: '3',
     desc: '503页面',
 });
 api.push({
     alias: 'NodeController',
-    order: '15',
+    order: '16',
     desc: '升级扩容服务',
     link: '升级扩容服务',
     list: []
 })
-api[14].list.push({
+api[15].list.push({
     order: '1',
     desc: 'server构建首页',
 });
-api[14].list.push({
+api[15].list.push({
     order: '2',
     desc: 'server构建列表',
 });
-api[14].list.push({
+api[15].list.push({
     order: '3',
     desc: 'server服务列表',
 });
-api[14].list.push({
+api[15].list.push({
     order: '4',
     desc: 'server服务更新上下线',
 });
-api[14].list.push({
+api[15].list.push({
     order: '5',
     desc: 'server新增模板首页',
 });
-api[14].list.push({
+api[15].list.push({
     order: '6',
     desc: 'server新增',
 });
-api[14].list.push({
+api[15].list.push({
     order: '7',
     desc: 'server模板更新',
 });
-api[14].list.push({
+api[15].list.push({
     order: '8',
     desc: '手动构建配置',
 });
-api[14].list.push({
+api[15].list.push({
     order: '9',
     desc: 'server 一键部署',
 });
-api[14].list.push({
+api[15].list.push({
     order: '10',
     desc: '获取server部署记录',
 });
-api[14].list.push({
+api[15].list.push({
     order: '11',
     desc: '获取server部署记录',
 });
-api[14].list.push({
+api[15].list.push({
     order: '12',
     desc: '',
 });
 api.push({
     alias: 'PermissionController',
-    order: '16',
+    order: '17',
     desc: '权限服务',
     link: '权限服务',
     list: []
 })
-api[15].list.push({
+api[16].list.push({
     order: '1',
     desc: '权限首页(废弃)',
 });
-api[15].list.push({
+api[16].list.push({
     order: '2',
     desc: '权限用户列表',
 });
-api[15].list.push({
+api[16].list.push({
     order: '3',
+    desc: '用户账号列表',
+});
+api[16].list.push({
+    order: '4',
+    desc: '获取用户上级账号  未完成,待完善',
+});
+api[16].list.push({
+    order: '5',
     desc: '启用/禁用用户',
 });
-api[15].list.push({
-    order: '4',
+api[16].list.push({
+    order: '6',
     desc: '菜单资源权限配置页面',
 });
-api[15].list.push({
-    order: '5',
+api[16].list.push({
+    order: '7',
     desc: '新增用户页面',
 });
-api[15].list.push({
-    order: '6',
+api[16].list.push({
+    order: '8',
     desc: '查询权限用户明细',
 });
-api[15].list.push({
-    order: '7',
+api[16].list.push({
+    order: '9',
     desc: '权限用户信息更新',
 });
-api[15].list.push({
-    order: '8',
+api[16].list.push({
+    order: '10',
     desc: '新增用户组页面',
 });
-api[15].list.push({
-    order: '9',
+api[16].list.push({
+    order: '11',
     desc: '新增用户组',
 });
-api[15].list.push({
-    order: '10',
+api[16].list.push({
+    order: '12',
     desc: '',
 });
-api[15].list.push({
-    order: '11',
+api[16].list.push({
+    order: '13',
     desc: '角色首页',
 });
-api[15].list.push({
-    order: '12',
+api[16].list.push({
+    order: '14',
     desc: '新增角色页面',
 });
-api[15].list.push({
-    order: '13',
+api[16].list.push({
+    order: '15',
     desc: '角色列表',
 });
-api[15].list.push({
-    order: '14',
+api[16].list.push({
+    order: '16',
     desc: '角色批量启用',
 });
-api[15].list.push({
-    order: '15',
+api[16].list.push({
+    order: '17',
     desc: '角色明细',
 });
-api[15].list.push({
-    order: '16',
+api[16].list.push({
+    order: '18',
     desc: '根据角色code查询角色信息',
 });
-api[15].list.push({
-    order: '17',
+api[16].list.push({
+    order: '19',
     desc: '资源树页面',
 });
-api[15].list.push({
-    order: '18',
+api[16].list.push({
+    order: '20',
     desc: '资源树-新增资源',
 });
-api[15].list.push({
-    order: '19',
+api[16].list.push({
+    order: '21',
     desc: '资源新增根节点',
 });
-api[15].list.push({
-    order: '20',
+api[16].list.push({
+    order: '22',
     desc: '获取资源信息',
 });
-api[15].list.push({
-    order: '21',
+api[16].list.push({
+    order: '23',
     desc: '根据主键获取资源信息',
 });
-api[15].list.push({
-    order: '22',
+api[16].list.push({
+    order: '24',
     desc: '更新资源信息',
 });
-api[15].list.push({
-    order: '23',
+api[16].list.push({
+    order: '25',
     desc: '删除资源信息',
 });
-api[15].list.push({
-    order: '24',
+api[16].list.push({
+    order: '26',
     desc: '更新资源层级',
 });
-api[15].list.push({
-    order: '25',
+api[16].list.push({
+    order: '27',
     desc: '角色绑定资源',
 });
-api[15].list.push({
-    order: '26',
+api[16].list.push({
+    order: '28',
     desc: '通过角色id获取资源',
 });
-api[15].list.push({
-    order: '27',
+api[16].list.push({
+    order: '29',
     desc: '通过用户id获取资源',
 });
-api[15].list.push({
-    order: '28',
+api[16].list.push({
+    order: '30',
     desc: '权限用户首页',
 });
-api[15].list.push({
-    order: '29',
+api[16].list.push({
+    order: '31',
     desc: '获取当前系统的数据组标识',
 });
-api[15].list.push({
-    order: '30',
+api[16].list.push({
+    order: '32',
     desc: '权限申请列表首页',
 });
-api[15].list.push({
-    order: '31',
+api[16].list.push({
+    order: '33',
     desc: '权限新增申请首页',
 });
-api[15].list.push({
-    order: '32',
+api[16].list.push({
+    order: '34',
     desc: '权限申请',
 });
-api[15].list.push({
-    order: '33',
+api[16].list.push({
+    order: '35',
     desc: '权限申请列表',
 });
-api[15].list.push({
-    order: '34',
+api[16].list.push({
+    order: '36',
     desc: '新建申请,并创建审批流',
 });
-api[15].list.push({
-    order: '35',
+api[16].list.push({
+    order: '37',
     desc: '删除申请,并撤销审批流',
 });
-api[15].list.push({
-    order: '36',
+api[16].list.push({
+    order: '38',
     desc: '权限申请明细',
+});
+api[16].list.push({
+    order: '39',
+    desc: '用户组首页',
+});
+api[16].list.push({
+    order: '40',
+    desc: '分页查询用户组列表',
+});
+api[16].list.push({
+    order: '41',
+    desc: '查询用户组明细',
+});
+api[16].list.push({
+    order: '42',
+    desc: '大数据权限申请列表首页',
+});
+api[16].list.push({
+    order: '43',
+    desc: '大数据权限新增首页',
+});
+api[16].list.push({
+    order: '44',
+    desc: '大数据权限-列表',
+});
+api[16].list.push({
+    order: '45',
+    desc: '大数据权限-明细',
+});
+api[16].list.push({
+    order: '46',
+    desc: '大数据权限新增',
+});
+api[16].list.push({
+    order: '47',
+    desc: '大数据权限-更新',
+});
+api[16].list.push({
+    order: '48',
+    desc: '大数据权限-删除',
+});
+api[16].list.push({
+    order: '49',
+    desc: '根据产品获取对应的权限规则列表',
 });
 api.push({
     alias: 'ProductTagController',
-    order: '17',
+    order: '18',
     desc: '产品标识服务',
     link: '产品标识服务',
     list: []
 })
-api[16].list.push({
+api[17].list.push({
     order: '1',
     desc: '产品列表首页',
 });
-api[16].list.push({
+api[17].list.push({
     order: '2',
     desc: '产品列表',
 });
-api[16].list.push({
+api[17].list.push({
     order: '3',
     desc: '产品新增首页',
 });
-api[16].list.push({
+api[17].list.push({
     order: '4',
     desc: '产品明细',
 });
-api[16].list.push({
+api[17].list.push({
     order: '5',
     desc: '产品更新',
 });
-api[16].list.push({
+api[17].list.push({
     order: '6',
     desc: '产品新增',
 });
-api[16].list.push({
+api[17].list.push({
     order: '7',
     desc: '产品删除',
 });
 api.push({
     alias: 'SystemController',
-    order: '18',
+    order: '19',
     desc: '系统服务',
     link: '系统服务',
     list: []
 })
-api[17].list.push({
+api[18].list.push({
     order: '1',
     desc: '获取平台名称',
 });
-api[17].list.push({
+api[18].list.push({
     order: '2',
     desc: '帮助页',
 });
-api[17].list.push({
+api[18].list.push({
     order: '3',
     desc: 'quartz表达式页面',
 });
-api[17].list.push({
+api[18].list.push({
     order: '4',
     desc: '文件服务器设置页面',
 });
-api[17].list.push({
+api[18].list.push({
     order: '5',
     desc: '获取文件服务器',
 });
-api[17].list.push({
+api[18].list.push({
     order: '6',
     desc: '文件服务器信息更新',
 });
-api[17].list.push({
+api[18].list.push({
     order: '7',
     desc: '系统通知信息',
 });
-api[17].list.push({
+api[18].list.push({
     order: '8',
     desc: '删除系统任务',
 });
-api[17].list.push({
+api[18].list.push({
     order: '9',
     desc: '通知信息详情页面',
 });
-api[17].list.push({
+api[18].list.push({
     order: '10',
     desc: '通知信息明细',
 });
-api[17].list.push({
+api[18].list.push({
     order: '11',
     desc: '通知首页',
 });
-api[17].list.push({
+api[18].list.push({
     order: '12',
     desc: '通知信息列表',
 });
-api[17].list.push({
+api[18].list.push({
     order: '13',
     desc: '删除通知信息',
 });
-api[17].list.push({
+api[18].list.push({
     order: '14',
     desc: '通知信息标记已读',
 });
-api[17].list.push({
+api[18].list.push({
     order: '15',
     desc: '使用帮助',
 });
-api[17].list.push({
+api[18].list.push({
     order: '16',
     desc: '解析quartz表达式',
 });
-api[17].list.push({
+api[18].list.push({
     order: '17',
     desc: '系统登录通知页面',
 });
-api[17].list.push({
+api[18].list.push({
     order: '18',
     desc: '系统登录通知',
 });
-api[17].list.push({
+api[18].list.push({
     order: '19',
     desc: '更新系统登录通知',
 });
-api[17].list.push({
+api[18].list.push({
     order: '20',
     desc: '获取当前系统版本',
-});
-api.push({
-    alias: 'TestController',
-    order: '19',
-    desc: 'ClassName: TestController',
-    link: 'classname:_testcontroller',
-    list: []
-})
-api[18].list.push({
-    order: '1',
-    desc: '',
-});
-api[18].list.push({
-    order: '2',
-    desc: '',
 });
 api.push({
     alias: 'WeMockController',
@@ -2105,6 +2209,14 @@ api[41].list.push({
     order: '8',
     desc: '审批明细',
 });
+api[41].list.push({
+    order: '9',
+    desc: '流程代理首页',
+});
+api[41].list.push({
+    order: '10',
+    desc: '更新流程代理人',
+});
 api.push({
     alias: 'ZdhQualityController',
     order: '43',
@@ -2220,14 +2332,18 @@ api[44].list.push({
 });
 api[44].list.push({
     order: '2',
-    desc: '删除参数',
+    desc: '获取参数',
 });
 api[44].list.push({
     order: '3',
-    desc: '获取所有参数名',
+    desc: '删除参数',
 });
 api[44].list.push({
     order: '4',
+    desc: '获取所有参数名',
+});
+api[44].list.push({
+    order: '5',
     desc: '新增参数',
 });
 api.push({

@@ -18,6 +18,11 @@ public class StrategyGroupInfo {
     private String group_context;
 
     /**
+     *类型,offline,online
+     */
+    private String group_type;
+
+    /**
      * 开始时间
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -107,6 +112,11 @@ public class StrategyGroupInfo {
     private String jsmind_data;
 
     /**
+     * 在线监控数据节点,实时策略使用
+     */
+    private String data_node;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -136,6 +146,14 @@ public class StrategyGroupInfo {
      */
     public void setGroup_context(String group_context) {
         this.group_context = group_context;
+    }
+
+    public String getGroup_type() {
+        return group_type;
+    }
+
+    public void setGroup_type(String group_type) {
+        this.group_type = group_type;
     }
 
     /**
@@ -442,5 +460,13 @@ public class StrategyGroupInfo {
      */
     public void setJsmind_data(String jsmind_data) {
         this.jsmind_data = jsmind_data;
+    }
+
+    public String getData_node() {
+        return data_node;
+    }
+
+    public void setData_node(String data_node) {
+        this.data_node = data_node;
     }
 }

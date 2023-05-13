@@ -407,7 +407,7 @@
                 var postData = {
                     id: $("#data_sources_choose_input").val(),
                     table_name: $("#data_sources_table_name_input").val(),
-                }
+                };
 
                 $.ajax({
                     type: 'POST',
@@ -420,12 +420,12 @@
                         if(data.code == "200"){
                             $('#row_num').val('');
                             var str = '';
-                            for (var i = 0; i < data.length; i++) {
+                            for (var i = 0; i < data.result.length; i++) {
                                 if (str == '')
-                                    str = data[i];
+                                    str = data.result[i];
                                 else
-                                    str += "," + data[i];
-                                addRow(data[i])
+                                    str += "," + data.result[i];
+                                addRow(data.result[i])
                             }
                             $("#data_sources_table_columns").val(str)
                         }else{
@@ -843,7 +843,7 @@
             function save() {
 
                 if ($('#issue_context').val() == '') {
-                    layer.msg("ETL任务说明不能为空！");
+                    layer.msg("发布任务说明不能为空！");
                     return;
                 }
 

@@ -289,9 +289,13 @@ public class AspectConfig implements Ordered {
             }
             String uid = getUser() == null ? "" : getUser().getUserName();
             String city = IpUtil.getCityByIp(ipAddr);
-            logger.debug("请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】", ipAddr, city, uid, url, request.getMethod(), reqParam);
+            if (is_operate_log(url)){
+                logger.debug("请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】", ipAddr, city, uid, url, request.getMethod(), reqParam);
+            }
             Object o = pjp.proceed();
-            logger.debug("请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,结束", ipAddr, city, uid, url);
+            if (is_operate_log(url)){
+                logger.debug("请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,结束", ipAddr, city, uid, url);
+            }
             try {
                 //跳过特殊操作，etlEcharts,getTotalNum,notice_list
                 if (is_operate_log(url) && getUser() != null) {
@@ -350,6 +354,7 @@ public class AspectConfig implements Ordered {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             MDC.remove("user_id");
+            MDC.remove("logId");
             if (returnName.contains("ReturnInfo")) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "系统错误", e);
             }

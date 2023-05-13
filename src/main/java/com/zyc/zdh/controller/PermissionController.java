@@ -127,6 +127,56 @@ public class PermissionController extends BaseController {
     }
 
     /**
+     * 用户账号列表
+     * @param product_code 产品代码
+     * @return
+     */
+    @RequestMapping(value = "/user_account_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<String>> user_account_list(String product_code) {
+        List<String> result = new ArrayList<>();
+        if(StringUtils.isEmpty(product_code)){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", result);
+        }
+
+        Example example=new Example(PermissionUserInfo.class);
+        Example.Criteria criteria=example.createCriteria();
+
+        criteria.andEqualTo("product_code", product_code);
+
+        List<String> users = permissionMapper.selectAccountByProduct(product_code,null);
+
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", users);
+    }
+
+    /**
+     * 获取用户上级账号
+     * 未完成,待完善
+     * @param product_code 产品代码
+     * @return
+     */
+    @RequestMapping(value = "/user_team_list_by_user", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<String>> user_team_list_by_user(String product_code, String user_account) {
+        List<String> result = new ArrayList<>();
+        if(StringUtils.isEmpty(product_code)){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", result);
+        }
+        if(StringUtils.isEmpty(user_account)){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "用户账户不可为空", result);
+        }
+
+        Example example=new Example(PermissionUserInfo.class);
+        Example.Criteria criteria=example.createCriteria();
+
+        criteria.andEqualTo("product_code", product_code);
+        criteria.andEqualTo("user_account", user_account);
+        List<String> users = new ArrayList<>();
+
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", users);
+    }
+
+    /**
      * 启用/禁用用户
      * @param ids 用户ID数组
      * @param enable true/false
@@ -415,6 +465,8 @@ public class PermissionController extends BaseController {
             if (org.apache.commons.lang3.StringUtils.isEmpty(rti.getProduct_code())) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", null);
             }
+            //校验code是否重复
+
             String id = SnowflakeIdWorker.getInstance().nextId() + "";
             rti.setId(id);
             rti.setCreate_time(new Timestamp(new Date().getTime()));
@@ -995,7 +1047,6 @@ public class PermissionController extends BaseController {
      * 用户组首页
      * @return
      */
-    @White
     @RequestMapping(value = "/user_group_index", method = RequestMethod.GET)
     public String user_group_index() {
 
@@ -1009,7 +1060,6 @@ public class PermissionController extends BaseController {
      * @param offset
      * @return
      */
-    @White
     @RequestMapping(value = "/user_group_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<UserGroupInfo>>> user_group_list2(String product_code,String group_context, int limit, int offset){
@@ -1046,7 +1096,6 @@ public class PermissionController extends BaseController {
      * @param id
      * @return
      */
-    @White
     @RequestMapping(value = "/user_group_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<UserGroupInfo> user_group_detail(String id) {
@@ -1064,24 +1113,33 @@ public class PermissionController extends BaseController {
 
 
     /**
-     * 权限申请列表首页
+     * 大数据权限申请列表首页
      * @return
      */
-    @White
     @RequestMapping(value = "/permission_bigdata_index", method = RequestMethod.GET)
     public String permission_bigdata_index() {
 
         return "admin/permission_bigdata_index";
     }
 
-    @White
+    /**
+     * 大数据权限新增首页
+     * @return
+     */
     @RequestMapping(value = "/permission_bigdata_add_index", method = RequestMethod.GET)
     public String permission_bigdata_add_index() {
 
         return "admin/permission_bigdata_add_index";
     }
 
-    @White
+
+    /**
+     * 大数据权限-列表
+     * @param permission_context
+     * @param limit
+     * @param offset
+     * @return
+     */
     @RequestMapping(value = "/permission_bigdata_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<PermissionBigdataInfo>>> permission_bigdata_list(String permission_context, int limit, int offset){
@@ -1116,6 +1174,11 @@ public class PermissionController extends BaseController {
         }
     }
 
+    /**
+     * 大数据权限-明细
+     * @param id
+     * @return
+     */
     @RequestMapping(value = "/permission_bigdata_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PermissionBigdataInfo> permission_bigdata_detail(String id){
@@ -1130,7 +1193,11 @@ public class PermissionController extends BaseController {
         }
     }
 
-    @White
+    /**
+     * 大数据权限新增
+     * @param permissionBigdataInfo
+     * @return
+     */
     @RequestMapping(value = "/permission_bigdata_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PermissionBigdataInfo> permission_bigdata_add(PermissionBigdataInfo permissionBigdataInfo){
@@ -1150,7 +1217,11 @@ public class PermissionController extends BaseController {
         }
     }
 
-    @White
+    /**
+     * 大数据权限-更新
+     * @param permissionBigdataInfo
+     * @return
+     */
     @RequestMapping(value = "/permission_bigdata_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PermissionBigdataInfo> permission_bigdata_update(PermissionBigdataInfo permissionBigdataInfo){
@@ -1175,6 +1246,11 @@ public class PermissionController extends BaseController {
         }
     }
 
+    /**
+     * 大数据权限-删除
+     * @param ids
+     * @return
+     */
     @RequestMapping(value = "/permission_bigdata_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<PermissionApplyInfo>> permission_bigdata_delete(String[] ids){
@@ -1188,7 +1264,11 @@ public class PermissionController extends BaseController {
         }
     }
 
-    @White
+    /**
+     * 根据产品获取对应的权限规则列表
+     * @param product_code
+     * @return
+     */
     @RequestMapping(value = "/permission_rule_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<JSONObject>> permission_rule_list(String product_code){

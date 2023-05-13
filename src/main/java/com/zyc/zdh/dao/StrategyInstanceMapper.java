@@ -35,10 +35,11 @@ public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<Strat
                     "</foreach>",
                     " and sgi.status = 'sub_task_dispatch'",
                     " and si.group_instance_id=sgi.id",
+                    " and sgi.group_type = #{group_type}",
                     "</script>"
             }
     )
-    public List<StrategyInstance> selectThreadByStatus1(@Param("status") String[] status);
+    public List<StrategyInstance> selectThreadByStatus1(@Param("status") String[] status, @Param("group_type") String group_type);
 
     /**
      * 获取上游任务并且状态是kill,error,killed

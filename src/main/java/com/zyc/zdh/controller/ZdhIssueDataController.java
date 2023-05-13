@@ -255,7 +255,8 @@ public class ZdhIssueDataController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功,等待审批", null);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            logger.error("数据发布异常, {} : ", e);
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }

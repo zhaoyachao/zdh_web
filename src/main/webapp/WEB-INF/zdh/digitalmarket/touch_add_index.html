@@ -85,10 +85,21 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">触达参数</label>
+                            <label class="col-sm-2 control-label">触达配置</label>
                             <div class="col-sm-10">
                                 <div id="touch_config" name="touch_config" class="monaco_div_100"></div>
                                 <span class="help-block m-b-none"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">触达参数</label>
+                            <div class="col-sm-10">
+                                <select id="touch_param_codes" name="touch_param_codes"
+                                        data-placeholder="" multiple
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
                             </div>
                         </div>
 
@@ -185,8 +196,8 @@
             }
 
             window.editor_touch_config = monaco.editor.create(document.getElementById('touch_config'), {
-                value: 'json参数 ,提交时此语句此提示语必须删除',
-                language: 'json',
+                value: 'html语法格式',
+                language: 'html',
                 theme:'vs-dark'
             });
 
@@ -194,7 +205,9 @@
 
                 if(touch_task == "sms"){
                     $('#div_sms_config')[0].style.display = 'block';
+                    init_touch_param("touch_sms_param")
                 }else{
+                    init_touch_param("touch_email_param");
                     $('#div_sms_config')[0].style.display = 'none';
                 }
             }
@@ -202,6 +215,33 @@
             $('#touch_task').chosen().on("change", function (evt, params) {
                 touch_task_change($('#touch_task').find("option:selected").val());
             });
+
+            $('#touch_param_codes').chosen();
+
+            function init_touch_param(enum_code){
+                $.ajax({
+                    url: server_context+"/enum_by_code",
+                    data: "enum_code=" + enum_code,
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        console.info("success");
+
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
+                        for (var i = 0; i < data.result.enum_json_object.length; i++) {
+                            str += '<option value=\"' + data.result.enum_json_object[i].enum_value + "\" mytype=\"" + data.result.enum_json_object[i].enum_value + "\" hassubinfo=\"true\">" + data.result.enum_json_object[i].enum_value_context + "</option>"
+                        }
+                        $('#touch_param_codes').html(str);
+                        $("#touch_param_codes").trigger("chosen:updated");
+                        $('#touch_param_codes').chosen();
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+            }
 
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
@@ -279,13 +319,19 @@
                                 $('#div_sms_config')[0].style.display = 'block';
                                 $("#sign").val(sign);
                                 $("#template_code").val(template_code);
+                                init_touch_param("touch_sms_param");
                             }else{
                                 $('#div_sms_config')[0].style.display = 'none';
+                                init_touch_param("touch_email_param");
                             }
 
                             var touch_config = data.result.touch_config;
                             //$("#touch_config").val(touch_config);
                             window.editor_touch_config.setValue(touch_config);
+
+                            var touch_param_codes = data.result.touch_param_codes;
+                            $("#touch_param_codes").val(touch_param_codes.split(","));
+                            $("#touch_param_codes").trigger("chosen:updated");
 
                             var create_time = data.result.create_time;
                             $("#create_time").val(getMyDate(create_time));

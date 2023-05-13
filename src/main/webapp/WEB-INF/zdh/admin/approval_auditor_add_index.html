@@ -80,6 +80,20 @@
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">审批规则：</label>
+                                <div class="col-sm-8">
+                                    <select id="auditor_rule" name="auditor_rule"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2">
+                                        <option value="" mytype="">空</option>
+                                        <option value="leader" mytype="">直属领导审批</option>
+                                        <option value="security" mytype="">安全审批</option>
+                                        <option value="legal" mytype="">法务审批</option>
+                                        <option value="resources_leader" mytype="">资源所属领导审批</option>
+                                    </select>
+                                </div>
+                            </div>
 
 
                             <div class="form-group">
@@ -180,6 +194,7 @@
             }
             $('#type').chosen();
             $('#level').chosen();
+            $('#auditor_rule').chosen();
 
             $('#code').chosen();
             //$('#level').chosen();
@@ -340,6 +355,9 @@
                             $("#code").trigger("chosen:updated");
                             $('#level').val(data.result.level);
                             $("#level").trigger("chosen:updated");
+                            $('#auditor_rule').val(data.result.auditor_rule);
+                            $("#auditor_rule").trigger("chosen:updated");
+
                             $('#product_code').val(data.result.product_code);
                             $("#product_code").trigger("chosen:updated");
 
@@ -379,7 +397,7 @@
                         type: 'POST',
                         url: server_context+"/approval_auditor_update",
                         dataType: 'json',
-                        data: $("#signupForm").serialize()+"&id="+s.id,
+                        data: $("#signupForm").serialize()+"&id="+s.id+"&product_code="+$("#product_code").val()+"&code="+ $("#code").val(),
                         //发送数据前
                         beforeSend: function () {
                             // 禁用按钮防止重复提交
@@ -435,7 +453,7 @@
                         type: 'POST',
                         url: server_context+"/approval_auditor_add",
                         dataType: 'json',
-                        data: $("#signupForm").serialize(),
+                        data: $("#signupForm").serialize()+"&product_code="+$("#product_code").val()+"&code="+ $("#code").val(),
                         //发送数据前
                         beforeSend: function () {
                             // 禁用按钮防止重复提交

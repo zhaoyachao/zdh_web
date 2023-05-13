@@ -22,6 +22,7 @@ public interface ProcessFlowMapper extends BaseProcessFlowMapper<ProcessFlowInfo
             "<when test='context!=null and context !=\"\"'>",
             "and context like #{context}",
             "</when>",
+            "order by pfi.create_time desc",
             "</script>"
 
     })
@@ -70,6 +71,7 @@ public interface ProcessFlowMapper extends BaseProcessFlowMapper<ProcessFlowInfo
             "and context like #{context}",
             "</when>",
             "group by owner,flow_id",
+            "order by create_time desc ",
             "</script>"
 
     })
@@ -77,11 +79,11 @@ public interface ProcessFlowMapper extends BaseProcessFlowMapper<ProcessFlowInfo
 
     @Select({
             "<script>",
-            "select pfi.*,'${auditor_id}' as by_person_name from process_flow_info pfi where pfi.flow_id=#{flow_id} and find_in_set('${auditor_id}', auditor_id) ",
+            "select pfi.*,pfi.auditor_id as by_person_name from process_flow_info pfi where pfi.flow_id=#{flow_id} and owner = #{owner} ",
             "</script>"
 
     })
-    public List<ProcessFlowInfo> selectByFlowId(@Param("flow_id") String flow_id, @Param("auditor_id") String auditor_id);
+    public List<ProcessFlowInfo> selectByFlowId(@Param("flow_id") String flow_id, @Param("owner") String owner);
 
     @Update(
             {

@@ -46,6 +46,10 @@ public class ReturnInfo<T> {
         this.result = result;
     }
 
+    public Exception getE() {
+        return e;
+    }
+
     /**
      * 返回json-string入口
      * @param code

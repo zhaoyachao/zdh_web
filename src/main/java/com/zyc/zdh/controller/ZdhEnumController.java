@@ -217,7 +217,6 @@ public class ZdhEnumController extends BaseController{
      */
     @RequestMapping(value = "/enum_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<EnumInfo> enum_by_code(String enum_code) {
         try{
             if(StringUtils.isEmpty(enum_code)){

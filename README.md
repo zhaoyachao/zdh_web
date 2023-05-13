@@ -657,15 +657,17 @@
   + v5.1.1 [zdh_web]审批流增加代理人审批
   + v5.1.1 [zdh_web]优化quartz配置-采用配置文件替换代码格式
   + v5.1.1 [zdh_web]权限模块-资源管理增加title提示资源类型
+  + v5.1.1 [zdh_web]增加mybatis自定义生成代码(非通用,只适合当前项目)
+  + v5.1.1 [zdh_web]修复审批流更新时bug
+  + v5.1.1 [zdh_web]优化日志滚动格式,改为只按小时滚动,sql日志增加uuid日志标识
+  + v5.1.1 [zdh_web]新增过滤模块【过滤列表】
+  + v5.1.1 [zdh_web]新增策略组模块
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]历史遗留支持spark-greenplum 链接器【未完成】
   
-  
-  + v5.1.0 新增过滤模块【过滤列表待开发】【进行中】
-  + v5.1.0 新增策略组模块【进行中】
   
   + v5.1.0 标签模块-增加标签加工任务【开发中】
  
@@ -2016,6 +2018,20 @@
     alter table label_info add column label_data_update_type varchar(16) not null default 'overwrite' comment '数据更新类型,overwrite:覆盖,append:追加,get_append:值追加';
     alter table label_info add column label_event_time_column varchar(256) not null default '' comment '事件事件字段,默认为空';
     alter table label_info add column label_data_code varchar(256) not null default '' comment '数据标识,使用场景：从kafka来的数据根据此标识找到可以加工的标签都有哪些';
+    
+    CREATE TABLE `plugin_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `plugin_type` varchar(200) not null DEFAULT '' COMMENT '插件类型',
+      `plugin_code` varchar(200) not null DEFAULT '' COMMENT '插件code',
+      `plugin_name` varchar(200) not null DEFAULT '' COMMENT '插件名称',
+      `plugin_json` text COMMENT '插件配置',
+      `owner` varchar(100) not null DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
     
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

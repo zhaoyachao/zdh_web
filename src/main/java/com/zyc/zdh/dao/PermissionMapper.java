@@ -3,7 +3,10 @@ package com.zyc.zdh.dao;
 import com.zyc.notscan.base.BasePermissionMapper;
 import com.zyc.zdh.entity.PermissionUserInfo;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
 
 
 /**
@@ -62,5 +65,15 @@ public interface PermissionMapper extends BasePermissionMapper<PermissionUserInf
 			}
 	)
 	public int updateDataTagGroup(@Param("ids") String[] ids, @Param("tag_group_code") String tag_group_code);
+
+	@Select({
+			"<script>",
+			"select user_account from permission_user_info where enable='true' and product_code = #{product_code}",
+			"<when test='user_account!=null and user_account !=\"\"'>",
+			"and user_account = #{user_account}",
+			"</when>",
+			"</script>"
+	})
+	public List<String> selectAccountByProduct(@Param("product_code") String product_code, @Param("user_account") String user_account);
 
 }

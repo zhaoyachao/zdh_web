@@ -1,20 +1,23 @@
 package com.zyc.zdh.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
-import org.springframework.stereotype.Service;
 
 @Service("postConstructUtil")
 public class PostConstructUtil {
 
+	private static Logger logger= LoggerFactory.getLogger(PostConstructUtil.class);
 	public PostConstructUtil(){
-		System.out.println("初始化构造器");
+		logger.info("自定义前置任务初始化构造器");
 	}
 	
 	@PostConstruct
 	public void init(){
-		System.out.println("运行init方法");
+		logger.info("自定义前置任务运行init方法");
 	}
 	
 	@PreDestroy

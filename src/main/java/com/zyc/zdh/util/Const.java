@@ -105,6 +105,11 @@ public class Const {
     public static String PARAM_TYPE_STRING="1";//参数类型,字符串
     public static String PARAM_TYPE_JSON="2";//参数类型,json
 
+    public static String AUDITOR_RULE_LEADER="leader";
+    public static String AUDITOR_RULE_SECURITY="security";
+    public static String AUDITOR_RULE_LEGAL="legal";
+    public static String AUDITOR_RULE_RESOURCES_LEADER="resources_leader";
+
 
     public static String getEnumName(String type,String code){
         Map<String, Map<String, String>> enumMap=new HashMap<>();

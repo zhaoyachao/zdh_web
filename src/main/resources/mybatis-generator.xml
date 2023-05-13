@@ -8,9 +8,30 @@
              defaultModelType="flat">
         <property name="beginningDelimiter" value="`" />
         <property name="endingDelimiter" value="`" />
-        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
-            <property name="mappers" value="com.zyc.notscan.BaseMapper"/>
+        <plugin type="com.zyc.generator.ZdhMybatisPlugin">
+            <property name="controllerPackage" value="com.zyc.zdh.controller"/>
+            <property name="entityPackage" value="com.zyc.zdh.entity"/>
+            <property name="baseMapperPackage" value="com.zyc.notscan.base"/>
+            <property name="mapperPackage" value="com.zyc.zdh.dao"/>
+
+            <property name="enableGeneratorController" value="true"/>
+            <property name="enableGeneratorBaseMapper" value="true"/>
+            <property name="enableGeneratorMapper" value="true"/>
+
+            <property name="overwriteController" value="true"/>
+            <property name="overwriteBaseMapper" value="true"/>
+            <property name="overwriteMapper" value="false"/>
+
+            <property name="templateControllerFile" value="src/main/resources/TemplateController.ftl"/>
+            <property name="templateBaseMapperFile" value="src/main/resources/TemplateBaseMapper.ftl"/>
+            <property name="templateMapperFile" value="src/main/resources/TemplateMapper.ftl"/>
+
         </plugin>
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="com.zyc.notscan.base.BaseTestMapper"/>
+            <property name="useMapperCommentGenerator" value="false"/>
+        </plugin>
+
         <commentGenerator>
             <property name="suppressDate" value="true" />
             <property name="suppressAllComments" value="true" />
@@ -32,10 +53,10 @@
         <!-- 客户端代码，生成易于使用的针对Model对象和XML配置文件 的代码 type="ANNOTATEDMAPPER",生成Java Model
             和基于注解的Mapper对象 type="MIXEDMAPPER",生成基于注解的Java Model 和相应的Mapper对象 type="XMLMAPPER",生成SQLMap
             XML文件和独立的Mapper接口 -->
-        <javaClientGenerator type="ANNOTATEDMAPPER"
-                             targetPackage="com.zyc.notscan.base" targetProject="src/main/java">
-            <property name="enableSubPackages" value="true" />
-        </javaClientGenerator>
+<!--        <javaClientGenerator type="ANNOTATEDMAPPER"-->
+<!--                             targetPackage="com.zyc.zdh.dao" targetProject="src/main/java" implementationPackage="">-->
+<!--            <property name="enableSubPackages" value="true" />-->
+<!--        </javaClientGenerator>-->
         <!--生成对应表及类名 -->
 <!--        <table tableName="blood_source_info" domainObjectName="BloodSourceInfo" mapperName="BaseBloodSourceMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
@@ -269,7 +290,14 @@
 <!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--                </table>-->
 
-                    <table tableName="plugin_info" domainObjectName="PluginInfo" mapperName="BasePluginMapper">
+<!--                    <table tableName="plugin_info" domainObjectName="PluginInfo" mapperName="BasePluginMapper">-->
+<!--                        <property name="useActualColumnNames" value="true" />-->
+<!--                        <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                        <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                        <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--                    </table>-->
+
+                    <table tableName="test_info" domainObjectName="TestInfo" mapperName="BaseTestMapper">
                         <property name="useActualColumnNames" value="true" />
                         <columnOverride column="id" property="id" javaType="java.lang.String"/>
                         <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>

@@ -420,10 +420,10 @@
                 async: false,
                 success : function(data) {
                     console.info("task_log_instance_list success");
-                    for(var j=0;j<data.length;j++){
+                    for(var j=0;j<data.result.length;j++){
                         //divId->status
-                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id));
-                        map3.set(map2.get(data[j].id),data[j].status)
+                        console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
+                        map3.set(map2.get(data.result[j].id),data.result[j].status)
                     }
                 },
                 error: function (data) {
@@ -622,7 +622,7 @@
                 }, function (index) {
 
                     $.ajax({
-                        url: server_context+"/kill",
+                        url: server_context+"/killStrategy",
                         data: "id=" + row.id,
                         type: "post",
                         dataType: "json",
@@ -801,7 +801,7 @@
                 field: 'status',
                 title: '任务执行状态',
                 sortable: true,
-                width:150,
+                width:250,
                 events: operateEvents,//给按钮注册事件
                 formatter: function (value, row, index) {
                     var r1=row;
@@ -868,7 +868,7 @@
                         btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
                     }
 
-                    var url=server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time
+                    var url=server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time;
                     var title=row.job_context + "日志";
                     return [
                         '<div style="text-align:center" >'+
@@ -878,8 +878,8 @@
                         btn_kill_str +
                         btn_skip_str +
                         '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+
-                        '</div>'+
-                        '<button type="button" id="strategy_task_download" class="btn btn-warning btn-xs">下载</button>'+
+                        //'</div>'+
+                        '<button type="button" id="strategy_task_download" class="btn btn-success btn-xs">下载</button>'+
                         '</div>'+
                         '</div>'
                     ].join('');

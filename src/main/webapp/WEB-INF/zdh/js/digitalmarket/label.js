@@ -141,7 +141,7 @@
               });
           },
           'click #tasks': function (e, value, row, index) {
-              layer.confirm('是否编辑加工任务', {
+              layer.confirm('是否编辑加工任务(当前功能未开发,可使用ETL能力暂时代替)', {
                   btn: ['确定','取消'] //按钮
               }, function(index){
                   layer.close(layer.index)

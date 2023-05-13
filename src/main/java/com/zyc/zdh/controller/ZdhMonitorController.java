@@ -537,7 +537,6 @@ public class ZdhMonitorController extends BaseController {
      * @param status
      * @return
      */
-    @White
     @RequestMapping(value = "/task_group_log_instance_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<TaskGroupLogInstance>>> task_group_log_instance_list2(String start_time, String end_time,
@@ -692,7 +691,6 @@ public class ZdhMonitorController extends BaseController {
      */
     @RequestMapping(value = "/download_log", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @White
     public void download_log(HttpServletResponse response, String job_id, String task_log_id) {
         String levels = "'DEBUG','WARN','INFO','ERROR'";
         File path = null;

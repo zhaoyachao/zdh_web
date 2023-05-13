@@ -135,7 +135,7 @@ public class ProcessFlowApi {
      */
     @RequestMapping(value = "process_detail_by_flow_id", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo process_flow_detail(String user_account,String flow_id,String product_code,String ak, String sk) {
+    public ReturnInfo process_detail_by_flow_id(String user_account,String flow_id,String product_code,String ak, String sk) {
         try {
             check_aksk(product_code,ak,sk);
             List<ProcessFlowInfo> pfis = processFlowMapper.selectByFlowId(flow_id, user_account);

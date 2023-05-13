@@ -14,6 +14,8 @@ public class StrategyGroupInstance {
      */
     private String group_context;
 
+    private String group_type;
+
     /**
      * 开始时间
      */
@@ -119,6 +121,8 @@ public class StrategyGroupInstance {
      */
     private String pre_tasks;
 
+    private String data_node;
+
     /**
      * @return id
      */
@@ -149,6 +153,14 @@ public class StrategyGroupInstance {
      */
     public void setGroup_context(String group_context) {
         this.group_context = group_context;
+    }
+
+    public String getGroup_type() {
+        return group_type;
+    }
+
+    public void setGroup_type(String group_type) {
+        this.group_type = group_type;
     }
 
     /**
@@ -527,5 +539,13 @@ public class StrategyGroupInstance {
      */
     public void setPre_tasks(String pre_tasks) {
         this.pre_tasks = pre_tasks;
+    }
+
+    public String getData_node() {
+        return data_node;
+    }
+
+    public void setData_node(String data_node) {
+        this.data_node = data_node;
     }
 }

@@ -14,6 +14,7 @@ import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.shiro.session.mgt.SimpleSession;
 import org.quartz.Job;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -30,6 +31,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
@@ -58,6 +60,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         quartzExecutor();
         init2Ip();
         scheduleByCurrentServer();
+        removeValidSession();
         logger.info("初始化通知事件");
         EmailJob.notice_event();
         logger.info("初始化失败任务监控程序");
@@ -386,7 +389,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                 while (true) {
                     try {
                         String instanceId = scheduler.getSchedulerInstanceId();
-
+                        redisUtil.set("schedule_"+instanceId,instanceId,50L, TimeUnit.SECONDS);
                         Example example=new Example(QrtzSchedulerState.class);
                         Example.Criteria criteria=example.createCriteria();
                         criteria.andEqualTo("instance_name", instanceId);
@@ -409,5 +412,31 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
         t.setName("ScheduleByCurrentServer");
         t.start();
+    }
+
+    public void removeValidSession(){
+        Thread t = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
+                try{
+                    while (true){
+                        Set<String> sets = redisUtil.scan("shiro:cache:shiro-activeSessionCache1*");
+                        for(String key:sets){
+                            if( !((SimpleSession) redisUtil.get(key)).isValid()){
+                                logger.info("检测到过期session: "+ JSON.toJSONString(redisUtil.get(key)));
+                                redisUtil.remove(key);
+                            }
+                        }
+                        Thread.sleep(1000*60*10);
+                    }
+
+                }catch (Exception e){
+                    logger.info("检测到过期session异常: "+e.getMessage());
+                }
+            }
+        });
+       t.start();
     }
 }

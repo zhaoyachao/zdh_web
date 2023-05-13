@@ -429,7 +429,7 @@ public class JobDigitalMarket {
 
                         //todo 生成具体任务组下任务实例
                         sub_strategy_instance(sgi, sub_tasks);
-                        //sgim.updateStatus2Create(new String[]{tgli.getId()});
+                        sgim.updateStatus2Create(new String[]{sgi.getId()});
                         debugInfo(sgi);
                         sgim.updateByPrimaryKey(sgi);
 
@@ -698,6 +698,7 @@ public class JobDigitalMarket {
                 String depend_level = ((JSONObject) job).getString("depend_level");
                 String time_out = ((JSONObject) job).getString("time_out");
                 String touch_type = ((JSONObject) job).getString("touch_type");
+                String data_node = ((JSONObject) job).getString("data_node");
                 if (!StringUtils.isEmpty(time_out)) {
                     //si.setTime_out(time_out);
                 }
@@ -706,6 +707,9 @@ public class JobDigitalMarket {
                 }
                 if (StringUtils.isEmpty(depend_level)) {
                     depend_level = "0";
+                }
+                if (StringUtils.isEmpty(data_node)) {
+                    data_node = "";
                 }
 
                 si.setRun_time(new Timestamp(new Date().getTime()));
@@ -732,6 +736,7 @@ public class JobDigitalMarket {
                 si.setIs_disenable(is_disenable);
                 si.setDepend_level(depend_level);
                 si.setTouch_type(touch_type);
+                si.setData_node(data_node);
 
                 String name = ((JSONObject) job).getString("name");
                 si.setStrategy_context(name);

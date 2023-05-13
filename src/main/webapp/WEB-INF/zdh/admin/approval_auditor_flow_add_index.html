@@ -252,6 +252,7 @@
             $("#" + divId).attr("type",tp);
             $("#" + divId).attr("level",rs.level);
             $("#" + divId).attr("level_name",rs.level_name);
+            $("#" + divId).attr("auditor_rule",rs.auditor_rule);
 
             $("#" + divId).attr("auditor_context",rs.auditor_context);
             $("#" + divId).attr("auditor_id",rs.auditor_id);
@@ -298,6 +299,7 @@
                 auditor_id:$elem.attr('auditor_id'),
                 level:$elem.attr('level'),
                 level_name:$elem.attr('level_name'),
+                auditor_rule:$elem.attr('auditor_rule'),
                 auditor_context:$elem.attr('auditor_context'),
                 id: $elem.attr('id'),
 

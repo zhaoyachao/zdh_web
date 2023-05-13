@@ -218,12 +218,18 @@
             title: '进度',
             sortable: true,
             formatter: function (value, row, index) {
-                var context = "未知";
-                var process = 100;
+                var context = "执行中";
+                var process = 10;
                 var class_str = "progress-bar progress-bar-success";
                 if (row.status == "error" || row.status == "killed") {
-                    class_str = "progress-bar progress-bar-danger"
-                    //context = "采集失败"
+                    class_str = "progress-bar progress-bar-danger";
+                    process = 100;
+                    context = "失败"
+                }
+                if (row.status == "finish") {
+                    class_str = "progress-bar progress-bar-success";
+                    process = 100;
+                    context = "完成"
                 }
                 return [
                     '<small>' + context + process + '%</small>' +

@@ -243,7 +243,11 @@
             field: 'id',
             title: 'ID',
             sortable:false
-        }, {
+        },{
+            field: 'plugin_type',
+            title: '插件类型',
+            sortable:false
+        },  {
             field: 'plugin_name',
             title: '插件说明',
             sortable:false

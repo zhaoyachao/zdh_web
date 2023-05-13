@@ -42,6 +42,8 @@ public class ApprovalAuditorInfo {
      */
     private String auditor_context;//环节说明
 
+    private String auditor_rule;
+
     @Transient
     private String code_name;
 
@@ -155,5 +157,13 @@ public class ApprovalAuditorInfo {
 
     public void setAuditor_context(String auditor_context) {
         this.auditor_context = auditor_context;
+    }
+
+    public String getAuditor_rule() {
+        return auditor_rule;
+    }
+
+    public void setAuditor_rule(String auditor_rule) {
+        this.auditor_rule = auditor_rule;
     }
 }

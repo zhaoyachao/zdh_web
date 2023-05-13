@@ -193,6 +193,7 @@ function doubleclick_flow(id) {
                 div.attr("auditor_id",etl_task_info.id);
                 div.attr("level",etl_task_info.level);
                 div.attr("level_name",etl_task_info.level_name);
+                div.attr("auditor_rule",etl_task_info.auditor_rule);
                 div.attr("auditor_context",etl_task_info.auditor_context);
                 div.attr("type","flow");
 

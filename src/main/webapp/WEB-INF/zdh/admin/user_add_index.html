@@ -134,6 +134,17 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="col-sm-3 control-label">归属上级</label>
+                                <div class="col-sm-8">
+                                    <select id="user_team" name="user_team"
+                                            data-placeholder=""
+                                            class="chosen-select form-control m-b" tabindex="2">
+                                        <option value="" mytype="">空</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="col-sm-3 control-label">角色</label>
                                 <div class="col-sm-8">
                                     <select id="roles" name="roles"
@@ -206,6 +217,7 @@
             $('#user_group').chosen();
             $('#roles').chosen();
             $('#tag_group_code').chosen();
+            $('#user_team').chosen();
 
             $.ajax({
                 type: 'POST',
@@ -226,11 +238,13 @@
                         init_role($("#product_code").val());
                         init_user_group($("#product_code").val());
                         init_data_tag($("#product_code").val());
+                        init_user_leader($("#product_code").val());
                         //init_jstree($("#product_code").val());
                     });
                     init_role($("#product_code").val());
                     init_user_group($("#product_code").val());
                     init_data_tag($("#product_code").val());
+                    init_user_leader($("#product_code").val());
                 },
                 //处理完成
                 complete: function () {
@@ -281,7 +295,7 @@
 
                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
                         for (var i = 0; i < data.result.length; i++) {
-                            str += '<option value=\"' + data.result[i].id + '\" hassubinfo=\"true\">' + data.result[i].name + '</option>'
+                            str += '<option value=\"' + data.result[i].group_code + '\" hassubinfo=\"true\">' + data.result[i].name + '</option>'
                         }
                         $('#user_group').html(str);
                         $("#user_group").trigger("chosen:updated");
@@ -320,6 +334,40 @@
                         $('#tag_group_code').html(str);
                         $("#tag_group_code").trigger("chosen:updated");
                         $('#tag_group_code').chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete data_tag_group_list")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+
+            function init_user_leader(product_code){
+                $.ajax({
+                    type: 'post',
+                    url: server_context+"/user_account_list?product_code="+product_code,
+                    async:false,
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+
+                        var str = '<option value=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i] + '\" hassubinfo=\"true\">' + data.result[i] + '</option>'
+                        }
+                        $('#user_team').html(str);
+                        $("#user_team").trigger("chosen:updated");
+                        $('#user_team').chosen();
                     },
                     //处理完成
                     complete: function () {

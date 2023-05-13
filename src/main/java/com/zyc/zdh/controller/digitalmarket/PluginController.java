@@ -54,7 +54,7 @@ public class PluginController extends BaseController {
 
     /**
      * 插件列表
-     * @param plugin_context 关键字
+     * @param plugin_name 关键字
      * @return
      */
     @RequestMapping(value = "/plugin_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -106,7 +106,7 @@ public class PluginController extends BaseController {
     @RequestMapping(value = "/plugin_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public ReturnInfo plugin_detail(String id) {
+    public ReturnInfo<PluginInfo> plugin_detail(String id) {
         try {
             PluginInfo pluginInfo = pluginMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pluginInfo);
@@ -123,7 +123,7 @@ public class PluginController extends BaseController {
     @RequestMapping(value = "/plugin_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public ReturnInfo plugin_detail_by_code(String plugin_code) {
+    public ReturnInfo<PluginInfo> plugin_detail_by_code(String plugin_code) {
         try {
 
             PluginInfo pluginInfo = new PluginInfo();
@@ -148,7 +148,7 @@ public class PluginController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     @White
-    public ReturnInfo plugin_update(PluginInfo pluginInfo,String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value) {
+    public ReturnInfo<PluginInfo> plugin_update(PluginInfo pluginInfo,String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value) {
         try {
             if(param_code==null || param_code.length<1){
                 throw new Exception("参数不可为空");
@@ -200,7 +200,7 @@ public class PluginController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     @White
-    public ReturnInfo plugin_add(PluginInfo pluginInfo,String[] param_code, String[] param_context, String[] param_type, String[] param_operate, String[] param_value) {
+    public ReturnInfo<PluginInfo> plugin_add(PluginInfo pluginInfo,String[] param_code, String[] param_context, String[] param_type, String[] param_operate, String[] param_value) {
         try {
             if(param_code==null || param_code.length<1){
                throw new Exception("参数不可为空");
@@ -227,10 +227,10 @@ public class PluginController extends BaseController {
             pluginInfo.setCreate_time(new Timestamp(new Date().getTime()));
             pluginInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             pluginMapper.insert(pluginInfo);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", pluginInfo);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 

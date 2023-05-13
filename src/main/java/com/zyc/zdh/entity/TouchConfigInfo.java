@@ -56,6 +56,11 @@ public class TouchConfigInfo {
     private String touch_config;
 
     /**
+     * 触达参数
+     */
+    private String touch_param_codes;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -243,5 +248,13 @@ public class TouchConfigInfo {
      */
     public void setTouch_config(String touch_config) {
         this.touch_config = touch_config;
+    }
+
+    public String getTouch_param_codes() {
+        return touch_param_codes;
+    }
+
+    public void setTouch_param_codes(String touch_param_codes) {
+        this.touch_param_codes = touch_param_codes;
     }
 }

@@ -13,6 +13,11 @@ public class PluginInfo {
     private String id;
 
     /**
+     * 插件类型
+     */
+    private String plugin_type;
+
+    /**
      * 插件code
      */
     private String plugin_code;
@@ -69,6 +74,14 @@ public class PluginInfo {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getPlugin_type() {
+        return plugin_type;
+    }
+
+    public void setPlugin_type(String plugin_type) {
+        this.plugin_type = plugin_type;
     }
 
     /**

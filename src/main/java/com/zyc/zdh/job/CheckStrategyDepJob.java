@@ -22,9 +22,11 @@ import org.apache.http.NameValuePair;
 import org.apache.shiro.session.mgt.SimpleSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -44,12 +46,13 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 
     public void run() {
         try {
+            MDC.put("logId", UUID.randomUUID().toString());
             logger.debug("开始检测策略组任务...");
             StrategyGroupInstanceMapper sgim=(StrategyGroupInstanceMapper) SpringContext.getBean("strategyGroupInstanceMapper");
             StrategyInstanceMapper sim=(StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
 
 
-            // 如果当前任务组无子任务则直接设置完成
+            // 如果当前任务组无子任务则直接设置完成,或者是在线任务组状态更新成执行中
             List<StrategyGroupInstance> non_group=sgim.selectTaskGroupByStatus(new String[]{JobStatus.SUB_TASK_DISPATCH.getValue(),JobStatus.KILL.getValue()});
             for(StrategyGroupInstance group :non_group){
                 List<StrategyInstance> sub_task=sim.selectByGroupInstanceId(group.getId(), null);
@@ -83,6 +86,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             create_group_final_status();
         } catch (Exception e) {
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+             MDC.remove("logId");
         }
 
     }
@@ -115,112 +119,128 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             StrategyGroupInstanceMapper sgim=(StrategyGroupInstanceMapper) SpringContext.getBean("strategyGroupInstanceMapper");
             StrategyInstanceMapper sim=(StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
 
-            //获取所有可执行的非依赖类型子任务
-            List<StrategyInstance> strategyInstanceList=sim.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()});
+            //获取所有实时类型的可执行子任务
+            List<StrategyInstance> strategyInstanceOnLineList=sim.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()}, "online");
+            for(StrategyInstance tl :strategyInstanceOnLineList){
+                tl.setStatus(JobStatus.ETL.getValue());
+                tl.setUpdate_time(new Timestamp(new Date().getTime()));
+                JobDigitalMarket.updateTaskLog(tl,sim);
+            }
+
+            //获取所有离线类型的可执行的非依赖类型子任务
+            List<StrategyInstance> strategyInstanceList=sim.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()}, "offline");
             for(StrategyInstance tl :strategyInstanceList){
-                //如果skip状态,跳过当前策略实例
-                if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
-                    continue;
-                }
-                //如果上游任务kill,killed 设置本实例为killed
-                String pre_tasks=tl.getPre_tasks();
-                if(!StringUtils.isEmpty(pre_tasks)){
-                    String[] task_ids=pre_tasks.split(",");
-                    List<StrategyInstance> tlis=sim.selectByIds(task_ids);
-
-                    int level= Integer.valueOf(tl.getDepend_level());
-                    if(tlis!=null && tlis.size()>0 && level==0){
-                        // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
-                        tl.setStatus(JobStatus.KILLED.getValue());
-                        JobDigitalMarket.updateTaskLog(tl,sim);
-                        JobDigitalMarket.insertLog(tl,"INFO","检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为killed");
-                        continue;
-                    }
-                    if(level >= 1){
-                        // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
-                        //杀死触发,如果所有上游任务都以完成
-                        List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
-                        if(tlis_finish.size()==task_ids.length){
-                            tl.setStatus(JobStatus.SKIP.getValue());
-                            JobDigitalMarket.updateTaskLog(tl, sim);
-                            //JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
-                            JobDigitalMarket.insertLog(tl,"INFO","检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为SKIP");
-                            continue;
-                        }
-                    }
-                }
-
-                //根据dag判断是否对当前任务进行
-                DAG dag=new DAG();
-                String group_instance_id=tl.getGroup_instance_id();
-                List<StrategyInstance> strategyInstanceList2=sim.selectByGroupInstanceId(group_instance_id, null);
-                Map<String,StrategyInstance> dagStrategyInstance=new HashMap<>();
-                //此处必须使用group_instance_id实例id查询,因可能有策略实例已完成
-                for(StrategyInstance t2 :strategyInstanceList2){
-                    if(t2.getGroup_instance_id().equalsIgnoreCase(group_instance_id)) {
-                        dagStrategyInstance.put(t2.getId(), t2);
-                        String pre_tasks2=t2.getPre_tasks();
-                        if (!StringUtils.isEmpty(pre_tasks2)) {
-                            String[] task_ids = pre_tasks2.split(",");
-                            for (String instance_id:task_ids){
-                                dag.addEdge(instance_id, t2.getId());
-                            }
-                        }
-                    }
-                }
-                Set<String> parents = dag.getAllParent(tl.getId());
-                if(parents==null || parents.size()==0){
-                    //无父节点直接运行即可
-                    System.out.println("根节点模拟发放任务--开始");
-                    System.out.println("=======================");
-                    System.out.println(JSON.toJSONString(tl));
+                try{
+                    //如果skip状态,跳过当前策略实例
                     if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                         continue;
                     }
-                    JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
-                    if(tl.getTouch_type()==null || !tl.getTouch_type().equalsIgnoreCase("queue")){
-                        resovleStrategyInstance(tl);
-                    }
-                    System.out.println("根节点模拟发放任务--结束");
-                    //更新任务状态为检查完成
-                    tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
-                    JobDigitalMarket.updateTaskLog(tl,sim);
-                }else{
-                    boolean is_run=true;
-                    for (String parent:parents){
-                        if(!dagStrategyInstance.containsKey(parent)){
-                            is_run=false;
-                            System.out.println("未找到任务父节点信息");
-                            break ;
+                    //如果上游任务kill,killed 设置本实例为killed
+                    String pre_tasks=tl.getPre_tasks();
+                    if(!StringUtils.isEmpty(pre_tasks)){
+                        String[] task_ids=pre_tasks.split(",");
+                        List<StrategyInstance> tlis=sim.selectByIds(task_ids);
+
+                        int level= Integer.valueOf(tl.getDepend_level());
+                        if(tlis!=null && tlis.size()>0 && level==0){
+                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
+                            tl.setStatus(JobStatus.KILLED.getValue());
+                            JobDigitalMarket.updateTaskLog(tl,sim);
+                            JobDigitalMarket.insertLog(tl,"INFO","检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为killed");
+                            continue;
                         }
-                        if(!dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue()) &&
-                              !dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue())){
-                            //当前不可执行
-                            is_run=false;
-                            //System.out.println(JSON.toJSONString(tl));
-                            //System.out.println("当前任务父任务存在为完成");
-                            break ;
+                        if(level >= 1){
+                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
+                            //杀死触发,如果所有上游任务都以完成
+                            List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
+                            if(tlis_finish.size()==task_ids.length){
+                                tl.setStatus(JobStatus.SKIP.getValue());
+                                JobDigitalMarket.updateTaskLog(tl, sim);
+                                //JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
+                                JobDigitalMarket.insertLog(tl,"INFO","检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为SKIP");
+                                continue;
+                            }
                         }
                     }
 
-                    if(is_run){
-                        //上游都以完成,可执行,任务发完执行集群 此处建议使用优先级队列 todo
-                        System.out.println("模拟发放任务--开始");
-                        JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
+                    //根据dag判断是否对当前任务进行
+                    DAG dag=new DAG();
+                    String group_instance_id=tl.getGroup_instance_id();
+                    List<StrategyInstance> strategyInstanceList2=sim.selectByGroupInstanceId(group_instance_id, null);
+                    Map<String,StrategyInstance> dagStrategyInstance=new HashMap<>();
+                    //此处必须使用group_instance_id实例id查询,因可能有策略实例已完成
+                    for(StrategyInstance t2 :strategyInstanceList2){
+                        if(t2.getGroup_instance_id().equalsIgnoreCase(group_instance_id)) {
+                            dagStrategyInstance.put(t2.getId(), t2);
+                            String pre_tasks2=t2.getPre_tasks();
+                            if (!StringUtils.isEmpty(pre_tasks2)) {
+                                String[] task_ids = pre_tasks2.split(",");
+                                for (String instance_id:task_ids){
+                                    dag.addEdge(instance_id, t2.getId());
+                                }
+                            }
+                        }
+                    }
+                    Set<String> parents = dag.getAllParent(tl.getId());
+                    if(parents==null || parents.size()==0){
+                        //无父节点直接运行即可
+                        System.out.println("根节点模拟发放任务--开始");
+                        System.out.println("=======================");
+                        System.out.println(JSON.toJSONString(tl));
                         if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                             continue;
                         }
+                        JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
                         if(tl.getTouch_type()==null || !tl.getTouch_type().equalsIgnoreCase("queue")){
                             resovleStrategyInstance(tl);
                         }
-                        System.out.println("=======================");
-                        System.out.println(JSON.toJSONString(tl));
-                        System.out.println("模拟发放任务--结束");
-
+                        System.out.println("根节点模拟发放任务--结束");
                         //更新任务状态为检查完成
                         tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                         JobDigitalMarket.updateTaskLog(tl,sim);
+                    }else{
+                        boolean is_run=true;
+                        for (String parent:parents){
+                            if(!dagStrategyInstance.containsKey(parent)){
+                                is_run=false;
+                                System.out.println("未找到任务父节点信息");
+                                break ;
+                            }
+                            if(!dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue()) &&
+                                    !dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue())){
+                                //当前不可执行
+                                is_run=false;
+                                //System.out.println(JSON.toJSONString(tl));
+                                //System.out.println("当前任务父任务存在为完成");
+                                break ;
+                            }
+                        }
+
+                        if(is_run){
+                            //上游都以完成,可执行,任务发完执行集群 此处建议使用优先级队列 todo
+                            System.out.println("模拟发放任务--开始");
+                            JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
+                            if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
+                                continue;
+                            }
+                            if(tl.getTouch_type()==null || !tl.getTouch_type().equalsIgnoreCase("queue")){
+                                resovleStrategyInstance(tl);
+                            }
+                            System.out.println("=======================");
+                            System.out.println(JSON.toJSONString(tl));
+                            System.out.println("模拟发放任务--结束");
+
+                            //更新任务状态为检查完成
+                            tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
+                            JobDigitalMarket.updateTaskLog(tl,sim);
+                        }
                     }
+                }catch (Exception e){
+                    //任务未知异常,设置实例为失败
+                    //更新任务状态为检查完成
+                    tl.setStatus(JobStatus.ERROR.getValue());
+                    JobDigitalMarket.updateTaskLog(tl,sim);
+                    logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
                 }
             }
 

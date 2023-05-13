@@ -40,6 +40,18 @@ public class TouchController extends BaseController {
 
 
     /**
+     * 在线节点配置首页
+     * @return
+     */
+    @White
+    @RequestMapping(value = "/online_detail", method = RequestMethod.GET)
+    public String online_detail() {
+
+        return "digitalmarket/online_detail";
+    }
+
+
+    /**
      * 触达配置首页
      * @return
      */

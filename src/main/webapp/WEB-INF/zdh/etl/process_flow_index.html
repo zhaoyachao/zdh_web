@@ -225,10 +225,10 @@
             function operateFormatter(value, row, index) {
                 return [
                     ' <button id="approve" name="approve" type="button" class="btn btn-outline btn-sm"  title="审批">\n' +
-                    '                                        <i class="fa fa-gg" aria-hidden="true"></i>\n' +
+                    '                                        <i class="fa fa-gg" aria-hidden="true">审批</i>\n' +
                     '                                    </button>',
                     ' <button id="agent" name="agent" type="button" class="btn btn-outline btn-sm" title="代理">\n' +
-                    '                                        <i class="fa fa-location-arrow" aria-hidden="true"></i>\n' +
+                    '                                        <i class="fa fa-location-arrow" aria-hidden="true">代理</i>\n' +
                     '                                    </button>'
                 ].join('');
             }
@@ -316,7 +316,7 @@
                         field: 'operate',
                         title: '审批',
                         events: operateEvents,//给按钮注册事件
-                        width: 90,
+                        width: 150,
                         formatter: operateFormatter //表格中增加按钮
                     }]
             });

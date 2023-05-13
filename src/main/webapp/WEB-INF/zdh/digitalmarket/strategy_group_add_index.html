@@ -89,6 +89,14 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">在线节点</label>
+                            <div class="col-sm-10">
+                                <input id="data_node" name="data_node" type="text"
+                                       placeholder="在线节点" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">表达式</label>
                             <div class="col-sm-10">
                                 <input id="expr" name="expr" type="text"
@@ -118,6 +126,7 @@
                                 <div class="container device col-sm-12">
                                     <div class="deviceLeft2">
                                         <div class="deviceLeft_box">
+                                            <div class="node nodedata_nodecss" data-type="data_node">在线节点</div>
                                             <div class="node nodelabelcss" data-type="label">标签</div>
                                             <div class="node nodecrowd_rulecss" data-type="crowd_rule">人群规则</div>
                                             <div class="node nodecrowd_filecss" data-type="crowd_file">人群文件</div>
@@ -376,6 +385,10 @@
                 $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
+            if(tp == "data_node"){
+                $("#" + divId).attr("data_node",rs.data_node);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
 
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
@@ -455,6 +468,8 @@
                 touch_context: $elem.attr('touch_context'),
                 touch_id: $elem.attr('touch_id'),
                 touch_task: $elem.attr('touch_task'),
+
+                data_node: $elem.attr('data_node'),
 
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,
@@ -685,6 +700,11 @@
                         var group_context=data.result.group_context;
                         $("#group_context").val(group_context);
 
+                        var group_type=data.result.group_type;
+                        $("#group_type").val(group_type);
+
+                        var data_node=data.result.data_node;
+                        $("#data_node").val(data_node);
                         //开始时间
                         var start_time=data.result.start_time;
                         if(start_time!='' && typeof(start_time) !="undefined"){
@@ -823,6 +843,10 @@
             },
             //成功返回
             success: function (data) {
+                if(data.code != '200'){
+                    parent.layer.msg("更新失败"+data.msg);
+                    return ;
+                }
                 $("#update_dispatch_task").removeAttr('disabled');
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭

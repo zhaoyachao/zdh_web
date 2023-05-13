@@ -1,5 +1,7 @@
 package com.zyc.zdh.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -18,7 +20,7 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
-
+	public Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	Environment ev;
 //	@Bean
@@ -59,7 +61,7 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 	public InternalResourceViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 		// viewResolver.setPrefix("/WEB-INF/classes/views/");
-        System.out.println("打印web.path:"+ev.getProperty("web.path"));
+		logger.info("打印web.path:"+ev.getProperty("web.path"));
 		viewResolver.setPrefix(ev.getProperty("web.path"));
 		viewResolver.setSuffix(".html");
 		viewResolver.setViewClass(JstlView.class);

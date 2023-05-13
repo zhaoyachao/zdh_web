@@ -55,7 +55,7 @@ public class ShiroRedisCache<K, V> implements Cache<K, V> {
 		V old = get(arg0);
 		redisTemplate.boundValueOps(getCacheKey(arg0)).set(arg1);
 		//session失效时间为1小时
-		redisTemplate.expire(getCacheKey(arg0), 1, TimeUnit.HOURS);
+		redisTemplate.expire(getCacheKey(arg0), 12, TimeUnit.HOURS);
 		return old;
 	}
 

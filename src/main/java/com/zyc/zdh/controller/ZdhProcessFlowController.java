@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.*;
@@ -46,6 +47,8 @@ public class ZdhProcessFlowController extends BaseController {
     PermissionApplyMapper permissionApplyMapper;
     @Autowired
     PermissionMapper permissionMapper;
+    @Resource
+    PermissionController permissionController;
     @Autowired
     RedisUtil redisUtil;
     @Autowired
@@ -301,71 +304,101 @@ public class ZdhProcessFlowController extends BaseController {
      * @param context
      * @param event_id
      */
-    public void createProcess(String event_code, String context, String event_id) {
-        String group = getUser().getUser_group();
-        String product_code = ev.getProperty("zdp.product", "zdh");
-        //获取事件对应的审批流code
-        List<ApprovalAuditorInfo> approvalAuditorInfos = approvalAuditorMapper.selectByEvent(event_code, group, product_code);
+    public void createProcess(String event_code, String context, String event_id) throws Exception{
+        try{
+            String group = getUser().getUser_group();
+            String product_code = ev.getProperty("zdp.product", "zdh");
+            //获取事件对应的审批流code
+            List<ApprovalAuditorInfo> approvalAuditorInfos = approvalAuditorMapper.selectByEvent(event_code, group, product_code);
 
-        List<ProcessFlowInfo> pfis = new ArrayList<>();
-        //生成唯一标识,用于串联审批节点
-        String uid = SnowflakeIdWorker.getInstance().nextId() + "";
-        String pre_id = "";
-        String auditors = "";
-        //遍历层级生成上下游关系
-        for (int i = 1; i < 10; i++) {
-            ProcessFlowInfo pfi = new ProcessFlowInfo();
-            String id = SnowflakeIdWorker.getInstance().nextId() + "";
-            pfi.setId(id);
-            pfi.setOwner(getUser().getUserName());
-            pfi.setFlow_id(uid);
-            pfi.setEvent_code(event_code);
-            Set<String> sb = new TreeSet<>();
-            for (ApprovalAuditorInfo aai : approvalAuditorInfos) {
-                if (aai.getLevel().equalsIgnoreCase(i + "")) {
-                    pfi.setConfig_code(aai.getCode());
-                    //审批人账号
-                    sb.add(aai.getAuditor_id());
+            List<ProcessFlowInfo> pfis = new ArrayList<>();
+            //生成唯一标识,用于串联审批节点
+            String uid = SnowflakeIdWorker.getInstance().nextId() + "";
+            String pre_id = "";
+            String auditors = "";
+            //遍历层级生成上下游关系
+            for (int i = 1; i < 10; i++) {
+                ProcessFlowInfo pfi = new ProcessFlowInfo();
+                String id = SnowflakeIdWorker.getInstance().nextId() + "";
+                pfi.setId(id);
+                pfi.setOwner(getUser().getUserName());
+                pfi.setFlow_id(uid);
+                pfi.setEvent_code(event_code);
+                Set<String> sb = new TreeSet<>();
+                for (ApprovalAuditorInfo aai : approvalAuditorInfos) {
+                    if (aai.getLevel().equalsIgnoreCase(i + "")) {
+                        pfi.setConfig_code(aai.getCode());
+                        //根据规则获取审批人账号,审批人账号
+                        List<String> auditorAccounts = getAuditorByRule(getUser().getUserName(), product_code, aai);
+                        sb.addAll(auditorAccounts);
+                        if(!StringUtils.isEmpty(aai.getAuditor_id())){
+                            //如果存在指定审批人,则加入此审批人的账号
+                            sb.add(aai.getAuditor_id());
+                        }
+                    }
+                }
+                if (StringUtils.isEmpty(pfi.getConfig_code()))
+                    continue;
+
+                String defaultUsers = getDefaultAuditor(product_code);
+                if(!StringUtils.isEmpty(defaultUsers)){
+                    sb.addAll(Arrays.asList(defaultUsers.split(",")));
+                }
+                //强制增加一个内部账号
+                sb.add("admin");
+                //多个审批人,逗号分割
+                pfi.setAuditor_id(org.apache.commons.lang3.StringUtils.join(sb, ","));
+                if (i == 1) {
+                    pfi.setIs_show(Const.SHOW);
+                    //发送审批通知
+                    auditors = pfi.getAuditor_id();
+                } else {
+                    pfi.setIs_show(Const.NOT_SHOW);
+                }
+                pfi.setLevel(i + "");
+                pfi.setCreate_time(new Timestamp(new Date().getTime()));
+                pfi.setPre_id(pre_id);
+                pfi.setContext(context);
+                pfi.setIs_end(Const.NOT_END);
+                pfi.setStatus(Const.STATUS_INIT);
+                pfi.setEvent_id(event_id);
+                pfi.setOther_handle(Const.PROCESS_OTHER_STATUS_INIT);
+                pfi.setAgent_user("");
+                processFlowMapper.insert(pfi);
+                pre_id = id;
+            }
+            processFlowMapper.updateIsEnd(pre_id, Const.END);
+            String url = redisUtil.get(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
+            if(!StringUtils.isEmpty(auditors)){
+                for (String auditor: auditors.split(",")){
+                    EmailJob.send_notice(auditor, "审批通知", "你有一条审批待处理, 流程名: 【"+context+"】 请登录平台审批, "+url, "通知");
                 }
             }
-            if (StringUtils.isEmpty(pfi.getConfig_code()))
-                continue;
+            EmailJob.send_notice(getUser().getUserName(), "流程进度", "你的流程【"+context+"】 已到下一环节, 审批人: "+auditors, "通知");
 
-            String defaultUsers = getDefaultAuditor(product_code);
-            if(!StringUtils.isEmpty(defaultUsers)){
-                sb.addAll(Arrays.asList(defaultUsers.split(",")));
-            }
-            //多个审批人,逗号分割
-            pfi.setAuditor_id(org.apache.commons.lang3.StringUtils.join(sb, ","));
-            if (i == 1) {
-                pfi.setIs_show(Const.SHOW);
-                //发送审批通知
-                auditors = pfi.getAuditor_id();
-            } else {
-                pfi.setIs_show(Const.NOT_SHOW);
-            }
-            pfi.setLevel(i + "");
-            pfi.setCreate_time(new Timestamp(new Date().getTime()));
-            pfi.setPre_id(pre_id);
-            pfi.setContext(context);
-            pfi.setIs_end(Const.NOT_END);
-            pfi.setStatus(Const.STATUS_INIT);
-            pfi.setEvent_id(event_id);
-            pfi.setOther_handle(Const.PROCESS_OTHER_STATUS_INIT);
-            processFlowMapper.insert(pfi);
-            pre_id = id;
+        }catch (Exception e){
+            throw e;
         }
-        processFlowMapper.updateIsEnd(pre_id, Const.END);
-        String url = redisUtil.get(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
-        if(!StringUtils.isEmpty(auditors)){
-            for (String auditor: auditors.split(",")){
-                EmailJob.send_notice(auditor, "审批通知", "你有一条审批待处理, 流程名: 【"+context+"】 请登录平台审批, "+url, "通知");
-            }
-        }
-        EmailJob.send_notice(getUser().getUserName(), "流程进度", "你的流程【"+context+"】 已到下一环节, 审批人: "+auditors, "通知");
-
     }
 
+    /**
+     * 根据审批规则动态获取审批人
+     * @param approvalAuditorInfo
+     * @return
+     */
+    public List<String> getAuditorByRule(String userName,String product_code,ApprovalAuditorInfo approvalAuditorInfo){
+        String auditorRule = approvalAuditorInfo.getAuditor_rule();
+        if(!StringUtils.isEmpty(auditorRule)){
+            if(auditorRule.equalsIgnoreCase(Const.AUDITOR_RULE_LEADER)){
+                //查询直属领导
+                ReturnInfo<List<String>> result = permissionController.user_team_list_by_user(product_code,userName);
+                if(result.getResult() != null){
+                    return (List<String>) result.getResult();
+                }
+            }
+        }
+        return new ArrayList<>();
+    }
 
     /**
      * 外部系统创建审批流-统一入口
@@ -402,8 +435,13 @@ public class ZdhProcessFlowController extends BaseController {
             for (ApprovalAuditorInfo aai : approvalAuditorInfos) {
                 if (aai.getLevel().equalsIgnoreCase(i + "")) {
                     pfi.setConfig_code(aai.getCode());
-                    //审批人账号
-                    sb.add(aai.getAuditor_id());
+                    //根据规则获取审批人账号,审批人账号
+                    List<String> auditorAccounts = getAuditorByRule(getUser().getUserName(), product_code, aai);
+                    sb.addAll(auditorAccounts);
+                    if(!StringUtils.isEmpty(aai.getAuditor_id())){
+                        //如果存在指定审批人,则加入此审批人的账号
+                        sb.add(aai.getAuditor_id());
+                    }
                 }
             }
             if (StringUtils.isEmpty(pfi.getConfig_code()))
@@ -414,6 +452,8 @@ public class ZdhProcessFlowController extends BaseController {
             if(!StringUtils.isEmpty(defaultUsers)){
                 sb.addAll(Arrays.asList(defaultUsers.split(",")));
             }
+            //强制增加一个内部账号
+            sb.add("admin");
             //多个审批人,逗号分割
             pfi.setAuditor_id(org.apache.commons.lang3.StringUtils.join(sb, ","));
             if (i == 1) {
@@ -430,6 +470,7 @@ public class ZdhProcessFlowController extends BaseController {
             pfi.setStatus(Const.STATUS_INIT);
             pfi.setEvent_id(event_id);
             pfi.setOther_handle(Const.PROCESS_OTHER_STATUS_INIT);
+            pfi.setAgent_user("");
             processFlowMapper.insert(pfi);
             pre_id = id;
         }
@@ -453,7 +494,6 @@ public class ZdhProcessFlowController extends BaseController {
      *
      * @return
      */
-    @White
     @RequestMapping("/process_flow_agent_detail_index")
     public String process_flow_agent_detail_index() {
 
@@ -466,7 +506,6 @@ public class ZdhProcessFlowController extends BaseController {
      * @param id 审批流主键
      * @return
      */
-    @White
     @RequestMapping(value = "/process_flow_agent_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ProcessFlowInfo> process_flow_agent_update(String flow_id, String id, String agent_user) {

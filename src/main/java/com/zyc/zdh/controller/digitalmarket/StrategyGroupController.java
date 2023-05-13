@@ -91,6 +91,7 @@ public class StrategyGroupController extends BaseController {
         Example.Criteria criteria2=example.createCriteria();
         if(!StringUtils.isEmpty(group_context)){
             criteria2.orLike("group_context", getLikeCondition(group_context));
+            criteria2.orLike("id", getLikeCondition(group_context));
         }
         example.and(criteria2);
 
@@ -254,6 +255,7 @@ public class StrategyGroupController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
@@ -444,6 +446,29 @@ public class StrategyGroupController extends BaseController {
         String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
 
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "",url);
+    }
+
+
+    /**
+     * 杀死单个任务
+     *
+     * @param id 任务实例ID
+     * @return
+     */
+    @RequestMapping(value = "/killStrategy", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public ReturnInfo killStrategy(String id) {
+        //此处直接设置为已杀死,后续带优化
+        try {
+            strategyInstanceMapper.updateStatusByIds(new String[]{id},JobStatus.KILLED.getValue());
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "杀死任务成功", null);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "杀死任务失败", e);
+        }
+
     }
 
     private void debugInfo(Object obj) {
