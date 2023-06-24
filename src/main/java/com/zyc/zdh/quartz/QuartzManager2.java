@@ -175,7 +175,7 @@ public class QuartzManager2 {
 	public void addTaskToQuartz(StrategyGroupInfo strategyGroupInfo) throws Exception {
 		try {
 			//根据调度id 和etl任务id 确定唯一的triggerkey
-			if(schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(strategyGroupInfo.getId(), strategyGroupInfo.getGroup_context()))!=null){
+			if(schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(strategyGroupInfo.getId(), "strategy_group"))!=null){
 				logger.info("已经存在同名的triggerkey,请重新创建");
 				throw new Exception("已经存在同名的triggerkey,请重新创建");
 			}
@@ -186,7 +186,7 @@ public class QuartzManager2 {
 					.newJob(MyJobBean.class)
 					.requestRecovery(recovery) // quartz 自动故障转移
 					.withDescription(strategyGroupInfo.getGroup_context())
-					.withIdentity(strategyGroupInfo.getId(), strategyGroupInfo.getGroup_context()).build();
+					.withIdentity(strategyGroupInfo.getId(), "strategy_group").build();
 			Trigger trigger = null;
 
 			String expression = strategyGroupInfo.getExpr();
@@ -200,14 +200,14 @@ public class QuartzManager2 {
 				trigger = TriggerBuilder
 						.newTrigger()
 						.withPriority(Integer.valueOf(StringUtils.isEmpty(strategyGroupInfo.getPriority())?"5":strategyGroupInfo.getPriority())) //设置优先级
-						.withIdentity(strategyGroupInfo.getId(), strategyGroupInfo.getGroup_context()).startNow()
+						.withIdentity(strategyGroupInfo.getId(), "strategy_group").startNow()
 						.withSchedule(simpleScheduleBuilder).build();
 			} else {
 				CronScheduleBuilder cronScheduleBuilder = getCronScheduleBuilder(expression,strategyGroupInfo.getMisfire());
 				trigger = TriggerBuilder
 						.newTrigger()
 						.withPriority(Integer.valueOf(StringUtils.isEmpty(strategyGroupInfo.getPriority())?"5":strategyGroupInfo.getPriority())) //设置优先级
-						.withIdentity(strategyGroupInfo.getId(), strategyGroupInfo.getGroup_context()).startNow()
+						.withIdentity(strategyGroupInfo.getId(), "strategy_group").startNow()
 						.withSchedule(cronScheduleBuilder).build();
 			}
 
@@ -349,6 +349,24 @@ public class QuartzManager2 {
 		return qji;
 	}
 
+	public QuartzJobInfo deleteTask(StrategyGroupInfo strategyGroupInfo) throws Exception{
+		QuartzJobInfo qji=new QuartzJobInfo();
+		try {
+			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			JobKey jobKey = new JobKey(strategyGroupInfo.getId(), "strategy_group");
+			scheduler.pauseJob(jobKey);
+			scheduler.deleteJob(jobKey);
+			// 在自己定义的任务表中删除任务,状态删除
+			strategyGroupInfo.setStatus("finish");
+			strategyGroupMapper.updateByPrimaryKeySelective(strategyGroupInfo);
+		} catch (SchedulerException e) {
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+			logger.error(error, e);
+			throw e;
+		}
+		return qji;
+	}
+
 	public QuartzJobInfo deleteTask(TaskGroupLogInstance tgli, String status, String last_status) {
 		QuartzJobInfo qji=new QuartzJobInfo();
 		try {
@@ -392,6 +410,27 @@ public class QuartzManager2 {
 	}
 
 	/**
+	 * 暂停定时任务
+	 *
+	 * @param strategyGroupInfo
+	 */
+	public void pauseTask(StrategyGroupInfo strategyGroupInfo) {
+		try {
+			// Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			JobKey jobKey = new JobKey(strategyGroupInfo.getId(), "strategy_group");
+			schedulerFactoryBean.getScheduler().pauseJob(jobKey);
+			// 更新定时任务状态
+			strategyGroupInfo.setStatus("pause");
+			strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+			strategyGroupMapper.updateByPrimaryKeySelective(strategyGroupInfo);
+		} catch (SchedulerException e) {
+			// TODO Auto-generated catch block
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+			logger.error(error, e);
+		}
+	}
+
+	/**
 	 * 恢复定时任务
 	 * 
 	 * @param quartzJobInfo
@@ -399,6 +438,22 @@ public class QuartzManager2 {
 	public void resumeTask(QuartzJobInfo quartzJobInfo) {
 		try {
 			JobKey jobKey = new JobKey(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id());
+			schedulerFactoryBean.getScheduler().resumeJob(jobKey);
+		} catch (SchedulerException e) {
+			// TODO Auto-generated catch block
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+			logger.error(error, e);
+		}
+	}
+
+	/**
+	 * 恢复定时任务
+	 *
+	 * @param strategyGroupInfo
+	 */
+	public void resumeTask(StrategyGroupInfo strategyGroupInfo) {
+		try {
+			JobKey jobKey = new JobKey(strategyGroupInfo.getId(), "strategy_group");
 			schedulerFactoryBean.getScheduler().resumeJob(jobKey);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block

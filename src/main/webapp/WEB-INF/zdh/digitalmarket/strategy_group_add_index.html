@@ -139,6 +139,7 @@
                                             <div class="node nodeplugincss" data-type="plugin">插件</div>
                                             <div class="node nodemessagecss" data-type="message">消息</div>
                                             <div class="node nodeactive_eventcss" data-type="active_event">活动</div>
+                                            <div class="node nodeid_mappingcss" data-type="id_mapping">ID转换</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight">
@@ -389,6 +390,10 @@
                 $("#" + divId).attr("data_node",rs.data_node);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
+            if(tp == "id_mapping"){
+                $("#" + divId).attr("id_mapping_code",rs.id_mapping_code);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
 
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
@@ -470,6 +475,8 @@
                 touch_task: $elem.attr('touch_task'),
 
                 data_node: $elem.attr('data_node'),
+
+                id_mapping_code: $elem.attr('id_mapping_code'),
 
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,

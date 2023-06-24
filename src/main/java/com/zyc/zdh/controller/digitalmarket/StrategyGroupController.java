@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
+import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
 import com.zyc.zdh.dao.StrategyGroupMapper;
 import com.zyc.zdh.dao.StrategyInstanceMapper;
@@ -12,6 +13,7 @@ import com.zyc.zdh.job.JobDigitalMarket;
 import com.zyc.zdh.job.JobStatus;
 import com.zyc.zdh.job.ScheduleSource;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import org.apache.commons.beanutils.BeanUtils;
@@ -59,6 +61,12 @@ public class StrategyGroupController extends BaseController {
     @Autowired
     private StrategyInstanceMapper strategyInstanceMapper;
 
+    @Autowired
+    QuartzJobMapper quartzJobMapper;
+
+    @Autowired
+    QuartzManager2 quartzManager2;
+
 
     @RequestMapping(value = "/get_id", method = RequestMethod.GET)
     @ResponseBody
@@ -84,20 +92,35 @@ public class StrategyGroupController extends BaseController {
      */
     @RequestMapping(value = "/strategy_group_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String strategy_group_list(String group_context) {
-        Example example=new Example(StrategyGroupInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        Example.Criteria criteria2=example.createCriteria();
-        if(!StringUtils.isEmpty(group_context)){
-            criteria2.orLike("group_context", getLikeCondition(group_context));
-            criteria2.orLike("id", getLikeCondition(group_context));
+    public ReturnInfo<PageResult<List<StrategyGroupInfo>>> strategy_group_list(String group_context, int limit, int offset) {
+        try{
+            Example example=new Example(StrategyGroupInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            Example.Criteria criteria2=example.createCriteria();
+            if(!StringUtils.isEmpty(group_context)){
+                criteria2.orLike("group_context", getLikeCondition(group_context));
+                criteria2.orLike("id", getLikeCondition(group_context));
+            }
+            example.and(criteria2);
+
+            RowBounds rowBounds=new RowBounds(offset,limit);
+            int total = strategyGroupMapper.selectCountByExample(example);
+
+            List<StrategyGroupInfo> strategyGroupInfos = strategyGroupMapper.selectByExampleAndRowBounds(example, rowBounds);
+
+            PageResult<List<StrategyGroupInfo>> pageResult=new PageResult<>();
+            pageResult.setTotal(total);
+            pageResult.setRows(strategyGroupInfos);
+
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
-        example.and(criteria2);
 
-        List<StrategyGroupInfo> strategyGroupInfos = strategyGroupMapper.selectByExample(example);
-
-        return JSONObject.toJSONString(strategyGroupInfos);
     }
 
     /**
@@ -207,7 +230,6 @@ public class StrategyGroupController extends BaseController {
      * 策略组手动执行页面
      * @return
      */
-    @White
     @RequestMapping(value = "/strategy_group_task_exe_detail_index", method = RequestMethod.GET)
     public String strategy_group_task_exe_detail_index() {
 
@@ -220,7 +242,6 @@ public class StrategyGroupController extends BaseController {
      * @param strategyGroupInfo
      * @return
      */
-    @White
     @RequestMapping(value = "/strategy_group_task_execute", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -262,10 +283,9 @@ public class StrategyGroupController extends BaseController {
 
 
     /**
-     * 策略组手动执行页面
+     * 策略组执行实例页面
      * @return
      */
-    @White
     @RequestMapping(value = "/strategy_group_instance_index", method = RequestMethod.GET)
     public String strategy_group_instance_index() {
 
@@ -277,7 +297,6 @@ public class StrategyGroupController extends BaseController {
      * @param group_id 关键字
      * @return
      */
-    @White
     @RequestMapping(value = "/strategy_group_instance_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<StrategyGroupInstance>>> strategy_group_instance_list(String id, String group_id,String group_context, int limit, int offset) {
@@ -320,7 +339,6 @@ public class StrategyGroupController extends BaseController {
      * @param id
      * @return
      */
-    @White
     @RequestMapping(value = "/strategy_group_instance_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<StrategyGroupInstance> strategy_group_instance_list2(String id) {
@@ -341,7 +359,6 @@ public class StrategyGroupController extends BaseController {
      * 策略实例执行日志首页
      * @return
      */
-    @White
     @RequestMapping(value = "/strategy_instance_index", method = RequestMethod.GET)
     public String strategy_instance_index() {
 
@@ -349,11 +366,10 @@ public class StrategyGroupController extends BaseController {
     }
 
     /**
-     * 获取策略组实例下的所有子策略
+     * 获取策略组实例下的所有子策略实例
      * @param strategy_group_instance_id
      * @return
      */
-    @White
     @RequestMapping(value = "/strategy_instance_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<StrategyInstance>> strategy_instance_list(String strategy_group_instance_id,String status) {
@@ -371,7 +387,6 @@ public class StrategyGroupController extends BaseController {
      * 策略组实例重试首页
      * @return
      */
-    @White
     @RequestMapping(value = "/strategy_group_retry_detail_index", method = RequestMethod.GET)
     public String strategy_group_retry_detail_index() {
 
@@ -384,7 +399,6 @@ public class StrategyGroupController extends BaseController {
      * @param sub_tasks
      * @return
      */
-    @White
     @RequestMapping(value = "/retry_strategy_group_instance", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -457,7 +471,6 @@ public class StrategyGroupController extends BaseController {
      */
     @RequestMapping(value = "/killStrategy", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo killStrategy(String id) {
         //此处直接设置为已杀死,后续带优化
         try {
@@ -470,6 +483,85 @@ public class StrategyGroupController extends BaseController {
         }
 
     }
+
+    /**
+     * 自动执行调度任务
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/strategy_group_execute_quartz", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo strategy_group_execute_quartz(String id,String reset) {
+        StrategyGroupInfo strategyGroupInfo = strategyGroupMapper.selectByPrimaryKey(id);
+        ReturnInfo result= null;
+        try {
+            //添加调度器并更新quartzjobinfo
+            quartzManager2.addTaskToQuartz(strategyGroupInfo);
+            result = ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"调度开启成功",null);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            result=ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"调度开启失败",e);
+
+        }
+
+
+        return result;
+    }
+
+
+    /**
+     * 暂停调度任务
+     *
+     * @param strategyGroupInfo
+     * @return
+     */
+    @RequestMapping(value = "/strategy_group_quartz_pause",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo strategy_group_quartz_pause(StrategyGroupInfo strategyGroupInfo) {
+
+        try{
+
+            if (strategyGroupInfo.getStatus().equals("running")) {
+                //需要恢复暂停任务
+                quartzManager2.resumeTask(strategyGroupInfo);
+                strategyGroupMapper.updateByPrimaryKeySelective(strategyGroupInfo);
+            } else {
+                //暂停任务,//状态在pauseTask 方法中修改
+                quartzManager2.pauseTask(strategyGroupInfo);
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"暂停成功", null);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"暂停失败", e);
+        }
+
+    }
+
+    /**
+     * 删除调度任务
+     *
+     * @param strategyGroupInfo
+     * @return
+     */
+    @RequestMapping(value = "/strategy_group_quartz_del", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo strategy_group_quartz_del(StrategyGroupInfo strategyGroupInfo) {
+
+        try{
+            quartzManager2.deleteTask(strategyGroupInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
+        }
+    }
+
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

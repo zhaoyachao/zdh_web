@@ -159,6 +159,54 @@
           }
       };
 
+      window.operateEvents2 = {
+          'click #execute_quartz': function (e, value, row, index) {
+              layer.confirm('是否启用调度', {
+                  btn: ['启用','重置并启用','取消'], //按钮
+                  cancel:function(index, layero){
+                      console.log('关闭x号');
+                  },
+                  title:"启用调度",
+                  btn1:function(index){
+                      executeQuartz(row.id,"0");
+                      layer.close(layer.index)
+                  },
+                  btn2:function(index){
+                      executeQuartz(row.id,"1");
+                      layer.close(layer.index)
+                  }
+              });
+          },
+          'click #pause': function (e, value, row, index) {
+              layer.confirm('是否暂停/恢复调度', {
+                  btn: ['暂停/恢复','取消'], //按钮
+                  cancel:function(index, layero){
+                      console.log('关闭x号');
+                  },
+                  title:"暂停/恢复调度"
+              }, function(index){
+                  $("#id").val(row.id);
+                  pauseQuartz(row.id, row.status);
+                  layer.close(layer.index)
+              }, function(index){
+              });
+          },
+          'click #minus_sign': function (e, value, row, index) {
+
+              layer.confirm('是否关闭调度', {
+                  btn: ['关闭','取消'], //按钮
+                  cancel:function(index, layero){
+                      console.log('关闭x号');
+                  },
+                  title:"关闭调度"
+              }, function(index){
+                  delQuartz(row.id);
+                  layer.close(layer.index)
+              }, function(index){
+              });
+          }
+      };
+
       window.operateEvents3 = {
           'click #strategy_group_instance': function (e, value, row, index) {
               window.open(server_context+"/strategy_group_instance_index.html?id=" + row.id);
@@ -182,6 +230,152 @@
 
           ].join('');
 
+      }
+
+      function operateFormatter2(value, row, index) {
+          var status_context = "暂停";
+          if (row.status == "pause") {
+              status_context = "恢复"
+          }
+
+          return [
+              ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+
+              ' <button id="execute_quartz" name="execute_quartz" type="button" class="btn btn-outline btn-sm">调度\n' +
+
+              '                                        <i class="glyphicon glyphicon-retweet" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="pause" name="pause" type="button" class="btn btn-outline btn-sm">' + status_context + '<i class="glyphicon glyphicon-pause" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="minus_sign" name="minus_sign" type="button" class="btn btn-outline btn-sm">停用\n' +
+              '                                        <i class="glyphicon glyphicon-minus-sign" aria-hidden="true"></i>\n' +
+              '                                    </button>'
+              +
+              '</div>'
+
+          ].join('');
+
+      }
+
+      function executeQuartz(id,reset) {
+          $('#execute_quartz').attr({disabled: "disabled"});
+          var index=top.layer.msg('添加到调度器开始执行',{time:"-1"});
+
+          var msg="";
+          $.ajax({
+              url: server_context+"/strategy_group_execute_quartz",
+              data: "id=" + id+"&reset="+reset,
+              type: "post",
+              async:false,
+              dataType: "json",
+              success: function (data) {
+                  console.info("success");
+                  console.info(data);
+                  top.layer.close(index);
+                  msg=data.msg
+              },
+              complete: function () {
+                  $("#execute_quartz").removeAttr('disabled');
+                  console.info("complete");
+              },
+              error: function (data) {
+                  $("#execute_quartz").removeAttr('disabled');
+                  layer.msg('添加失败');
+                  console.info("error: " + data.responseText);
+              }
+          });
+          top.layer.msg(msg);
+          $("#execute_quartz").removeAttr('disabled');
+          $('#exampleTableEvents').bootstrapTable('refresh', {
+              url: server_context+"/strategy_group_list?"+$("#strategy_group_form").serialize()
+          });
+      }
+
+      function pauseQuartz(id, row_status) {
+          if (row_status != 'pause' && row_status != 'running') {
+              layer.msg("任务状态未启动,或者不是处于暂停状态 无法完成暂停或恢复");
+              return false;
+          }
+          var status = "pause";
+          if (row_status == 'pause') {
+              status = "running"
+          }
+          $('#pause').attr({disabled: "disabled"});
+          $.ajax({
+              url: server_context+"/strategy_group_quartz_pause",
+              data: "id=" + id + "&status=" + status,
+              type: "post",
+              async:false,
+              dataType: "json",
+              success: function (data) {
+                  console.info("success");
+                  if(data.code != "200"){
+                      layer.msg(data.msg);
+                      return
+                  }
+                  if (status == 'running') {
+                      layer.msg('恢复成功');
+                  } else {
+                      layer.msg('暂停成功');
+                  }
+
+                  $("#pause").removeAttr('disabled');
+                  $('#exampleTableEvents').bootstrapTable('refresh', {
+                      url: server_context+"/strategy_group_list?"+$("#strategy_group_form").serialize()
+                  });
+              },
+              complete: function () {
+                  $("#pause").removeAttr('disabled');
+                  console.info("complete")
+              },
+              error: function (data) {
+                  $("#pause").removeAttr('disabled');
+                  if (status == 'running') {
+                      layer.msg('恢复失败');
+                  } else {
+                      layer.msg('暂停失败');
+                  }
+                  console.info("error: " + data.responseText);
+              }
+
+          });
+      }
+
+      function delQuartz(id) {
+
+          $('#minus_sign').attr({disabled: "disabled"});
+          layer.msg('删除调度器任务');
+          $.ajax({
+              url: server_context+"/strategy_group_quartz_del",
+              data: "id=" + id,
+              type: "post",
+              async:false,
+              dataType: "json",
+              success: function (data) {
+                  console.info("success");
+                  if(data.code != "200"){
+                      layer.msg(data.msg);
+                      return
+                  }
+                  layer.msg(data.msg);
+                  $("#minus_sign").removeAttr('disabled');
+                  $('#exampleTableEvents').bootstrapTable('refresh', {
+                      url: server_context+"/strategy_group_list?"+$("#strategy_group_form").serialize()
+                  });
+              },
+              complete: function () {
+                  $("#minus_sign").removeAttr('disabled');
+                  console.info("complete")
+              },
+              error: function (data) {
+                  $("#minus_sign").removeAttr('disabled');
+
+                  layer.msg('删除失败');
+
+                  console.info("error: " + data.responseText);
+              }
+
+          });
       }
 
       //表格超出宽度鼠标悬停显示td内容
@@ -225,23 +419,42 @@
 
       $('#exampleTableEvents').bootstrapTable('destroy').bootstrapTable({
       method: "POST",
-      url: server_context+"/strategy_group_list",
-      search: true,
-      pagination: true,
-      showRefresh: true,
-      showToggle: true,
-      showColumns: true,
-      iconSize: 'outline',
-      responseHandler:function (res) {
-          if(!Array.isArray(res)){
-              if(res.code == "201"){
-                  layer.msg(res.msg);
-              }else{
-                  layer.msg("未返回有效数据");
-              }
-          }
-          return res;
+      url: server_context+"/strategy_group_list?"+$("#strategy_group_form").serialize(),
+          dataType: 'json',
+          search: true,
+          pagination: true,
+          showRefresh: true,
+          showToggle: true,
+          showColumns: true,
+          sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+          pageNumber: 1,                       //初始化加载第一页，默认第一页
+          pageSize: 10,                       //每页的记录行数（*）
+          iconSize: 'outline',
+          toolbar: '#exampleTableEventsToolbar',
+          icons: {
+              refresh: 'glyphicon-repeat',
+              toggle: 'glyphicon-list-alt',
+              columns: 'glyphicon-list'
+          },
+      queryParams: function (params) {
+          // 此处使用了LayUi组件 是为加载层
+          loadIndex = layer.load(1);
+          let resRepor = {
+              //服务端分页所需要的参数
+              limit: params.limit,
+              offset: params.offset
+          };
+          return resRepor;
       },
+     responseHandler: res => {
+              // 关闭加载层
+              layer.close(loadIndex);
+              layer.msg(res.msg);
+              return {
+                  "total":res.result.total,
+                  "rows": res.result.rows
+              }
+          },
       toolbar: '#exampleTableEventsToolbar',
       icons: {
         refresh: 'glyphicon-repeat',
@@ -313,6 +526,13 @@
             events: operateEvents,//给按钮注册事件
             width:150,
             formatter: operateFormatter //表格中增加按钮
+        }, {
+            field: 'operate2',
+            title: ' 调 度 器 相 关 及 调 度 任 务 操 作 ',
+            events: operateEvents2,//给按钮注册事件
+            align : "center",
+            valign : "middle",
+            formatter: operateFormatter2 //表格中增加按钮
         }]
     });
 

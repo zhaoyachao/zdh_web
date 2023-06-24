@@ -99,6 +99,21 @@ public class LabelInfo {
      */
     private String label_data_code;
 
+    /**
+     * 标签更新时间,配合标签更新时效,用于调度发现标签生成任务
+     */
+    private String label_data_update_time;
+
+    /**
+     * 1:新建,2:启用,3:禁用
+     */
+    private String status;
+
+    /**
+     * 标签默认值,json格式
+     */
+    private String label_default;
+
     @Transient
     private JSONArray param_json_object;
 
@@ -366,5 +381,29 @@ public class LabelInfo {
 
     public void setLabel_data_code(String label_data_code) {
         this.label_data_code = label_data_code;
+    }
+
+    public String getLabel_data_update_time() {
+        return label_data_update_time;
+    }
+
+    public void setLabel_data_update_time(String label_data_update_time) {
+        this.label_data_update_time = label_data_update_time;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getLabel_default() {
+        return label_default;
+    }
+
+    public void setLabel_default(String label_default) {
+        this.label_default = label_default;
     }
 }

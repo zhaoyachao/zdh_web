@@ -399,7 +399,7 @@ CREATE TABLE `etl_drools_task_info` (
   `sep_output` varchar(10) DEFAULT NULL,
   `header_output` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ;
 
 --2020-08-01 更新;
 alter table quartz_job_info add column jump_dep varchar(10);

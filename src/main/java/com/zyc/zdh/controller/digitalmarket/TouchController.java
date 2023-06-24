@@ -43,7 +43,6 @@ public class TouchController extends BaseController {
      * 在线节点配置首页
      * @return
      */
-    @White
     @RequestMapping(value = "/online_detail", method = RequestMethod.GET)
     public String online_detail() {
 
@@ -228,7 +227,6 @@ public class TouchController extends BaseController {
      * 触达组件明细页
      * @return
      */
-    @White
     @RequestMapping(value = "/touch_detail", method = RequestMethod.GET)
     public String touch_detail() {
 

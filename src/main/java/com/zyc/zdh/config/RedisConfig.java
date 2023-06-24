@@ -3,6 +3,11 @@ package com.zyc.zdh.config;
 import com.zyc.zdh.cache.MyCacheManager;
 import com.zyc.zdh.cache.MyCacheTemplate;
 import com.zyc.zdh.cache.MyRedisCache;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.client.codec.StringCodec;
+import org.redisson.config.ClusterServersConfig;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.CacheManager;
@@ -278,4 +283,23 @@ public class RedisConfig extends CachingConfigurerSupport {
 	 return cacheManagerFactoryBean;
 	 }
 
+	@Bean
+	public RedissonClient redissonClient(){
+		Config config = new Config();
+		if(hostName.contains(",")){
+			//redis 集群模式
+			ClusterServersConfig clusterServersConfig = config.useClusterServers();
+			for(String hp:hostName.split(",")){
+				clusterServersConfig.addNodeAddress("redis://"+hp.split(":")[0]+":"+hp.split(":")[1]);
+			}
+			clusterServersConfig.setPassword(password);
+		}else{
+			config.useSingleServer().
+					setAddress("redis://"+hostName+":"+port).
+					setPassword(password);
+		}
+
+		config.setCodec(new StringCodec());
+		return Redisson.create(config);
+	}
 }

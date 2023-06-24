@@ -504,8 +504,8 @@ public class LoginController {
         for (int i = 0; i < 4; i++) {
             String tmp = getRandomChar();
             //去除有歧义的字母数字
-            while (Arrays.asList(new String[]{"0", "1", "i", "I", "l", "L", "o", "O"}).contains(tmp)) {
-                tmp = getRandomChar();
+            if(Arrays.asList(new String[]{"0", "1", "i", "I", "l", "L", "o", "O"}).contains(tmp)) {
+                tmp = "A";
             }
 
             sRand += tmp;

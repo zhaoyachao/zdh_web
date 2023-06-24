@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH ID MAPPING</title>
+    <meta name="keywords" content="ZDH ID MAPPING">
+    <meta name="description" content="ZDH ID MAPPING">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+<!--    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">-->
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>ID_MAPPING配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
+                          action="">
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">MAPPING</label>
+                            <div class="col-sm-10">
+                                <select id="id_mapping_code" name="id_mapping_code" data-placeholder="选择MAPPING..."
+                                         class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">MAPPING...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否禁用</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="is_disenable" name='is_disenable'  type="checkbox"><i></i> 禁用</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">推送类型</label>
+                            <div class="col-sm-10">
+                                <select id="touch_type" name="touch_type" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="database" mytype="" selected>数据库</option>
+                                    <option value="queue" mytype="">消息队列</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">依赖级别</label>
+                            <div class="col-sm-10">
+                                <select id="depend_level" name="depend_level" data-placeholder="依赖级别"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="0" mytype="">成功触发</option>
+                                    <option value="1" mytype="">杀死触发</option>
+                                    <option value="2" mytype="">失败触发</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">超时时间</label>
+                            <div class="col-sm-10">
+                                <input id="time_out" name="time_out" type="text" value="86400"
+                                       placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+
+            var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+
+            function init_mapping() {
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/enum_by_code",
+                    dataType: 'json',
+                    async: false,
+                    data: {'enum_code': 'id_mapping'},
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
+                        for (var i = 0; i < data.result.enum_json_object.length; i++) {
+                            str += '<option value=\"' + data.result.enum_json_object[i].enum_value + "\" mytype=\"" + data.result.enum_json_object[i].enum_value + "\" hassubinfo=\"true\">" + data.result.enum_json_object[i].enum_value_context + "</option>"
+                        }
+                        //输入数据源类型下拉框
+                        $('#id_mapping_code').html(str);
+                        $('#id_mapping_code').chosen()
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+            init_mapping();
+            $('#depend_level').chosen();
+            $("#id_mapping_code").chosen();
+            if(s["id_mapping_code"] != '-1'){
+                console.info("更新触发");
+                //$('#filter_context').val(s.filter_context);
+                $("#depend_level").val(s["depend_level"]);
+                $("#depend_level").trigger("chosen:updated");
+                if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
+                    $("#time_out").val(s["time_out"]);
+                }
+
+                $("#id_mapping_code").val(s["id_mapping_code"]);
+                $("#id_mapping_code").trigger("chosen:updated");
+
+                $("#touch_type").val(s.touch_type);
+                $("#touch_type").trigger("chosen:updated");
+
+                var is_disenable=s['is_disenable'];
+                if(is_disenable=="true"){
+                    $('#is_disenable').iCheck('check');
+                }
+            }
+        })();
+
+
+
+    })(document, window, jQuery);
+
+    $('#save_etl_info').click(function () {
+
+        //自定义实现
+        var filter_context = "MAPPING";
+        var operate='or';
+        var touch_type=$('#touch_type').find("option:selected").val();
+
+        var depend_level=$('#depend_level').find("option:selected").val();
+        var time_out=$('#time_out').val();
+        var id_mapping_code = $('#id_mapping_code').val();
+        var id_mapping_name = $('#id_mapping_code').find("option:selected").text();
+
+        var is_disenable = "false";
+        if($('#is_disenable').is(':checked')){
+            is_disenable="true"
+        }
+        data={
+            "more_task": "id_mapping",
+            "is_disenable":is_disenable,
+            "depend_level":depend_level,
+            "time_out": time_out,
+            "operate": operate,
+            "touch_type": touch_type,
+
+            "id_mapping_code": id_mapping_code,
+            "rule_context":id_mapping_name,
+        };
+        console.info("job_detail:"+JSON.stringify(data));
+        $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+    })
+</script>
+
+
+</body>
+
+</html>

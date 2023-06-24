@@ -18,7 +18,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
 	private static Logger logger=LoggerFactory.getLogger(MyCommandLineRunner.class);
 	@Override
 	public void run(String... args) throws Exception {
-		logger.info("[{}]项目启动完成","spring boot");
+		logger.info("[{}]项目启动完成","ZDH");
 	}
 
 }

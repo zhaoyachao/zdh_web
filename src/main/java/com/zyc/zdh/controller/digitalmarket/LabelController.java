@@ -11,6 +11,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.User;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -163,7 +164,8 @@ public class LabelController extends BaseController {
             labelInfo.setCreate_time(oldLabelInfo.getCreate_time());
             labelInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             labelInfo.setIs_delete(Const.NOT_DELETE);
-            labelMapper.updateByPrimaryKey(labelInfo);
+            labelInfo.setStatus(oldLabelInfo.getStatus());
+            labelMapper.updateByPrimaryKeySelective(labelInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", labelInfo);
         } catch (Exception e) {
@@ -212,7 +214,8 @@ public class LabelController extends BaseController {
             labelInfo.setIs_delete(Const.NOT_DELETE);
             labelInfo.setCreate_time(new Timestamp(new Date().getTime()));
             labelInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            labelMapper.insert(labelInfo);
+            labelInfo.setStatus(Const.STATUS_NOT_PUB);
+            labelMapper.insertSelective(labelInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
@@ -236,6 +239,28 @@ public class LabelController extends BaseController {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+        }
+    }
+
+    /**
+     * 标签启用/禁用
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/label_enable", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo label_enable(String id) {
+        try {
+            LabelInfo labelInfo = labelMapper.selectByPrimaryKey(id);
+            labelInfo.setStatus(labelInfo.getStatus().equalsIgnoreCase("2")?"1":"2");
+            labelInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            labelMapper.updateByPrimaryKey(labelInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
         }
     }
 

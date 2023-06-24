@@ -151,6 +151,46 @@
           }
       };
 
+      window.operateEvents3 = {
+          'click #btn_status': function (e, value, row, index) {
+              layer.confirm('是否启用/禁用', {
+                  btn: ['确定','取消'] //按钮
+              }, function(index){
+                  $.ajax({
+                      url: server_context+"/label_enable",
+                      data: "id=" + row.id,
+                      type: "post",
+                      async:false,
+                      dataType: "json",
+                      success: function (data) {
+                          console.info("success");
+                          if(data.code != "200"){
+                              layer.msg(data.msg);
+                              return
+                          }
+                          layer.msg(data.msg);
+                          $('#exampleTableEvents').bootstrapTable('refresh', {
+                              url: server_context+"/label_list?"+$("#label_form").serialize(),
+                              contentType: "application/json;charset=utf-8",
+                              dataType: "json"
+                          });
+                      },
+                      complete: function () {
+                          console.info("complete")
+                      },
+                      error: function (data) {
+                          layer.msg('删除失败');
+                          console.info("error: " + data.responseText);
+                      }
+
+                  });
+                  layer.close(layer.index)
+              }, function(){
+
+              });
+          }
+      };
+
       function operateFormatter(value, row, index) {
           return [
               ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
@@ -266,7 +306,33 @@
             formatter: function (value, row, index) {
                 return getMyDate(value);
             }
-        },{
+        }, {
+            field: 'status',
+            title: '状态',
+            sortable: true,
+            width:150,
+            events: operateEvents3,//给按钮注册事件
+            formatter: function (value, row, index) {
+                var context = "未启用";
+                var class_str = "btn-danger btn-xs";
+                if (value == "2") {
+                    context = "未启用";
+                    class_str = "btn-danger  btn-xs"
+                }
+                if (value == "1") {
+                    context = "启用";
+                    class_str = "btn-primary  btn-xs"
+                }
+                return [
+                    '<div style="text-align:center" >'+
+                    '<div class="btn-group">'+
+                    '<button id="btn_status" type="button" class="btn '+class_str+'">'+context+'</button>'+
+                    '</div>'+
+                    '</div>'
+                ].join('');
+            }
+
+        }, {
             field: 'operate',
             title: '常用操作按钮事件',
             events: operateEvents,//给按钮注册事件

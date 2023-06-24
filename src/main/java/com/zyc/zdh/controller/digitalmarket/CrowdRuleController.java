@@ -270,6 +270,7 @@ public class CrowdRuleController extends BaseController {
      */
     @RequestMapping(value = "/crowd_file_list_by_owner", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
+    @White
     public String crowd_file_list_by_owner(String rule_context) {
         try{
             Example example=new Example(CrowdFileInfo.class);

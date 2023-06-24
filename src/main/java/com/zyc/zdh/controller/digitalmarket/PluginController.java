@@ -46,7 +46,6 @@ public class PluginController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/plugin_index", method = RequestMethod.GET)
-    @White
     public String plugin_index() {
 
         return "digitalmarket/plugin_index";
@@ -59,7 +58,6 @@ public class PluginController extends BaseController {
      */
     @RequestMapping(value = "/plugin_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public String plugin_list(String plugin_name) {
         Example example=new Example(PluginInfo.class);
         Example.Criteria criteria=example.createCriteria();
@@ -82,7 +80,6 @@ public class PluginController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/plugin_add_index", method = RequestMethod.GET)
-    @White
     public String plugin_add_index() {
 
         return "digitalmarket/plugin_add_index";
@@ -92,11 +89,10 @@ public class PluginController extends BaseController {
      * 插件明细页面
      * @return
      */
-    @RequestMapping(value = "/plugin_detail", method = RequestMethod.GET)
-    @White
-    public String plugin_detail() {
+    @RequestMapping(value = "/plugin_detail2", method = RequestMethod.GET)
+    public String plugin_detail2() {
 
-        return "digitalmarket/plugin_detail";
+        return "digitalmarket/plugin_detail2";
     }
     /**
      * 插件明细
@@ -105,7 +101,6 @@ public class PluginController extends BaseController {
      */
     @RequestMapping(value = "/plugin_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PluginInfo> plugin_detail(String id) {
         try {
             PluginInfo pluginInfo = pluginMapper.selectByPrimaryKey(id);
@@ -122,7 +117,6 @@ public class PluginController extends BaseController {
      */
     @RequestMapping(value = "/plugin_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PluginInfo> plugin_detail_by_code(String plugin_code) {
         try {
 
@@ -147,7 +141,6 @@ public class PluginController extends BaseController {
     @RequestMapping(value = "/plugin_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PluginInfo> plugin_update(PluginInfo pluginInfo,String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value) {
         try {
             if(param_code==null || param_code.length<1){
@@ -199,7 +192,6 @@ public class PluginController extends BaseController {
     @RequestMapping(value = "/plugin_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PluginInfo> plugin_add(PluginInfo pluginInfo,String[] param_code, String[] param_context, String[] param_type, String[] param_operate, String[] param_value) {
         try {
             if(param_code==null || param_code.length<1){
@@ -242,7 +234,6 @@ public class PluginController extends BaseController {
     @RequestMapping(value = "/plugin_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo plugin_delete(String[] ids) {
         try {
             pluginMapper.deleteLogicByIds("plugin_info",ids, new Timestamp(new Date().getTime()));

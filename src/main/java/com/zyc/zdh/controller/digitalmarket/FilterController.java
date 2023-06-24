@@ -42,7 +42,6 @@ public class FilterController extends BaseController {
      * 过滤列表首页
      * @return
      */
-    @White
     @RequestMapping(value = "/filter_index", method = RequestMethod.GET)
     public String filter_index() {
 
@@ -54,7 +53,6 @@ public class FilterController extends BaseController {
      * @param filter_name 关键字
      * @return
      */
-    @White
     @RequestMapping(value = "/filter_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public  ReturnInfo<List<FilterInfo>> filter_list(String filter_name) {
@@ -84,7 +82,6 @@ public class FilterController extends BaseController {
      * 过滤新增首页
      * @return
      */
-    @White
     @RequestMapping(value = "/filter_add_index", method = RequestMethod.GET)
     public String filter_add_index() {
 
@@ -97,7 +94,6 @@ public class FilterController extends BaseController {
      * @param id 主键ID
      * @return
      */
-    @White
     @RequestMapping(value = "/filter_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<FilterInfo> filter_detail(String id) {
@@ -116,7 +112,6 @@ public class FilterController extends BaseController {
      * @param filterInfo
      * @return
      */
-    @White
     @RequestMapping(value = "/filter_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -146,7 +141,6 @@ public class FilterController extends BaseController {
      * @param filterInfo
      * @return
      */
-    @White
     @RequestMapping(value = "/filter_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -171,7 +165,6 @@ public class FilterController extends BaseController {
      * @param ids id数组
      * @return
      */
-    @White
     @RequestMapping(value = "/filter_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

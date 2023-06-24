@@ -21,6 +21,10 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.redisson.api.RRateLimiter;
+import org.redisson.api.RateIntervalUnit;
+import org.redisson.api.RateType;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -39,6 +43,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 /***
@@ -85,35 +90,41 @@ public class AspectConfig implements Ordered {
         try {
             RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
 
+            RedissonClient redissonClient = (RedissonClient) SpringContext.getBean("redissonClient");
+
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
             String method = request.getMethod();
             //IP地址
             String ipAddr = getRemoteHost(request);
             String url = request.getRequestURL().toString();
+            if(url.endsWith("404")){
+                request.getHeader("Referer");
+                String uid = "";
+                try{
+                    if(getUser()!=null){
+                        uid = getUser().getUserName();
+                    }
+                }catch (Exception e){
 
+                }
+                logger.error("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,not found url", ipAddr, uid, request.getHeader("Referer"));
+            }
             Object clearTime = redisUtil.get(Const.ZDH_RATELIMIT_CLEART_TIME);
             if (getUser() != null) {
                 Object user_limit = redisUtil.get(Const.ZDH_USER_RATELIMIT, "200");
                 String key = Const.ZDH_RATELIMIT_KEY_USER_PRE + getUser().getUserName();
-                Long current_user_limit = redisUtil.increment(key, 1L);
-
-                if (clearTime == null) {
-                    clearTime = "1000";
-                }
-                Message message = new Message(0, key, Long.parseLong(clearTime.toString()));
-                IpUtil.queue.add(message);
-                if (current_user_limit>Long.parseLong(user_limit.toString())) {
-                    logger.warn("当前IP/账号超出流量限制,IP_LIMIT:{},USER_LIMIT:{},IP:{}, 账号:{}", current_user_limit,user_limit, ipAddr, getUser() == null ? "" : getUser().getUserName());
-                    //直接返回
+                RRateLimiter rateLimiter = redissonClient.getRateLimiter(key);
+                //设置速率，time秒中产生count个令牌
+                rateLimiter.trySetRate(RateType.OVERALL, Long.valueOf(user_limit.toString()), 1L, RateIntervalUnit.SECONDS);
+                // 试图获取一个令牌，获取到返回true
+                boolean tryAcquire = rateLimiter.tryAcquire(1L, TimeUnit.SECONDS);
+                if(!tryAcquire){
+                    logger.warn("当前IP/账号超出流量限制,IP_LIMIT:{},USER_LIMIT:{},IP:{}, 账号:{}", -1L,user_limit, ipAddr, getUser() == null ? "" : getUser().getUserName());
                     if (method.equalsIgnoreCase("get")) {
                         return "403";
-                    } else {
-                        if (returnName.contains("ReturnInfo")) {
-                            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前IP/账号超出流量限制", "当前IP/账号超出流量限制");
-                        }
-                        return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前IP/账号超出流量限制", "当前IP/账号超出流量限制");
                     }
+                    return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前IP/账号超出流量限制", "当前IP/账号超出流量限制");
                 }
             }
 

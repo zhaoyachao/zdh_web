@@ -152,6 +152,11 @@
                             <div class="col-sm-10">
                                 <textarea id="label_expression" name="label_expression"  class="form-control" rows="4"  placeholder="运算逻辑,目前仅支持sql运算"></textarea></span>
                             </div>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">默认值</label>
+                            <div class="col-sm-10">
+                                <textarea id="label_default" name="label_default"  class="form-control" rows="2"  placeholder="json格式{'k1': 'v1', 'k2':'v2'}"></textarea></span>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">创建时间</label>
@@ -554,6 +559,9 @@
 
                             var label_expression = data.result.label_expression;
                             $("#label_expression").val(label_expression);
+
+                            var label_default = data.result.label_default;
+                            $("#label_default").val(label_default);
 
                             var create_time = data.result.create_time;
                             $("#create_time").val(getMyDate(create_time));

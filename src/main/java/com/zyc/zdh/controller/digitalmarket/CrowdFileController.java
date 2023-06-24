@@ -53,7 +53,6 @@ public class CrowdFileController extends BaseController {
      * 人群文件列表首页
      * @return
      */
-    @White
     @RequestMapping(value = "/crowd_file_index", method = RequestMethod.GET)
     public String crowd_file_index() {
 
@@ -65,7 +64,6 @@ public class CrowdFileController extends BaseController {
      * @param file_name 关键字
      * @return
      */
-    @White
     @RequestMapping(value = "/crowd_file_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public  ReturnInfo<PageResult<List<CrowdFileInfo>>> crowd_file_list(String file_name,int limit, int offset) {
@@ -102,7 +100,6 @@ public class CrowdFileController extends BaseController {
      * 过滤新增首页
      * @return
      */
-    @White
     @RequestMapping(value = "/crowd_file_add_index", method = RequestMethod.GET)
     public String crowd_file_add_index() {
 
@@ -115,7 +112,6 @@ public class CrowdFileController extends BaseController {
      * @param id 主键ID
      * @return
      */
-    @White
     @RequestMapping(value = "/crowd_file_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<CrowdFileInfo> crowd_file_detail(String id) {
@@ -134,7 +130,6 @@ public class CrowdFileController extends BaseController {
      * @param crowdFileInfo
      * @return
      */
-    @White
     @RequestMapping(value = "/crowd_file_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -164,7 +159,6 @@ public class CrowdFileController extends BaseController {
      * @param crowdFile
      * @return
      */
-    @White
     @RequestMapping(value = "/crowd_file_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -243,7 +237,6 @@ public class CrowdFileController extends BaseController {
      * @param ids id数组
      * @return
      */
-    @White
     @RequestMapping(value = "/crowd_file_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

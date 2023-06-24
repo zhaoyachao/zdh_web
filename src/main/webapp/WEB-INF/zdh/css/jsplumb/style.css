@@ -25,7 +25,7 @@ html,body{height:100%;}
 .device .nodeemailcss{border:red   1px solid;}
 .device .nodeflumecss{border: #9E792E   1px solid;}
 
-.device .deviceLeft2{width:100px;height:700px;border-right:1px solid #ccc;float:left;overflow: auto;}
+.device .deviceLeft2{width:100px;height:750px;border-right:1px solid #ccc;float:left;overflow: auto;}
 .device .deviceLeft2 h3{padding-left:10px;font-size:14px;background:#ddd;line-height:36px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .device .deviceLeft2 .deviceLeft_box{overflow: hidden;padding:10px 0;}
 .device .deviceLeft2 .deviceLeft_box .node{user-select:none;width:80px;height:40px;line-height:20px;float: left;margin:5px;}
@@ -45,6 +45,7 @@ html,body{height:100%;}
 .device .nodeplugincss{border:greenyellow 2px solid;}
 .device .nodemessagecss{border:lightskyblue 2px solid;}
 .device .nodeactive_eventcss{border:lightskyblue 2px solid;}
+.device .nodeid_mappingcss{border:cadetblue 2px solid;}
 
 .device .nodeflowcss{border:lightskyblue 1px solid;}
 

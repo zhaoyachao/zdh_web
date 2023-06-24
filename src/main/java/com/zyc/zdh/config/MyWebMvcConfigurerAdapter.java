@@ -61,7 +61,7 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 	public InternalResourceViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 		// viewResolver.setPrefix("/WEB-INF/classes/views/");
-		logger.info("打印web.path:"+ev.getProperty("web.path"));
+		logger.info("web.path:"+ev.getProperty("web.path"));
 		viewResolver.setPrefix(ev.getProperty("web.path"));
 		viewResolver.setSuffix(".html");
 		viewResolver.setViewClass(JstlView.class);
