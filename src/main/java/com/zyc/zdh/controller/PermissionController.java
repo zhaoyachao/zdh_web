@@ -189,6 +189,9 @@ public class PermissionController extends BaseController {
 
         try {
             int result = permissionMapper.updateEnable(ids, enable);
+            if(enable.equalsIgnoreCase(Const.FALSE)){
+                //禁用用户,redis中写禁用标志 todo 此处待实现
+            }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", getBaseException());
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

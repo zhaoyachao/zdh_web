@@ -4,6 +4,7 @@
 
 - [READ MORE](#read-more)
 - [数据采集,处理,监控,调度,管理一体化平台](#%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86%E5%A4%84%E7%90%86%E7%9B%91%E6%8E%A7%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86%E4%B8%80%E4%BD%93%E5%8C%96%E5%B9%B3%E5%8F%B0)
+- [项目模块划分](#%E9%A1%B9%E7%9B%AE%E6%A8%A1%E5%9D%97%E5%88%92%E5%88%86)
 - [开源/闭源版本](#%E5%BC%80%E6%BA%90%E9%97%AD%E6%BA%90%E7%89%88%E6%9C%AC)
 - [下载编译包](#%E4%B8%8B%E8%BD%BD%E7%BC%96%E8%AF%91%E5%8C%85)
 - [在线预览](#%E5%9C%A8%E7%BA%BF%E9%A2%84%E8%A7%88)
@@ -53,9 +54,25 @@
    + 降低使用者标准,通过拖拉拽实现数据的采集(任务依赖关系由自带调度完成-优势)
    + 本平台的初衷及目的尽量减少开发者的工作量及降低数据开发者的使用门槛
    
+# 项目模块划分
+      项目涉及方向较多,技术杂乱
+      包含以下几个项目,以下几个项目都是单独的git仓库
+      zdh_web: zdh系列项目web管理端,提供可视化配置,比如ETL,调度,mock服务,权限管理,数仓模块等
+      zdh_spark: 基于spark的etl处理,必须依赖zdh_web
+      zdh_flinkx: 基于flink sql的etl处理,必须依赖zdh_web
+      zdh_mock: 基于netty的http-mock服务,必须依赖zdh_web
+      zdh_queue: 计划开发一个非高性能的优先级可控队列(用于etl任务优先级控制),开发失败,废弃
+      zdh_auth: 大数据统一权限管理(hadoop,hive,hbase,presto),开发中
+      coustomer: 是一个客户管理模块,计划做客户画像,智能营销等服务,主要包括label, plugin, ship, variable, 4个模块
+         coustomer-label: 客户管理-标签服务,必须依赖zdh_web,主要提供离线批量圈人功能
+         coustomer-plugin: 客户管理-通用插件服务,提供id_mapping,过滤,触达用户(发送短信,邮件等)
+         coustomer-ship: 客户管理-实时经营服务,实时接入用户流量,对用户做经营
+         coustomer-variable: 客户管理-变量服务,和label服务能力一样,区别在于一个离线处理,一个实时处理
+    
+   
 # 开源/闭源版本
-   + 5.0及之前版本不在进行维护
-   + 5.1.1及之后版本所有代码开源
+   + 5.1.1之前版本不开放源代码且不在继续维护
+   + 5.1.1及之后版本开放所有源代码
    
 # 下载编译包   
    + 编译包下载地址(只提供4.7.11之后的版本,因4.7.11之后不提供源码下载)：
@@ -81,6 +98,11 @@
      +  [zdh_web_5.1.0](http://zycblog.cn:8080/zdh/download/5.1.0/zdh_web.tar)
      +  [zdh_server_5.1.0](http://zycblog.cn:8080/zdh/download/5.1.0/zdh_server.tar)
      +  [zdh_flink_5.1.0](http://zycblog.cn:8080/zdh/download/5.1.0/zdh_flink.tar)
+     
+   + 5.1.1
+     +  [zdh_web_5.1.1](http://zycblog.cn:8080/zdh/download/5.1.1/zdh_web.tar)
+     +  [zdh_server_5.1.1](http://zycblog.cn:8080/zdh/download/5.1.1/zdh_server.tar)
+     +  [zdh_flink_5.1.1](http://zycblog.cn:8080/zdh/download/5.1.1/zdh_flink.tar)     
                      
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包,也可登陆ZDH预览页面下载
 
@@ -114,7 +136,7 @@
   + 数据迁移
   + 质量检测
   + 元数据,指标管理
-  + drools灵活动态的数据清洗
+  + drools灵活动态的数据清洗(废弃)
   
   
   
@@ -173,9 +195,14 @@
     4.7.13 之前
       在target 目录下找到zdh_web.jar
       执行 java  -Dfile.encoding=utf-8 -jar zdh_web.jar  
-    4.7.13及之后
+    4.7.13及之后5.1.1之前
       进入在xxx-RELEASE 目录下
-      执行 java -jar -Dfile.encoding=utf-8 -Dloader.path=libs/,conf zdh_web.jar     
+      执行 java -jar -Dfile.encoding=utf-8 -Dloader.path=libs/,conf zdh_web.jar 
+      
+    5.1.1及之后
+      进入在xxx-RELEASE 目录下
+      启动执行 sh bin/start.sh 或者 sh bin/zdh_web.sh start
+      关闭执行 sh bin/stop.sh 或者 sh bin/zdh_web.sh stop
 
 # FAQ
 
@@ -2231,6 +2258,10 @@
 # 个人联系方式
     邮件：1209687056@qq.com
     代码所有都以开源,敢兴趣的码友可以下载自行研究,个人也可有偿进行定制化开发
+
+#权益
+    因代码全部开源,谨防一些不法分子利用项目做违法等事情,均和本人无关,本人不承担任何责任,当他人因任何利益等和本人产生冲突时，最终解释权归本人所有
+        
     
     
 # 界面预览

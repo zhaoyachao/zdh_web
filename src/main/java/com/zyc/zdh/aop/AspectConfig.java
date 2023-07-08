@@ -176,10 +176,12 @@ public class AspectConfig implements Ordered {
 
             String reqParam = "";
 
+            //校验账号是否启用
+            boolean is_unenable = is_unenable();
             //校验ip黑名单
             boolean is_ipbacklist = is_ipblacklist(ipAddr);
             boolean is_userbacklist = is_blacklist();
-            if (is_ipbacklist || is_userbacklist) {
+            if (is_ipbacklist || is_userbacklist || is_unenable) {
                 UserOperateLogMapper userOperateLogMapper = (UserOperateLogMapper) SpringContext.getBean("userOperateLogMapper");
                 UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();
                 userOperateLogInfo.setOwner(getUser().getUserName());
@@ -193,6 +195,8 @@ public class AspectConfig implements Ordered {
                     output = String.format("用户:%s命中IP黑名单,IP地址:%s", getUser().getUserName(), ipAddr);
                 } else if (is_userbacklist) {
                     output = String.format("用户:%s命中用户黑名单,IP地址:%s", getUser().getUserName(), ipAddr);
+                } else if(is_unenable){
+                    output = String.format("用户:%s已被禁用,IP地址:%s", getUser().getUserName(), ipAddr);
                 }
                 userOperateLogInfo.setOperate_output(output);
 
@@ -515,6 +519,16 @@ public class AspectConfig implements Ordered {
         permissions.add("get_error_msg");
 
         return permissions;
+    }
+
+    /**
+     * 校验是否禁用用户,true:禁用,false:未禁用
+     * @return
+     */
+    private boolean is_unenable(){
+        RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+        //todo 此处待实现
+        return false;
     }
 
     /**
