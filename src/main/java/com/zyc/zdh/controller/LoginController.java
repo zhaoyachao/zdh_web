@@ -118,6 +118,12 @@ public class LoginController {
             //user.setPassword(new SimpleHash("md5", new String(user.getPassword()), null, 2).toString());
             user.setPassword(Encrypt.AESencrypt(user.getPassword()));
 
+            //判断是否是字母和数字
+            String regex = "^[a-zA-Z0-9]$";
+            if(!user.getUserName().matches(regex)){
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "用户名必须只包含字母或者数字", null);
+            }
+
             //判断是否存在用户
             List<User> users = accountService.findByUserName(user);
 
@@ -403,6 +409,8 @@ public class LoginController {
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "密码已发送到注册邮箱,如果你已忘记注册邮箱,请联系管理员解决", null);
             }
         }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "找回密码异常", e);
         }
 
@@ -415,25 +423,31 @@ public class LoginController {
      */
     @RequestMapping(value = "user_names", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public  List<JSONObject> user_names(String username) {
+    public  ReturnInfo<List<JSONObject>> user_names(String username) {
 
-        AccountInfo accountInfo = new AccountInfo();
-        Example example = new Example(accountInfo.getClass());
-        Example.Criteria criteria = example.createCriteria();
-        if (!StringUtils.isEmpty(username)) {
-            criteria.andLike("user_account", "%" + username + "%");
+        try{
+            PermissionUserInfo accountInfo = new PermissionUserInfo();
+            Example example = new Example(accountInfo.getClass());
+            Example.Criteria criteria = example.createCriteria();
+            if (!StringUtils.isEmpty(username)) {
+                criteria.andLike("user_account", "%" + username + "%");
+            }
+
+            List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
+            List<JSONObject> user_names = new ArrayList<>();
+            for (PermissionUserInfo acc : permissionUserInfos) {
+                JSONObject js = new JSONObject();
+                js.put("id", acc.getUser_account());
+                js.put("name", acc.getUser_account());
+                user_names.add(js);
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", user_names);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
-        List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
-        List<JSONObject> user_names = new ArrayList<>();
-        for (PermissionUserInfo acc : permissionUserInfos) {
-            JSONObject js = new JSONObject();
-            js.put("id", acc.getUser_account());
-            js.put("name", acc.getUser_account());
-            user_names.add(js);
-        }
-
-        return user_names;
     }
 
 

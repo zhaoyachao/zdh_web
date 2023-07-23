@@ -271,25 +271,29 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
                             console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取ETL 说明
-                            var rule_code = data[0].rule_code;
+                            var rule_code = data.result[0].rule_code;
                             $("#rule_code").val(rule_code);
 
-                            var rule_name = data[0].rule_name;
+                            var rule_name = data.result[0].rule_name;
                             $("#rule_name").val(rule_name);
 
-                            var create_time = data[0].create_time;
+                            var create_time = data.result[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
-                            var rule_type = data[0].rule_type;
+                            var rule_type = data.result[0].rule_type;
                             $("#rule_type").val(rule_type);
                             $("#rule_type").trigger("chosen:updated");
 
 
-                            var rule_expr = data[0].rule_expr;
+                            var rule_expr = data.result[0].rule_expr;
                             //$("#etl_sql").val(etl_sql);
                             console.info(rule_expr);
                             window.editor_rule_expr.setValue(rule_expr);

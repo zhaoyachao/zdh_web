@@ -11,6 +11,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_config_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public List<ApprovalConfigInfo> approve_config_list(String approval_context) {
+    public ReturnInfo<List<ApprovalConfigInfo>> approve_config_list(String approval_context) {
         try{
             Example example=new Example(ApprovalConfigInfo.class);
             Example.Criteria criteria = example.createCriteria();
@@ -74,10 +75,10 @@ public class ZdhApprovalController extends BaseController{
                 criteria.orLike("id", getLikeCondition(approval_context));
             }
             List<ApprovalConfigInfo> approvalConfigInfos=approvalConfigMapper.selectByExample(example);
-            return approvalConfigInfos;
+            return ReturnInfo.buildSuccess(approvalConfigInfos);
         }catch (Exception e){
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-             return null;
+            logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            return ReturnInfo.buildError(e);
         }
     }
 
@@ -169,18 +170,18 @@ public class ZdhApprovalController extends BaseController{
      * @param auditor_id 审批人账号
      * @return
      */
-    @RequestMapping(value = "/approval_auditor_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/approval_auditor_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String approval_auditor_list(String approval_context, String auditor_id) {
+    public ReturnInfo<List<ApprovalAuditorInfo>> approval_auditor_list(String approval_context, String auditor_id) {
         try{
             if(!StringUtils.isEmpty(approval_context)){
                 approval_context = getLikeCondition(approval_context);
             }
             List<ApprovalAuditorInfo> approvalAuditorInfos=approvalAuditorMapper.selectByContext(approval_context, auditor_id);
-            return JSON.toJSONString(approvalAuditorInfos);
+            return ReturnInfo.buildSuccess(approvalAuditorInfos);
         }catch (Exception e){
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.buildError(e);
         }
     }
 
@@ -300,9 +301,9 @@ public class ZdhApprovalController extends BaseController{
      * @param flow_context 关键字
      * @return
      */
-    @RequestMapping(value = "/approval_auditor_flow_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/approval_auditor_flow_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String approval_auditor_flow_list(String flow_context) {
+    public ReturnInfo<PageResult<List<ApprovalAuditorFlowInfo>>> approval_auditor_flow_list(String flow_context, int limit, int offset) {
         try{
 
             Example example=new Example(ApprovalAuditorFlowInfo.class);
@@ -313,11 +314,20 @@ public class ZdhApprovalController extends BaseController{
                 criteria.andLike("flow_context", flow_context);
             }
 
-            List<ApprovalAuditorFlowInfo> approvalAuditorFlowInfos=approvalAuditorFlowMapper.selectByExample(example);
-            return JSON.toJSONString(approvalAuditorFlowInfos);
+            example.setOrderByClause("id desc");
+            RowBounds rowBounds=new RowBounds(offset,limit);
+            int total = approvalAuditorFlowMapper.selectCountByExample(example);
+
+            List<ApprovalAuditorFlowInfo> approvalAuditorFlowInfos=approvalAuditorFlowMapper.selectByExampleAndRowBounds(example, rowBounds);
+
+            PageResult<List<ApprovalAuditorFlowInfo>> pageResult=new PageResult<>();
+            pageResult.setTotal(total);
+            pageResult.setRows(approvalAuditorFlowInfos);
+
+            return ReturnInfo.buildSuccess(pageResult);
         }catch (Exception e){
             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.buildError(e);
         }
     }
 
@@ -474,18 +484,18 @@ public class ZdhApprovalController extends BaseController{
      * @param event_context 关键字
      * @return
      */
-    @RequestMapping(value = "/approval_event_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/approval_event_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String approval_event_list(String event_context) {
+    public ReturnInfo<List<ApprovalEventInfo>> approval_event_list(String event_context) {
         try{
             if(!StringUtils.isEmpty(event_context)){
                 event_context = getLikeCondition(event_context);
             }
             List<ApprovalEventInfo> approvalEventInfos=approvalEventMapper.selectByContext(event_context);
-            return JSON.toJSONString(approvalEventInfos);
+            return ReturnInfo.buildSuccess(approvalEventInfos);
         }catch (Exception e){
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.buildError(e);
         }
     }
 

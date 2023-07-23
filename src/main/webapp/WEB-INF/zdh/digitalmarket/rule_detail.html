@@ -236,9 +236,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].label_code + "\" mytype=\"" + data[i].label_code + "\" hassubinfo=\"true\">" + data[i].label_context + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].label_code + "\" mytype=\"" + data.result[i].label_code + "\" hassubinfo=\"true\">" + data.result[i].label_context + "</option>"
                         }
                         $('#rule_id').empty();
                         $("#rule_id").chosen("destroy");
@@ -297,9 +301,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i]+ "\" mytype=\"" + data[i] + "\" hassubinfo=\"true\">" + data[i] + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i]+ "\" mytype=\"" + data.result[i] + "\" hassubinfo=\"true\">" + data.result[i] + "</option>"
                         }
                         //ETL单任务下拉框
                         $('#zdh_instance').html(str);

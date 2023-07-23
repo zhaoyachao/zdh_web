@@ -74,7 +74,7 @@
                                     <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
                                 </button>
                             </div>
-                            <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true">
+                            <table id="exampleTableEvents" data-height="500" data-content-type="application/x-www-form-urlencoded" data-query-params="queryParams">
 
                             </table>
                         </div>
@@ -117,9 +117,13 @@
             data: "",
             //成功返回
             success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
+                }
                 var str = '';
-                for (var i = 0; i < data.length; i++) {
-                    str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+                for (var i = 0; i < data.result.length; i++) {
+                    str += '<option value=\"' + data.result[i].product_code + '\" hassubinfo=\"true\">' + data.result[i].product_name + '</option>';
                 }
                 $('#product_code').html(str);
                 $("#product_code").trigger("chosen:updated");
@@ -137,7 +141,17 @@
             $('#exampleTableEvents').bootstrapTable('refresh', {
                 url: server_context+"/data_tag_list?"+$("#data_tag_form").serialize(),
                 contentType: "application/json;charset=utf-8",
-                dataType: "json"
+                dataType: "json",
+                queryParams: function (params) {
+                    // 此处使用了LayUi组件 是为加载层
+                    loadIndex = layer.load(1);
+                    let resRepor = {
+                        //服务端分页所需要的参数
+                        limit: params.limit,
+                        offset: params.offset
+                    };
+                    return resRepor;
+                }
             });
         });
 

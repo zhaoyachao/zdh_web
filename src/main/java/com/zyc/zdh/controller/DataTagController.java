@@ -2,12 +2,10 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.DataTagMapper;
-import com.zyc.zdh.entity.DataTagInfo;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.User;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import org.apache.ibatis.session.RowBounds;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,26 +48,43 @@ public class DataTagController extends BaseController {
     /**
      * 数据标识列表
      * @param tag_context 关键字
-     * @param product_code 产品代码
+     * @param product_code 产品code
+     * @param limit
+     * @param offset
      * @return
      */
     @RequestMapping(value = "/data_tag_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public List<DataTagInfo> data_tag_list(String tag_context, String product_code) {
-        Example example=new Example(DataTagInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        Example.Criteria criteria2=example.createCriteria();
-        if(!org.apache.commons.lang3.StringUtils.isEmpty(tag_context)){
-            criteria2.orLike("tag_code", getLikeCondition(tag_context));
-            criteria2.orLike("tag_name", getLikeCondition(tag_context));
-            criteria2.orLike("product_code", getLikeCondition(tag_context));
+    public ReturnInfo<PageResult<List<DataTagInfo>>> data_tag_list(String tag_context, String product_code,int limit, int offset) {
+        try{
+            Example example=new Example(DataTagInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("product_code", product_code);
+            Example.Criteria criteria2=example.createCriteria();
+            if(!org.apache.commons.lang3.StringUtils.isEmpty(tag_context)){
+                criteria2.orLike("tag_code", getLikeCondition(tag_context));
+                criteria2.orLike("tag_name", getLikeCondition(tag_context));
+                criteria2.orLike("product_code", getLikeCondition(tag_context));
+            }
+            example.and(criteria2);
+
+            example.setOrderByClause("id desc");
+            RowBounds rowBounds=new RowBounds(offset,limit);
+            int total = dataTagMapper.selectCountByExample(example);
+
+            List<DataTagInfo> dataTagInfos = dataTagMapper.selectByExampleAndRowBounds(example, rowBounds);
+
+            PageResult<List<DataTagInfo>> pageResult=new PageResult<>();
+            pageResult.setTotal(total);
+            pageResult.setRows(dataTagInfos);
+            return ReturnInfo.buildSuccess(pageResult);
+
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError(e);
         }
-        example.and(criteria2);
-
-        List<DataTagInfo> dataTagInfos = dataTagMapper.selectByExample(example);
-
-        return dataTagInfos;
     }
 
     /**
@@ -77,18 +92,21 @@ public class DataTagController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
-    @RequestMapping(value = "/data_tag_by_product_code", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/data_tag_by_product_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public List<DataTagInfo> data_tag_by_product_code(String product_code) {
-        Example example=new Example(DataTagInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        criteria.andEqualTo("product_code", product_code);
-
-
-        List<DataTagInfo> dataTagInfos = dataTagMapper.selectByExample(example);
-
-        return dataTagInfos;
+    public ReturnInfo<List<DataTagInfo>> data_tag_by_product_code(String product_code) {
+        try{
+            Example example=new Example(DataTagInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("product_code", product_code);
+            List<DataTagInfo> dataTagInfos = dataTagMapper.selectByExample(example);
+            return ReturnInfo.buildSuccess(dataTagInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError(e);
+        }
     }
 
     /**

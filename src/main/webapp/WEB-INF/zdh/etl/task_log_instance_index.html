@@ -289,12 +289,16 @@
                 dataType : "json",
                 async: false,
                 success : function(data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     console.info("task_log_instance_list success");
-                    for(var j=0;j<data.length;j++){
+                    for(var j=0;j<data.result.length;j++){
                         //divId->status
-                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id));
-                        map3.set(map2.get(data[j].id),data[j].status);
-                        map4.set(data[j].id, data[j].run_time);
+                        console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
+                        map3.set(map2.get(data.result[j].id),data.result[j].status);
+                        map4.set(data.result[j].id, data.result[j].run_time);
                     }
                 },
                 error: function (data) {
@@ -387,11 +391,15 @@
                 dataType : "json",
                 async: false,
                 success : function(data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     console.info("task_log_instance_list success");
-                    for(var j=0;j<data.length;j++){
+                    for(var j=0;j<data.result.length;j++){
                         //divId->status
-                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id));
-                        map3.set(map2.get(data[j].id),data[j].status)
+                        console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
+                        map3.set(map2.get(data.result[j].id),data.result[j].status)
                     }
                 },
                 error: function (data) {
@@ -673,8 +681,12 @@
                     type: "post",
                     dataType: "json",
                     success: function (data) {
-                        console.info("success")
-                        if (!data && typeof data != "undefined" && data != 0 || data.length < 1) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        console.info("success");
+                        if (!data.result && typeof data.result != "undefined" && data.result != 0 || data.result.length < 1) {
                             if (typeof row.history_server == "undefined"){
                                 layer.msg("无法找到历史服务器并且应用程序已经死亡");
                                 return;
@@ -682,8 +694,8 @@
                             window.open(row.history_server + "/" + row.application_id);
                             return;
                         }
-                        console.info("http://" + data.zdh_host + ":" + data.web_port);
-                        window.open("http://" + data.zdh_host + ":" + data.web_port);
+                        console.info("http://" + data.result.zdh_host + ":" + data.result.web_port);
+                        window.open("http://" + data.result.zdh_host + ":" + data.result.web_port);
                     },
                     error: function (data) {
                         console.info("error: " + data.responseText);
@@ -730,6 +742,13 @@
                 refresh: 'glyphicon-repeat',
                 toggle: 'glyphicon-list-alt',
                 columns: 'glyphicon-list'
+            },
+            responseHandler:function (res) {
+                if(res.code != "200"){
+                    layer.msg(res.msg);
+                    return ;
+                }
+                return res.result;
             },
             columns: [{
                 checkbox: true,
@@ -945,9 +964,13 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     console.info("success");
                     //初始化输入数据源select 组件
-                    var run_jsmind_data=data[0].run_jsmind_data;
+                    var run_jsmind_data=data.result[0].run_jsmind_data;
                     open_json(run_jsmind_data,s.group_id)
 
                 },
@@ -966,9 +989,13 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     console.info("success");
                     //重新渲染图
-                    var run_jsmind_data=data[0].run_jsmind_data;
+                    var run_jsmind_data=data.result[0].run_jsmind_data;
                     refash(run_jsmind_data,s.group_id)
 
                 },

@@ -73,9 +73,9 @@ public class ZdhMoreEtlController extends BaseController {
      * @param file_name   输出文件名/表名
      * @return
      */
-    @RequestMapping(value = "/etl_task_more_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_more_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_more_list2(String etl_context, String file_name) {
+    public ReturnInfo<List<EtlMoreTaskInfo>> etl_task_more_list2(String etl_context, String file_name) {
         try{
             List<EtlMoreTaskInfo> etlMoreTaskInfos = new ArrayList<EtlMoreTaskInfo>();
             if(!StringUtils.isEmpty(etl_context)){
@@ -85,11 +85,11 @@ public class ZdhMoreEtlController extends BaseController {
                 file_name=getLikeCondition(file_name);
             }
             etlMoreTaskInfos = etlMoreTaskMapper.selectByParams(getOwner(), etl_context, file_name);
-            return JSON.toJSONString(etlMoreTaskInfos);
+            return ReturnInfo.buildSuccess(etlMoreTaskInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("多源ETL任务查询失败", e);
         }
 
     }

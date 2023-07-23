@@ -64,9 +64,9 @@ public class ZdhDataWareController extends BaseController {
      * @param page_size 分页大小
      * @return
      */
-    @RequestMapping(value = "/data_ware_house_list6", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_ware_house_list6", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_list6(String issue_context,String current_page,String label_params,Integer  page_size) {
+    public ReturnInfo<JSONObject> data_ware_house_list6(String issue_context,String current_page,String label_params,Integer  page_size) {
         if(page_size==null || page_size==0){
             page_size = 10;
         }
@@ -125,7 +125,7 @@ public class ZdhDataWareController extends BaseController {
         jsonObject.put("right_page", right_page);
         jsonObject.put("list", list);
 
-        return jsonObject.toJSONString();
+        return ReturnInfo.buildSuccess(jsonObject);
     }
 
     /**

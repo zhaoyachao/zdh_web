@@ -49,7 +49,8 @@
                         </div>
 
                         <div class="form-group">
-                            <div class="col-sm-12" style="text-align: left">
+                            <label class="col-sm-2 control-label">分流配置</label>
+                            <div class="col-sm-10" style="text-align: left">
                                 <button id="btn_add" name="btn_add" class="btn btn-primary"
                                         οnsubmit='return false'
                                         type="button">新增
@@ -147,7 +148,7 @@
 
 <script>
 
-    var template = '<div class="ibox-content"  id="template">\n' +
+    var template = '<div class="from-group col-sm-12"  id="template">\n' +
         '<label class="col-sm-2 control-label">分流器</label>\n' +
         '        <div class="col-sm-2" >\n' +
         '            <input name="shunt_code" type="text"\n' +
@@ -175,7 +176,6 @@
         '            </button>\n' +
         '        </div>\n' +
         '\n' +
-        '    </div>\n' +
         '</div>';
 
     $(document).ready(function () {
@@ -224,9 +224,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i]+ "\" mytype=\"" + data[i] + "\" hassubinfo=\"true\">" + data[i] + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i]+ "\" mytype=\"" + data.result[i] + "\" hassubinfo=\"true\">" + data.result[i] + "</option>"
                         }
                         //ETL单任务下拉框
                         $('#zdh_instance').html(str);

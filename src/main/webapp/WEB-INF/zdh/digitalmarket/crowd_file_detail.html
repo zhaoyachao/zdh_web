@@ -207,9 +207,13 @@
                     data: {},
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
-                        for (let i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\""  + "\" hassubinfo=\"true\">" + data[i].file_name + "</option>"
+                        for (let i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].id + "\" mytype=\""  + "\" hassubinfo=\"true\">" + data.result[i].file_name + "</option>"
                         }
                         //输入数据源类型下拉框
                         $('#crowd_file').html(str);

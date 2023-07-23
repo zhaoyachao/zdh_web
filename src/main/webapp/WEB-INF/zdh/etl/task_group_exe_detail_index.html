@@ -261,14 +261,17 @@
                     },
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
 
-
-                       if(data.length=1){
+                       if(data.result.length=1){
 
                            $('#sub_task_div').empty();
                            $('#sub_task_div').addClass("checkbox");
                            $('#sub_task_div').addClass("i-checks");
-                           var jsplumb_json=JSON.parse(data[0].jsmind_data);
+                           var jsplumb_json=JSON.parse(data.result[0].jsmind_data);
                            for(var i=0;i<jsplumb_json.tasks.length;i++){
                                if(jsplumb_json.tasks[i].is_disenable == "true"){
                                    continue
@@ -662,9 +665,13 @@
             type : "post",
             dataType : "json",
             success : function(data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
+                }
                 console.info("success");
                 //初始化输入数据源select 组件
-                var jsmind_data=data[0].jsmind_data;
+                var jsmind_data=data.result[0].jsmind_data;
                 open_json(jsmind_data,s.id)
 
             },

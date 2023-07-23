@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * drools服务
+ * drools服务-废弃
  */
 @Controller
 public class ZdhDroolsController extends BaseController{
@@ -67,6 +67,8 @@ public class ZdhDroolsController extends BaseController{
             EtlDroolsTaskInfo etlDroolsTaskInfo=etlDroolsTaskMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlDroolsTaskInfo);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -77,18 +79,25 @@ public class ZdhDroolsController extends BaseController{
      * @param file_name 输出数据源关键字
      * @return
      */
-    @RequestMapping(value = "/etl_task_drools_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_drools_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_drools_list2(String etl_context, String file_name) throws Exception {
-        List<EtlDroolsTaskInfo> etlDroolsTaskInfos = new ArrayList<EtlDroolsTaskInfo>();
-        if(!StringUtils.isEmpty(etl_context)){
-            etl_context=getLikeCondition(etl_context);
+    public ReturnInfo<List<EtlDroolsTaskInfo>> etl_task_drools_list2(String etl_context, String file_name) throws Exception {
+        try{
+            List<EtlDroolsTaskInfo> etlDroolsTaskInfos = new ArrayList<EtlDroolsTaskInfo>();
+            if(!StringUtils.isEmpty(etl_context)){
+                etl_context=getLikeCondition(etl_context);
+            }
+            if(!StringUtils.isEmpty(file_name)){
+                file_name=getLikeCondition(file_name);
+            }
+            etlDroolsTaskInfos = etlDroolsTaskMapper.selectByParams(getOwner(), etl_context, file_name);
+            return ReturnInfo.buildSuccess(etlDroolsTaskInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("drools任务列表查询失败", e);
         }
-        if(!StringUtils.isEmpty(file_name)){
-            file_name=getLikeCondition(file_name);
-        }
-        etlDroolsTaskInfos = etlDroolsTaskMapper.selectByParams(getOwner(), etl_context, file_name);
-        return JSON.toJSONString(etlDroolsTaskInfos);
+
     }
 
 
@@ -109,6 +118,8 @@ public class ZdhDroolsController extends BaseController{
             etlDroolsTaskMapper.insert(etlDroolsTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
@@ -130,6 +141,8 @@ public class ZdhDroolsController extends BaseController{
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
@@ -151,6 +164,8 @@ public class ZdhDroolsController extends BaseController{
             etlDroolsTaskMapper.updateByPrimaryKey(etlDroolsTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
     }

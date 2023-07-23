@@ -112,6 +112,15 @@
         toggle: 'glyphicon-list-alt',
         columns: 'glyphicon-list'
       },
+          // 请求完成回调 可处理请求到的数据
+          responseHandler: res => {
+              // 关闭加载层
+              layer.msg(res.msg);
+              if(res.code != "200"){
+                  return ;
+              }
+              return res.result;
+          },
         columns: [{
             checkbox: true,
             field:'state',

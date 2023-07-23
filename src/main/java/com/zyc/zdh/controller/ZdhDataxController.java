@@ -68,9 +68,9 @@ public class ZdhDataxController extends BaseController{
      * @param id 主键ID
      * @return
      */
-    @RequestMapping(value = "/etl_task_datax_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_datax_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_datax_list(String datax_context, String id) {
+    public ReturnInfo<List<EtlTaskDataxInfo>> etl_task_datax_list(String datax_context, String id) {
         try{
             EtlTaskDataxInfo etlTaskDataxInfo=new EtlTaskDataxInfo();
             Example etlTaskDataxInfoExample= new Example(etlTaskDataxInfo.getClass());
@@ -86,11 +86,11 @@ public class ZdhDataxController extends BaseController{
             cri.andEqualTo("is_delete", Const.NOT_DELETE);
             etlTaskDataxInfos = etlTaskDataxMapper.selectByExample(etlTaskDataxInfoExample);
 
-            return JSON.toJSONString(etlTaskDataxInfos);
+            return ReturnInfo.buildSuccess(etlTaskDataxInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("查询datax任务列表",e);
         }
 
     }

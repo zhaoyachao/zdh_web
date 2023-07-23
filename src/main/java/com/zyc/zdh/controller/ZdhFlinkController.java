@@ -73,9 +73,9 @@ public class ZdhFlinkController extends BaseController {
      * @param id          sql任务id
      * @return
      */
-    @RequestMapping(value = "/etl_task_flink_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_flink_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_flink_list(String sql_context, String id) {
+    public ReturnInfo<List<EtlTaskFlinkInfo>> etl_task_flink_list(String sql_context, String id) {
 
         try{
             List<EtlTaskFlinkInfo> sqlTaskInfos = new ArrayList<>();
@@ -84,11 +84,11 @@ public class ZdhFlinkController extends BaseController {
             }
             sqlTaskInfos = etlTaskFlinkMapper.selectByParams(getOwner(), sql_context, id);
 
-            return JSON.toJSONString(sqlTaskInfos);
+            return ReturnInfo.buildSuccess(sqlTaskInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("flink任务列表查询失败", e);
         }
 
     }

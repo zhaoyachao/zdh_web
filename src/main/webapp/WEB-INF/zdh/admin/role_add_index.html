@@ -119,9 +119,13 @@
             data: "",
             //成功返回
             success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
+                }
                 var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                for (var i = 0; i < data.length; i++) {
-                    str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+                for (var i = 0; i < data.result.length; i++) {
+                    str += '<option value=\"' + data.result[i].product_code + '\" hassubinfo=\"true\">' + data.result[i].product_name + '</option>';
                 }
                 $('#product_code').html(str);
                 $("#product_code").trigger("chosen:updated");
@@ -229,10 +233,12 @@
                 data : {"id":s.id, "code": s.code},
                 async:'false',
                 success : function(data) {
-                    console.info(data);
-
-                    for(var i=0;i<data.length;i++){
-                        $('#using_json3').jstree('check_node',data[i].resource_id);
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    for(var i=0;i<data.result.length;i++){
+                        $('#using_json3').jstree('check_node',data.result[i].resource_id);
                     }
                     $('#using_json3').jstree('open_all')
                 }

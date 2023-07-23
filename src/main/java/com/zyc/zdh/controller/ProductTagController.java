@@ -52,24 +52,30 @@ public class ProductTagController extends BaseController {
      */
     @RequestMapping(value = "/product_tag_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public List<ProductTagInfo> product_tag_list(String tag_context) {
-        Example example=new Example(ProductTagInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        Example.Criteria criteria2=example.createCriteria();
-        if(!org.apache.commons.lang3.StringUtils.isEmpty(tag_context)){
-            criteria2.orLike("product_code", getLikeCondition(tag_context));
-            criteria2.orLike("product_name", getLikeCondition(tag_context));
-        }
-        example.and(criteria2);
+    public ReturnInfo<List<ProductTagInfo>> product_tag_list(String tag_context) {
+        try{
+            Example example=new Example(ProductTagInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            Example.Criteria criteria2=example.createCriteria();
+            if(!org.apache.commons.lang3.StringUtils.isEmpty(tag_context)){
+                criteria2.orLike("product_code", getLikeCondition(tag_context));
+                criteria2.orLike("product_name", getLikeCondition(tag_context));
+            }
+            example.and(criteria2);
 
-        List<ProductTagInfo> productTagInfos = productTagMapper.selectByExample(example);
+            List<ProductTagInfo> productTagInfos = productTagMapper.selectByExample(example);
 
-        for (ProductTagInfo pti: productTagInfos){
-            pti.setSk("");
-            pti.setAk("");
+            for (ProductTagInfo pti: productTagInfos){
+                pti.setSk("");
+                pti.setAk("");
+            }
+            return ReturnInfo.buildSuccess(productTagInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError(e);
         }
-        return productTagInfos;
     }
 
     /**

@@ -136,9 +136,15 @@ public class SystemController extends BaseController{
      */
     @RequestMapping(value = "/getFileManager", method = RequestMethod.POST )
     @ResponseBody
-    public ZdhNginx getFileManager() throws Exception {
-        ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(getOwner());
-        return zdhNginx;
+    public ReturnInfo<ZdhNginx> getFileManager() throws Exception {
+        try{
+            ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(getOwner());
+            return ReturnInfo.buildSuccess(zdhNginx);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError(e);
+        }
     }
 
     /**
@@ -149,23 +155,26 @@ public class SystemController extends BaseController{
      */
     @RequestMapping(value = "/file_manager_up", method = RequestMethod.POST)
     @ResponseBody
-    public String file_manager_up(ZdhNginx zdhNginx) throws Exception {
+    public ReturnInfo<String> file_manager_up(ZdhNginx zdhNginx) throws Exception {
+        try{
+            ZdhNginx zdhNginx1 = zdhNginxMapper.selectByOwner(getOwner());
+            zdhNginx.setOwner(getOwner());
+            if (zdhNginx.getPort().equals("")) {
+                zdhNginx.setPort("22");
+            }
+            if (zdhNginx1 != null) {
+                zdhNginx.setId(zdhNginx1.getId());
+                zdhNginxMapper.updateByPrimaryKey(zdhNginx);
+            } else {
+                zdhNginxMapper.insert(zdhNginx);
+            }
 
-        ZdhNginx zdhNginx1 = zdhNginxMapper.selectByOwner(getOwner());
-        zdhNginx.setOwner(getOwner());
-        if (zdhNginx.getPort().equals("")) {
-            zdhNginx.setPort("22");
+            return ReturnInfo.buildSuccess("200");
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError(e);
         }
-        if (zdhNginx1 != null) {
-            zdhNginx.setId(zdhNginx1.getId());
-            zdhNginxMapper.updateByPrimaryKey(zdhNginx);
-        } else {
-            zdhNginxMapper.insert(zdhNginx);
-        }
-
-        JSONObject json = new JSONObject();
-        json.put("success", "200");
-        return json.toJSONString();
     }
 
     /**
@@ -408,21 +417,25 @@ public class SystemController extends BaseController{
      * @return
      * @throws ParseException
      */
-    @RequestMapping(value = "quartz-cron", method = RequestMethod.POST)
+    @RequestMapping(value = "quartz-cron", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String cronExpression2executeDates(String crontab) throws ParseException {
-        System.out.println(crontab);
-        List<String> resultList = new ArrayList<String>() ;
-        CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
-        cronTriggerImpl.setCronExpression(crontab);//这里写要准备猜测的cron表达式
-        List<Date> dates = TriggerUtils.computeFireTimes(cronTriggerImpl, null, 10);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        for (Date date : dates) {
-            resultList.add(dateFormat.format(date));
+    public ReturnInfo<List<String>> cronExpression2executeDates(String crontab) throws ParseException {
+        try{
+            System.out.println(crontab);
+            List<String> resultList = new ArrayList<String>() ;
+            CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+            cronTriggerImpl.setCronExpression(crontab);//这里写要准备猜测的cron表达式
+            List<Date> dates = TriggerUtils.computeFireTimes(cronTriggerImpl, null, 10);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for (Date date : dates) {
+                resultList.add(dateFormat.format(date));
+            }
+            return ReturnInfo.buildSuccess(resultList);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError(e);
         }
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("dateList",resultList);
-        return jsonObject.toJSONString();
     }
 
 
@@ -469,23 +482,25 @@ public class SystemController extends BaseController{
      */
     @RequestMapping(value = "/notice_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String notice_update(String msg, String show_type) {
-
-        EveryDayNotice everyDayNotice=new EveryDayNotice();
-        everyDayNotice.setIs_delete(Const.DELETE);
-        Example example=new Example(everyDayNotice.getClass());
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        everyDayNoticeMapper.updateByExampleSelective(everyDayNotice, example);
-        everyDayNotice.setMsg(msg);
-        everyDayNotice.setIs_delete(Const.NOT_DELETE);
-        everyDayNotice.setId(SnowflakeIdWorker.getInstance().nextId()+"");
-        everyDayNotice.setShow_type(show_type);
-        everyDayNoticeMapper.insert(everyDayNotice);
-
-        JSONObject json=new JSONObject();
-        json.put("success", "200");
-        return json.toJSONString();
+    public ReturnInfo<String> notice_update(String msg, String show_type) {
+        try{
+            EveryDayNotice everyDayNotice=new EveryDayNotice();
+            everyDayNotice.setIs_delete(Const.DELETE);
+            Example example=new Example(everyDayNotice.getClass());
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            everyDayNoticeMapper.updateByExampleSelective(everyDayNotice, example);
+            everyDayNotice.setMsg(msg);
+            everyDayNotice.setIs_delete(Const.NOT_DELETE);
+            everyDayNotice.setId(SnowflakeIdWorker.getInstance().nextId()+"");
+            everyDayNotice.setShow_type(show_type);
+            everyDayNoticeMapper.insert(everyDayNotice);
+            return ReturnInfo.buildSuccess("");
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError(e);
+        }
     }
 
 

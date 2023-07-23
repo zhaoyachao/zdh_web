@@ -85,11 +85,10 @@ public class ZdhEtlLogController extends BaseController{
      * @param log_context 关键字
      * @return
      */
-    @RequestMapping(value = "/etl_task_log_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_log_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_log_list2(String log_context) {
+    public ReturnInfo<List<EtlTaskLogInfo>> etl_task_log_list2(String log_context) {
         try{
-
             List<EtlTaskLogInfo> list = new ArrayList<>();
             Example example = new Example(EtlTaskLogInfo.class);
 
@@ -105,11 +104,11 @@ public class ZdhEtlLogController extends BaseController{
             example.and(criteria);
 
             list = etlTaskLogMapper.selectByExample(example);
-            return JSON.toJSONString(list);
+            return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("", e);
         }
 
     }

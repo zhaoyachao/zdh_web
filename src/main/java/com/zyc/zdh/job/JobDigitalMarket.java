@@ -30,6 +30,7 @@ import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.*;
@@ -96,16 +97,25 @@ public class JobDigitalMarket {
 
     public static void insertLog(StrategyGroupInstance sgi, String level, String msg) {
 
-//        ZdhLogs zdhLogs = new ZdhLogs();
-//        zdhLogs.setJob_id(tli.getJob_id());
-//        Timestamp lon_time = new Timestamp(new Date().getTime());
-//        zdhLogs.setTask_logs_id(tli.getId());
-//        zdhLogs.setLog_time(lon_time);
-//        zdhLogs.setMsg(msg);
-//        zdhLogs.setLevel(level.toUpperCase());
-//        //linkedBlockingDeque.add(zdhLogs);
-//        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-//        zdhLogsService.insert(zdhLogs);
+        ZdhLogs zdhLogs = new ZdhLogs();
+        zdhLogs.setJob_id(sgi.getStrategy_group_id());
+        Timestamp lon_time = new Timestamp(new Date().getTime());
+        zdhLogs.setTask_logs_id(sgi.getId());
+        zdhLogs.setLog_time(lon_time);
+        zdhLogs.setMsg(msg);
+        zdhLogs.setLevel(level.toUpperCase());
+        //linkedBlockingDeque.add(zdhLogs);
+
+        RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
+        Object logType=redisUtil.get("zdh_log_type");
+
+        if(logType == null || logType.toString().equalsIgnoreCase(Const.LOG_MYSQL)){
+            ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
+            zdhLogsService.insert(zdhLogs);
+        }else if(logType.toString().equalsIgnoreCase(Const.LOG_MONGODB)){
+            MongoTemplate mongoTemplate = (MongoTemplate) SpringContext.getBean("mongoTemplate");
+            mongoTemplate.insert(zdhLogs);
+        }
     }
 
     public static void insertLog(StrategyInstance si, String level, String msg) {

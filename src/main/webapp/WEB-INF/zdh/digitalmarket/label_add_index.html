@@ -235,7 +235,7 @@
 <script>
 
 
-    var template = '<div class="ibox-content"  id="template">\n' +
+    var template = '<div class="from-group col-sm-12"  id="template">\n' +
         '<label class="col-sm-1 control-label">参数</label>\n' +
         '        <div class="col-sm-2" >\n' +
         '            <input name="param_code" type="text"\n' +
@@ -279,7 +279,7 @@
         '            </button>\n' +
         '        </div>\n' +
         '\n' +
-        '    </div>\n' +
+        // '    </div>\n' +
         '</div>';
 
     $(document).ready(function () {
@@ -397,9 +397,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
-                        for (let i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        for (let i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>"
                         }
                         //输入数据源类型下拉框
                         $('#data_sources_choose_input').html(str);
@@ -412,16 +416,6 @@
                             // alert($('#data_sources_choose_input').val())
                             $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
                             $("#data_sources_choose_output").trigger("chosen:updated");
-                            if ($('#data_sources_choose_output').find("option:selected").attr("mytype") == 'JDBC') {
-                                init_table_name_output($('#data_sources_choose_output').val());
-
-                                $('#div_data_sources_table_name_output')[0].style.display = 'block';
-                                $('#div_data_sources_file_name_output')[0].style.display = 'block';
-                            } else {
-                                $('#div_data_sources_file_name_output')[0].style.display = 'block';
-                                $('#div_data_sources_table_name_output')[0].style.display = 'none';
-
-                            }
                         });
 
                     },

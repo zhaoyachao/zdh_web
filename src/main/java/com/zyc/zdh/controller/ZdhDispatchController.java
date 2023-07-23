@@ -76,9 +76,9 @@ public class ZdhDispatchController extends BaseController {
      * @param ids ids数组,可为空
      * @return
      */
-    @RequestMapping(value = "/dispatch_task_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/dispatch_task_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String dispatch_task_list(String[] ids) {
+    public ReturnInfo<List<QuartzJobInfo>> dispatch_task_list(String[] ids) {
         try{
             List<QuartzJobInfo> list = new ArrayList<>();
             QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
@@ -90,11 +90,11 @@ public class ZdhDispatchController extends BaseController {
                 list.add(quartzJobMapper.selectByPrimaryKey(quartzJobInfo));
             }
 
-            return JSON.toJSONString(list);
+            return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("查询调度任务列表失败", e);
         }
 
     }
@@ -108,9 +108,9 @@ public class ZdhDispatchController extends BaseController {
      * @param last_status etl任务状态(废弃)
      * @return
      */
-    @RequestMapping(value = "/dispatch_task_list2",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/dispatch_task_list2",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String dispatch_task_list2(String job_context, String etl_context, String status, String last_status) {
+    public ReturnInfo<List<QuartzJobInfo>> dispatch_task_list2(String job_context, String etl_context, String status, String last_status) {
         try{
             List<QuartzJobInfo> list = new ArrayList<>();
             if(!StringUtils.isEmpty(job_context)){
@@ -120,11 +120,11 @@ public class ZdhDispatchController extends BaseController {
                 etl_context=getLikeCondition(etl_context);
             }
             list = quartzJobMapper.selectByParams(getOwner(), job_context, etl_context, status, last_status);
-            return JSON.toJSONString(list);
+            return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("调度任务列表2查询失败", e);
         }
 
     }
@@ -564,11 +564,15 @@ public class ZdhDispatchController extends BaseController {
      */
     @RequestMapping(value = "zdh_instance_list", method = RequestMethod.POST)
     @ResponseBody
-    public String zdh_instance_list() {
-
-        List<String> instances = zdhHaInfoMapper.selectServerInstance();
-
-        return JSON.toJSONString(instances);
+    public ReturnInfo<List<String>> zdh_instance_list() {
+        try{
+            List<String> instances = zdhHaInfoMapper.selectServerInstance();
+            return ReturnInfo.buildSuccess(instances);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("查询执行server失败",e);
+        }
     }
 
     /**

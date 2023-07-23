@@ -176,9 +176,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" +  data[i].id + "\" hassubinfo=\"true\">" + data[i].log_context + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].id + "\" mytype=\"" +  data.result[i].id + "\" hassubinfo=\"true\">" + data.result[i].log_context + "</option>"
                         }
                         $('#flume_job').empty();
                         $("#flume_job").chosen("destroy");

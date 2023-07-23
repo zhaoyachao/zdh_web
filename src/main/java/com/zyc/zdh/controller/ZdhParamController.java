@@ -66,23 +66,29 @@ public class ZdhParamController extends BaseController {
      * @param param_context 关键字
      * @return
      */
-    @RequestMapping(value = "/param_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/param_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String param_list(String param_context) {
-
-        Example example=new Example(ParamInfo.class);
-        Example.Criteria criteria2 = example.createCriteria();
-        criteria2.andEqualTo("is_delete", Const.NOT_DELETE);
-        Example.Criteria criteria = example.createCriteria();
-        if(!StringUtils.isEmpty(param_context)){
-            criteria.orLike("param_name", getLikeCondition(param_context));
-            criteria.orLike("param_context", getLikeCondition(param_context));
-            criteria.orLike("param_value", getLikeCondition(param_context));
-            criteria.orLike("param_type", getLikeCondition(param_context));
-            example.and(criteria);
+    public ReturnInfo<List<ParamInfo>> param_list(String param_context) {
+        try{
+            Example example=new Example(ParamInfo.class);
+            Example.Criteria criteria2 = example.createCriteria();
+            criteria2.andEqualTo("is_delete", Const.NOT_DELETE);
+            Example.Criteria criteria = example.createCriteria();
+            if(!StringUtils.isEmpty(param_context)){
+                criteria.orLike("param_name", getLikeCondition(param_context));
+                criteria.orLike("param_context", getLikeCondition(param_context));
+                criteria.orLike("param_value", getLikeCondition(param_context));
+                criteria.orLike("param_type", getLikeCondition(param_context));
+                example.and(criteria);
+            }
+            List<ParamInfo> paramInfos = paramMapper.selectByExample(example);
+            return ReturnInfo.buildSuccess(paramInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("系统参数列表查询失败", e);
         }
-        List<ParamInfo> paramInfos = paramMapper.selectByExample(example);
-        return JSON.toJSONString(paramInfos);
+
     }
 
     /**

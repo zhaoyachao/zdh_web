@@ -11,16 +11,16 @@
         <!--自定义代码生成插件 -->
         <plugin type="com.zyc.generator.ZdhMybatisPlugin">
             <!--自定义代码生成插件-生成controller,entity,baseMapper, mapper包路径 -->
-            <property name="controllerPackage" value="com.zyc.zdh.controller"/>
+            <property name="controllerPackage" value="com.zyc.zdh.controller.digitalmarket"/>
             <property name="entityPackage" value="com.zyc.zdh.entity"/>
             <!--自定义代码生成插件-生成baseMapper包路径,basemapper的作用,继承注解方式实现代码逻辑,basemapper 和dao层mapper分离可以防止代码覆盖自定义的逻辑 -->
             <property name="baseMapperPackage" value="com.zyc.notscan.base"/>
             <property name="mapperPackage" value="com.zyc.zdh.dao"/>
 
             <!--自定义代码生成插件-生成controller,entity,baseMapper, mapper包, 是否启用配置 -->
-            <property name="enableGeneratorController" value="false"/>
-            <property name="enableGeneratorBaseMapper" value="false"/>
-            <property name="enableGeneratorMapper" value="false"/>
+            <property name="enableGeneratorController" value="true"/>
+            <property name="enableGeneratorBaseMapper" value="true"/>
+            <property name="enableGeneratorMapper" value="true"/>
 
             <!--自定义代码生成插件-生成controller,entity,baseMapper, mapper包, 是否启用覆盖配置 -->
             <property name="overwriteController" value="false"/>
@@ -191,12 +191,12 @@
 <!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--            </table>-->
-                <table tableName="label_info" domainObjectName="LabelInfo" mapperName="BaseLabelMapper">
-                    <property name="useActualColumnNames" value="true" />
-                    <columnOverride column="id" property="id" javaType="java.lang.String"/>
-                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
-                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
-                </table>
+<!--                <table tableName="label_info" domainObjectName="LabelInfo" mapperName="BaseLabelMapper">-->
+<!--                    <property name="useActualColumnNames" value="true" />-->
+<!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--                </table>-->
 <!--                    <table tableName="crowd_rule_info" domainObjectName="CrowdRuleInfo" mapperName="BaseCrowdRuleMapper">-->
 <!--                        <property name="useActualColumnNames" value="true" />-->
 <!--                        <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
@@ -309,5 +309,11 @@
 <!--                        <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                        <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--                    </table>-->
+        <table tableName="risk_event_info" domainObjectName="RiskEventInfo" mapperName="BaseRiskEventMapper">
+            <property name="useActualColumnNames" value="true" />
+            <columnOverride column="id" property="id" javaType="java.lang.String"/>
+            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
+            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
+        </table>
     </context>
 </generatorConfiguration>

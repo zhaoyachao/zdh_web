@@ -247,6 +247,13 @@
         toggle: 'glyphicon-list-alt',
         columns: 'glyphicon-list'
       },
+      responseHandler:function (res) {
+          if(res.code != "200"){
+              layer.msg(res.msg);
+              return ;
+          }
+          return res.result;
+      },
         columns: [{
             checkbox: true,
             field:'state',

@@ -172,7 +172,7 @@
 
         (function () {
 
-            var template = '<div class="ibox-content"  id="template">\n' +
+            var template = '<div class="from-group col-sm-12"  id="template">\n' +
                 '<label class="col-sm-2 control-label">参数</label>\n' +
                 '        <div class="col-sm-2" >\n' +
                 '            <input name="param_code" type="text"\n' +
@@ -204,7 +204,7 @@
                 '                   placeholder="参数值,多个分号分割" class="form-control param_value" aria-required="true" value="zdh_param_value" id="zdh_param_value_id">\n' +
                 '        </div>\n' +
                 '\n' +
-                '    </div>\n' +
+                // '    </div>\n' +
                 '</div>';
 
             var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
@@ -225,9 +225,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].plugin_code + "\" mytype=\"" + data[i].plugin_code + "\" hassubinfo=\"true\">" + data[i].plugin_name + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].plugin_code + "\" mytype=\"" + data.result[i].plugin_code + "\" hassubinfo=\"true\">" + data.result[i].plugin_name + "</option>"
                         }
                         $('#rule_id').empty();
                         $("#rule_id").chosen("destroy");
@@ -257,9 +261,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i]+ "\" mytype=\"" + data[i] + "\" hassubinfo=\"true\">" + data[i] + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i]+ "\" mytype=\"" + data.result[i] + "\" hassubinfo=\"true\">" + data.result[i] + "</option>"
                         }
                         //ETL单任务下拉框
                         $('#zdh_instance').html(str);

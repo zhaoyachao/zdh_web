@@ -216,14 +216,11 @@ function buildTable($el, cells, rows) {
       showColumns: true,
       iconSize: 'outline',
       responseHandler:function (res) {
-          if(!Array.isArray(res)){
-              if(res.code == "201"){
-                  layer.msg(res.msg);
-              }else{
-                  layer.msg("未返回有效数据");
-              }
+          if(res.code != "200"){
+              layer.msg(res.msg);
+              return ;
           }
-          return res;
+          return res.result;
       },
       toolbar: '#exampleTableEventsToolbar',
       icons: {

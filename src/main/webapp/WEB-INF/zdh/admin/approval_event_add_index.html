@@ -134,6 +134,8 @@
                 displayField:"name",
                 resultAsString:true,
                 selectionStacked: true,
+                resultsField: "result",
+
                 //下拉框数据的获得：
                 data: server_context+'/user_names'
             });
@@ -156,9 +158,13 @@
                 data: "",
                 //成功返回
                 success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                    for (var i = 0; i < data.length; i++) {
-                        str += '<option value=\"' + data[i].code + '\" hassubinfo=\"true\">' + data[i].code_name + '</option>';
+                    for (var i = 0; i < data.result.length; i++) {
+                        str += '<option value=\"' + data.result[i].code + '\" hassubinfo=\"true\">' + data.result[i].code_name + '</option>';
                     }
                     $('#code').html(str);
                     $("#code").trigger("chosen:updated");

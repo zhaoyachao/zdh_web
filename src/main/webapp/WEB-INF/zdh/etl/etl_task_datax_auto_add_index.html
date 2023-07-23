@@ -665,9 +665,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
-                        for (let i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        for (let i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>"
                         }
                         //输入数据源类型下拉框
                         $('#data_sources_choose_input').html(str);
@@ -782,13 +786,17 @@
                     data: postData,
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         select_data_sources_table_name_input.emptyValue();
                         var d=new Array();
 
                         var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                        for (var i = 0; i < data.length; i++) {
-                            d.push({value: data[i], name: data[i], mytype: data[i]});
-                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        for (var i = 0; i < data.result.length; i++) {
+                            d.push({value: data.result[i], name: data.result[i], mytype: data.result[i]});
+                            str += '<option value=\"' + data.result[i] + '\" hassubinfo=\"true\">' + data.result[i] + '</option>'
                         }
                         select_data_sources_table_name_input.addSelect(d);
                         select_data_sources_table_name_input.showElem(false);
@@ -835,13 +843,17 @@
                     async: false,
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         select_data_sources_table_name_output.emptyValue();
                         var d=new Array();
 
                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            d.push({value: data[i], name: data[i], mytype: data[i]});
-                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        for (var i = 0; i < data.result.length; i++) {
+                            d.push({value: data.result[i], name: data.result[i], mytype: data.result[i]});
+                            str += '<option value=\"' + data.result[i] + '\" hassubinfo=\"true\">' + data.result[i] + '</option>'
                         }
                         select_data_sources_table_name_output.addSelect(d);
                         select_data_sources_table_name_output.showElem(false);

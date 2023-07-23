@@ -123,13 +123,17 @@
                 data: '',
                 //成功返回
                 success: function (data) {
-                    if(data.username !='' ){
-                        $('#username').val(data.username);
-                        $('#password').val(data.password);
-                        $('#host').val(data.host);
-                        $('#port').val(data.port);
-                        $('#tmp_dir').val(data.tmp_dir);
-                        $('#nginx_dir').val(data.nginx_dir);
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    if(data.result.username !='' ){
+                        $('#username').val(data.result.username);
+                        $('#password').val(data.result.password);
+                        $('#host').val(data.result.host);
+                        $('#port').val(data.result.port);
+                        $('#tmp_dir').val(data.result.tmp_dir);
+                        $('#nginx_dir').val(data.result.nginx_dir);
                     }
                 },
                 //处理完成
@@ -163,6 +167,10 @@
                     //成功返回
                     success: function (data) {
                         $("#btn_up").removeAttr('disabled');
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         layer.msg('更新成功', {
                             time: 5000, //20s后自动关闭
                             btn: ['明白了,5s后自动关闭']

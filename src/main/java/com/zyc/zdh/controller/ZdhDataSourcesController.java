@@ -67,9 +67,9 @@ public class ZdhDataSourcesController extends BaseController{
      * 数据源列表
      * @return
      */
-    @RequestMapping(value = "/data_sources_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_sources_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_sources_list() {
+    public ReturnInfo<List<DataSourcesInfo>> data_sources_list() {
         //获取数据权限
         try{
             String[] tag_group_code = "".split(",");
@@ -95,11 +95,11 @@ public class ZdhDataSourcesController extends BaseController{
                     dsi.setPassword("");
                 }
             }
-            return JSON.toJSONString(list);
+            return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("数据源列表查询失败",e);
         }
 
     }
@@ -111,9 +111,9 @@ public class ZdhDataSourcesController extends BaseController{
      * @param url 连接串
      * @return
      */
-    @RequestMapping(value = "/data_sources_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_sources_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_sources_list2(String data_source_context, String data_source_type, String url) {
+    public ReturnInfo<List<DataSourcesInfo>> data_sources_list2(String data_source_context, String data_source_type, String url) {
 
         try{
             Example example = new Example(DataSourcesInfo.class);
@@ -153,11 +153,11 @@ public class ZdhDataSourcesController extends BaseController{
             }
             List<DataSourcesInfo> list = dataSourcesMapper.selectByParams2(getOwner(), tag_group_code, url, data_source_context, data_source_type);
 
-            return JSON.toJSONString(list);
+            return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("数据源列表2查询失败",e);
         }
 
     }
@@ -169,11 +169,15 @@ public class ZdhDataSourcesController extends BaseController{
      */
     @RequestMapping(value = "/data_sources_info", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public DataSourcesInfo data_sources_info(String id) {
-
-        DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
-
-        return dataSourcesInfo;
+    public ReturnInfo<DataSourcesInfo> data_sources_info(String id) {
+        try{
+            DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
+            return ReturnInfo.buildSuccess(dataSourcesInfo);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("数据源信息查询失败",e);
+        }
     }
 
     /**
@@ -256,10 +260,15 @@ public class ZdhDataSourcesController extends BaseController{
      */
     @RequestMapping(value = "/data_sources_type", method = RequestMethod.GET)
     @ResponseBody
-    public List<String> data_sources_type() {
-        List<String> result = dataSourcesMapper.selectDataSourcesType();
-
-        return result;
+    public ReturnInfo<List<String>> data_sources_type() {
+        try{
+            List<String> result = dataSourcesMapper.selectDataSourcesType();
+            return ReturnInfo.buildSuccess(result);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError(e);
+        }
     }
 
 

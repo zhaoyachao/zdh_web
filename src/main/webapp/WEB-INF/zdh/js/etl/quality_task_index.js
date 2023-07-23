@@ -223,23 +223,20 @@ function buildTable($el, cells, rows) {
 
     $('#exampleTableEvents').bootstrapTable({
       method: "POST",
-      url: "",
+      url: server_context+"/quality_task_list",
       search: true,
       pagination: true,
       showRefresh: true,
       showToggle: true,
       showColumns: true,
       iconSize: 'outline',
-      responseHandler:function (res) {
-          if(!Array.isArray(res)){
-              if(res.code == "201"){
-                  layer.msg(res.msg);
-              }else{
-                  layer.msg("未返回有效数据");
-              }
-          }
-          return res;
-      },
+        responseHandler:function (res) {
+            if(res.code != "200"){
+                layer.msg(res.msg);
+                return ;
+            }
+            return res.result;
+        },
       toolbar: '#exampleTableEventsToolbar',
       icons: {
         refresh: 'glyphicon-repeat',

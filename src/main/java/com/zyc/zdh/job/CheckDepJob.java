@@ -3,6 +3,7 @@ package com.zyc.zdh.job;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.*;
@@ -25,13 +26,14 @@ import java.util.*;
  */
 public class CheckDepJob implements CheckDepJobInterface{
 
+    private static Logger logger = LoggerFactory.getLogger(CheckDepJob.class);
 
     private Object object;
 
     private final static String task_log_status="etl";
-    private static Logger logger = LoggerFactory.getLogger(CheckDepJob.class);
 
-    public static List<ZdhDownloadInfo> zdhDownloadInfos = new ArrayList<>();
+    private final static List<String> checkJobType = Lists.newArrayList("GROUP","JDBC", "HDFS");
+
 
     public static void run(QuartzJobInfo quartzJobInfo) {
         try {
@@ -132,9 +134,9 @@ public class CheckDepJob implements CheckDepJobInterface{
             TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper taskLogInstanceMapper=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
             RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
-            //检查JDBC等依赖类型的任务
+            //执行-检查JDBC等依赖类型的任务
             List<TaskLogInstance> dep_tlis=taskLogInstanceMapper.selectTaskByJobType(new String[] {JobStatus.DISPATCH.getValue(),JobStatus.CREATE.getValue(),
-                    JobStatus.CHECK_DEP.getValue()},new String[]{"JDBC","GROUP","HDFS"});
+                    JobStatus.CHECK_DEP.getValue()},checkJobType.toArray(new String[]{}));
             for(TaskLogInstance tli :dep_tlis) {
                 try{
                     //调度器不相等跳过
@@ -213,8 +215,8 @@ public class CheckDepJob implements CheckDepJobInterface{
             }
 
 
-            //获取所有可执行的非依赖类型子任务
-            List<TaskLogInstance> taskLogInstanceList=taskLogInstanceMapper.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()});
+            //获取所有可执行的非依赖类型子任务(排除了group, jdbc,hdfs 类的任务)
+            List<TaskLogInstance> taskLogInstanceList=taskLogInstanceMapper.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()}, checkJobType.toArray(new String[]{}));
             for(TaskLogInstance tl :taskLogInstanceList){
                 try{
                     if(!tl.getSchedule_id().equalsIgnoreCase(scheduleId)){
@@ -309,13 +311,13 @@ public class CheckDepJob implements CheckDepJobInterface{
                         pti.setCheck_dep_time(DateUtil.getCurrentTime());
                         tl.setProcess_time(pti);
 
-                        //debugInfo(tl);
+                        //group,jdbc,hdfs为同步检查类的任务,
                         if(!tl.getJob_type().equalsIgnoreCase("group") && !tl.getJob_type().equalsIgnoreCase("jdbc")
                                 && !tl.getJob_type().equalsIgnoreCase("hdfs")){
                             JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
                             JobCommon2.chooseJobBean(tl);
                         }else{
-                            //任务组依赖检查直接设置为已完成
+                            //任务组依赖检查直接设置为已完成--理论上此处不会执行,如果执行,代表数据异常
                             tl.setStatus(JobStatus.FINISH.getValue());
                             tl.setProcess("100");
                             JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);

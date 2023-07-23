@@ -225,13 +225,17 @@
                 data: '',
                 //成功返回
                 success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     layui.use("laypage",function() {
                         var laypage = layui.laypage;
 
                         // 加载laypage实例
                         laypage.render({
                             elem: "itemPage", // elem绑定的是容器的id属性值，不需要加#
-                            count: data.total_size, // 总数量，一般是从服务器获取
+                            count: data.result.total_size, // 总数量，一般是从服务器获取
                             limit: 5, // 每页显示的数量
                             limits: [5, 10, 20, 30,100], // 每页条数选项
                             layout: ['prev', 'page', 'next', 'limit', 'count', 'skip'], // 自定义排版
@@ -244,12 +248,12 @@
 
                     $('#data_div').html("");
 
-                    if(data.list.length>0){
+                    if( data.result.list.length>0){
 
-                        for(var i=0;i <data.list.length;i++){
-                            var tmp = template.replace("table_name", data.list[i].data_sources_table_name_input);
-                            tmp = tmp.replaceAll("table_id",data.list[i].id);
-                            tmp = tmp.replaceAll("data_context", data.list[i].issue_context);
+                        for(var i=0;i < data.result.list.length;i++){
+                            var tmp = template.replace("table_name",  data.result.list[i].data_sources_table_name_input);
+                            tmp = tmp.replaceAll("table_id", data.result.list[i].id);
+                            tmp = tmp.replaceAll("data_context",  data.result.list[i].issue_context);
                             $('#data_div').append(tmp);
                         }
 
@@ -306,12 +310,16 @@
                 data: '',
                 //成功返回
                 success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     $('#data_div').html("");
-                    if(data.list.length>0){
-                        for(var i=0;i <data.list.length;i++){
-                            var tmp = template.replace("table_name", data.list[i].data_sources_table_name_input);
-                            tmp = tmp.replaceAll("table_id",data.list[i].id);
-                            tmp = tmp.replaceAll("data_context", data.list[i].issue_context);
+                    if(data.result.list.length>0){
+                        for(var i=0;i <data.result.list.length;i++){
+                            var tmp = template.replace("table_name", data.result.list[i].data_sources_table_name_input);
+                            tmp = tmp.replaceAll("table_id",data.result.list[i].id);
+                            tmp = tmp.replaceAll("data_context", data.result.list[i].issue_context);
                             $('#data_div').append(tmp);
                         }
 

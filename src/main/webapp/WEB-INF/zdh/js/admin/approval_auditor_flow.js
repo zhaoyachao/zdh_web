@@ -149,50 +149,37 @@
           return num;
       }
 
+      var columns = [{
+          checkbox: true,
+          field:'state',
+          sortable:true
+      }, {
+          field: 'id',
+          title: 'ID',
+          sortable:true
+      }, {
+          field: 'flow_context',
+          title: '审批流',
+          sortable:true
+      },{
+          field: 'flow_code',
+          title: '审批节点',
+          sortable:true
+      },{
+          field: 'product_code',
+          title: '产品代码',
+          sortable:true
+      },{
+          field: 'operate',
+          title: '操作',
+          events: operateEvents,//给按钮注册事件
+          width:150,
+          formatter: operateFormatter //表格中增加按钮
+      }];
+      var bootstrapTableConf = getTablePageCommon(server_context+"/approval_auditor_flow_list?tm="+new Date());
+      bootstrapTableConf['columns'] = columns;
 
-      $('#exampleTableEvents').bootstrapTable({
-          method: "POST",
-          url: server_context+"/approval_auditor_flow_list",
-      search: true,
-      pagination: true,
-      showRefresh: true,
-      showToggle: true,
-      showColumns: true,
-      iconSize: 'outline',
-      toolbar: '#exampleTableEventsToolbar',
-      icons: {
-        refresh: 'glyphicon-repeat',
-        toggle: 'glyphicon-list-alt',
-        columns: 'glyphicon-list'
-      },
-        columns: [{
-            checkbox: true,
-            field:'state',
-            sortable:true
-        }, {
-            field: 'id',
-            title: 'ID',
-            sortable:true
-        }, {
-            field: 'flow_context',
-            title: '审批流',
-            sortable:true
-        },{
-            field: 'flow_code',
-            title: '审批节点',
-            sortable:true
-        },{
-            field: 'product_code',
-            title: '产品代码',
-            sortable:true
-        },{
-            field: 'operate',
-            title: '操作',
-            events: operateEvents,//给按钮注册事件
-            width:150,
-            formatter: operateFormatter //表格中增加按钮
-        }]
-    });
+      $('#exampleTableEvents').bootstrapTable(bootstrapTableConf);
 
     function openTabPage(url, title) {
           var wpd = $(window.parent.document);

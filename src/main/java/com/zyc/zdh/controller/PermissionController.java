@@ -186,17 +186,26 @@ public class PermissionController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<Object> user_enable(String[] ids, String enable) {
-
+        String unable_key = Const.ZDH_USER_UNENABLE+"_"+getUser().getUserName();
         try {
             int result = permissionMapper.updateEnable(ids, enable);
             if(enable.equalsIgnoreCase(Const.FALSE)){
-                //禁用用户,redis中写禁用标志 todo 此处待实现
+                //禁用用户,redis中写禁用标志
+                redisUtil.set(unable_key, "");
+            }else{
+                if(redisUtil.exists(unable_key)){
+                    redisUtil.remove(unable_key);
+                }
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", getBaseException());
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
+            if(enable.equalsIgnoreCase(Const.TRUR)){
+                //启用失败,重新添加用户禁用到redis
+                redisUtil.set(unable_key, "");
+            }
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", getBaseException(e));
         }
 
@@ -580,9 +589,16 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/jstree_get_node",method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String jstree_get_node(String id, String text) {
+    public ReturnInfo<ResourceTreeInfo> jstree_get_node(String id, String text) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        return JSON.toJSONString(resourceTreeMapper.selectByPrimaryKey(id));
+        try{
+            ResourceTreeInfo resourceTreeInfo = resourceTreeMapper.selectByPrimaryKey(id);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "",resourceTreeInfo);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查找节点失败",e);
+        }
     }
 
     /**
@@ -752,13 +768,16 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/jstree_permission_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public List<RoleResourceInfo> jstree_permission_list(String id,String code) {
+    public ReturnInfo<List<RoleResourceInfo>> jstree_permission_list(String id,String code) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        List<RoleResourceInfo> uris = new ArrayList<>();
+        try{
+            List<RoleResourceInfo> uris = new ArrayList<>();
 
-        uris = resourceTreeMapper.selectByRoleCode(code);
-
-        return uris;
+            uris = resourceTreeMapper.selectByRoleCode(code);
+            return ReturnInfo.buildSuccess(uris);
+        }catch (Exception e){
+            return ReturnInfo.buildError(e);
+        }
     }
 
     /**
@@ -767,14 +786,19 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "/jstree_permission_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public List<UserResourceInfo2> jstree_permission_list2() {
+    public ReturnInfo<List<UserResourceInfo2>> jstree_permission_list2() {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        List<UserResourceInfo2> uris = new ArrayList<>();
-        String user_account = getUser().getUserName();
-        uris = resourceTreeMapper.selectResourceByUserAccount(user_account);
-        uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
-
-        return uris;
+        try{
+            List<UserResourceInfo2> uris = new ArrayList<>();
+            String user_account = getUser().getUserName();
+            uris = resourceTreeMapper.selectResourceByUserAccount(user_account);
+            uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
+            return ReturnInfo.buildSuccess(uris);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError(e);
+        }
     }
 
 

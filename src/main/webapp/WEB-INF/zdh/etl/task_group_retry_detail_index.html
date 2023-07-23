@@ -169,12 +169,17 @@
                     //成功返回
                     success: function (data) {
 
-                       if(data.length=1){
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+
+                       if(data.result.length=1){
 
                            $('#sub_task_div').empty();
                            $('#sub_task_div').addClass("checkbox");
                            $('#sub_task_div').addClass("i-checks");
-                           var jsplumb_json=JSON.parse(data[0].jsmind_data);
+                           var jsplumb_json=JSON.parse(data.result[0].jsmind_data);
 
                            for(var i=0;i<jsplumb_json.tasks.length;i++){
                                var divId=jsplumb_json.tasks[i].divId;
@@ -416,11 +421,15 @@
                 dataType : "json",
                 async: false,
                 success : function(data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     console.info("task_log_instance_list success");
-                    for(var j=0;j<data.length;j++){
+                    for(var j=0;j<data.result.length;j++){
                         //divId->status
-                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id));
-                        map3.set(map2.get(data[j].id),data[j].status)
+                        console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
+                        map3.set(map2.get(data.result[j].id),data.result[j].status)
                     }
                 },
                 error: function (data) {
@@ -521,9 +530,13 @@
             type : "post",
             dataType : "json",
             success : function(data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
+                }
                 console.info("success");
                 //初始化输入数据源select 组件
-                var run_jsmind_data=data[0].run_jsmind_data;
+                var run_jsmind_data=data.result[0].run_jsmind_data;
                 open_json(run_jsmind_data,s.id)
 
             },

@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * xxx服务1
+ * ${tableDesc}服务
  */
 @Controller
 public class ${ControllerName} extends BaseController {
@@ -40,7 +40,7 @@ public class ${ControllerName} extends BaseController {
     private ${MapperName} ${mapperName};
 
     /**
-     * xx列表首页
+     * ${tableDesc}列表首页
      * @return
      */
     @RequestMapping(value = "/${controller}_index", method = RequestMethod.GET)
@@ -51,30 +51,37 @@ public class ${ControllerName} extends BaseController {
     }
 
     /**
-     * xx列表
+     * ${tableDesc}列表
      * @param context 关键字
      * @return
      */
     @RequestMapping(value = "/${controller}_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public String ${controller}_list(String context) {
-        Example example=new Example(${EntityName}.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        Example.Criteria criteria2=example.createCriteria();
-        if(!StringUtils.isEmpty(context)){
+    public ReturnInfo<List<${EntityName}>> ${controller}_list(String context) {
+        try{
+            Example example=new Example(${EntityName}.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            Example.Criteria criteria2=example.createCriteria();
+            if(!StringUtils.isEmpty(context)){
             criteria2.orLike("context", getLikeCondition(context));
+            }
+            example.and(criteria2);
+
+            List<${EntityName}> ${entityName}s = ${mapperName}.selectByExample(example);
+
+            return ReturnInfo.buildSuccess(${entityName}s);
+        }catch(Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("${tableDesc}列表查询失败", e);
         }
-        example.and(criteria2);
 
-        List<${EntityName}> ${entityName}s = ${mapperName}.selectByExample(example);
-
-        return JSONObject.toJSONString(${entityName}s);
     }
 
     /**
-     * xx新增首页
+     * ${tableDesc}新增首页
      * @return
      */
     @RequestMapping(value = "/${controller}_add_index", method = RequestMethod.GET)
@@ -85,7 +92,7 @@ public class ${ControllerName} extends BaseController {
     }
 
     /**
-     * xx明细页面
+     * ${tableDesc}明细页面
      * @return
      */
     @RequestMapping(value = "/${controller}_detail", method = RequestMethod.GET)
@@ -112,7 +119,7 @@ public class ${ControllerName} extends BaseController {
     }
 
     /**
-     * xx更新
+     * ${tableDesc}更新
      * @param ${entityName}
      * @return
      */
@@ -141,7 +148,7 @@ public class ${ControllerName} extends BaseController {
 
 
     /**
-     * xx新增
+     * ${tableDesc}新增
      * @param ${entityName}
      * @return
      */
@@ -165,7 +172,7 @@ public class ${ControllerName} extends BaseController {
     }
 
     /**
-     * xx删除
+     * ${tableDesc}删除
      * @param ids
      * @return
      */

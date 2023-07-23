@@ -359,9 +359,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>"
                         }
                         //输入数据源类型下拉框
                         $('#data_sources_choose_input').html(str);
@@ -479,10 +483,13 @@
                     data: postData,
                     //成功返回
                     success: function (data) {
-
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i] + '\" hassubinfo=\"true\">' + data.result[i] + '</option>';
                         }
 
                         $('#div_data_sources_file_name_input')[0].style.display = 'none';
@@ -493,7 +500,7 @@
                         //表字段
                         $('#div_data_sources_table_columns')[0].style.display = 'block';
 
-                        $('#data_sources_table_name_input').html(str)
+                        $('#data_sources_table_name_input').html(str);
 
                         $('#data_sources_table_name_input').trigger("chosen:updated");
 
@@ -644,39 +651,43 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
                             console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             // 基础信息加载
-                            $('#issue_context').val(data.issue_context);
-                            $('#create_time').val(getMyDate(data.create_time));
-                            $('#data_source_type_input').val(data.data_source_type_input);
+                            $('#issue_context').val(data.result.issue_context);
+                            $('#create_time').val(getMyDate(data.result.create_time));
+                            $('#data_source_type_input').val(data.result.data_source_type_input);
 
-                            $("#data_sources_choose_input").val(data.data_sources_choose_input);
+                            $("#data_sources_choose_input").val(data.result.data_sources_choose_input);
                             $("#data_sources_choose_input").trigger("chosen:updated");
 
-                            $('#data_sources_file_name_input').val(data.data_sources_table_name_input);
-                            $('#user_name').val(data.user_name);
-                            $('#company').val(data.company);
-                            $('#section').val(data.section);
-                            $('#service').val(data.service);
+                            $('#data_sources_file_name_input').val(data.result.data_sources_table_name_input);
+                            $('#user_name').val(data.result.user_name);
+                            $('#company').val(data.result.company);
+                            $('#section').val(data.result.section);
+                            $('#service').val(data.result.service);
 
                             //字段列表
-                            if(data.data_source_type_input=="JDBC"){
-                                init_table_name(data.data_sources_choose_input);
-                                $('#data_sources_table_columns').val(data.data_sources_table_columns);
-                                $('#data_sources_table_name_input').val(data.data_sources_table_name_input);
+                            if(data.result.data_source_type_input=="JDBC"){
+                                init_table_name(data.result.data_sources_choose_input);
+                                $('#data_sources_table_columns').val(data.result.data_sources_table_columns);
+                                $('#data_sources_table_name_input').val(data.result.data_sources_table_name_input);
                                 $("#data_sources_table_name_input").trigger("chosen:updated");
 
                             }else{
                                 fileShow();
-                                $('#data_sources_file_columns').val(data.data_sources_file_columns)
+                                $('#data_sources_file_columns').val(data.result.data_sources_file_columns)
                             }
 
 
 
                             // 字段信息加载
-                            var column_datas = data.column_datas;
+                            var column_datas = data.result.column_datas;
                             var cd = JSON.parse(column_datas);
                             for (var i = 0; i < cd.length; i++) {
                                 var index = $('#exampleTableEvents').bootstrapTable('getData').length;
@@ -697,9 +708,9 @@
                             }
 
                             //加载标签信息
-                            if(data.label_params!=""){
+                            if(data.result.label_params!=""){
 
-                                for(label_name of data.label_params.split(','))
+                                for(label_name of data.result.label_params.split(','))
                                 $('#label_div button').each(function ( index,element){
                                     console.info(label_name);
                                     if($(this).attr('enum_value') == label_name){

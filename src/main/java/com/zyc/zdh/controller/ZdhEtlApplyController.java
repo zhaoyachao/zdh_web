@@ -80,9 +80,9 @@ public class ZdhEtlApplyController extends BaseController{
      * @param file_name
      * @return
      */
-    @RequestMapping(value = "/etl_task_apply_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_apply_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_list2(String etl_context, String file_name) {
+    public ReturnInfo<List<EtlTaskInfo>> etl_task_apply_list2(String etl_context, String file_name) {
         try{
             List<EtlTaskInfo> list = new ArrayList<>();
             if(!StringUtils.isEmpty(etl_context)){
@@ -92,11 +92,11 @@ public class ZdhEtlApplyController extends BaseController{
                 file_name=getLikeCondition(file_name);
             }
             list = etlApplyTaskMapper.selectByParams(getOwner(), etl_context, file_name);
-            return JSON.toJSONString(list);
+            return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("申请源ETL查询失败", e);
         }
 
     }

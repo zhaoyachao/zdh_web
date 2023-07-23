@@ -23,8 +23,8 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
             <fileNamePattern>logs/out.%d{yyyyMMddHH}.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
-            <maxHistory>30</maxHistory>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>1</maxHistory>
 <!--            <maxFileSize>4096MB</maxFileSize>-->
         </rollingPolicy>
         <encoder>
@@ -39,8 +39,8 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
             <fileNamePattern>logs/error.%d{yyyyMMddHH}.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
-            <maxHistory>30</maxHistory>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>1</maxHistory>
 <!--            <maxFileSize>4096MB</maxFileSize>-->
         </rollingPolicy>
         <encoder>
@@ -58,8 +58,8 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
             <fileNamePattern>logs/info.%d{yyyyMMddHH}.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
-            <maxHistory>30</maxHistory>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>1</maxHistory>
 <!--            <maxFileSize>4096MB</maxFileSize>-->
         </rollingPolicy>
         <encoder>
@@ -76,8 +76,8 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
             <fileNamePattern>logs/sql.%d{yyyyMMddHH}.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
-            <maxHistory>30</maxHistory>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>1</maxHistory>
 <!--            <maxFileSize>4096MB</maxFileSize>-->
         </rollingPolicy>
         <encoder>
@@ -95,8 +95,8 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
             <fileNamePattern>logs/request.%d{yyyyMMddHH}.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
-            <maxHistory>30</maxHistory>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>1</maxHistory>
 <!--            <maxFileSize>4096MB</maxFileSize>-->
         </rollingPolicy>
         <encoder>

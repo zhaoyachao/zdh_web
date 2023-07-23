@@ -694,6 +694,15 @@
   + v5.1.1 [zdh_web]新增ID MAPPING配置能力
   + v5.1.1 [zdh_web]使用redisson模块实现限流功能
   
+  + v5.1.2 [zdh_web]新增账号禁用
+  + v5.1.2 [zdh_web]智能营销模块新增risk插件,用于实时风控
+  + v5.1.2 [zdh_ship]修复经营策略执行图解析功能
+  + v5.1.2 [zdh_web] 数据标识,产品标识,系统设置,血缘分析,审批管理controller层,统一返回数据结构【进行中】
+  + v5.1.2 [zdh_web]修复etl获取数据schema时bug
+  + v5.1.2 [zdh_web]优化代码生成工具,controller层统一返回数据结构
+  
+  
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】

@@ -128,32 +128,6 @@ public class AspectConfig implements Ordered {
                 }
             }
 
-            //限流控制,每个ip,每秒不能超过50个请求
-//			RateLimiter ipRateLimiter = IpUtil.ipRequestCaches.get(ipAddr);
-//			Object ip_limit = redisUtil.get(Const.ZDH_IP_RATELIMIT);
-//			if(ip_limit != null && !StringUtils.isEmpty(ip_limit.toString())){
-//				ipRateLimiter.setRate(Integer.parseInt(ip_limit.toString()));
-//			}
-
-//			RateLimiter userRateLimiter = IpUtil.userRequestCaches.get(getUser()==null?ipAddr:getUser().getUserName());
-//			Object user_limit = redisUtil.get(Const.ZDH_USER_RATELIMIT);
-//			if(user_limit != null && !StringUtils.isEmpty(user_limit.toString())){
-//				userRateLimiter.setRate(Integer.parseInt(user_limit.toString()));
-//			}
-
-//			if(!ipRateLimiter.tryAcquire() || !userRateLimiter.tryAcquire()){
-//				logger.warn("当前IP/账号超出流量限制,IP_LIMIT:{},USER_LIMIT:{},IP:{}, 账号:{}",ipRateLimiter.getRate(),userRateLimiter.getRate(), ipAddr, getUser()==null?"":getUser().getUserName());
-//				//直接返回
-//				if(method.equalsIgnoreCase("get")){
-//					return "403";
-//				}else{
-//					if(returnName.contains("ReturnInfo")){
-//						return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前IP/账号超出流量限制", "当前IP/账号超出流量限制");
-//					}
-//					return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前IP/账号超出流量限制", "当前IP/账号超出流量限制");
-//				}
-//
-//			}
 
             if (getUser() == null) {
                 MDC.put("user_id", UUID.randomUUID().toString());
@@ -526,8 +500,23 @@ public class AspectConfig implements Ordered {
      * @return
      */
     private boolean is_unenable(){
-        RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-        //todo 此处待实现
+        try{
+            if (getUser() == null) {
+                return false;
+            }
+            if (StringUtils.isEmpty(getUser().getUserName())) {
+                return false;
+            }
+
+            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+
+            return redisUtil.exists(Const.ZDH_USER_UNENABLE+"_"+getUser().getUserName());
+
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+        }
+
         return false;
     }
 
@@ -537,21 +526,26 @@ public class AspectConfig implements Ordered {
      * @return
      */
     private boolean is_blacklist() {
-        if (getUser() == null) {
-            return false;
-        }
-        //查询黑名单
-        if (StringUtils.isEmpty(getUser().getUserName())) {
-            return false;
-        }
-        RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-        Object o = redisUtil.get(Const.ZDH_USER_BACKLIST);
-        if (o == null) {
-            return false;
-        }
+        try{
+            if (getUser() == null) {
+                return false;
+            }
+            //查询黑名单
+            if (StringUtils.isEmpty(getUser().getUserName())) {
+                return false;
+            }
+            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+            Object o = redisUtil.get(Const.ZDH_USER_BACKLIST);
+            if (o == null) {
+                return false;
+            }
 
-        if (Arrays.asList(o.toString().split(",")).contains(getUser().getUserName())) {
-            return true;
+            if (Arrays.asList(o.toString().split(",")).contains(getUser().getUserName())) {
+                return true;
+            }
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
         }
 
         return false;
@@ -563,29 +557,35 @@ public class AspectConfig implements Ordered {
      * @return
      */
     private boolean is_pass(String url) {
-        if (url.contains("503")) {
-            return true;
-        }
-        RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-        if (getUser() == null) {
-            return true;
-        }
-        Object pass_user = redisUtil.get(Const.ZDH_IS_PASS_USER);
-        if (pass_user != null) {
-            if (Arrays.asList(pass_user.toString().split(",")).contains(getUser().getUserName())) {
+        try{
+            if (url.contains("503")) {
                 return true;
             }
+            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+            if (getUser() == null) {
+                return true;
+            }
+            Object pass_user = redisUtil.get(Const.ZDH_IS_PASS_USER);
+            if (pass_user != null) {
+                if (Arrays.asList(pass_user.toString().split(",")).contains(getUser().getUserName())) {
+                    return true;
+                }
+            }
+            if (getUser().getUserName().equalsIgnoreCase("admin") || getUser().getUserName().equalsIgnoreCase("zyc")) {
+                return true;
+            }
+            Object o = redisUtil.get(Const.ZDH_IS_PASS);
+            if (o == null) {
+                return true;
+            }
+            if (o != null && o.toString().equalsIgnoreCase("true")) {
+                return true;
+            }
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
         }
-        if (getUser().getUserName().equalsIgnoreCase("admin") || getUser().getUserName().equalsIgnoreCase("zyc")) {
-            return true;
-        }
-        Object o = redisUtil.get(Const.ZDH_IS_PASS);
-        if (o == null) {
-            return true;
-        }
-        if (o != null && o.toString().equalsIgnoreCase("true")) {
-            return true;
-        }
+
         return false;
     }
 
@@ -596,20 +596,25 @@ public class AspectConfig implements Ordered {
      * @return true:命中黑名单,false:为命中黑名单
      */
     private boolean is_ipblacklist(String ip) {
+        try{
+            if (getUser() == null) {
+                return false;
+            }
 
-        if (getUser() == null) {
-            return false;
+            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+
+            Object o = redisUtil.get(Const.ZDH_IP_BACKLIST);
+            if (o == null) {
+                return false;
+            }
+            if (o != null && !o.toString().contains(ip)) {
+                return false;
+            }
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
         }
 
-        RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-
-        Object o = redisUtil.get(Const.ZDH_IP_BACKLIST);
-        if (o == null) {
-            return false;
-        }
-        if (o != null && !o.toString().contains(ip)) {
-            return false;
-        }
         return true;
     }
 

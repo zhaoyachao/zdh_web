@@ -73,25 +73,31 @@ public class ZdhQualityController extends BaseController {
      * @param qualityRuleInfo
      * @return
      */
-    @RequestMapping(value = "/quality_rule_list",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_rule_list",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String quality_rule_list(QualityRuleInfo qualityRuleInfo) {
+    public ReturnInfo<List<QualityRuleInfo>> quality_rule_list(QualityRuleInfo qualityRuleInfo) {
+        try{
+            List<QualityRuleInfo> qualityRuleInfos = new ArrayList<>();
+            Example example = new Example(qualityRuleInfo.getClass());
+            Example.Criteria criteria = example.createCriteria();
+            if (!StringUtils.isEmpty(qualityRuleInfo.getId())) {
+                criteria.andEqualTo("id", qualityRuleInfo.getId());
+            }
+            if (!StringUtils.isEmpty(qualityRuleInfo.getRule_code())) {
+                criteria.andLike("rule_code", getLikeCondition(qualityRuleInfo.getRule_code()));
+            }
+            if (!StringUtils.isEmpty(qualityRuleInfo.getRule_name())) {
+                criteria.andLike("rule_name", getLikeCondition(qualityRuleInfo.getRule_name()));
+            }
 
-        List<QualityRuleInfo> qualityRuleInfos = new ArrayList<>();
-        Example example = new Example(qualityRuleInfo.getClass());
-        Example.Criteria criteria = example.createCriteria();
-        if (!StringUtils.isEmpty(qualityRuleInfo.getId())) {
-            criteria.andEqualTo("id", qualityRuleInfo.getId());
-        }
-        if (!StringUtils.isEmpty(qualityRuleInfo.getRule_code())) {
-            criteria.andLike("rule_code", getLikeCondition(qualityRuleInfo.getRule_code()));
-        }
-        if (!StringUtils.isEmpty(qualityRuleInfo.getRule_name())) {
-            criteria.andLike("rule_name", getLikeCondition(qualityRuleInfo.getRule_name()));
+            qualityRuleInfos = qualityRuleMapper.selectByExample(example);
+            return ReturnInfo.buildSuccess(qualityRuleInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("质量检测规则列表查询失败", e);
         }
 
-        qualityRuleInfos = qualityRuleMapper.selectByExample(example);
-        return JSON.toJSONString(qualityRuleInfos);
     }
 
     /**
@@ -179,29 +185,36 @@ public class ZdhQualityController extends BaseController {
      */
     @RequestMapping(value = "/quality_task_list",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String quality_task_list(QualityTaskInfo qualityTaskInfo, String rule_code) {
+    public ReturnInfo<List<QualityTaskInfo>> quality_task_list(QualityTaskInfo qualityTaskInfo, String rule_code) {
 
-        List<QualityTaskInfo> qualityTaskInfos = new ArrayList<>();
-        Example example = new Example(qualityTaskInfo.getClass());
-        Example.Criteria criteria = example.createCriteria();
-        if (!StringUtils.isEmpty(qualityTaskInfo.getId())) {
-            criteria.andEqualTo("id", qualityTaskInfo.getId());
-        }
-        if (!StringUtils.isEmpty(qualityTaskInfo.getQuality_context())) {
-            Example.Criteria criteria1 = example.createCriteria();
-            criteria1.orLike("quality_context", getLikeCondition(qualityTaskInfo.getQuality_context()));
-            criteria1.orLike("data_sources_table_name_input", getLikeCondition(qualityTaskInfo.getQuality_context()));
-            criteria1.orLike("data_sources_file_name_input", getLikeCondition(qualityTaskInfo.getQuality_context()));
-            criteria1.orLike("data_source_type_input", getLikeCondition(qualityTaskInfo.getQuality_context()));
-            criteria1.orLike("quality_rule_config", getLikeCondition(qualityTaskInfo.getQuality_context()));
-            example.and(criteria1);
-        }
-        if (!StringUtils.isEmpty(rule_code)) {
-            criteria.andLike("quality_rule_config", getLikeCondition(rule_code));
+        try{
+            List<QualityTaskInfo> qualityTaskInfos = new ArrayList<>();
+            Example example = new Example(qualityTaskInfo.getClass());
+            Example.Criteria criteria = example.createCriteria();
+            if (!StringUtils.isEmpty(qualityTaskInfo.getId())) {
+                criteria.andEqualTo("id", qualityTaskInfo.getId());
+            }
+            if (!StringUtils.isEmpty(qualityTaskInfo.getQuality_context())) {
+                Example.Criteria criteria1 = example.createCriteria();
+                criteria1.orLike("quality_context", getLikeCondition(qualityTaskInfo.getQuality_context()));
+                criteria1.orLike("data_sources_table_name_input", getLikeCondition(qualityTaskInfo.getQuality_context()));
+                criteria1.orLike("data_sources_file_name_input", getLikeCondition(qualityTaskInfo.getQuality_context()));
+                criteria1.orLike("data_source_type_input", getLikeCondition(qualityTaskInfo.getQuality_context()));
+                criteria1.orLike("quality_rule_config", getLikeCondition(qualityTaskInfo.getQuality_context()));
+                example.and(criteria1);
+            }
+            if (!StringUtils.isEmpty(rule_code)) {
+                criteria.andLike("quality_rule_config", getLikeCondition(rule_code));
+            }
+
+            qualityTaskInfos = qualityTaskMapper.selectByExample(example);
+            return ReturnInfo.buildSuccess(qualityTaskInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("", e);
         }
 
-        qualityTaskInfos = qualityTaskMapper.selectByExample(example);
-        return JSON.toJSONString(qualityTaskInfos);
     }
 
     /**
@@ -325,9 +338,9 @@ public class ZdhQualityController extends BaseController {
      * @param service
      * @return
      */
-    @RequestMapping(value = "/quota_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quota_list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String quota_list(String column_desc, String column_alias, String company, String section, String service) {
+    public ReturnInfo<List<QuotaInfo>> quota_list(String column_desc, String column_alias, String company, String section, String service) {
 
         try{
             List<QuotaInfo> etlTaskInfos = new ArrayList<>();
@@ -347,11 +360,11 @@ public class ZdhQualityController extends BaseController {
                 service = getLikeCondition(service);
             }
             etlTaskInfos = etlTaskMapper.selectByColumn(getOwner(), column_desc, column_alias, company, section, service);
-            return JSON.toJSONString(etlTaskInfos);
+            return ReturnInfo.buildSuccess(etlTaskInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("指标列表查询失败", e);
         }
 
     }
@@ -365,9 +378,9 @@ public class ZdhQualityController extends BaseController {
      * @param status
      * @return
      */
-    @RequestMapping(value = "/quality_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/quality_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String quality_list(String job_context, String etl_context, String status) {
+    public ReturnInfo<List<QualityInfo>> quality_list(String job_context, String etl_context, String status) {
 
         try{
             List<QualityInfo> qualities = new ArrayList<>();
@@ -388,11 +401,11 @@ public class ZdhQualityController extends BaseController {
 
             qualities = qualityMapper.selectByExample(example);
 
-            return JSON.toJSONString(qualities);
+            return ReturnInfo.buildSuccess(qualities);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("质量报告列表查询失败", e);
         }
     }
 

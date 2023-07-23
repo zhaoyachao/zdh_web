@@ -81,6 +81,14 @@ public class ReturnInfo<T> {
         return ri;
     }
 
+    public static <T> ReturnInfo<T> buildSuccess(T result){
+        ReturnInfo ri=new ReturnInfo<>();
+        ri.code=RETURN_CODE.SUCCESS.getCode();
+        ri.msg=RETURN_CODE.SUCCESS.getDesc();
+        ri.result=result;
+        return ri;
+    }
+
     /**
      * 异常时返回ReturnInfo对象入口
      * @param code
@@ -92,6 +100,21 @@ public class ReturnInfo<T> {
     public static <T> ReturnInfo<T> build(String code,String msg,Exception e){
         ReturnInfo ri=new ReturnInfo<>();
         ri.code=code;
+        ri.msg=msg;
+        ri.e=e;
+        return ri;
+    }
+
+    public static <T> ReturnInfo<T> buildError(Exception e){
+        ReturnInfo ri=new ReturnInfo<>();
+        ri.code=RETURN_CODE.FAIL.getCode();
+        ri.msg=RETURN_CODE.FAIL.getDesc();
+        ri.e=e;
+        return ri;
+    }
+    public static <T> ReturnInfo<T> buildError(String msg, Exception e){
+        ReturnInfo ri=new ReturnInfo<>();
+        ri.code=RETURN_CODE.FAIL.getCode();
         ri.msg=msg;
         ri.e=e;
         return ri;

@@ -110,7 +110,7 @@
                 <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="monitor.html" frameborder="0" data-id="monitor.html" seamless></iframe>
             </div>
             <div class="footer">
-                <div class="pull-right">&copy; 2014-2022 <a href="" target="_blank"></a>
+                <div class="pull-right" id="web_date">&copy; 2014-2023 <a href="" target="_blank"></a>
                 </div>
             </div>
         </div>
@@ -361,73 +361,73 @@
                 dataType : "json",
                 async:'false',
                 success : function(data) {
-                    if(data.code == "201"){
+                    if(data.code != "200"){
                         layer.msg(data.msg);
                         return ;
                     }
                     //当前最大支持层级数是10级
                     for(var j=2;j<=10;j++){
-                        for(var i=0;i<data.length;i++){
-                                if(data[i].level == j) {
-                                    var level_tmp = data[i].level;
+                        for(var i=0;i<data.result.length;i++){
+                                if(data.result[i].level == j) {
+                                    var level_tmp = data.result[i].level;
 
                                     var span_notice_title="";
-                                    if(data[i].notice_title != ''){
-                                        span_notice_title = "<span class=\"label label-danger pull-right\">"+data[i].notice_title+"</span>";
+                                    if(data.result[i].notice_title != ''){
+                                        span_notice_title = "<span class=\"label label-danger pull-right\">"+data.result[i].notice_title+"</span>";
                                     }
 
                                     ul_class = "nav nav-second-level";
                                     li_class = '';
                                     //获取level
-                                    if(data[i].level == "3"){
+                                    if(data.result[i].level == "3"){
                                         ul_class = "nav nav-third-level";
                                     }
-                                    if(data[i].level == "4"){
+                                    if(data.result[i].level == "4"){
                                         ul_class = "nav nav-four-level";
                                     }
-                                    if(data[i].level == "5"){
+                                    if(data.result[i].level == "5"){
                                         ul_class = "nav nav-five-level";
 
                                     }
-                                    if(data[i].level >= "6"){
+                                    if(data.result[i].level >= "6"){
                                         ul_class = "nav nav-five-level";
                                     }
 
                                     var li_tmplete =
                                         "<li class=\""+li_class+"\">" +
-                                        "<a class=\"J_menuItem\" href=\"" + data[i].url + "\"><i class=\""+ data[i].icon+"\"></i>" +
-                                        "<span class=\"nav-label\">"+data[i].text+"</span>"+span_notice_title+"</a>" +
+                                        "<a class=\"J_menuItem\" href=\"" + data.result[i].url + "\"><i class=\""+ data.result[i].icon+"\"></i>" +
+                                        "<span class=\"nav-label\">"+data.result[i].text+"</span>"+span_notice_title+"</a>" +
                                         "</li>";
 
                                     //console.info(data[i].text+"==="+data[i].url+"==="+data[i].level+"==="+data[i].parent);
                                     //目录
-                                    if(data[i].resource_type == "1"){
+                                    if(data.result[i].resource_type == "1"){
 
                                         var ul_tmplate =
                                             "<li>"+
-                                            "<a href=\"\#\"><i class=\""+data[i].icon+"\"></i><span class=\"nav-label\">"+data[i].text+"</span>"+span_notice_title+"</a>"+
-                                            "<ul class=\""+ul_class+"\" id=\"ul_"+data[i].resource_id+"\">"+
+                                            "<a href=\"\#\"><i class=\""+data.result[i].icon+"\"></i><span class=\"nav-label\">"+data.result[i].text+"</span>"+span_notice_title+"</a>"+
+                                            "<ul class=\""+ul_class+"\" id=\"ul_"+data.result[i].resource_id+"\">"+
                                             "</ul>"+
                                             "</li>";
                                         if( level_tmp > "2") {
-                                            $('#ul_'+data[i].parent).append(ul_tmplate);
-                                            $('#'+"ul_"+data[i].parent).metisMenu();
+                                            $('#ul_'+data.result[i].parent).append(ul_tmplate);
+                                            $('#'+"ul_"+data.result[i].parent).metisMenu();
                                         }else{
                                             $('#side-menu').append(ul_tmplate);
                                             $('#side-menu').metisMenu();
                                         }
 
-                                    }else if(data[i].resource_type == "4"){
+                                    }else if(data.result[i].resource_type == "4"){
                                         //函数
                                         li_tmplete =
-                                            "<li><a href=\"javascript:void(0);\" onclick=\"" +data[i].url.split("function:")[1] +"\">" + "<i class=\""+ data[i].icon+"\"></i>"+data[i].text+"</a>";
-                                        $('#ul_'+data[i].parent).append(li_tmplete);
-                                        $('#'+"ul_"+data[i].parent).metisMenu();
-                                    }else if(data[i].resource_type == "2"){
+                                            "<li><a href=\"javascript:void(0);\" onclick=\"" +data.result[i].url.split("function:")[1] +"\">" + "<i class=\""+ data.result[i].icon+"\"></i>"+data.result[i].text+"</a>";
+                                        $('#ul_'+data.result[i].parent).append(li_tmplete);
+                                        $('#'+"ul_"+data.result[i].parent).metisMenu();
+                                    }else if(data.result[i].resource_type == "2"){
                                         //菜单
-                                        if($('#ul_'+data[i].parent).length>0){
-                                            $('#ul_'+data[i].parent).append(li_tmplete);
-                                            $('#'+"ul_"+data[i].parent).metisMenu();
+                                        if($('#ul_'+data.result[i].parent).length>0){
+                                            $('#ul_'+data.result[i].parent).append(li_tmplete);
+                                            $('#'+"ul_"+data.result[i].parent).metisMenu();
                                         }else{
                                             //if(data[i].level==2){
                                                 //父节点存在,且是2级目录,才可显示,3级菜单必须有2级目录
@@ -774,7 +774,10 @@
             });
 
 
-
+            //动态修改版权时间
+            var date = new Date();
+            var year = date.getFullYear();
+            $('#web_date').text('©'+ "2018-"+year);
 
         })(document, window, jQuery);
 

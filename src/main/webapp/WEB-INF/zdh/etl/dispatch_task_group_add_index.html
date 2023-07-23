@@ -1030,6 +1030,7 @@
             displayField:"name",
             resultAsString:true,
             selectionStacked: true,
+            resultsField: "result",
             //下拉框数据的获得：
             data: server_context+'/user_names'
         });
@@ -1285,25 +1286,29 @@
                     type : "post",
                     dataType : "json",
                     success : function(data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         console.info("success");
                        // layer.alert(JSON.stringify(data[0]))
                         //获取调度任务说明
-                        var job_context=data[0].job_context;
+                        var job_context=data.result[0].job_context;
                         $("#job_context").val(job_context);
 
 
                         //任务类型
-                        var job_type=data[0].job_type;
+                        var job_type=data.result[0].job_type;
                         //初始化输入数据源select 组件
                         $("#job_type").val(job_type);
-                        var jsmind_data=data[0].jsmind_data;
+                        var jsmind_data=data.result[0].jsmind_data;
                         open_json(jsmind_data);
 
                         //表达式expr
-                        var expr=data[0].expr;
+                        var expr=data.result[0].expr;
                         $("#expr").val(expr);
 
-                        var use_quartz_time=data[0].use_quartz_time;
+                        var use_quartz_time=data.result[0].use_quartz_time;
                         console.info("use_quartz_time:"+use_quartz_time);
                         if(use_quartz_time=="on"){
                             $('#use_quartz_time').iCheck('check');
@@ -1311,114 +1316,114 @@
                             $('#use_quartz_time').iCheck('uncheck');
                         }
 
-                        var time_diff=data[0].time_diff;
+                        var time_diff=data.result[0].time_diff;
                         if(time_diff!=''){
                             $("#time_diff").val(time_diff);
                         }
                         //开始时间
-                        var start_time=data[0].start_time;
+                        var start_time=data.result[0].start_time;
                         if(start_time!='' && typeof(start_time) !="undefined"){
                             $("#start_time").val(getMyDate(start_time));
                         }
 
                         //结束时间
-                        var end_time=data[0].end_time;
+                        var end_time=data.result[0].end_time;
                         if(end_time!='' && typeof(end_time) !="undefined"){
                             $("#end_time").val(getMyDate(end_time));
                         }
 
-                        var step_size=data[0].step_size;
+                        var step_size=data.result[0].step_size;
                         if(step_size!=''){
                             $("#step_size").val(step_size);
                         }
 
                         //执行模式job_model
-                        var job_model=data[0].job_model;
+                        var job_model=data.result[0].job_model;
                         //初始化输入数据源select 组件
                         $("#job_model").val(job_model);
                         $("#job_model").trigger("chosen:updated");
 
-                        var misfire=data[0].misfire;
+                        var misfire=data.result[0].misfire;
                         //初始化输入数据源select 组件
                         $("#misfire").val(misfire);
                         $("#misfire").trigger("chosen:updated");
 
-                        var plan_count=data[0].plan_count;
+                        var plan_count=data.result[0].plan_count;
                         $("#plan_count").val(plan_count);
 
-                        var interval_time=data[0].interval_time;
+                        var interval_time=data.result[0].interval_time;
                         $("#interval_time").val(interval_time);
 
                         //调度任务依赖
-                        var job_ids=data[0].job_ids;
-                        if(job_ids!='' && typeof(job_ids) !="undefined"){
-                            //初始化输入数据源select 组件
-                            $("#job_ids").val(job_ids.split(","));
-                            $("#job_ids").trigger("chosen:updated");
-                        }
+                        // var job_ids=data.result[0].job_ids;
+                        // if(job_ids!='' && typeof(job_ids) !="undefined"){
+                        //     //初始化输入数据源select 组件
+                        //     $("#job_ids").val(job_ids.split(","));
+                        //     $("#job_ids").trigger("chosen:updated");
+                        // }
 
-                        var jump_dep=data[0].jump_dep;
-                        console.info("jump_dep:"+jump_dep);
-                        if(jump_dep=="on"){
-                            $('#jump_dep').iCheck('check');
-                        }
+                        // var jump_dep=data.result[0].jump_dep;
+                        // console.info("jump_dep:"+jump_dep);
+                        // if(jump_dep=="on"){
+                        //     $('#jump_dep').iCheck('check');
+                        // }
 
                         //status
-                        var status=data[0].status;
+                        var status=data.result[0].status;
                         $("#status").val(status);
 
                         //获取输入源数据其他参数
-                        var params=data[0].params;
+                        var params=data.result[0].params;
                         $("#params").val(params);
 
-                        var last_status=data[0].last_status;
+                        var last_status=data.result[0].last_status;
                         console.info("last_status:"+last_status);
                         $("#last_status").val(last_status);
                         $("#last_status").trigger("chosen:updated");
 
-                        var last_time=data[0].last_time;
+                        var last_time=data.result[0].last_time;
 
                         if(last_time!='' && typeof(last_time) !="undefined")
                         $("#last_time").val(getMyDate(last_time));
 
-                        var notice_error=data[0].notice_error;
+                        var notice_error=data.result[0].notice_error;
                         console.info("notice_error:"+notice_error);
                         if(notice_error=="on"){
                             $('#notice_error').iCheck('check');
                         }
-                        var notice_finish=data[0].notice_finish;
+                        var notice_finish=data.result[0].notice_finish;
                         console.info("notice_finish:"+notice_finish);
                         if(notice_finish=="on"){
                             $('#notice_finish').iCheck('check');
                         }
-                        var notice_timeout=data[0].notice_timeout;
+                        var notice_timeout=data.result[0].notice_timeout;
                         console.info("notice_timeout:"+notice_timeout);
                         if(notice_timeout=="on"){
                             $('#notice_timeout').iCheck('check');
                         }
 
-                        var alarm_email=data[0].alarm_email;
+                        var alarm_email=data.result[0].alarm_email;
                         console.info("email_alarm:"+alarm_email);
                         if(alarm_email=="on"){
                             $('#alarm_email').iCheck('check');
                         }
 
-                        var alarm_sms=data[0].alarm_sms;
+                        var alarm_sms=data.result[0].alarm_sms;
                         console.info("alarm_sms:"+alarm_sms);
                         if(alarm_sms=="on"){
                             $('#alarm_sms').iCheck('check');
                         }
 
-                        var alarm_zdh=data[0].alarm_zdh;
+                        var alarm_zdh=data.result[0].alarm_zdh;
                         console.info("alarm_zdh:"+alarm_zdh);
                         if(alarm_zdh=="on"){
                             $('#alarm_zdh').iCheck('check');
                         }
 
-                        var alarm_account=data[0].alarm_account;
+                        var alarm_account=data.result[0].alarm_account;
                         window.addressIdMagicSuggest.setValue(alarm_account.split(','));
 
-                        var time_out=data[0].time_out;
+                        var time_out=data.result[0].time_out;
                         $("#time_out").val(time_out);
 
                     },

@@ -199,13 +199,17 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     console.info("success");
-                    if(data.length>0){
-                        for(var i=0;i<data.length;i++){
-                            tmp_source_json[data[i].id]=data[i].source_json;
+                    if(data.result.length>0){
+                        for(var i=0;i<data.result.length;i++){
+                            tmp_source_json[data.result[i].id]=data.result[i].source_json;
                         }
                     }
-                    open_jsmind(data);
+                    open_jsmind(data.result);
                     layer.msg("分析完成");
                 },
                 error: function (data) {

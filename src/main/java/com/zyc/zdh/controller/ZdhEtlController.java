@@ -91,7 +91,7 @@ public class ZdhEtlController extends BaseController{
      */
     @RequestMapping(value = "/etl_task_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_list2(String etl_context, String file_name) {
+    public ReturnInfo<List<EtlTaskInfo>> etl_task_list2(String etl_context, String file_name) {
         try{
             List<EtlTaskInfo> list = new ArrayList<>();
             if(!StringUtils.isEmpty(etl_context)){
@@ -101,11 +101,11 @@ public class ZdhEtlController extends BaseController{
                 file_name=getLikeCondition(file_name);
             }
             list = etlTaskMapper.selectByParams(getOwner(),etl_context,file_name);
-            return JSON.toJSONString(list);
+            return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("单源ETL任务列表查询失败", e);
         }
 
     }
@@ -297,31 +297,31 @@ public class ZdhEtlController extends BaseController{
      * @param id 数据源id
      * @return
      */
-    @RequestMapping(value = "/etl_task_tables", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_tables", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_tables(String id) {
-
-        DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
-
-        String jsonArrayStr = tables(dataSourcesInfo);
-
-        if(StringUtils.isEmpty(jsonArrayStr)){
-            return JSON.toJSONString(new JSONObject());
+    public ReturnInfo<List<String>> etl_task_tables(String id) {
+        try{
+            DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
+            List<String> tables = tables(dataSourcesInfo);
+            return ReturnInfo.buildSuccess(tables);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("获取数据源表列表失败",e);
         }
-        System.out.println(jsonArrayStr);
-        return jsonArrayStr;
+
     }
 
-    private String tables(DataSourcesInfo dataSourcesInfo) {
+    private List<String> tables(DataSourcesInfo dataSourcesInfo) {
         debugInfo(dataSourcesInfo);
         String url = dataSourcesInfo.getUrl();
 
         try {
-            return JSON.toJSONString(new DBUtil().R3(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
-                    ""));
+            return new DBUtil().R3(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
+                    "");
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            return "";
+            logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            return new ArrayList<>();
         }
 
 

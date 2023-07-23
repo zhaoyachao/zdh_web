@@ -176,9 +176,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].job_id + "\" mytype=\"" +  data[i].job_id + "\" hassubinfo=\"true\">" + data[i].job_context + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].job_id + "\" mytype=\"" +  data.result[i].job_id + "\" hassubinfo=\"true\">" + data.result[i].job_context + "</option>"
                         }
                         $('#group_job').empty();
                         $("#group_job").chosen("destroy");

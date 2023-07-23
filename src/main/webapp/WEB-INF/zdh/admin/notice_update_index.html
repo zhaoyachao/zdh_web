@@ -155,6 +155,10 @@
                 //成功返回
                 success: function (data) {
                     $("#update_zdh").removeAttr('disabled');
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     layer.msg("更新完成");
                     closeTab()
                 },

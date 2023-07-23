@@ -28,7 +28,17 @@
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/data_tag_list?"+$("#data_tag_form").serialize()+"&tm="+new Date(),
                       contentType: "application/json;charset=utf-8",
-                      dataType: "json"
+                      dataType: "json",
+                      queryParams: function (params) {
+                          // 此处使用了LayUi组件 是为加载层
+                          loadIndex = layer.load(1);
+                          let resRepor = {
+                              //服务端分页所需要的参数
+                              limit: params.limit,
+                              offset: params.offset
+                          };
+                          return resRepor;
+                      }
                   });
               }
           });
@@ -79,7 +89,17 @@
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/data_tag_list?"+$("#data_tag_form").serialize(),
                       contentType: "application/json;charset=utf-8",
-                      dataType: "json"
+                      dataType: "json",
+                      queryParams: function (params) {
+                          // 此处使用了LayUi组件 是为加载层
+                          loadIndex = layer.load(1);
+                          let resRepor = {
+                              //服务端分页所需要的参数
+                              limit: params.limit,
+                              offset: params.offset
+                          };
+                          return resRepor;
+                      }
                   });
               },
               error: function (data) {
@@ -109,7 +129,17 @@
                       $('#exampleTableEvents').bootstrapTable('refresh', {
                           url: server_context+"/data_tag_list?"+$("#data_tag_form").serialize()+"&tm="+new Date(),
                           contentType: "application/json;charset=utf-8",
-                          dataType: "json"
+                          dataType: "json",
+                          queryParams: function (params) {
+                              // 此处使用了LayUi组件 是为加载层
+                              loadIndex = layer.load(1);
+                              let resRepor = {
+                                  //服务端分页所需要的参数
+                                  limit: params.limit,
+                                  offset: params.offset
+                              };
+                              return resRepor;
+                          }
                       });
                   }
               });
@@ -174,74 +204,33 @@
       }
 
 
-      $('#exampleTableEvents').bootstrapTable({
-          method: "POST",
-          url: "",
-      search: true,
-      pagination: true,
-      showRefresh: true,
-      showToggle: true,
-      showColumns: true,
-      iconSize: 'outline',
-      toolbar: '#exampleTableEventsToolbar',
-      icons: {
-        refresh: 'glyphicon-repeat',
-        toggle: 'glyphicon-list-alt',
-        columns: 'glyphicon-list'
-      },
-        columns: [{
-            checkbox: true,
-            field:'state',
-            sortable:true
-        }, {
-            field: 'id',
-            title: 'ID',
-            sortable:false
-        }, {
-            field: 'tag_code',
-            title: '标识code',
-            sortable:false
-        },{
-            field: 'tag_name',
-            title: '标识名称',
-            sortable:false
-        },{
-            field: 'operate',
-            title: '操作',
-            events: operateEvents,//给按钮注册事件
-            width:150,
-            formatter: operateFormatter //表格中增加按钮
-        }]
-    });
+      var columns =  [{
+          checkbox: true,
+          field:'state',
+          sortable:true
+      }, {
+          field: 'id',
+          title: 'ID',
+          sortable:false
+      }, {
+          field: 'tag_code',
+          title: '标识code',
+          sortable:false
+      },{
+          field: 'tag_name',
+          title: '标识名称',
+          sortable:false
+      },{
+          field: 'operate',
+          title: '操作',
+          events: operateEvents,//给按钮注册事件
+          width:150,
+          formatter: operateFormatter //表格中增加按钮
+      }];
 
-    function openTabPage(url, title) {
-          var wpd = $(window.parent.document);
-          var mainContent = wpd.find('.J_mainContent');
-          var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
-          var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
-          pageTabs.find(".J_menuTab.active").removeClass("active");
-          mainContent.find("iframe").css("display", "none");
-          if (thisIframe.length > 0) {	// 选项卡已打开
-              thisIframe.css("display", "inline");
-              pageTabs.find(".J_menuTab[data-id='" + url + "']").addClass("active");
-          } else {
-              var menuItem = wpd.find("a.J_menuItem[href='" + url + "']");
-              var dataIndex = title == undefined ? menuItem.attr("data-index") : '9999';
-              var _title = title == undefined ? menuItem.find('.nav-label').text() : title;
-              var iframe = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + url + '" frameborder="0" data-id="' + url
-                  + '" seamless="" style="display: inline;"></iframe>';
-              pageTabs.append(
-                  ' <a href="javascript:;" class="J_menuTab active" data-id="' + url + '">' + _title + ' <i class="fa fa-times-circle"></i></a>');
-              mainContent.append(iframe);
-              //显示loading提示
-              var loading = top.layer.load();
-              mainContent.find('iframe:visible').load(function () {
-                  //iframe加载完成后隐藏loading提示
-                  top.layer.close(loading);
-              });
-          }
-
-      }
+      var bootstrapTableConf = getTablePageCommon(server_context+"/data_tag_list?"+$("#data_tag_form").serialize()+"&tm="+new Date());
+      bootstrapTableConf['columns'] = columns;
+      $('#exampleTableEvents').bootstrapTable(bootstrapTableConf);
 
     var $result = $('#examplebtTableEventsResult');
   })();

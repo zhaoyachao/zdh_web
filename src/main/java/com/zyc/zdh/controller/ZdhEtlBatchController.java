@@ -96,9 +96,9 @@ public class ZdhEtlBatchController extends BaseController {
      * @param etl_context 关键字
      * @return
      */
-    @RequestMapping(value = "/etl_task_batch_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_batch_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_batch_list(String etl_context) {
+    public ReturnInfo<List<EtlTaskBatchInfo>> etl_task_batch_list(String etl_context) {
         try{
             List<EtlTaskBatchInfo> list = new ArrayList<>();
             Example example = new Example(EtlTaskBatchInfo.class);
@@ -115,11 +115,11 @@ public class ZdhEtlBatchController extends BaseController {
             }
             example.and(criteria);
             list = etlTaskBatchMapper.selectByExample(example);
-            return JSON.toJSONString(list);
+            return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("批量生成任务查询列表失败", e);
         }
 
     }

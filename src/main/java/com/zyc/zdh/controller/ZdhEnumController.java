@@ -76,18 +76,24 @@ public class ZdhEnumController extends BaseController{
      */
     @RequestMapping(value = "/enum_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public List<EnumInfo> enum_list(String enum_context) {
-        List<EnumInfo> list = new ArrayList<>();
-        Example example=new Example(EnumInfo.class);
-        Example.Criteria criteria= example.createCriteria();
-        if(!StringUtils.isEmpty(enum_context)){
-            criteria.orLike("enum_context", getLikeCondition(enum_context));
-            criteria.orLike("enum_json", getLikeCondition(enum_context));
-            criteria.orLike("enum_code", getLikeCondition(enum_context));
-        }
+    public ReturnInfo<List<EnumInfo>> enum_list(String enum_context) {
+        try{
+            List<EnumInfo> list = new ArrayList<>();
+            Example example=new Example(EnumInfo.class);
+            Example.Criteria criteria= example.createCriteria();
+            if(!StringUtils.isEmpty(enum_context)){
+                criteria.orLike("enum_context", getLikeCondition(enum_context));
+                criteria.orLike("enum_json", getLikeCondition(enum_context));
+                criteria.orLike("enum_code", getLikeCondition(enum_context));
+            }
 
-        list = enumMapper.selectByExample(example);
-        return list;
+            list = enumMapper.selectByExample(example);
+            return ReturnInfo.buildSuccess(list);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("枚举列表查询失败", e);
+        }
     }
 
     /**

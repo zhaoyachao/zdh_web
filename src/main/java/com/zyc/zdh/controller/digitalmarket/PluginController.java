@@ -58,21 +58,28 @@ public class PluginController extends BaseController {
      */
     @RequestMapping(value = "/plugin_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String plugin_list(String plugin_name) {
-        Example example=new Example(PluginInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        Example.Criteria criteria2=example.createCriteria();
-        if(!StringUtils.isEmpty(plugin_name)){
-            criteria2.orLike("plugin_code", getLikeCondition(plugin_name));
-            criteria2.orLike("plugin_name", getLikeCondition(plugin_name));
-            criteria2.orLike("plugin_json", getLikeCondition(plugin_name));
+    public ReturnInfo<List<PluginInfo>> plugin_list(String plugin_name) {
+        try{
+            Example example=new Example(PluginInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            Example.Criteria criteria2=example.createCriteria();
+            if(!StringUtils.isEmpty(plugin_name)){
+                criteria2.orLike("plugin_code", getLikeCondition(plugin_name));
+                criteria2.orLike("plugin_name", getLikeCondition(plugin_name));
+                criteria2.orLike("plugin_json", getLikeCondition(plugin_name));
+            }
+            example.and(criteria2);
+
+            List<PluginInfo> pluginInfos = pluginMapper.selectByExample(example);
+
+            return ReturnInfo.buildSuccess(pluginInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("插件列表查询失败", e);
         }
-        example.and(criteria2);
 
-        List<PluginInfo> pluginInfos = pluginMapper.selectByExample(example);
-
-        return JSONObject.toJSONString(pluginInfos);
     }
 
     /**

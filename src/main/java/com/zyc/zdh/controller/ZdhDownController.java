@@ -57,20 +57,20 @@ public class ZdhDownController extends BaseController{
      * @param file_name 文件名
      * @return
      */
-    @RequestMapping(value = "/download_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/download_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String download_list(String file_name) {
+    public ReturnInfo<List<ZdhDownloadInfo>> download_list(String file_name) {
         try{
             List<ZdhDownloadInfo> list = new ArrayList<>();
             if(!StringUtils.isEmpty(file_name)){
                 file_name=getLikeCondition(file_name);
             }
             list = zdhDownloadMapper.slectByOwner(getOwner(), file_name);
-            return JSON.toJSONString(list);
+            return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("文件下载列表查询失败", e);
         }
 
     }

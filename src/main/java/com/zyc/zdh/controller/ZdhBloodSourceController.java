@@ -132,9 +132,9 @@ public class ZdhBloodSourceController extends BaseController{
      * @param stream_type 上游/下游  1：上游,2：下游, 3：全部
      * @return
      */
-    @RequestMapping(value = "/blood_source_detail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/blood_source_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String blood_source_detail(String input, String input_md5, String level, String stream_type) {
+    public ReturnInfo<JSONArray> blood_source_detail(String input, String input_md5, String level, String stream_type) {
         DAG dag=new DAG();
         Map<String, String> source_json = new HashMap<>();
         JSONObject jsonObject=new JSONObject();
@@ -148,7 +148,7 @@ public class ZdhBloodSourceController extends BaseController{
                 source_json.put(bsi.getOutput()+"__-__"+bsi.getOutput_md5(), bsi.getOutput_json());
                 if(!result){
                     jsonObject.put("result","失败");
-                    return jsonObject.toJSONString();
+                    return ReturnInfo.buildError(new Exception("解析失败"));
                 }
             }
         }
@@ -227,7 +227,7 @@ public class ZdhBloodSourceController extends BaseController{
             }
         }
 
-        return jsonArray.toJSONString();
+        return ReturnInfo.buildSuccess(jsonArray);
     }
 
     /**

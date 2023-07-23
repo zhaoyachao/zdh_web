@@ -459,13 +459,17 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str_out = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
                         var str_input = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
-                        for (var i = 0; i < data.length; i++) {
-                            if(data[i].data_source_type == "JDBC"){
-                                str_input += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>";
+                        for (var i = 0; i < data.result.length; i++) {
+                            if(data.result[i].data_source_type == "JDBC"){
+                                str_input += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>";
                             }
-                            str_out += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>";
+                            str_out += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>";
                         }
 
                         //输入数据源下拉框
@@ -518,7 +522,10 @@
                     data: postData,
                     //成功返回
                     success: function (data) {
-
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
                         for (var i = 0; i < data.length; i++) {
                             str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
@@ -626,40 +633,44 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
                             console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取输入数据源id
-                            var data_sources_choose_input = data[0].data_sources_choose_input;
+                            var data_sources_choose_input = data.result[0].data_sources_choose_input;
                             console.info("参数赋值:输入数据源id:" + data_sources_choose_input);
 
 
                             //获取ETL 说明
-                            var etl_context = data[0].etl_context;
+                            var etl_context = data.result[0].etl_context;
                             $("#etl_context").val(etl_context);
 
-                            var create_time = data[0].create_time;
+                            var create_time = data.result[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
 
 //                            //初始化输入数据源select 组件
-                            $("#engine_type").val(data[0].engine_type);
+                            $("#engine_type").val(data.result[0].engine_type);
                             $("#engine_type").trigger("chosen:updated");
 
                             $("#data_sources_choose_input").val(data_sources_choose_input);
                             $("#data_sources_choose_input").trigger("chosen:updated");
 
                             //获取输入数据源类型
-                            var data_source_type_input = data[0].data_source_type_input;
+                            var data_source_type_input = data.result[0].data_source_type_input;
                             $("#data_source_type_input").val(data_source_type_input);
 
-                            var etl_sql = data[0].etl_sql;
+                            var etl_sql = data.result[0].etl_sql;
                             //$("#etl_sql").val(etl_sql);
                             console.info(etl_sql);
                             window.editor.setValue(etl_sql);
 
                             //获取输出源数据其他参数
-                            var data_sources_params_input = data[0].data_sources_params_input;
+                            var data_sources_params_input = data.result[0].data_sources_params_input;
                             window.editor_data_sources_params_input.setValue(data_sources_params_input);
 
 
@@ -765,16 +776,16 @@
                             // $('#data_sources_clear_output').val(data_sources_clear_output);
 
                             //获取元数据信息
-                            var company = data[0].company;
+                            var company = data.result[0].company;
                             $('#company').val(company);
 
-                            var section = data[0].section;
+                            var section = data.result[0].section;
                             $('#section').val(section);
 
-                            var service = data[0].service;
+                            var service = data.result[0].service;
                             $('#service').val(service);
 
-                            var update_context = data[0].update_context;
+                            var update_context = data.result[0].update_context;
                             $('#update_context').val(update_context)
 
                         },

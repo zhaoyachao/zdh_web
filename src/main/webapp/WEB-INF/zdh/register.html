@@ -37,7 +37,7 @@
         <div class="layui-form login-form">
             <form class="layui-form" action="" method="post" id="register">
                 <div class="layui-form-item logo-title">
-                    <h1>ZDH注册</h1>
+                    <h1 id="platform_name">ZDH注册</h1>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-icon layui-icon-username" for="userName"></label>
@@ -71,6 +71,57 @@
 <!--<script src="js/layui/lib/jq-module/jquery.particleground.min.js" charset="utf-8"></script>-->
 
 <script>
+
+    $(document).ready(function () {
+        //加载平台名称
+        $.ajax({
+            type: 'GET',
+            url: server_context+"/get_platform_name",
+            dataType: 'json',
+            async: false,
+            data: {},
+            //成功返回
+            success: function (data) {
+                //layer.close(index)
+                if(data.code != "200"){
+                    parent.layer.msg(data.msg);
+                    return ;
+                }
+                $('#platform_name').html(data.result.platform_name);
+                //$("#videoCoverLayer").css('background-image', 'url(' + src + ')');
+                //$("body").css('background-image', 'url(' + data.result.background_image + ')');
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/get_error_msg",
+            dataType: 'json',
+            async: false,
+            data: $("#login").serialize(),
+            //成功返回
+            success: function (data) {
+                if(data.code == "200"){
+                    layer.msg(data.msg);
+                }
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+    });
+
     layui.use(['form'], function () {
         var form = layui.form,
             layer = layui.layer;

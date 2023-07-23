@@ -48,7 +48,7 @@
                   }
                   parent.layer.msg(data.msg);
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/etl_task_unstructure_log_list?"+$("#etl_task_unstructure_from").serialize(),
+                      url: server_context+"/etl_task_unstructure_log_list?"+$("#etl_task_unstructure_from").serialize()+"&unstructure_id="+row.unstructure_id,
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -79,7 +79,7 @@
                   content: html, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/etl_task_unstructure_log_list'
+                          url : server_context+'/etl_task_unstructure_log_list'+"?unstructure_id="+row.unstructure_id
                       });
                   }
               });
@@ -163,14 +163,11 @@
       showColumns: true,
       iconSize: 'outline',
       responseHandler:function (res) {
-          if(!Array.isArray(res)){
-              if(res.code == "201"){
-                  layer.msg(res.msg);
-              }else{
-                  layer.msg("未返回有效数据");
-              }
+          if(res.code != "200"){
+              layer.msg(res.msg);
+              return ;
           }
-          return res;
+          return res.result;
       },
       toolbar: '#exampleTableEventsToolbar',
       icons: {
@@ -235,6 +232,10 @@
                 ].join('');
             }
 
+        }, {
+            field: 'unstructure_id',
+            title: '非结构任务id',
+            sortable:false
         },{
             field: 'create_time',
             title: '任 务 创 建 时 间',

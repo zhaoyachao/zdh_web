@@ -272,11 +272,11 @@
                     var running_datas = new Array();// 声明一个数组
                     var error_datas = new Array();// 声明一个数组
                     var finish_datas = new Array();// 声明一个数组
-                    for (var i = 0; i < res.length; i++) {
-                        etl_date_datas.push(res[i].etl_date);
-                        running_datas.push(res[i].running);
-                        error_datas.push(res[i].error);
-                        finish_datas.push(res[i].finish);
+                    for (var i = 0; i < res.result.length; i++) {
+                        etl_date_datas.push(res.result[i].etl_date);
+                        running_datas.push(res.result[i].running);
+                        error_datas.push(res.result[i].error);
+                        finish_datas.push(res.result[i].finish);
                     }
 
                     var baroption = {
@@ -343,12 +343,16 @@
                 data: {},
                 dataType: "json",
                 success: function (data) {
-                    $('#allTaskNum').text(data.allTaskNum);
-                    $('#allDispatchNum').text(data.allDispatchNum);
-                    $('#allDispatchRunNum').text(data.allDispatchRunNum);
-                    $('#successNum').text(data.successNum);
-                    $('#errorNum').text(data.errorNum);
-                    $('#alarmNum').text(data.alarmNum);
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    $('#allTaskNum').text(data.result.allTaskNum);
+                    $('#allDispatchNum').text(data.result.allDispatchNum);
+                    $('#allDispatchRunNum').text(data.result.allDispatchRunNum);
+                    $('#successNum').text(data.result.successNum);
+                    $('#errorNum').text(data.result.errorNum);
+                    $('#alarmNum').text(data.result.alarmNum);
                 },
                 error: function (errorMsg) {
                     //请求失败时执行该函数
@@ -601,8 +605,12 @@
                     type: "post",
                     dataType: "json",
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         console.info("success");
-                        if (!data && typeof data != "undefined" && data != 0 || data.length < 1) {
+                        if (!data.result && typeof data.result != "undefined" && data.result != 0 || data.result.length < 1) {
                             if (typeof row.history_server == "undefined"){
                                 layer.msg("无法找到历史服务器并且应用程序已经死亡");
                                 return;
@@ -610,8 +618,8 @@
                             window.open(row.history_server + "/" + row.application_id);
                             return;
                         }
-                        console.info("http://" + data.zdh_host + ":" + data.web_port);
-                        window.open("http://" + data.zdh_host + ":" + data.web_port);
+                        console.info("http://" + data.result.zdh_host + ":" + data.result.web_port);
+                        window.open("http://" + data.result.zdh_host + ":" + data.result.web_port);
                     },
                     error: function (data) {
                         console.info("error: " + data.responseText);
@@ -858,6 +866,13 @@
                 refresh: 'glyphicon-repeat',
                 toggle: 'glyphicon-list-alt',
                 columns: 'glyphicon-list'
+            },
+            responseHandler:function (res) {
+                if(res.code != "200"){
+                    layer.msg(res.msg);
+                    return ;
+                }
+                return res.result;
             },
             columns: [{
                 checkbox: true,

@@ -299,9 +299,13 @@
                     data: {data_source_type: "DATAX"},
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>"
                         }
                         //输入数据源类型下拉框
                         $('#data_sources_choose_input').html(str);
@@ -383,47 +387,51 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
                             console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取输入数据源id
-                            var data_sources_choose_input = data[0].data_sources_choose_input;
+                            var data_sources_choose_input = data.result[0].data_sources_choose_input;
                             console.info("参数赋值:输入数据源id:" + data_sources_choose_input);
 
 
                             //获取ETL 说明
-                            var datax_context = data[0].datax_context;
+                            var datax_context = data.result[0].datax_context;
                             $("#datax_context").val(datax_context);
 
-                            var create_time = data[0].create_time;
+                            var create_time = data.result[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
 
 
                             //获取输入数据源类型
-                            var data_sources_choose_input = data[0].data_sources_choose_input;
+                            var data_sources_choose_input = data.result[0].data_sources_choose_input;
                             $("#data_sources_choose_input").val(data_sources_choose_input);
                             $("#data_sources_choose_input").trigger("chosen:updated");
 
-                            var data_source_type_input = data[0].data_source_type_input;
+                            var data_source_type_input = data.result[0].data_source_type_input;
                             $("#data_source_type_input").val(data_source_type_input);
 
-                            var datax_json = data[0].datax_json;
+                            var datax_json = data.result[0].datax_json;
                             //$("#datax_json").val(datax_json);
                             window.editor.setValue(datax_json);
                             //window.editor.refresh();
 
                             //获取元数据信息
-                            var company = data[0].company;
+                            var company = data.result[0].company;
                             $('#company').val(company);
 
-                            var section = data[0].section;
+                            var section = data.result[0].section;
                             $('#section').val(section);
 
-                            var service = data[0].service;
+                            var service = data.result[0].service;
                             $('#service').val(service);
 
-                            var update_context = data[0].update_context;
+                            var update_context = data.result[0].update_context;
                             $('#update_context').val(update_context);
 
                         },

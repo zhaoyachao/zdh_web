@@ -69,9 +69,9 @@ public class ZdhJdbcController extends BaseController {
      * @param id          jdbc任务id
      * @return
      */
-    @RequestMapping(value = "/etl_task_jdbc_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_jdbc_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_jdbc_list(String etl_context, String id) {
+    public ReturnInfo<List<EtlTaskJdbcInfo>> etl_task_jdbc_list(String etl_context, String id) {
 
         try{
             List<EtlTaskJdbcInfo> etlTaskJdbcInfos = new ArrayList<>();
@@ -80,11 +80,11 @@ public class ZdhJdbcController extends BaseController {
             }
             etlTaskJdbcInfos = etlTaskJdbcMapper.selectByParams(getOwner(), etl_context, id);
 
-            return JSON.toJSONString(etlTaskJdbcInfos);
+            return ReturnInfo.buildSuccess(etlTaskJdbcInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("jdbc任务列表查询失败", e);
         }
 
     }

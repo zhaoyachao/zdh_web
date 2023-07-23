@@ -410,18 +410,21 @@
                         data: "id="+id,
                         //成功返回
                         success: function (data) {
-
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
                             // 基础信息加载
-                            $('#issue_context').val(data.issue_context);
-                            $('#create_time').val(getMyDate(data.create_time));
-                            $('#data_source_type_input').val(data.data_source_type_input);
-                            $('#data_sources_file_name_input').val(data.data_sources_table_name_input);
-                            $('#user_name').val(data.user_name);
-                            $('#company').val(data.company);
-                            $('#section').val(data.section);
-                            $('#service').val(data.service);
+                            $('#issue_context').val(data.result.issue_context);
+                            $('#create_time').val(getMyDate(data.result.create_time));
+                            $('#data_source_type_input').val(data.result.data_source_type_input);
+                            $('#data_sources_file_name_input').val(data.result.data_sources_table_name_input);
+                            $('#user_name').val(data.result.user_name);
+                            $('#company').val(data.result.company);
+                            $('#section').val(data.result.section);
+                            $('#service').val(data.result.service);
                             // 字段信息加载
-                            var column_datas = data.column_datas;
+                            var column_datas = data.result.column_datas;
                             var cd = JSON.parse(column_datas);
                             var columnsArray=new Array();
                             columnsArray.push({field: "state", checkbox: true});

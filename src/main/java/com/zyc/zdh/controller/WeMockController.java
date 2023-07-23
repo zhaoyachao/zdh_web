@@ -172,7 +172,7 @@ public class WeMockController extends BaseController{
      */
     @RequestMapping(value = "/wemock_update_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo wemock_update_node(WeMockTreeInfo wmti) {
+    public ReturnInfo<WeMockTreeInfo> wemock_update_node(WeMockTreeInfo wmti) {
 
         try{
 

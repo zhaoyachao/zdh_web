@@ -346,60 +346,64 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
                             console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取ETL 说明
-                            var sql_context = data[0].sql_context;
+                            var sql_context = data.result[0].sql_context;
                             $("#sql_context").val(sql_context);
 
-                            var create_time = data[0].create_time;
+                            var create_time = data.result[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
 
-                            var etl_sql = data[0].etl_sql;
+                            var etl_sql = data.result[0].etl_sql;
                             //$("#etl_sql").val(etl_sql);
                             console.info(etl_sql);
                             window.editor.setValue(etl_sql);
                             //window.editor.refresh();
 
                             //获取输入源数据其他参数
-                            var data_sources_params_input = data[0].data_sources_params_input;
+                            var data_sources_params_input = data.result[0].data_sources_params_input;
                             //$("#data_sources_params_input").val(data_sources_params_input);
                             window.editor_data_sources_params_input.setValue(data_sources_params_input);
 
-                            var checkpoint = data[0].checkpoint;
+                            var checkpoint = data.result[0].checkpoint;
                             $("#checkpoint").val(checkpoint);
 
-                            $("#server_type").val(data[0].server_type);
+                            $("#server_type").val(data.result[0].server_type);
                             $("#server_type").trigger("chosen:updated");
 
-                            var host = data[0].host;
+                            var host = data.result[0].host;
                             $("#host").val(host);
 
-                            var port = data[0].port;
+                            var port = data.result[0].port;
                             $("#port").val(port);
 
-                            var user_name = data[0].user_name;
+                            var user_name = data.result[0].user_name;
                             $("#user_name").val(user_name);
 
-                            var password = data[0].password;
+                            var password = data.result[0].password;
                             $("#password").val(password);
 
-                            var command = data[0].command;
+                            var command = data.result[0].command;
                             $("#command").val(command);
 
                             //获取元数据信息
-                            var company = data[0].company;
+                            var company = data.result[0].company;
                             $('#company').val(company);
 
-                            var section = data[0].section;
+                            var section = data.result[0].section;
                             $('#section').val(section);
 
-                            var service = data[0].service;
+                            var service = data.result[0].service;
                             $('#service').val(service);
 
-                            var update_context = data[0].update_context;
+                            var update_context = data.result[0].update_context;
                             $('#update_context').val(update_context);
 
                         },

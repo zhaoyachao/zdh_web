@@ -246,22 +246,26 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
                             console.info("success");
 
                             //获取ETL 说明
-                            var unstructure_context = data[0].unstructure_context;
+                            var unstructure_context = data.result[0].unstructure_context;
                             $("#unstructure_context").val(unstructure_context);
 
-                            var create_time = data[0].create_time;
+                            var create_time = data.result[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
-                            var project_id = data[0].project_id;
+                            var project_id = data.result[0].project_id;
                             $("#project_id").val(project_id);
 
-                            var data_sources_choose_file_output = data[0].data_sources_choose_file_output;
+                            var data_sources_choose_file_output = data.result[0].data_sources_choose_file_output;
                             $("#data_sources_choose_file_output").val(data_sources_choose_file_output);
 
-                            var data_sources_choose_jdbc_output = data[0].data_sources_choose_jdbc_output;
+                            var data_sources_choose_jdbc_output = data.result[0].data_sources_choose_jdbc_output;
                             $("#data_sources_choose_jdbc_output").val(data_sources_choose_jdbc_output);
 
                         },

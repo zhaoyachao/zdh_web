@@ -131,12 +131,17 @@ public class ZdhIssueDataController extends BaseController {
      * @param id 发布数据ID
      * @return
      */
-    @RequestMapping(value = "/data_ware_house_list", method=RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/data_ware_house_list", method=RequestMethod.POST,produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String data_ware_house_list(String id) {
-
-        IssueDataInfo idi = issueDataMapper.selectById(id);
-        return JSON.toJSONString(idi);
+    public ReturnInfo<IssueDataInfo> data_ware_house_list(String id) {
+        try{
+            IssueDataInfo idi = issueDataMapper.selectById(id);
+            return ReturnInfo.buildSuccess(idi);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("数据集市任务列表查询失败", e);
+        }
     }
 
     /**
@@ -147,14 +152,19 @@ public class ZdhIssueDataController extends BaseController {
      */
     @RequestMapping(value = "/data_ware_house_list2",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public List<IssueDataInfo> data_ware_house_list2(String issue_context) {
-        List<IssueDataInfo> list = new ArrayList<>();
-        if(!StringUtils.isEmpty(issue_context)){
-            issue_context = getLikeCondition(issue_context);
+    public ReturnInfo<List<IssueDataInfo>> data_ware_house_list2(String issue_context) {
+        try{
+            List<IssueDataInfo> list = new ArrayList<>();
+            if(!StringUtils.isEmpty(issue_context)){
+                issue_context = getLikeCondition(issue_context);
+            }
+            list = issueDataMapper.selectByParams(issue_context,new String[]{});
+            return ReturnInfo.buildSuccess(list);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("数据集市任务列表2查询失败", e);
         }
-        list = issueDataMapper.selectByParams(issue_context,new String[]{});
-
-        return list;
     }
 
     /**
@@ -165,15 +175,20 @@ public class ZdhIssueDataController extends BaseController {
      */
     @RequestMapping(value = "/data_ware_house_list3", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public List<IssueDataInfo> data_ware_house_list3(String issue_context) throws Exception {
-        List<IssueDataInfo> list = new ArrayList<>();
-        String owner = getOwner();
-        if(!StringUtils.isEmpty(issue_context)){
-            issue_context = getLikeCondition(issue_context);
+    public ReturnInfo<List<IssueDataInfo>> data_ware_house_list3(String issue_context) throws Exception {
+        try{
+            List<IssueDataInfo> list = new ArrayList<>();
+            String owner = getOwner();
+            if(!StringUtils.isEmpty(issue_context)){
+                issue_context = getLikeCondition(issue_context);
+            }
+            list = issueDataMapper.selectByOwner(issue_context, owner);
+            return ReturnInfo.buildSuccess(list);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("数据集市任务列表3查询失败", e);
         }
-        list = issueDataMapper.selectByOwner(issue_context, owner);
-
-        return list;
     }
 
 

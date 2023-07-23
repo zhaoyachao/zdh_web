@@ -634,9 +634,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
-                        for (let i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        for (let i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>"
                         }
                         //输入数据源类型下拉框
                         $('#data_sources_choose_input').html(str);
@@ -724,7 +728,7 @@
                                     str = data.result[i];
                                 else
                                     str += "," + data.result[i];
-                                addRow(data[i])
+                                addRow(data.result[i])
                             }
                             $("#data_sources_table_columns").val(str)
                         }else{
@@ -781,10 +785,13 @@
                     data: postData,
                     //成功返回
                     success: function (data) {
-
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i] + '\" hassubinfo=\"true\">' + data.result[i] + '</option>'
                         }
 
                         //alert("fafafa1"+str)
@@ -831,10 +838,13 @@
                     data: postData,
                     //成功返回
                     success: function (data) {
-
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i] + '\" hassubinfo=\"true\">' + data.result[i] + '</option>'
                         }
                         $('#data_sources_table_name_output').html(str);
                         $("#data_sources_table_name_output").trigger("chosen:updated");
@@ -1099,10 +1109,13 @@
                                     data: postData,
                                     //成功返回
                                     success: function (data_table) {
-
+                                        if(data_table.code != "200"){
+                                            layer.msg(data_table.msg);
+                                            return ;
+                                        }
                                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
-                                        for (var i = 0; i < data_table.length; i++) {
-                                            str += '<option value=\"' + data_table[i] + '\" hassubinfo=\"true\">' + data_table[i] + '</option>'
+                                        for (var i = 0; i < data_table.result.length; i++) {
+                                            str += '<option value=\"' + data_table.result[i] + '\" hassubinfo=\"true\">' + data_table.result[i] + '</option>'
                                         }
                                         $('#data_sources_table_name_input').html(str);
                                         $("#data_sources_table_name_input").trigger("chosen:updated");
@@ -1257,10 +1270,13 @@
                                     data: postData,
                                     //成功返回
                                     success: function (data_table) {
-
+                                        if(data_table.code != "200"){
+                                            layer.msg(data_table.msg);
+                                            return ;
+                                        }
                                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
-                                        for (var i = 0; i < data_table.length; i++) {
-                                            str += '<option value=\"' + data_table[i] + '\" hassubinfo=\"true\">' + data_table[i] + '</option>'
+                                        for (var i = 0; i < data_table.result.length; i++) {
+                                            str += '<option value=\"' + data_table.result[i] + '\" hassubinfo=\"true\">' + data_table.result[i] + '</option>'
                                         }
                                         $('#data_sources_table_name_output').html(str);
                                         $("#data_sources_table_name_output").trigger("chosen:updated");

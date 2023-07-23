@@ -359,8 +359,12 @@
                     type: "post",
                     dataType: "json",
                     success: function (data) {
-                        console.info("success")
-                        if (!data && typeof data != "undefined" && data != 0 || data.length < 1) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        console.info("success");
+                        if (!data.result && typeof data.result != "undefined" && data.result != 0 || data.result.length < 1) {
                             if (typeof row.history_server == "undefined"){
                                 layer.msg("无法找到历史服务器并且应用程序已经死亡");
                                 return;
@@ -368,8 +372,8 @@
                             window.open(row.history_server + "/" + row.application_id);
                             return;
                         }
-                        console.info("http://" + data.zdh_host + ":" + data.web_port);
-                        window.open("http://" + data.zdh_host + ":" + data.web_port);
+                        console.info("http://" + data.result.zdh_host + ":" + data.result.web_port);
+                        window.open("http://" + data.result.zdh_host + ":" + data.result.web_port);
                     },
                     error: function (data) {
                         console.info("error: " + data.responseText);
@@ -416,6 +420,13 @@
                 refresh: 'glyphicon-repeat',
                 toggle: 'glyphicon-list-alt',
                 columns: 'glyphicon-list'
+            },
+            responseHandler:function (res) {
+                if(res.code != "200"){
+                    layer.msg(res.msg);
+                    return ;
+                }
+                return res.result;
             },
             columns: [{
                 checkbox: true,

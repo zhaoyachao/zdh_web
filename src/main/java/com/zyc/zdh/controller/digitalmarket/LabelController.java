@@ -58,21 +58,28 @@ public class LabelController extends BaseController {
      */
     @RequestMapping(value = "/label_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String label_list(String label_context) {
-        Example example=new Example(LabelInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        Example.Criteria criteria2=example.createCriteria();
-        if(!org.apache.commons.lang3.StringUtils.isEmpty(label_context)){
-            criteria2.orLike("label_code", getLikeCondition(label_context));
-            criteria2.orLike("label_context", getLikeCondition(label_context));
-            criteria2.orLike("param_json", getLikeCondition(label_context));
+    public ReturnInfo<List<LabelInfo>> label_list(String label_context) {
+        try{
+            Example example=new Example(LabelInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            Example.Criteria criteria2=example.createCriteria();
+            if(!org.apache.commons.lang3.StringUtils.isEmpty(label_context)){
+                criteria2.orLike("label_code", getLikeCondition(label_context));
+                criteria2.orLike("label_context", getLikeCondition(label_context));
+                criteria2.orLike("param_json", getLikeCondition(label_context));
+            }
+            example.and(criteria2);
+
+            List<LabelInfo> labelInfos = labelMapper.selectByExample(example);
+
+            return ReturnInfo.buildSuccess(labelInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("标签列表查询失败", e);
         }
-        example.and(criteria2);
 
-        List<LabelInfo> labelInfos = labelMapper.selectByExample(example);
-
-        return JSONObject.toJSONString(labelInfos);
     }
 
     /**

@@ -120,11 +120,15 @@
 <script>
     $(document).ready(function () {
         $('#data_source_type').chosen();
-        $.get(server_context+'/data_sources_type', function(res) {
+        $.get(server_context+'/data_sources_type', function(data) {
+            if(data.code != "200"){
+                layer.msg(data.msg);
+                return ;
+            }
             $('#data_source_type').html("");
             $('#data_source_type').append("<option value=\"\">数据源类型</option>");
-            for (i = 0; i < res.length; i++) {
-                $('#data_source_type').append("<option value='"+res[i]+"'>"+res[i]+"</option>");
+            for (i = 0; i < data.result.length; i++) {
+                $('#data_source_type').append("<option value='"+data.result[i]+"'>"+data.result[i]+"</option>");
             }
 
             $("#data_source_type").trigger("chosen:updated");

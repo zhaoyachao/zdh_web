@@ -184,13 +184,17 @@
                 $.ajax({
                     url: server_context+"/data_tag_by_product_code",
                     data: "product_code=" + product_code,
-                    type: "get",
+                    type: "post",
                     async: false,
                     dataType: "json",
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str_tag = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str_tag += '<option value=\"' + data[i].tag_code + '\" hassubinfo=\"true\">' + data[i].tag_name + '</option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str_tag += '<option value=\"' + data.result[i].tag_code + '\" hassubinfo=\"true\">' + data.result[i].tag_name + '</option>';
                         }
                         $('#tag_codes').html(str_tag);
                         $("#tag_codes").trigger("chosen:updated");
@@ -211,9 +215,13 @@
                 data: "",
                 //成功返回
                 success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                    for (var i = 0; i < data.length; i++) {
-                        str += '<option value=\"' + data[i].product_code + '\" hassubinfo=\"true\">' + data[i].product_name + '</option>';
+                    for (var i = 0; i < data.result.length; i++) {
+                        str += '<option value=\"' + data.result[i].product_code + '\" hassubinfo=\"true\">' + data.result[i].product_name + '</option>';
                     }
                     $('#product_code').html(str);
                     $("#product_code").trigger("chosen:updated");

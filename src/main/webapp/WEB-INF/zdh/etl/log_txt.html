@@ -215,7 +215,11 @@
                 //成功返回
                 success: function (data) {
                     $("#btn_search").removeAttr('disabled');
-                    $("#textarea_logs").val(data.logs);
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    $("#textarea_logs").val(data.result);
                     layer.msg("查询完成")
                     //  layer.close(layer.index)
                 },
@@ -256,7 +260,11 @@
                 //成功返回
                 success: function (data) {
                     $("#btn_del").removeAttr('disabled');
-                    $("#textarea_logs").val(data.logs);
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    $("#textarea_logs").val(data.result);
                     layer.msg("删除完成")
                     //  layer.close(layer.index)
                 },

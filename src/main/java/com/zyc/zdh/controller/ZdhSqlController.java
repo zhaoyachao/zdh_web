@@ -74,9 +74,9 @@ public class ZdhSqlController extends BaseController {
      * @param id          sql任务id
      * @return
      */
-    @RequestMapping(value = "/sql_task_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/sql_task_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String sql_task_list(String sql_context, String id) {
+    public ReturnInfo<List<SqlTaskInfo>> sql_task_list(String sql_context, String id) {
 
         try{
             List<SqlTaskInfo> sqlTaskInfos = new ArrayList<>();
@@ -85,11 +85,11 @@ public class ZdhSqlController extends BaseController {
             }
             sqlTaskInfos = sqlTaskMapper.selectByParams(getOwner(), sql_context, id);
 
-            return JSON.toJSONString(sqlTaskInfos);
+            return ReturnInfo.buildSuccess(sqlTaskInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("sparksql任务列表", e);
         }
 
     }
@@ -261,9 +261,9 @@ public class ZdhSqlController extends BaseController {
      *
      * @return
      */
-    @RequestMapping(value = "/show_databases", method = RequestMethod.POST)
+    @RequestMapping(value = "/show_databases", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String show_databases() {
+    public ReturnInfo<JSONArray> show_databases() {
         meta_database_info meta_database_info = new meta_database_info();
         try {
             String owner=getOwner();
@@ -290,15 +290,13 @@ public class ZdhSqlController extends BaseController {
                 jsa.add(jo1);
             }
 
-            return jsa.toJSONString();
+            return ReturnInfo.buildSuccess(jsa);
 
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
+            return ReturnInfo.buildError("查询数据仓库失败", e);
         }
-
-
-        return "";
     }
 
     /**

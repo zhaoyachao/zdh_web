@@ -66,6 +66,8 @@ public class Const {
 
     public static String ZDH_USER_BACKLIST= "zdh_user_backlist";//用户黑名单参数
 
+    public static String ZDH_USER_UNENABLE= "zdh_user_enable";//用户冻结参数
+
     public static String ZDH_PLATFORM_NAME = "zdh_platform_name";//系统名称,登录页显示
 
     public static String ZDH_BACKGROUND_IMAGE = "zdh_background_image";//系统背景页

@@ -1,5 +1,8 @@
 package com.zyc.zdh.job;
 
+/**
+ * ETL任务类型
+ */
 public enum MoreTask {
 
     ETL("1","单源ETL","单源ETL"),//为了异步数据一致性

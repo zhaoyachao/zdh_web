@@ -82,9 +82,6 @@
           showRefresh: true,
           showToggle: true,
           showColumns: true,
-          sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
-          pageNumber: 1,                       //初始化加载第一页，默认第一页
-          pageSize: 10,                       //每页的记录行数（*）
           iconSize: 'outline',
           toolbar: '#exampleTableEventsToolbar',
           icons: {
@@ -92,6 +89,9 @@
             toggle: 'glyphicon-list-alt',
             columns: 'glyphicon-list'
           },
+          sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+          pageNumber: 1,                       //初始化加载第一页，默认第一页
+          pageSize: 10,                       //每页的记录行数（*）
           queryParams: function (params) {
               // 此处使用了LayUi组件 是为加载层
               loadIndex = layer.load(1);

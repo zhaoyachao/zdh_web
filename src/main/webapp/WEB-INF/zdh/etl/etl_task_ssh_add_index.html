@@ -395,7 +395,11 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
-                            console.info("success")
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
+                            console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取输入数据源id
@@ -404,54 +408,54 @@
 
 
                             //获取ETL 说明
-                            var ssh_context = data[0].ssh_context;
+                            var ssh_context = data.result[0].ssh_context;
                             $("#ssh_context").val(ssh_context);
 
-                            var create_time = data[0].create_time;
+                            var create_time = data.result[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
 
 
                             //获取输入数据源类型
-                            var host = data[0].host;
+                            var host = data.result[0].host;
                             $("#host").val(host);
 
-                            var port = data[0].port;
+                            var port = data.result[0].port;
                             $("#port").val(port);
 
-                            var user_name = data[0].user_name;
+                            var user_name = data.result[0].user_name;
                             $("#user_name").val(user_name);
 
-                            var password = data[0].password;
+                            var password = data.result[0].password;
                             $("#password").val(password);
 
-                            var ssh_cmd = data[0].ssh_cmd;
+                            var ssh_cmd = data.result[0].ssh_cmd;
                             //$("#ssh_cmd").val(ssh_cmd);
                             window.editor.setValue(ssh_cmd);
 
-                            var ssh_script_path = data[0].ssh_script_path;
+                            var ssh_script_path = data.result[0].ssh_script_path;
                             $("#ssh_script_path").val(ssh_script_path);
 
 
-                            var ssh_script_context = data[0].ssh_script_context;
+                            var ssh_script_context = data.result[0].ssh_script_context;
                             //$("#ssh_script_context").val(ssh_script_context);
                             window.editor_ssh_script_context.setValue(ssh_script_context);
 
                             //获取元数据信息
-                            var ssh_params_input = data[0].ssh_params_input;
+                            var ssh_params_input = data.result[0].ssh_params_input;
                             $('#ssh_params_input').val(ssh_params_input);
 
                             //获取元数据信息
-                            var company = data[0].company;
+                            var company = data.result[0].company;
                             $('#company').val(company);
 
-                            var section = data[0].section;
+                            var section = data.result[0].section;
                             $('#section').val(section);
 
-                            var service = data[0].service;
+                            var service = data.result[0].service;
                             $('#service').val(service);
 
-                            var update_context = data[0].update_context;
+                            var update_context = data.result[0].update_context;
                             $('#update_context').val(update_context)
 
                         },
@@ -479,12 +483,16 @@
             async: false,
             dataType : "json",
             success : function(data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
+                }
                 console.info("success");
                 //获取输入数据源id
                 $("#file_list").html("");
-                for (var i = 0; i < data.length; i++) {
-                    var id=data[i].id;
-                    var fileName=data[i].file_name;
+                for (var i = 0; i < data.result.length; i++) {
+                    var id=data.result[i].id;
+                    var fileName=data.result[i].file_name;
                     console.info("参数赋值:文件唯一id:"+id);
                     var div1=' <div class="checkbox i-checks">'+
                         '<label class="no-padding">'+

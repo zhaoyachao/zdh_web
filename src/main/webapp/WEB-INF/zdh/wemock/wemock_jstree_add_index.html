@@ -620,91 +620,97 @@
 
             }
 
-            $('#exampleTableEvents').bootstrapTable({
-                method: 'POST',
-                url: server_context+"/wemock_data_list?mock_tree_id="+s.id,
-                search: false,
-                pagination: true,
-                showRefresh: true,
-                showToggle: true,
-                showColumns: true,
-                pageList:[10,50,100,200,500],
-                sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
-                pageNumber: 1,                       //初始化加载第一页，默认第一页
-                pageSize: 10,                       //每页的记录行数（*）
-                queryParams: function (params) {
-                    // 此处使用了LayUi组件 是为加载层
-                    loadIndex = layer.load(1);
-                    let resRepor = {
-                        //服务端分页所需要的参数
-                        limit: params.limit,
-                        offset: params.offset
-                    };
-                    return resRepor;
-                },
-                responseHandler: res => {
-                    // 关闭加载层
-                    layer.close(loadIndex);
-                    return {                            //return bootstrap-table能处理的数据格式
-                        "total":res.result.total,
-                        "rows": res.result.rows
-                    }
-                },
-                iconSize: 'outline',
-                toolbar: '#exampleTableEventsToolbar',
-                icons: {
-                    refresh: 'glyphicon-repeat',
-                    toggle: 'glyphicon-list-alt',
-                    columns: 'glyphicon-list'
-                },
-                columns: [{
-                    checkbox: true,
-                    field: 'state',
-                    sortable: true
-                }, {
-                    field: 'id',
-                    title: 'ID',
-                    visible: false
-                }, {
-                    field: 'wemock_context',
-                    title: 'mock说明',
-                    sortable: false,
-                    visible: true
-                },{
-                    field: 'req_type',
-                    title: '请求类型',
-                    sortable: false,
-                    visible: true
-                }, {
-                    field: 'resolve_type',
-                    title: '解析类型',
-                    sortable: false,
-                    visible: true
-                },  {
-                    field: 'url',
-                    title: '链接',
-                    sortable: false,
-                    visible: true
-                }, {
-                    field: 'mock_tree_id',
-                    title: '树节点',
-                    sortable: false,
-                    visible: false
-                }, {
-                    field: 'create_time',
-                    title: '创建时间',
-                    sortable: false,
-                    formatter: function (value, row, index) {
-                        return getMyDate(value);
-                    }
-                },{
-                    field: 'operate',
-                    title: '操作按钮',
-                    events: operateEvents,//给按钮注册事件
-                    width:150,
-                    formatter: operateFormatter //表格中增加按钮
-                }]
-            });
+            var columns = [{
+                checkbox: true,
+                field: 'state',
+                sortable: true
+            }, {
+                field: 'id',
+                title: 'ID',
+                visible: false
+            }, {
+                field: 'wemock_context',
+                title: 'mock说明',
+                sortable: false,
+                visible: true
+            },{
+                field: 'req_type',
+                title: '请求类型',
+                sortable: false,
+                visible: true
+            }, {
+                field: 'resolve_type',
+                title: '解析类型',
+                sortable: false,
+                visible: true
+            },  {
+                field: 'url',
+                title: '链接',
+                sortable: false,
+                visible: true
+            }, {
+                field: 'mock_tree_id',
+                title: '树节点',
+                sortable: false,
+                visible: false
+            }, {
+                field: 'create_time',
+                title: '创建时间',
+                sortable: false,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
+            },{
+                field: 'operate',
+                title: '操作按钮',
+                events: operateEvents,//给按钮注册事件
+                width:150,
+                formatter: operateFormatter //表格中增加按钮
+            }];
+            var bootstrapTableConf = getTablePageCommon(server_context+"/wemock_data_list?mock_tree_id="+s.id);
+            bootstrapTableConf['columns'] = columns;
+            bootstrapTableConf['pageList'] = [10,50,100,200,500];
+            $('#exampleTableEvents').bootstrapTable(bootstrapTableConf
+            //     {
+            //     method: 'POST',
+            //     url: ,
+            //     search: false,
+            //     pagination: true,
+            //     showRefresh: true,
+            //     showToggle: true,
+            //     showColumns: true,
+            //
+            //     sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            //     pageNumber: 1,                       //初始化加载第一页，默认第一页
+            //     pageSize: 10,                       //每页的记录行数（*）
+            //     queryParams: function (params) {
+            //         // 此处使用了LayUi组件 是为加载层
+            //         loadIndex = layer.load(1);
+            //         let resRepor = {
+            //             //服务端分页所需要的参数
+            //             limit: params.limit,
+            //             offset: params.offset
+            //         };
+            //         return resRepor;
+            //     },
+            //     responseHandler: res => {
+            //         // 关闭加载层
+            //         layer.close(loadIndex);
+            //         return {                            //return bootstrap-table能处理的数据格式
+            //             "total":res.result.total,
+            //             "rows": res.result.rows
+            //         }
+            //     },
+            //     iconSize: 'outline',
+            //     toolbar: '#exampleTableEventsToolbar',
+            //     icons: {
+            //         refresh: 'glyphicon-repeat',
+            //         toggle: 'glyphicon-list-alt',
+            //         columns: 'glyphicon-list'
+            //     },
+            //
+            // }
+            );
 
             $('#search').click(function () {
                 $('#exampleTableEvents').bootstrapTable('refresh', {

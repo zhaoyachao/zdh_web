@@ -140,9 +140,10 @@
                                             <div class="node nodemessagecss" data-type="message">消息</div>
                                             <div class="node nodeactive_eventcss" data-type="active_event">活动</div>
                                             <div class="node nodeid_mappingcss" data-type="id_mapping">ID转换</div>
+                                            <div class="node noderiskcss" data-type="risk">决策事件</div>
                                         </div>
                                     </div>
-                                    <div id="deviceRight">
+                                    <div id="deviceRight2">
                                         <div id="m1"></div>
                                     </div>
                                 </div>
@@ -392,6 +393,10 @@
             }
             if(tp == "id_mapping"){
                 $("#" + divId).attr("id_mapping_code",rs.id_mapping_code);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "risk"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 

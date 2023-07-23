@@ -235,12 +235,16 @@
             radioClass: 'iradio_square-green',
         });
 
-        $.get(server_context+'/data_sources_type', function(res) {
+        $.get(server_context+'/data_sources_type', function(data) {
+            if(data.code != "200"){
+                layer.msg(data.msg);
+                return ;
+            }
             //$('#data_source_type').html("");
             var str = '';
-            for (i = 0; i < res.length; i++) {
+            for (i = 0; i < data.result.length; i++) {
                 //$('#data_source_type').append("<option value='"+res[i]+"'>"+res[i]+"</option>");
-                str += '<option value=\"' + res[i] + '\" hassubinfo=\"true\">' + res[i] + '</option>'
+                str += '<option value=\"' + data.result[i] + '\" hassubinfo=\"true\">' + data.result[i] + '</option>'
             }
 
             $('#data_source_type').html(str);
@@ -260,16 +264,20 @@
                     data: 'id='+s.id,
                     //成功返回
                     success: function (data) {
-                        $("#id").val(data.id);
-                        $("#data_source_context").val(data.data_source_context);
-                        $("#data_source_type").val(data.data_source_type);
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        $("#id").val(data.result.id);
+                        $("#data_source_context").val(data.result.data_source_context);
+                        $("#data_source_type").val(data.result.data_source_type);
                         $("#data_source_type").trigger("chosen:updated");
 
-                        $("#driver").val(data.driver);
-                        $("#url").val(data.url);
-                        $("#username").val(data.username);
-                        $("#password").val(data.password);
-                        $("#tag_group_code").val(data.tag_group_code.split(','));
+                        $("#driver").val(data.result.driver);
+                        $("#url").val(data.result.url);
+                        $("#username").val(data.result.username);
+                        $("#password").val(data.result.password);
+                        $("#tag_group_code").val(data.result.tag_group_code.split(','));
                         $("#tag_group_code").trigger("chosen:updated");
                     },
                     //处理完成

@@ -224,11 +224,15 @@ public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLog
             "</foreach>",
             " and tgli.status = 'sub_task_dispatch'",
             " and tli.group_id=tgli.id",
-            " and tli.job_type not in ('group','jdbc','hdfs')",
+            " and tli.job_type not in ",
+            "<foreach collection='job_types' item='job_type' open='(' separator=',' close=')'>",
+            "#{job_type}",
+            "</foreach>",
+            //" and tli.job_type not in ('group','jdbc','hdfs')",
             "</script>"
             }
     )
-    public List<TaskLogInstance> selectThreadByStatus1(@Param("status") String[] status);
+    public List<TaskLogInstance> selectThreadByStatus1(@Param("status") String[] status, @Param("job_types") String[] job_types);
 
     /**
      * 获取所有可以执行的JDBC子任务

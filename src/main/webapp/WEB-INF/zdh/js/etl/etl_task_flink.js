@@ -207,16 +207,13 @@
       showToggle: true,
       showColumns: true,
       iconSize: 'outline',
-      responseHandler:function (res) {
-          if(!Array.isArray(res)){
-              if(res.code == "201"){
+          responseHandler:function (res) {
+              if(res.code != "200"){
                   layer.msg(res.msg);
-              }else{
-                  layer.msg("未返回有效数据");
+                  return ;
               }
-          }
-          return res;
-      },
+              return res.result;
+          },
       toolbar: '#exampleTableEventsToolbar',
       icons: {
         refresh: 'glyphicon-repeat',

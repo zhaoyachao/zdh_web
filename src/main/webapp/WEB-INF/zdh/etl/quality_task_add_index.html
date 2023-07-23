@@ -448,10 +448,14 @@
                     data: {},
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         //$('#template #quality_rule').html("");
                         var str = '';
-                        for (var i = 0; i < data.length; i++) {
-                            str = str+ "<option value='"+data[i].id+"'>"+data[i].rule_name+"</option>\n";
+                        for (var i = 0; i < data.result.length; i++) {
+                            str = str+ "<option value='"+data.result[i].id+"'>"+data.result[i].rule_name+"</option>\n";
                             //$('#template #quality_rule').append(str);
                         }
                         tmp = tmp.replace("zdh_quality_rule", str);
@@ -503,9 +507,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>"
                         }
                         //输入数据源类型下拉框
                         $('#data_sources_choose_input').html(str);
@@ -626,10 +634,13 @@
                     data: postData,
                     //成功返回
                     success: function (data) {
-
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i] + '\" hassubinfo=\"true\">' + data[i] + '</option>'
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i] + '\" hassubinfo=\"true\">' + data.result[i] + '</option>'
                         }
 
                         //alert("fafafa1"+str)
@@ -729,13 +740,17 @@
                     data: {},
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '';
-                        for (var i = 0; i < data.length; i++) {
+                        for (var i = 0; i < data.result.length; i++) {
                             is_check=false;
-                            if(data[i].id == quality_rule){
-                                str = str+ "<option value='"+data[i].id+"' selected=true>"+data[i].rule_name+"</option>\n";
+                            if(data.result[i].id == quality_rule){
+                                str = str+ "<option value='"+data.result[i].id+"' selected=true>"+data.result[i].rule_name+"</option>\n";
                             }else{
-                                str = str+ "<option value='"+data[i].id+"'>"+data[i].rule_name+"</option>\n";
+                                str = str+ "<option value='"+data.result[i].id+"'>"+data.result[i].rule_name+"</option>\n";
                             }
                         }
                             tmp = tmp.replace("zdh_quality_rule", str);
@@ -769,19 +784,23 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
                             console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取输入数据源id
-                            var data_sources_choose_input = data[0].data_sources_choose_input;
+                            var data_sources_choose_input = data.result[0].data_sources_choose_input;
                             console.info("参数赋值:输入数据源id:" + data_sources_choose_input);
 
 
                             //获取ETL 说明
-                            var quality_context = data[0].quality_context;
+                            var quality_context = data.result[0].quality_context;
                             $("#quality_context").val(quality_context);
 
-                            var create_time = data[0].create_time;
+                            var create_time = data.result[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
 
@@ -790,34 +809,34 @@
                             $("#data_sources_choose_input").trigger("chosen:updated");
 
                             //获取输入数据源类型
-                            var data_source_type_input = data[0].data_source_type_input;
+                            var data_source_type_input = data.result[0].data_source_type_input;
                             $("#data_source_type_input").val(data_source_type_input);
 
                             //输出文件类型参数
-                            var file_type_input = data[0].file_type_input;
+                            var file_type_input = data.result[0].file_type_input;
                             $("#file_type_input").val(file_type_input);
                             $("#file_type_input").trigger("chosen:updated");
 
-                            var encoding_input = data[0].encoding_input;
+                            var encoding_input = data.result[0].encoding_input;
                             $("#encoding_input").val(encoding_input);
                             $("#encoding_input").trigger("chosen:updated");
 
-                            var header_input = data[0].header_input;
+                            var header_input = data.result[0].header_input;
                             $("#header_input").val(header_input);
                             $("#header_input").trigger("chosen:updated");
 
-                            var sep_input = data[0].sep_input;
+                            var sep_input = data.result[0].sep_input;
                             $("#sep_input").val(sep_input);
 
 
-                            var repartition_num_input = data[0].repartition_num_input;
+                            var repartition_num_input = data.result[0].repartition_num_input;
                             $("#repartition_num_input").val(repartition_num_input);
 
-                            var repartition_cols_input = data[0].repartition_cols_input;
+                            var repartition_cols_input = data.result[0].repartition_cols_input;
                             $("#repartition_cols_input").val(repartition_cols_input);
 
                             //获取输入源数据其他参数
-                            var data_sources_params_input = data[0].data_sources_params_input;
+                            var data_sources_params_input = data.result[0].data_sources_params_input;
                             $("#data_sources_params_input").val(data_sources_params_input);
 
                             //获取表名/文件名
@@ -829,7 +848,7 @@
 
                             if (data_source_type_input == "JDBC") {
                                 //获取表名
-                                var data_sources_table_name_input = data[0].data_sources_table_name_input;
+                                var data_sources_table_name_input = data.result[0].data_sources_table_name_input;
                                 //初始化数据源对应的表
                                 var postData = {
                                     id: data_sources_choose_input
@@ -843,10 +862,13 @@
                                     data: postData,
                                     //成功返回
                                     success: function (data_table) {
-
+                                        if(data_table.code != "200"){
+                                            layer.msg(data_table.msg);
+                                            return ;
+                                        }
                                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
-                                        for (var i = 0; i < data_table.length; i++) {
-                                            str += '<option value=\"' + data_table[i] + '\" hassubinfo=\"true\">' + data_table[i] + '</option>'
+                                        for (var i = 0; i < data_table.result.length; i++) {
+                                            str += '<option value=\"' + data_table.result[i] + '\" hassubinfo=\"true\">' + data_table.result[i] + '</option>'
                                         }
                                         $('#data_sources_table_name_input').html(str);
                                         $("#data_sources_table_name_input").trigger("chosen:updated");
@@ -874,39 +896,39 @@
                                 $('#div_data_sources_table_columns')[0].style.display = 'block';
                             }
                             else {
-                                var data_sources_file_name_input = data[0].data_sources_file_name_input;
+                                var data_sources_file_name_input = data.result[0].data_sources_file_name_input;
                                 $('#data_sources_file_name_input').val(data_sources_file_name_input)
                             }
 
                             //获取过滤条件
-                            var data_sources_filter_input = data[0].data_sources_filter_input;
+                            var data_sources_filter_input = data.result[0].data_sources_filter_input;
                             $('#data_sources_filter_input').val(data_sources_filter_input);
 
                             if (data_source_type_input == "JDBC") {
-                                var data_sources_table_columns = data[0].data_sources_table_columns;
+                                var data_sources_table_columns = data.result[0].data_sources_table_columns;
                                 $('#data_sources_table_columns').val(data_sources_table_columns)
                             } else {
-                                var data_sources_file_columns = data[0].data_sources_file_columns;
+                                var data_sources_file_columns = data.result[0].data_sources_file_columns;
                                 $('#data_sources_file_columns').val(data_sources_file_columns)
                             }
 
                             //生成数据质量配置
-                            var quality_rule_list = data[0].quality_rule_list;
+                            var quality_rule_list = data.result[0].quality_rule_list;
                             for (var i = 0; i < quality_rule_list.length; i++) {
                                 buildConfig(quality_rule_list[i].quality_rule, quality_rule_list[i].quality_columns);
                             }
 
                             //获取元数据信息
-                            var company = data[0].company;
+                            var company = data.result[0].company;
                             $('#company').val(company);
 
-                            var section = data[0].section;
+                            var section = data.result[0].section;
                             $('#section').val(section);
 
-                            var service = data[0].service;
+                            var service = data.result[0].service;
                             $('#service').val(service);
 
-                            var update_context = data[0].update_context;
+                            var update_context = data.result[0].update_context;
                             $('#update_context').val(update_context)
 
                         },

@@ -379,9 +379,13 @@
                 data: "",
                 //成功返回
                 success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     var str = '<option value=\"\" hassubinfo=\"true\"></option>';
-                   for(var i=0;i<data.length;i++){
-                       str += '<option value=\"' + data[i].event_code + '\" hassubinfo=\"true\">' + data[i].event_context + '</option>'
+                   for(var i=0;i<data.result.length;i++){
+                       str += '<option value=\"' + data.result[i].event_code + '\" hassubinfo=\"true\">' + data.result[i].event_context + '</option>'
                    }
                     $('#event_code').html(str);
                     $('#event_code').trigger("chosen:updated");
@@ -418,19 +422,23 @@
                 data: "id="+s.id,
                 //成功返回
                 success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     $('#text').attr('node_id',s.id);
-                    $('#text').val(data.text);
+                    $('#text').val(data.result.text);
 
-                    $('#event_code2').val(data.event_code);
+                    $('#event_code2').val(data.result.event_code);
                     $('#event_code2').trigger("chosen:updated");
 
-                    $('#parent2').val(data.parent);
-                    $('#product_code2').val(data.product_code);
-                    $('#icon2').val(data.icon);
-                    $('#url2').val(data.url);
-                    $('#order2').val(data.order);
-                    $('#notice_title2').val(data.notice_title);
-                    $('#resource_type2').val(data.resource_type);
+                    $('#parent2').val(data.result.parent);
+                    $('#product_code2').val(data.result.product_code);
+                    $('#icon2').val(data.result.icon);
+                    $('#url2').val(data.result.url);
+                    $('#order2').val(data.result.order);
+                    $('#notice_title2').val(data.result.notice_title);
+                    $('#resource_type2').val(data.result.resource_type);
                     $("#resource_type2").trigger("chosen:updated");
                 },
                 //处理完成

@@ -12,11 +12,11 @@ $(function () {
             var running_datas = new Array();// 声明一个数组
             var error_datas = new Array();// 声明一个数组
             var finish_datas = new Array();// 声明一个数组
-            for (i = 0; i < res.length; i++) {
-                etl_date_datas.push(res[i].etl_date);
-                running_datas.push(res[i].running);
-                error_datas.push(res[i].error);
-                finish_datas.push(res[i].finish)
+            for (i = 0; i < res.result.length; i++) {
+                etl_date_datas.push(res.result[i].etl_date);
+                running_datas.push(res.result[i].running);
+                error_datas.push(res.result[i].error);
+                finish_datas.push(res.result[i].finish)
             }
 
             var baroption = {
@@ -80,11 +80,11 @@ $(function () {
             var running_datas = new Array();// 声明一个数组
             var error_datas = new Array();// 声明一个数组
             var finish_datas = new Array();// 声明一个数组
-            for (i = 0; i < res.length; i++) {
-                etl_date_datas.push(res[i].etl_date);
-                running_datas.push(res[i].running);
-                error_datas.push(res[i].error);
-                finish_datas.push(res[i].finish)
+            for (i = 0; i < res.result.length; i++) {
+                etl_date_datas.push(res.result[i].etl_date);
+                running_datas.push(res.result[i].running);
+                error_datas.push(res.result[i].error);
+                finish_datas.push(res.result[i].finish)
             }
 
             var pieoption = {

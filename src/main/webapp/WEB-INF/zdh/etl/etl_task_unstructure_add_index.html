@@ -287,15 +287,19 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str_out = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
                         var str_input = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
-                        for (var i = 0; i < data.length; i++) {
+                        for (var i = 0; i < data.result.length; i++) {
 
-                            if($.inArray(data[i].data_source_type, new Array("HDFS", "FTP","SFTP")) > -1){
-                                str_input += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>";
+                            if($.inArray(data.result[i].data_source_type, new Array("HDFS", "FTP","SFTP")) > -1){
+                                str_input += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>";
                             }
-                            if(data[i].data_source_type == "JDBC"){
-                                str_out += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>";
+                            if(data.result[i].data_source_type == "JDBC"){
+                                str_out += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>";
                             }
                         }
                         console.info(str_input);
@@ -382,54 +386,58 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
                             console.info("success");
 
                             //获取ETL 说明
-                            var unstructure_context = data[0].unstructure_context;
+                            var unstructure_context = data.result[0].unstructure_context;
                             $("#unstructure_context").val(unstructure_context);
 
-                            var create_time = data[0].create_time;
+                            var create_time = data.result[0].create_time;
                             $("#create_time").val(getMyDate(create_time));
 
-                            var project_id = data[0].project_id;
+                            var project_id = data.result[0].project_id;
                             $("#project_id").val(project_id);
 
 
-                            $("#data_sources_choose_file_input").val(data[0].data_sources_choose_file_input);
+                            $("#data_sources_choose_file_input").val(data.result[0].data_sources_choose_file_input);
                             $("#data_sources_choose_file_input").trigger("chosen:updated");
 
-                            var input_path = data[0].input_path;
+                            var input_path = data.result[0].input_path;
                             $("#input_path").val(input_path);
 
                             //初始化输入数据源select 组件
-                            $("#data_sources_choose_file_output").val(data[0].data_sources_choose_file_output);
+                            $("#data_sources_choose_file_output").val(data.result[0].data_sources_choose_file_output);
                             $("#data_sources_choose_file_output").trigger("chosen:updated");
                             //初始化输入数据源select 组件
-                            $("#data_sources_choose_jdbc_output").val(data[0].data_sources_choose_jdbc_output);
+                            $("#data_sources_choose_jdbc_output").val(data.result[0].data_sources_choose_jdbc_output);
                             $("#data_sources_choose_jdbc_output").trigger("chosen:updated");
 
-                            var output_path = data[0].output_path;
+                            var output_path = data.result[0].output_path;
                             $("#output_path").val(output_path);
 
-                            var etl_sql = data[0].etl_sql;
+                            var etl_sql = data.result[0].etl_sql;
                             window.editor.setValue(etl_sql);
 
 
                             //获取元数据信息
-                            var unstructure_params_output = data[0].unstructure_params_output;
+                            var unstructure_params_output = data.result[0].unstructure_params_output;
                             window.editor_unstructure_params_output.setValue(unstructure_params_output);
 
                             //获取元数据信息
-                            var company = data[0].company;
+                            var company = data.result[0].company;
                             $('#company').val(company);
 
-                            var section = data[0].section;
+                            var section = data.result[0].section;
                             $('#section').val(section);
 
-                            var service = data[0].service;
+                            var service = data.result[0].service;
                             $('#service').val(service);
 
-                            var update_context = data[0].update_context;
+                            var update_context = data.result[0].update_context;
                             $('#update_context').val(update_context)
 
                         },

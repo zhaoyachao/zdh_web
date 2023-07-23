@@ -111,7 +111,7 @@ public class ZdhUnstructureController extends BaseController{
      */
     @RequestMapping(value = "/etl_task_unstructure_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_unstructure_list(String unstructure_context, String id) {
+    public ReturnInfo<List<EtlTaskUnstructureInfo>> etl_task_unstructure_list(String unstructure_context, String id) {
 
         try{
             List<EtlTaskUnstructureInfo> etlTaskUnstructureInfos = new ArrayList<>();
@@ -128,11 +128,11 @@ public class ZdhUnstructureController extends BaseController{
             }
             etlTaskUnstructureInfos = etlTaskUnstructureMapper.selectByExample(example);
 
-            return JSON.toJSONString(etlTaskUnstructureInfos);
+            return ReturnInfo.buildSuccess(etlTaskUnstructureInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("", e);
         }
 
     }
@@ -433,15 +433,22 @@ public class ZdhUnstructureController extends BaseController{
      */
     @RequestMapping(value = "/etl_task_unstructure_file_list", method = RequestMethod.GET)
     @ResponseBody
-    public List<JarFileInfo> etl_task_unstructure_file_list(String id, HttpServletRequest request) throws Exception {
-        String json_str = JSON.toJSONString(request.getParameterMap());
-        String owner = getOwner();
-        JarFileInfo jarFileInfo = new JarFileInfo();
-        jarFileInfo.setOwner(owner);
-        jarFileInfo.setJar_etl_id(id);
-        List<JarFileInfo> jarFileInfos=jarFileMapper.select(jarFileInfo);
+    public ReturnInfo<List<JarFileInfo>> etl_task_unstructure_file_list(String id, HttpServletRequest request) throws Exception {
+        try{
+            String json_str = JSON.toJSONString(request.getParameterMap());
+            String owner = getOwner();
+            JarFileInfo jarFileInfo = new JarFileInfo();
+            jarFileInfo.setOwner(owner);
+            jarFileInfo.setJar_etl_id(id);
+            List<JarFileInfo> jarFileInfos=jarFileMapper.select(jarFileInfo);
 
-        return jarFileInfos;
+            return ReturnInfo.buildSuccess(jarFileInfos);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("非结构化任务上传文件查询失败", e);
+        }
+
     }
 
     /**
@@ -449,9 +456,9 @@ public class ZdhUnstructureController extends BaseController{
      * @param id
      * @return
      */
-    @RequestMapping(value = "/etl_task_unstructure_log_list", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/etl_task_unstructure_log_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String etl_task_unstructure_log_list(String id, String unstructure_id) {
+    public ReturnInfo<List<EtlTaskUnstructureLogInfo>> etl_task_unstructure_log_list(String id, String unstructure_id) {
 
         try{
             List<EtlTaskUnstructureLogInfo> etlTaskUnstructureInfos = new ArrayList<>();
@@ -468,11 +475,11 @@ public class ZdhUnstructureController extends BaseController{
             }
             etlTaskUnstructureInfos = etlTaskUnstructureLogMapper.selectByExample(example);
 
-            return JSON.toJSONString(etlTaskUnstructureInfos);
+            return ReturnInfo.buildSuccess(etlTaskUnstructureInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return JSON.toJSONString(e.getMessage());
+            return ReturnInfo.buildError("非结构化任务日志查询失败", e);
         }
 
     }

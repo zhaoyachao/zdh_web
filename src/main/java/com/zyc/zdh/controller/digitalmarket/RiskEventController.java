@@ -1,0 +1,289 @@
+package com.zyc.zdh.controller.digitalmarket;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.annotation.White;
+import com.zyc.zdh.controller.BaseController;
+import com.zyc.zdh.entity.RiskEventInfo;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.entity.User;
+import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.HttpUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import tk.mybatis.mapper.entity.Example;
+import com.zyc.zdh.dao.RiskEventMapper;
+
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * 风控事件信息服务
+ */
+@Controller
+public class RiskEventController extends BaseController {
+
+    public Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private RiskEventMapper riskEventMapper;
+
+    @Autowired
+    Environment ev;
+
+    /**
+     * 风控事件测试首页
+     * @return
+     */
+    @RequestMapping(value = "/risk_test_index", method = RequestMethod.GET)
+    @White
+    public String risk_test_index() {
+
+        return "digitalmarket/risk_test_index";
+    }
+
+    @RequestMapping(value = "/risk_test", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public ReturnInfo<JSONObject> risk_test(String uid, String data_node, String scene, String source, String id_type, String param) {
+
+        try{
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("uid", uid);
+            jsonObject.put("data_node", data_node);
+            jsonObject.put("scene", scene);
+            jsonObject.put("source", source);
+            jsonObject.put("id_type", id_type);
+            jsonObject.put("param", param);
+
+            String url = ev.getProperty("zdh.ship.url", "http://127.0.0.1:9002/api/v1/ship/accept");
+            String ret = HttpUtil.postJSON(url, jsonObject.toJSONString());
+            System.out.println(ret);
+            return ReturnInfo.buildSuccess(JSONObject.parseObject(ret));
+        }catch (Exception e){
+            e.printStackTrace();
+            return ReturnInfo.buildError(e);
+        }
+    }
+
+    /**
+     * 风控事件信息列表首页
+     * @return
+     */
+    @RequestMapping(value = "/risk_event_index", method = RequestMethod.GET)
+    @White
+    public String risk_event_index() {
+
+        return "digitalmarket/risk_event_index";
+    }
+
+    /**
+     * 风控事件信息列表
+     * @param context 关键字
+     * @return
+     */
+    @RequestMapping(value = "/risk_event_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public String risk_event_list(String context) {
+        Example example=new Example(RiskEventInfo.class);
+        Example.Criteria criteria=example.createCriteria();
+        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+        Example.Criteria criteria2=example.createCriteria();
+        if(!StringUtils.isEmpty(context)){
+            criteria2.orLike("event_name", getLikeCondition(context));
+            criteria2.orLike("event_code", getLikeCondition(context));
+        }
+        example.and(criteria2);
+
+        List<RiskEventInfo> riskEventInfos = riskEventMapper.selectByExample(example);
+
+        return JSONObject.toJSONString(riskEventInfos);
+    }
+
+    /**
+     * 风控事件信息新增首页
+     * @return
+     */
+    @RequestMapping(value = "/risk_event_add_index", method = RequestMethod.GET)
+    @White
+    public String risk_event_add_index() {
+
+        return "digitalmarket/risk_event_add_index";
+    }
+
+
+    /**
+     * 风控事件信息明细页面
+     * @return
+     */
+    @RequestMapping(value = "/risk_event_detail2", method = RequestMethod.GET)
+    @White
+    public String risk_event_detail2() {
+
+        return "digitalmarket/risk_event_detail2";
+    }
+    /**
+     * xx明细
+     * @param id 主键ID
+     * @return
+     */
+    @RequestMapping(value = "/risk_event_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public ReturnInfo<RiskEventInfo> risk_event_detail(String id) {
+        try {
+            RiskEventInfo riskEventInfo = riskEventMapper.selectByPrimaryKey(id);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", riskEventInfo);
+        } catch (Exception e) {
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+    /**
+     * 风控事件信息更新
+     * @param riskEventInfo
+     * @return
+     */
+    @RequestMapping(value = "/risk_event_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    @White
+    public ReturnInfo<RiskEventInfo> risk_event_update(RiskEventInfo riskEventInfo, String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value) {
+        try {
+
+            RiskEventInfo oldRiskEventInfo = riskEventMapper.selectByPrimaryKey(riskEventInfo.getId());
+
+            JSONArray jsonArray=new JSONArray();
+            for (int i=0;i<param_code.length;i++){
+                JSONObject jsonObject=new JSONObject();
+                jsonObject.put("param_code", param_code[i]);
+                jsonObject.put("param_context", param_context[i]);
+                jsonObject.put("param_operate", param_operate[i]);
+                jsonObject.put("param_type", param_type[i]);
+                if(i>=param_value.length){
+                    jsonObject.put("param_value", "");
+                }else{
+                    jsonObject.put("param_value", param_value[i]);
+                }
+                jsonArray.add(jsonObject);
+            }
+            riskEventInfo.setEvent_json(jsonArray.toJSONString());
+
+            riskEventInfo.setOwner(oldRiskEventInfo.getOwner());
+            riskEventInfo.setCreate_time(oldRiskEventInfo.getCreate_time());
+            riskEventInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            riskEventInfo.setIs_delete(Const.NOT_DELETE);
+            riskEventMapper.updateByPrimaryKey(riskEventInfo);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", riskEventInfo);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
+    }
+
+
+    /**
+     * 风控事件信息新增
+     * @param riskEventInfo
+     * @return
+     */
+    @RequestMapping(value = "/risk_event_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    @White
+    public ReturnInfo<RiskEventInfo> risk_event_add(RiskEventInfo riskEventInfo,String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value) {
+        try {
+            riskEventInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
+
+            JSONArray jsonArray=new JSONArray();
+            for (int i=0;i<param_code.length;i++){
+                JSONObject jsonObject=new JSONObject();
+                jsonObject.put("param_code", param_code[i]);
+                jsonObject.put("param_context", param_context[i]);
+                jsonObject.put("param_operate", param_operate[i]);
+                jsonObject.put("param_type", param_type[i]);
+                if(i>=param_value.length){
+                    jsonObject.put("param_value", "");
+                }else{
+                    jsonObject.put("param_value", param_value[i]);
+                }
+                jsonArray.add(jsonObject);
+            }
+            riskEventInfo.setEvent_json(jsonArray.toJSONString());
+
+            riskEventInfo.setOwner(getOwner());
+            riskEventInfo.setIs_delete(Const.NOT_DELETE);
+            riskEventInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            riskEventInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            riskEventMapper.insert(riskEventInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", riskEventInfo);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
+        }
+    }
+
+    /**
+     * 风控事件信息删除
+     * @param ids
+     * @return
+     */
+    @RequestMapping(value = "/risk_event_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    @White
+    public ReturnInfo risk_event_delete(String[] ids) {
+        try {
+            riskEventMapper.deleteLogicByIds("risk_event_info",ids, new Timestamp(new Date().getTime()));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+        }
+    }
+
+    /**
+     * 根据code查询风控事件明细
+     * @param plugin_code
+     * @return
+     */
+    @RequestMapping(value = "/risk_event_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public ReturnInfo<RiskEventInfo> risk_event_detail_by_code(String plugin_code) {
+        try {
+
+            RiskEventInfo riskEventInfo = new RiskEventInfo();
+            riskEventInfo.setEvent_code(plugin_code);
+            riskEventInfo = riskEventMapper.selectOne(riskEventInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", riskEventInfo);
+        } catch (Exception e) {
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+    public User getUser() {
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        return user;
+    }
+
+}

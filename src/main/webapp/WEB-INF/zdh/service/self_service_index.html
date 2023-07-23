@@ -196,10 +196,14 @@
                 data: '',
                 //成功返回
                 success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     var str_input = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
-                    for (var i = 0; i < data.length; i++) {
-                        if($.inArray(data[i].data_source_type, new Array("JDBC")) > -1){
-                            str_input += '<option value=\"' + data[i].id + "\" mytype=\"" + data[i].data_source_type + "\" hassubinfo=\"true\">" + data[i].data_source_context + "</option>";
+                    for (var i = 0; i < data.result.length; i++) {
+                        if($.inArray(data.result[i].data_source_type, new Array("JDBC")) > -1){
+                            str_input += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>";
                         }
                     }
                     console.info(str_input);
