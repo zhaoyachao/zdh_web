@@ -44,6 +44,11 @@ public class FilterInfo {
     private Timestamp update_time;
 
     /**
+     * 计算引擎,file,redis,hive
+     */
+    private String engine_type;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -181,5 +186,21 @@ public class FilterInfo {
      */
     public void setUpdate_time(Timestamp update_time) {
         this.update_time = update_time;
+    }
+
+    /**
+     * 获取计算引擎
+     * @return
+     */
+    public String getEngine_type() {
+        return engine_type;
+    }
+
+    /**
+     * 设置计算引擎
+     * @param engine_type
+     */
+    public void setEngine_type(String engine_type) {
+        this.engine_type = engine_type;
     }
 }

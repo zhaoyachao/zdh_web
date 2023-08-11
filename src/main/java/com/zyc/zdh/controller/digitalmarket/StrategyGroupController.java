@@ -462,6 +462,27 @@ public class StrategyGroupController extends BaseController {
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "",url);
     }
 
+    /**
+     * 杀死策略组
+     *
+     * @param id 策略组实例ID
+     * @return
+     */
+    @RequestMapping(value = "/killStrategyGroup", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public ReturnInfo killJobGroup(String id) {
+        //执行中,跳过,失败的任务保留,其余策略状态都改为已杀死,策略组实例改为kill杀死中
+        try {
+            strategyGroupInstanceMapper.updateStatusById3(JobStatus.KILL.getValue(),DateUtil.getCurrentTime(), id);
+            strategyInstanceMapper.updateStatusKilledByGroupInstanceId(id,JobStatus.KILLED.getValue());
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "杀死任务组成功", null);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "杀死任务组失败", e);
+        }
+    }
 
     /**
      * 杀死单个任务
@@ -481,8 +502,60 @@ public class StrategyGroupController extends BaseController {
             logger.error(error, e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "杀死任务失败", e);
         }
-
     }
+
+    /**
+     * 手动跳过任务
+     * 更新策略组状态为执行中,策略实例状态为执行中,并策略实例执行信息中is_disenable更新为true(禁用)
+     * @param id 任务实例ID
+     * @return
+     */
+    @RequestMapping(value = "/strategy_skip", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public ReturnInfo strategy_skip(String id) {
+        try {
+            StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
+            //此处需要修改策略实例状态新建,策略组状态新建
+            strategyInstance.setStatus(JobStatus.CREATE.getValue());
+            String run_jsmind_data = strategyInstance.getRun_jsmind_data();
+            JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
+            jsonObject.put("is_disenable","true");
+            strategyInstance.setRun_jsmind_data(jsonObject.toJSONString());
+            strategyInstance.setIs_disenable("true");
+            strategyInstanceMapper.updateByPrimaryKey(strategyInstance);
+            strategyGroupInstanceMapper.updateStatusById3(JobStatus.CREATE.getValue(), DateUtil.getCurrentTime(),strategyInstance.getGroup_instance_id());
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "手动跳过任务失败", e);
+        }
+    }
+
+    /**
+     * 手动重试
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/strategy_retry", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    @White
+    public ReturnInfo strategy_retry(String id) {
+        try {
+            StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
+            strategyInstanceMapper.updateStatusByIds(new String[]{id},JobStatus.CREATE.getValue());
+            strategyGroupInstanceMapper.updateStatusById3(JobStatus.SUB_TASK_DISPATCH.getValue(), DateUtil.getCurrentTime(), strategyInstance.getGroup_instance_id());
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "手动跳过任务失败", e);
+        }
+    }
+
 
     /**
      * 自动执行调度任务

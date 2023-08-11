@@ -56,7 +56,17 @@
                                        placeholder="规则说明" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
-
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">计算引擎</label>
+                            <div class="col-sm-10">
+                                <select id="engine_type" name="engine_type" data-placeholder="计算引擎"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="file" mytype="">本地文件</option>
+                                    <option value="redis" mytype="">redis</option>
+                                    <option value="hive" mytype="">hive</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">创建时间</label>
                             <div class="col-sm-10">
@@ -136,7 +146,7 @@
             for (var i = 0; i < pa.length; i++) {
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
-
+            $('#engine_type').chosen();
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
                 console.info("新增按钮触发");
@@ -205,6 +215,8 @@
                             var filter_name = data.result.filter_name;
                             $("#filter_name").val(filter_name);
 
+                            $("#engine_type").val(data.result.engine_type);
+                            $("#engine_type").trigger("chosen:updated");
 
                             var create_time = data.result.create_time;
                             $("#create_time").val(getMyDate(create_time));

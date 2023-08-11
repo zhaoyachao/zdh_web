@@ -1,5 +1,6 @@
 package com.zyc.zdh.job;
 
+import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -7,6 +8,7 @@ import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
+import com.mchange.lang.IntegerUtils;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.quartz.QuartzManager2;
@@ -161,6 +163,77 @@ public class JobDigitalMarket {
     }
 
 
+    /**
+     * 检查t+n模块是否满足
+     * @param si
+     */
+    public static boolean checkTnDepends(StrategyInstance si, Map<String,StrategyInstance> dagStrategyInstance) throws Exception {
+        //1 获取对比时间类型,相对或者绝对
+        String tn_type = JSONObject.parseObject(si.getRun_jsmind_data()).getString("tn_type");
+        String tn_unit = JSONObject.parseObject(si.getRun_jsmind_data()).getString("tn_unit");
+        String tn_value = JSONObject.parseObject(si.getRun_jsmind_data()).getString("tn_value");
+        if(StringUtils.isEmpty(tn_value)){
+            throw new Exception("tn模块时间参数不可为空");
+        }
+        Date currentDate = new Date();
+        if(tn_type.equalsIgnoreCase(Const.TN_TYPE_RELATIVE)){
+            //相对时间
+            //获取上游执行完成时间
+            if(StringUtils.isEmpty(si.getPre_tasks())){
+                throw new Exception("tn模块设置相对时间,必须有上游任务");
+            }
+            String parentId = si.getPre_tasks().split(",")[0];
+            StrategyInstance parentStrategyInstance = dagStrategyInstance.get(parentId);
+            Timestamp updateTime = parentStrategyInstance.getUpdate_time();
+
+            if(StringUtils.isEmpty(tn_unit)){
+                throw new Exception("tn模块设置相对时间单位为空");
+            }
+            if(!NumberUtil.isInteger(tn_value)){
+                throw new Exception("tn模块设置相对时间必须是整数");
+            }
+            Timestamp executeTime = null;
+            if(tn_unit.equalsIgnoreCase("minute")){
+                executeTime = DateUtil.addMinute(DateUtil.formatTime(updateTime), Integer.valueOf(tn_value));
+            }else if(tn_unit.equalsIgnoreCase("hour")){
+                executeTime =DateUtil.addHour(DateUtil.formatTime(updateTime), Integer.valueOf(tn_value));
+            }else if(tn_unit.equalsIgnoreCase("day")){
+                executeTime =DateUtil.addDay(DateUtil.formatTime(updateTime), Integer.valueOf(tn_value));
+            }
+
+            //此处还少一个之前/之后参数,默认当前只支持之后
+
+            if(currentDate.getTime() >= executeTime.getTime()){
+                //校验通过
+                return true;
+            }
+            return false;
+
+        }else if(tn_type.equalsIgnoreCase(Const.TN_TYPE_ABSOLUTE)){
+
+            long start=0;
+            long end=0;
+            //绝对时间
+            String[] values = tn_value.split(";");
+            if(values.length == 1){
+                //起始结束一样
+                start = DateUtil.pase(values[0], DateUtil.df_time.getPattern()).getTime();
+                end = start;
+            }
+            if(values.length != 2){
+                throw new Exception("tn模块设置绝对时间必须设置开始和结束2个时间");
+            }
+            start = DateUtil.pase(values[0], DateUtil.df_time.getPattern()).getTime();
+            end = DateUtil.pase(values[1], DateUtil.df_time.getPattern()).getTime();
+
+            //只做包含校验
+            if(currentDate.getTime()>=start && currentDate.getTime()<=end){
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
 
     /**
      * 根据时间(timestamp) 生成jinjava 模板中的时间参数
@@ -192,191 +265,6 @@ public class JobDigitalMarket {
         jinJavaParam.put("zdh_task_log_id", tli.getId());
 
         return jinJavaParam;
-
-    }
-
-    public static void DynamicParams(Map<String, Object> map, StrategyGroupInstance tli, Object taskInfo) {
-        try {
-            Map<String, Object> jinJavaParam = getJinJavaParam(tli);
-
-            Jinjava jj = new Jinjava();
-
-            jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "add_day",
-                    DateUtil.class, "addDay", String.class, Integer.class));
-            jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "add_hour",
-                    DateUtil.class, "addHour", String.class, Integer.class));
-            jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "add_minute",
-                    DateUtil.class, "addMinute", String.class, Integer.class));
-
-            String msg = "目前支持日期操作: {{add_day('2021-12-01 00:00:00', 1)}} => 2021-12-02 00:00:00 ,{{add_hour('2021-12-01 00:00:00', 1)}} => 2021-12-01 01:00:00,{{add_minute('2021-12-01 00:00:00', 1)}} => 2021-12-01 00:01:00";
-            logger.info(msg);
-            insertLog(tli, "info", msg);
-
-            map.forEach((k, v) -> {
-                logger.info("key:" + k + ",value:" + v);
-                jinJavaParam.put(k, v);
-            });
-//            EtlTaskInfo etlTaskInfo, SqlTaskInfo sqlTaskInfo, JarTaskInfo jarTaskInfo, SshTaskInfo sshTaskInfo,
-//                    EtlApplyTaskInfo etlApplyTaskInfo,EtlTaskFlinkInfo etlTaskFlinkInfo,EtlTaskJdbcInfo etlTaskJdbcInfo,EtlTaskDataxInfo etlTaskDataxInfo
-            if (taskInfo instanceof EtlTaskInfo) {
-                EtlTaskInfo etlTaskInfo = (EtlTaskInfo) taskInfo;
-                if (etlTaskInfo != null) {
-                    final String filter = jj.render(etlTaskInfo.getData_sources_filter_input(), jinJavaParam);
-                    final String clear = jj.render(etlTaskInfo.getData_sources_clear_output(), jinJavaParam);
-                    final String file_name = jj.render(etlTaskInfo.getData_sources_file_name_input(), jinJavaParam);
-                    final String file_name2 = jj.render(etlTaskInfo.getData_sources_file_name_output(), jinJavaParam);
-                    final String table_name = jj.render(etlTaskInfo.getData_sources_table_name_input(), jinJavaParam);
-                    final String table_name2 = jj.render(etlTaskInfo.getData_sources_table_name_output(), jinJavaParam);
-                    etlTaskInfo.setData_sources_filter_input(filter);
-                    etlTaskInfo.setData_sources_clear_output(clear);
-                    etlTaskInfo.setData_sources_file_name_input(file_name);
-                    etlTaskInfo.setData_sources_file_name_output(file_name2);
-                    etlTaskInfo.setData_sources_table_name_input(table_name);
-                    etlTaskInfo.setData_sources_table_name_output(table_name2);
-                }
-            }
-
-            if (taskInfo instanceof SqlTaskInfo) {
-                SqlTaskInfo sqlTaskInfo = (SqlTaskInfo) taskInfo;
-                if (sqlTaskInfo != null) {
-                    final String etl_sql = jj.render(sqlTaskInfo.getEtl_sql(), jinJavaParam);
-                    final String clear = jj.render(sqlTaskInfo.getData_sources_clear_output(), jinJavaParam);
-                    final String file_name = jj.render(sqlTaskInfo.getData_sources_file_name_output(), jinJavaParam);
-                    final String table_name = jj.render(sqlTaskInfo.getData_sources_table_name_output(), jinJavaParam);
-
-                    sqlTaskInfo.setEtl_sql(etl_sql);
-                    sqlTaskInfo.setData_sources_clear_output(clear);
-                    sqlTaskInfo.setData_sources_file_name_output(file_name);
-                    sqlTaskInfo.setData_sources_table_name_output(table_name);
-
-                }
-            }
-            if (taskInfo instanceof JarTaskInfo) {
-                JarTaskInfo jarTaskInfo = (JarTaskInfo) taskInfo;
-                if (jarTaskInfo != null) {
-                    final String spark_submit_params = jj.render(jarTaskInfo.getSpark_submit_params(), jinJavaParam);
-                    jarTaskInfo.setSpark_submit_params(spark_submit_params);
-                }
-            }
-
-            if (taskInfo instanceof SshTaskInfo) {
-                SshTaskInfo sshTaskInfo = (SshTaskInfo) taskInfo;
-                if (sshTaskInfo != null) {
-                    final String script_path = jj.render(sshTaskInfo.getSsh_script_path(), jinJavaParam);
-                    sshTaskInfo.setSsh_script_path(script_path);
-
-                    jinJavaParam.put("zdh_online_file", sshTaskInfo.getSsh_script_path() + "/" + tli.getId() + "_online");
-                    final String ssh_cmd = jj.render(sshTaskInfo.getSsh_cmd(), jinJavaParam);
-                    sshTaskInfo.setSsh_cmd(ssh_cmd);
-
-                    final String script_context = jj.render(sshTaskInfo.getSsh_script_context(), jinJavaParam);
-                    sshTaskInfo.setSsh_script_context(script_context);
-
-                }
-            }
-            if (taskInfo instanceof EtlApplyTaskInfo) {
-                EtlApplyTaskInfo etlApplyTaskInfo = (EtlApplyTaskInfo) taskInfo;
-                if (etlApplyTaskInfo != null) {
-                    final String filter = jj.render(etlApplyTaskInfo.getData_sources_filter_input(), jinJavaParam);
-                    final String clear = jj.render(etlApplyTaskInfo.getData_sources_clear_output(), jinJavaParam);
-                    final String file_name = jj.render(etlApplyTaskInfo.getData_sources_file_name_input(), jinJavaParam);
-                    final String file_name2 = jj.render(etlApplyTaskInfo.getData_sources_file_name_output(), jinJavaParam);
-                    final String table_name = jj.render(etlApplyTaskInfo.getData_sources_table_name_input(), jinJavaParam);
-                    final String table_name2 = jj.render(etlApplyTaskInfo.getData_sources_table_name_output(), jinJavaParam);
-                    etlApplyTaskInfo.setData_sources_filter_input(filter);
-                    etlApplyTaskInfo.setData_sources_clear_output(clear);
-                    etlApplyTaskInfo.setData_sources_file_name_input(file_name);
-                    etlApplyTaskInfo.setData_sources_file_name_output(file_name2);
-                    etlApplyTaskInfo.setData_sources_table_name_input(table_name);
-                    etlApplyTaskInfo.setData_sources_table_name_output(table_name2);
-                }
-
-            }
-            if (taskInfo instanceof EtlTaskFlinkInfo) {
-                EtlTaskFlinkInfo etlTaskFlinkInfo = (EtlTaskFlinkInfo) taskInfo;
-                if (etlTaskFlinkInfo != null) {
-                    final String etl_sql = jj.render(etlTaskFlinkInfo.getEtl_sql(), jinJavaParam);
-                    final String command = jj.render(etlTaskFlinkInfo.getCommand(), jinJavaParam);
-                    etlTaskFlinkInfo.setEtl_sql(etl_sql);
-                    etlTaskFlinkInfo.setCommand(command);
-                }
-            }
-            if (taskInfo instanceof EtlTaskJdbcInfo) {
-                EtlTaskJdbcInfo etlTaskJdbcInfo = (EtlTaskJdbcInfo) taskInfo;
-                if (etlTaskJdbcInfo != null) {
-                    final String etl_sql = jj.render(etlTaskJdbcInfo.getEtl_sql(), jinJavaParam);
-                    final String clear = jj.render(etlTaskJdbcInfo.getData_sources_clear_output(), jinJavaParam);
-                    final String file_name = jj.render(etlTaskJdbcInfo.getData_sources_file_name_output(), jinJavaParam);
-                    final String table_name = jj.render(etlTaskJdbcInfo.getData_sources_table_name_output(), jinJavaParam);
-
-                    etlTaskJdbcInfo.setEtl_sql(etl_sql);
-                    etlTaskJdbcInfo.setData_sources_clear_output(clear);
-                    etlTaskJdbcInfo.setData_sources_file_name_output(file_name);
-                    etlTaskJdbcInfo.setData_sources_table_name_output(table_name);
-                }
-            }
-
-            if (taskInfo instanceof EtlTaskDataxInfo) {
-                EtlTaskDataxInfo etlTaskDataxInfo = (EtlTaskDataxInfo) taskInfo;
-                if (etlTaskDataxInfo != null) {
-                    final String datax_json = jj.render(etlTaskDataxInfo.getDatax_json(), jinJavaParam);
-                    etlTaskDataxInfo.setDatax_json(datax_json);
-                }
-            }
-
-            if (taskInfo instanceof QualityTaskInfo) {
-                QualityTaskInfo qualityTaskInfo = (QualityTaskInfo) taskInfo;
-                if (qualityTaskInfo != null) {
-                    final String filter = jj.render(qualityTaskInfo.getData_sources_filter_input(), jinJavaParam);
-                    final String file_name = jj.render(qualityTaskInfo.getData_sources_file_name_input(), jinJavaParam);
-                    final String table_name = jj.render(qualityTaskInfo.getData_sources_table_name_input(), jinJavaParam);
-                    final String quality_rule_config = jj.render(qualityTaskInfo.getQuality_rule_config(), jinJavaParam);
-                    qualityTaskInfo.setData_sources_filter_input(filter);
-                    qualityTaskInfo.setData_sources_file_name_input(file_name);
-                    qualityTaskInfo.setData_sources_table_name_input(table_name);
-                    qualityTaskInfo.setQuality_rule_config(quality_rule_config);
-                }
-            }
-
-            if (taskInfo instanceof EtlTaskUnstructureInfo) {
-                EtlTaskUnstructureInfo etlTaskUnstructureInfo = (EtlTaskUnstructureInfo) taskInfo;
-                if (etlTaskUnstructureInfo != null) {
-                    final String input_path = jj.render(etlTaskUnstructureInfo.getInput_path(), jinJavaParam);
-                    final String output_path = jj.render(etlTaskUnstructureInfo.getOutput_path(), jinJavaParam);
-                    etlTaskUnstructureInfo.setInput_path(input_path);
-                    etlTaskUnstructureInfo.setOutput_path(output_path);
-                }
-            }
-
-        } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            throw e;
-        }
-
-
-    }
-
-    public static String DynamicParams(Map<String, Object> map, StrategyGroupInstance tli, String old_str) {
-        try {
-            Map<String, Object> jinJavaParam = getJinJavaParam(tli);
-
-            Jinjava jj = new Jinjava();
-
-            if (map != null) {
-                map.forEach((k, v) -> {
-                    logger.info("key:" + k + ",value:" + v);
-                    jinJavaParam.put(k, v);
-                });
-            }
-
-            String new_str = jj.render(old_str, jinJavaParam);
-
-            return new_str;
-        } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            throw e;
-        }
-
 
     }
 
@@ -495,184 +383,6 @@ public class JobDigitalMarket {
         }
 
 
-    }
-
-
-    /**
-     * 任务触发后,等待依赖任务完成触发,其他外部均调用此方法执行子任务实例
-     *
-     * @param sgi
-     */
-    public static void chooseJobBean(StrategyGroupInstance sgi) {
-        QuartzJobMapper qjm = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
-        StrategyGroupInstanceMapper tlim = (StrategyGroupInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-
-        //线程池执行具体调度任务
-        //threadPoolExecutor.execute();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                sub_strategy_instance(sgi, new String[]{});
-            }
-        }).start();
-    }
-
-
-
-
-
-    public static List<Date> resolveQuartzExpr(String expr) throws ParseException {
-
-        List<Date> dates = new ArrayList<>();
-
-        if (expr.endsWith("s") || expr.endsWith("m") || expr.endsWith("h") || expr.endsWith("d")) {
-            long time = Integer.valueOf(expr.substring(0, expr.length() - 1));
-
-            int dateType = Calendar.DAY_OF_MONTH;
-            int num = 1;
-            if (expr.endsWith("s")) {
-                dateType = Calendar.SECOND;
-                num = Integer.parseInt(expr.split("s")[0]);
-            }
-            if (expr.endsWith("m")) {
-                dateType = Calendar.MINUTE;
-                num = Integer.parseInt(expr.split("m")[0]);
-            }
-            if (expr.endsWith("h")) {
-                dateType = Calendar.HOUR;
-                num = Integer.parseInt(expr.split("h")[0]);
-            }
-            if (expr.endsWith("d")) {
-                dateType = Calendar.DAY_OF_MONTH;
-                num = Integer.parseInt(expr.split("d")[0]);
-            }
-
-            for (int i = 1; i <= 10; i++) {
-                dates.add(DateUtil.add(new Timestamp(new Date().getTime()), dateType, num * i));
-            }
-
-        } else {
-            CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
-            cronTriggerImpl.setCronExpression(expr);//这里写要准备猜测的cron表达式
-            dates = TriggerUtils.computeFireTimes(cronTriggerImpl, null, 10);
-        }
-
-        return dates;
-
-    }
-
-    public static List<Date> resolveQuartzExpr(String use_quartz_time, String step_size, String expr, String start_time, String end_time) throws ParseException {
-
-        List<Date> dates1 = new ArrayList<>();
-        List<Date> dates = new ArrayList<>();
-        //对于自定义时间
-        if (expr.endsWith("s") || expr.endsWith("m") || expr.endsWith("h") || expr.endsWith("d")) {
-            long time = Integer.valueOf(expr.substring(0, expr.length() - 1));
-
-            int dateType = Calendar.DAY_OF_MONTH;
-            int num = 1;
-            if (expr.endsWith("s")) {
-                dateType = Calendar.SECOND;
-                num = Integer.parseInt(expr.split("s")[0]);
-            }
-            if (expr.endsWith("m")) {
-                dateType = Calendar.MINUTE;
-                num = Integer.parseInt(expr.split("m")[0]);
-            }
-            if (expr.endsWith("h")) {
-                dateType = Calendar.HOUR;
-                num = Integer.parseInt(expr.split("h")[0]);
-            }
-            if (expr.endsWith("d")) {
-                dateType = Calendar.DAY_OF_MONTH;
-                num = Integer.parseInt(expr.split("d")[0]);
-            }
-
-            boolean if_end = true;
-            Timestamp st = new Timestamp(DateUtil.pase(start_time, "yyyy-MM-dd HH:mm:ss").getTime());
-            Timestamp end = new Timestamp(DateUtil.pase(end_time, "yyyy-MM-dd HH:mm:ss").getTime());
-            dates.add(st);
-            while (if_end) {
-                st = DateUtil.add(st, dateType, num);
-                if (st.getTime() <= end.getTime()) {
-                    dates.add(st);
-                } else {
-                    if_end = false;
-                }
-            }
-        } else {
-            CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
-            cronTriggerImpl.setCronExpression(expr);//这里写要准备猜测的cron表达式
-            dates = TriggerUtils.computeFireTimesBetween(cronTriggerImpl, null, DateUtil.pase(start_time, "yyyy-MM-dd HH:mm:ss"), DateUtil.pase(end_time, "yyyy-MM-dd HH:mm:ss"));
-        }
-
-        if (use_quartz_time.equalsIgnoreCase("on")) {
-            return dates;
-        }
-
-
-        int num = 0;
-        int dateType = Calendar.DAY_OF_MONTH;
-        if (step_size.endsWith("s")) {
-            dateType = Calendar.SECOND;
-            num = Integer.parseInt(step_size.split("s")[0]);
-        }
-        if (step_size.endsWith("m")) {
-            dateType = Calendar.MINUTE;
-            num = Integer.parseInt(step_size.split("m")[0]);
-        }
-        if (step_size.endsWith("h")) {
-            dateType = Calendar.HOUR;
-            num = Integer.parseInt(step_size.split("h")[0]);
-        }
-        if (step_size.endsWith("d")) {
-            dateType = Calendar.DAY_OF_MONTH;
-            num = Integer.parseInt(step_size.split("d")[0]);
-        }
-
-        Timestamp tmp = Timestamp.valueOf(start_time);
-        dates1.add(tmp);
-        for (int i = 0; i < dates.size(); i++) {
-            tmp = DateUtil.add(tmp, dateType, num);
-            if (tmp.getTime() <= Timestamp.valueOf(end_time).getTime()) {
-                dates1.add(tmp);
-            } else {
-                break;
-            }
-        }
-
-        return dates1;
-
-    }
-
-    /**
-     * 使用quartz 触发时间时,获取指定时间差的etl_date
-     *
-     * @param cur
-     * @param step_size
-     * @return
-     */
-    public static Timestamp getEtlDate(Timestamp cur, String step_size) {
-        int dateType = Calendar.SECOND;
-        int num = 0;
-        if (step_size.endsWith("s")) {
-            dateType = Calendar.SECOND;
-            num = Integer.parseInt(step_size.split("s")[0]);
-        }
-        if (step_size.endsWith("m")) {
-            dateType = Calendar.MINUTE;
-            num = Integer.parseInt(step_size.split("m")[0]);
-        }
-        if (step_size.endsWith("h")) {
-            dateType = Calendar.HOUR;
-            num = Integer.parseInt(step_size.split("h")[0]);
-        }
-        if (step_size.endsWith("d")) {
-            dateType = Calendar.DAY_OF_MONTH;
-            num = Integer.parseInt(step_size.split("d")[0]);
-        }
-
-        return DateUtil.add(cur, dateType, num);
     }
 
     /**
@@ -816,14 +526,11 @@ public class JobDigitalMarket {
                     if (Arrays.asList(sub_tasks).contains(map2.get(sid)) && !si.getIs_disenable().equalsIgnoreCase("true")) {
                         //设置为初始态
                         si.setStatus(JobStatus.NON.getValue());
-                    } else {
-                        insertLog(si,"INFO", "当前策略实例设置跳过");
-                        si.setStatus(JobStatus.SKIP.getValue());
+                    }else {
+                        si.setStatus(JobStatus.NON.getValue());
                     }
                 }
-
                 sim.insert(si);
-                // debugInfo(tli);
             }
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

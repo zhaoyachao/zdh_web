@@ -49,7 +49,10 @@
                   //area: ['450px', '500px'],
                   content: server_context+"/strategy_group_retry_detail_index?id="+row.id, //iframe的url
                   end : function () {
-                      console.info("弹框结束")
+                      console.info("弹框结束");
+                      $('#exampleTableEvents').bootstrapTable('refresh', {
+                          url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
+                      });
                   }
               });
 
@@ -64,7 +67,7 @@
               }, function (index) {
 
                   $.ajax({
-                      url: server_context+"/killJobGroup",
+                      url: server_context+"/killStrategyGroup",
                       data: "id=" + row.id,
                       type: "post",
                       dataType: "json",
@@ -214,6 +217,13 @@
                 return getMyDate(value);
             }
         }, {
+            field: 'update_time',
+            title: '任 务 更 新 时 间',
+            sortable:true,
+            formatter: function (value, row, index) {
+                return getMyDate(value);
+            }
+        },{
             field: 'process',
             title: '进度',
             sortable: true,

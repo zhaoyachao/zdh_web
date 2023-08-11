@@ -101,4 +101,16 @@ public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<Strat
             }
     )
     public int updateStatusByIds(@Param("ids") String[] ids, @Param("status") String status);
+
+
+    @Update(
+            {
+                    "<script>",
+                    "update strategy_instance set status=#{status} where group_instance_id =",
+                    "#{group_instance_id}",
+                    " and status not in ('etl','error','skip')",
+                    "</script>"
+            }
+    )
+    public int updateStatusKilledByGroupInstanceId(@Param("group_instance_id") String group_instance_id, @Param("status") String status);
 }

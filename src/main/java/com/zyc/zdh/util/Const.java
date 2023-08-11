@@ -112,6 +112,8 @@ public class Const {
     public static String AUDITOR_RULE_LEGAL="legal";
     public static String AUDITOR_RULE_RESOURCES_LEADER="resources_leader";
 
+    public static String TN_TYPE_RELATIVE="relative";
+    public static String TN_TYPE_ABSOLUTE="absolute";
 
     public static String getEnumName(String type,String code){
         Map<String, Map<String, String>> enumMap=new HashMap<>();

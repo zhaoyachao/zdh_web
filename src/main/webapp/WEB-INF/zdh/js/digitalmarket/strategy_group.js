@@ -426,6 +426,7 @@
           showRefresh: true,
           showToggle: true,
           showColumns: true,
+          showLoading: true,
           sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
           pageNumber: 1,                       //初始化加载第一页，默认第一页
           pageSize: 10,                       //每页的记录行数（*）
@@ -438,7 +439,7 @@
           },
       queryParams: function (params) {
           // 此处使用了LayUi组件 是为加载层
-          loadIndex = layer.load(1);
+          //loadIndex = layer.load(1);
           let resRepor = {
               //服务端分页所需要的参数
               limit: params.limit,
@@ -448,7 +449,7 @@
       },
      responseHandler: res => {
               // 关闭加载层
-              layer.close(loadIndex);
+              //layer.close(loadIndex);
               layer.msg(res.msg);
               return {
                   "total":res.result.total,

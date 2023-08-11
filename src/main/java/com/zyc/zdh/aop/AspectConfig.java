@@ -99,14 +99,13 @@ public class AspectConfig implements Ordered {
             String ipAddr = getRemoteHost(request);
             String url = request.getRequestURL().toString();
             if(url.endsWith("404")){
-                request.getHeader("Referer");
                 String uid = "";
                 try{
                     if(getUser()!=null){
                         uid = getUser().getUserName();
                     }
                 }catch (Exception e){
-
+                    e.printStackTrace();
                 }
                 logger.error("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,not found url", ipAddr, uid, request.getHeader("Referer"));
             }

@@ -234,27 +234,30 @@
         ]
     };
 
-    function get_color_by_status(status){
+    function get_color_by_status(status, is_disenable){
         //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+        if(is_disenable == "true"){
+            return "LightGrey";
+        }
         if(status=='create'  ){
-            return "#C2DFFF"
+            return "#C2DFFF";
         }
         // value == "etl"  || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch"
         if(status=="etl"|| status=="kill" || status=="sub_task_dispatch" || status == "dispatch" || status=="check_dep" || status=="wait_retry" || status=="check_dep_finish"){
-            return "#00bb00"
+            return "#00bb00";
         }
         if(status=="finish"){
-            return "#2B65EC"
+            return "#2B65EC";
         }
 
         if(status=="error" || status=="killed"){
-            return "#ec4758"
+            return "#ec4758";
         }
         if(status == "skip"){
             return "LightGrey"
         }
 
-        return "#f7a54a"
+        return "#f7a54a";
 
 
     }
@@ -284,6 +287,10 @@
                 dataType : "json",
                 async: false,
                 success : function(data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     console.info("task_log_instance_list success");
                     for(var j=0;j<data.result.length;j++){
                         //divId->status
@@ -312,7 +319,7 @@
             var strategy_instance_id=map.get(divId);
             var run_time = map4.get(strategy_instance_id);
             cls_str="node node"+tp+"css tasks";
-            var color=get_color_by_status(map3.get(divId));
+            var color=get_color_by_status(map3.get(divId), rs.is_disenable);
             console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color);
 
             $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="'+tp+'"'+' data-id=" " >' +etl_context+ '</div>');
@@ -371,6 +378,11 @@
                 $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
+            if(tp == "tn"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto");
             $("#" + divId).css("display","inline-block");
@@ -401,6 +413,7 @@
         var map = new Map();
         var map2 = new Map();
         var map3 = new Map();
+        var map4 = new Map();
         //获取任务运行状态
         var run_data=jsplumb_json.run_data;
         if (run_data.length >= 1 ){
@@ -423,7 +436,8 @@
                     for(var j=0;j<data.result.length;j++){
                         //divId->status
                         console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
-                        map3.set(map2.get(data.result[j].id),data.result[j].status)
+                        map3.set(map2.get(data.result[j].id),data.result[j].status);
+                        map4.set(map2.get(data.result[j].id),data.result[j].is_disenable);
                     }
                 },
                 error: function (data) {
@@ -433,9 +447,10 @@
             });
         }
 
+        console.info(map4);
         map3.forEach(function(value,key){
-            console.log(value,key);
-            var color=get_color_by_status(value);
+            console.log(value,key, map4.get(key));
+            var color=get_color_by_status(value, map4.get(key));
             $('#'+key).css("background-color",color);
         });
 
@@ -571,7 +586,7 @@
                     },
                     btn1:function(){
                         $.ajax({
-                            url: server_context+"/retryJob",
+                            url: server_context+"/strategy_retry",
                             data: "id=" + row.id+"&new_version=false",
                             type: "post",
                             dataType: "json",
@@ -652,11 +667,15 @@
                 }, function (index) {
 
                     $.ajax({
-                        url: server_context+"/skip",
+                        url: server_context+"/strategy_skip",
                         data: "id=" + row.id,
                         type: "post",
                         dataType: "json",
                         success: function (data) {
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
                             console.info("success");
                             layer.close(index)
                         },
@@ -732,8 +751,8 @@
                 title: '子任务说明',
                 sortable: true
             }, {
-                field: 'job_id',
-                title: '任务ID',
+                field: 'group_instance_id',
+                title: '任务组实例ID',
                 sortable: false,
                 visible: true
             },{
@@ -808,7 +827,7 @@
                     var class_str = "btn-primary  btn-xs";
                     var class_str2 = "btn-primary  ";
                     var context = "未运行";
-                    var btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>';
+                    var btn_retry_str='';
                     var btn_kill_str='<button id="kill" type="button" class="btn btn-danger btn-xs">杀死</button>';
                     if(row.is_retryed==1){
                         btn_retry_str='<button disabled="disabled" id="retry" type="button" class="btn btn-primary btn-xs">重试</button>'
@@ -820,7 +839,7 @@
                     if (value == "finish") {
                         context = "完成";
                         class_str = "btn-primary btn-xs";
-                        btn_retry_str='';
+                        btn_retry_str='<button id="retry" type="button" class="btn btn-info btn-xs">重新执行</button>';
                         btn_kill_str=''
                     }
                     if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
@@ -836,6 +855,7 @@
                         class_str2 = "btn-primary ";
                         btn_kill_str='';
                         btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
+                        btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>';
                     }
                     if (value == "retry") {
                         context = "重试";
@@ -851,6 +871,7 @@
                         class_str = "btn-danger btn-xs";
                         btn_kill_str='';
                         btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
+                        btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>';
                     }
 
 
@@ -874,7 +895,7 @@
                         '<div style="text-align:center" >'+
                         '<div class="btn-group">'+
                         '<button type="button" class="btn '+class_str+'" >'+context+'</button>'+
-                        // btn_retry_str +
+                         btn_retry_str +
                         btn_kill_str +
                         btn_skip_str +
                         '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+

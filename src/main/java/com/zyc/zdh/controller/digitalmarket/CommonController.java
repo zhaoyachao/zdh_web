@@ -125,6 +125,16 @@ public class CommonController extends BaseController {
     }
 
     /**
+     * T+N页面
+     * @return
+     */
+    @RequestMapping(value = "/tn_detail", method = RequestMethod.GET)
+    @White
+    public String tn_detail() {
+        return "digitalmarket/tn_detail";
+    }
+
+    /**
      * 人群文件列表
      * @param rule_context 关键字
      * @return

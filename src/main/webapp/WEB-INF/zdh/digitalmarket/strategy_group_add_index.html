@@ -399,6 +399,13 @@
                 $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
+            if(tp == "tn"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+                $("#" + divId).attr("tn_unit",rs.tn_unit);
+                $("#" + divId).attr("tn_type",rs.tn_type);
+                $("#" + divId).attr("tn_value",rs.tn_value);
+            }
 
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
@@ -482,6 +489,10 @@
                 data_node: $elem.attr('data_node'),
 
                 id_mapping_code: $elem.attr('id_mapping_code'),
+
+                tn_unit: $elem.attr('tn_unit'),
+                tn_type: $elem.attr('tn_type'),
+                tn_value: $elem.attr('tn_value'),
 
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,

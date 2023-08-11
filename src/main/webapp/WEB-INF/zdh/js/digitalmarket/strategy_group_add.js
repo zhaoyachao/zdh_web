@@ -196,6 +196,9 @@ function doubleclick(id,tp) {
         case "risk":
             doubleclick_risk(id);
             break;
+        case "tn":
+            doubleclick_tn(id);
+            break;
         default:
             $(id).dblclick(function () {layer.msg("不支持的组件");});
 
@@ -812,7 +815,7 @@ function doubleclick_id_mapping(id) {
                 div.attr("touch_type",etl_task_info.touch_type);
                 div.attr("is_base",etl_task_info.is_base);
 
-                //div.attr("operate",etl_task_info.operate);
+                div.attr("operate",etl_task_info.operate);
                 div.attr("id_mapping_code",etl_task_info.id_mapping_code);
                 div.attr("rule_context",etl_task_info.rule_context);
                 //div.width(etl_task_info.etl_context.length*16)
@@ -830,7 +833,6 @@ function doubleclick_id_mapping(id) {
         });
     });
 }
-
 
 function doubleclick_risk(id) {
     $(id).dblclick(function () {
@@ -887,6 +889,66 @@ function doubleclick_risk(id) {
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 //此处更新中文表达式
                 //create_rule_expression_cn();
+            }
+        });
+    });
+}
+
+function doubleclick_tn(id) {
+    $(id).dblclick(function () {
+        $("#etl_task_text").val("");
+        var text = $(this).text();
+        var div = $(this);
+        var rule_id=div.attr("rule_id");
+        var url=server_context+'/tn_detail.html';
+        if( div.attr("rule_id") == "" || div.attr("rule_id") == undefined ){
+            url=url+"?rule_id=-1"
+        }else{
+            var tn_unit=div.attr("tn_unit");
+            var tn_type=div.attr("tn_type");
+            var tn_value=div.attr("tn_value");
+            var depend_level = div.attr("depend_level");
+            var time_out = div.attr("time_out");
+            var operate = div.attr("operate");
+            var touch_type = div.attr("touch_type");
+            var is_base = div.attr("is_base");
+            var is_disenable = div.attr("is_disenable");
+            url=url+"?rule_id="+rule_id+"&tn_unit="+tn_unit+"&tn_type="+tn_type+"&tn_value="+tn_value+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+        }
+        layer.open({
+            type: 2,
+            area: ['100%', '100%'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: encodeURI(url),
+            end: function () {
+                console.info("index:doubleclick:"+$("#etl_task_text").val());
+                if($("#etl_task_text").val()==""){
+                    console.info("无修改-不更新");
+                    return ;
+                }
+                var etl_task_info=JSON.parse($("#etl_task_text").val());
+                div.attr("more_task",etl_task_info.more_task);
+                div.attr("is_disenable",etl_task_info.is_disenable);
+                div.attr("time_out",etl_task_info.time_out);
+                div.attr("touch_type",etl_task_info.touch_type);
+                div.attr("is_base",etl_task_info.is_base);
+
+                div.attr("tn_unit",etl_task_info.tn_unit);
+                div.attr("tn_type",etl_task_info.tn_type);
+                div.attr("tn_value",etl_task_info.tn_value);
+                div.attr("operate",etl_task_info.operate);
+                div.attr("rule_id",etl_task_info.rule_id);
+                div.attr("rule_context",etl_task_info.rule_context);
+                //div.width(etl_task_info.etl_context.length*16)
+                div.css("width","auto");
+                div.css("height","auto");
+                div.css("display","inline-block");
+                div.css("*display","inline");
+                div.css("*zoom","1");
+                div.attr("title", etl_task_info.rule_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
     });

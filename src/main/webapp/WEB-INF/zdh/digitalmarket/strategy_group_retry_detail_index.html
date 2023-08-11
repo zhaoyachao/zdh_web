@@ -328,6 +328,15 @@
                 $("#" + divId).attr("touch_task",rs.touch_task);
                 $("#" + divId).html(rs.touch_context);
             }
+            if(tp == "plugin"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html(rs.rule_context);
+            }
+            if(tp == "tn"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html(rs.rule_context);
+            }
+
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto");
             $("#" + divId).css("display","inline-block");
@@ -497,7 +506,7 @@
                     for(var i=0;i<jsplumb_json.tasks.length;i++){
                         var divId=jsplumb_json.tasks[i].divId;
                         if(jsplumb_json.tasks[i].is_disenable == "true"){
-                            continue;
+                            //continue;
                         }
                         $('#sub_task_div').append('<label class="no-padding">');
                         $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' id="checkbox_'+divId+'"><i></i>'+jsplumb_json.tasks[i].name+'</label>')

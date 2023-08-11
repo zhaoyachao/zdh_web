@@ -700,7 +700,12 @@
   + v5.1.2 [zdh_web] 数据标识,产品标识,系统设置,血缘分析,审批管理controller层,统一返回数据结构【进行中】
   + v5.1.2 [zdh_web]修复etl获取数据schema时bug
   + v5.1.2 [zdh_web]优化代码生成工具,controller层统一返回数据结构
-  
+  + v5.1.2 [zdh_web]智能营销模块-策略重试功能(不重新生成任务)
+  + v5.1.2 [zdh_web]修复idmaping编辑后展示问题
+  + v5.1.2 [zdh_web]智能营销模块-杀死策略组实例
+  + v5.1.2 [zdh_web]智能营销模块-成功策略新增重新执行功能
+  + v5.1.2 [zdh_web]智能营销模块-跳过策略逻辑修改(修改逻辑,跳过策略状态会设置为初始化太,coustomer模块会根据is_disenable判断是否复用上游数据)
+  + v5.1.2 [zdh_web]智能营销模块-增加实时日志
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -2213,7 +2218,21 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
     VALUES(1122102818098909184, '963932648793706496', 'idmapping页面', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2023-06-24 09:55:59', '2023-06-24 09:55:59', 'id_mapping_detail', '3', '', '', 'zdh');
     
-
+# 5.1.1迁移5.1.2
+     CREATE TABLE `risk_event_info` (
+       `id` bigint NOT NULL AUTO_INCREMENT,
+       `event_type` varchar(200) not null DEFAULT '' COMMENT '事件类型',
+       `event_code` varchar(200) not null DEFAULT '' COMMENT '事件code',
+       `event_name` varchar(200) not null DEFAULT '' COMMENT '事件名称',
+       `event_json` text COMMENT '事件配置',
+       `owner` varchar(100) not null DEFAULT '' COMMENT '拥有者',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       PRIMARY KEY (`id`)
+     ) comment '风控事件信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
   + v4.7.x 接入flink引擎,实现流采集 已完成

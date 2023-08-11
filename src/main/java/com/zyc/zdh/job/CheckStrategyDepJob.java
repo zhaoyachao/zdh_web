@@ -217,6 +217,20 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                         }
 
                         if(is_run){
+                            //检查是否tn策略,tn策略动态判断当前时间是否可执行
+                            if(tl.getInstance_type().equalsIgnoreCase("tn")){
+                                is_run = JobDigitalMarket.checkTnDepends(tl, dagStrategyInstance);
+                                if(is_run){
+                                    //更新任务状态为完成
+                                    tl.setStatus(JobStatus.FINISH.getValue());
+                                    JobDigitalMarket.updateTaskLog(tl,sim);
+                                    JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",检查完成:"+tl.getStatus());
+                                    continue;
+                                }
+                            }
+                        }
+
+                        if(is_run){
                             //上游都以完成,可执行,任务发完执行集群 此处建议使用优先级队列 todo
                             System.out.println("模拟发放任务--开始");
                             JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
@@ -233,6 +247,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                             //更新任务状态为检查完成
                             tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                             JobDigitalMarket.updateTaskLog(tl,sim);
+                            JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",检查完成:"+tl.getStatus());
                         }
                     }
                 }catch (Exception e){
@@ -367,6 +382,14 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 
     }
 
+    /**
+     * 废弃,如果需要已队列方式运行,需要重新实现
+     * @param producer
+     * @param priority
+     * @param msg
+     * @param queue_name
+     * @throws Exception
+     */
     public static void send(ProducerImpl producer,int priority, Object msg,String queue_name) throws Exception {
         producer.setQueue(queue_name);
         producer.send(msg, priority,5);
