@@ -2019,7 +2019,324 @@ INSERT INTO zdh.resource_tree_info
 (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
 VALUES(1015585046146322432, '904058054746574848', 'FLUME页面', '5', 'zyc', 'fa fa-coffee', '', '9', '1', '2022-09-03 11:32:24', '2022-09-03 11:32:24', 'flume_detail', '3', '', '', 'zdh');
 
+update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`= 'dispatch' and job_type in ('JDBC','GROUP','SHELL','HDFS')) then 'killed' when `status` in ('error','finish','skip') then `status` else 'kill' end
+where group_id='963565723408404480' and (`status` != 'error' and `status` != 'killed');
 
+
+CREATE TABLE `user_operate_log` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+  `user_name` varchar(500) DEFAULT NULL COMMENT '用户名',
+  `operate_url` varchar(500) DEFAULT NULL COMMENT '操作url',
+  `operate_context` varchar(500) DEFAULT NULL COMMENT '操作说明',
+  `operate_input` text COMMENT '输入参数',
+  `operate_output` text COMMENT '输出结果',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `time` varchar(100) NOT NULL DEFAULT '' COMMENT '请求响应耗时',
+  `ip` varchar(16) NOT NULL DEFAULT '' COMMENT 'ip地址',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `we_mock_tree_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `parent` varchar(100) DEFAULT NULL,
+  `text` varchar(1024) DEFAULT NULL,
+  `level` varchar(10) DEFAULT NULL COMMENT '层级',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `icon` varchar(200) DEFAULT NULL,
+  `resource_desc` varchar(10) DEFAULT NULL COMMENT '资源说明',
+  `order` varchar(200) DEFAULT NULL,
+  `is_delete` varchar(10) not null DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `url` text COMMENT 'url链接',
+  `resource_type` varchar(64) DEFAULT NULL COMMENT '1:目录,2:菜单',
+  `notice_title` varchar(8) NOT NULL DEFAULT '' COMMENT '提示语',
+  `event_code` varchar(64) NOT NULL DEFAULT '' COMMENT '绑定事件',
+  `product_code` varchar(100) NOT NULL DEFAULT '' COMMENT '产品code',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+INSERT INTO zdh.param_info
+(id, param_name, param_value, param_context, param_type, param_timeout, owner, status, is_delete, create_time, update_time)
+VALUES(10, 'zdh_check_impls', 'com.zyc.zdh.job.CheckDepJob', '系统调度检查实现类', '1', '-1', 'zyc', 'on', '0', '2022-10-08 20:55:56', '2022-10-08 20:55:56');
+
+
+CREATE TABLE `we_mock_data_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `wemock_context` varchar(128) DEFAULT NULL,
+  `req_type` varchar(1024) DEFAULT 'post' COMMENT '请求类型',
+  `req_encode` varchar(128) DEFAULT 'utf-8' comment '请求编码',
+  `req_timeout` varchar(128) DEFAULT '10' comment '超时时间',
+  `resp_content_type` varchar(256) DEFAULT 'application/json' comment '响应content_type',
+  `resp_encode` varchar(128) DEFAULT 'utf-8' comment '响应编码',
+  `url` varchar(2048) DEFAULT NULL COMMENT 'url',
+  `header` text  COMMENT '响应信息',
+  `resolve_type` varchar(200) DEFAULT null COMMENT '解析类型,0:静态，1:动态',
+  `resp_context` text COMMENT '内容',
+  `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+  `is_delete` varchar(10) not null DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `product_code` varchar(100) NOT NULL DEFAULT '' COMMENT '产品code',
+  `mock_tree_id` varchar(100) NOT NULL DEFAULT '' COMMENT 'mock tree id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1025372388994322432, '#', 'test_product', '1', 'zyc', 'fa fa-folder', '', '1', '1', '2022-09-30 11:43:48', '2022-09-30 11:43:48', '', NULL, '', '', 'test_product');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030640518721179648, '934940905796800512', '树形信息新增页面', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:37:28', '2022-10-15 00:37:28', 'wemock_jstree_add_index', '3', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030640652699832320, '934940905796800512', '树形-查询所有节点', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:38:00', '2022-10-15 00:40:10', 'wemock_jstree_node', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030640747650486272, '934940905796800512', '树形-新增根节点', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:38:23', '2022-10-15 00:39:52', 'wemock_add_root_node', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030640849358163968, '934940905796800512', '树形-查询指定节点信息', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:38:47', '2022-10-15 00:40:21', 'wemock_jstree_get_node', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641377911771136, '934940905796800512', '树形-更新节点信息', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:40:53', '2022-10-15 00:40:53', 'wemock_update_node', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641431800188928, '934940905796800512', '树形-新增节点信息', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:41:06', '2022-10-15 00:41:06', 'wemock_add_node', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641488435875840, '934940905796800512', '树形-删除节点信息', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:41:19', '2022-10-15 00:41:19', 'wemock_del_node', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641579972366336, '934940905796800512', '树形-更新节点层级', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:41:41', '2022-10-15 00:41:41', 'wemock_update_parent', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641732816998400, '934940905796800512', 'mock数据-查询', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:42:18', '2022-10-15 00:42:18', 'wemock_data_list', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641800286572544, '934940905796800512', 'mock数据-查询明细', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:42:34', '2022-10-15 00:42:34', 'wemock_data_detail', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641851285114880, '934940905796800512', 'mock数据-新增', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:42:46', '2022-10-15 00:42:46', 'wemock_data_add', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641898072576000, '934940905796800512', 'mock数据-更新', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:42:57', '2022-10-15 00:42:57', 'wemock_data_update', '5', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641985137938432, '934940905796800512', 'mock数据-新增页面', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:43:18', '2022-10-15 00:43:18', 'wemock_data_add_index', '3', '', '', 'zdh');
+INSERT INTO zdh.resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030642818059603968, '934940905796800512', 'mock数据-删除', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:46:36', '2022-10-15 00:46:36', 'wemock_data_delete', '3', '', '', 'zdh');
+
+
+ALTER TABLE strategy_instance add COLUMN touch_type varchar(128) not null default 'database' COMMENT '推送类型,database,queue';
+ALTER TABLE strategy_instance add COLUMN strategy_id varchar(128) not null default '0' COMMENT '策略id';
+ALTER TABLE strategy_group_instance add COLUMN strategy_group_id varchar(128) not null default '0' COMMENT '策略组id';
+
+
+CREATE TABLE `touch_config_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `touch_context` varchar(128) DEFAULT NULL,
+  `touch_config` text COMMENT '配置json格式',
+  `touch_task` varchar(128) DEFAULT 'email' comment '触达任务类型',
+  `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+  `is_delete` varchar(10) not null DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER TABLE label_info add COLUMN data_sources_choose_input varchar(128) not null default '0' COMMENT '数据源id';
+
+ALTER TABLE crowd_file_info add COLUMN data_type varchar(128) not null default '' COMMENT '数据类型,phone,email,id_card,可扩展';
+
+
+CREATE TABLE `etl_task_datax_auto_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `etl_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `data_sources_choose_input` varchar(100) DEFAULT NULL COMMENT '输入数据源id',
+  `data_source_type_input` varchar(100) DEFAULT NULL COMMENT '输入数据源类型',
+  `data_sources_table_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源表名',
+  `data_sources_file_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源文件名',
+  `data_sources_table_columns` text COMMENT '输入数据源表列名',
+  `data_sources_params_input` varchar(500) DEFAULT NULL COMMENT '输入数据源参数',
+  `data_sources_filter_input` varchar(500) DEFAULT NULL COMMENT '输入数据源过滤条件',
+
+  `data_sources_choose_output` varchar(100) DEFAULT NULL COMMENT '输出数据源id',
+  `data_source_type_output` varchar(100) DEFAULT NULL COMMENT '输出数据源类型',
+  `data_sources_table_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源表名',
+  `data_sources_file_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源文件名',
+  `data_sources_params_output` varchar(500) DEFAULT NULL COMMENT '输出数据源参数',
+  `column_datas` text COMMENT '输入输出自定映射关系',
+  `data_sources_clear_output` varchar(500) DEFAULT NULL COMMENT '数据源数据源删除条件',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+  `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+  `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+  `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+  `column_size` varchar(100) DEFAULT NULL COMMENT '字段个数',
+  `rows_range` varchar(100) DEFAULT NULL COMMENT '行数范围',
+  `error_rate` varchar(10) DEFAULT NULL COMMENT '错误率',
+  `enable_quality` varchar(10) DEFAULT NULL COMMENT '是否开启质量检测',
+  `duplicate_columns` varchar(200) DEFAULT NULL COMMENT '去重字段',
+  `primary_columns` varchar(100) DEFAULT NULL COMMENT '不可重复字段',
+  `file_type_input` varchar(10) DEFAULT NULL COMMENT '输入文件类型',
+  `encoding_input` varchar(10) DEFAULT NULL COMMENT '输入文件编码',
+  `sep_input` varchar(10) DEFAULT NULL COMMENT '输入分割符',
+  `file_type_output` varchar(10) DEFAULT NULL COMMENT '输出文件类型',
+  `encoding_output` varchar(10) DEFAULT NULL COMMENT '输出文件编码',
+  `sep_output` varchar(10) DEFAULT NULL COMMENT '输出文件分割符',
+  `header_input` varchar(10) DEFAULT NULL COMMENT '输入是否包含表头',
+  `header_output` varchar(10) DEFAULT NULL COMMENT '输出是否包含表头',
+  `repartition_cols_input` varchar(256) NOT NULL DEFAULT '' COMMENT '洗牌字段默认空',
+  `model_output` varchar(64) NOT NULL DEFAULT '' COMMENT '写入模式默认空',
+  `partition_by_output` varchar(256) NOT NULL DEFAULT '' COMMENT '分区字段默认空',
+  `merge_output` varchar(256) NOT NULL DEFAULT '-1' COMMENT '合并小文件默认-1 不合并',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+ALTER TABLE role_resource_info add COLUMN role_code varchar(128) not null default '' COMMENT '角色code';
+update role_resource_info a left join role_info b on a.role_id =b.id set a.role_code=b.code;
+
+update permission_user_info set roles='admin' where user_account ='zyc';
+
+alter table touch_config_info add column sign varchar(128) not null default '' comment '签名';
+alter table touch_config_info add column template_code varchar(256) not null default '' comment '模板code';
+alter table touch_config_info add column platform varchar(256) not null default '' comment '短信平台';
+
+alter table product_tag_info add column product_type varchar(256) not null default '' comment '产品类型';
+
+drop table permission_bigdata_info;
+CREATE TABLE `permission_bigdata_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_account` varchar(200) DEFAULT NULL COMMENT '产品code',
+  `product_code` varchar(200) DEFAULT NULL COMMENT '产品code',
+  `product_type` varchar(100) DEFAULT NULL COMMENT '产品类型',
+  `resource_type` varchar(100) DEFAULT NULL COMMENT '资源类型,文件,目录,表',
+  `resource_manage_group` varchar(100) DEFAULT NULL COMMENT '用户组是否作为当前路径管理层',
+  `permission_rule` varchar(100) DEFAULT NULL COMMENT '权限规则',
+  `path` varchar(100) DEFAULT NULL COMMENT '路径',
+  `user_group_code` varchar(100) DEFAULT NULL COMMENT '用户组',
+  `permission_depth_level` varchar(100) DEFAULT NULL COMMENT '权限层级',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+alter table user_group_info add column group_code varchar(256) not null default '' comment '组code';
+ALTER TABLE we_mock_data_info add COLUMN is_disenable varchar(128) not null default 'on' COMMENT '是否禁用on,off';
+
+alter table task_log_instance add column schedule_id varchar(256) not null default '' comment '调度器标识';
+
+alter table process_flow_info add column agent_user varchar(256) not null default '' comment '代理人id';
+
+alter table label_info add column label_use_type varchar(16) not null default 'batch' comment '使用方式,batch:值查人,single:人查值';
+alter table label_info add column label_data_time_effect varchar(16) not null default 'day' comment '数据时效性, day:天级,hour:小时级,second:准实时';
+alter table label_info add column label_data_update_type varchar(16) not null default 'overwrite' comment '数据更新类型,overwrite:覆盖,append:追加,get_append:值追加';
+alter table label_info add column label_event_time_column varchar(256) not null default '' comment '事件事件字段,默认为空';
+alter table label_info add column label_data_code varchar(256) not null default '' comment '数据标识,使用场景：从kafka来的数据根据此标识找到可以加工的标签都有哪些';
+
+CREATE TABLE `plugin_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plugin_type` varchar(200) not null DEFAULT '' COMMENT '插件类型',
+  `plugin_code` varchar(200) not null DEFAULT '' COMMENT '插件code',
+  `plugin_name` varchar(200) not null DEFAULT '' COMMENT '插件名称',
+  `plugin_json` text COMMENT '插件配置',
+  `owner` varchar(100) not null DEFAULT '' COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE approval_auditor_info add COLUMN auditor_rule varchar(128) not null default '' COMMENT '审批规则,根据规则自动查询审批人信息,实现动态审批人效果';
+
+update user_group_info set group_code ='bigdata1' where id='6';
+update user_group_info set group_code ='bigdata2' where id='7';
+update user_group_info set group_code ='bigdata3' where id='8';
+update user_group_info set group_code ='bigdata5' where id='9';
+update user_group_info set group_code ='g1' where id='10';
+
+update permission_user_info a inner join user_group_info b on a.user_group = b.id set a.user_group =b.group_code ;
+
+update approval_auditor_info a inner join user_group_info b on find_in_set(b.id, a.auditor_group)
+set a.auditor_group  = replace(a.auditor_group, b.id, b.group_code);
+
+ALTER TABLE user_group_info add COLUMN teams text  COMMENT '组下所属团队';
+
+ALTER TABLE touch_config_info add COLUMN touch_param_codes text  COMMENT '触达参数,多个逗号分割';
+
+alter table strategy_group_info add column group_type varchar(256) not null default 'offline' comment '实时online,离线:offline';
+alter table strategy_group_info add column data_node varchar(1024) not null default '' comment '数据节点';
+alter table strategy_group_instance add column group_type varchar(256) not null default 'offline' comment '实时online,离线:offline';
+alter table strategy_group_instance add column data_node varchar(1024) not null default '' comment '数据节点';
+
+alter table strategy_instance add column group_type varchar(256) not null default 'offline' comment '实时online,离线:offline';
+alter table strategy_instance add column data_node varchar(1024) not null default '' comment '数据节点';
+
+alter table label_info add column label_data_update_time varchar(256) not null default '' comment '数据更新时间,调度根据此时间决定是否加工标签数据';
+alter table label_info add column status varchar(8) not null default '2' comment '1:发布,2:未发布';
+alter table label_info add column label_default varchar(1024) not null default '' comment '标签默认值,json格式';
+
+drop table risk_event_info;
+CREATE TABLE `risk_event_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `event_type` varchar(200) not null DEFAULT '' COMMENT '事件类型',
+  `event_code` varchar(200) not null DEFAULT '' COMMENT '事件code',
+  `event_name` varchar(200) not null DEFAULT '' COMMENT '事件名称',
+  `event_json` text COMMENT '事件配置',
+  `owner` varchar(100) not null DEFAULT '' COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`)
+) comment '风控事件信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- 标签依赖数据
+CREATE TABLE `label_depend_data_info` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `data_code` varchar(256) DEFAULT NULL COMMENT '过滤code',
+  `data_name` varchar(2048) DEFAULT NULL COMMENT '过滤名称',
+  `data_time` varchar(2048) DEFAULT NULL COMMENT '过滤名称',
+  `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 标签计算信息表
+CREATE TABLE `label_complete_info` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label_code` varchar(256) DEFAULT NULL COMMENT '标签code',
+  `task_time` varchar(2048) DEFAULT NULL COMMENT '任务时间',
+  `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+  `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) comment '标签完成信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+alter table filter_info add column engine_type varchar(16) not null default 'file' comment '计算引擎类型,file,redis,hive';
+
+alter table resource_tree_info MODIFY COLUMN resource_desc text COMMENT '资源说明';
 
 -- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;

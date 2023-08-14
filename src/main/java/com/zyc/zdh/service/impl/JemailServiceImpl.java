@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.Properties;
 
 @Service
 public class JemailServiceImpl implements JemailService{

@@ -50,7 +50,7 @@
                                                     <tr>
                                                         <td>
                                                             <i class="fa fa-envelope"></i>
-                                                            <a href="javascript:void(0);" onclick="history_click(this);return false;" history_id="" class="client-link">袁岳</a>
+<!--                                                            <a href="javascript:void(0);" onclick="history_click(this);return false;" history_id="" class="client-link">袁岳</a>-->
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -102,7 +102,7 @@
                                 <div class="example-wrap">
                                     <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
                                         <button id="export" type="button" class="btn btn-outline btn-default">
-                                            <i class="fa fa-download" aria-hidden="true"></i>
+                                            <i class="fa fa-download" aria-hidden="true"></i>结果下载
                                         </button>
                                     </div>
                                     <table id="exampleTableEvents" name="exampleTableEvents" data-height="100%"
@@ -160,7 +160,7 @@
                 height: '100%'
             });
 
-            var height = $(document.body).height()*0.8;
+            var height = $(document.body).height()*0.6;
             $('#iframe_div').css("height", height+"px");
             $('#etl_sql').css("height", height+"px");
             window.editor = monaco.editor.create(document.getElementById("etl_sql"), {
@@ -533,7 +533,7 @@
                 //成功返回
                 success: function (data) {
                     if(data.code != "200" ){
-                        layer.msg(data.msg);
+                        layer.msg(data.result);
                         return ;
                     }
                     // 字段信息加载
@@ -578,6 +578,8 @@
                         }
 
                     }
+
+                    layer.msg("执行成功");
                 },
                 //处理完成
                 complete: function () {

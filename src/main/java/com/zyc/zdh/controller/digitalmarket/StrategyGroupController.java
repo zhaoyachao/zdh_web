@@ -476,6 +476,7 @@ public class StrategyGroupController extends BaseController {
         try {
             strategyGroupInstanceMapper.updateStatusById3(JobStatus.KILL.getValue(),DateUtil.getCurrentTime(), id);
             strategyInstanceMapper.updateStatusKilledByGroupInstanceId(id,JobStatus.KILLED.getValue());
+            strategyInstanceMapper.updateStatusKillByGroupInstanceId(id,JobStatus.KILL.getValue());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "杀死任务组成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -495,7 +496,7 @@ public class StrategyGroupController extends BaseController {
     public ReturnInfo killStrategy(String id) {
         //此处直接设置为已杀死,后续带优化
         try {
-            strategyInstanceMapper.updateStatusByIds(new String[]{id},JobStatus.KILLED.getValue());
+            strategyInstanceMapper.updateStatusKillByIds(new String[]{id});
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "杀死任务成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

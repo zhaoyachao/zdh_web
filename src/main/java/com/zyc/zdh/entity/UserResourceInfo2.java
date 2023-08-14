@@ -1,14 +1,5 @@
 package com.zyc.zdh.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.sql.Timestamp;
-
-
 public class UserResourceInfo2 {
 
 

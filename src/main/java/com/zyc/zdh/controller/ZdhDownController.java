@@ -1,7 +1,5 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.ZdhDownloadMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.RETURN_CODE;

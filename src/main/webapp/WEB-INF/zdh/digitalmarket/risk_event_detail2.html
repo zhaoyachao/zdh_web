@@ -33,6 +33,13 @@
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -172,7 +179,7 @@
 
         (function () {
 
-            var template = '<div class="ibox-content"  id="template">\n' +
+            var template = '<div class="from-group col-sm-12"  id="template">\n' +
                 '<label class="col-sm-2 control-label">参数</label>\n' +
                 '        <div class="col-sm-2" >\n' +
                 '            <input name="param_code" type="text"\n' +

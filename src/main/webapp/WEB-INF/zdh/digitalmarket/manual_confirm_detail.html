@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 调度新增首页</title>
-    <meta name="keywords" content="ZDH 调度新增首页">
-    <meta name="description" content="ZDH 调度新增首页">
+    <title>ZDH 人工确认</title>
+    <meta name="keywords" content="ZDH 人工确认">
+    <meta name="description" content="ZDH 人工确认">
 
     <link rel="shortcut icon" href="img/favicon.ico">
 
@@ -22,8 +22,7 @@
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
-    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
-    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
+
 </head>
 
 <body class="gray-bg">
@@ -33,7 +32,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>调度任务配置</h5>
+                    <h5>确认配置</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -51,25 +50,36 @@
 
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
+                        <input type="hidden" id="rule_id" name="rule_id" value="">
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">SHELL说明</label>
+                            <label class="col-sm-2 control-label">运算符</label>
                             <div class="col-sm-10">
-                                <input id="etl_context" name="etl_context" type="text"
-                                       placeholder="SHELL说明" class="form-control" aria-required="true"> </span>
-                            </div>
-                            <label class="col-sm-2 control-label">是否脚本</label>
-                            <div class="col-sm-10">
-                                <div class="checkbox i-checks">
-                                    <label class="no-padding">
-                                        <input id="is_script" type="checkbox"><i></i> 脚本方式</label>
-                                </div>
-                            </div>
-                            <label class="col-sm-2 control-label">任务命令</label>
-                            <div class="col-sm-10">
-                                <div id="command" name="command" class="monaco_div"></div>
+                                <select id="operate" name="operate" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="and" mytype="">AND</option>
+                                    <option value="or" mytype="">OR</option>
+                                    <option value="not" mytype="">NOT</option>
+                                    <option value="not_use" mytype="">NOT_USE</option>
+                                </select>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">确认通知类型</label>
+                            <div class="col-sm-10">
+                                <select id="confirm_notice_type" name="confirm_notice_type" data-placeholder="确认通知类型..."
+                                        multiple class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype=""></option>
+                                    <option value="email" mytype="">邮件</option>
+                                    <option value="sms" mytype="">短信</option>
+                                    <option value="zdh" mytype="">ZDH</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">是否禁用</label>
                             <div class="col-sm-10">
@@ -79,6 +89,18 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">推送类型</label>
+                            <div class="col-sm-10">
+                                <select id="touch_type" name="touch_type" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="database" mytype="" selected>数据库</option>
+                                    <option value="queue" mytype="">消息队列</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label">依赖级别</label>
                             <div class="col-sm-10">
@@ -88,13 +110,6 @@
                                     <option value="1" mytype="">杀死触发</option>
                                     <option value="2" mytype="">失败触发</option>
                                 </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">调度器</label>
-                            <div class="col-sm-10">
-                                <input id="schedule_id" name="schedule_id" type="text" value=""
-                                       placeholder="调度器标识" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
                         <div class="form-group">
@@ -127,15 +142,6 @@
 
 <script src="js/zdh_common.js"></script>
 
-<script>
-    var require = {
-        paths: {
-            'vs': 'js/plugins/vs'
-        }
-    };
-
-</script>
-
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -163,16 +169,9 @@
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
-<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
-
-<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
 
-<script src="js/plugins/vs/loader.js"></script>
-<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
-<script src="js/plugins/vs/editor/editor.main.js"></script>
-<script type="text/javascript" src="js/plugins/vs/basic-languages/shell/shell.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -189,13 +188,6 @@
         (function () {
 
 
-            window.editor = monaco.editor.create(document.getElementById('command'), {
-                value: '',
-                language: 'shell',
-                theme:'vs-dark'
-            });
-
-
             var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
             var params = url.substr(1);//去掉问号
             var pa = params.split("&");
@@ -203,26 +195,32 @@
             for(var i = 0; i < pa.length; i ++){
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
+
+            $('#operate').chosen();
             $('#depend_level').chosen();
-            if(s.command != '-1'){
+            $("#confirm_notice_type").chosen();
+            $("#rule_id").val(guid3());
+            if(s["rule_id"] != '-1'){
                 console.info("更新触发");
-                if( s.is_script=="true"){
-                    $('#is_script').iCheck('check');
-                }
-                //$("#command").val($("#shell_text",window.parent.document).val());
-                window.editor.setValue($("#shell_text",window.parent.document).val());
-                $("#etl_context").val(s.etl_context);
-                $("#schedule_id").val(s["schedule_id"]);
+                $('#rule_context').val(s.rule_context);
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
-                if (s["time_out"]!="" && typeof(s["time_out"])!="undefined"){
+                if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
                     $("#time_out").val(s["time_out"]);
                 }
+
+                $("#confirm_notice_type").val(s["confirm_notice_type"].split(','));
+                $("#confirm_notice_type").trigger("chosen:updated");
+
+                $("#rule_id").val(s["rule_id"]);
+
+                $("#touch_type").val(s.touch_type);
+                $("#touch_type").trigger("chosen:updated");
+
                 var is_disenable=s['is_disenable'];
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
                 }
-
             }
         })();
 
@@ -233,30 +231,32 @@
     $('#save_etl_info').click(function () {
 
         //自定义实现
-        var command=window.editor.getValue();
-        var is_script="false";
-        if($('#is_script').is(':checked')){
-            is_script="true"
-        }
+        var rule_context = "人工确认";
+        var operate=$('#operate').find("option:selected").val();
+        var touch_type=$('#touch_type').find("option:selected").val();
+
+        var depend_level=$('#depend_level').find("option:selected").val();
+        var time_out=$('#time_out').val();
+        var rule_id = $('#rule_id').val();
+        var confirm_notice_type = $("#confirm_notice_type").val();// 声明一个数组
+
         var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
         }
-        var depend_level=$('#depend_level').find("option:selected").val();
-        var schedule_id=$('#schedule_id').val();
-        var time_out=$('#time_out').val();
-
-        var etl_context=$('#etl_context').val();
         data={
-            "command":command,
-            "is_script":is_script,
-            "etl_context":etl_context,
+            "more_task": "manual_confirm",
             "is_disenable":is_disenable,
-            "schedule_id": schedule_id,
             "depend_level":depend_level,
-            "time_out": time_out
-        }
-        console.info("shell_detail:"+JSON.stringify(data));
+            "time_out": time_out,
+            "operate": operate,
+            "touch_type": touch_type,
+
+            "confirm_notice_type": confirm_notice_type.join(","),
+            "rule_context":rule_context,
+            "rule_id": rule_id
+        };
+        console.info("job_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
         parent.layer.close(index); //再执行关闭

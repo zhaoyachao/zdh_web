@@ -47,6 +47,8 @@ html,body{height:100%;}
 .device .nodeactive_eventcss{border:lightskyblue 2px solid;}
 .device .nodeid_mappingcss{border:cadetblue 2px solid;}
 .device .noderiskcss{border: #009900 2px solid;}
+.device .nodemodelcss{border: #009900 2px solid;}
+.device .nodemanual_confirmcss{border: #009900 2px solid;}
 
 .device .nodeflowcss{border:lightskyblue 1px solid;}
 

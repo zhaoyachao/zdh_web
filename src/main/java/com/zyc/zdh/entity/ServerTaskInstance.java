@@ -1,14 +1,12 @@
 package com.zyc.zdh.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.apache.hadoop.yarn.util.Times;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Table(name = "server_task_instance")
 public class ServerTaskInstance {

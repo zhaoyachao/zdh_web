@@ -1,6 +1,5 @@
 package com.zyc.zdh.controller.digitalmarket;
 
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.CrowdFileMapper;
 import com.zyc.zdh.entity.CrowdFileInfo;

@@ -3,7 +3,6 @@ package com.zyc.zdh.entity;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 
 @Table
 public class EtlTaskMeta {

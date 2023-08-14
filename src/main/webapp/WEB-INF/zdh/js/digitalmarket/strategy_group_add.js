@@ -199,6 +199,9 @@ function doubleclick(id,tp) {
         case "tn":
             doubleclick_tn(id);
             break;
+        case "manual_confirm":
+            doubleclick_manual_confirm(id);
+            break;
         default:
             $(id).dblclick(function () {layer.msg("不支持的组件");});
 
@@ -948,6 +951,62 @@ function doubleclick_tn(id) {
                 div.css("*zoom","1");
                 div.attr("title", etl_task_info.rule_context);
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                div.css('background', get_color_by_status(etl_task_info.is_disenable));
+            }
+        });
+    });
+}
+
+function doubleclick_manual_confirm(id) {
+    $(id).dblclick(function () {
+        $("#etl_task_text").val("");
+        var rule_context = $(this).text();
+        var div = $(this);
+        var rule_context=div.attr("rule_context");
+        var rule_id=div.attr("rule_id");
+        var operate=div.attr("operate");
+        var url=server_context+'/manual_confirm_detail.html';
+        if( rule_id == "" || rule_id == undefined ){
+            url=url+"?rule_id=-1"
+        }else{
+            var depend_level = div.attr("depend_level");
+            var time_out = div.attr("time_out");
+            var touch_type = div.attr("touch_type");
+            var is_disenable = div.attr("is_disenable");
+            var confirm_notice_type=div.attr("confirm_notice_type");
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&confirm_notice_type="+confirm_notice_type+"&operate="+operate+"&touch_type="+touch_type+"&is_disenable="+is_disenable
+        }
+        layer.open({
+            type: 2,
+            area: ['700px', '450px'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: encodeURI(url),
+            end: function () {
+                console.info("index:doubleclick:"+$("#etl_task_text").val());
+                if($("#etl_task_text").val()==""){
+                    console.info("无修改-不更新");
+                    return ;
+                }
+
+                var etl_task_info=JSON.parse($("#etl_task_text").val());
+                div.attr("is_disenable",etl_task_info.is_disenable);
+                div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("time_out",etl_task_info.time_out);
+                div.attr("more_task",etl_task_info.more_task);
+                div.attr("touch_type",etl_task_info.touch_type);
+
+                div.attr("operate",etl_task_info.operate);
+                div.attr("rule_context",etl_task_info.rule_context);
+                div.attr("rule_id",etl_task_info.rule_id);
+                div.attr("confirm_notice_type",etl_task_info.confirm_notice_type);
+
+                div.css("width","auto");
+                div.css("display","inline-block");
+                div.css("*display","inline");
+                div.css("*zoom","1");
+                div.html(etl_task_info.rule_context);
+                div.attr("title", etl_task_info.rule_context);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });

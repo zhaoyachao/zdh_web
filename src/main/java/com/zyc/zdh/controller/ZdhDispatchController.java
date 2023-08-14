@@ -1,8 +1,6 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.*;
@@ -580,9 +578,9 @@ public class ZdhDispatchController extends BaseController {
      * @param qrtzSchedulerState
      * @return
      */
-    @RequestMapping(value="/dispatch_executor_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value="/dispatch_executor_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String dispatch_executor_list(QrtzSchedulerState qrtzSchedulerState) {
+    public ReturnInfo<List<QrtzSchedulerState>> dispatch_executor_list(QrtzSchedulerState qrtzSchedulerState) {
         try{
 
             Example example=new Example(qrtzSchedulerState.getClass());
@@ -597,11 +595,11 @@ public class ZdhDispatchController extends BaseController {
             example.and(criteria2);
 
             List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(example);
-            return JSON.toJSONString(qrtzSchedulerStates);
+            return ReturnInfo.buildSuccess(qrtzSchedulerStates);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),"查询失败", e);
+            return ReturnInfo.buildError("查询失败", e);
         }
     }
 

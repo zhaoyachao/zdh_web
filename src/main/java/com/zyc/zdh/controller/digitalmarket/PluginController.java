@@ -2,9 +2,7 @@ package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
-import com.zyc.zdh.dao.LabelMapper;
 import com.zyc.zdh.dao.PluginMapper;
 import com.zyc.zdh.entity.PluginInfo;
 import com.zyc.zdh.entity.RETURN_CODE;

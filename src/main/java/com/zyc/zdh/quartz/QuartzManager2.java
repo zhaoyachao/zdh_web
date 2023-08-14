@@ -6,7 +6,6 @@ import com.zyc.zdh.entity.QuartzJobInfo;
 import com.zyc.zdh.entity.StrategyGroupInfo;
 import com.zyc.zdh.entity.TaskGroupLogInstance;
 import com.zyc.zdh.entity.TaskLogInstance;
-import com.zyc.zdh.job.JobType;
 import com.zyc.zdh.job.MyJobBean;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;

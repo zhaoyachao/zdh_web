@@ -35,6 +35,13 @@
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -134,7 +141,13 @@
                                                     <div class="col-sm-10">
                                                         <input id="notice_title" name="notice_title" class="form-control" type="text" value="" placeholder="提示语,最多支持4个汉字">
                                                     </div>
+                                                </div>
 
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">资源描述</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="resource_desc" name="resource_desc" class="form-control" type="text" value="" placeholder="资源描述,描述当前资源的使用范围及功能">
+                                                    </div>
                                                 </div>
 
                                                 <div class="hr-line-dashed"></div>
@@ -227,7 +240,13 @@
                                                     <div class="col-sm-10">
                                                         <input id="notice_title2" name="notice_title" class="form-control" type="text" value="" placeholder="提示语,最多支持4个汉字">
                                                     </div>
+                                                </div>
 
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">资源描述</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="resource_desc2" name="resource_desc" class="form-control" type="text" value="" placeholder="资源描述,描述当前资源的使用范围及功能">
+                                                    </div>
                                                 </div>
 
                                                 <div class="hr-line-dashed"></div>
@@ -438,6 +457,7 @@
                     $('#url2').val(data.result.url);
                     $('#order2').val(data.result.order);
                     $('#notice_title2').val(data.result.notice_title);
+                    $('#resource_desc2').val(data.result.resource_desc);
                     $('#resource_type2').val(data.result.resource_type);
                     $("#resource_type2").trigger("chosen:updated");
                 },

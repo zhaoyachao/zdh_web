@@ -3,7 +3,6 @@ package com.zyc.zdh.util;
 import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.entity.EtlTaskInfo;
 import org.apache.commons.codec.Charsets;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -16,7 +15,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;

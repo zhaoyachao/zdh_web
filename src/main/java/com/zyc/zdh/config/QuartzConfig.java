@@ -1,20 +1,10 @@
 package com.zyc.zdh.config;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-
+import com.zyc.zdh.quartz.MyJobFactory;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -22,7 +12,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
-import com.zyc.zdh.quartz.MyJobFactory;
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * quartz配置类

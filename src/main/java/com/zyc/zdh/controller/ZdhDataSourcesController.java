@@ -1,6 +1,5 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.PermissionMapper;
 import com.zyc.zdh.entity.DataSourcesInfo;
@@ -26,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Date;

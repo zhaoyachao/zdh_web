@@ -1,23 +1,16 @@
 package com.zyc.zdh.job;
 
 import com.alibaba.fastjson.JSON;
-import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.entity.EtlTaskLogInfo;
 import com.zyc.zdh.entity.TaskLogInstance;
-import com.zyc.zdh.util.CommandUtils;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.SFTPUtil;
 import com.zyc.zdh.util.SSHUtil;
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 

@@ -1,30 +1,13 @@
 package com.zyc.zdh.controller.digitalmarket;
 
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
-import com.zyc.zdh.dao.FilterMapper;
-import com.zyc.zdh.entity.FilterInfo;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.util.Const;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 智能营销-ID转换服务

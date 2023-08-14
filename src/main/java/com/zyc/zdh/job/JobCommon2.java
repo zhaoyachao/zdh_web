@@ -3332,12 +3332,14 @@ public class JobCommon2 {
 
         //线程池执行具体调度任务
         //threadPoolExecutor.execute();
-        new Thread(new Runnable() {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 run_sub_task_log_instance(tli.getJob_type(), tli);
             }
-        }).start();
+        });
+        thread.setName("etl_job_"+tli.getId());
+        thread.start();
     }
 
 

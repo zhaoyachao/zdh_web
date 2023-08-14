@@ -8,18 +8,21 @@ import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.*;
+import com.zyc.zdh.util.DAG;
+import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.HttpUtil;
+import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.session.mgt.SimpleSession;
-import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * 检查任务及任务组,判定上下游依赖

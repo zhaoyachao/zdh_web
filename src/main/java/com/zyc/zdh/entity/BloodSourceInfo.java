@@ -1,7 +1,8 @@
 package com.zyc.zdh.entity;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import javax.persistence.*;
 
 @Table(name = "blood_source_info")
 public class BloodSourceInfo {

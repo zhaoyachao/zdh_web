@@ -108,9 +108,32 @@ public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<Strat
                     "<script>",
                     "update strategy_instance set status=#{status} where group_instance_id =",
                     "#{group_instance_id}",
-                    " and status not in ('etl','error','skip')",
+                    " and status not in ('etl','error','skip','check_dep_finish','finish')",
                     "</script>"
             }
     )
     public int updateStatusKilledByGroupInstanceId(@Param("group_instance_id") String group_instance_id, @Param("status") String status);
+
+    @Update(
+            {
+                    "<script>",
+                    "update strategy_instance set status=#{status} where group_instance_id =",
+                    "#{group_instance_id}",
+                    " and status in ('etl','error','skip','check_dep_finish')",
+                    "</script>"
+            }
+    )
+    public int updateStatusKillByGroupInstanceId(@Param("group_instance_id") String group_instance_id, @Param("status") String status);
+
+    @Update(
+            {
+                    "<script>",
+                    "update strategy_instance set status = case when status in ('etl','error','skip','check_dep_finish') then 'kill' else 'killed' end  where id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public int updateStatusKillByIds(@Param("ids") String[] ids);
 }

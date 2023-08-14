@@ -1,7 +1,5 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
@@ -23,15 +21,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -134,7 +128,7 @@ public class SystemController extends BaseController{
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getFileManager", method = RequestMethod.POST )
+    @RequestMapping(value = "/getFileManager", method = RequestMethod.POST , produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ZdhNginx> getFileManager() throws Exception {
         try{
@@ -153,7 +147,7 @@ public class SystemController extends BaseController{
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/file_manager_up", method = RequestMethod.POST)
+    @RequestMapping(value = "/file_manager_up", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> file_manager_up(ZdhNginx zdhNginx) throws Exception {
         try{
@@ -480,7 +474,7 @@ public class SystemController extends BaseController{
      * @param show_type 1弹框,2文字,3不展示
      * @return
      */
-    @RequestMapping(value = "/notice_update", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/notice_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> notice_update(String msg, String show_type) {
         try{

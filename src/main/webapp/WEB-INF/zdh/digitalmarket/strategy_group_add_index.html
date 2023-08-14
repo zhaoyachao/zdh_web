@@ -39,6 +39,13 @@
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -141,6 +148,8 @@
                                             <div class="node nodeactive_eventcss" data-type="active_event">活动</div>
                                             <div class="node nodeid_mappingcss" data-type="id_mapping">ID转换</div>
                                             <div class="node noderiskcss" data-type="risk">决策事件</div>
+                                            <div class="node nodemodelcss" data-type="model">模型</div>
+                                            <div class="node nodemanual_confirmcss" data-type="manual_confirm">人工确认</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight2">
@@ -406,6 +415,13 @@
                 $("#" + divId).attr("tn_type",rs.tn_type);
                 $("#" + divId).attr("tn_value",rs.tn_value);
             }
+            if(tp == "manual_confirm"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).attr("title",rs.rule_context);
+                $("#" + divId).attr("filter_context",rs.rule_context);
+                $("#" + divId).attr("confirm_notice_type",rs.confirm_notice_type);
+                $("#" + divId).html(rs.rule_context);
+            }
 
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
             jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
@@ -493,6 +509,8 @@
                 tn_unit: $elem.attr('tn_unit'),
                 tn_type: $elem.attr('tn_type'),
                 tn_value: $elem.attr('tn_value'),
+
+                confirm_notice_type: $elem.attr('confirm_notice_type'),
 
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,

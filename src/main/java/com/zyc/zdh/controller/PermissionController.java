@@ -1,9 +1,7 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
@@ -485,7 +483,9 @@ public class PermissionController extends BaseController {
             rti.setUpdate_time(new Timestamp(new Date().getTime()));
             rti.setIs_enable(Const.ENABLE);
             rti.setOwner(getOwner());
-            rti.setResource_desc("");
+            if(StringUtils.isEmpty(rti.getResource_desc())){
+                rti.setResource_desc("");
+            }
             if(StringUtils.isEmpty(rti.getNotice_title())){
                 rti.setNotice_title("");
             }
@@ -536,7 +536,9 @@ public class PermissionController extends BaseController {
             rti.setUpdate_time(new Timestamp(new Date().getTime()));
             rti.setIs_enable(Const.ENABLE);
             rti.setOwner(getOwner());
-            rti.setResource_desc("");
+            if(StringUtils.isEmpty(rti.getResource_desc())){
+                rti.setResource_desc("");
+            }
             if(StringUtils.isEmpty(rti.getNotice_title())){
                 rti.setNotice_title("");
             }
@@ -587,7 +589,7 @@ public class PermissionController extends BaseController {
      * @param text
      * @return
      */
-    @RequestMapping(value = "/jstree_get_node",method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/jstree_get_node",method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ResourceTreeInfo> jstree_get_node(String id, String text) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
@@ -615,7 +617,9 @@ public class PermissionController extends BaseController {
             rti.setCreate_time(null);
             rti.setOwner(getOwner());
             rti.setIs_enable(Const.ENABLE);
-            rti.setResource_desc("");
+            if(StringUtils.isEmpty(rti.getResource_desc())){
+                rti.setResource_desc("");
+            }
             debugInfo(rti);
             resourceTreeMapper.updateByPrimaryKey(rti);
 
@@ -691,6 +695,31 @@ public class PermissionController extends BaseController {
         }
 
 
+    }
+
+    /**
+     * 根据url查询资源说明
+     * @param url
+     * @return
+     */
+    @RequestMapping(value = "/jstree_get_desc", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public ReturnInfo<String> jstree_get_desc(String url){
+        try{
+            Example example=new Example(ResourceTreeInfo.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("url", url);
+            List<ResourceTreeInfo> resourceTreeInfos = resourceTreeMapper.selectByExample(example);
+            if(resourceTreeInfos != null && resourceTreeInfos.size() >= 1){
+                return ReturnInfo.buildSuccess(resourceTreeInfos.get(0).getResource_desc());
+            }
+            return ReturnInfo.buildSuccess("未找到相关说明");
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", getBaseException(e));
+        }
     }
 
     /**

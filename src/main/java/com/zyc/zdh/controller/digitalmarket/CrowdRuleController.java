@@ -1,14 +1,12 @@
 package com.zyc.zdh.controller.digitalmarket;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
-import com.zyc.zdh.dao.CrowdFileMapper;
 import com.zyc.zdh.dao.CrowdRuleMapper;
-import com.zyc.zdh.dao.FilterMapper;
-import com.zyc.zdh.dao.LabelMapper;
-import com.zyc.zdh.entity.*;
+import com.zyc.zdh.entity.CrowdRuleInfo;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.entity.User;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;

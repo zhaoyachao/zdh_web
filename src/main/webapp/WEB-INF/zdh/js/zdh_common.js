@@ -8,6 +8,13 @@ function is_empty(data){
     return false;
 }
 
+function guid3() {
+    return $.ajax({
+        url: server_context+"/get_id",
+        async: false
+    }).responseText;
+}
+
 //生成uuid
 function guuid() {
     return 'xxx_xxx_yxxx_xx'.replace(/[xy]/g, function (c) {
@@ -59,4 +66,44 @@ function getTablePageCommon(url){
             return resRepor;
         },
     }
+}
+
+
+function getResourceDesc(){
+    var url = window.location.pathname;
+    url = url.replace("/","");
+    $.ajax({
+        type: 'POST',
+        url: server_context+"/jstree_get_desc",
+        dataType: 'json',
+        data: {'url': url},
+        //成功返回
+        success: function (data) {
+            if(data.code != '200'){
+                console.info(data.msg);
+                return ;
+            }
+            layer.open({
+                type: 1
+                ,title: false //不显示标题栏
+                ,closeBtn: true
+                ,area: [$(document.body).width()*0.48+"px", "auto"]
+                ,shade: 0.8
+                ,id: 'notice_layer' //设定一个id，防止重复弹出
+                ,btnAlign: 'c'
+                ,moveType: 1 //拖拽模式，0或者1
+                ,content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">功能说明<br>'+data.result+'<br></div>'
+            });
+
+
+        },
+        //处理完成
+        complete: function () {
+            console.info("complete")
+        },
+        //报错
+        error: function (data) {
+            console.info("error: " + data.responseText);
+        }
+    });
 }

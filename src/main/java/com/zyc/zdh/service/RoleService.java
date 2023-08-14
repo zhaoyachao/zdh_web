@@ -1,10 +1,9 @@
 package com.zyc.zdh.service;
 
-import java.util.List;
-
 import com.zyc.zdh.entity.PageBase;
 import com.zyc.zdh.entity.RoleInfo;
-import com.zyc.zdh.entity.RoleInfo;
+
+import java.util.List;
 
 public interface RoleService {
 

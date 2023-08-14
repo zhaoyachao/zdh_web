@@ -1,16 +1,15 @@
 package com.zyc.zdh.util;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.job.JobCommon2;
 import org.apache.commons.exec.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 执行系统命令工具类

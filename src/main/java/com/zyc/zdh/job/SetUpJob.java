@@ -2,8 +2,6 @@ package com.zyc.zdh.job;
 
 import com.jcraft.jsch.JSchException;
 import com.zyc.zdh.dao.ServerTaskInstanceMappeer;
-import com.zyc.zdh.entity.QuartzJobInfo;
-import com.zyc.zdh.entity.ServerTaskInfo;
 import com.zyc.zdh.entity.ServerTaskInstance;
 import com.zyc.zdh.util.SSHUtil;
 import com.zyc.zdh.util.SpringContext;
@@ -13,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SetUpJob {

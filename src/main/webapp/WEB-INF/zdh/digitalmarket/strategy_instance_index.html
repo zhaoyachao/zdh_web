@@ -35,6 +35,13 @@
                     <a class="collapse-link">
                         <i class="fa fa-chevron-up"></i>
                     </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
             <div class="ibox-content col-sm-12">
@@ -243,7 +250,7 @@
             return "#C2DFFF";
         }
         // value == "etl"  || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch"
-        if(status=="etl"|| status=="kill" || status=="sub_task_dispatch" || status == "dispatch" || status=="check_dep" || status=="wait_retry" || status=="check_dep_finish"){
+        if(status=="running"||status=="etl"|| status=="kill" || status=="sub_task_dispatch" || status == "dispatch" || status=="check_dep" || status=="wait_retry" || status=="check_dep_finish"){
             return "#00bb00";
         }
         if(status=="finish"){
@@ -379,6 +386,10 @@
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "tn"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "manual_confirm"){
                 $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
@@ -596,7 +607,13 @@
                                     layer.msg(data.msg);
                                     return
                                 }
-                                layer.close(index)
+                                layer.close(index);
+
+                                $('#exampleTableEvents').bootstrapTable('refresh', {
+                                    url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                                    contentType: "application/json;charset=utf-8",
+                                    dataType: "json"
+                                });
                             },
                             error: function (data) {
                                 console.info("error: " + data.responseText);
@@ -616,7 +633,12 @@
                                     layer.msg(data.msg);
                                     return
                                 }
-                                layer.close(index)
+                                layer.close(index);
+                                $('#exampleTableEvents').bootstrapTable('refresh', {
+                                    url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                                    contentType: "application/json;charset=utf-8",
+                                    dataType: "json"
+                                });
                             },
                             error: function (data) {
                                 console.info("error: " + data.responseText);
@@ -643,7 +665,12 @@
                         dataType: "json",
                         success: function (data) {
                             console.info("success");
-                            layer.close(index)
+                            layer.close(index);
+                            $('#exampleTableEvents').bootstrapTable('refresh', {
+                                url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                                contentType: "application/json;charset=utf-8",
+                                dataType: "json"
+                            });
                         },
                         error: function (data) {
                             console.info("error: " + data.responseText);
@@ -677,7 +704,12 @@
                                 return ;
                             }
                             console.info("success");
-                            layer.close(index)
+                            layer.close(index);
+                            $('#exampleTableEvents').bootstrapTable('refresh', {
+                                url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                                contentType: "application/json;charset=utf-8",
+                                dataType: "json"
+                            });
                         },
                         error: function (data) {
                             console.info("error: " + data.responseText);
@@ -842,7 +874,7 @@
                         btn_retry_str='<button id="retry" type="button" class="btn btn-info btn-xs">重新执行</button>';
                         btn_kill_str=''
                     }
-                    if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
+                    if (value == "running" || value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
                         context = "运行中";
                         class_str = "btn-primary  btn-xs";
                         class_str2= "btn-danger  ";

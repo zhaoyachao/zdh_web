@@ -135,6 +135,17 @@ public class CommonController extends BaseController {
     }
 
     /**
+     * 人工确认
+     * manual_confirm_detail页面
+     * @return
+     */
+    @RequestMapping(value = "/manual_confirm_detail", method = RequestMethod.GET)
+    @White
+    public String manual_confirm_detail() {
+        return "digitalmarket/manual_confirm_detail";
+    }
+
+    /**
      * 人群文件列表
      * @param rule_context 关键字
      * @return

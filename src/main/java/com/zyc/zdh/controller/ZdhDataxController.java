@@ -1,6 +1,5 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.EtlTaskDataxMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.entity.EtlTaskDataxInfo;
@@ -20,7 +19,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
