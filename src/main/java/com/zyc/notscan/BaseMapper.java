@@ -2,10 +2,12 @@ package com.zyc.notscan;
 
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * ClassName: BaseMapper   
@@ -32,4 +34,15 @@ public interface BaseMapper<T> extends Mapper<T> {
     }
     )
     public int deleteLogicByIds(@Param("table_name") String table_name, @Param("ids") String[] ids, @Param("update_time") Timestamp update_time);
+
+    @Select({
+            "<script>",
+            "select * from ${table_name} where id in ",
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"
+    }
+    )
+    public List<T> selectObjectByIds(@Param("table_name") String table_name, @Param("ids") String[] ids);
 }

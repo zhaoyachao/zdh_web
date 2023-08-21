@@ -63,22 +63,22 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="产品code...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">审批节点</label>
                             <div class="col-sm-10">
                                 <select id="flow_code" name="flow_code"
                                         data-placeholder=""
                                         class="chosen-select form-control m-b" tabindex="2">
                                     <option value="" mytype="">空</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">产品</label>
-                            <div class="col-sm-10">
-                                <select id="product_code" name="product_code"
-                                        data-placeholder="产品code...."
-                                        class="chosen-select form-control m-b" >
                                 </select>
                             </div>
                         </div>
@@ -441,13 +441,13 @@
             }
 
             $('#flow_code').chosen();
-            function init_code(){
+            function init_code(product_code){
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/approval_config_list",
                     async:false,
                     dataType: 'json',
-                    data: "",
+                    data: {"product_code": product_code},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -470,7 +470,7 @@
                     }
                 });
             }
-            init_code();
+
 
 
             $('#product_code').chosen();
@@ -493,6 +493,9 @@
                         }
                         $('#product_code').html(str);
                         $("#product_code").trigger("chosen:updated");
+                        $('#product_code').chosen().on("change", function (evt, params) {
+                            init_code($("#product_code").val());
+                        });
                     },
                     //处理完成
                     complete: function () {
@@ -523,38 +526,6 @@
             }
             // ------------------------------------------------------------------
 
-
-            function getCurrentDate(){
-                var oDate = new Date(),
-                    oYear = oDate.getFullYear(),
-                    oMonth = oDate.getMonth()+1,
-                    oDay = oDate.getDate(),
-                    oHour = oDate.getHours(),
-                    oMin = oDate.getMinutes(),
-                    oSen = oDate.getSeconds(),
-                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
-                return oTime;
-            };
-
-            function getMyDate(str){
-                var oDate = new Date(str),
-                    oYear = oDate.getFullYear(),
-                    oMonth = oDate.getMonth()+1,
-                    oDay = oDate.getDate(),
-                    oHour = oDate.getHours(),
-                    oMin = oDate.getMinutes(),
-                    oSen = oDate.getSeconds(),
-                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
-                return oTime;
-            };
-            //补0操作
-            function getzf(num){
-                if(parseInt(num) < 10){
-                    num = '0'+num;
-                }
-                return num;
-            }
-
             if(s.id !='-1'){
                 console.info("更新-拷贝按钮触发");
                 //开始赋值
@@ -574,13 +545,13 @@
                         var flow_context=data.result.flow_context;
                         $("#flow_context").val(flow_context);
 
-                        var flow_code=data.result.flow_code;
-                        $("#flow_code").val(flow_code);
-                        $("#flow_code").trigger("chosen:updated");
-
                         var product_code=data.result.product_code;
                         $("#product_code").val(product_code);
                         $("#product_code").trigger("chosen:updated");
+                        init_code(product_code);
+                        var flow_code=data.result.flow_code;
+                        $("#flow_code").val(flow_code);
+                        $("#flow_code").trigger("chosen:updated");
 
                         var jsmind_data=data.result.jsmind_data;
                         open_json(jsmind_data);

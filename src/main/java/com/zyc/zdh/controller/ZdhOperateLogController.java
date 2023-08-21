@@ -76,7 +76,7 @@ public class ZdhOperateLogController extends BaseController {
      */
     @RequestMapping(value = "/user_operate_log_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo user_operate_log_list(String log_context, String id, String start_time, String end_time,int limit, int offset, ServletRequest request) {
+    public ReturnInfo<PageResult<List<UserOperateLogInfo>>> user_operate_log_list(String log_context, String id, String start_time, String end_time,int limit, int offset, ServletRequest request) {
 
         try{
             UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();

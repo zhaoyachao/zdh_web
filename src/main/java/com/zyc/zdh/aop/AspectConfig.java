@@ -6,7 +6,6 @@ import com.zyc.zdh.dao.NoticeMapper;
 import com.zyc.zdh.dao.UserOperateLogMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.exception.ZdhException;
-import com.zyc.zdh.queue.Message;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
@@ -95,20 +94,13 @@ public class AspectConfig implements Ordered {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
             String method = request.getMethod();
+
+            if(method.equalsIgnoreCase("get")){
+                response.setDateHeader("Expires", System.currentTimeMillis());
+            }
             //IP地址
             String ipAddr = getRemoteHost(request);
             String url = request.getRequestURL().toString();
-            if(url.endsWith("404")){
-                String uid = "";
-                try{
-                    if(getUser()!=null){
-                        uid = getUser().getUserName();
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-                logger.error("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,not found url", ipAddr, uid, request.getHeader("Referer"));
-            }
             Object clearTime = redisUtil.get(Const.ZDH_RATELIMIT_CLEART_TIME);
             if (getUser() != null) {
                 Object user_limit = redisUtil.get(Const.ZDH_USER_RATELIMIT, "200");

@@ -95,7 +95,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
           method: "POST",
-          url: server_context+"/user_list",
+          url: server_context+"/user_list?"+$("#user_form").serialize(),
       search: true,
       pagination: true,
       showRefresh: true,

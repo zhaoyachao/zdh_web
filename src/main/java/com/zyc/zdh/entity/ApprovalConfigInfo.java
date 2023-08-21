@@ -32,6 +32,11 @@ public class ApprovalConfigInfo {
      */
     private String employee_id ;
 
+    /**
+     * 产品code
+     */
+    private String product_code;
+
     public String getId() {
         return id;
     }
@@ -78,5 +83,13 @@ public class ApprovalConfigInfo {
 
     public void setEmployee_id(String employee_id) {
         this.employee_id = employee_id;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }

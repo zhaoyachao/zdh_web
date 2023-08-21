@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 权限申请新增</title>
-    <meta name="keywords" content="ZDH 权限申请新增">
-    <meta name="description" content="ZDH 权限申请新增">
+    <title>ZDH 维度新增</title>
+    <meta name="keywords" content="ZDH 维度新增">
+    <meta name="description" content="ZDH 维度新增">
 
     <link rel="shortcut icon" href="img/favicon.ico">
 
@@ -20,6 +20,8 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 
 </head>
 
@@ -30,7 +32,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>权限申请配置</h5>
+                    <h5>数据标识配置</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -46,55 +48,37 @@
                 </div>
                 <div class="ibox-content">
 
-                    <form id="permission_apply_add_form" name="permission_apply_add_form" method="post" class="form-horizontal"
+                    <form id="permission_dimension_add_form" name="permission_dimension_add_form" method="post" class="form-horizontal"
                           action="">
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">产品code</label>
-                            <div class="col-sm-10">
+                            <div class="col-sm-10" id="div_data_sources_table_name_input">
                                 <select id="product_code" name="product_code"
                                         data-placeholder="产品code"
                                         class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="">空</option>
+                                    <option value="">产品code</option>
                                 </select>
                             </div>
                         </div>
 
+                        <div class="hr-line-dashed"></div>
+
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">申请类型</label>
+                            <label class="col-sm-2 control-label">维度code</label>
                             <div class="col-sm-10">
-                                <select id="apply_type" name="apply_type"
-                                        data-placeholder="申请类型"
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="">空</option>
-                                    <option value="user_group">用户组</option>
-                                    <option value="data_group">数据组</option>
-                                    <option value="role">角色</option>
-                                    <option value="product_admin">产品管理员</option>
-                                </select>
+                                <input id="dim_code" name="dim_code" type="text"
+                                       placeholder="维度code" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">申请对象</label>
+                            <label class="col-sm-2 control-label">维度名称</label>
                             <div class="col-sm-10">
-                                <select id="apply_code" name="apply_code"
-                                        data-placeholder="申请对象"
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="">空</option>
-                                </select>
+                                <input id="dim_name" name="dim_name" type="text"
+                                       placeholder="维度名称" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">申请原因</label>
-                            <div class="col-sm-10">
-                                 <textarea id="reason" name="reason" class="form-control" rows="2"
-                                           placeholder="申请原因"></textarea>
-                            </div>
-                        </div>
-
-
                         <div class="form-group">
                             <label class="col-sm-2 control-label">创建时间</label>
                             <div class="col-sm-10">
@@ -102,11 +86,6 @@
                                        placeholder="创建时间" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
-
-                        <div class="hr-line-dashed"></div>
-
-
-
 
                         <div class="hr-line-dashed"></div>
                         <!-- 输入数据源结束-->
@@ -139,7 +118,14 @@
 
 
 <script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
 
+</script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -155,6 +141,8 @@
 
 <!-- layer javascript -->
 <script src="js/plugins/layer/layer.min.js"></script>
+
+<script src="js/admin/product_common.js"></script>
 
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
@@ -178,75 +166,7 @@
             for (var i = 0; i < pa.length; i++) {
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
-
-            function init_apply(product_code, apply_type){
-                if(is_empty(product_code) || is_empty(apply_type)){
-
-                }else{
-                    //获取申请对象
-                    $.ajax({
-                        type: 'POST',
-                        url: server_context+"/permission_apply_by_product_code",
-                        async:false,
-                        dataType: 'json',
-                        data: {"product_code": product_code, "apply_type": apply_type},
-                        //成功返回
-                        success: function (data) {
-                            if(data.code == "201"){
-                                layer.msg(data.msg);
-                                return ;
-                            }
-                            var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                            for (var i = 0; i < data.result.length; i++) {
-                                str += '<option value=\"' + data.result[i].code + '\" hassubinfo=\"true\">' + data.result[i].name + '</option>';
-                            }
-                            $('#apply_code').html(str);
-                            $("#apply_code").trigger("chosen:updated");
-                            $('#apply_code').chosen();
-                        },
-                        //处理完成
-                        complete: function () {
-                        },
-                        //报错
-                        error: function (data) {
-                        }
-                    });
-                }
-
-            }
-
             $('#product_code').chosen();
-            $('#apply_type').chosen().on("change", function (evt, params) {
-                init_apply($("#product_code").val(), $("#apply_type").val());
-            });
-
-            $.ajax({
-                type: 'POST',
-                url: server_context+"/product_tag_all",
-                async:false,
-                dataType: 'json',
-                data: "",
-                //成功返回
-                success: function (data) {
-                    if(data.code != "200"){
-                        layer.msg(data.msg);
-                        return ;
-                    }
-                    var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                    for (var i = 0; i < data.result.length; i++) {
-                        str += '<option value=\"' + data.result[i].product_code + '\" hassubinfo=\"true\">' + data.result[i].product_name + '</option>';
-                    }
-                    $('#product_code').html(str);
-                    $("#product_code").trigger("chosen:updated");
-                    $('#product_code').chosen();
-                },
-                //处理完成
-                complete: function () {
-                },
-                //报错
-                error: function (data) {
-                }
-            });
 
             //定义特定数据源展示的div
             function fileShow() {
@@ -301,7 +221,7 @@
                     //开始赋值
 
                     $.ajax({
-                        url: server_context+"/permission_apply_detail",
+                        url: server_context+"/permission_dimension_detail",
                         data: "id=" + s.id,
                         type: "post",
                         async: false,
@@ -310,34 +230,23 @@
                             console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
-                            if(data.code != "200"){
-                                layer.msg(data.msg);
-                                return ;
-                            }
-                            //获取ETL 说明
+                            //初始化输入数据源select 组件
                             var product_code = data.result.product_code;
                             $("#product_code").val(product_code);
-                            //$("#product_code").prop("disabled","true");
                             $("#product_code").trigger("chosen:updated");
 
-                            var apply_type = data.result.apply_type;
-                            $("#apply_type").val(apply_type);
-                            //$("#apply_type").prop("disabled","true");
-                            $("#apply_type").trigger("chosen:updated");
+                            //获取ETL 说明
+                            var dim_code = data.result.dim_code;
+                            $("#dim_code").val(dim_code);
+                            $("#dim_code").attr("readonly","readonly");
 
-                            init_apply(product_code, apply_type);
-                            var apply_code = data.result.apply_code;
-                            $("#apply_code").val(apply_code);
-                            //$("#apply_code").prop("disabled","true");
-                            $("#apply_code").trigger("chosen:updated");
+                            //获取标识名称
+                            var dim_name = data.result.dim_name;
+                            $("#dim_name").val(dim_name);
 
                             var create_time = data.result.create_time;
                             $("#create_time").val(getMyDate(create_time));
 
-
-                            var reason = data.result.reason;
-                            $("#reason").val(reason);
-                            $("#reason").attr("readonly","true");
                         },
                         error: function (data) {
                             console.info("error: " + data.responseText);
@@ -355,27 +264,22 @@
 
     $('#save_etl_task').click(function () {
 
-        if ($('#apply_code').val() == '') {
-            layer.msg("申请对象不能为空！");
+        if ($('#tag_name').val() == '') {
+            layer.msg("标签名称不能为空！");
             return;
         }
-        if ($('#apply_type').val() == '') {
-            layer.msg("申请类型不能为空！");
-            return;
-        }
-        if ($('#product_code').val() == '') {
-            layer.msg("产品code不能为空！");
+        if ($('#tag_code').val() == '') {
+            layer.msg("标签code不能为空！");
             return;
         }
 
-        var apply_context = $('#apply_code').find("option:selected").text();
 
         $.ajax({
             type: 'POST',
-            url: server_context+"/permission_apply_add",
+            url: server_context+"/permission_dimension_add",
             async: false,
             dataType: 'json',
-            data: $("#permission_apply_add_form").serialize()+"&apply_context="+apply_context,
+            data: $("#permission_dimension_add_form").serialize(),
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -389,7 +293,7 @@
                     layer.msg("执行失败");
                     return ;
                 }
-                layer.msg("执行成功");
+                parent.layer.msg("执行成功");
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 parent.layer.close(index); //再执行关闭
             },
@@ -406,6 +310,64 @@
         });
 
     });
+
+
+    $('#update_etl_task').click(function () {
+
+        if ($('#tag_name').val() == '') {
+            layer.msg("标签名称不能为空！");
+            return;
+        }
+        if ($('#tag_code').val() == '') {
+            layer.msg("标签code不能为空！");
+            return;
+        }
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/permission_dimension_update",
+            dataType: 'json',
+            async: false,
+            data: $("#permission_dimension_add_form").serialize()+ "&" + "id=" + s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    layer.msg("执行失败");
+                    return ;
+                }
+                parent.layer.msg("执行成功");
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                layer.error(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
 
 </script>
 

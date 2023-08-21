@@ -51,6 +51,16 @@
                         <form class="form-horizontal m-t" id="signupForm">
 
                             <div class="form-group">
+                                <label class="col-sm-3 control-label">产品code：</label>
+                                <div class="col-sm-8">
+                                    <select id="product_code" name="product_code"
+                                            data-placeholder="产品code...."
+                                            class="chosen-select form-control m-b" >
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="col-sm-3 control-label">节点code：</label>
                                 <div class="col-sm-8">
                                     <input id="code" name="code" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
@@ -110,6 +120,8 @@
 
     <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
+    <script src="js/admin/product_common.js"></script>
+
     <script>
 
         (function(document, window, $) {
@@ -140,6 +152,11 @@
                     success: function (data) {
                         $("#btn_up").removeAttr('disabled');
                         if(data.code == "200"){
+
+                            $('#product_code').val(data.result.product_code);
+                            //$("#product_code").prop("disabled","true");
+                            $("#product_code").trigger("chosen:updated");
+
 
                             $('#code').val(data.result.code);
                             $('#code_name').val(data.result.code_name);

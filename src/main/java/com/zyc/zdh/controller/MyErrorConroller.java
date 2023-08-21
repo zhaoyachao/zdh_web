@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.zyc.zdh.annotation.White;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -22,7 +23,8 @@ public class MyErrorConroller {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/404", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/404")
+	@White
 	public String  error(HttpServletRequest request){
 		Map<String, String[]> parameterMap = request.getParameterMap();
 		
@@ -37,7 +39,8 @@ public class MyErrorConroller {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="/403", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value="/403")
+	@White
 	public String  permission(HttpServletRequest request){
 		Map<String, String[]> parameterMap = request.getParameterMap();
 
@@ -49,7 +52,8 @@ public class MyErrorConroller {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="/503", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value="/503")
+	@White
 	public String  manager(HttpServletRequest request){
 		return "503";
 	}

@@ -57,6 +57,15 @@
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">产品</label>
+                                <div class="col-sm-8">
+                                    <select id="product_code" name="product_code"
+                                            data-placeholder="产品code...."
+                                            class="chosen-select form-control m-b" >
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="form-group">
                                 <label class="col-sm-3 control-label">节点code：</label>
@@ -103,15 +112,7 @@
                             </div>
 
 
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">产品</label>
-                                <div class="col-sm-8">
-                                    <select id="product_code" name="product_code"
-                                            data-placeholder="产品code...."
-                                            class="chosen-select form-control m-b" >
-                                    </select>
-                                </div>
-                            </div>
+
 
                             <div class="form-group">
                                 <label class="col-sm-3 control-label">审批人ID：</label>
@@ -245,17 +246,17 @@
             init_product_code();
 
             $("#product_code").val(s.product_code);
-            $("#product_code").prop("disabled","true");
+            //$("#product_code").prop("disabled","true");
             $("#product_code").trigger("chosen:updated");
 
 
-            function init_code(){
+            function init_code(product_code){
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/approval_config_list",
                     async:false,
                     dataType: 'json',
-                    data: "",
+                    data: {"product_code": product_code},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -278,11 +279,10 @@
                     }
                 });
             }
-
-            init_code();
+            init_code(s.product_code);
 
             $("#code").val(s.flow_code);
-            $("#code").prop("disabled","true");
+            //$("#code").prop("disabled","true");
             $("#code").trigger("chosen:updated");
 
             function init_user_group(product_code){
@@ -370,6 +370,7 @@
 
                             $('#auditor_context').val(data.result.auditor_context);
                             $('#code').val(data.result.code);
+                            //$("#code").prop("disabled","true");
                             $("#code").trigger("chosen:updated");
                             $('#level').val(data.result.level);
                             $("#level").trigger("chosen:updated");

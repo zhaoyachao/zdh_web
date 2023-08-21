@@ -7,10 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 权限设置</title>
+    <title>ZDH 用户维度关系首页</title>
 
-    <meta name="keywords" content="ZDH 权限设置">
-    <meta name="description" content="ZDH 权限设置">
+    <meta name="keywords" content="ZDH 用户维度关系首页">
+    <meta name="description" content="ZDH 用户维度关系首页">
 
     <link rel="shortcut icon" href="img/favicon.ico">
     <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
@@ -29,7 +29,7 @@
             <div class="col-sm-6">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>权限列表</h5>
+                        <h5>维度列表</h5>
                         <div class="ibox-tools">
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
@@ -50,25 +50,18 @@
 
                         <form role="form" class="form-inline" id="data_sources_form">
                             <div class="form-group">
-                                <input id="search1" onclick="refash_resource()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="更新资源树"/>
-                                <input id="search" onclick="get_auth()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="获取已有权限"/>
-                                <input id="search2" onclick="update_auth()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="更新权限"/>
+                                <input id="search1" onclick="get_auth()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="获取绑定"/>
+                                <input id="search2" onclick="update_auth()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="更新"/>
                             </div>
                             <div class="hr-line-dashed"></div>
                             <div class="form-group" style="width: 100%">
-                            <select id="product_code" name="product_code"
-                                    data-placeholder="产品code"
+                            <select id="dim_code" name="dim_code"
+                                    data-placeholder="维度code"
                                     class="chosen-select form-control m-b" tabindex="2" style="width: 35%">
                                 <option value="">空</option>
                             </select>
                             </div>
                             <div class="form-group" style="width: 100%;"></div>
-                            <div class="form-group">
-                                <input id="code" name="code" type="text"
-                                       placeholder="角色code" class="form-control" aria-required="true"> </span>
-                                <input id="name" name="name" type="text"
-                                       placeholder="角色说明" class="form-control" aria-required="true"> </span>
-                            </div>
 
                             <div class="hr-line-dashed"></div>
                             <div class="form-group">
@@ -105,8 +98,6 @@
     <script src="js/plugins/layer/layer.min.js"></script>
     <script src="js/plugins/jsTree/jstree.min.js"></script>
 
-
-
     <style>
         .jstree-open > .jstree-anchor > .fa-folder:before {
             content: "\f07c";
@@ -118,39 +109,8 @@
     </style>
 
     <script>
-        $('#product_code').chosen();
 
-        $.ajax({
-            type: 'POST',
-            url: server_context+"/product_tag_list",
-            async:false,
-            dataType: 'json',
-            data: "",
-            //成功返回
-            success: function (data) {
-                if(data.code != "200"){
-                    layer.msg(data.msg);
-                    return ;
-                }
-                var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
-                for (var i = 0; i < data.result.length; i++) {
-                    str += '<option value=\"' + data.result[i].product_code + '\" hassubinfo=\"true\">' + data.result[i].product_name + '</option>';
-                }
-                $('#product_code').html(str);
-                $("#product_code").trigger("chosen:updated");
-                $('#product_code').chosen().on("change", function (evt, params) {
-                    init_jstree($("#product_code").val());
-                });
-            },
-            //处理完成
-            complete: function () {
-            },
-            //报错
-            error: function (data) {
-            }
-        });
-
-        function init_jstree(product_code){
+        function init_jstree(product_code, dim_code){
             $('#using_json3').jstree("destroy");
             $('#using_json3').jstree({
                 "plugins" : [ "types","checkbox", "search"],
@@ -160,8 +120,8 @@
                     'data' :  function (obj, callback){
                         $.ajax({
                             type : "post",
-                            url : server_context+"/jstree_node",//getAreaBuild=getTreeArea
-                            data: {"product_code": product_code},
+                            url : server_context+"/permission_dimension_value_node",//getAreaBuild=getTreeArea
+                            data: {"product_code": product_code, "dim_code": dim_code},
                             dataType : "json",
                             async:'false',
                             success : function(data) {
@@ -184,11 +144,6 @@
             });
         }
 
-        $(document).ready(function () {
-
-        });
-
-
         var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
         var params = url.substr(1);//去掉问号
         var pa = params.split("&");
@@ -197,49 +152,55 @@
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
 
-        if(s.id != '-1'){
-            $.ajax({
-                type : "post",
-                url : server_context+"/role_detail?id="+s.id,
-                dataType : "json",
-                async:'false',
-                success : function(data) {
-                    if(data.code != "200"){
-                        layer.msg(data.msg);
-                        return ;
-                    }
-                    $('#code').val(data.result.code);
-                    $('#name').val(data.result.name);
-                    $("#product_code").val(data.result.product_code);
-                    $("#product_code").prop("disabled","true");
-                    $("#product_code").trigger("chosen:updated");
-                    $('#code').attr("readonly", "true");
-                    init_jstree(data.result.product_code);
+        var product_code = s.product_code;
+        var user_account = s.user_account;
+        var dim_code = s.dim_code;
+
+        //初始化维度下拉框
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/permission_dimension_list_by_product_code",
+            async:false,
+            dataType: 'json',
+            data: {"product_code": product_code},
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
                 }
-            });
-
-        }
-
-        function refash_resource() {
-            $('#using_json3').jstree(true).refresh();
-        }
-
-        function get_auth() {
-
-            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
-            var params = url.substr(1);//去掉问号
-            var pa = params.split("&");
-            var s = new Object();
-            for(var i = 0; i < pa.length; i ++){
-                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+                var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                for (var i = 0; i < data.result.length; i++) {
+                    str += '<option value=\"' + data.result[i].dim_code + '\" hassubinfo=\"true\">' + data.result[i].dim_name + '</option>';
+                }
+                $('#dim_code').html(str);
+                $("#dim_code").trigger("chosen:updated");
+                $('#dim_code').chosen().on("change", function (evt, params) {
+                    init_jstree(product_code, $('#dim_code').val());
+                });
+            },
+            //处理完成
+            complete: function () {
+            },
+            //报错
+            error: function (data) {
             }
-            //$('#using_json3').jstree(true).refresh();
-            //$('#using_json3').jstree(true).refresh();
+        });
+
+
+        if(s.id != '-1'){
+            $("#dim_code").val(dim_code);
+            $("#dim_code").attr("disenabled", "disenabled");
+            $("#dim_code").trigger("chosen:updated");
+            init_jstree(product_code, dim_code);
+        }
+
+        function get_auth(){
             $.ajax({
                 type : "POST",
-                url : server_context+"/jstree_permission_list",
+                url : server_context+"/permission_user_dimension_value_list",
                 dataType : "json",
-                data : {"id":s.id, "code": s.code},
+                data : {"product_code":product_code, "dim_code": $("#dim_code").val(), "user_account": user_account},
                 async:'false',
                 success : function(data) {
                     if(data.code != "200"){
@@ -247,12 +208,11 @@
                         return ;
                     }
                     for(var i=0;i<data.result.length;i++){
-                        $('#using_json3').jstree('check_node',data.result[i].resource_id);
+                        $('#using_json3').jstree('check_node',data.result[i].dim_value_code);
                     }
                     $('#using_json3').jstree('open_all')
                 }
             });
-
         }
 
         function update_auth() {
@@ -266,14 +226,9 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            if($('#code').val() == ''){
-                layer.msg("角色code不可为空")
+            if($('#dim_code').val() == ''){
+                layer.msg("维度code不可为空")
             }
-
-            if($('#name').val() == ''){
-                layer.msg("角色名称不可为空")
-            }
-
 
             var ids = $('#using_json3').jstree("get_checked");
 
@@ -291,15 +246,14 @@
             //用户id->功能id
             $.ajax({
                 type : "POST",
-                url : server_context+"/jstree_add_permission",
+                url : server_context+"/permission_user_dimension_value_update",
                 dataType : "json",
                 data : {
-                    id:s.id,
-                    resource_id:ids,
+                    dim_code:$('#dim_code').val(),
+                    dim_value_codes:ids,
                     level:level,
-                    code: $('#code').val(),
-                    name:$('#name').val(),
-                    product_code: $('#product_code').val()
+                    user_account: user_account,
+                    product_code: product_code
                 },
                 async:'false',
                 traditional: true,

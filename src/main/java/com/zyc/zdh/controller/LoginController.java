@@ -119,7 +119,7 @@ public class LoginController {
             user.setPassword(Encrypt.AESencrypt(user.getPassword()));
 
             //判断是否是字母和数字
-            String regex = "^[a-zA-Z0-9]$";
+            String regex = "^([a-zA-Z0-9])*$";
             if(!user.getUserName().matches(regex)){
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "用户名必须只包含字母或者数字", null);
             }
@@ -152,7 +152,7 @@ public class LoginController {
             roleInfo.setCode("role_base");//此角色code 不可变
             roleInfo = roleDao.selectOne(roleInfo);
             if (roleInfo != null) {
-                pui.setRoles(roleInfo.getId());
+                pui.setRoles(roleInfo.getCode());
             }
             pui.setTag_group_code("");
             permissionMapper.insert(pui);

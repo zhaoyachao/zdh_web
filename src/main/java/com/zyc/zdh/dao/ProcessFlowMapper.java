@@ -18,15 +18,16 @@ public interface ProcessFlowMapper extends BaseProcessFlowMapper<ProcessFlowInfo
 
     @Select({
             "<script>",
-            "select pfi.*,acc.user_name as by_person_name from process_flow_info pfi left join account_info acc on pfi.owner=acc.id where is_show=#{is_show} and ( find_in_set(#{auditor_id}, auditor_id) or agent_user=#{auditor_id} )",
+            "select pfi.*,acc.user_name as by_person_name from process_flow_info pfi left join permission_user_info acc on pfi.owner=acc.user_account and pfi.product_code=acc.product_code where is_show=#{is_show} and ( find_in_set(#{auditor_id}, auditor_id) or agent_user=#{auditor_id} )",
             "<when test='context!=null and context !=\"\"'>",
             "and context like #{context}",
             "</when>",
+            " and pfi.product_code = #{product_code}",
             "order by pfi.create_time desc",
             "</script>"
 
     })
-    public List<ProcessFlowInfo> selectByAuditorId(@Param("is_show") String is_show, @Param("auditor_id") String auditor_id,@Param("context") String context);
+    public List<ProcessFlowInfo> selectByAuditorId(@Param("is_show") String is_show, @Param("auditor_id") String auditor_id,@Param("context") String context, @Param("product_code") String product_code);
 
     @Update(
             {
@@ -70,12 +71,13 @@ public interface ProcessFlowMapper extends BaseProcessFlowMapper<ProcessFlowInfo
             "<when test='context!=null and context !=\"\"'>",
             "and context like #{context}",
             "</when>",
+            " and product_code = #{product_code}",
             "group by owner,flow_id",
             "order by create_time desc ",
             "</script>"
 
     })
-    public List<ProcessFlowInfo> selectByOwner(@Param("owner") String owner,@Param("context") String context);
+    public List<ProcessFlowInfo> selectByOwner(@Param("owner") String owner,@Param("context") String context, @Param("product_code") String product_code);
 
     @Select({
             "<script>",

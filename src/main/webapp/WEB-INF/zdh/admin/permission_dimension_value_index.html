@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 维度值设置</title>
+
+    <meta name="keywords" content="ZDH 维度值设置">
+    <meta name="description" content="ZDH 维度值设置">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content  animated fadeInRight">
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>维度值列表</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div>
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code"
+                                    class="chosen-select form-control m-b" tabindex="2">
+                                <option value="">空</option>
+                            </select>
+                        </div><br />
+                        <div> <input id="dim_code" name="dim_code" class="form-control" type="text" value="" placeholder="维度code"></div><br />
+                        <div> <input id="search_input" name="search_input" class="form-control" type="text" value="" placeholder="资源信息"></div><br />
+                        <div>  <input id="add_root" οnsubmit='return false' onclick="add_root()" type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="新增根" disabled="true"/></div><br />
+                        <div id="using_json"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>维度值配置</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="using_json6" style="width: 100%; height: 800px">
+                            <iframe id="ifm" src="" style="width: 100%; height: 100%" frameBorder="0"></iframe>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <!-- jsTree plugin javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+    <script src="js/plugins/jsTree/jstree.min.js"></script>
+
+
+    <style>
+        .jstree-open > .jstree-anchor > .fa-folder:before {
+            content: "\f07c";
+        }
+
+        .jstree-default .jstree-icon.none {
+            width: 0;
+        }
+    </style>
+
+    <script>
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();//定义一个全局变量-存储任务ID
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        $('#product_code').chosen();
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/product_tag_list",
+            async:false,
+            dataType: 'json',
+            data: "",
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
+                }
+                var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                for (var i = 0; i < data.result.length; i++) {
+                    str += '<option value=\"' + data.result[i].product_code + '\" hassubinfo=\"true\">' + data.result[i].product_name + '</option>';
+                }
+                $('#product_code').html(str);
+                $("#product_code").trigger("chosen:updated");
+                $('#product_code').chosen().on("change", function (evt, params) {
+                    init_jstree($("#product_code").val());
+                });
+            },
+            //处理完成
+            complete: function () {
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+
+        function init_jstree(product_code, dim_code){
+            $('#using_json').jstree("destroy");
+            $('#using_json').jstree({
+                "plugins" : [ "types","search"],
+                //'plugins' : ["checkbox"], //出现选择框
+                //'checkbox': { cascade: "", three_state: true }, //不级联
+                'core' : {
+                    "check_callback": true,
+                    'data' :  function (obj, callback){
+                        $.ajax({
+                            type : "post",
+                            url : server_context+"/permission_dimension_value_node",//getAreaBuild=getTreeArea
+                            data: {"product_code": product_code, "dim_code": dim_code},
+                            dataType : "json",
+                            async:'false',
+                            success : function(data) {
+                                console.info(data);
+                                if(data.code == "200") {
+                                    callback.call(this, data.result);
+                                    if(data.result == null || data.result.length<=0){
+                                        //开启新增根
+                                        $('#add_root').removeAttr("disabled")
+                                    }
+
+                                }else{
+                                    callback.call(this, []);
+                                    layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    }
+
+
+                } })
+                .bind('dblclick.jstree',function(e){
+                    console.info(e.target.id);
+                    var id=e.target.id.split("_anchor")[0];
+                    console.info("event:"+e.target.id.split("_anchor")[0]);
+                    if(!id){
+                        layer.msg("请双击资源名称！");
+                        return ;
+                    }
+                    $('#using_json').jstree("open_node", id);
+                    var node = $('#using_json').jstree("get_node", id);
+                    console.info("id:"+node.id+",parent:"+node.parent+",text:"+node.text);
+                    //$('#jstree').jstree('create_node', $(parent_node), { "text":new_node_text, "id":new_node_id }, position, false, false);
+                    var parent_ary = $('#using_json').jstree("get_path", id);
+                    console.info("level:"+parent_ary.length);
+                    var level=parent_ary.length;
+
+
+                    var is_open = $('#using_json').jstree("is_open", id);
+                    console.info("is_open:"+is_open);
+                    $("#ifm").attr("src", encodeURI(server_context+"/permission_dimension_value_add_index?id="+node.id+"&text="+node.text+"&level="+level+"&product_code="+product_code+"&dim_code="+dim_code));
+                });
+        }
+
+
+        if (s.id == -1) {
+            console.info("新增按钮触发");
+
+        } else {
+            if (s.is_copy == "true") {
+                console.info("拷贝按钮触发");
+            } else {
+                console.info("更新按钮触发");
+            }
+            buildParam()
+        }
+
+
+        function buildParam() {
+            if (s.id != '-1') {
+                console.info("更新按钮触发--开始赋值对应参数");
+                //开始赋值
+
+                $.ajax({
+                    url: server_context+"/permission_dimension_detail",
+                    data: "id=" + s.id,
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        console.info("success");
+                        // layer.alert(JSON.stringify(data[0]))
+
+                        //初始化输入数据源select 组件
+                        var product_code = data.result.product_code;
+                        $("#product_code").val(product_code);
+                        $("#product_code").trigger("chosen:updated");
+
+                        //获取ETL 说明
+                        var dim_code = data.result.dim_code;
+                        $("#dim_code").val(dim_code);
+                        $("#dim_code").attr("readonly","readonly");
+
+                        init_jstree(product_code, dim_code);
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+
+
+            }
+        }
+
+        $(document).ready(function () {
+
+            $('#search_input').keyup(function () {
+                $('#using_json').jstree(true).search($('#search_input').val());
+
+            });
+
+        });
+
+        function refash(id){
+            $('#using_json').jstree(true).refresh();
+            $('#using_json').jstree("open_node", id);
+        }
+        
+        function add_root() {
+            var product_code = $("#product_code").val();
+            var dim_code = $("#dim_code").val();
+            //请求新增根
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/permission_dimension_value_add",
+                dataType: 'json',
+                async:'false',
+                data: "product_code="+product_code+"&parent_dim_value_code=#&text="+dim_code+"&level=1"+"&dim_value_code="+dim_code+"&dim_value_name="+dim_code+"&dim_code="+dim_code,
+                //发送数据前
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#add_root").attr({disabled: "disabled"});
+                },
+                //成功返回
+                success: function (data) {
+                    if(data.code != '200'){
+                        console.error(data.msg);
+                        layer.msg(data.msg);
+                        $("#add_root").removeAttr('disabled');
+                        return ;
+                    }
+                    layer.msg("执行成功");
+                    init_jstree(product_code, dim_code);
+                },
+                //处理完成
+                complete: function () {
+                    //layer.close(index1);
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    $("#add_root").removeAttr('disabled');
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+        }
+    </script>
+
+</body>
+
+</html>

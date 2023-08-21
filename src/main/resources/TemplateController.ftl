@@ -92,16 +92,6 @@ public class ${ControllerName} extends BaseController {
     }
 
     /**
-     * ${tableDesc}明细页面
-     * @return
-     */
-    @RequestMapping(value = "/${controller}_detail", method = RequestMethod.GET)
-    @White
-    public String ${controller}_detail() {
-
-        return "${controller}_detail";
-    }
-    /**
      * xx明细
      * @param id 主键ID
      * @return

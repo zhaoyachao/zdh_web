@@ -7,16 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 用户权限首页(废弃)</title>
-    <meta name="keywords" content="ZDH 用户权限首页(废弃)">
-    <meta name="description" content="ZDH 用户权限首页(废弃)">
+    <title>ZDH 用户维度关系首页</title>
+    <meta name="keywords" content="ZDH 用户维度关系首页">
+    <meta name="description" content="ZDH 用户维度关系首页">
 
-    <link rel="shortcut icon" href="img/favicon.ico"> <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
-    
 
 </head>
 
@@ -25,7 +26,7 @@
         <!-- Panel Other -->
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>用户列表</h5>
+                <h5>绑定维度列表</h5>
                 <div class="ibox-tools">
                     <a class="collapse-link">
                         <i class="fa fa-chevron-up"></i>
@@ -41,11 +42,21 @@
             </div>
             <div class="ibox-content">
 
-                <form role="form" class="form-inline" id="user_form">
+                <form role="form" class="form-inline" id="permission_dimension_form">
+
+                    <input type="hidden" name="user_account" value="" id="user_account">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code...."
+                                    class="chosen-select form-control m-b" >
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <div class="input-group" >
-                            <input id="user_context" name="user_context" class="form-control" type="text" value="" placeholder="用户信息">
+                            <input id="tag_context" name="tag_context" class="form-control" type="text" value="" placeholder="关键字">
                             <span class="add-on"><i class="icon-remove"></i></span>
                             <span class="add-on"><i class="icon-calendar"></i></span>
                         </div>
@@ -62,11 +73,17 @@
                     <div class="col-sm-12">
                         <!-- Example Events -->
                         <div class="example-wrap">
-                                </div>
-                                <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true">
-
-                                </table>
+                            <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                                <button id="add" type="button" class="btn btn-outline btn-default">
+                                    <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                </button>
+                                <button id="remove" type="button" class="btn btn-outline btn-default">
+                                    <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
+                                </button>
                             </div>
+                            <table id="exampleTableEvents" data-height="500">
+
+                            </table>
                         </div>
                         <!-- End Example Events -->
                     </div>
@@ -87,26 +104,38 @@
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
 
-
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
     <!-- Bootstrap table -->
     <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
-    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
-    <!-- Peity -->
-    <script src="js/admin/permission.js"></script>
+    <script src="js/admin/product_common.js"></script>
+
+    <script src="js/admin/permission_user_dimension_value.js"></script>
 
 <script>
 
     $(document).ready(function () {
 
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();//定义一个全局变量-存储任务ID
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+        $('#user_account').val(s.user_account);
+
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: server_context+"/user_list?"+$("#user_form").serialize(),
+                url: server_context+"/permission_user_dimension_list?"+$("#permission_dimension_form").serialize(),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json"
             });
-        })
+        });
+
+
+        $('#search').click();
 
     })
 

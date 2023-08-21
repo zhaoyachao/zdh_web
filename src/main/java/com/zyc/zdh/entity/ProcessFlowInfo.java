@@ -81,6 +81,11 @@ public class ProcessFlowInfo {
      */
     private String event_id;
 
+    /**
+     * 产品code
+     */
+    private String product_code;
+
 
     @Transient
     private String by_person_name;
@@ -227,5 +232,13 @@ public class ProcessFlowInfo {
 
     public void setAgent_user(String agent_user) {
         this.agent_user = agent_user;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }

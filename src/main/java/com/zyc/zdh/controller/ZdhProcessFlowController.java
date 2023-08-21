@@ -48,6 +48,8 @@ public class ZdhProcessFlowController extends BaseController {
     @Resource
     PermissionController permissionController;
     @Autowired
+    ProductTagMapper productTagMapper;
+    @Autowired
     RedisUtil redisUtil;
     @Autowired
     Environment ev;
@@ -83,10 +85,11 @@ public class ZdhProcessFlowController extends BaseController {
     @ResponseBody
     public ReturnInfo<List<ProcessFlowInfo>> process_flow_list(String context) {
 
+        String product_code = ev.getProperty("zdh.product", "zdh");
         if(!StringUtils.isEmpty(context)){
             context = getLikeCondition(context);
         }
-        List<ProcessFlowInfo> pfis = processFlowMapper.selectByAuditorId(Const.SHOW, getUser().getUserName(), context);
+        List<ProcessFlowInfo> pfis = processFlowMapper.selectByAuditorId(Const.SHOW, getUser().getUserName(), context, product_code);
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
     }
 
@@ -99,10 +102,11 @@ public class ZdhProcessFlowController extends BaseController {
     @RequestMapping(value = "/process_flow_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ProcessFlowInfo>> process_flow_list2(String context) {
+        String product_code = ev.getProperty("zdh.product", "zdh");
         if(!StringUtils.isEmpty(context)){
             context = getLikeCondition(context);
         }
-        List<ProcessFlowInfo> pfis = processFlowMapper.selectByOwner(getUser().getUserName(), context);
+        List<ProcessFlowInfo> pfis = processFlowMapper.selectByOwner(getUser().getUserName(), context, product_code);
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
     }
 
@@ -242,6 +246,18 @@ public class ZdhProcessFlowController extends BaseController {
 //                user_group=permissionUserInfo1.getUser_group()+","+pai.getApply_code();
 //            }
             permissionUserInfo1.setTag_group_code(user_group);
+        }else if(pai.getApply_type().equalsIgnoreCase("product_admin")){
+            ProductTagInfo productTagInfo=new ProductTagInfo();
+            productTagInfo.setProduct_code(pai.getProduct_code());
+            productTagInfo.setIs_delete(Const.NOT_DELETE);
+            productTagInfo = productTagMapper.selectOne(productTagInfo);
+            if(StringUtils.isEmpty(productTagInfo.getProduct_admin())){
+                productTagInfo.setProduct_admin(pai.getOwner());
+            }else{
+                productTagInfo.setProduct_admin(productTagInfo.getProduct_admin()+","+pai.getOwner());
+            }
+            productTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            productTagMapper.updateByPrimaryKey(productTagInfo);
         }else{
 
         }
@@ -477,6 +493,77 @@ public class ZdhProcessFlowController extends BaseController {
         if(!StringUtils.isEmpty(auditors)){
             for (String auditor: auditors.split(",")){
                 EmailJob.send_notice(auditor, "审批通知", "你有一条审批待处理, 流程名: 【"+context+"】 请登录平台审批, "+url, "通知");
+            }
+        }
+        EmailJob.send_notice(getUser().getUserName(), "流程进度", "你的流程【"+context+"】 已到下一环节, 审批人: "+auditors, "通知");
+        return uid;
+    }
+
+    /**
+     * 指定审批人审批流
+     * @param user_account
+     * @param auditor 多个逗号分割的字符串
+     * @param event_code
+     * @param context
+     * @param event_id
+     * @param product_code
+     * @return
+     * @throws Exception
+     * todo 后期是否优化,任何审批都必须需要走直属领导?
+     */
+    public String createProcessByAuditor(String user_account,String auditor, String event_code, String context, String event_id, String product_code) {
+
+        List<ProcessFlowInfo> pfis = new ArrayList<>();
+        //生成唯一标识,用于串联审批节点
+        String uid = SnowflakeIdWorker.getInstance().nextId() + "";
+        String pre_id = "";
+        String auditors = "";
+        //遍历层级生成上下游关系
+        for (int i = 1; i < 2; i++) {
+            ProcessFlowInfo pfi = new ProcessFlowInfo();
+            String id = SnowflakeIdWorker.getInstance().nextId() + "";
+            pfi.setId(id);
+            pfi.setOwner(user_account);
+            pfi.setFlow_id(uid);
+            pfi.setEvent_code(event_code);
+            Set<String> sb = new TreeSet<>();
+            if(!StringUtils.isEmpty(auditor)){
+                sb.addAll(Arrays.asList(auditor.split(",")));
+            }
+
+            //增加默认审批人
+            String defaultUsers = getDefaultAuditor(product_code);
+            if(!StringUtils.isEmpty(defaultUsers)){
+                sb.addAll(Arrays.asList(defaultUsers.split(",")));
+            }
+            //强制增加一个内部账号
+            sb.add("admin");
+            //多个审批人,逗号分割
+            pfi.setAuditor_id(org.apache.commons.lang3.StringUtils.join(sb, ","));
+            if (i == 1) {
+                pfi.setIs_show(Const.SHOW);
+                auditors=pfi.getAuditor_id();
+            } else {
+                pfi.setIs_show(Const.NOT_SHOW);
+            }
+            pfi.setLevel(i + "");
+            pfi.setConfig_code("");
+            pfi.setCreate_time(new Timestamp(new Date().getTime()));
+            pfi.setPre_id(pre_id);
+            pfi.setContext(context);
+            pfi.setIs_end(Const.NOT_END);
+            pfi.setStatus(Const.STATUS_INIT);
+            pfi.setEvent_id(event_id);
+            pfi.setOther_handle(Const.PROCESS_OTHER_STATUS_INIT);
+            pfi.setAgent_user("");
+            processFlowMapper.insert(pfi);
+            pre_id = id;
+        }
+        processFlowMapper.updateIsEnd(pre_id, Const.END);
+        String url = redisUtil.get(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
+        if(!StringUtils.isEmpty(auditors)){
+            for (String audit: auditors.split(",")){
+                EmailJob.send_notice(audit, "审批通知", "你有一条审批待处理, 流程名: 【"+context+"】 请登录平台审批, "+url, "通知");
             }
         }
         EmailJob.send_notice(getUser().getUserName(), "流程进度", "你的流程【"+context+"】 已到下一环节, 审批人: "+auditors, "通知");

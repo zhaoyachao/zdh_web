@@ -100,6 +100,11 @@ public class Const {
     public static String PERMISSION_APPLY_SUCCESS="3";//申请通过
     public static String PERMISSION_APPLY_RECALL="4";//申请撤销
 
+    public static String PERMISSION_APPLY_TYPE_ROLE="role";//申请角色
+    public static String PERMISSION_APPLY_TYPE_USER_GROUP="user_group";//申请用户组
+    public static String PERMISSION_APPLY_TYPE_DATA_GROUP="data_group";//申请数据组
+    public static String PERMISSION_APPLY_TYPE_PRODUCT_ADMIN="product_admin";//申请产品管理员
+
 
     public static String LOG_MYSQL="mysql";//
     public static String LOG_MONGODB="mongodb";//

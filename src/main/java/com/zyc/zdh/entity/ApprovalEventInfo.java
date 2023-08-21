@@ -42,6 +42,11 @@ public class ApprovalEventInfo {
      */
     private String call_back;//回调接口
 
+    /**
+     * 产品code
+     */
+    private String product_code;
+
     @Transient
     private String code_name;
 
@@ -148,5 +153,13 @@ public class ApprovalEventInfo {
 
     public void setCall_back(String call_back) {
         this.call_back = call_back;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }

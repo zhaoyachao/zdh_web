@@ -68,6 +68,33 @@ function getTablePageCommon(url){
     }
 }
 
+function getTableCommon(url){
+
+    return {
+        "method": "POST",
+        "url": url,
+        "dataType": "json",
+        "search": "true",
+        "pagination": "true",
+        "showRefresh": "true",
+        "showToggle": "true",
+        "showColumns": "true",
+        "iconSize": "outline",
+        "toolbar": "#exampleTableEventsToolbar",
+        "icons": {
+            "refresh": "glyphicon-repeat",
+            "toggle": "glyphicon-list-alt",
+            "columns": "glyphicon-list"
+        },
+        "pageNumber": 1,
+        "pageSize": 10,
+        "responseHandler": res => {
+            // 关闭加载层
+            layer.msg(res.msg);
+            return res.result;
+        }
+    }
+}
 
 function getResourceDesc(){
     var url = window.location.pathname;

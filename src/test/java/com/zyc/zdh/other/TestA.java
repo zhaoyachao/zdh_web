@@ -11,6 +11,17 @@ import java.util.Arrays;
 
 public class TestA {
 
+
+    @Test
+    public void testRegex(){
+        String user="abc1.";
+        String regex = "^([a-zA-Z0-9])*$";
+        if(!user.matches(regex)){
+            System.out.println("用户格式不满足");
+        }
+
+    }
+
     @Test
     public void run() throws Exception {
 

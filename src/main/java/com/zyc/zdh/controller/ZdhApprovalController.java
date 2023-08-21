@@ -63,8 +63,9 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_config_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<ApprovalConfigInfo>> approve_config_list(String approval_context) {
+    public ReturnInfo<List<ApprovalConfigInfo>> approve_config_list(String product_code,String approval_context) {
         try{
+            checkPermissionByOwner(product_code);
             Example example=new Example(ApprovalConfigInfo.class);
             Example.Criteria criteria = example.createCriteria();
             if(!StringUtils.isEmpty(approval_context)){
@@ -484,8 +485,9 @@ public class ZdhApprovalController extends BaseController{
      */
     @RequestMapping(value = "/approval_event_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<ApprovalEventInfo>> approval_event_list(String event_context) {
+    public ReturnInfo<List<ApprovalEventInfo>> approval_event_list(String product_code,String event_context) {
         try{
+            checkPermissionByOwner(product_code);
             if(!StringUtils.isEmpty(event_context)){
                 event_context = getLikeCondition(event_context);
             }

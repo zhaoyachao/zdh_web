@@ -58,6 +58,12 @@ public class ProductTagInfo {
      */
     private String product_type;
 
+
+    /**
+     * 产品管理员账号
+     */
+    private String product_admin;
+
     /**
      * @return id
      */
@@ -250,5 +256,13 @@ public class ProductTagInfo {
      */
     public void setProduct_type(String product_type) {
         this.product_type = product_type;
+    }
+
+    public String getProduct_admin() {
+        return product_admin;
+    }
+
+    public void setProduct_admin(String product_admin) {
+        this.product_admin = product_admin;
     }
 }

@@ -23,6 +23,12 @@
               content: server_context+'/approval_event_add_index?id=-1', //iframe的url
               end:function () {
                   parent.layer.closeAll();
+                  $('#exampleTableEvents-table').bootstrapTable('destroy');
+                  $('#exampleTableEvents').bootstrapTable('refresh', {
+                      url: server_context+"/approval_event_list?"+$("#user_form").serialize()+"&tm="+new Date(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
+                  });
               }
           });
 
@@ -41,6 +47,12 @@
                   content: server_context+'/approval_event_add_index?id='+row.id, //iframe的url
                   end:function () {
                       parent.layer.closeAll();
+                      $('#exampleTableEvents-table').bootstrapTable('destroy');
+                      $('#exampleTableEvents').bootstrapTable('refresh', {
+                          url: server_context+"/approval_event_list?"+$("#user_form").serialize()+"&tm="+new Date(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
+                      });
                   }
               });
           }
@@ -99,7 +111,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
           method: "POST",
-          url: server_context+"/approval_event_list",
+          url: server_context+"/approval_event_list?"+$("#user_form").serialize(),
       search: true,
       pagination: true,
       showRefresh: true,
