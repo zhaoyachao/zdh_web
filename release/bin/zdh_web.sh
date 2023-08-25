@@ -36,7 +36,6 @@ start(){
  echo "${APP_NAME} is already running. pid=${pid} ."
  else
  nohup java -Dfile.encoding=utf-8 -Dloader.path=libs/,conf/ -Xss512M -jar "$APP_NAME"  >> web.log  &
- #nohup java -jar $APP_DIR/$APP_NAME
  echo "${APP_NAME} start success"
  fi
 }

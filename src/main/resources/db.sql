@@ -2018,6 +2018,369 @@ VALUES(1015583512050274304, '967380640318099456', '更新', '4', 'zyc', 'fa fa-c
 INSERT INTO zdh.resource_tree_info
 (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
 VALUES(1015585046146322432, '904058054746574848', 'FLUME页面', '5', 'zyc', 'fa fa-coffee', '', '9', '1', '2022-09-03 11:32:24', '2022-09-03 11:32:24', 'flume_detail', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1019003620370157568, '802848818109353984', 'API文档', '2', 'zyc', 'fa fa-coffee', '', '0', '1', '2022-09-12 21:56:35', '2022-09-12 21:56:35', 'smart_doc/api.html', '2', '接口文档', '', 'zdh');
+
+
+CREATE TABLE `we_mock_tree_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `parent` varchar(100) DEFAULT NULL,
+  `text` varchar(1024) DEFAULT NULL,
+  `level` varchar(10) DEFAULT NULL COMMENT '层级',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `icon` varchar(200) DEFAULT NULL,
+  `resource_desc` varchar(10) DEFAULT NULL COMMENT '资源说明',
+  `order` varchar(200) DEFAULT NULL,
+  `is_delete` varchar(10) not null DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `url` text COMMENT 'url链接',
+  `resource_type` varchar(64) DEFAULT NULL COMMENT '1:目录,2:菜单',
+  `notice_title` varchar(8) NOT NULL DEFAULT '' COMMENT '提示语',
+  `event_code` varchar(64) NOT NULL DEFAULT '' COMMENT '绑定事件',
+  `product_code` varchar(100) NOT NULL DEFAULT '' COMMENT '产品code',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+INSERT INTO param_info
+(id, param_name, param_value, param_context, param_type, param_timeout, owner, status, is_delete, create_time, update_time)
+VALUES(10, 'zdh_check_impls', 'com.zyc.zdh.job.CheckDepJob', '系统调度检查实现类', '1', '-1', 'zyc', 'on', '0', '2022-10-08 20:55:56', '2022-10-08 20:55:56');
+
+
+CREATE TABLE `we_mock_data_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `wemock_context` varchar(128) DEFAULT NULL,
+  `req_type` varchar(1024) DEFAULT 'post' COMMENT '请求类型',
+  `req_encode` varchar(128) DEFAULT 'utf-8' comment '请求编码',
+  `req_timeout` varchar(128) DEFAULT '10' comment '超时时间',
+  `resp_content_type` varchar(256) DEFAULT 'application/json' comment '响应content_type',
+  `resp_encode` varchar(128) DEFAULT 'utf-8' comment '响应编码',
+  `url` varchar(2048) DEFAULT NULL COMMENT 'url',
+  `header` text  COMMENT '响应信息',
+  `resolve_type` varchar(200) DEFAULT null COMMENT '解析类型,0:静态，1:动态',
+  `resp_context` text COMMENT '内容',
+  `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+  `is_delete` varchar(10) not null DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `product_code` varchar(100) NOT NULL DEFAULT '' COMMENT '产品code',
+  `mock_tree_id` varchar(100) NOT NULL DEFAULT '' COMMENT 'mock tree id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1025372388994322432, '#', 'test_product', '1', 'zyc', 'fa fa-folder', '', '1', '1', '2022-09-30 11:43:48', '2022-09-30 11:43:48', '', NULL, '', '', 'test_product');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030640518721179648, '934940905796800512', '树形信息新增页面', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:37:28', '2022-10-15 00:37:28', 'wemock_jstree_add_index', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030640652699832320, '934940905796800512', '树形-查询所有节点', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:38:00', '2022-10-15 00:40:10', 'wemock_jstree_node', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030640747650486272, '934940905796800512', '树形-新增根节点', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:38:23', '2022-10-15 00:39:52', 'wemock_add_root_node', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030640849358163968, '934940905796800512', '树形-查询指定节点信息', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:38:47', '2022-10-15 00:40:21', 'wemock_jstree_get_node', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641377911771136, '934940905796800512', '树形-更新节点信息', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:40:53', '2022-10-15 00:40:53', 'wemock_update_node', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641431800188928, '934940905796800512', '树形-新增节点信息', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:41:06', '2022-10-15 00:41:06', 'wemock_add_node', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641488435875840, '934940905796800512', '树形-删除节点信息', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:41:19', '2022-10-15 00:41:19', 'wemock_del_node', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641579972366336, '934940905796800512', '树形-更新节点层级', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:41:41', '2022-10-15 00:41:41', 'wemock_update_parent', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641732816998400, '934940905796800512', 'mock数据-查询', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:42:18', '2022-10-15 00:42:18', 'wemock_data_list', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641800286572544, '934940905796800512', 'mock数据-查询明细', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:42:34', '2022-10-15 00:42:34', 'wemock_data_detail', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641851285114880, '934940905796800512', 'mock数据-新增', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:42:46', '2022-10-15 00:42:46', 'wemock_data_add', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641898072576000, '934940905796800512', 'mock数据-更新', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:42:57', '2022-10-15 00:42:57', 'wemock_data_update', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030641985137938432, '934940905796800512', 'mock数据-新增页面', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:43:18', '2022-10-15 00:43:18', 'wemock_data_add_index', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1030642818059603968, '934940905796800512', 'mock数据-删除', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2022-10-15 00:46:36', '2022-10-15 00:46:36', 'wemock_data_delete', '3', '', '', 'zdh');
+
+
+ALTER TABLE strategy_instance add COLUMN touch_type varchar(128) not null default 'database' COMMENT '推送类型,database,queue';
+ALTER TABLE strategy_instance add COLUMN strategy_id varchar(128) not null default '0' COMMENT '策略id';
+ALTER TABLE strategy_group_instance add COLUMN strategy_group_id varchar(128) not null default '0' COMMENT '策略组id';
+
+CREATE TABLE `touch_config_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `touch_context` varchar(128) DEFAULT NULL,
+  `touch_config` text COMMENT '配置json格式',
+  `touch_task` varchar(128) DEFAULT 'email' comment '触达任务类型',
+  `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+  `is_delete` varchar(10) not null DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER TABLE label_info add COLUMN data_sources_choose_input varchar(128) not null default '0' COMMENT '数据源id';
+
+ALTER TABLE crowd_file_info add COLUMN data_type varchar(128) not null default '' COMMENT '数据类型,phone,email,id_card,可扩展';
+
+drop table etl_task_datax_auto_info
+CREATE TABLE `etl_task_datax_auto_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `etl_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+  `data_sources_choose_input` varchar(100) DEFAULT NULL COMMENT '输入数据源id',
+  `data_source_type_input` varchar(100) DEFAULT NULL COMMENT '输入数据源类型',
+  `data_sources_table_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源表名',
+  `data_sources_file_name_input` varchar(100) DEFAULT NULL COMMENT '输入数据源文件名',
+  `data_sources_table_columns` text COMMENT '输入数据源表列名',
+  `data_sources_params_input` varchar(500) DEFAULT NULL COMMENT '输入数据源参数',
+  `data_sources_filter_input` varchar(500) DEFAULT NULL COMMENT '输入数据源过滤条件',
+  `data_sources_choose_output` varchar(100) DEFAULT NULL COMMENT '输出数据源id',
+  `data_source_type_output` varchar(100) DEFAULT NULL COMMENT '输出数据源类型',
+  `data_sources_table_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源表名',
+  `data_sources_file_name_output` varchar(100) DEFAULT NULL COMMENT '输出数据源文件名',
+  `data_sources_params_output` varchar(500) DEFAULT NULL COMMENT '输出数据源参数',
+  `column_datas` text COMMENT '输入输出自定映射关系',
+  `data_sources_clear_output` varchar(500) DEFAULT NULL COMMENT '数据源数据源删除条件',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+  `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+  `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+  `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+  `column_size` varchar(100) DEFAULT NULL COMMENT '字段个数',
+  `rows_range` varchar(100) DEFAULT NULL COMMENT '行数范围',
+  `error_rate` varchar(10) DEFAULT NULL COMMENT '错误率',
+  `enable_quality` varchar(10) DEFAULT NULL COMMENT '是否开启质量检测',
+  `duplicate_columns` varchar(200) DEFAULT NULL COMMENT '去重字段',
+  `primary_columns` varchar(100) DEFAULT NULL COMMENT '不可重复字段',
+  `file_type_input` varchar(10) DEFAULT NULL COMMENT '输入文件类型',
+  `encoding_input` varchar(10) DEFAULT NULL COMMENT '输入文件编码',
+  `sep_input` varchar(10) DEFAULT NULL COMMENT '输入分割符',
+  `file_type_output` varchar(10) DEFAULT NULL COMMENT '输出文件类型',
+  `encoding_output` varchar(10) DEFAULT NULL COMMENT '输出文件编码',
+  `sep_output` varchar(10) DEFAULT NULL COMMENT '输出文件分割符',
+  `header_input` varchar(10) DEFAULT NULL COMMENT '输入是否包含表头',
+  `header_output` varchar(10) DEFAULT NULL COMMENT '输出是否包含表头',
+  `repartition_cols_input` varchar(256) NOT NULL DEFAULT '' COMMENT '洗牌字段默认空',
+  `model_output` varchar(64) NOT NULL DEFAULT '' COMMENT '写入模式默认空',
+  `partition_by_output` varchar(256) NOT NULL DEFAULT '' COMMENT '分区字段默认空',
+  `merge_output` varchar(256) NOT NULL DEFAULT '-1' COMMENT '合并小文件默认-1 不合并',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE role_resource_info add COLUMN role_code varchar(128) not null default '' COMMENT '角色code';
+update role_resource_info a left join role_info b on a.role_id =b.id set a.role_code=b.code;
+update permission_user_info set roles='admin' where user_account ='zyc';
+
+alter table touch_config_info add column sign varchar(128) not null default '' comment '签名';
+alter table touch_config_info add column template_code varchar(256) not null default '' comment '模板code';
+alter table touch_config_info add column platform varchar(256) not null default '' comment '短信平台';
+
+alter table product_tag_info add column product_type varchar(256) not null default '' comment '产品类型';
+
+drop table permission_bigdata_info;
+CREATE TABLE `permission_bigdata_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_account` varchar(200) DEFAULT NULL COMMENT '产品code',
+  `product_code` varchar(200) DEFAULT NULL COMMENT '产品code',
+  `product_type` varchar(100) DEFAULT NULL COMMENT '产品类型',
+  `resource_type` varchar(100) DEFAULT NULL COMMENT '资源类型,文件,目录,表',
+  `resource_manage_group` varchar(100) DEFAULT NULL COMMENT '用户组是否作为当前路径管理层',
+  `permission_rule` varchar(100) DEFAULT NULL COMMENT '权限规则',
+  `path` varchar(100) DEFAULT NULL COMMENT '路径',
+  `user_group_code` varchar(100) DEFAULT NULL COMMENT '用户组',
+  `permission_depth_level` varchar(100) DEFAULT NULL COMMENT '权限层级',
+  `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+alter table user_group_info add column group_code varchar(256) not null default '' comment '组code';
+ALTER TABLE we_mock_data_info add COLUMN is_disenable varchar(128) not null default 'on' COMMENT '是否禁用on,off';
+
+alter table task_log_instance add column schedule_id varchar(256) not null default '' comment '调度器标识';
+alter table process_flow_info add column agent_user varchar(256) not null default '' comment '代理人id';
+
+alter table label_info add column label_use_type varchar(16) not null default 'batch' comment '使用方式,batch:值查人,single:人查值';
+alter table label_info add column label_data_time_effect varchar(16) not null default 'day' comment '数据时效性, day:天级,hour:小时级,second:准实时';
+alter table label_info add column label_data_update_type varchar(16) not null default 'overwrite' comment '数据更新类型,overwrite:覆盖,append:追加,get_append:值追加';
+alter table label_info add column label_event_time_column varchar(256) not null default '' comment '事件事件字段,默认为空';
+alter table label_info add column label_data_code varchar(256) not null default '' comment '数据标识,使用场景：从kafka来的数据根据此标识找到可以加工的标签都有哪些';
+
+CREATE TABLE `plugin_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plugin_type` varchar(200) not null DEFAULT '' COMMENT '插件类型',
+  `plugin_code` varchar(200) not null DEFAULT '' COMMENT '插件code',
+  `plugin_name` varchar(200) not null DEFAULT '' COMMENT '插件名称',
+  `plugin_json` text COMMENT '插件配置',
+  `owner` varchar(100) not null DEFAULT '' COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE approval_auditor_info add COLUMN auditor_rule varchar(128) not null default '' COMMENT '审批规则,根据规则自动查询审批人信息,实现动态审批人效果';
+
+update user_group_info set group_code ='bigdata1' where id='6';
+update user_group_info set group_code ='bigdata2' where id='7';
+update user_group_info set group_code ='bigdata3' where id='8';
+update user_group_info set group_code ='bigdata5' where id='9';
+update user_group_info set group_code ='g1' where id='10';
+
+update permission_user_info a inner join user_group_info b on a.user_group = b.id set a.user_group =b.group_code ;
+
+update approval_auditor_info a inner join user_group_info b on find_in_set(b.id, a.auditor_group)
+set a.auditor_group  = replace(a.auditor_group, b.id, b.group_code);
+
+ALTER TABLE user_group_info add COLUMN teams text  COMMENT '组下所属团队';
+
+ALTER TABLE touch_config_info add COLUMN touch_param_codes text  COMMENT '触达参数,多个逗号分割';
+
+alter table strategy_group_info add column group_type varchar(256) not null default 'offline' comment '实时online,离线:offline';
+alter table strategy_group_info add column data_node varchar(1024) not null default '' comment '数据节点';
+alter table strategy_group_instance add column group_type varchar(256) not null default 'offline' comment '实时online,离线:offline';
+alter table strategy_group_instance add column data_node varchar(1024) not null default '' comment '数据节点';
+
+alter table strategy_instance add column group_type varchar(256) not null default 'offline' comment '实时online,离线:offline';
+alter table strategy_instance add column data_node varchar(1024) not null default '' comment '数据节点';
+
+alter table label_info add column label_data_update_time varchar(256) not null default '' comment '数据更新时间,调度根据此时间决定是否加工标签数据';
+alter table label_info add column status varchar(8) not null default '2' comment '1:发布,2:未发布';
+alter table label_info add column label_default varchar(1024) not null default '' comment '标签默认值,json格式';
+
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122088565212188672, '963932648793706496', '策略组手动执行页面', '4', 'zyc', 'fa fa-coffee', '', '20', '1', '2023-06-24 08:59:21', '2023-06-24 08:59:21', 'strategy_group_task_exe_detail_index', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122088667641286656, '963932648793706496', '策略组手动执行', '4', 'zyc', 'fa fa-coffee', '', '21', '1', '2023-06-24 08:59:46', '2023-06-24 08:59:46', 'strategy_group_task_execute', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122088892451786752, '963932648793706496', '策略组执行实例页面', '4', 'zyc', 'fa fa-coffee', '', '22', '1', '2023-06-24 09:00:39', '2023-06-24 09:00:39', 'strategy_group_instance_index', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122089036400300032, '963932648793706496', '策略组执行列表', '4', 'zyc', 'fa fa-coffee', '', '23', '1', '2023-06-24 09:01:14', '2023-06-24 09:01:14', 'strategy_group_instance_list', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122089246555901952, '963932648793706496', '获取组策略实例信息', '4', 'zyc', 'fa fa-coffee', '', '24', '1', '2023-06-24 09:02:04', '2023-06-24 09:02:04', 'strategy_group_instance_list2', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122089348783673344, '963932648793706496', '策略实例执行日志首页', '4', 'zyc', 'fa fa-coffee', '', '25', '1', '2023-06-24 09:02:28', '2023-06-24 09:06:15', 'strategy_instance_index', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122089757464072192, '963932648793706496', '获取策略组实例下的所有子策略', '4', 'zyc', 'fa fa-coffee', '', '26', '1', '2023-06-24 09:04:06', '2023-06-24 09:04:06', 'strategy_instance_list', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122089903845281792, '963932648793706496', '策略组实例重试首页', '4', 'zyc', 'fa fa-coffee', '', '27', '1', '2023-06-24 09:04:40', '2023-06-24 09:06:07', 'strategy_group_retry_detail_index', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122090226374676480, '963932648793706496', '策略组实例重试', '4', 'zyc', 'fa fa-coffee', '', '27', '1', '2023-06-24 09:05:57', '2023-06-24 09:05:57', 'retry_strategy_group_instance', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122090586501812224, '963932648793706496', '杀死单个策略实例任务', '4', 'zyc', 'fa fa-coffee', '', '28', '1', '2023-06-24 09:07:23', '2023-06-24 09:07:23', 'killStrategy', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122090760456376320, '963932648793706496', '开启调度策略组', '4', 'zyc', 'fa fa-coffee', '', '28', '1', '2023-06-24 09:08:05', '2023-06-24 09:08:05', 'strategy_group_execute_quartz', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122090815657611264, '963932648793706496', '暂停调度策略组', '4', 'zyc', 'fa fa-coffee', '', '28', '1', '2023-06-24 09:08:18', '2023-06-24 09:08:18', 'strategy_group_quartz_pause', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122091016275365888, '963932648793706496', '关闭调度策略组', '4', 'zyc', 'fa fa-coffee', '', '28', '1', '2023-06-24 09:09:06', '2023-06-24 09:09:06', 'strategy_group_quartz_del', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122092526900088832, '963926116140060672', '启用标签', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2023-06-24 09:15:06', '2023-06-24 09:15:06', 'label_enable', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122094404123758592, '1013053483735060480', '查询', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-06-24 09:22:33', '2023-06-24 09:22:33', 'filter_list', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122094539536863232, '1013053483735060480', '新增页面', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-06-24 09:23:06', '2023-06-24 09:23:06', 'filter_add_index', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122094634240053248, '1013053483735060480', '明细', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-06-24 09:23:28', '2023-06-24 09:23:28', 'filter_detail', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122094697305608192, '1013053483735060480', '更新', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-06-24 09:23:43', '2023-06-24 09:23:43', 'filter_update', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122094755254112256, '1013053483735060480', '新增', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-06-24 09:23:57', '2023-06-24 09:23:57', 'filter_add', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122094827526164480, '1013053483735060480', '删除', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-06-24 09:24:14', '2023-06-24 09:24:14', 'filter_delete', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122095893332365312, '1013053374364389376', '查询', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-06-24 09:28:29', '2023-06-24 09:28:29', 'crowd_file_list', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122095997707620352, '1013053374364389376', '新增首页', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-06-24 09:28:53', '2023-06-24 09:28:53', 'crowd_file_add_index', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122096075528736768, '1013053374364389376', '明细', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-06-24 09:29:12', '2023-06-24 09:29:12', 'crowd_file_detail', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122096196618293248, '1013053374364389376', '更新', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-06-24 09:29:41', '2023-06-24 09:29:41', 'crowd_file_update', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122096248828989440, '1013053374364389376', '新增', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-06-24 09:29:53', '2023-06-24 09:29:53', 'crowd_file_add', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122096327245697024, '1013053374364389376', '删除', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-06-24 09:30:12', '2023-06-24 09:30:12', 'crowd_file_delete', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122096513946750976, '1086584826015780864', '查询', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-06-24 09:30:56', '2023-06-24 09:30:56', 'plugin_list', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122096595349803008, '1086584826015780864', '新增页面', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-06-24 09:31:16', '2023-06-24 09:31:16', 'plugin_add_index', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122096658411163648, '1086584826015780864', '明细', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-06-24 09:31:31', '2023-06-24 09:31:31', 'plugin_detail', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122101476781461504, '963932648793706496', '插件页面', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2023-06-24 09:50:40', '2023-06-24 09:50:40', 'plugin_detail2', '2', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122101737163853824, '1086584826015780864', 'code查询插件信息', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2023-06-24 09:51:42', '2023-06-24 09:51:42', 'plugin_detail_by_code', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122101825579782144, '1086584826015780864', '更新', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2023-06-24 09:52:03', '2023-06-24 09:52:03', 'plugin_update', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122101889572278272, '1086584826015780864', '新增', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2023-06-24 09:52:18', '2023-06-24 09:52:18', 'plugin_add', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122101956072968192, '1086584826015780864', '删除', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2023-06-24 09:52:34', '2023-06-24 09:52:34', 'plugin_delete', '5', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122102401994592256, '963932648793706496', '在线节点页面', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2023-06-24 09:54:20', '2023-06-24 09:54:20', 'online_detail', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122102597474324480, '963932648793706496', '触达页面', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2023-06-24 09:55:07', '2023-06-24 09:55:07', 'touch_detail', '3', '', '', 'zdh');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
+VALUES(1122102818098909184, '963932648793706496', 'idmapping页面', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2023-06-24 09:55:59', '2023-06-24 09:55:59', 'id_mapping_detail', '3', '', '', 'zdh');
+
 
 
 

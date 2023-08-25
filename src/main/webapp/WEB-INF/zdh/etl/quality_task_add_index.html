@@ -569,11 +569,11 @@
                         if(data.code == "200"){
                             $('#row_num').val('');
                             var str = '';
-                            for (var i = 0; i < data.length; i++) {
+                            for (var i = 0; i < data.result.length; i++) {
                                 if (str == '')
-                                    str = data[i];
+                                    str = data.result[i];
                                 else
-                                    str += "," + data[i];
+                                    str += "," + data.result[i];
                             }
                             $("#data_sources_table_columns").val(str)
                         }else{
