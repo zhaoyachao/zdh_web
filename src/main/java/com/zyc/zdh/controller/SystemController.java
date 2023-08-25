@@ -458,7 +458,6 @@ public class SystemController extends BaseController{
             if(list != null && list.size()>0){
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "", list.get(0));
             }
-
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "暂无通知", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
