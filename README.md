@@ -716,6 +716,8 @@
   + v5.1.2 [zdh_web]get相关请求增加去除缓存
   + v5.1.2 [zdh_web]审批模块优化,增加产品限制
   + v5.1.2 [zdh_web]权限模块-新增维度模型,用于实现数据权限(历史上使用数据标识模型实现数据权限)
+  + v5.1.2 [zdh_web]智能营销模块-部分插件补充运算符
+  + v5.1.2 [zdh_web]修复获取schema时获取失败bug
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -2241,6 +2243,104 @@
        `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
        PRIMARY KEY (`id`)
      ) comment '风控事件信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     -- 标签依赖数据
+     CREATE TABLE `label_depend_data_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `data_code` varchar(256) DEFAULT NULL COMMENT '过滤code',
+       `data_name` varchar(2048) DEFAULT NULL COMMENT '过滤名称',
+       `data_time` varchar(2048) DEFAULT NULL COMMENT '过滤名称',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     -- 标签计算信息表
+     CREATE TABLE `label_complete_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `label_code` varchar(256) DEFAULT NULL COMMENT '标签code',
+       `task_time` varchar(2048) DEFAULT NULL COMMENT '任务时间',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) comment '标签完成信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     alter table filter_info add column engine_type varchar(16) not null default 'file' comment '计算引擎类型,file,redis,hive';
+     
+     alter table resource_tree_info MODIFY COLUMN resource_desc text COMMENT '资源说明';
+     
+     CREATE TABLE `permission_dimension_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `dim_code` varchar(256) DEFAULT NULL COMMENT '维度code',
+       `dim_name` varchar(256) DEFAULT NULL COMMENT '维度名称',
+       `dim_value` varchar(2048) DEFAULT NULL COMMENT '维度值',
+       `product_code` varchar(200) DEFAULT NULL COMMENT '产品code',
+       `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+       `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) comment '维度信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     CREATE TABLE `permission_dimension_value_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `dim_value_code` varchar(256) DEFAULT '' COMMENT '维度值code',
+       `dim_value_name` varchar(256) DEFAULT '' COMMENT '维度值名称',
+       `parent_dim_value_code` varchar(256) DEFAULT '-1' COMMENT '父级维度值code',
+       `dim_code` varchar(256) DEFAULT '' COMMENT '维度code',
+       `product_code` varchar(200) DEFAULT '' COMMENT '产品code',
+       `owner` varchar(500) DEFAULT '' COMMENT '账号',
+       `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) comment '维度值信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     
+     CREATE TABLE `permission_user_dimension_value_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `user_account` varchar(256) DEFAULT '' COMMENT '账号',
+       `dim_code` varchar(256) DEFAULT '' COMMENT '维度code',
+       `dim_value_code` varchar(256) DEFAULT '' COMMENT '维度值code',
+       `product_code` varchar(200) DEFAULT '' COMMENT '产品code',
+       `owner` varchar(500) DEFAULT '' COMMENT '账号',
+       `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) comment '用户维度关系信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     CREATE TABLE `permission_usergroup_dimension_value_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `group_code` varchar(256) DEFAULT '' COMMENT '用户组code',
+       `dim_code` varchar(256) DEFAULT '' COMMENT '维度code',
+       `dim_value_code` varchar(256) DEFAULT '' COMMENT '维度值code',
+       `product_code` varchar(200) DEFAULT '' COMMENT '产品code',
+       `owner` varchar(500) DEFAULT '' COMMENT '账号',
+       `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) comment '用户组维度关系信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     alter table role_resource_info add column product_code varchar(200) not null default '' comment '产品code';
+     alter table product_tag_info add column product_admin varchar(1024) not null default '' comment '产品管理员';
+     update product_tag_info set product_admin='zyc';
+     alter table approval_config_info add column product_code varchar(200) not null default '' comment '产品code';
+     update approval_config_info set product_code='zdh';
+     alter table approval_event_info add column product_code varchar(200) not null default '' comment '产品code';
+     update approval_event_info set product_code='zdh';
+     alter table process_flow_info add column product_code varchar(200) not null default '' comment '产品code';
+     update process_flow_info set product_code='zdh';
      
      
 # 未完成的功能

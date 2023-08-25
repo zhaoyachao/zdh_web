@@ -1,12 +1,8 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
-import com.zyc.zdh.entity.PermissionUserGroupDimensionValueInfo;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.User;
-import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.dao.PermissionUserGroupDimensionValueMapper;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -21,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
-import com.zyc.zdh.dao.PermissionUserGroupDimensionValueMapper;
-
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -43,11 +37,43 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
      * 用户组维度关系信息列表首页
      * @return
      */
-    @RequestMapping(value = "/permission_user_group_dimension_value_index", method = RequestMethod.GET)
+    @RequestMapping(value = "/permission_usergroup_dimension_value_index", method = RequestMethod.GET)
     @White
-    public String permission_user_group_dimension_value_index() {
+    public String permission_usergroup_dimension_value_index() {
 
-        return "permission_user_group_dimension_value_index";
+        return "admin/permission_usergroup_dimension_value_index";
+    }
+
+
+    /**
+     * 用户组绑定的维度列表
+     * @param context 关键字
+     * @return
+     */
+    @RequestMapping(value = "/permission_usergroup_dimension_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public ReturnInfo<List<PermissionDimensionInfo>> permission_usergroup_dimension_list(String context, String product_code, String group_code) {
+        try{
+
+            checkPermissionByOwner(product_code);
+            checkParam(group_code, "用户组");
+
+            Example example=new Example(PermissionUserGroupDimensionValueInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("product_code", product_code);
+            criteria.andEqualTo("group_code", group_code);
+
+            List<PermissionDimensionInfo> permissionUserDimensionValueInfos = permissionUserGroupDimensionValueMapper.selectDimByGroup(product_code, group_code);
+
+            return ReturnInfo.buildSuccess(permissionUserDimensionValueInfos);
+        }catch(Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("用户维度关系信息列表查询失败", e);
+        }
+
     }
 
     /**
@@ -55,14 +81,21 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
      * @param context 关键字
      * @return
      */
-    @RequestMapping(value = "/permission_user_group_dimension_value_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/permission_usergroup_dimension_value_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public ReturnInfo<List<PermissionUserGroupDimensionValueInfo>> permission_user_group_dimension_value_list(String context) {
+    public ReturnInfo<List<PermissionUserGroupDimensionValueInfo>> permission_usergroup_dimension_value_list(String context,String product_code, String group_code, String dim_code) {
         try{
+            checkPermissionByOwner(product_code);
+            checkParam(group_code, "用户组");
+
+
             Example example=new Example(PermissionUserGroupDimensionValueInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("product_code", product_code);
+            criteria.andEqualTo("group_code", group_code);
+            criteria.andEqualTo("dim_code", dim_code);
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
             criteria2.orLike("context", getLikeCondition(context));
@@ -84,61 +117,49 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
      * 用户组维度关系信息新增首页
      * @return
      */
-    @RequestMapping(value = "/permission_user_group_dimension_value_add_index", method = RequestMethod.GET)
+    @RequestMapping(value = "/permission_usergroup_dimension_value_add_index", method = RequestMethod.GET)
     @White
-    public String permission_user_group_dimension_value_add_index() {
+    public String permission_usergroup_dimension_value_add_index() {
 
-        return "permission_user_group_dimension_value_add_index";
-    }
-
-    /**
-     * 用户组维度关系信息明细页面
-     * @return
-     */
-    @RequestMapping(value = "/permission_user_group_dimension_value_detail", method = RequestMethod.GET)
-    @White
-    public String permission_user_group_dimension_value_detail() {
-
-        return "permission_user_group_dimension_value_detail";
-    }
-    /**
-     * xx明细
-     * @param id 主键ID
-     * @return
-     */
-    @RequestMapping(value = "/permission_user_group_dimension_value_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    @White
-    public ReturnInfo<PermissionUserGroupDimensionValueInfo> permission_user_group_dimension_value_detail(String id) {
-        try {
-            PermissionUserGroupDimensionValueInfo permissionUserGroupDimensionValueInfo = permissionUserGroupDimensionValueMapper.selectByPrimaryKey(id);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserGroupDimensionValueInfo);
-        } catch (Exception e) {
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
-        }
+        return "admin/permission_usergroup_dimension_value_add_index";
     }
 
     /**
      * 用户组维度关系信息更新
-     * @param permissionUserGroupDimensionValueInfo
+     * @param product_code 产品code
+     * @param dim_code 维度code
+     * @param group_code 用户组
+     * @param dim_value_codes 维度值code
      * @return
      */
-    @RequestMapping(value = "/permission_user_group_dimension_value_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/permission_usergroup_dimension_value_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     @White
-    public ReturnInfo<PermissionUserGroupDimensionValueInfo> permission_user_group_dimension_value_update(PermissionUserGroupDimensionValueInfo permissionUserGroupDimensionValueInfo) {
+    public ReturnInfo<PermissionUserGroupDimensionValueInfo> permission_usergroup_dimension_value_update(String product_code, String dim_code, String group_code, String[] dim_value_codes) {
         try {
+            Example example=new Example(PermissionUserGroupDimensionValueInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("product_code", product_code);
+            criteria.andEqualTo("group_code", group_code);
+            criteria.andEqualTo("dim_code", dim_code);
+            permissionUserGroupDimensionValueMapper.deleteByExample(example);
 
-            PermissionUserGroupDimensionValueInfo oldPermissionUserGroupDimensionValueInfo = permissionUserGroupDimensionValueMapper.selectByPrimaryKey(permissionUserGroupDimensionValueInfo.getId());
+            PermissionUserGroupDimensionValueInfo permissionUserDimensionValueInfo = new PermissionUserGroupDimensionValueInfo();
+            permissionUserDimensionValueInfo.setProduct_code(product_code);
+            permissionUserDimensionValueInfo.setDim_code(dim_code);
+            permissionUserDimensionValueInfo.setGroup_code(group_code);
+            permissionUserDimensionValueInfo.setOwner(getOwner());
+            permissionUserDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
+            permissionUserDimensionValueInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            permissionUserDimensionValueInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            for (String dim_value_code: dim_value_codes){
+                permissionUserDimensionValueInfo.setDim_value_code(dim_value_code);
+                permissionUserGroupDimensionValueMapper.insert(permissionUserDimensionValueInfo);
+            }
 
-
-            permissionUserGroupDimensionValueInfo.setCreate_time(oldPermissionUserGroupDimensionValueInfo.getCreate_time());
-            permissionUserGroupDimensionValueInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            permissionUserGroupDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
-            permissionUserGroupDimensionValueMapper.updateByPrimaryKey(permissionUserGroupDimensionValueInfo);
-
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", permissionUserGroupDimensionValueInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", permissionUserDimensionValueInfo);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -146,50 +167,6 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
         }
     }
 
-
-    /**
-     * 用户组维度关系信息新增
-     * @param permissionUserGroupDimensionValueInfo
-     * @return
-     */
-    @RequestMapping(value = "/permission_user_group_dimension_value_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    @Transactional(propagation= Propagation.NESTED)
-    @White
-    public ReturnInfo<PermissionUserGroupDimensionValueInfo> permission_user_group_dimension_value_add(PermissionUserGroupDimensionValueInfo permissionUserGroupDimensionValueInfo) {
-        try {
-            permissionUserGroupDimensionValueInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
-            permissionUserGroupDimensionValueInfo.setOwner(getOwner());
-            permissionUserGroupDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
-            permissionUserGroupDimensionValueInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            permissionUserGroupDimensionValueInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            permissionUserGroupDimensionValueMapper.insert(permissionUserGroupDimensionValueInfo);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", permissionUserGroupDimensionValueInfo);
-        } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
-        }
-    }
-
-    /**
-     * 用户组维度关系信息删除
-     * @param ids
-     * @return
-     */
-    @RequestMapping(value = "/permission_user_group_dimension_value_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    @Transactional(propagation= Propagation.NESTED)
-    @White
-    public ReturnInfo permission_user_group_dimension_value_delete(String[] ids) {
-        try {
-            permissionUserGroupDimensionValueMapper.deleteLogicByIds("permission_usergroup_dimension_value_info",ids, new Timestamp(new Date().getTime()));
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
-        } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
-        }
-    }
 
     public User getUser() {
         User user = (User) SecurityUtils.getSubject().getPrincipal();

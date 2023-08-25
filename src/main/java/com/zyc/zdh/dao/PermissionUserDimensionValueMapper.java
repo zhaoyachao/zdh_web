@@ -13,7 +13,7 @@ public interface PermissionUserDimensionValueMapper extends BasePermissionUserDi
 
     @Select({
             "<script>",
-            "select distinct udv.dim_code, pdi.dim_name from permission_user_dimension_value_info udv inner join permission_dimension_info pdi on udv.dim_code=pdi.dim_code and udv.user_account=#{user_account} and udv.product_code=pdi.product_code and udv.product_code=#{product_code}",
+            "select distinct pdi.* from permission_user_dimension_value_info udv inner join permission_dimension_info pdi on udv.dim_code=pdi.dim_code and udv.user_account=#{user_account} and udv.product_code=pdi.product_code and udv.product_code=#{product_code}",
             "and udv.is_delete=0",
             "and pdi.is_delete=0",
             "</script>"

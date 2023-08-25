@@ -88,6 +88,7 @@ public class ProcessFlowApi {
 
             //检查event_code 是否合法
             ApprovalEventInfo aei=new ApprovalEventInfo();
+            aei.setProduct_code(product_code);
             aei.setEvent_code(event_code);
             aei = approvalEventMapper.selectOne(aei);
             if(aei == null){
@@ -97,6 +98,7 @@ public class ProcessFlowApi {
             //校验账号是否有效
             PermissionUserInfo pui=new PermissionUserInfo();
             pui.setUser_account(user_account);
+            pui.setProduct_code(product_code);
             pui=permissionMapper.selectOne(pui);
             if(pui == null){
                 throw new Exception("user_account无效,请检查user_account是否正确,若无user_account可在权限管理->用户配置模块增加用户信息");
@@ -110,6 +112,7 @@ public class ProcessFlowApi {
             Example example1=new Example(ApprovalEventInfo.class);
             Example.Criteria criteria1 = example1.createCriteria();
             criteria1.andEqualTo("event_code", event_code);
+            criteria1.andEqualTo("product_code", product_code);
             List<ApprovalEventInfo> approvalEventInfos = approvalEventMapper.selectByExample(example1);
             if(approvalEventInfos!=null && approvalEventInfos.size()>0){
                 if(Arrays.asList(approvalEventInfos.get(0).getSkip_account().split(",")).contains(user_account)){

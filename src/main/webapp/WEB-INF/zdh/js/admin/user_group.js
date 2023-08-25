@@ -57,6 +57,30 @@
                       });
                   }
               });
+          },
+          'click #edit_dim': function (e, value, row, index) {
+              $("#id").val(row.id);
+              parent.layer.open({
+                  type: 2,
+                  title: '维度配置',
+                  shadeClose: false,
+                  resize: true,
+                  fixed: false,
+                  maxmin: true,
+                  shade: 0.1,
+                  area : ['100%', '100%'],
+                  //area: ['450px', '500px'],
+                  content: server_context+"/permission_usergroup_dimension_value_index.html?group_code="+ row.group_code+"&product_code="+row.product_code, //iframe的url
+                  end : function () {
+                      console.info("弹框结束");
+                      $('#exampleTableEvents-table').bootstrapTable('destroy');
+                      $('#exampleTableEvents').bootstrapTable('refresh', {
+                          url: server_context+"/user_group_list2?"+$("#user_group_form").serialize()+"&tm="+new Date(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
+                      });
+                  }
+              });
           }
       };
 
@@ -64,6 +88,8 @@
           return [
               ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="edit_dim" name="edit_dim" type="button" class="btn btn-outline btn-sm" title="更新维度"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>'
               // ' <button id="copy" name="copy" type="button" class="btn btn-outline btn-sm" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
               // '                                    </button>',

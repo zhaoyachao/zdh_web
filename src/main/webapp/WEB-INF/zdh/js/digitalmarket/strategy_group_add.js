@@ -500,6 +500,7 @@ function doubleclick_shunt(id) {
         var shunt_context=div.attr("shunt_context");
         var shunt=div.attr("shunt");
         var shunt_param=div.attr("shunt_param");
+        var operate=div.attr("operate");
         var url=server_context+'/shunt_detail.html';
         if( shunt == "" || shunt == undefined ){
             url=url+"?shunt=-1"
@@ -509,7 +510,7 @@ function doubleclick_shunt(id) {
             var touch_type = div.attr("touch_type");
             var is_disenable = div.attr("is_disenable");
             $('#shunt_param').val(shunt_param);
-            url=url+"?shunt_context="+shunt_context+"&depend_level="+depend_level +"&time_out="+time_out+"&shunt="+shunt+"&touch_type="+touch_type+"&is_disenable="+is_disenable
+            url=url+"?shunt_context="+shunt_context+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&shunt="+shunt+"&touch_type="+touch_type+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -530,6 +531,7 @@ function doubleclick_shunt(id) {
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
                 div.attr("touch_type",etl_task_info.touch_type);
+                div.attr("operate",etl_task_info.operate);
 
                 div.attr("shunt_param",etl_task_info.shunt_param);
                 div.attr("shunt_context",etl_task_info.shunt_context);

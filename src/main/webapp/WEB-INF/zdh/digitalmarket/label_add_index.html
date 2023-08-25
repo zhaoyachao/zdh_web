@@ -262,7 +262,7 @@
         '<option value="ts">日期时间戳</option>\n'+
         '            </select>\n' +
         '        </div>\n' +
-        '        <div class="col-sm-2">\n' +
+        '        <div class="col-sm-1">\n' +
         '            <select class="form-control m-b param_operate" data-live-search="true" name="param_operate" id="zdh_param_operate">\n' +
         '<option value="=">等于</option>\n'+
         '<option value="in">包含</option>\n'+
@@ -278,6 +278,10 @@
         '        <div class="col-sm-2">\n' +
         '            <input name="param_value" type="text"\n' +
         '                   placeholder="参数值,多个分号分割" class="form-control param_value" aria-required="true" value="zdh_param_value">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-1">\n' +
+        '            <input name="param_enum_key" type="text"\n' +
+        '                   placeholder="枚举key" class="form-control param_enum_key" aria-required="true" value="zdh_param_enum_key">\n' +
         '        </div>\n' +
         '        <div class="col-sm-1">\n' +
         '            <button id="delete" name="delete" class="btn btn-danger"\n' +
@@ -316,6 +320,7 @@
                 tmp = tmp.replace("zdh_param_type", "");
                 tmp = tmp.replace("zdh_param_operate", "");
                 tmp = tmp.replace("zdh_param_value", "");
+                tmp = tmp.replace("zdh_param_enum_key", "0");
                 $('#label_div').append(tmp);
                 $('#label_div #delete').click(function () {
                     $(this).parent().parent().remove();
@@ -488,13 +493,25 @@
                 return num;
             }
 
-            function buildConfig(i,param_code, param_context,param_type, param_operate, param_value) {
+            function buildConfig(i,param_code, param_context,param_type, param_operate, param_value, param_enum_key) {
+                if(is_empty(param_enum_key)){
+                    param_enum_key="0";
+                }
+                if(is_empty(param_code)){
+                    param_code="";
+                }
+                if(is_empty(param_context)){
+                    param_context="";
+                }if(is_empty(param_value)){
+                    param_value="";
+                }
                 var tmp=template;
                 tmp = tmp.replace("zdh_param_code", param_code);
                 tmp = tmp.replace("zdh_param_context", param_context);
                 tmp = tmp.replace("zdh_param_value", param_value);
                 tmp = tmp.replace("zdh_param_operate", "zdh_param_operate"+i);
                 tmp = tmp.replace("zdh_param_type", "zdh_param_type"+i);
+                tmp = tmp.replace("zdh_param_enum_key", param_enum_key);
                 $('#label_div').append(tmp);
                 $("#zdh_param_operate"+i).val(param_operate);
                 $("#zdh_param_type"+i).val(param_type);
@@ -570,7 +587,8 @@
                             //解析json
                             if(data.result.param_json_object.length>0){
                                 for(var i=0;i<data.result.param_json_object.length;i++){
-                                    buildConfig(i,data.result.param_json_object[i].param_code, data.result.param_json_object[i].param_context, data.result.param_json_object[i].param_type,data.result.param_json_object[i].param_operate, data.result.param_json_object[i].param_value);
+                                    buildConfig(i,data.result.param_json_object[i].param_code, data.result.param_json_object[i].param_context, data.result.param_json_object[i].param_type,data.result.param_json_object[i].param_operate,
+                                        data.result.param_json_object[i].param_value, data.result.param_json_object[i].param_enum_key);
                                 }
                             }
 

@@ -58,6 +58,14 @@ public class PermissionApi {
     @Autowired
     DataTagGroupMapper dataTagGroupMapper;
     @Autowired
+    PermissionDimensionMapper permissionDimensionMapper;
+    @Autowired
+    PermissionDimensionValueMapper permissionDimensionValueMapper;
+    @Autowired
+    PermissionUserDimensionValueMapper permissionUserDimensionValueMapper;
+    @Autowired
+    PermissionUserGroupDimensionValueMapper permissionUserGroupDimensionValueMapper;
+    @Autowired
     Environment ev;
 
 
@@ -85,7 +93,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -118,7 +126,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
@@ -153,7 +161,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -169,7 +177,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "enable_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo update_user_by_product(String product_code,String ak, String sk, String user_account, String enable) {
+    public ReturnInfo enable_user_by_product(String product_code,String ak, String sk, String user_account, String enable) {
 
         try{
             //检查ak,sk
@@ -187,7 +195,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -220,7 +228,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -252,7 +260,7 @@ public class PermissionApi {
             }
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", "不支持的权限校验");
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -296,7 +304,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "get_user_by_product_password", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo get_user_by_product_password(String product_code,String ak, String sk, String user_account,String password) {
+    public ReturnInfo<PermissionUserInfo> get_user_by_product_password(String product_code,String ak, String sk, String user_account,String password) {
 
         try{
             //检查ak,sk
@@ -319,9 +327,9 @@ public class PermissionApi {
                 permissionUserInfos.get(0).setUser_password("");
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos.get(0));
             }
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", "未找到用户信息");
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", new Exception("未找到用户信息"));
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -336,7 +344,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "get_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo get_user_by_product(String product_code,String ak, String sk, String user_account) {
+    public ReturnInfo<List<PermissionUserInfo>> get_user_by_product(String product_code,String ak, String sk, String user_account) {
 
         try{
             //检查ak,sk
@@ -354,7 +362,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -369,7 +377,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "get_user_by_product_user", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo get_user_list_by_product_users(String product_code,String ak, String sk, String[] user_account) {
+    public ReturnInfo<List<PermissionUserInfo>> get_user_list_by_product_users(String product_code,String ak, String sk, String[] user_account) {
 
         try{
             //检查ak,sk
@@ -387,7 +395,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -400,7 +408,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "get_user_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo get_user_by_product(String product_code,String ak, String sk) {
+    public ReturnInfo<List<PermissionUserInfo>> get_user_by_product(String product_code,String ak, String sk) {
 
         try{
             //检查ak,sk
@@ -418,7 +426,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -463,7 +471,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -497,7 +505,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
@@ -527,7 +535,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -567,7 +575,7 @@ public class PermissionApi {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -581,7 +589,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "get_role_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo get_role_by_product(String product_code,String ak, String sk, String role_code) {
+    public ReturnInfo<RoleInfo> get_role_by_product(String product_code,String ak, String sk, String role_code) {
 
         try{
             //检查ak,sk
@@ -599,7 +607,7 @@ public class PermissionApi {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -612,7 +620,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "get_role_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo get_role_by_product(String product_code,String ak, String sk) {
+    public ReturnInfo<List<RoleInfo>> get_role_by_product(String product_code,String ak, String sk) {
 
         try{
             //检查ak,sk
@@ -629,7 +637,7 @@ public class PermissionApi {
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -643,7 +651,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "get_user_list_by_product_role", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo get_user_list_by_product_role(String product_code,String role_code,String ak, String sk) {
+    public ReturnInfo<List<PermissionUserInfo>> get_user_list_by_product_role(String product_code,String role_code,String ak, String sk) {
 
         try{
             //检查ak,sk
@@ -670,7 +678,7 @@ public class PermissionApi {
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -695,7 +703,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
@@ -725,7 +733,7 @@ public class PermissionApi {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
@@ -740,7 +748,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "resources_by_user", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo resources_by_user(String user_account, String product_code,String ak, String sk) {
+    public ReturnInfo<List<UserResourceInfo2>> resources_by_user(String user_account, String product_code,String ak, String sk) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -755,7 +763,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", uris);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -784,7 +792,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", uris);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -817,7 +825,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 
@@ -848,7 +856,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -881,7 +889,7 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
@@ -895,7 +903,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "update_data_tag_group_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo update_data_tag_group_by_product(String product_code,String ak, String sk, DataTagGroupInfo dataTagGroupInfo) {
+    public ReturnInfo<DataTagGroupInfo> update_data_tag_group_by_product(String product_code,String ak, String sk, DataTagGroupInfo dataTagGroupInfo) {
 
         try{
             check_aksk(product_code, ak, sk);
@@ -912,9 +920,197 @@ public class PermissionApi {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
+
+
+    /**
+     * 获取产品线下所有维度
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @return
+     */
+    @RequestMapping(value = "get_dimension_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<PermissionDimensionInfo>> get_dimension_list_by_product(String product_code,String ak, String sk) {
+
+        try{
+            //检查ak,sk
+            check_aksk(product_code, ak, sk);
+
+            PermissionDimensionInfo permissionDimensionInfo=new PermissionDimensionInfo();
+            permissionDimensionInfo.setProduct_code(product_code);
+            permissionDimensionInfo.setIs_delete(Const.NOT_DELETE);
+
+            List<PermissionDimensionInfo> permissionDimensionInfos = permissionDimensionMapper.select(permissionDimensionInfo);
+
+            //返回统一信息
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionDimensionInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError( "查询失败", e);
+        }
+    }
+
+
+    /**
+     * 获取产品线下所有维度
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @return
+     */
+    @RequestMapping(value = "get_dimension_value_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<PermissionDimensionValueInfo>> get_dimension_value_list_by_product(String product_code,String ak, String sk) {
+
+        try{
+            //检查ak,sk
+            check_aksk(product_code, ak, sk);
+
+            PermissionDimensionValueInfo permissionDimensionValueInfo=new PermissionDimensionValueInfo();
+            permissionDimensionValueInfo.setProduct_code(product_code);
+            permissionDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
+
+            List<PermissionDimensionValueInfo> permissionDimensionInfos = permissionDimensionValueMapper.select(permissionDimensionValueInfo);
+
+            //返回统一信息
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionDimensionInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError( "查询失败", e);
+        }
+    }
+
+
+    /**
+     * 获取用户在产品线下所有维度
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @return
+     */
+    @RequestMapping(value = "get_user_dimension_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<PermissionDimensionInfo>> get_user_dimension_list_by_product(String user_account,String product_code,String ak, String sk) {
+
+        try{
+            //检查ak,sk
+            check_aksk(product_code, ak, sk);
+
+            PermissionDimensionInfo permissionDimensionInfo=new PermissionDimensionInfo();
+            permissionDimensionInfo.setProduct_code(product_code);
+            permissionDimensionInfo.setIs_delete(Const.NOT_DELETE);
+
+            List<PermissionDimensionInfo> permissionDimensionInfos = permissionUserDimensionValueMapper.selectDimByUser(product_code, user_account);
+
+            //返回统一信息
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionDimensionInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError( "查询失败", e);
+        }
+    }
+
+    /**
+     * 获取用户在产品线下所有维度值
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @return
+     */
+    @RequestMapping(value = "get_user_dimension_value_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<PermissionUserDimensionValueInfo>> get_user_dimension_value_list_by_product(String user_account, String product_code,String ak, String sk) {
+
+        try{
+            //检查ak,sk
+            check_aksk(product_code, ak, sk);
+
+            PermissionUserDimensionValueInfo permissionUserDimensionValueInfo=new PermissionUserDimensionValueInfo();
+            permissionUserDimensionValueInfo.setProduct_code(product_code);
+            permissionUserDimensionValueInfo.setUser_account(user_account);
+            permissionUserDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
+
+            List<PermissionUserDimensionValueInfo> permissionUserDimensionValueInfos = permissionUserDimensionValueMapper.select(permissionUserDimensionValueInfo);
+
+            //返回统一信息
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserDimensionValueInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError( "查询失败", e);
+        }
+    }
+
+    /**
+     * 获取用户在产品线下所有维度
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @return
+     */
+    @RequestMapping(value = "get_usergroup_dimension_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<PermissionDimensionInfo>> get_usergroup_dimension_list_by_product(String group_code,String product_code,String ak, String sk) {
+
+        try{
+            //检查ak,sk
+            check_aksk(product_code, ak, sk);
+
+            PermissionDimensionInfo permissionDimensionInfo=new PermissionDimensionInfo();
+            permissionDimensionInfo.setProduct_code(product_code);
+            permissionDimensionInfo.setIs_delete(Const.NOT_DELETE);
+
+            List<PermissionDimensionInfo> permissionDimensionInfos = permissionUserGroupDimensionValueMapper.selectDimByGroup(product_code, group_code);
+
+            //返回统一信息
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionDimensionInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError( "查询失败", e);
+        }
+    }
+
+    /**
+     * 获取用户在产品线下所有维度值
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
+     * @return
+     */
+    @RequestMapping(value = "get_usergroup_dimension_value_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<PermissionUserGroupDimensionValueInfo>> get_usergroup_dimension_value_list_by_product(String group_code, String product_code,String ak, String sk) {
+
+        try{
+            //检查ak,sk
+            check_aksk(product_code, ak, sk);
+
+            PermissionUserGroupDimensionValueInfo permissionUserGroupDimensionValueInfo=new PermissionUserGroupDimensionValueInfo();
+            permissionUserGroupDimensionValueInfo.setProduct_code(product_code);
+            permissionUserGroupDimensionValueInfo.setGroup_code(group_code);
+            permissionUserGroupDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
+
+            List<PermissionUserGroupDimensionValueInfo> permissionUserGroupDimensionValueInfos = permissionUserGroupDimensionValueMapper.select(permissionUserGroupDimensionValueInfo);
+
+            //返回统一信息
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserGroupDimensionValueInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError( "查询失败", e);
+        }
+    }
+
+
+
 
     private void check_exist_role(String product_code, String code) throws Exception {
 

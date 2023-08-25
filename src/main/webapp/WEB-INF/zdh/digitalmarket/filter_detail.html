@@ -51,6 +51,18 @@
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
 
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">运算符</label>
+                            <div class="col-sm-10">
+                                <select id="operate" name="operate" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="and" mytype="">AND</option>
+                                    <option value="or" mytype="">OR</option>
+                                    <option value="not" mytype="">NOT</option>
+                                    <option value="not_use" mytype="">NOT_USE</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">过滤规则</label>
@@ -212,10 +224,15 @@
                 });
             }
             init_filter();
+            $('#operate').chosen();
             $('#depend_level').chosen();
             $("#filter").chosen();
             if(s["filter"] != '-1'){
                 console.info("更新触发");
+
+                $("#operate").val(s.operate);
+                $("#operate").trigger("chosen:updated");
+
                 $('#filter_context').val(s.filter_context);
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");

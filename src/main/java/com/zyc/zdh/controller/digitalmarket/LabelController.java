@@ -138,7 +138,7 @@ public class LabelController extends BaseController {
     @RequestMapping(value = "/label_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo label_update(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value) {
+    public ReturnInfo label_update(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value, String[] param_enum_key) {
         try {
             if(param_code==null || param_code.length<1){
                 throw new Exception("参数不可为空");
@@ -154,6 +154,7 @@ public class LabelController extends BaseController {
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
                 jsonObject.put("param_type", param_type[i]);
+                jsonObject.put("param_enum_key", param_enum_key[i]);
                 if(i>=param_value.length){
                     jsonObject.put("param_value", "");
                 }else{
@@ -193,7 +194,7 @@ public class LabelController extends BaseController {
     @RequestMapping(value = "/label_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo label_add(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_type, String[] param_operate, String[] param_value) {
+    public ReturnInfo label_add(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_type, String[] param_operate, String[] param_value, String[] param_enum_key) {
         try {
             if(param_code==null || param_code.length<1){
                throw new Exception("参数不可为空");
@@ -205,6 +206,7 @@ public class LabelController extends BaseController {
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
                 jsonObject.put("param_type", param_type[i]);
+                jsonObject.put("param_enum_key", param_enum_key[i]);
                 if(i>=param_value.length){
                     jsonObject.put("param_value", "");
                 }else{

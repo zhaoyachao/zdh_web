@@ -43,11 +43,11 @@ html,body{height:100%;}
 .device .nodetouchcss{border:darkblue 2px solid;}
 .device .nodetncss{border:lightskyblue 2px solid;}
 .device .nodeplugincss{border:greenyellow 2px solid;}
-.device .nodemessagecss{border:lightskyblue 2px solid;}
-.device .nodeactive_eventcss{border:lightskyblue 2px solid;}
+.device .nodemessagecss{border:lightskyblue 2px solid; background-color: LightGrey;}
+.device .nodeactive_eventcss{border:lightskyblue 2px solid; background-color: LightGrey;}
 .device .nodeid_mappingcss{border:cadetblue 2px solid;}
 .device .noderiskcss{border: #009900 2px solid;}
-.device .nodemodelcss{border: #009900 2px solid;}
+.device .nodemodelcss{border: #009900 2px solid; background-color: LightGrey;}
 .device .nodemanual_confirmcss{border: #009900 2px solid;}
 
 .device .nodeflowcss{border:lightskyblue 1px solid;}
