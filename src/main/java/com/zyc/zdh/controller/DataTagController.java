@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.DataTagMapper;
 import com.zyc.zdh.entity.DataTagInfo;
 import com.zyc.zdh.entity.PageResult;
@@ -54,6 +55,7 @@ public class DataTagController extends BaseController {
      * @param offset
      * @return
      */
+    @SentinelResource(value = "data_tag_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<DataTagInfo>>> data_tag_list(String tag_context, String product_code,int limit, int offset) {
@@ -93,6 +95,7 @@ public class DataTagController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
+    @SentinelResource(value = "data_tag_by_product_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_by_product_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<DataTagInfo>> data_tag_by_product_code(String product_code) {
@@ -126,6 +129,7 @@ public class DataTagController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "data_tag_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<DataTagInfo> data_tag_detail(String id) {
@@ -143,6 +147,7 @@ public class DataTagController extends BaseController {
      * @param dataTagInfo
      * @return
      */
+    @SentinelResource(value = "data_tag_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -170,6 +175,7 @@ public class DataTagController extends BaseController {
      * @param dataTagInfo
      * @return
      */
+    @SentinelResource(value = "data_tag_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -193,6 +199,7 @@ public class DataTagController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "data_tag_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

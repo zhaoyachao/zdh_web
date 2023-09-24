@@ -188,63 +188,69 @@
 
       $('#exampleTableEvents').bootstrapTable({
           method: "POST",
-          url: "",
-      search: true,
-      pagination: true,
-      showRefresh: true,
-      showToggle: true,
-      showColumns: true,
-      iconSize: 'outline',
-      toolbar: '#exampleTableEventsToolbar',
-      icons: {
-        refresh: 'glyphicon-repeat',
-        toggle: 'glyphicon-list-alt',
-        columns: 'glyphicon-list'
-      },
-        columns: [{
-            checkbox: true,
-            field:'state',
-            sortable:true
-        }, {
-            field: 'id',
-            title: 'ID',
-            sortable:true
-        }, {
-            field: 'code',
-            title: '角色code',
-            sortable:true
-        },{
-            field: 'name',
-            title: '角色中文',
-            sortable:false
-        },{
-            field: 'enable',
-            title: '状态',
-            sortable:false,
-            events: operateEvents2,//给按钮注册事件
-            formatter: function (value, row, index){
-                var context = "未启用";
-                var class_str = "btn-danger btn-xs";
+          url: server_context+"/role_list?"+$("#user_form").serialize(),
+          search: true,
+          pagination: true,
+          showRefresh: true,
+          showToggle: true,
+          showColumns: true,
+          iconSize: 'outline',
+          responseHandler:function (res) {
+              if(res.code != "200"){
+                  layer.msg(res.msg);
+              }
+              return res.result;
+          },
+          toolbar: '#exampleTableEventsToolbar',
+          icons: {
+            refresh: 'glyphicon-repeat',
+            toggle: 'glyphicon-list-alt',
+            columns: 'glyphicon-list'
+          },
+            columns: [{
+                checkbox: true,
+                field:'state',
+                sortable:true
+            }, {
+                field: 'id',
+                title: 'ID',
+                sortable:true
+            }, {
+                field: 'code',
+                title: '角色code',
+                sortable:true
+            },{
+                field: 'name',
+                title: '角色中文',
+                sortable:false
+            },{
+                field: 'enable',
+                title: '状态',
+                sortable:false,
+                events: operateEvents2,//给按钮注册事件
+                formatter: function (value, row, index){
+                    var context = "未启用";
+                    var class_str = "btn-danger btn-xs";
 
-                if (value == "true") {
-                    context = "启用";
-                    class_str = "btn-primary  btn-xs"
+                    if (value == "true") {
+                        context = "启用";
+                        class_str = "btn-primary  btn-xs"
+                    }
+                    return [
+                        '<div style="text-align:center" >'+
+                        '<div class="btn-group">'+
+                        '<button id="btn_enable" type="button" class="btn '+class_str+'">'+context+'</button>'+
+                        '</div>'+
+                        '</div>'
+                    ].join('');
                 }
-                return [
-                    '<div style="text-align:center" >'+
-                    '<div class="btn-group">'+
-                    '<button id="btn_enable" type="button" class="btn '+class_str+'">'+context+'</button>'+
-                    '</div>'+
-                    '</div>'
-                ].join('');
-            }
-        },{
-            field: 'operate',
-            title: '操作',
-            events: operateEvents,//给按钮注册事件
-            width:150,
-            formatter: operateFormatter //表格中增加按钮
-        }]
+            },{
+                field: 'operate',
+                title: '操作',
+                events: operateEvents,//给按钮注册事件
+                width:150,
+                formatter: operateFormatter //表格中增加按钮
+            }]
     });
 
     function openTabPage(url, title) {

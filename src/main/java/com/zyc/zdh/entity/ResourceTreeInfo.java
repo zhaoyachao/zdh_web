@@ -95,6 +95,8 @@ public class ResourceTreeInfo{
 	 */
 	private String product_code;
 
+	private String qps;
+
 	@Transient
 	private JSONObject a_attr;
 
@@ -231,6 +233,14 @@ public class ResourceTreeInfo{
 
 	public void setProduct_code(String product_code) {
 		this.product_code = product_code;
+	}
+
+	public String getQps() {
+		return qps;
+	}
+
+	public void setQps(String qps) {
+		this.qps = qps;
 	}
 
 	public JSONObject getA_attr() {

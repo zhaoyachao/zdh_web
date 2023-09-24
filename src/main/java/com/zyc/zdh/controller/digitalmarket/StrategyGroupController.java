@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
@@ -16,6 +17,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.SFTPUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
@@ -23,6 +25,7 @@ import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -67,6 +67,9 @@ public class StrategyGroupController extends BaseController {
     @Autowired
     QuartzManager2 quartzManager2;
 
+    @Autowired
+    private Environment env;
+
 
     @RequestMapping(value = "/get_id", method = RequestMethod.GET)
     @ResponseBody
@@ -90,6 +93,7 @@ public class StrategyGroupController extends BaseController {
      * @param group_context 关键字
      * @return
      */
+    @SentinelResource(value = "strategy_group_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<StrategyGroupInfo>>> strategy_group_list(String group_context, int limit, int offset) {
@@ -139,6 +143,7 @@ public class StrategyGroupController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "strategy_group_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo strategy_group_detail(String id) {
@@ -155,6 +160,7 @@ public class StrategyGroupController extends BaseController {
      * @param strategyGroupInfo
      * @return
      */
+    @SentinelResource(value = "strategy_group_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -167,6 +173,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInfo.setOwner(oldStrategyGroupInfo.getOwner());
             strategyGroupInfo.setMisfire(oldStrategyGroupInfo.getMisfire());
             strategyGroupInfo.setSchedule_source(oldStrategyGroupInfo.getSchedule_source());
+            strategyGroupInfo.setUse_quartz_time(oldStrategyGroupInfo.getUse_quartz_time());
             strategyGroupInfo.setCreate_time(oldStrategyGroupInfo.getCreate_time());
             strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             strategyGroupInfo.setIs_delete(Const.NOT_DELETE);
@@ -186,6 +193,7 @@ public class StrategyGroupController extends BaseController {
      * @param strategyGroupInfo
      * @return
      */
+    @SentinelResource(value = "strategy_group_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -197,6 +205,8 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInfo.setIs_delete(Const.NOT_DELETE);
             strategyGroupInfo.setMisfire("0");
             strategyGroupInfo.setSchedule_source(ScheduleSource.SYSTEM.getCode());
+            strategyGroupInfo.setUse_quartz_time(Const.OFF);
+            strategyGroupInfo.setTime_diff("0");
             strategyGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
             strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             strategyGroupMapper.insert(strategyGroupInfo);
@@ -212,6 +222,7 @@ public class StrategyGroupController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "strategy_group_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -242,6 +253,7 @@ public class StrategyGroupController extends BaseController {
      * @param strategyGroupInfo
      * @return
      */
+    @SentinelResource(value = "strategy_group_task_execute", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_task_execute", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -297,6 +309,7 @@ public class StrategyGroupController extends BaseController {
      * @param group_id 关键字
      * @return
      */
+    @SentinelResource(value = "strategy_group_instance_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_instance_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<StrategyGroupInstance>>> strategy_group_instance_list(String id, String group_id,String group_context, int limit, int offset) {
@@ -339,6 +352,7 @@ public class StrategyGroupController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "strategy_group_instance_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_instance_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<StrategyGroupInstance> strategy_group_instance_list2(String id) {
@@ -370,6 +384,7 @@ public class StrategyGroupController extends BaseController {
      * @param strategy_group_instance_id
      * @return
      */
+    @SentinelResource(value = "strategy_instance_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_instance_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<StrategyInstance>> strategy_instance_list(String strategy_group_instance_id,String status) {
@@ -399,6 +414,7 @@ public class StrategyGroupController extends BaseController {
      * @param sub_tasks
      * @return
      */
+    @SentinelResource(value = "retry_strategy_group_instance", blockHandler = "handleReturn")
     @RequestMapping(value = "/retry_strategy_group_instance", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -432,6 +448,7 @@ public class StrategyGroupController extends BaseController {
      * 获取下载地址
      * @param id 策略实例任务id
      */
+    @SentinelResource(value = "get_strategy_task_download", blockHandler = "handleReturn")
     @RequestMapping(value = "/get_strategy_task_download", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> get_strategy_task_download(String id) {
@@ -449,17 +466,73 @@ public class StrategyGroupController extends BaseController {
      * 下载地址
      * @param id 策略实例任务id
      */
-    @RequestMapping(value = "/strategy_task_download", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/strategy_task_download", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<String> strategy_task_download(HttpServletResponse response, String id) {
+    @White
+    public void strategy_task_download(HttpServletResponse response, String id) {
+        response.setHeader("content-type", "text/html;charset=UTF-8");
 
-        //根据id 获取策略任务信息
-        StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
-        String basePath = "/home/data/label/";
+        response.setContentType("text/html;charset=UTF-8");
+        BufferedInputStream bis = null;
+        OutputStream os = null;
+        try{
+            //根据id 获取策略任务信息
+            StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
+            String basePath = "/home/data/label/";
+            String dir =  String.format("%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id());
+            String fileName = strategyInstance.getId();
+            String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
+            byte[] buff = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
 
-        String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
+            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("日志_" + strategyInstance.getStrategy_context() + ".log", "UTF-8"));
 
-        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "",url);
+            String storeType = env.getProperty("digitalmarket.store.type");
+
+            //判断是本地存储
+            if(storeType.equalsIgnoreCase("local")){
+                File logFile = new File(url);
+                os = response.getOutputStream();
+                bis = new BufferedInputStream(new FileInputStream(logFile));
+                int i = bis.read(buff);
+                while (i != -1) {
+                    os.write(buff, 0, buff.length);
+                    os.flush();
+                    i = bis.read(buff);
+                }
+            }else if(storeType.equalsIgnoreCase("sftp")){
+                String host = env.getProperty("digitalmarket.sftp.host");
+                String port = env.getProperty("digitalmarket.sftp.port");
+                String username = env.getProperty("digitalmarket.sftp.username");
+                String password = env.getProperty("digitalmarket.sftp.password");
+
+                SFTPUtil sftp = new SFTPUtil(username, password,
+                        host, new Integer(port));
+                sftp.login();
+                byte[] buff1 = sftp.download(dir, fileName);
+                os = response.getOutputStream();
+                os.write(buff1, 0, buff1.length);
+                os.flush();
+            }
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+        }finally {
+            if(os != null){
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(bis != null){
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**
@@ -468,6 +541,7 @@ public class StrategyGroupController extends BaseController {
      * @param id 策略组实例ID
      * @return
      */
+    @SentinelResource(value = "killStrategyGroup", blockHandler = "handleReturn")
     @RequestMapping(value = "/killStrategyGroup", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -491,6 +565,7 @@ public class StrategyGroupController extends BaseController {
      * @param id 任务实例ID
      * @return
      */
+    @SentinelResource(value = "killStrategy", blockHandler = "handleReturn")
     @RequestMapping(value = "/killStrategy", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo killStrategy(String id) {
@@ -511,6 +586,7 @@ public class StrategyGroupController extends BaseController {
      * @param id 任务实例ID
      * @return
      */
+    @SentinelResource(value = "strategy_skip", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_skip", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -539,6 +615,7 @@ public class StrategyGroupController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "strategy_retry", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_retry", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -564,6 +641,7 @@ public class StrategyGroupController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "strategy_group_execute_quartz", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_execute_quartz", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo strategy_group_execute_quartz(String id,String reset) {
@@ -591,6 +669,7 @@ public class StrategyGroupController extends BaseController {
      * @param strategyGroupInfo
      * @return
      */
+    @SentinelResource(value = "strategy_group_quartz_pause", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_quartz_pause",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -622,6 +701,7 @@ public class StrategyGroupController extends BaseController {
      * @param strategyGroupInfo
      * @return
      */
+    @SentinelResource(value = "strategy_group_quartz_del", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_quartz_del", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.EtlTaskJdbcMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.entity.EtlTaskJdbcInfo;
@@ -68,6 +69,7 @@ public class ZdhJdbcController extends BaseController {
      * @param id          jdbc任务id
      * @return
      */
+    @SentinelResource(value = "etl_task_jdbc_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_jdbc_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlTaskJdbcInfo>> etl_task_jdbc_list(String etl_context, String id) {
@@ -94,6 +96,7 @@ public class ZdhJdbcController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "etl_task_jdbc_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_jdbc_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -116,6 +119,7 @@ public class ZdhJdbcController extends BaseController {
      * @param etlTaskJdbcInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_jdbc_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_jdbc_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -157,6 +161,7 @@ public class ZdhJdbcController extends BaseController {
      * @param etlTaskJdbcInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_jdbc_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_jdbc_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo etl_task_jdbc_update(EtlTaskJdbcInfo etlTaskJdbcInfo) {

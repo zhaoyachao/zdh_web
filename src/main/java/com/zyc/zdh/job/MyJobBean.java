@@ -87,6 +87,7 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 				//智能营销调度任务
 				StrategyGroupInfo strategyGroupInfo=new StrategyGroupInfo();
 				strategyGroupInfo = sgm.selectByPrimaryKey(taskId);
+				strategyGroupInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
 				JobDigitalMarket.chooseJobBean(strategyGroupInfo, 0, null, null);
 			}
 

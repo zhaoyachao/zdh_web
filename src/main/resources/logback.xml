@@ -26,6 +26,7 @@
             <!-- keep 1 days' worth of history -->
             <maxHistory>1</maxHistory>
 <!--            <maxFileSize>4096MB</maxFileSize>-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
             <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger[%L] - %msg %n</pattern>
@@ -42,6 +43,7 @@
             <!-- keep 1 days' worth of history -->
             <maxHistory>1</maxHistory>
 <!--            <maxFileSize>4096MB</maxFileSize>-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
             <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger[%L] - %msg %n</pattern>
@@ -61,6 +63,7 @@
             <!-- keep 1 days' worth of history -->
             <maxHistory>1</maxHistory>
 <!--            <maxFileSize>4096MB</maxFileSize>-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
             <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger[%L] - %msg %n</pattern>
@@ -79,6 +82,7 @@
             <!-- keep 1 days' worth of history -->
             <maxHistory>1</maxHistory>
 <!--            <maxFileSize>4096MB</maxFileSize>-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
             <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger[%L] - %msg %n</pattern>
@@ -98,6 +102,7 @@
             <!-- keep 1 days' worth of history -->
             <maxHistory>1</maxHistory>
 <!--            <maxFileSize>4096MB</maxFileSize>-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
             <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger[%L] - %msg %n</pattern>

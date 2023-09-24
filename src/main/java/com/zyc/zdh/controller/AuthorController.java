@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.JemailService;
@@ -44,6 +45,7 @@ public class AuthorController extends BaseController{
      * @param subject 主题
      * @return
      */
+    @SentinelResource(value = "send_email", blockHandler = "handleReturn")
     @RequestMapping(value = "/send_email", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> send_email(String context,String receiver,String subject) {
@@ -82,6 +84,7 @@ public class AuthorController extends BaseController{
      * ZDH历史版本查询
      * @return
      */
+    @SentinelResource(value = "zdh_version", blockHandler = "handleReturn")
     @RequestMapping(value = "/zdh_version", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<String>> zdh_version() {

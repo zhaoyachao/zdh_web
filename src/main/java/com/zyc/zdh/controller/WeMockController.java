@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.WeMockDataMapper;
 import com.zyc.zdh.dao.WeMockTreeMapper;
 import com.zyc.zdh.entity.*;
@@ -65,6 +66,7 @@ public class WeMockController extends BaseController{
      * @param product_code 产品code
      * @return
      */
+    @SentinelResource(value = "wemock_jstree_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_jstree_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<WeMockTreeInfo>> wemock_jstree_node(String product_code) {
@@ -93,6 +95,7 @@ public class WeMockController extends BaseController{
      * @param wmti mock树形信息
      * @return
      */
+    @SentinelResource(value = "wemock_add_root_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_add_root_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> wemock_add_root_node(WeMockTreeInfo wmti) {
@@ -145,6 +148,7 @@ public class WeMockController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "wemock_jstree_get_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_jstree_get_node",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<WeMockTreeInfo> wemock_jstree_get_node(String id) {
@@ -165,6 +169,7 @@ public class WeMockController extends BaseController{
      * @param wmti
      * @return
      */
+    @SentinelResource(value = "wemock_update_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_update_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<WeMockTreeInfo> wemock_update_node(WeMockTreeInfo wmti) {
@@ -212,6 +217,7 @@ public class WeMockController extends BaseController{
      * @param wmti
      * @return
      */
+    @SentinelResource(value = "wemock_add_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_add_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<WeMockTreeInfo> wemock_add_node(WeMockTreeInfo wmti) {
@@ -259,6 +265,7 @@ public class WeMockController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "wemock_del_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_del_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo wemock_del_node(String id) {
@@ -286,6 +293,7 @@ public class WeMockController extends BaseController{
      * @param level 资源层级
      * @return
      */
+    @SentinelResource(value = "wemock_update_parent", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_update_parent", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> wemock_update_parent(String id, String parent_id, String level) {
@@ -324,6 +332,7 @@ public class WeMockController extends BaseController{
      * @param offset 起始下标
      * @return
      */
+    @SentinelResource(value = "wemock_data_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_data_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<WeMockDataInfo>>> wemock_data_list(String mock_tree_id, int limit, int offset, String wemock_context) {
@@ -385,6 +394,7 @@ public class WeMockController extends BaseController{
      * @param id 主键
      * @return
      */
+    @SentinelResource(value = "wemock_data_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_data_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<WeMockDataInfo> wemock_data_detail(String id) {
@@ -405,6 +415,7 @@ public class WeMockController extends BaseController{
      * @param weMockDataInfo
      * @return
      */
+    @SentinelResource(value = "wemock_data_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_data_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<WeMockDataInfo> wemock_data_add(WeMockDataInfo weMockDataInfo) {
@@ -434,6 +445,7 @@ public class WeMockController extends BaseController{
      * @param weMockDataInfo
      * @return
      */
+    @SentinelResource(value = "wemock_data_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_data_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<WeMockDataInfo> wemock_data_update(WeMockDataInfo weMockDataInfo) {
@@ -464,6 +476,7 @@ public class WeMockController extends BaseController{
      * @param ids
      * @return
      */
+    @SentinelResource(value = "wemock_data_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/wemock_data_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> wemock_data_delete(String[] ids) {

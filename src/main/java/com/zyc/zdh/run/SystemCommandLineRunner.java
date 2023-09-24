@@ -1,11 +1,18 @@
 package com.zyc.zdh.run;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.RuleConstant;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.controller.SystemController;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.*;
+import com.zyc.zdh.monitor.Sys;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.queue.Message;
 import com.zyc.zdh.service.ZdhLogsService;
@@ -26,10 +33,7 @@ import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -74,6 +78,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         removeValidSession();
         logger.info("初始化通知事件");
         EmailJob.notice_event();
+        initSentinelRule();
         logger.info("初始化失败任务监控程序");
         //检测是否有email 任务 如果没有则添加
         QuartzJobInfo qj = new QuartzJobInfo();
@@ -452,6 +457,73 @@ public class SystemCommandLineRunner implements CommandLineRunner {
             }
         };
         threadPool.submit(createThread(zdhRunableTask));
+    }
+
+    /**
+     * 初始化限流控制
+     */
+    public void initSentinelRule(){
+        try{
+            String product_code = ev.getProperty("zdp.product");
+            ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
+                @Override
+                public void run() {
+
+                    while (true){
+
+                        try {
+                            ResourceTreeMapper resourceTreeMapper=(ResourceTreeMapper) SpringContext.getBean("resourceTreeMapper");
+
+                            Example example=new Example(ResourceTreeInfo.class);
+                            Example.Criteria criteria=example.createCriteria();
+                            criteria.andEqualTo("product_code", product_code);
+
+                            List<ResourceTreeInfo> rtis = resourceTreeMapper.selectByExample(example);
+                            rtis.sort(Comparator.comparing(ResourceTreeInfo::getOrderN));
+                            List<FlowRule> rules = new ArrayList<>();
+
+                            for (ResourceTreeInfo rti: rtis){
+                                if(StringUtils.isEmpty(rti.getQps()) || !StringUtils.isNumeric(rti.getQps())){
+                                    continue ;
+                                }
+                                FlowRule rule = new FlowRule();
+                                String url = rti.getUrl();
+                                if(url.startsWith("/")){
+                                    url = url.substring(1);
+                                }
+                                if(url.contains(".")){
+                                    url = url.split("\\.")[0];
+                                }
+                                rule.setResource(url);
+                                rule.setGrade(RuleConstant.FLOW_GRADE_QPS);
+                                // Set limit QPS to 20.
+                                rule.setCount(Integer.valueOf(rti.getQps()));
+                                rules.add(rule);
+                            }
+                            logger.info("限流重置规则: "+ JSON.toJSONString(rules));
+                            FlowRuleManager.loadRules(rules);
+
+                            Thread.sleep(1000*60);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public String name() {
+                    return "schedule init sentinel rule";
+                }
+            };
+
+            threadPool.submit(zdhRunableTask);
+        }catch (Exception e){
+
+        }
+    }
+    @SentinelResource("test")
+    public void test(){
+        System.out.println("====");
     }
 
     public void removeValidSession(){

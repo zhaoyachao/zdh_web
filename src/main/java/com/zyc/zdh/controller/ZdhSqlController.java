@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -74,6 +75,7 @@ public class ZdhSqlController extends BaseController {
      * @param id          sql任务id
      * @return
      */
+    @SentinelResource(value = "sql_task_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/sql_task_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<SqlTaskInfo>> sql_task_list(String sql_context, String id) {
@@ -100,6 +102,7 @@ public class ZdhSqlController extends BaseController {
      * @param ids
      * @return
      */
+    @SentinelResource(value = "sql_task_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/sql_task_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -122,6 +125,7 @@ public class ZdhSqlController extends BaseController {
      * @param sqlTaskInfo
      * @return
      */
+    @SentinelResource(value = "sql_task_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/sql_task_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -164,6 +168,7 @@ public class ZdhSqlController extends BaseController {
      * @param sqlTaskInfo
      * @return
      */
+    @SentinelResource(value = "sql_task_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/sql_task_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo sql_task_update(SqlTaskInfo sqlTaskInfo) {
@@ -204,6 +209,7 @@ public class ZdhSqlController extends BaseController {
      *
      * @return
      */
+    @SentinelResource(value = "load_meta_databases", blockHandler = "handleReturn")
     @RequestMapping(value = "/load_meta_databases", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo load_meta_databases() {
@@ -261,6 +267,7 @@ public class ZdhSqlController extends BaseController {
      *
      * @return
      */
+    @SentinelResource(value = "show_databases", blockHandler = "handleReturn")
     @RequestMapping(value = "/show_databases", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<JSONArray> show_databases() {
@@ -297,30 +304,6 @@ public class ZdhSqlController extends BaseController {
             logger.error(error, e);
             return ReturnInfo.buildError("查询数据仓库失败", e);
         }
-    }
-
-    /**
-     * 此服务停用
-     *
-     * @return
-     */
-    @RequestMapping(value = "/show_tables", method = RequestMethod.POST)
-    @ResponseBody
-    public String show_tables() {
-
-        String url = JobCommon2.getZdhUrl(zdhHaInfoMapper, "").getZdh_url();
-        try {
-            String tableNames = HttpUtil.postJSON(url + "/show_tables", "");
-
-            return tableNames;
-
-        } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
-        }
-
-
-        return "";
     }
 
 

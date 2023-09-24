@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
@@ -106,6 +107,7 @@ public class NodeController extends BaseController{
      * @param online 0:逻辑下线,1:逻辑上线,2:物理下线
      * @return
      */
+    @SentinelResource(value = "server_manager_online_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/server_manager_online_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo server_manager_online_update(String id,String online) {
@@ -134,6 +136,7 @@ public class NodeController extends BaseController{
      * @param serverTaskInfo
      * @return
      */
+    @SentinelResource(value = "server_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/server_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo server_add(ServerTaskInfo serverTaskInfo) {
@@ -156,6 +159,7 @@ public class NodeController extends BaseController{
      * @param serverTaskInfo
      * @return
      */
+    @SentinelResource(value = "server_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/server_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo server_update(ServerTaskInfo serverTaskInfo) {
@@ -186,6 +190,7 @@ public class NodeController extends BaseController{
     /**
      * server 一键部署
      */
+    @SentinelResource(value = "server_setup", blockHandler = "handleReturn")
     @RequestMapping(value = "/server_setup", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -263,6 +268,7 @@ public class NodeController extends BaseController{
     }
 
 
+    @SentinelResource(value = "server_logs_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/server_logs_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

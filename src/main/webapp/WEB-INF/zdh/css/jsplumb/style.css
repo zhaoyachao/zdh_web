@@ -49,6 +49,8 @@ html,body{height:100%;}
 .device .noderiskcss{border: #009900 2px solid;}
 .device .nodemodelcss{border: #009900 2px solid; background-color: LightGrey;}
 .device .nodemanual_confirmcss{border: #009900 2px solid;}
+.device .nodecode_blockcss{border: #009900 2px solid;}
+.device .nodecustom_listcss{border: #009900 2px solid;}
 
 .device .nodeflowcss{border:lightskyblue 1px solid;}
 

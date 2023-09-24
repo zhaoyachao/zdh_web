@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
@@ -81,6 +82,7 @@ public class ZdhProcessFlowController extends BaseController {
      * @param context 关键字
      * @return
      */
+    @SentinelResource(value = "process_flow_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/process_flow_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ProcessFlowInfo>> process_flow_list(String context) {
@@ -99,6 +101,7 @@ public class ZdhProcessFlowController extends BaseController {
      * @param context 关键字
      * @return
      */
+    @SentinelResource(value = "process_flow_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/process_flow_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ProcessFlowInfo>> process_flow_list2(String context) {
@@ -115,6 +118,7 @@ public class ZdhProcessFlowController extends BaseController {
      * @param pfi
      * @return
      */
+    @SentinelResource(value = "process_flow_status", blockHandler = "handleReturn")
     @RequestMapping(value = "/process_flow_status", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ProcessFlowInfo> process_flow_status(ProcessFlowInfo pfi) {
@@ -272,6 +276,7 @@ public class ZdhProcessFlowController extends BaseController {
      * @param pfi
      * @return
      */
+    @SentinelResource(value = "process_flow_status2", blockHandler = "handleReturn")
     @RequestMapping(value = "/process_flow_status2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ProcessFlowInfo> process_flow_status2(ProcessFlowInfo pfi) {
@@ -296,6 +301,7 @@ public class ZdhProcessFlowController extends BaseController {
      * @param flow_id 审批流程ID
      * @return
      */
+    @SentinelResource(value = "process_flow_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/process_flow_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ProcessFlowInfo>> process_flow_detail(String flow_id) {
@@ -591,6 +597,7 @@ public class ZdhProcessFlowController extends BaseController {
      * @param id 审批流主键
      * @return
      */
+    @SentinelResource(value = "process_flow_agent_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/process_flow_agent_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ProcessFlowInfo> process_flow_agent_update(String flow_id, String id, String agent_user) {

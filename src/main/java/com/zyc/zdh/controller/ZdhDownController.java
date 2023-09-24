@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.ZdhDownloadMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -55,6 +56,7 @@ public class ZdhDownController extends BaseController{
      * @param file_name 文件名
      * @return
      */
+    @SentinelResource(value = "download_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/download_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ZdhDownloadInfo>> download_list(String file_name) {
@@ -78,6 +80,7 @@ public class ZdhDownController extends BaseController{
      * @param ids
      * @return
      */
+    @SentinelResource(value = "download_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/download_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

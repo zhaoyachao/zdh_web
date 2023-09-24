@@ -62,6 +62,8 @@ public class User extends PageBase implements Serializable {
 	 */
 	private String tag_group_code;
 
+	private String product_code;
+
 	public String getId() {
 		return id;
 	}
@@ -153,5 +155,13 @@ public class User extends PageBase implements Serializable {
 
 	public void setTag_group_code(String tag_group_code) {
 		this.tag_group_code = tag_group_code;
+	}
+
+	public String getProduct_code() {
+		return product_code;
+	}
+
+	public void setProduct_code(String product_code) {
+		this.product_code = product_code;
 	}
 }

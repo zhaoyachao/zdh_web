@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.CrowdFileMapper;
 import com.zyc.zdh.entity.CrowdFileInfo;
@@ -63,6 +64,7 @@ public class CrowdFileController extends BaseController {
      * @param file_name 关键字
      * @return
      */
+    @SentinelResource(value = "crowd_file_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_file_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public  ReturnInfo<PageResult<List<CrowdFileInfo>>> crowd_file_list(String file_name,int limit, int offset) {
@@ -111,6 +113,7 @@ public class CrowdFileController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "crowd_file_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_file_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<CrowdFileInfo> crowd_file_detail(String id) {
@@ -129,6 +132,7 @@ public class CrowdFileController extends BaseController {
      * @param crowdFileInfo
      * @return
      */
+    @SentinelResource(value = "crowd_file_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_file_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -158,6 +162,7 @@ public class CrowdFileController extends BaseController {
      * @param crowdFile
      * @return
      */
+    @SentinelResource(value = "crowd_file_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_file_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -236,6 +241,7 @@ public class CrowdFileController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "crowd_file_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_file_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

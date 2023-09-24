@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
@@ -95,6 +96,7 @@ public class PermissionController extends BaseController {
      * @param user_context 关键字
      * @return
      */
+    @SentinelResource(value = "user_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<PermissionUserInfo>> user_list(String product_code,String user_context) {
@@ -138,6 +140,7 @@ public class PermissionController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
+    @SentinelResource(value = "user_account_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_account_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<String>> user_account_list(String product_code) {
@@ -169,6 +172,7 @@ public class PermissionController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
+    @SentinelResource(value = "user_team_list_by_user", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_team_list_by_user", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<String>> user_team_list_by_user(String product_code, String user_account) {
@@ -196,6 +200,7 @@ public class PermissionController extends BaseController {
      * @param enable true/false
      * @return
      */
+    @SentinelResource(value = "user_enable", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_enable", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -250,6 +255,7 @@ public class PermissionController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "user_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PermissionUserInfo> user_detail(String id) {
@@ -269,6 +275,7 @@ public class PermissionController extends BaseController {
      * @param user
      * @return
      */
+    @SentinelResource(value = "user_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -315,6 +322,7 @@ public class PermissionController extends BaseController {
      * @param ugi
      * @return
      */
+    @SentinelResource(value = "user_group_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_group_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -348,6 +356,7 @@ public class PermissionController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
+    @SentinelResource(value = "user_group_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_group_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -394,14 +403,15 @@ public class PermissionController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
+    @SentinelResource(value = "role_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/role_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public List<RoleInfo> role_list(String role_context, String enable, String product_code) {
+    public ReturnInfo<List<RoleInfo>> role_list(String role_context, String enable, String product_code) {
         if(!StringUtils.isEmpty(role_context)){
             role_context = getLikeCondition(role_context);
         }
         List<RoleInfo> users = roleDao.selectByContext(role_context, enable, product_code);
-        return users;
+        return ReturnInfo.buildSuccess(users);
     }
 
     /**
@@ -410,6 +420,7 @@ public class PermissionController extends BaseController {
      * @param enable 是否启用 true/false
      * @return
      */
+    @SentinelResource(value = "role_enable", blockHandler = "handleReturn")
     @RequestMapping(value = "/role_enable", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -432,6 +443,7 @@ public class PermissionController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "role_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/role_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<RoleInfo> role_detail(String id) {
@@ -451,6 +463,7 @@ public class PermissionController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
+    @SentinelResource(value = "role_by_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/role_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<RoleInfo> role_by_code(String code, String product_code) {
@@ -482,6 +495,7 @@ public class PermissionController extends BaseController {
      * @param rti
      * @return
      */
+    @SentinelResource(value = "jstree_add_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_add_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> jstree_add_node(ResourceTreeInfo rti) {
@@ -510,7 +524,9 @@ public class PermissionController extends BaseController {
             if(StringUtils.isEmpty(rti.getEvent_code())){
                 rti.setEvent_code("");
             }
-
+            if(StringUtils.isEmpty(rti.getQps())){
+                rti.setQps("");
+            }
             debugInfo(rti);
             resourceTreeMapper.insert(rti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
@@ -527,6 +543,7 @@ public class PermissionController extends BaseController {
      * @param rti
      * @return
      */
+    @SentinelResource(value = "jstree_add_root_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_add_root_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> jstree_add_root_node(ResourceTreeInfo rti) {
@@ -566,7 +583,9 @@ public class PermissionController extends BaseController {
             if(StringUtils.isEmpty(rti.getIcon())){
                 rti.setIcon("fa fa-folder");
             }
-
+            if(StringUtils.isEmpty(rti.getQps())){
+                rti.setQps("");
+            }
             debugInfo(rti);
             resourceTreeMapper.insert(rti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
@@ -585,6 +604,7 @@ public class PermissionController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
+    @SentinelResource(value = "jstree_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_node",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ResourceTreeInfo>> jstree_node(String parent_id, String text,String product_code) {
@@ -607,6 +627,7 @@ public class PermissionController extends BaseController {
      * @param text
      * @return
      */
+    @SentinelResource(value = "jstree_get_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_get_node",method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ResourceTreeInfo> jstree_get_node(String id, String text) {
@@ -626,6 +647,7 @@ public class PermissionController extends BaseController {
      * @param rti
      * @return
      */
+    @SentinelResource(value = "jstree_update_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_update_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> jstree_update_node(ResourceTreeInfo rti) {
@@ -637,6 +659,12 @@ public class PermissionController extends BaseController {
             rti.setIs_enable(Const.ENABLE);
             if(StringUtils.isEmpty(rti.getResource_desc())){
                 rti.setResource_desc("");
+            }
+            if(StringUtils.isEmpty(rti.getEvent_code())){
+                rti.setEvent_code("");
+            }
+            if(StringUtils.isEmpty(rti.getQps())){
+                rti.setQps("");
             }
             debugInfo(rti);
             resourceTreeMapper.updateByPrimaryKey(rti);
@@ -655,6 +683,7 @@ public class PermissionController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "jstree_del_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_del_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> jstree_del_node(String id) {
@@ -683,6 +712,7 @@ public class PermissionController extends BaseController {
      * @param level 资源层级
      * @return
      */
+    @SentinelResource(value = "jstree_update_parent", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_update_parent", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> jstree_update_parent(String id, String parent_id, String level) {
@@ -720,6 +750,7 @@ public class PermissionController extends BaseController {
      * @param url
      * @return
      */
+    @SentinelResource(value = "jstree_get_desc", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_get_desc", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -727,8 +758,14 @@ public class PermissionController extends BaseController {
         try{
             Example example=new Example(ResourceTreeInfo.class);
             Example.Criteria criteria = example.createCriteria();
+            String urlStr = url;
+            if(url.contains(".")){
+                urlStr = url.split("\\.")[0];
+            }
             criteria.andEqualTo("url", url);
+            criteria.orEqualTo("url", urlStr);
             List<ResourceTreeInfo> resourceTreeInfos = resourceTreeMapper.selectByExample(example);
+
             if(resourceTreeInfos != null && resourceTreeInfos.size() >= 1){
                 return ReturnInfo.buildSuccess(resourceTreeInfos.get(0).getResource_desc());
             }
@@ -749,6 +786,7 @@ public class PermissionController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
+    @SentinelResource(value = "jstree_add_permission", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_add_permission", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -794,9 +832,10 @@ public class PermissionController extends BaseController {
                 rri.setRole_code(code);
                 rri.setCreate_time(new Timestamp(new Date().getTime()));
                 rri.setUpdate_time(new Timestamp(new Date().getTime()));
+                rri.setProduct_code(product_code);
                 rris.add(rri);
             }
-            resourceTreeMapper.deleteByRoleCode(code);
+            resourceTreeMapper.deleteByRoleCode(code, product_code);
             resourceTreeMapper.updateUserResource(rris);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
@@ -811,16 +850,19 @@ public class PermissionController extends BaseController {
     /**
      * 通过角色id获取资源
      * @param id
+     * @param code 角色code
+     * @param product_code 产品code
      * @return
      */
+    @SentinelResource(value = "jstree_permission_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_permission_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<RoleResourceInfo>> jstree_permission_list(String id,String code) {
+    public ReturnInfo<List<RoleResourceInfo>> jstree_permission_list(String id,String code, String product_code) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try{
             List<RoleResourceInfo> uris = new ArrayList<>();
 
-            uris = resourceTreeMapper.selectByRoleCode(code);
+            uris = resourceTreeMapper.selectByRoleCode(code, product_code);
             return ReturnInfo.buildSuccess(uris);
         }catch (Exception e){
             return ReturnInfo.buildError(e);
@@ -831,6 +873,7 @@ public class PermissionController extends BaseController {
      * 通过用户id获取资源
      * @return
      */
+    @SentinelResource(value = "jstree_permission_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_permission_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<UserResourceInfo2>> jstree_permission_list2() {
@@ -838,7 +881,8 @@ public class PermissionController extends BaseController {
         try{
             List<UserResourceInfo2> uris = new ArrayList<>();
             String user_account = getUser().getUserName();
-            uris = resourceTreeMapper.selectResourceByUserAccount(user_account);
+            String product_code = ev.getProperty("zdp.product", "zdh");
+            uris = resourceTreeMapper.selectResourceByUserAccount(user_account, product_code);
             uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
             return ReturnInfo.buildSuccess(uris);
         }catch (Exception e){
@@ -863,6 +907,7 @@ public class PermissionController extends BaseController {
      * 获取当前系统的数据组标识
      * @return
      */
+    @SentinelResource(value = "user_tag_group_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_tag_group_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<DataTagGroupInfo>> user_tag_group_code() {
@@ -926,6 +971,7 @@ public class PermissionController extends BaseController {
      * @param apply_type 申请类型 role,user_group,data_group
      * @return
      */
+    @SentinelResource(value = "permission_apply_by_product_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_apply_by_product_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> permission_apply_by_product_code(String product_code, String apply_type) {
@@ -952,6 +998,7 @@ public class PermissionController extends BaseController {
      * @param permission_context 关键字
      * @return
      */
+    @SentinelResource(value = "permission_apply_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_apply_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<PermissionApplyInfo>> permission_apply_list(String permission_context){
@@ -986,6 +1033,7 @@ public class PermissionController extends BaseController {
      * @param apply_context 申请说明
      * @return
      */
+    @SentinelResource(value = "permission_apply_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_apply_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional
@@ -1050,6 +1098,7 @@ public class PermissionController extends BaseController {
      * @param id 申请ID数组
      * @return
      */
+    @SentinelResource(value = "permission_apply_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_apply_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<PermissionApplyInfo>> permission_apply_delete(String[] id){
@@ -1077,6 +1126,7 @@ public class PermissionController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "permission_apply_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_apply_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PermissionApplyInfo> permission_apply_detail(String id){
@@ -1164,6 +1214,7 @@ public class PermissionController extends BaseController {
      * @param offset
      * @return
      */
+    @SentinelResource(value = "user_group_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_group_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<UserGroupInfo>>> user_group_list2(String product_code,String group_context, int limit, int offset){
@@ -1200,6 +1251,7 @@ public class PermissionController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "user_group_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_group_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<UserGroupInfo> user_group_detail(String id) {
@@ -1244,6 +1296,7 @@ public class PermissionController extends BaseController {
      * @param offset
      * @return
      */
+    @SentinelResource(value = "permission_bigdata_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_bigdata_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<PermissionBigdataInfo>>> permission_bigdata_list(String permission_context, int limit, int offset){
@@ -1283,6 +1336,7 @@ public class PermissionController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "permission_bigdata_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_bigdata_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PermissionBigdataInfo> permission_bigdata_detail(String id){
@@ -1302,6 +1356,7 @@ public class PermissionController extends BaseController {
      * @param permissionBigdataInfo
      * @return
      */
+    @SentinelResource(value = "permission_bigdata_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_bigdata_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PermissionBigdataInfo> permission_bigdata_add(PermissionBigdataInfo permissionBigdataInfo){
@@ -1326,6 +1381,7 @@ public class PermissionController extends BaseController {
      * @param permissionBigdataInfo
      * @return
      */
+    @SentinelResource(value = "permission_bigdata_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_bigdata_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PermissionBigdataInfo> permission_bigdata_update(PermissionBigdataInfo permissionBigdataInfo){
@@ -1355,6 +1411,7 @@ public class PermissionController extends BaseController {
      * @param ids
      * @return
      */
+    @SentinelResource(value = "permission_bigdata_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_bigdata_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<PermissionApplyInfo>> permission_bigdata_delete(String[] ids){
@@ -1373,6 +1430,7 @@ public class PermissionController extends BaseController {
      * @param product_code
      * @return
      */
+    @SentinelResource(value = "permission_rule_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_rule_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<JSONObject>> permission_rule_list(String product_code){

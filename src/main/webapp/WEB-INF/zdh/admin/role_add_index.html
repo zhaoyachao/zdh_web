@@ -239,7 +239,7 @@
                 type : "POST",
                 url : server_context+"/jstree_permission_list",
                 dataType : "json",
-                data : {"id":s.id, "code": s.code},
+                data : {"id":s.id, "code": s.code, "product_code": $("#product_code").val()},
                 async:'false',
                 success : function(data) {
                     if(data.code != "200"){

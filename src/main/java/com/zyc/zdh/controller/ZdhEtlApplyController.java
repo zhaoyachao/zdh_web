@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.EtlApplyTaskMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
@@ -59,6 +60,7 @@ public class ZdhEtlApplyController extends BaseController{
      * @param id 数据发布ID
      * @return
      */
+    @SentinelResource(value = "etl_task_apply_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_apply_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<EtlApplyTaskInfo> etl_task_apply_detail(String id) {
@@ -79,6 +81,7 @@ public class ZdhEtlApplyController extends BaseController{
      * @param file_name
      * @return
      */
+    @SentinelResource(value = "etl_task_apply_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_apply_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlTaskInfo>> etl_task_apply_list2(String etl_context, String file_name) {
@@ -105,6 +108,7 @@ public class ZdhEtlApplyController extends BaseController{
      * @param ids
      * @return
      */
+    @SentinelResource(value = "etl_task_apply_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_apply_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -142,6 +146,7 @@ public class ZdhEtlApplyController extends BaseController{
      * @param etlApplyTaskInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_apply_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_apply_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -185,6 +190,7 @@ public class ZdhEtlApplyController extends BaseController{
      * @param etlApplyTaskInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_apply_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_apply_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

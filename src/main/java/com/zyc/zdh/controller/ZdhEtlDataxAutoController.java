@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.EtlTaskDataxAutoMapper;
@@ -57,6 +58,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "etl_task_datax_auto_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_datax_auto_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<EtlTaskDataxAutoInfo> etl_task_datax_auto_detail(String id) {
@@ -75,6 +77,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
      * @param file_name 数据源关键字
      * @return
      */
+    @SentinelResource(value = "etl_task_datax_auto_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_datax_auto_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<EtlTaskDataxAutoInfo>>> etl_task_datax_auto_list(String etl_context, String file_name,int limit, int offset) {
@@ -113,6 +116,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
      * 根据条件模糊查询单源ETL任务信息
      * @return
      */
+    @SentinelResource(value = "etl_task_datax_auto_all_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_datax_auto_all_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -145,6 +149,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "etl_task_datax_auto_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_datax_auto_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -177,6 +182,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
      * @param etlTaskDataxAutoInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_datax_auto_add", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_datax_auto_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -206,6 +212,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
      * @param etlTaskDataxAutoInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_datax_auto_update", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_datax_auto_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

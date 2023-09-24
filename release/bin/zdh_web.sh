@@ -4,6 +4,7 @@ bin_path=`dirname "$0"`
 cd "$bin_path/.."
 pt=`pwd`
 APP_NAME=${pt}"/zdh_web.jar"
+RUN_MODE=pro
 
 #APP_DIR=./
 APP_DIR=`pwd`
@@ -35,8 +36,7 @@ start(){
  if [ $? -eq "0" ]; then
  echo "${APP_NAME} is already running. pid=${pid} ."
  else
- nohup java -Dfile.encoding=utf-8 -Dloader.path=libs/,conf/ -Xss512M -jar "$APP_NAME"  >> web.log  &
- #nohup java -jar $APP_DIR/$APP_NAME
+ nohup java -Dspring.profiles.active=$RUN_MODE -Dfile.encoding=utf-8 -Dloader.path=libs/,conf/ -Xss512M -jar "$APP_NAME"  >> web.log  &
  echo "${APP_NAME} start success"
  fi
 }

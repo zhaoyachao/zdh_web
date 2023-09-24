@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
@@ -46,6 +47,7 @@ public class CommonController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "crowd_rule_detail2", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_rule_detail2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo crowd_rule_detail2(String id) {
@@ -146,10 +148,34 @@ public class CommonController extends BaseController {
     }
 
     /**
+     * 代码块
+     * manual_confirm_detail页面
+     * @return
+     */
+    @RequestMapping(value = "/code_block_detail", method = RequestMethod.GET)
+    @White
+    public String code_block_detail() {
+        return "digitalmarket/code_block_detail";
+    }
+
+
+    /**
+     * 自定义名单
+     * custom_list_detail页面
+     * @return
+     */
+    @RequestMapping(value = "/custom_list_detail", method = RequestMethod.GET)
+    @White
+    public String custom_list_detail() {
+        return "digitalmarket/custom_list_detail";
+    }
+
+    /**
      * 人群文件列表
      * @param rule_context 关键字
      * @return
      */
+    @SentinelResource(value = "crowd_file_list_by_owner", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_file_list_by_owner", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White

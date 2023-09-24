@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.FilterMapper;
 import com.zyc.zdh.entity.FilterInfo;
@@ -51,6 +52,7 @@ public class FilterController extends BaseController {
      * @param filter_name 关键字
      * @return
      */
+    @SentinelResource(value = "filter_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/filter_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public  ReturnInfo<List<FilterInfo>> filter_list(String filter_name) {
@@ -92,6 +94,7 @@ public class FilterController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "filter_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/filter_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<FilterInfo> filter_detail(String id) {
@@ -110,6 +113,7 @@ public class FilterController extends BaseController {
      * @param filterInfo
      * @return
      */
+    @SentinelResource(value = "filter_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/filter_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -139,6 +143,7 @@ public class FilterController extends BaseController {
      * @param filterInfo
      * @return
      */
+    @SentinelResource(value = "filter_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/filter_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -163,6 +168,7 @@ public class FilterController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "filter_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/filter_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

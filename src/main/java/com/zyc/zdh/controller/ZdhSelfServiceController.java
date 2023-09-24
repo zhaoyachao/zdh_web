@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.SelfHistoryMapper;
 import com.zyc.zdh.entity.DataSourcesInfo;
@@ -60,6 +61,7 @@ public class ZdhSelfServiceController extends BaseController {
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "self_service_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/self_service_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<SelfHistory>> self_service_list(String history_context) throws Exception {
@@ -95,6 +97,7 @@ public class ZdhSelfServiceController extends BaseController {
      * @param id id
      * @return
      */
+    @SentinelResource(value = "self_service_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/self_service_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<SelfHistory> self_service_detail(String id) {
@@ -113,6 +116,7 @@ public class ZdhSelfServiceController extends BaseController {
      * @param selfHistory
      * @return
      */
+    @SentinelResource(value = "self_service_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/self_service_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -143,6 +147,7 @@ public class ZdhSelfServiceController extends BaseController {
      * @param selfHistory
      * @return
      */
+    @SentinelResource(value = "self_service_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/self_service_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -170,6 +175,7 @@ public class ZdhSelfServiceController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "self_service_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/self_service_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -189,6 +195,7 @@ public class ZdhSelfServiceController extends BaseController {
      * @param data_sources_choose_input
      * @return
      */
+    @SentinelResource(value = "self_service_execute", blockHandler = "handleReturn")
     @RequestMapping(value = "/self_service_execute", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -214,6 +221,7 @@ public class ZdhSelfServiceController extends BaseController {
      * @param response
      * @return
      */
+    @SentinelResource(value = "self_service_export", blockHandler = "handleReturn")
     @RequestMapping(value = "/self_service_export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public ReturnInfo data_ware_house_export(String etl_sql, String data_sources_choose_input,HttpServletResponse response) {
 

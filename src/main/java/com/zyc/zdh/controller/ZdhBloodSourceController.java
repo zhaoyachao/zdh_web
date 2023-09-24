@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -64,6 +65,7 @@ public class ZdhBloodSourceController extends BaseController{
      * 生成血缘关系
      * @return
      */
+    @SentinelResource(value = "blood_source_create", blockHandler = "handleReturn")
     @RequestMapping(value = "/blood_source_create", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> blood_source_create() {
@@ -76,6 +78,7 @@ public class ZdhBloodSourceController extends BaseController{
      * @param input 表名/文件名
      * @return
      */
+    @SentinelResource(value = "blood_source_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/blood_source_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> blood_source_list(String input) {
@@ -132,6 +135,7 @@ public class ZdhBloodSourceController extends BaseController{
      * @param stream_type 上游/下游  1：上游,2：下游, 3：全部
      * @return
      */
+    @SentinelResource(value = "blood_source_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/blood_source_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<JSONArray> blood_source_detail(String input, String input_md5, String level, String stream_type) {

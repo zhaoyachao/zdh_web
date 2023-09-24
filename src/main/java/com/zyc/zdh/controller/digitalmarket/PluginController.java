@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
@@ -54,6 +55,7 @@ public class PluginController extends BaseController {
      * @param plugin_name 关键字
      * @return
      */
+    @SentinelResource(value = "plugin_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/plugin_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<PluginInfo>> plugin_list(String plugin_name) {
@@ -104,6 +106,7 @@ public class PluginController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "plugin_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/plugin_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PluginInfo> plugin_detail(String id) {
@@ -120,6 +123,7 @@ public class PluginController extends BaseController {
      * @param plugin_code
      * @return
      */
+    @SentinelResource(value = "plugin_detail_by_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/plugin_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PluginInfo> plugin_detail_by_code(String plugin_code) {
@@ -143,6 +147,7 @@ public class PluginController extends BaseController {
      * @param param_value 参数可选值
      * @return
      */
+    @SentinelResource(value = "plugin_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/plugin_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -194,6 +199,7 @@ public class PluginController extends BaseController {
      * @param param_value 参数可选值
      * @return
      */
+    @SentinelResource(value = "plugin_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/plugin_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -236,6 +242,7 @@ public class PluginController extends BaseController {
      * @param ids
      * @return
      */
+    @SentinelResource(value = "plugin_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/plugin_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

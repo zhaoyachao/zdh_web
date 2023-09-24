@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.ApprovalAuditorFlowMapper;
 import com.zyc.zdh.dao.ApprovalAuditorMapper;
 import com.zyc.zdh.dao.ApprovalConfigMapper;
@@ -61,6 +62,7 @@ public class ZdhApprovalController extends BaseController{
      * @param approval_context 关键字
      * @return
      */
+    @SentinelResource(value = "approval_config_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_config_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ApprovalConfigInfo>> approve_config_list(String product_code,String approval_context) {
@@ -97,6 +99,7 @@ public class ZdhApprovalController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "approval_config_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_config_detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ApprovalConfigInfo> approval_config_detail(String id) {
@@ -115,6 +118,7 @@ public class ZdhApprovalController extends BaseController{
      * @param approvalConfigInfo
      * @return
      */
+    @SentinelResource(value = "approval_config_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_config_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> approval_config_add(ApprovalConfigInfo approvalConfigInfo) {
@@ -138,6 +142,7 @@ public class ZdhApprovalController extends BaseController{
      * @param approvalConfigInfo
      * @return
      */
+    @SentinelResource(value = "approval_config_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_config_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> approval_config_update(ApprovalConfigInfo approvalConfigInfo) {
@@ -169,6 +174,7 @@ public class ZdhApprovalController extends BaseController{
      * @param auditor_id 审批人账号
      * @return
      */
+    @SentinelResource(value = "approval_auditor_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ApprovalAuditorInfo>> approval_auditor_list(String approval_context, String auditor_id) {
@@ -221,6 +227,7 @@ public class ZdhApprovalController extends BaseController{
      * @param approvalAuditorInfo
      * @return
      */
+    @SentinelResource(value = "approval_auditor_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ApprovalAuditorInfo> approval_auditor_add(ApprovalAuditorInfo approvalAuditorInfo) {
@@ -244,6 +251,7 @@ public class ZdhApprovalController extends BaseController{
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "approval_auditor_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -263,6 +271,7 @@ public class ZdhApprovalController extends BaseController{
      * @param approvalAuditorInfo
      * @return
      */
+    @SentinelResource(value = "approval_auditor_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ApprovalAuditorInfo> approval_auditor_update(ApprovalAuditorInfo approvalAuditorInfo) {
@@ -282,6 +291,7 @@ public class ZdhApprovalController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "approval_auditor_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ApprovalAuditorInfo> approval_auditor_detail(String id) {
@@ -300,6 +310,7 @@ public class ZdhApprovalController extends BaseController{
      * @param flow_context 关键字
      * @return
      */
+    @SentinelResource(value = "approval_auditor_flow_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_flow_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<ApprovalAuditorFlowInfo>>> approval_auditor_flow_list(String flow_context, int limit, int offset) {
@@ -336,6 +347,7 @@ public class ZdhApprovalController extends BaseController{
      * @param approvalAuditorFlowInfo
      * @return
      */
+    @SentinelResource(value = "approval_auditor_flow_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_flow_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ApprovalAuditorFlowInfo> approval_auditor_flow_add(ApprovalAuditorFlowInfo approvalAuditorFlowInfo) {
@@ -362,6 +374,7 @@ public class ZdhApprovalController extends BaseController{
      * @param ids
      * @return
      */
+    @SentinelResource(value = "approval_auditor_flow_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_flow_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -381,6 +394,7 @@ public class ZdhApprovalController extends BaseController{
      * @param approvalAuditorFlowInfo
      * @return
      */
+    @SentinelResource(value = "approval_auditor_flow_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_flow_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ApprovalAuditorFlowInfo> approval_auditor_flow_update(ApprovalAuditorFlowInfo approvalAuditorFlowInfo) {
@@ -404,6 +418,7 @@ public class ZdhApprovalController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "approval_auditor_flow_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_flow_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ApprovalAuditorFlowInfo> approval_auditor_flow_detail(String id) {
@@ -443,6 +458,7 @@ public class ZdhApprovalController extends BaseController{
      * @param approvalEventInfo
      * @return
      */
+    @SentinelResource(value = "approval_event_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_event_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> approval_event_add(ApprovalEventInfo approvalEventInfo) {
@@ -466,6 +482,7 @@ public class ZdhApprovalController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "approval_event_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_event_detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ApprovalEventInfo> approval_event_detail(String id) {
@@ -483,6 +500,7 @@ public class ZdhApprovalController extends BaseController{
      * @param event_context 关键字
      * @return
      */
+    @SentinelResource(value = "approval_event_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_event_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ApprovalEventInfo>> approval_event_list(String product_code,String event_context) {
@@ -504,6 +522,7 @@ public class ZdhApprovalController extends BaseController{
      * @param approvalEventInfo
      * @return
      */
+    @SentinelResource(value = "approval_event_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_event_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ApprovalEventInfo> approval_event_update(ApprovalEventInfo approvalEventInfo) {

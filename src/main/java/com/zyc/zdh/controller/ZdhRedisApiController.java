@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.shiro.RedisUtil;
@@ -32,6 +33,7 @@ public class ZdhRedisApiController extends BaseController {
      * @param key
      * @return
      */
+    @SentinelResource(value = "redis_get", blockHandler = "handleReturn")
     @RequestMapping(value = "/redis/get/{key}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> get_key(@PathVariable("key") String key) {
@@ -46,6 +48,7 @@ public class ZdhRedisApiController extends BaseController {
      * @param key
      * @return
      */
+    @SentinelResource(value = "redis_get2", blockHandler = "handleReturn")
     @RequestMapping(value = "/redis/get2/{key}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> get_bound_value(@PathVariable("key") String key) {
@@ -60,6 +63,7 @@ public class ZdhRedisApiController extends BaseController {
      * @param key
      * @return
      */
+    @SentinelResource(value = "redis_del", blockHandler = "handleReturn")
     @RequestMapping(value = "/redis/del/{key}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo del_key(@PathVariable("key") String key) {
@@ -73,6 +77,7 @@ public class ZdhRedisApiController extends BaseController {
      * 获取所有参数名
      * @return
      */
+    @SentinelResource(value = "redis_keys", blockHandler = "handleReturn")
     @RequestMapping(value = "/redis/keys", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Set<String>> keys() {
@@ -85,6 +90,7 @@ public class ZdhRedisApiController extends BaseController {
      * @param value
      * @return
      */
+    @SentinelResource(value = "redis_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/redis/add/{key}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo add_key(@PathVariable("key") String key, String value) {

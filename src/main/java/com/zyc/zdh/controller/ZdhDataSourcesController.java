@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.PermissionMapper;
 import com.zyc.zdh.entity.DataSourcesInfo;
@@ -64,6 +65,7 @@ public class ZdhDataSourcesController extends BaseController{
      * 数据源列表
      * @return
      */
+    @SentinelResource(value = "data_sources_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_sources_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<DataSourcesInfo>> data_sources_list() {
@@ -108,6 +110,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param url 连接串
      * @return
      */
+    @SentinelResource(value = "data_sources_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_sources_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<DataSourcesInfo>> data_sources_list2(String data_source_context, String data_source_type, String url) {
@@ -164,6 +167,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param id id
      * @return
      */
+    @SentinelResource(value = "data_sources_info", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_sources_info", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<DataSourcesInfo> data_sources_info(String id) {
@@ -182,6 +186,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "data_sources_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_sources_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -212,6 +217,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param dataSourcesInfo
      * @return
      */
+    @SentinelResource(value = "data_sources_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_sources_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> data_sources_add(DataSourcesInfo dataSourcesInfo) {
@@ -233,6 +239,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param dataSourcesInfo
      * @return
      */
+    @SentinelResource(value = "data_sources_update", blockHandler = "handleReturn")
     @RequestMapping(value="/data_sources_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> data_sources_update(DataSourcesInfo dataSourcesInfo) {
@@ -255,6 +262,7 @@ public class ZdhDataSourcesController extends BaseController{
      * 获取所有的数据源类型
      * @return
      */
+    @SentinelResource(value = "data_sources_type", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_sources_type", method = RequestMethod.GET)
     @ResponseBody
     public ReturnInfo<List<String>> data_sources_type() {
@@ -274,6 +282,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param dataSourcesInfo
      * @return
      */
+    @SentinelResource(value = "test_connect", blockHandler = "handleReturn")
     @RequestMapping(value = "/test_connect", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> test_connect(DataSourcesInfo dataSourcesInfo) {

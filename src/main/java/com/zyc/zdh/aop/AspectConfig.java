@@ -2,10 +2,12 @@ package com.zyc.zdh.aop;
 
 import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.annotation.White;
+import com.zyc.zdh.config.SystemConfig;
 import com.zyc.zdh.dao.NoticeMapper;
 import com.zyc.zdh.dao.UserOperateLogMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.exception.ZdhException;
+import com.zyc.zdh.filter.ZdhFilter;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
@@ -66,7 +68,7 @@ public class AspectConfig implements Ordered {
     public void pointcutMethod2() {
     }
 
-    @Pointcut("execution(* com.zyc.zdh.controller.*.*.*(..)) || (execution(* com.zyc.zdh.controller.*.*(..)) && !execution(* com.zyc.zdh.controller.LoginController.login1(..)) && !execution(* com.zyc.zdh.controller.LoginController.getIndex(..)))")
+    @Pointcut("execution(* com.zyc.zdh.controller.*.*.*(..)) || (execution(* com.zyc.zdh.controller.*.*(..)) && !execution(* com.zyc.zdh.controller.MyErrorConroller.*(..)) && !execution(* com.zyc.zdh.controller.LoginController.getLogin(..)) && !execution(* com.zyc.zdh.controller.LoginController.captcha(..)) && !execution(* com.zyc.zdh.controller.LoginController.login(..)) && !execution(* com.zyc.zdh.controller.LoginController.login1(..)) && !execution(* com.zyc.zdh.controller.LoginController.getIndex(..)))")
     public void pointcutMethod3() {
     }
 
@@ -96,11 +98,12 @@ public class AspectConfig implements Ordered {
             String method = request.getMethod();
 
             if(method.equalsIgnoreCase("get")){
-                response.setDateHeader("Expires", System.currentTimeMillis());
+                response.setDateHeader("Expires", System.currentTimeMillis()+1000*5);
             }
+            SystemFilterParam systemFilterParam = SystemConfig.urlThread.get();
             //IP地址
-            String ipAddr = getRemoteHost(request);
-            String url = request.getRequestURL().toString();
+            String ipAddr = systemFilterParam.getIp();
+            String url = systemFilterParam.getRequestURL();
             Object clearTime = redisUtil.get(Const.ZDH_RATELIMIT_CLEART_TIME);
             if (getUser() != null) {
                 Object user_limit = redisUtil.get(Const.ZDH_USER_RATELIMIT, "200");
@@ -144,7 +147,7 @@ public class AspectConfig implements Ordered {
             //校验账号是否启用
             boolean is_unenable = is_unenable();
             //校验ip黑名单
-            boolean is_ipbacklist = is_ipblacklist(ipAddr);
+            boolean is_ipbacklist = is_ipblacklist(SystemConfig.urlThread.get().getIp());
             boolean is_userbacklist = is_blacklist();
             if (is_ipbacklist || is_userbacklist || is_unenable) {
                 UserOperateLogMapper userOperateLogMapper = (UserOperateLogMapper) SpringContext.getBean("userOperateLogMapper");
@@ -203,8 +206,9 @@ public class AspectConfig implements Ordered {
                 //SecurityUtils.getSecurityManager().logout(subject);
                 String whiteUrl = getUrl(request);
                 if (!white().contains(whiteUrl)) {
-                    MDC.remove("user_id");
                     logger.error("用户未登录");
+                    logger.debug("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】请求参数:【{}】", ipAddr, "xxxx", url, request.getMethod(), reqParam);
+                    MDC.remove("user_id");
                     return "redirect:login";
                 }
             }
@@ -317,7 +321,11 @@ public class AspectConfig implements Ordered {
                         } else {
                             returnInfo.setResult(obj);
                         }
-                        userOperateLogInfo.setOperate_output(JSON.toJSONString(returnInfo));
+                        String retStr = JSON.toJSONString(returnInfo);
+                        if (retStr.length() > 6400) {
+                            retStr = retStr.substring(0,256);
+                        }
+                        userOperateLogInfo.setOperate_output(retStr);
                     } else {
                         //未知的object类型
                         userOperateLogInfo.setOperate_output(JSON.toJSONString("未知的返回值类型,请管理员确认"));
@@ -422,7 +430,7 @@ public class AspectConfig implements Ordered {
     }
 
     private String getUrl(HttpServletRequest request) {
-        String url = request.getServletPath();
+        String url = SystemConfig.urlThread.get().getServletPath();
         if (url.startsWith("/"))
             url = url.substring(1).replaceAll("function:", "");
         url = url.split("\\.")[0];
@@ -588,9 +596,6 @@ public class AspectConfig implements Ordered {
      */
     private boolean is_ipblacklist(String ip) {
         try{
-            if (getUser() == null) {
-                return false;
-            }
 
             RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
 
@@ -609,25 +614,7 @@ public class AspectConfig implements Ordered {
         return true;
     }
 
-    /**
-     * 获取ip
-     *
-     * @param request
-     * @return
-     */
-    private String getRemoteHost(HttpServletRequest request) {
-        String ip = request.getHeader("x-forwarded-for");
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-        return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1" : ip;
-    }
+
 
     public User getUser() {
         User user = (User) SecurityUtils.getSubject().getPrincipal();

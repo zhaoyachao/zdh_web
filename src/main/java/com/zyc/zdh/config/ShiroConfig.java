@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.servlet.Filter;
 
+import com.zyc.zdh.filter.ZdhFilter;
 import com.zyc.zdh.shiro.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
@@ -23,6 +24,7 @@ import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +38,9 @@ public class ShiroConfig {
 
 	@Autowired
 	Environment ev;
+
+	@Value("${cookie.path:'/'}")
+	private String cookiePath;
 
 	
 	@Bean(name="shiroRedisCacheManager")
@@ -169,8 +174,9 @@ public class ShiroConfig {
 		//sessionManager.setSessionValidationScheduler(quartzSessionValidationScheduler2(sessionManager));
 		//设置SessionIdCookie 导致认证不成功，不从新设置新的cookie,从sessionManager获取sessionIdCookie
 //		sessionManager.setSessionIdCookie(rememberMeCookie());
-		sessionManager.getSessionIdCookie().setName("WEBJSESSIONID");
-		sessionManager.getSessionIdCookie().setPath("/");
+		sessionManager.getSessionIdCookie().setName("ZDHSESIONID");
+		sessionManager.getSessionIdCookie().setPath(cookiePath);
+		//sessionManager.getSessionIdCookie().setDomain("");
 		sessionManager.getSessionIdCookie().setMaxAge(60*60*24*7);
 
 		sessionManager.setSessionDAO(sessionDao);
@@ -220,11 +226,26 @@ public class ShiroConfig {
 				.addInitParameter("targetFilterLifecycle", "true");
 		filterRegistrationBean.setEnabled(true);
 		filterRegistrationBean.addUrlPatterns("/");
+		filterRegistrationBean.setOrder(1);
 //		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST,
 //				DispatcherType.FORWARD, DispatcherType.INCLUDE,
 //				DispatcherType.ERROR);
 		return filterRegistrationBean;
 	}
+
+	@Bean(name = "zdhfilterRegistrationBean")
+	public FilterRegistrationBean zdhFilterRegistrationBean() {
+		FilterRegistrationBean bean = new FilterRegistrationBean(zdhFilter());
+		bean.setOrder(-2);
+		bean.addUrlPatterns("/*");
+		return bean;
+	}
+
+	@Bean
+	public Filter zdhFilter() {
+		return new ZdhFilter();
+	}
+
 
 	@Bean(name = "shiroFilter")
 	public ShiroFilterFactoryBean shiroFilterFactoryBean(
@@ -235,7 +256,7 @@ public class ShiroConfig {
 		ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
 		shiroFilterFactoryBean.setLoginUrl(project_pre+"/login");
 		shiroFilterFactoryBean.setSuccessUrl(project_pre+"/index");
-		shiroFilterFactoryBean.setUnauthorizedUrl(project_pre+"/login");
+		shiroFilterFactoryBean.setUnauthorizedUrl(project_pre+"/404");
 		shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
 		Map<String, Filter> filterMap1 = shiroFilterFactoryBean.getFilters();
 		filterMap1.put("authc", new MyFormAuthenticationFilter());

@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.UserOperateLogMapper;
 import com.zyc.zdh.entity.PageResult;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -74,6 +75,7 @@ public class ZdhOperateLogController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "user_operate_log_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_operate_log_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<UserOperateLogInfo>>> user_operate_log_list(String log_context, String id, String start_time, String end_time,int limit, int offset, ServletRequest request) {

@@ -62,6 +62,7 @@
                     <input type="hidden" id="rule_param" name="rule_param" value="">
                     <input type="hidden" id="shunt_param" name="shunt_param" value="">
                     <input type="hidden" id="rights_param" name="rights_param" value="">
+                    <input type="hidden" id="code_text" name="code_text" value="">
 
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
@@ -150,6 +151,8 @@
                                             <div class="node noderiskcss" data-type="risk">决策事件</div>
                                             <div class="node nodemodelcss" data-type="model">模型</div>
                                             <div class="node nodemanual_confirmcss" data-type="manual_confirm">人工确认</div>
+                                            <div class="node nodecode_blockcss" data-type="code_block">代码块</div>
+                                            <div class="node nodecustom_listcss" data-type="custom_list">用户名单</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight2">
@@ -369,28 +372,28 @@
                 $("#" + divId).attr("filter",rs.filter);
                 $("#" + divId).attr("title",rs.filter_title);
                 $("#" + divId).attr("filter_context",rs.filter_context);
-                $("#" + divId).html(rs.filter_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.filter_context);
             }
 
             if(tp == "shunt"){
                 $("#" + divId).attr("shunt_param",rs.shunt_param);
                 $("#" + divId).attr("shunt_context",rs.shunt_context);
                 $("#" + divId).attr("shunt",rs.shunt);
-                $("#" + divId).html(rs.shunt_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.shunt_context);
             }
 
             if(tp == "rights"){
                 $("#" + divId).attr("rights_param",rs.rights_param);
                 $("#" + divId).attr("rights_context",rs.rights_context);
                 $("#" + divId).attr("rights",rs.rights);
-                $("#" + divId).html(rs.rights_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rights_context);
             }
 
             if(tp == "touch"){
                 $("#" + divId).attr("touch_id",rs.touch_id);
                 $("#" + divId).attr("touch_context",rs.touch_context);
                 $("#" + divId).attr("touch_task",rs.touch_task);
-                $("#" + divId).html(rs.touch_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.touch_context);
             }
             if(tp == "plugin"){
                 $("#" + divId).attr("rule_id",rs.rule_id);
@@ -418,9 +421,25 @@
             if(tp == "manual_confirm"){
                 $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).attr("title",rs.rule_context);
-                $("#" + divId).attr("filter_context",rs.rule_context);
+                $("#" + divId).attr("rule_context",rs.rule_context);
                 $("#" + divId).attr("confirm_notice_type",rs.confirm_notice_type);
-                $("#" + divId).html(rs.rule_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            if(tp == "code_block"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).attr("title",rs.rule_context);
+                $("#" + divId).attr("rule_context",rs.rule_context);
+                $("#" + divId).attr("code_type",rs.code_type);
+                $("#" + divId).attr("command",rs.command);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "custom_list"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).attr("title",rs.rule_context);
+                $("#" + divId).attr("rule_context",rs.rule_context);
+                $("#" + divId).attr("name_list",rs.name_list);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
@@ -511,6 +530,11 @@
                 tn_value: $elem.attr('tn_value'),
 
                 confirm_notice_type: $elem.attr('confirm_notice_type'),
+
+                command: $elem.attr('command'),
+                code_type: $elem.attr('code_type'),
+
+                name_list: $elem.attr('name_list'),
 
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,

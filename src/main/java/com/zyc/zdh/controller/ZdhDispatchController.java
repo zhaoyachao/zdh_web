@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
@@ -74,6 +75,7 @@ public class ZdhDispatchController extends BaseController {
      * @param ids ids数组,可为空
      * @return
      */
+    @SentinelResource(value = "dispatch_task_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/dispatch_task_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<QuartzJobInfo>> dispatch_task_list(String[] ids) {
@@ -106,6 +108,7 @@ public class ZdhDispatchController extends BaseController {
      * @param last_status etl任务状态(废弃)
      * @return
      */
+    @SentinelResource(value = "dispatch_task_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/dispatch_task_list2",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<QuartzJobInfo>> dispatch_task_list2(String job_context, String etl_context, String status, String last_status) {
@@ -243,6 +246,7 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
+    @SentinelResource(value = "dispatch_task_group_add", blockHandler = "handleReturn")
     @RequestMapping(value="/dispatch_task_group_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo dispatch_task_group_add(QuartzJobInfo quartzJobInfo) {
@@ -276,6 +280,7 @@ public class ZdhDispatchController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "dispatch_task_group_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/dispatch_task_group_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -301,6 +306,7 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
+    @SentinelResource(value = "dispatch_task_group_update", blockHandler = "handleReturn")
     @RequestMapping(value="/dispatch_task_group_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo dispatch_task_group_update(QuartzJobInfo quartzJobInfo) {
@@ -331,6 +337,7 @@ public class ZdhDispatchController extends BaseController {
      * @param concurrency 0:串行,1:并行
      * @return
      */
+    @SentinelResource(value = "dispatch_task_execute", blockHandler = "handleReturn")
     @RequestMapping(value = "/dispatch_task_execute", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -395,6 +402,17 @@ public class ZdhDispatchController extends BaseController {
         }
     }
 
+    /**
+     * 获取执行时间
+     * @param quartzJobInfo
+     * @param reset_count
+     * @param concurrency
+     * @param start_time
+     * @param end_time
+     * @param sub_tasks
+     * @return
+     */
+    @SentinelResource(value = "dispatch_task_execute_time", blockHandler = "handleReturn")
     @RequestMapping(value = "/dispatch_task_execute_time",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<String>> dispatch_task_execute_time(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time,String[] sub_tasks) {
@@ -459,6 +477,7 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
+    @SentinelResource(value = "dispatch_task_execute_quartz", blockHandler = "handleReturn")
     @RequestMapping(value = "/dispatch_task_execute_quartz", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo dispatch_task_execute_quartz(QuartzJobInfo quartzJobInfo,String reset) {
@@ -507,6 +526,7 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
+    @SentinelResource(value = "dispatch_task_quartz_pause", blockHandler = "handleReturn")
     @RequestMapping(value = "/dispatch_task_quartz_pause",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -540,6 +560,7 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
+    @SentinelResource(value = "dispatch_task_quartz_del", blockHandler = "handleReturn")
     @RequestMapping(value = "/dispatch_task_quartz_del", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -560,6 +581,7 @@ public class ZdhDispatchController extends BaseController {
      * 获取server实例列表
      * @return
      */
+    @SentinelResource(value = "zdh_instance_list", blockHandler = "handleReturn")
     @RequestMapping(value = "zdh_instance_list", method = RequestMethod.POST)
     @ResponseBody
     public ReturnInfo<List<String>> zdh_instance_list() {
@@ -578,6 +600,7 @@ public class ZdhDispatchController extends BaseController {
      * @param qrtzSchedulerState
      * @return
      */
+    @SentinelResource(value = "dispatch_executor_list", blockHandler = "handleReturn")
     @RequestMapping(value="/dispatch_executor_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<QrtzSchedulerState>> dispatch_executor_list(QrtzSchedulerState qrtzSchedulerState) {
@@ -609,6 +632,7 @@ public class ZdhDispatchController extends BaseController {
      * @param status
      * @return
      */
+    @SentinelResource(value = "dispatch_executor_status", blockHandler = "handleReturn")
     @RequestMapping(value="/dispatch_executor_status", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo dispatch_executor_status(String instance_name, String status) {
@@ -644,6 +668,7 @@ public class ZdhDispatchController extends BaseController {
      * @param instance_name
      * @return
      */
+    @SentinelResource(value = "dispatch_system_task_list", blockHandler = "handleReturn")
     @RequestMapping(value="/dispatch_system_task_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<QuartzJobInfo>> dispatch_system_task_list(String instance_name) {
@@ -669,6 +694,7 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
+    @SentinelResource(value = "dispatch_system_task_add", blockHandler = "handleReturn")
     @RequestMapping(value="/dispatch_system_task_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -696,6 +722,7 @@ public class ZdhDispatchController extends BaseController {
      * @param quartzJobInfo
      * @return
      */
+    @SentinelResource(value = "dispatch_system_task_update", blockHandler = "handleReturn")
     @RequestMapping(value="/dispatch_system_task_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -717,6 +744,7 @@ public class ZdhDispatchController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "dispatch_system_task_create", blockHandler = "handleReturn")
     @RequestMapping(value="/dispatch_system_task_create", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -750,6 +778,7 @@ public class ZdhDispatchController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "dispatch_system_task_delete", blockHandler = "handleReturn")
     @RequestMapping(value="/dispatch_system_task_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

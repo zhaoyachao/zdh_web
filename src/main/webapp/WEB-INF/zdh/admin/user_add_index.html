@@ -274,10 +274,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
-
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
                         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].code + '\" hassubinfo=\"true\">' + data[i].name + '</option>'
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].code + '\" hassubinfo=\"true\">' + data.result[i].name + '</option>'
                         }
                         $('#roles').html(str);
                         $("#roles").trigger("chosen:updated");

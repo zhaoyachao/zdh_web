@@ -297,7 +297,7 @@
                             $('#msg_ul').html("");
                                 for(var i=0;i<data.result.notices.length;i++){
                                 var html_li="<li>"+
-                                    " <a href="+server_context+"\"/notice_detail_index.html?id="+data.result.notices[i].id+"\" target=\"_blank\">"+
+                                    " <a href="+server_context+"/notice_detail_index.html?id="+data.result.notices[i].id+"\ target=\"_blank\">"+
                                     " <div>"+
                                     " <i class=\"fa fa-envelope\"></i>  "+data.result.notices[i].msg_title+
                                     "</div>"+
@@ -311,7 +311,7 @@
                             var end_li=
                             " <li>\n" +
                             "     <div class=\"text-center link-block\">\n" +
-                            "        <a class=\"J_menuItem\" href="+server_context+"\"/notice_index.html\">\n" +
+                            "        <a class=\"J_menuItem\" href="+server_context+"/notice_index.html" +">\n" +
                             "           <strong>查看所有 </strong>\n" +
                             "           <i class=\"fa fa-angle-right\"></i>\n" +
                             "        </a>\n" +
@@ -322,7 +322,7 @@
                         }else{
                             $('#msg_ul').html("");
                             var html_li="<li>"+
-                                " <a href="+server_context+"\"/notice_index.html\">"+
+                                " <a href="+server_context+"/notice_index.html"+">"+
                                 " <div>"+
                                 " <i class=\"fa fa-weixin\"></i>  暂无消息"+
                                 "</div>"+
@@ -365,104 +365,90 @@
                         layer.msg(data.msg);
                         return ;
                     }
+                    var runPath = new Map();
                     //当前最大支持层级数是10级
-                    for(var j=2;j<=10;j++){
+                    for(var j=1;j<=10;j++){
                         for(var i=0;i<data.result.length;i++){
-                                if(data.result[i].level == j) {
-                                    var level_tmp = data.result[i].level;
+                            if(data.result[i].level == j) {
+                                runPath.set(data.result[i].resource_id, "1");
+                                if(j == 1){
+                                    //第一级跳过执行
+                                    continue ;
+                                }
 
-                                    var span_notice_title="";
-                                    if(data.result[i].notice_title != ''){
-                                        span_notice_title = "<span class=\"label label-danger pull-right\">"+data.result[i].notice_title+"</span>";
-                                    }
+                                var level_tmp = data.result[i].level;
 
-                                    ul_class = "nav nav-second-level";
-                                    li_class = '';
-                                    //获取level
-                                    if(data.result[i].level == "3"){
-                                        ul_class = "nav nav-third-level";
-                                    }
-                                    if(data.result[i].level == "4"){
-                                        ul_class = "nav nav-four-level";
-                                    }
-                                    if(data.result[i].level == "5"){
-                                        ul_class = "nav nav-five-level";
+                                var span_notice_title="";
+                                if(data.result[i].notice_title != ''){
+                                    span_notice_title = "<span class=\"label label-danger pull-right\">"+data.result[i].notice_title+"</span>";
+                                }
 
-                                    }
-                                    if(data.result[i].level >= "6"){
-                                        ul_class = "nav nav-five-level";
-                                    }
+                                ul_class = "nav nav-second-level";
+                                li_class = '';
+                                //获取level
+                                if(data.result[i].level == "3"){
+                                    ul_class = "nav nav-third-level";
+                                }
+                                if(data.result[i].level == "4"){
+                                    ul_class = "nav nav-four-level";
+                                }
+                                if(data.result[i].level == "5"){
+                                    ul_class = "nav nav-five-level";
 
-                                    var li_tmplete =
-                                        "<li class=\""+li_class+"\">" +
-                                        "<a class=\"J_menuItem\" href=\"" + data.result[i].url + "\"><i class=\""+ data.result[i].icon+"\"></i>" +
-                                        "<span class=\"nav-label\">"+data.result[i].text+"</span>"+span_notice_title+"</a>" +
+                                }
+                                if(data.result[i].level >= "6"){
+                                    ul_class = "nav nav-five-level";
+                                }
+
+                                var li_tmplete =
+                                    "<li class=\""+li_class+"\">" +
+                                    "<a class=\"J_menuItem\" href=\"" + data.result[i].url + "\"><i class=\""+ data.result[i].icon+"\"></i>" +
+                                    "<span class=\"nav-label\">"+data.result[i].text+"</span>"+span_notice_title+"</a>" +
+                                    "</li>";
+
+                                //console.info(data[i].text+"==="+data[i].url+"==="+data[i].level+"==="+data[i].parent);
+                                //目录
+                                if(data.result[i].resource_type == "1"){
+
+                                    var ul_tmplate =
+                                        "<li>"+
+                                        "<a href=\"\#\"><i class=\""+data.result[i].icon+"\"></i><span class=\"nav-label\">"+data.result[i].text+"</span>"+span_notice_title+"</a>"+
+                                        "<ul class=\""+ul_class+"\" id=\"ul_"+data.result[i].resource_id+"\">"+
+                                        "</ul>"+
                                         "</li>";
+                                    if( level_tmp > "2") {
+                                        $('#ul_'+data.result[i].parent).append(ul_tmplate);
+                                        $('#'+"ul_"+data.result[i].parent).metisMenu();
+                                    }else{
+                                        $('#side-menu').append(ul_tmplate);
+                                        $('#side-menu').metisMenu();
+                                    }
 
-                                    //console.info(data[i].text+"==="+data[i].url+"==="+data[i].level+"==="+data[i].parent);
-                                    //目录
-                                    if(data.result[i].resource_type == "1"){
-
-                                        var ul_tmplate =
-                                            "<li>"+
-                                            "<a href=\"\#\"><i class=\""+data.result[i].icon+"\"></i><span class=\"nav-label\">"+data.result[i].text+"</span>"+span_notice_title+"</a>"+
-                                            "<ul class=\""+ul_class+"\" id=\"ul_"+data.result[i].resource_id+"\">"+
-                                            "</ul>"+
-                                            "</li>";
-                                        if( level_tmp > "2") {
-                                            $('#ul_'+data.result[i].parent).append(ul_tmplate);
-                                            $('#'+"ul_"+data.result[i].parent).metisMenu();
-                                        }else{
-                                            $('#side-menu').append(ul_tmplate);
-                                            $('#side-menu').metisMenu();
-                                        }
-
-                                    }else if(data.result[i].resource_type == "4"){
-                                        //函数
-                                        li_tmplete =
-                                            "<li><a href=\"javascript:void(0);\" onclick=\"" +data.result[i].url.split("function:")[1] +"\">" + "<i class=\""+ data.result[i].icon+"\"></i>"+data.result[i].text+"</a>";
+                                }else if(data.result[i].resource_type == "4"){
+                                    //函数
+                                    li_tmplete =
+                                        "<li><a href=\"javascript:void(0);\" onclick=\"" +data.result[i].url.split("function:")[1] +"\">" + "<i class=\""+ data.result[i].icon+"\"></i>"+data.result[i].text+"</a>";
+                                    $('#ul_'+data.result[i].parent).append(li_tmplete);
+                                    $('#'+"ul_"+data.result[i].parent).metisMenu();
+                                }else if(data.result[i].resource_type == "2"){
+                                    //菜单
+                                    if($('#ul_'+data.result[i].parent).length>0){
                                         $('#ul_'+data.result[i].parent).append(li_tmplete);
                                         $('#'+"ul_"+data.result[i].parent).metisMenu();
-                                    }else if(data.result[i].resource_type == "2"){
-                                        //菜单
-                                        if($('#ul_'+data.result[i].parent).length>0){
-                                            $('#ul_'+data.result[i].parent).append(li_tmplete);
-                                            $('#'+"ul_"+data.result[i].parent).metisMenu();
-                                        }else{
-                                            //if(data[i].level==2){
-                                                //父节点存在,且是2级目录,才可显示,3级菜单必须有2级目录
-                                                $('#side-menu').append(li_tmplete);
-                                            //}
+                                    }else{
+                                        //父节点存在,才可展示菜单
+                                        if(runPath.has(data.result[i].parent)){
+                                            $('#side-menu').append(li_tmplete);
                                         }
-
-
                                     }
+
+
                                 }
+                            }
                         }
 
-
                     }
-
-                    // for(var i=0;i<data.length;i++){
-                    //     if(data[i].level == 3) {
-                    //         var li_tmplete =
-                    //             "<li>" +
-                    //             "<a class=\"J_menuItem\" href=\"" + data[i].url + "\">" + data[i].text + "</a>" +
-                    //             "</li>"
-                    //         console.info("abc"+data[i].parent)
-                    //
-                    //         if(data[i].url.startsWith("function:")){
-                    //             li_tmplete =
-                    //             "<li><a href=\"javascript:void(0);\" onclick=\"" +data[i].url.split("function:")[1] +"\">"+data[i].text+"</a>"
-                    //         }
-                    //         $('#ul_'+data[i].parent).append(li_tmplete)
-                    //         $('#'+"ul_"+data[i].parent).metisMenu()
-                    //     }
-                    //
-                    //
-                    // }
-
-
+                    runPath = new Map();
                     //计算元素集合的总宽度
                     function calSumWidth(elements) {
                         var width = 0;

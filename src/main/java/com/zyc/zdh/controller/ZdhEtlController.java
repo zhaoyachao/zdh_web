@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.EtlTaskMapper;
@@ -69,6 +70,7 @@ public class ZdhEtlController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "etl_task_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<EtlTaskInfo> etl_task_detail(String id) {
@@ -87,6 +89,7 @@ public class ZdhEtlController extends BaseController{
      * @param file_name 数据源关键字
      * @return
      */
+    @SentinelResource(value = "etl_task_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlTaskInfo>> etl_task_list2(String etl_context, String file_name) {
@@ -113,6 +116,7 @@ public class ZdhEtlController extends BaseController{
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "etl_task_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -146,6 +150,7 @@ public class ZdhEtlController extends BaseController{
      * @param etlTaskInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_add", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -196,6 +201,7 @@ public class ZdhEtlController extends BaseController{
      * @param request 请求回话
      * @return
      */
+    @SentinelResource(value = "etl_task_add_file", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_add_file", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo etl_task_add_file(MultipartFile up_file, HttpServletRequest request) {
@@ -240,6 +246,7 @@ public class ZdhEtlController extends BaseController{
      * @param etlTaskInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_update", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -295,6 +302,7 @@ public class ZdhEtlController extends BaseController{
      * @param id 数据源id
      * @return
      */
+    @SentinelResource(value = "etl_task_tables", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_tables", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<String>> etl_task_tables(String id) {
@@ -332,6 +340,7 @@ public class ZdhEtlController extends BaseController{
      * @param table_name
      * @return
      */
+    @SentinelResource(value = "etl_task_schema", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_schema", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<String>> etl_task_schema(String id, String table_name) {

@@ -1,6 +1,7 @@
 package com.zyc.zdh.controller;
 
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.EmailJob;
@@ -130,6 +131,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param id 发布数据ID
      * @return
      */
+    @SentinelResource(value = "data_ware_house_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_list", method=RequestMethod.POST,produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<IssueDataInfo> data_ware_house_list(String id) {
@@ -149,6 +151,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param issue_context 关键字
      * @return
      */
+    @SentinelResource(value = "data_ware_house_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_list2",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<IssueDataInfo>> data_ware_house_list2(String issue_context) {
@@ -172,6 +175,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param issue_context
      * @return
      */
+    @SentinelResource(value = "data_ware_house_list3", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_list3", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<IssueDataInfo>> data_ware_house_list3(String issue_context) throws Exception {
@@ -196,6 +200,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "data_ware_house_del", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_del", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo data_ware_house_del(String id) {
@@ -217,6 +222,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param issueDataInfo
      * @return
      */
+    @SentinelResource(value = "issue_data_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/issue_data_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -280,6 +286,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param issueDataInfo
      * @return
      */
+    @SentinelResource(value = "issue_data_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/issue_data_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -332,6 +339,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "issue_data_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/issue_data_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -356,6 +364,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param issue_id 数据仓库发布数据id
      * @return
      */
+    @SentinelResource(value = "data_apply_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_apply_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -447,6 +456,7 @@ public class ZdhIssueDataController extends BaseController {
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "data_apply_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_apply_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ApplyInfo>> data_apply_list(String apply_context) throws Exception {
@@ -466,6 +476,7 @@ public class ZdhIssueDataController extends BaseController {
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "data_apply_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_apply_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ApplyIssueInfo>> data_apply_list2(String apply_context) throws Exception {
@@ -485,6 +496,7 @@ public class ZdhIssueDataController extends BaseController {
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "data_apply_list3", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_apply_list3", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ApplyIssueInfo> data_apply_list3(String id) throws Exception {
@@ -500,6 +512,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "data_apply_cancel", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_apply_cancel", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> data_apply_cancel(String id) {
@@ -519,6 +532,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param apply_context 关键字
      * @return
      */
+    @SentinelResource(value = "data_approve_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_approve_list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ApplyInfo>> data_approve_list(String apply_context) throws Exception {
@@ -538,6 +552,7 @@ public class ZdhIssueDataController extends BaseController {
      * @param status 审批状态
      * @return
      */
+    @SentinelResource(value = "data_approve", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_approve", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo data_approve(String id, String status) {

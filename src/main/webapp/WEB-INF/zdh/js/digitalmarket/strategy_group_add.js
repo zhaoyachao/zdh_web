@@ -202,6 +202,12 @@ function doubleclick(id,tp) {
         case "manual_confirm":
             doubleclick_manual_confirm(id);
             break;
+        case "code_block":
+            doubleclick_code_block(id);
+            break;
+        case "custom_list":
+            doubleclick_custom_list(id);
+            break;
         default:
             $(id).dblclick(function () {layer.msg("不支持的组件");});
 
@@ -318,7 +324,7 @@ function doubleclick_crowd_file(id) {
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
-                div.html(etl_task_info.crowd_file_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.crowd_file_context);
                 div.attr("title", etl_task_info.crowd_file_context);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
@@ -372,7 +378,7 @@ function doubleclick_crowd_rule(id) {
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
-                div.html(etl_task_info.crowd_rule_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.crowd_rule_context);
                 div.attr("title", etl_task_info.crowd_rule_context);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
@@ -484,7 +490,7 @@ function doubleclick_filter(id) {
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
-                div.html(etl_task_info.filter_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.filter_context);
                 div.attr("title", etl_task_info.filter_title);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
@@ -541,7 +547,7 @@ function doubleclick_shunt(id) {
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
-                div.html(etl_task_info.shunt_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.shunt_context);
                 div.attr("title", etl_task_info.shunt_context);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
@@ -566,7 +572,8 @@ function doubleclick_rights(id) {
             $('#rights_param').val(rights_param);
             var touch_type = div.attr("touch_type");
             var is_disenable = div.attr("is_disenable");
-            url=url+"?rights_context="+rights_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rights="+rights+"&touch_type="+touch_type+"&is_disenable="+is_disenable
+            var operate=div.attr("operate");
+            url=url+"?rights_context="+rights_context+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&rights="+rights+"&touch_type="+touch_type+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -587,6 +594,7 @@ function doubleclick_rights(id) {
                 div.attr("time_out",etl_task_info.time_out);
                 div.attr("more_task",etl_task_info.more_task);
                 div.attr("touch_type",etl_task_info.touch_type);
+                div.attr("operate",etl_task_info.operate);
 
                 div.attr("rights_param",etl_task_info.rights_param);
                 div.attr("rights_context",etl_task_info.rights_context);
@@ -596,7 +604,7 @@ function doubleclick_rights(id) {
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
-                div.html(etl_task_info.rights_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rights_context);
                 div.attr("title", etl_task_info.rights_context);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
@@ -1007,7 +1015,124 @@ function doubleclick_manual_confirm(id) {
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
-                div.html(etl_task_info.rule_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                div.attr("title", etl_task_info.rule_context);
+                div.css('background', get_color_by_status(etl_task_info.is_disenable));
+            }
+        });
+    });
+}
+
+function doubleclick_code_block(id) {
+    $(id).dblclick(function () {
+        $("#etl_task_text").val("");
+        var rule_context = $(this).text();
+        var div = $(this);
+        var rule_context=div.attr("rule_context");
+        var rule_id=div.attr("rule_id");
+        var operate=div.attr("operate");
+        var command=div.attr("command");
+        var url=server_context+'/code_block_detail.html';
+        if( rule_id == "" || rule_id == undefined ){
+            url=url+"?rule_id=-1"
+        }else{
+            var depend_level = div.attr("depend_level");
+            var time_out = div.attr("time_out");
+            var touch_type = div.attr("touch_type");
+            var is_disenable = div.attr("is_disenable");
+            var code_type=div.attr("code_type");
+            $("#code_text").val(command);
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&code_type="+code_type+"&operate="+operate+"&touch_type="+touch_type+"&is_disenable="+is_disenable
+        }
+        layer.open({
+            type: 2,
+            area: ['700px', '450px'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: encodeURI(url),
+            end: function () {
+                console.info("index:doubleclick:"+$("#etl_task_text").val());
+                if($("#etl_task_text").val()==""){
+                    console.info("无修改-不更新");
+                    return ;
+                }
+
+                var etl_task_info=JSON.parse($("#etl_task_text").val());
+                div.attr("is_disenable",etl_task_info.is_disenable);
+                div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("time_out",etl_task_info.time_out);
+                div.attr("more_task",etl_task_info.more_task);
+                div.attr("touch_type",etl_task_info.touch_type);
+
+                div.attr("operate",etl_task_info.operate);
+                div.attr("rule_context",etl_task_info.rule_context);
+                div.attr("rule_id",etl_task_info.rule_id);
+                div.attr("code_type",etl_task_info.code_type);
+                div.attr("command",etl_task_info.command);
+
+                div.css("width","auto");
+                div.css("display","inline-block");
+                div.css("*display","inline");
+                div.css("*zoom","1");
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                div.attr("title", etl_task_info.rule_context);
+                div.css('background', get_color_by_status(etl_task_info.is_disenable));
+            }
+        });
+    });
+}
+
+function doubleclick_custom_list(id) {
+    $(id).dblclick(function () {
+        $("#etl_task_text").val("");
+        var rule_context = $(this).text();
+        var div = $(this);
+        var rule_context=div.attr("rule_context");
+        var rule_id=div.attr("rule_id");
+        var operate=div.attr("operate");
+        var name_list=div.attr("name_list");
+        var url=server_context+'/custom_list_detail.html';
+        if( rule_id == "" || rule_id == undefined ){
+            url=url+"?rule_id=-1"
+        }else{
+            var depend_level = div.attr("depend_level");
+            var time_out = div.attr("time_out");
+            var touch_type = div.attr("touch_type");
+            var is_disenable = div.attr("is_disenable");
+            var code_type=div.attr("code_type");
+            $("#code_text").val(name_list);
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&code_type="+code_type+"&operate="+operate+"&touch_type="+touch_type+"&is_disenable="+is_disenable
+        }
+        layer.open({
+            type: 2,
+            area: ['700px', '450px'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: encodeURI(url),
+            end: function () {
+                console.info("index:doubleclick:"+$("#etl_task_text").val());
+                if($("#etl_task_text").val()==""){
+                    console.info("无修改-不更新");
+                    return ;
+                }
+
+                var etl_task_info=JSON.parse($("#etl_task_text").val());
+                div.attr("is_disenable",etl_task_info.is_disenable);
+                div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("time_out",etl_task_info.time_out);
+                div.attr("more_task",etl_task_info.more_task);
+                div.attr("touch_type",etl_task_info.touch_type);
+
+                div.attr("operate",etl_task_info.operate);
+                div.attr("rule_context",etl_task_info.rule_context);
+                div.attr("rule_id",etl_task_info.rule_id);
+                div.attr("name_list",etl_task_info.name_list);
+
+                div.css("width","auto");
+                div.css("display","inline-block");
+                div.css("*display","inline");
+                div.css("*zoom","1");
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
                 div.attr("title", etl_task_info.rule_context);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }

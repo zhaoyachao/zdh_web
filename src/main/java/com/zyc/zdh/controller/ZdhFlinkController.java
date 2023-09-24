@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.EtlTaskFlinkMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.MetaDatabaseMapper;
@@ -72,6 +73,7 @@ public class ZdhFlinkController extends BaseController {
      * @param id          sql任务id
      * @return
      */
+    @SentinelResource(value = "etl_task_flink_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_flink_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlTaskFlinkInfo>> etl_task_flink_list(String sql_context, String id) {
@@ -98,6 +100,7 @@ public class ZdhFlinkController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "etl_task_flink_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_flink_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -119,6 +122,7 @@ public class ZdhFlinkController extends BaseController {
      * @param etlTaskFlinkInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_flink_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_flink_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -160,6 +164,7 @@ public class ZdhFlinkController extends BaseController {
      * @param etlTaskFlinkInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_flink_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_flink_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

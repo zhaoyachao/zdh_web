@@ -53,6 +53,7 @@
    + 通过工具完成大部分工作,减少开发者的工作量
    + 降低使用者标准,通过拖拉拽实现数据的采集(任务依赖关系由自带调度完成-优势)
    + 本平台的初衷及目的尽量减少开发者的工作量及降低数据开发者的使用门槛
+   + 记录平时工作中遇到的挑战
    
 # 项目模块划分
       项目涉及方向较多,技术杂乱
@@ -63,7 +64,7 @@
       zdh_mock: 基于netty的http-mock服务,必须依赖zdh_web
       zdh_queue: 计划开发一个非高性能的优先级可控队列(用于etl任务优先级控制),开发失败,废弃
       zdh_auth: 大数据统一权限管理(hadoop,hive,hbase,presto),开发中
-      coustomer: 是一个客户管理模块,计划做客户画像,智能营销等服务,主要包括label, plugin, ship, variable, 4个模块
+      coustomer: 是一个客户管理模块, 开发中,计划做客户画像,智能营销等服务,主要包括label, plugin, ship, variable, 4个模块
          coustomer-label: 客户管理-标签服务,必须依赖zdh_web,主要提供离线批量圈人功能
          coustomer-plugin: 客户管理-通用插件服务,提供id_mapping,过滤,触达用户(发送短信,邮件等)
          coustomer-ship: 客户管理-实时经营服务,实时接入用户流量,对用户做经营
@@ -75,7 +76,7 @@
    + 5.1.1及之后版本开放所有源代码
    
 # 下载编译包   
-   + 编译包下载地址(只提供4.7.11之后的版本,因4.7.11之后不提供源码下载)：
+   + 编译包下载地址(只提供最新编译包下载,历史版本需要手动从源码构建)：
    + 执行编译好的包需要提前安装mysql8,redis
    
    + 历史版本(>4.7.11)只提供最近2个版本目录下载,下载历史版本,点击下方下载连接,修改链接中的版本号,可下载历史版本
@@ -718,6 +719,15 @@
   + v5.1.2 [zdh_web]权限模块-新增维度模型,用于实现数据权限(历史上使用数据标识模型实现数据权限)
   + v5.1.2 [zdh_web]智能营销模块-部分插件补充运算符
   + v5.1.2 [zdh_web]修复获取schema时获取失败bug
+  + v5.1.2 [zdh_web]智能营销-标签管理标签参数验证
+  + v5.1.2 [zdh_web]重新生成banner图标
+  + v5.1.2 [zdh_web]智能营销-完善自动化调度
+  + v5.1.2 [zdh_web]etl模块-调度优化状态机
+  + v5.1.2 [zdh_web]目录修复展示bug
+  + v5.1.2 [zdh_web]启动脚本增加多pfofiles选择
+  + v5.1.2 [zdh_web]智能营销-实现数据下载
+  + v5.1.2 [zdh_web]新增filter初始化参数
+  + v5.1.2 [zdh_web]新增sentinel流量控制(结合zdh权限控制实现动态流控-未使用sentinel控制台之后版本会考虑整合)
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -732,8 +742,6 @@
   
   + v5.0.1 增加接口黑名单限制【废弃】
   + v5.0.1 权限单独出SDK及分配身份码(身份码和产品id加密解密绑定)【开发中】
-  + v5.0.1 数据资产-申请组信息【开发中】
-  + v5.0.1 wemock 【开发中】
   + v5.0.1 flink增加手动checkpoint功能 【开发中】
   
   
@@ -2341,6 +2349,92 @@
      update approval_event_info set product_code='zdh';
      alter table process_flow_info add column product_code varchar(200) not null default '' comment '产品code';
      update process_flow_info set product_code='zdh';
+     
+     CREATE TABLE `help_document_info` (
+       `id` int NOT NULL AUTO_INCREMENT,
+       `title` varchar(256) DEFAULT '' COMMENT '标题',
+       `doc_type` varchar(256) DEFAULT '' COMMENT '分类',
+       `doc_context` mediumtext  COMMENT '内容',
+       `owner` varchar(500) DEFAULT '' COMMENT '账号',
+       `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+       `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+       PRIMARY KEY (`id`)
+     ) comment '帮助文档' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+     
+     
+     update strategy_group_info set use_quartz_time='on';
+     
+     ALTER TABLE strategy_group_info MODIFY COLUMN jsmind_data mediumtext COMMENT '策略关系';
+     ALTER TABLE strategy_group_instance MODIFY COLUMN jsmind_data mediumtext COMMENT '策略关系';
+     ALTER TABLE strategy_group_instance MODIFY COLUMN run_jsmind_data mediumtext COMMENT '策略实例关系';
+     ALTER TABLE strategy_instance MODIFY COLUMN jsmind_data mediumtext COMMENT '策略关系';
+     ALTER TABLE strategy_instance MODIFY COLUMN run_jsmind_data mediumtext COMMENT '策略实例关系';
+     update role_resource_info set product_code ='zdh';
+     
+     alter table account_info add index idx_username(user_name);
+     alter table apply_info add index idx_approve_id(approve_id);
+     alter table approval_config_info add index idx_code(code);
+     alter table approval_event_info add index idx_event_code(product_code,event_code);
+     alter table data_sources_info add index idx_data_source_type(data_source_type);
+     alter table data_tag_group_info add index idx_data_source_type(product_code,tag_group_code);
+     alter table data_tag_info add index idx_tag_code(product_code,tag_code);
+     alter table enum_info add index idx_enum_code(enum_code);
+     alter table etl_apply_task_info add index idx_owner(owner);
+     alter table etl_drools_task_info add index idx_owner(owner);
+     alter table etl_more_task_info add index idx_owner(owner);
+     alter table etl_task_batch_info add index idx_owner(owner);
+     alter table etl_task_datax_auto_info add index idx_owner(owner);
+     alter table etl_task_datax_info add index idx_owner(owner);
+     alter table etl_task_flink_info add index idx_owner(owner);
+     alter table etl_task_info add index idx_owner(owner);
+     alter table etl_task_jdbc_info add index idx_owner(owner);
+     alter table etl_task_log_info add index idx_owner(owner);
+     alter table etl_task_unstructure_info add index idx_owner(owner);
+     
+     alter table filter_info add index idx_owner(owner);
+     alter table filter_info add index idx_filter_code(filter_code);
+     alter table issue_data_info add index idx_owner(owner);
+     
+     alter table label_info add index idx_label_code(label_code);
+     alter table notice_info add index idx_owner(owner);
+     alter table param_info add index idx_param_name(param_name);
+     alter table permission_apply_info add index idx_product_code_owner(product_code,owner);
+     alter table permission_dimension_info add index idx_product_code_dim(product_code,dim_code);
+     alter table permission_dimension_value_info add index idx_product_code_dim_value(product_code,dim_code,dim_value_code);
+     alter table permission_user_dimension_value_info add index idx_product_code_user_dim(product_code,user_account,dim_code);
+     alter table permission_user_info add index idx_product_code_user(product_code,user_account);
+     alter table permission_usergroup_dimension_value_info add index idx_product_code_group_dim(product_code,group_code,dim_code);
+     alter table plugin_info add index idx_plugin_code(plugin_code);
+     
+     alter table product_tag_info add index idx_product_code(product_code);
+     alter table resource_tree_info add index idx_product_code(product_code);
+     alter table role_info add index idx_product_code(product_code);
+     alter table role_resource_info add index idx_product_code(product_code,role_code);
+     
+     alter table self_history add index idx_owner(owner);
+     alter table sql_task_info add index idx_owner(owner);
+     alter table ssh_task_info add index idx_owner(owner);
+     
+     alter table strategy_group_info add index idx_owner(owner);
+     alter table strategy_group_instance add index idx_strategy_group_id_owner(strategy_group_id,owner);
+     alter table strategy_instance add index idx_strategy_group_id_owner(group_id,group_strategy_id,owner);
+     
+     alter table task_group_log_instance add index idx_job_id_owner(job_id,owner);
+     alter table task_log_instance add index idx_job_id_owner(group_id,owner);
+     
+     alter table touch_config_info add index idx_template_code_owner(template_code,owner);
+     alter table user_group_info add index idx_product_code_owner(product_code,group_code);
+     
+     alter table user_operate_log add index idx_create_time(create_time);
+     alter table user_resource_info add index idx_user_id(user_id);
+     
+     alter table we_mock_tree_info add index idx_product_code_owner(product_code,owner);
+     alter table zdh_download_info add index idx_owner(owner);
+     alter table zdh_ha_info add index idx_zdh_instance(zdh_instance);
+     alter table zdh_logs add index idx_task_logs_id(task_logs_id);
+     alter table zdh_nginx add index idx_owner(owner);
      
      
 # 未完成的功能

@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.EtlDroolsTaskMapper;
 import com.zyc.zdh.entity.EtlDroolsTaskInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -59,6 +60,7 @@ public class ZdhDroolsController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "etl_task_drools_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_drools_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo etl_task_drools_detail(String id) {
@@ -78,6 +80,7 @@ public class ZdhDroolsController extends BaseController{
      * @param file_name 输出数据源关键字
      * @return
      */
+    @SentinelResource(value = "etl_task_drools_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_drools_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlDroolsTaskInfo>> etl_task_drools_list2(String etl_context, String file_name) throws Exception {
@@ -105,6 +108,7 @@ public class ZdhDroolsController extends BaseController{
      * @param etlDroolsTaskInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_drools_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_drools_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo etl_task_drools_add(EtlDroolsTaskInfo etlDroolsTaskInfo) {
@@ -128,6 +132,7 @@ public class ZdhDroolsController extends BaseController{
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "etl_task_drools_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_drools_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -152,6 +157,7 @@ public class ZdhDroolsController extends BaseController{
      * @param etlDroolsTaskInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_drools_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_drools_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo etl_task_drools_update(EtlDroolsTaskInfo etlDroolsTaskInfo) {

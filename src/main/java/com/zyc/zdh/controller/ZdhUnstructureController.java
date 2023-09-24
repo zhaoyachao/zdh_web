@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jcraft.jsch.SftpException;
@@ -109,6 +110,7 @@ public class ZdhUnstructureController extends BaseController{
      * @param id id
      * @return
      */
+    @SentinelResource(value = "etl_task_unstructure_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_unstructure_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlTaskUnstructureInfo>> etl_task_unstructure_list(String unstructure_context, String id) {
@@ -142,6 +144,7 @@ public class ZdhUnstructureController extends BaseController{
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "etl_task_unstructure_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_unstructure_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -164,6 +167,7 @@ public class ZdhUnstructureController extends BaseController{
      * @param jar_files 文件
      * @return
      */
+    @SentinelResource(value = "etl_task_unstructure_add", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_unstructure_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -207,6 +211,7 @@ public class ZdhUnstructureController extends BaseController{
      * @param jar_files 文件
      * @return
      */
+    @SentinelResource(value = "etl_task_unstructure_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_unstructure_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -250,6 +255,7 @@ public class ZdhUnstructureController extends BaseController{
      * @param files 文件
      * @return
      */
+    @SentinelResource(value = "etl_task_unstructure_upload", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_unstructure_upload", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -383,6 +389,7 @@ public class ZdhUnstructureController extends BaseController{
      * @param request
      * @return
      */
+    @SentinelResource(value = "etl_task_unstructure_del_file", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_unstructure_del_file", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -431,6 +438,7 @@ public class ZdhUnstructureController extends BaseController{
      * @param request
      * @return
      */
+    @SentinelResource(value = "etl_task_unstructure_file_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_unstructure_file_list", method = RequestMethod.GET)
     @ResponseBody
     public ReturnInfo<List<JarFileInfo>> etl_task_unstructure_file_list(String id, HttpServletRequest request) throws Exception {
@@ -456,6 +464,7 @@ public class ZdhUnstructureController extends BaseController{
      * @param id
      * @return
      */
+    @SentinelResource(value = "etl_task_unstructure_log_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_unstructure_log_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlTaskUnstructureLogInfo>> etl_task_unstructure_log_list(String id, String unstructure_id) {
@@ -489,6 +498,7 @@ public class ZdhUnstructureController extends BaseController{
      * @param ids
      * @return
      */
+    @SentinelResource(value = "etl_task_unstructure_log_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_unstructure_log_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

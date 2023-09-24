@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.entity.*;
@@ -54,6 +55,7 @@ public class PermissionDimensionValueController extends BaseController {
      * @param dim_code 维度code
      * @return
      */
+    @SentinelResource(value = "permission_dimension_value_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -85,6 +87,7 @@ public class PermissionDimensionValueController extends BaseController {
      * @param dim_code 维度code
      * @return
      */
+    @SentinelResource(value = "permission_dimension_value_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -122,6 +125,7 @@ public class PermissionDimensionValueController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "permission_dimension_value_detail_by_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -145,6 +149,7 @@ public class PermissionDimensionValueController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "permission_dimension_value_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -162,6 +167,7 @@ public class PermissionDimensionValueController extends BaseController {
      * @param permissionDimensionValueInfo
      * @return
      */
+    @SentinelResource(value = "permission_dimension_value_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -188,6 +194,7 @@ public class PermissionDimensionValueController extends BaseController {
      * @param permissionDimensionValueInfo
      * @return
      */
+    @SentinelResource(value = "permission_dimension_value_parent", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_parent", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -216,6 +223,7 @@ public class PermissionDimensionValueController extends BaseController {
      * @param permissionDimensionValueInfo
      * @return
      */
+    @SentinelResource(value = "permission_dimension_value_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -239,6 +247,7 @@ public class PermissionDimensionValueController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "permission_dimension_value_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

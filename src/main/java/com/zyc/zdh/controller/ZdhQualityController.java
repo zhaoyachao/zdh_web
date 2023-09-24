@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
@@ -72,6 +73,7 @@ public class ZdhQualityController extends BaseController {
      * @param qualityRuleInfo
      * @return
      */
+    @SentinelResource(value = "quality_rule_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/quality_rule_list",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<QualityRuleInfo>> quality_rule_list(QualityRuleInfo qualityRuleInfo) {
@@ -104,6 +106,7 @@ public class ZdhQualityController extends BaseController {
      * @param qualityRuleInfo
      * @return
      */
+    @SentinelResource(value = "quality_rule_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/quality_rule_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -138,6 +141,7 @@ public class ZdhQualityController extends BaseController {
      * @param qualityRuleInfo
      * @return
      */
+    @SentinelResource(value = "quality_rule_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/quality_rule_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -182,6 +186,7 @@ public class ZdhQualityController extends BaseController {
      * @param rule_code 规则code
      * @return
      */
+    @SentinelResource(value = "quality_task_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/quality_task_list",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<QualityTaskInfo>> quality_task_list(QualityTaskInfo qualityTaskInfo, String rule_code) {
@@ -223,6 +228,7 @@ public class ZdhQualityController extends BaseController {
      * @param quality_columns 质量检测字段
      * @return
      */
+    @SentinelResource(value = "quality_task_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/quality_task_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -258,6 +264,7 @@ public class ZdhQualityController extends BaseController {
      * @param quality_columns 质量检测字段
      * @return
      */
+    @SentinelResource(value = "quality_task_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/quality_task_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -288,6 +295,7 @@ public class ZdhQualityController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "quality_task_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/quality_task_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -337,6 +345,7 @@ public class ZdhQualityController extends BaseController {
      * @param service
      * @return
      */
+    @SentinelResource(value = "quota_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/quota_list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<QuotaInfo>> quota_list(String column_desc, String column_alias, String company, String section, String service) {
@@ -377,6 +386,7 @@ public class ZdhQualityController extends BaseController {
      * @param status
      * @return
      */
+    @SentinelResource(value = "quality_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/quality_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<QualityInfo>> quality_list(String job_context, String etl_context, String status) {
@@ -415,6 +425,7 @@ public class ZdhQualityController extends BaseController {
      * @param ids
      * @return
      */
+    @SentinelResource(value = "quality_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/quality_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

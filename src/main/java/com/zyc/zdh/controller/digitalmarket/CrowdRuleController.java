@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.CrowdRuleMapper;
@@ -28,7 +29,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 智能营销-标签服务
+ * 智能营销-客群规则服务
+ * 废弃
  */
 @Controller
 public class CrowdRuleController extends BaseController {
@@ -50,6 +52,7 @@ public class CrowdRuleController extends BaseController {
 
     /**
      * 人群规则列表
+     * 废弃
      * @param rule_context 关键字
      * @return
      */
@@ -87,6 +90,7 @@ public class CrowdRuleController extends BaseController {
      * @param crowdRuleInfo
      * @return
      */
+    @SentinelResource(value = "crowd_rule_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_rule_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -116,6 +120,7 @@ public class CrowdRuleController extends BaseController {
      * @param crowdRuleInfo
      * @return
      */
+    @SentinelResource(value = "crowd_rule_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_rule_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -140,6 +145,7 @@ public class CrowdRuleController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "crowd_rule_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_rule_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -168,6 +174,7 @@ public class CrowdRuleController extends BaseController {
      * 手动执行人群规则,单独生成人群文件
      * @return
      */
+    @SentinelResource(value = "crowd_task_execute", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_task_execute", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo crowd_task_execute() {

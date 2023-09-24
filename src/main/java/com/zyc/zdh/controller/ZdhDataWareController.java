@@ -1,6 +1,7 @@
 package com.zyc.zdh.controller;
 
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
@@ -61,6 +62,7 @@ public class ZdhDataWareController extends BaseController {
      * @param page_size 分页大小
      * @return
      */
+    @SentinelResource(value = "data_ware_house_list6", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_list6", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<JSONObject> data_ware_house_list6(String issue_context,String current_page,String label_params,Integer  page_size) {
@@ -129,6 +131,7 @@ public class ZdhDataWareController extends BaseController {
      * 获取数据仓库标签参数
      * @return
      */
+    @SentinelResource(value = "data_ware_house_label", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_label", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EnumInfo>> data_ware_house_label() {
@@ -152,6 +155,7 @@ public class ZdhDataWareController extends BaseController {
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "data_ware_house_sample", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_sample", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> data_ware_house_sample(String context, String id) throws Exception {
@@ -215,6 +219,7 @@ public class ZdhDataWareController extends BaseController {
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "data_ware_house_export", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> data_ware_house_export(String id, HttpServletResponse response) throws Exception {
@@ -276,6 +281,7 @@ public class ZdhDataWareController extends BaseController {
      * @param issue_id
      * @return
      */
+    @SentinelResource(value = "data_ware_house_apply", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_apply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ApplyAlarmInfo>> data_ware_house_apply(String issue_id){
@@ -304,6 +310,7 @@ public class ZdhDataWareController extends BaseController {
      * @param context 内容
      * @return
      */
+    @SentinelResource(value = "notice_downstream_email", blockHandler = "handleReturn")
     @RequestMapping(value = "/notice_downstream_email", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ApplyAlarmInfo>> notice_downstream_email(String id, String subject, String context){

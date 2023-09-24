@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
@@ -67,6 +68,7 @@ public class SystemController extends BaseController{
      * 获取平台名称
      * @return
      */
+    @SentinelResource(value = "get_platform_name", blockHandler = "handleReturn")
     @RequestMapping(value = "/get_platform_name", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -128,6 +130,7 @@ public class SystemController extends BaseController{
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "getFileManager", blockHandler = "handleReturn")
     @RequestMapping(value = "/getFileManager", method = RequestMethod.POST , produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ZdhNginx> getFileManager() throws Exception {
@@ -147,6 +150,7 @@ public class SystemController extends BaseController{
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "file_manager_up", blockHandler = "handleReturn")
     @RequestMapping(value = "/file_manager_up", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> file_manager_up(ZdhNginx zdhNginx) throws Exception {
@@ -176,6 +180,7 @@ public class SystemController extends BaseController{
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "notice_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/notice_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Map<String,Object>> notice() throws Exception {
@@ -204,6 +209,7 @@ public class SystemController extends BaseController{
      * 删除系统任务
      * @return
      */
+    @SentinelResource(value = "del_system_job", blockHandler = "handleReturn")
     @RequestMapping(value = "/del_system_job", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Deprecated
@@ -269,6 +275,7 @@ public class SystemController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "notice_message", blockHandler = "handleReturn")
     @RequestMapping(value = "/notice_message", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -312,6 +319,7 @@ public class SystemController extends BaseController{
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "notice_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/notice_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<NoticeInfo>>> notice2(String message, int limit, int offset) throws Exception {
@@ -350,6 +358,7 @@ public class SystemController extends BaseController{
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "notice_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/notice_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -373,6 +382,7 @@ public class SystemController extends BaseController{
      * @param is_see 是否已读 true/false
      * @return
      */
+    @SentinelResource(value = "notice_update_see", blockHandler = "handleReturn")
     @RequestMapping(value = "/notice_update_see", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -411,6 +421,7 @@ public class SystemController extends BaseController{
      * @return
      * @throws ParseException
      */
+    @SentinelResource(value = "quartz-cron", blockHandler = "handleReturn")
     @RequestMapping(value = "quartz-cron", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<String>> cronExpression2executeDates(String crontab) throws ParseException {
@@ -447,6 +458,7 @@ public class SystemController extends BaseController{
      * 系统登录通知
      * @return
      */
+    @SentinelResource(value = "every_day_notice", blockHandler = "handleReturn")
     @RequestMapping(value = "/every_day_notice", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<EveryDayNotice> every_day_notice() {
@@ -473,6 +485,7 @@ public class SystemController extends BaseController{
      * @param show_type 1弹框,2文字,3不展示
      * @return
      */
+    @SentinelResource(value = "notice_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/notice_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> notice_update(String msg, String show_type) {
@@ -501,6 +514,7 @@ public class SystemController extends BaseController{
      * 获取当前系统版本
      * @return
      */
+    @SentinelResource(value = "version", blockHandler = "handleReturn")
     @RequestMapping(value = "/version", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> version() {

@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.QuartzJobMapper;
@@ -79,6 +80,7 @@ public class ZdhMonitorController extends BaseController {
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "etlEcharts", blockHandler = "handleReturn")
     @RequestMapping(value = "/etlEcharts", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlEcharts>> get1() throws Exception {
@@ -107,7 +109,7 @@ public class ZdhMonitorController extends BaseController {
         }
 
     }
-
+    @SentinelResource(value = "etlEchartsCurrent", blockHandler = "handleReturn")
     @RequestMapping(value = "/etlEchartsCurrent", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlEcharts>> get2() throws Exception {
@@ -131,6 +133,7 @@ public class ZdhMonitorController extends BaseController {
 
     }
 
+    @SentinelResource(value = "task_logs", blockHandler = "handleReturn")
     @Deprecated
     @RequestMapping(value = "/task_logs", method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -155,6 +158,7 @@ public class ZdhMonitorController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "task_logs_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/task_logs_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -178,6 +182,7 @@ public class ZdhMonitorController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "task_group_logs_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/task_group_logs_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -201,6 +206,7 @@ public class ZdhMonitorController extends BaseController {
      * @param id 任务实例ID
      * @return
      */
+    @SentinelResource(value = "kill", blockHandler = "handleReturn")
     @RequestMapping(value = "/kill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo killJob(String id) {
@@ -227,6 +233,7 @@ public class ZdhMonitorController extends BaseController {
      * @param id 任务实例ID
      * @return
      */
+    @SentinelResource(value = "skip", blockHandler = "handleReturn")
     @RequestMapping(value = "/skip", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo skipJob(String id) {
@@ -247,6 +254,7 @@ public class ZdhMonitorController extends BaseController {
      * @param id 任务组实例ID
      * @return
      */
+    @SentinelResource(value = "killJobGroup", blockHandler = "handleReturn")
     @RequestMapping(value = "/killJobGroup", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo killJobGroup(String id) {
@@ -274,6 +282,7 @@ public class ZdhMonitorController extends BaseController {
      * @param new_version 是否最新版
      * @return
      */
+    @SentinelResource(value = "retryJob", blockHandler = "handleReturn")
     @RequestMapping(value = "/retryJob", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo retryJob(String id, String new_version) {
@@ -330,6 +339,7 @@ public class ZdhMonitorController extends BaseController {
      * @param sub_tasks   重试的子任务,不可为空
      * @return
      */
+    @SentinelResource(value = "retryJobGroup", blockHandler = "handleReturn")
     @RequestMapping(value = "/retryJobGroup", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -389,6 +399,7 @@ public class ZdhMonitorController extends BaseController {
      * 获取正在执行中调度任务
      * @return
      */
+    @SentinelResource(value = "getScheduleTask", blockHandler = "handleReturn")
     @RequestMapping(value = "/getScheduleTask", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<QuartzJobInfo>> getScheduleTask() {
@@ -410,6 +421,7 @@ public class ZdhMonitorController extends BaseController {
      * @param executor
      * @return
      */
+    @SentinelResource(value = "getSparkMonitor", blockHandler = "handleReturn")
     @RequestMapping(value = "/getSparkMonitor", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ZdhHaInfo> getSparkMonitor(String executor) {
@@ -428,6 +440,7 @@ public class ZdhMonitorController extends BaseController {
      * 获取任务总览
      * @return
      */
+    @SentinelResource(value = "getTotalNum", blockHandler = "handleReturn")
     @RequestMapping(value = "/getTotalNum", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<JSONObject> getTotalNum() {
@@ -490,6 +503,7 @@ public class ZdhMonitorController extends BaseController {
      * @param group_id 调度任务ID
      * @return
      */
+    @SentinelResource(value = "task_log_instance_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/task_log_instance_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<TaskLogInstance>> task_log_instance_list(String status, String group_id) {
@@ -515,6 +529,7 @@ public class ZdhMonitorController extends BaseController {
      * @param job_id 必填,调度任务ID
      * @return
      */
+    @SentinelResource(value = "task_group_log_instance_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/task_group_log_instance_list",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<TaskGroupLogInstance>> task_group_log_instance_list(String start_time, String end_time, String status, String job_id) {
@@ -566,6 +581,7 @@ public class ZdhMonitorController extends BaseController {
      * @param status
      * @return
      */
+    @SentinelResource(value = "task_group_log_instance_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/task_group_log_instance_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<TaskGroupLogInstance>>> task_group_log_instance_list2(String start_time, String end_time,
@@ -600,6 +616,7 @@ public class ZdhMonitorController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "task_group_log_instance_list3", blockHandler = "handleReturn")
     @RequestMapping(value = "/task_group_log_instance_list3", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<TaskGroupLogInstance>> task_group_log_instance_list3(String[] ids) {
@@ -624,6 +641,7 @@ public class ZdhMonitorController extends BaseController {
      * @param level
      * @return
      */
+    @SentinelResource(value = "zdh_logs", blockHandler = "handleReturn")
     @RequestMapping(value = "/zdh_logs", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> zdh_logs(String job_id, String task_log_id, String start_time, String end_time, String del, String level,String log_type) {
@@ -781,6 +799,7 @@ public class ZdhMonitorController extends BaseController {
      * @return
      * @throws Exception
      */
+    @SentinelResource(value = "system_monitor", blockHandler = "handleReturn")
     @White()
     @RequestMapping(value = "/system_monitor", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody

@@ -150,6 +150,13 @@
                                                     </div>
                                                 </div>
 
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">QPS</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="qps" name="qps" class="form-control" type="text" value="" placeholder="qps限制">
+                                                    </div>
+                                                </div>
+
                                                 <div class="hr-line-dashed"></div>
 
                                                 <div class="form-group">
@@ -249,6 +256,13 @@
                                                     </div>
                                                 </div>
 
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">QPS</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="qps2" name="qps" class="form-control" type="text" value="" placeholder="qps限制">
+                                                    </div>
+                                                </div>
+
                                                 <div class="hr-line-dashed"></div>
 
                                                 <div class="form-group">
@@ -345,7 +359,6 @@
 
 <!-- Bootstrap table -->
 <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
-<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
 <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
 <!-- 自定义js -->
@@ -386,6 +399,8 @@
             for(var i = 0; i < pa.length; i ++){
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
+            var node_text=s.text;
+            var product_code=s.product_code;
 
             $('#event_code').chosen();
             $('#event_code2').chosen();
@@ -395,7 +410,7 @@
                 url: server_context+"/approval_event_list",
                 dataType: 'json',
                 async:'false',
-                data: "",
+                data: {"product_code": product_code},
                 //成功返回
                 success: function (data) {
                     if(data.code != "200"){
@@ -424,11 +439,11 @@
                 }
             });
 
-            var node_text=s.text;
-            var product_code=s.product_code;
+
             $('#parent_text').attr('node_id',s.id);
             $('#parent_text').val(node_text);
             $('#product_code').val(product_code);
+            $('#product_code2').val(product_code);
             //设置删除节点
             $('#text3').val(node_text);
 
@@ -460,6 +475,9 @@
                     $('#resource_desc2').val(data.result.resource_desc);
                     $('#resource_type2').val(data.result.resource_type);
                     $("#resource_type2").trigger("chosen:updated");
+                    $('#qps').val(data.result.qps);
+                    $('#qps2').val(data.result.qps);
+
                 },
                 //处理完成
                 complete: function () {

@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
@@ -47,6 +48,7 @@ public class VariableController extends BaseController {
      * @param variable_code 变量code
      * @return
      */
+    @SentinelResource(value = "variable_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/variable_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -85,6 +87,7 @@ public class VariableController extends BaseController {
      * @param param json结构的字符串
      * @return
      */
+    @SentinelResource(value = "variable_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/variable_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -105,6 +108,7 @@ public class VariableController extends BaseController {
      * @param variable_code 变量code
      * @return
      */
+    @SentinelResource(value = "variable_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/variable_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White

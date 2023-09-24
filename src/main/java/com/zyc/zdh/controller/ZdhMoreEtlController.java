@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.EtlMoreTaskMapper;
 import com.zyc.zdh.entity.EtlMoreTaskInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -52,6 +53,7 @@ public class ZdhMoreEtlController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "etl_task_more_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_more_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo etl_task_more_detail(String id) {
@@ -72,6 +74,7 @@ public class ZdhMoreEtlController extends BaseController {
      * @param file_name   输出文件名/表名
      * @return
      */
+    @SentinelResource(value = "etl_task_more_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_more_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlMoreTaskInfo>> etl_task_more_list2(String etl_context, String file_name) {
@@ -111,6 +114,7 @@ public class ZdhMoreEtlController extends BaseController {
      * @param etlMoreTaskInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_more_sources_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_more_sources_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo etl_task_more_sources_add(EtlMoreTaskInfo etlMoreTaskInfo) {
@@ -137,6 +141,7 @@ public class ZdhMoreEtlController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "etl_task_more_sources_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_more_sources_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -158,6 +163,7 @@ public class ZdhMoreEtlController extends BaseController {
      * @param etlMoreTaskInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_more_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_more_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo etl_task_more_update(EtlMoreTaskInfo etlMoreTaskInfo) {

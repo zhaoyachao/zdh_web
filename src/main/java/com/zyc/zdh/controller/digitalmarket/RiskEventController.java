@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
@@ -56,6 +57,17 @@ public class RiskEventController extends BaseController {
         return "digitalmarket/risk_test_index";
     }
 
+    /**
+     * 风控测试
+     * @param uid
+     * @param data_node
+     * @param scene
+     * @param source
+     * @param id_type
+     * @param param
+     * @return
+     */
+    @SentinelResource(value = "risk_test", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_test", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -96,6 +108,7 @@ public class RiskEventController extends BaseController {
      * @param context 关键字
      * @return
      */
+    @SentinelResource(value = "risk_event_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_event_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -142,6 +155,7 @@ public class RiskEventController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "risk_event_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_event_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -159,6 +173,7 @@ public class RiskEventController extends BaseController {
      * @param riskEventInfo
      * @return
      */
+    @SentinelResource(value = "risk_event_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_event_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -204,6 +219,7 @@ public class RiskEventController extends BaseController {
      * @param riskEventInfo
      * @return
      */
+    @SentinelResource(value = "risk_event_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_event_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -245,6 +261,7 @@ public class RiskEventController extends BaseController {
      * @param ids
      * @return
      */
+    @SentinelResource(value = "risk_event_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_event_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -265,6 +282,7 @@ public class RiskEventController extends BaseController {
      * @param plugin_code
      * @return
      */
+    @SentinelResource(value = "risk_event_detail_by_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_event_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White

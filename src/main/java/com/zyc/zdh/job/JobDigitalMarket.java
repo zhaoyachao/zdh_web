@@ -267,6 +267,9 @@ public class JobDigitalMarket {
                         //复制quartzjobinfo到tli,任务基础信息完成复制
                         BeanUtils.copyProperties(sgi, strategyGroupInfo);
                         sgi.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+                        sgi.setStrategy_group_id(strategyGroupInfo.getId());
+                        sgi.setCreate_time(new Timestamp(new Date().getTime()));
+                        sgi.setUpdate_time(new Timestamp(new Date().getTime()));
                         //逻辑发送错误代码捕获发生自动重试(retry_job) 不重新生成实例id,使用旧的实例id
                         String last_task_id = "";
                         if (is_retry == 0) {
@@ -305,16 +308,6 @@ public class JobDigitalMarket {
                         sub_strategy_instance(sgi, sub_tasks);
                         sgim.updateStatus2Create(new String[]{sgi.getId()});
                         debugInfo(sgi);
-                        sgim.updateByPrimaryKey(sgi);
-
-                        //检查任务依赖,和并行不冲突--此逻辑删除,目前任务组之间的依赖以子任务检查逻辑实现
-                        //boolean dep = checkDep(quartzJobInfo.getJob_type(), tgli);
-                        //更新任务依赖时间
-                        //process_time_info pti = tgli.getProcess_time2();
-                        //pti.setCheck_dep_time(DateUtil.getCurrentTime());
-                        //tgli.setProcess_time(pti);
-                        //todo 修改组任务状态,及修改子任务状态为检查依赖中
-                        //CheckDepJob.updateTaskGroupLogInstanceStatus(tgli);
 
                     } catch (IllegalAccessException e) {
                         logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

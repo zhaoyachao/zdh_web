@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.ParamMapper;
 import com.zyc.zdh.entity.ParamInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -65,6 +66,7 @@ public class ZdhParamController extends BaseController {
      * @param param_context 关键字
      * @return
      */
+    @SentinelResource(value = "param_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/param_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ParamInfo>> param_list(String param_context) {
@@ -95,6 +97,7 @@ public class ZdhParamController extends BaseController {
      * @param id id主键
      * @return
      */
+    @SentinelResource(value = "param_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/param_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ParamInfo> param_detail(String id) {
@@ -113,6 +116,7 @@ public class ZdhParamController extends BaseController {
      * @param paramInfo
      * @return
      */
+    @SentinelResource(value = "param_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/param_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo param_add(ParamInfo paramInfo) {
@@ -135,6 +139,7 @@ public class ZdhParamController extends BaseController {
      * @param paramInfo
      * @return
      */
+    @SentinelResource(value = "param_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/param_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo param_update(ParamInfo paramInfo) {
@@ -157,6 +162,7 @@ public class ZdhParamController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "param_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/param_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -177,6 +183,7 @@ public class ZdhParamController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "param_to_redis", blockHandler = "handleReturn")
     @RequestMapping(value = "/param_to_redis", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo param_to_redis(String[] ids) {

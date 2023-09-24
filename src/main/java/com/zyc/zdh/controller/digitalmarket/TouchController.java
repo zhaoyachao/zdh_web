@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.TouchConfigMapper;
@@ -70,6 +71,7 @@ public class TouchController extends BaseController {
      * @param offset
      * @return
      */
+    @SentinelResource(value = "touch_list", blockHandler = "handleReturn")
     @White
     @RequestMapping(value = "/touch_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -121,6 +123,7 @@ public class TouchController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "touch_detail", blockHandler = "handleReturn")
     @White
     @RequestMapping(value = "/touch_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -141,6 +144,7 @@ public class TouchController extends BaseController {
      * @param touchConfigInfo
      * @return
      */
+    @SentinelResource(value = "touch_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/touch_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -176,6 +180,7 @@ public class TouchController extends BaseController {
      * @param touchConfigInfo
      * @return
      */
+    @SentinelResource(value = "touch_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/touch_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -207,6 +212,7 @@ public class TouchController extends BaseController {
      * @param ids
      * @return
      */
+    @SentinelResource(value = "touch_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/touch_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -239,6 +245,7 @@ public class TouchController extends BaseController {
      * @param touch_task 触达任务类型,email,sms
      * @return
      */
+    @SentinelResource(value = "touch_list_by_task", blockHandler = "handleReturn")
     @White
     @RequestMapping(value = "/touch_list_by_task", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody

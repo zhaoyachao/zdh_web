@@ -565,6 +565,7 @@ public class PermissionApi {
                 rri.setResource_id(rid);
                 rri.setCreate_time(new Timestamp(new Date().getTime()));
                 rri.setUpdate_time(new Timestamp(new Date().getTime()));
+                rri.setProduct_code(product_code);
                 rris.add(rri);
             }
             resourceTreeMapper.deleteByRoleId(role_id);
@@ -755,7 +756,7 @@ public class PermissionApi {
             //验证用户和产品是否匹配 todo 此处需要实现,在前端增加 用户申请产品,通过后记录用户和产品对应关系
 
             //通过product_code 用户绑定角色,角色绑定资源
-            List<UserResourceInfo2> uris = resourceTreeMapper.selectResourceByUserAccount(user_account);
+            List<UserResourceInfo2> uris = resourceTreeMapper.selectResourceByUserAccount(user_account, product_code);
             if(uris != null){
                 uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
             }
@@ -784,7 +785,7 @@ public class PermissionApi {
             //验证用户和产品是否匹配 todo 此处需要实现,在前端增加 用户申请产品,通过后记录用户和产品对应关系
 
             //通过product_code 用户绑定角色,角色绑定资源
-            List<UserResourceInfo2> uris = resourceTreeMapper.selectResourceByRoleCode(role_code);
+            List<UserResourceInfo2> uris = resourceTreeMapper.selectResourceByRoleCode(role_code, product_code);
             if(uris != null){
                 uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
             }

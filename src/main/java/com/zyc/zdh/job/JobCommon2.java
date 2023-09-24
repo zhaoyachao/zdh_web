@@ -3228,7 +3228,7 @@ public class JobCommon2 {
                     sub_task_log_instance(tgli, sub_tasks);
                     tglim.updateStatus2Create(new String[]{tgli.getId()});
                     debugInfo(tgli);
-                    tglim.updateByPrimaryKey(tgli);
+                    //tglim.updateByPrimaryKey(tgli);
 
                     //检查任务依赖,和并行不冲突--此逻辑删除,目前任务组之间的依赖以子任务检查逻辑实现
                     //boolean dep = checkDep(quartzJobInfo.getJob_type(), tgli);

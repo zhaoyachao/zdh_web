@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.PermissionUserGroupDimensionValueMapper;
 import com.zyc.zdh.entity.*;
@@ -50,6 +51,7 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
      * @param context 关键字
      * @return
      */
+    @SentinelResource(value = "permission_usergroup_dimension_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_usergroup_dimension_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -81,6 +83,7 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
      * @param context 关键字
      * @return
      */
+    @SentinelResource(value = "permission_usergroup_dimension_value_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_usergroup_dimension_value_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -132,6 +135,7 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
      * @param dim_value_codes 维度值code
      * @return
      */
+    @SentinelResource(value = "permission_usergroup_dimension_value_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_usergroup_dimension_value_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
@@ -54,6 +55,7 @@ public class LabelController extends BaseController {
      * @param label_context 关键字
      * @return
      */
+    @SentinelResource(value = "label_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/label_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<LabelInfo>> label_list(String label_context) {
@@ -96,6 +98,7 @@ public class LabelController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "label_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/label_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo label_detail(String id) {
@@ -112,6 +115,7 @@ public class LabelController extends BaseController {
      * @param label_code
      * @return
      */
+    @SentinelResource(value = "label_detail_by_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/label_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo label_detail_by_code(String label_code) {
@@ -135,6 +139,7 @@ public class LabelController extends BaseController {
      * @param param_value 参数可选值
      * @return
      */
+    @SentinelResource(value = "label_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/label_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -145,6 +150,11 @@ public class LabelController extends BaseController {
             }
             if(StringUtils.isEmpty(labelInfo.getData_sources_choose_input())){
                 throw new Exception("数据源参数不可为空");
+            }
+
+            checkParam(labelInfo.getLabel_code(),"标签名");
+            if(!labelInfo.getLabel_code().startsWith("tag_")){
+                throw new Exception("标签code 必须以tag_开头");
             }
 
             JSONArray jsonArray=new JSONArray();
@@ -191,6 +201,7 @@ public class LabelController extends BaseController {
      * @param param_value 参数可选值
      * @return
      */
+    @SentinelResource(value = "label_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/label_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -199,6 +210,12 @@ public class LabelController extends BaseController {
             if(param_code==null || param_code.length<1){
                throw new Exception("参数不可为空");
             }
+
+            checkParam(labelInfo.getLabel_code(),"标签名");
+            if(!labelInfo.getLabel_code().startsWith("tag_")){
+                throw new Exception("标签code 必须以tag_开头");
+            }
+
             JSONArray jsonArray=new JSONArray();
             for (int i=0;i<param_code.length;i++){
                 JSONObject jsonObject=new JSONObject();
@@ -235,6 +252,7 @@ public class LabelController extends BaseController {
      * @param ids
      * @return
      */
+    @SentinelResource(value = "label_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/label_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -254,6 +272,7 @@ public class LabelController extends BaseController {
      * @param id
      * @return
      */
+    @SentinelResource(value = "label_enable", blockHandler = "handleReturn")
     @RequestMapping(value = "/label_enable", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

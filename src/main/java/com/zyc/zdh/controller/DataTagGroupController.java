@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.DataTagGroupMapper;
 import com.zyc.zdh.entity.DataTagGroupInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -54,6 +55,7 @@ public class DataTagGroupController extends BaseController {
      * @param product_code 产品代码
      * @return
      */
+    @SentinelResource(value = "data_tag_group_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_group_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<DataTagGroupInfo>> data_tag_group_list(String tag_context, String product_code) {
@@ -99,6 +101,7 @@ public class DataTagGroupController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "data_tag_group_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_group_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<DataTagGroupInfo> data_tag_group_detail(String id) {
@@ -117,6 +120,7 @@ public class DataTagGroupController extends BaseController {
      * @param dataTagGroupInfo
      * @return
      */
+    @SentinelResource(value = "data_tag_group_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_group_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -144,6 +148,7 @@ public class DataTagGroupController extends BaseController {
      * @param dataTagGroupInfo
      * @return
      */
+    @SentinelResource(value = "data_tag_group_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_group_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -167,6 +172,7 @@ public class DataTagGroupController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "data_tag_group_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_tag_group_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

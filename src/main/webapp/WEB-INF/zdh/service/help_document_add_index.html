@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 帮助文档新增首页</title>
+    <meta name="keywords" content="ZDH 帮助文档新增首页">
+    <meta name="description" content="ZDH 帮助文档新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/plugins/simditor/simditor.css" />
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-12 animated fadeInRight">
+                <div class="mail-box-header">
+                    <div class="pull-right tooltip-demo">
+<!--                        <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="存为草稿"><i class="fa fa-pencil"></i> 存为草稿</a>-->
+<!--                        <a href="mailbox.html" class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="放弃"><i class="fa fa-times"></i> 放弃</a>-->
+                    </div>
+                    <h2>
+                    帮助说明
+                </h2>
+                </div>
+                <div class="mail-box">
+
+
+                    <div class="mail-body">
+
+                        <form class="form-horizontal" method="get" id="document_from">
+                            <input type="hidden" name="doc_context" id="doc_context">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">标题</label>
+
+                                <div class="col-sm-10">
+                                    <input id="title" name="title" type="text" class="form-control" placeholder="zdh创建数据源" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">分类</label>
+
+                                <div class="col-sm-10">
+                                    <input  id="doc_type" name="doc_type" type="text" class="form-control" value="" placeholder="BUG,FAQ,提示...">
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+
+                    <textarea id="editor" placeholder="这里输入内容" autofocus>
+
+                    </textarea>
+
+
+                    <div class="mail-body text-right tooltip-demo">
+                        <a href="javascript:void(0);" onclick="save()" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Send"><i class="fa fa-reply"></i> 保存</a>
+<!--                        <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Discard email"><i class="fa fa-times"></i> 放弃</a>-->
+<!--                        <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to draft folder"><i class="fa fa-pencil"></i> 存为草稿</a>-->
+                    </div>
+                    <div class="clearfix"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+
+    <!-- iCheck -->
+    <script src="js/plugins/iCheck/icheck.min.js"></script>
+
+
+    <script src="js/plugins/layer/layer.min.js"></script>
+    <!-- simditor -->
+    <script type="text/javascript" src="js/plugins/simditor/module.js"></script>
+    <script type="text/javascript" src="js/plugins/simditor/uploader.js"></script>
+    <script type="text/javascript" src="js/plugins/simditor/hotkeys.js"></script>
+    <script type="text/javascript" src="js/plugins/simditor/simditor.js"></script>
+    <script>
+        $(document).ready(function () {
+
+        });
+
+        (function (document, window, $) {
+
+
+            (function () {
+
+                var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+                var params = url.substr(1);//去掉问号
+                var pa = params.split("&");
+                var s = new Object();//定义一个全局变量-存储任务ID
+                for (var i = 0; i < pa.length; i++) {
+                    s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+                }
+
+                window.editor = new Simditor({
+                    textarea: $('#editor'),
+                    defaultImage: 'img/a9.jpg'
+                });
+
+                //s.id=-1 表示新增,否则表示更新
+                if (s.id == -1) {
+
+                } else {
+                    buildParam();
+                }
+
+
+                function buildParam() {
+                    window.editor = new Simditor({
+                        textarea: $('#editor'),
+                        defaultImage: 'img/a9.jpg'
+                    });
+
+                    if (s.id != '-1') {
+                        console.info("更新按钮触发--开始赋值对应参数");
+                        //开始赋值
+                        $.ajax({
+                            url: server_context+"/help_document_detail",
+                            data: "id=" + s.id,
+                            type: "post",
+                            async: false,
+                            dataType: "json",
+                            success: function (data) {
+                                console.info("success");
+                                // layer.alert(JSON.stringify(data[0]))
+                                var doc_type = data.result.doc_type;
+                                $("#doc_type").val(doc_type);
+
+                                var title = data.result.title;
+                                $("#title").val(title);
+
+                                var doc_context = data.result.doc_context;
+                                window.editor.setValue(doc_context);
+
+                            },
+                            error: function (data) {
+                                console.info("error: " + data.responseText);
+                            }
+
+                        });
+                    }
+                }
+
+            })();
+
+        })(document, window, jQuery);
+        
+        function save() {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            $('#doc_context').val(window.editor.getValue());
+
+            if(s.id != "-1"){
+                update(s.id);
+                return ;
+            }
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/help_document_add",
+                dataType: 'json',
+                data: $('#document_from').serialize(),
+                //发送数据前
+                beforeSend: function () {
+
+                },
+                //成功返回
+                success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    layer.msg(data.msg);
+                    editor.setValue("");
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    layer.msg("发送失败");
+                    console.info("error: " + data);
+                }
+            });
+        }
+
+
+        function update(id) {
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/help_document_update",
+                dataType: 'json',
+                data: $('#document_from').serialize() +"&id="+id,
+                //发送数据前
+                beforeSend: function () {
+
+                },
+                //成功返回
+                success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    layer.msg(data.msg);
+                    editor.setValue("");
+                },
+                //处理完成
+                complete: function () {
+
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    layer.msg("发送失败");
+                    console.info("error: " + data);
+                }
+            });
+        }
+    </script>
+
+
+</body>
+
+</html>

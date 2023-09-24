@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.ProductTagMapper;
 import com.zyc.zdh.entity.ProductTagInfo;
@@ -54,6 +55,7 @@ public class ProductTagController extends BaseController {
      * @param tag_context 关键字
      * @return
      */
+    @SentinelResource(value = "product_tag_all", blockHandler = "handleReturn")
     @RequestMapping(value = "/product_tag_all", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -88,6 +90,7 @@ public class ProductTagController extends BaseController {
      * @param tag_context 关键字
      * @return
      */
+    @SentinelResource(value = "product_tag_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/product_tag_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ProductTagInfo>> product_tag_list(String tag_context) {
@@ -133,6 +136,7 @@ public class ProductTagController extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "product_tag_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/product_tag_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<ProductTagInfo> product_tag_detail(String id) {
@@ -154,6 +158,7 @@ public class ProductTagController extends BaseController {
      * @param productTagInfo
      * @return
      */
+    @SentinelResource(value = "product_tag_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/product_tag_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -185,6 +190,7 @@ public class ProductTagController extends BaseController {
      * @param productTagInfo
      * @return
      */
+    @SentinelResource(value = "product_tag_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/product_tag_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -223,6 +229,7 @@ public class ProductTagController extends BaseController {
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "product_tag_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/product_tag_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

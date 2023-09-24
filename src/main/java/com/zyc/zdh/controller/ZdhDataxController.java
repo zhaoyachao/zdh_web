@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.EtlTaskDataxMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.entity.EtlTaskDataxInfo;
@@ -66,6 +67,7 @@ public class ZdhDataxController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "etl_task_datax_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_datax_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlTaskDataxInfo>> etl_task_datax_list(String datax_context, String id) {
@@ -98,6 +100,7 @@ public class ZdhDataxController extends BaseController{
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "etl_task_datax_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_datax_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -119,6 +122,7 @@ public class ZdhDataxController extends BaseController{
      * @param etlTaskDataxInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_datax_add", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_datax_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -159,6 +163,7 @@ public class ZdhDataxController extends BaseController{
      * @param etlTaskDataxInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_datax_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_datax_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
@@ -58,6 +59,7 @@ public class ZdhEtlLogController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "etl_task_log_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_log_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<EtlTaskLogInfo> etl_task_log_detail(String id) {
@@ -75,6 +77,7 @@ public class ZdhEtlLogController extends BaseController{
      * @param log_context 关键字
      * @return
      */
+    @SentinelResource(value = "etl_task_log_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_log_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EtlTaskLogInfo>> etl_task_log_list2(String log_context) {
@@ -108,6 +111,7 @@ public class ZdhEtlLogController extends BaseController{
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "etl_task_log_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_log_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -139,6 +143,7 @@ public class ZdhEtlLogController extends BaseController{
      * @param etlTasklogInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_log_add", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_log_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -170,6 +175,7 @@ public class ZdhEtlLogController extends BaseController{
      * @param etlTaskLogInfo
      * @return
      */
+    @SentinelResource(value = "etl_task_log_update", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_log_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)

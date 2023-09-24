@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.*;
@@ -295,6 +296,7 @@ public class ZdhSshController extends BaseController{
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "etl_task_ssh_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_ssh_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<SshTaskInfo>> etl_task_ssh_list(String ssh_context, String id) {
@@ -319,6 +321,7 @@ public class ZdhSshController extends BaseController{
      * @param ids id数组
      * @return
      */
+    @SentinelResource(value = "etl_task_ssh_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_ssh_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -341,6 +344,7 @@ public class ZdhSshController extends BaseController{
      * @param jar_files 文件
      * @return
      */
+    @SentinelResource(value = "etl_task_ssh_add", blockHandler = "handleReturn")
     @RequestMapping(value="/etl_task_ssh_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -428,6 +432,7 @@ public class ZdhSshController extends BaseController{
      * @param jar_files 文件
      * @return
      */
+    @SentinelResource(value = "etl_task_ssh_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_ssh_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -517,6 +522,7 @@ public class ZdhSshController extends BaseController{
      * @param request
      * @return
      */
+    @SentinelResource(value = "etl_task_ssh_del_file", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_ssh_del_file", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -565,6 +571,7 @@ public class ZdhSshController extends BaseController{
      * @param request
      * @return
      */
+    @SentinelResource(value = "etl_task_ssh_file_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_ssh_file_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<JarFileInfo>> etl_task_ssh_file_list(String id, HttpServletRequest request) throws Exception {

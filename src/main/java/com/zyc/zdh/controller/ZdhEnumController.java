@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.EnumMapper;
@@ -53,6 +54,7 @@ public class ZdhEnumController extends BaseController{
      * @param id 主键
      * @return
      */
+    @SentinelResource(value = "enum_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/enum_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<EnumInfo> enum_detail(String id) {
@@ -72,6 +74,7 @@ public class ZdhEnumController extends BaseController{
      * @param enum_context 关键字
      * @return
      */
+    @SentinelResource(value = "enum_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/enum_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<EnumInfo>> enum_list(String enum_context) {
@@ -99,6 +102,7 @@ public class ZdhEnumController extends BaseController{
      * @param ids 主键数组
      * @return
      */
+    @SentinelResource(value = "enum_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/enum_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -132,6 +136,7 @@ public class ZdhEnumController extends BaseController{
      * @param enum_value_context 枚举code说明
      * @return
      */
+    @SentinelResource(value = "enum_add", blockHandler = "handleReturn")
     @RequestMapping(value="/enum_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -184,6 +189,7 @@ public class ZdhEnumController extends BaseController{
      * @param enum_value_context 枚举code说明
      * @return
      */
+    @SentinelResource(value = "enum_update", blockHandler = "handleReturn")
     @RequestMapping(value="/enum_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -219,6 +225,7 @@ public class ZdhEnumController extends BaseController{
      * @param enum_code 枚举code
      * @return
      */
+    @SentinelResource(value = "enum_by_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/enum_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<EnumInfo> enum_by_code(String enum_code) {

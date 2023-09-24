@@ -1,14 +1,13 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.AccountMapper;
 import com.zyc.zdh.dao.PermissionMapper;
 import com.zyc.zdh.dao.RoleDao;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
-import com.zyc.zdh.service.RoleService;
 import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.MyRealm;
 import com.zyc.zdh.shiro.RedisUtil;
@@ -19,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.cache.Cache;
-import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
@@ -42,7 +40,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -54,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -107,6 +103,7 @@ public class LoginController {
      * @param user
      * @return
      */
+    @SentinelResource(value = "register", blockHandler = "handleReturn")
     @Operation(summary = "register", description = "user register")
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -227,6 +224,7 @@ public class LoginController {
      * @param captcha
      * @return
      */
+    @SentinelResource(value = "get_error_msg", blockHandler = "handleReturn")
     @RequestMapping(value = "/get_error_msg", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> get_error_msg(HttpServletRequest request, HttpServletResponse response, String captcha) {
@@ -253,6 +251,7 @@ public class LoginController {
      * @param captcha 验证码
      * @return
      */
+    @SentinelResource(value = "check_captcha", blockHandler = "handleReturn")
     @RequestMapping(value = "/check_captcha", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> check_captcha(HttpServletRequest request, HttpServletResponse response, String captcha) {
@@ -314,6 +313,7 @@ public class LoginController {
      * @param user
      * @return
      */
+    @SentinelResource(value = "user", blockHandler = "handleReturn")
     @RequestMapping(value = "user", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> updateUser2(User user) {
@@ -368,6 +368,7 @@ public class LoginController {
      * 获取用户信息
      * @return
      */
+    @SentinelResource(value = "getUserInfo", blockHandler = "handleReturn")
     @RequestMapping(value = "getUserInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<User> getUserInfo() {
@@ -392,6 +393,7 @@ public class LoginController {
      * @param username
      * @return
      */
+    @SentinelResource(value = "retrieve_password", blockHandler = "handleReturn")
     @RequestMapping(value = "retrieve_password", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo retrieve_password(String username) {
@@ -421,6 +423,7 @@ public class LoginController {
      * @param username 关键字
      * @return
      */
+    @SentinelResource(value = "user_names", blockHandler = "handleReturn")
     @RequestMapping(value = "user_names", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public  ReturnInfo<List<JSONObject>> user_names(String username) {
