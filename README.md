@@ -178,7 +178,7 @@
      4 修改application-*配置文件中myid(多个集群依次1,2,3,...)
 
     创建需要的数据库配置
-     1 执行sql脚本db.sql
+     1 执行sql脚本release/db/zdh_xxx.sql
      
     依赖
      1 必须提前安装redis 
@@ -208,7 +208,6 @@
 # FAQ
 
    + sql结构报错
-     遇到sql 结构报错,可直接在resource目录下找db.sql 文件对比是否增加了字段,db.sql 文件会使用alter 方式增加字段
      quartz 相关的表必须大写
      
    + 日志级别修改
@@ -218,7 +217,7 @@
      串行模式:会判断上次任务运行状态
      并行模式:不判断上次任务状态,时间会自动生成 
      
-   + 数据表结构以src/main/resources/db.sql 为准
+   + 数据表结构以release/db/zdh_xxx.sql 为准
    
    + 暂不支持读取kerberos 认证的hadoop,hive,hbase 服务,预计在5.x 版本实现kerberos 认证
   
