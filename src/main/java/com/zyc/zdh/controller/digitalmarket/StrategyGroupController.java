@@ -10,10 +10,7 @@ import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
 import com.zyc.zdh.dao.StrategyGroupMapper;
 import com.zyc.zdh.dao.StrategyInstanceMapper;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.JobDigitalMarket;
-import com.zyc.zdh.job.JobStatus;
-import com.zyc.zdh.job.ScheduleSource;
-import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
@@ -422,10 +419,19 @@ public class StrategyGroupController extends BaseController {
         try{
             List<StrategyInstance> strategyInstances = strategyInstanceMapper.selectByGroupInstanceId(strategy_group_instance_id, null);
             List<String> ids=new ArrayList<>();
+            List<StrategyInstance> manualConfirmStrategys=new ArrayList<>();
             for (StrategyInstance strategyInstance:strategyInstances){
                 String divId = JSON.parseObject(strategyInstance.getRun_jsmind_data()).getString("divId");
                 if(Arrays.asList(sub_tasks).contains(divId)){
                     ids.add(strategyInstance.getId());
+                    if(strategyInstance.getInstance_type().equalsIgnoreCase(InstanceType.MANUAL_CONFIRM.getCode())){
+                        strategyInstance.setIs_disenable("false");
+                        strategyInstance.setStatus( JobStatus.CREATE.getValue());
+                        JSONObject jsonObject = JSON.parseObject(strategyInstance.getRun_jsmind_data());
+                        jsonObject.put("is_disenable","false");
+                        strategyInstance.setRun_jsmind_data(jsonObject.toJSONString());
+                        manualConfirmStrategys.add(strategyInstance);
+                    }
                 }
             }
 
@@ -433,7 +439,11 @@ public class StrategyGroupController extends BaseController {
                 throw new Exception("无法找到对应的子策略重试,请检查是否有正确选择策略实例");
             }
             strategyInstanceMapper.updateStatusByIds(ids.toArray(new String[]{}), JobStatus.CREATE.getValue());
-
+            if(manualConfirmStrategys.size()>0){
+                for (StrategyInstance strategyInstance: manualConfirmStrategys){
+                    strategyInstanceMapper.updateByPrimaryKeySelective(strategyInstance);
+                }
+            }
             strategyGroupInstanceMapper.updateStatusById3(JobStatus.SUB_TASK_DISPATCH.getValue(), DateUtil.getCurrentTime(), strategy_group_instance_id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", strategyInstances);
         }catch (Exception e){
@@ -625,6 +635,10 @@ public class StrategyGroupController extends BaseController {
             StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
             strategyInstanceMapper.updateStatusByIds(new String[]{id},JobStatus.CREATE.getValue());
             strategyGroupInstanceMapper.updateStatusById3(JobStatus.SUB_TASK_DISPATCH.getValue(), DateUtil.getCurrentTime(), strategyInstance.getGroup_instance_id());
+
+            //查询所有的策略实例是否包含人工确认,包含人工确认,需要修改is_disenable=false
+
+
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

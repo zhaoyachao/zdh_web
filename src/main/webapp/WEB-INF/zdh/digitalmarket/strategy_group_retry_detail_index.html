@@ -339,15 +339,38 @@
                 $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html(rs.rule_context);
             }
-            if(tp == "tn"){
-                $("#" + divId).attr("rule_id",rs.rule_id);
-                $("#" + divId).html(rs.rule_context);
+
+            if(tp == "data_node"){
+                $("#" + divId).attr("data_node",rs.data_node);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
-            if(tp == "manual_confirm"){
+
+            if(tp == "id_mapping"){
+                $("#" + divId).attr("id_mapping_code",rs.id_mapping_code);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "risk"){
                 $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
+            if(tp == "tn"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html(rs.rule_context);
+            }
+
+            if(tp == "manual_confirm"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "code_block"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "custom_list"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto");
             $("#" + divId).css("display","inline-block");

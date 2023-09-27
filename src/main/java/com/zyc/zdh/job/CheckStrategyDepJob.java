@@ -134,18 +134,19 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     String pre_tasks=tl.getPre_tasks();
                     if(!StringUtils.isEmpty(pre_tasks)){
                         String[] task_ids=pre_tasks.split(",");
+                        //获取上游 杀死,失败,杀死中的任务
                         List<StrategyInstance> tlis=sim.selectByIds(task_ids);
 
                         int level= Integer.valueOf(tl.getDepend_level());
                         if(tlis!=null && tlis.size()>0 && level==0){
-                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
+                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功), 默认成功时运行
                             tl.setStatus(JobStatus.KILLED.getValue());
                             JobDigitalMarket.updateTaskLog(tl,sim);
                             JobDigitalMarket.insertLog(tl,"INFO","检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为killed");
                             continue;
                         }
-                        if(level >= 1){
-                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
+                        if(level >= 1 && level <3){
+                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
                             //杀死触发,如果所有上游任务都以完成
                             List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
                             if(tlis_finish.size()==task_ids.length){
@@ -195,21 +196,79 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                         JobDigitalMarket.updateTaskLog(tl,sim);
                     }else{
                         boolean is_run=true;
+                        int success_num = 0;
+                        int error_num = 0;
+                        int run_num = 0;
+                        int killed_num = 0;
                         for (String parent:parents){
-                            if(!dagStrategyInstance.containsKey(parent)){
-                                is_run=false;
-                                System.out.println("未找到任务父节点信息");
-                                break ;
-                            }
-                            if(!dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue()) &&
-                                    !dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue())){
-                                //当前不可执行
-                                is_run=false;
-                                //System.out.println(JSON.toJSONString(tl));
-                                //System.out.println("当前任务父任务存在为完成");
-                                break ;
+                            if(dagStrategyInstance.containsKey(parent)){
+                                String status = dagStrategyInstance.get(parent).getStatus();
+                                if(status.equalsIgnoreCase(JobStatus.FINISH.getValue()) || status.equalsIgnoreCase(JobStatus.SKIP.getValue())){
+                                    success_num = success_num + 1;
+                                }else if(status.equalsIgnoreCase(JobStatus.ERROR.getValue())){
+                                    error_num = error_num + 1;
+                                }else if(status.equalsIgnoreCase(JobStatus.KILLED.getValue())){
+                                    killed_num = killed_num + 1;
+                                }else{
+                                    run_num = run_num + 1;
+                                }
                             }
                         }
+
+                        //根据执行级别判断上游任务
+                        int level= Integer.valueOf(tl.getDepend_level());
+
+                        if(level == 0){
+                            //0 成功触发, 上游必须都执行成功/跳过
+                            if(success_num != parents.size()){
+                                //当前不可执行
+                                is_run=false;
+                            }
+                        }else if(level == 3){
+                            //上游执行完,即可完成触发
+                            if(run_num == 0 && killed_num == 0 && (success_num+error_num)==parents.size()){
+
+                            }else{
+                                is_run = false;
+                            }
+                        }else{
+                            if(run_num == 0 && killed_num==0 && error_num >0 && (success_num+error_num)==parents.size()){
+
+                            }else{
+                                is_run = false;
+                            }
+                        }
+
+//                        for (String parent:parents){
+//                            if(!dagStrategyInstance.containsKey(parent)){
+//                                is_run=false;
+//                                System.out.println("未找到任务父节点信息");
+//                                break ;
+//                            }
+//
+//                            if(level == 0){
+//                                //0 成功触发, 上游存在任意的非跳过或者完成,则不可执行
+//                                if(!dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue()) &&
+//                                        !dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue())){
+//                                    //当前不可执行
+//                                    is_run=false;
+//                                    break ;
+//                                }
+//                            }else if(level == 3){
+//                                //上游执行完,即可完成触发
+//                                if(!dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue())
+//                                        || !dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.ERROR.getValue())
+//                                        || !dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
+//                                    is_run=false;
+//                                    break ;
+//                                }
+//                            }else if(level >=1 && level < 3){
+//                                //存在失败可触发,且不存在执行中任务
+//                                if(run_num == 0 && (error_num>0 || killed_num >0 )){
+//
+//                                }
+//                            }
+//                        }
 
                         if(is_run){
                             //检查是否tn策略,tn策略动态判断当前时间是否可执行

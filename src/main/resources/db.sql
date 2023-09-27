@@ -2338,6 +2338,162 @@ alter table filter_info add column engine_type varchar(16) not null default 'fil
 
 alter table resource_tree_info MODIFY COLUMN resource_desc text COMMENT '资源说明';
 
+CREATE TABLE `permission_dimension_info` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `dim_code` varchar(256) DEFAULT NULL COMMENT '维度code',
+  `dim_name` varchar(256) DEFAULT NULL COMMENT '维度名称',
+  `dim_value` varchar(2048) DEFAULT NULL COMMENT '维度值',
+  `product_code` varchar(200) DEFAULT NULL COMMENT '产品code',
+  `owner` varchar(500) DEFAULT NULL COMMENT '账号',
+  `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) comment '维度信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `permission_dimension_value_info` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `dim_value_code` varchar(256) DEFAULT '' COMMENT '维度值code',
+  `dim_value_name` varchar(256) DEFAULT '' COMMENT '维度值名称',
+  `parent_dim_value_code` varchar(256) DEFAULT '-1' COMMENT '父级维度值code',
+  `dim_code` varchar(256) DEFAULT '' COMMENT '维度code',
+  `product_code` varchar(200) DEFAULT '' COMMENT '产品code',
+  `owner` varchar(500) DEFAULT '' COMMENT '账号',
+  `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) comment '维度值信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `permission_user_dimension_value_info` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_account` varchar(256) DEFAULT '' COMMENT '账号',
+  `dim_code` varchar(256) DEFAULT '' COMMENT '维度code',
+  `dim_value_code` varchar(256) DEFAULT '' COMMENT '维度值code',
+  `product_code` varchar(200) DEFAULT '' COMMENT '产品code',
+  `owner` varchar(500) DEFAULT '' COMMENT '账号',
+  `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) comment '用户维度关系信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `permission_usergroup_dimension_value_info` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `group_code` varchar(256) DEFAULT '' COMMENT '用户组code',
+  `dim_code` varchar(256) DEFAULT '' COMMENT '维度code',
+  `dim_value_code` varchar(256) DEFAULT '' COMMENT '维度值code',
+  `product_code` varchar(200) DEFAULT '' COMMENT '产品code',
+  `owner` varchar(500) DEFAULT '' COMMENT '账号',
+  `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) comment '用户组维度关系信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+alter table role_resource_info add column product_code varchar(200) not null default '' comment '产品code';
+alter table product_tag_info add column product_admin varchar(1024) not null default '' comment '产品管理员';
+update product_tag_info set product_admin='zyc';
+alter table approval_config_info add column product_code varchar(200) not null default '' comment '产品code';
+update approval_config_info set product_code='zdh';
+alter table approval_event_info add column product_code varchar(200) not null default '' comment '产品code';
+update approval_event_info set product_code='zdh';
+alter table process_flow_info add column product_code varchar(200) not null default '' comment '产品code';
+update process_flow_info set product_code='zdh';
+
+CREATE TABLE `help_document_info` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(256) DEFAULT '' COMMENT '标题',
+  `doc_type` varchar(256) DEFAULT '' COMMENT '分类',
+  `doc_context` mediumtext  COMMENT '内容',
+  `owner` varchar(500) DEFAULT '' COMMENT '账号',
+  `enable` varchar(8) DEFAULT '2' COMMENT '启用状态,1:启用,2:未启用',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) comment '帮助文档' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+update strategy_group_info set use_quartz_time='on';
+
+ALTER TABLE strategy_group_info MODIFY COLUMN jsmind_data mediumtext COMMENT '策略关系';
+ALTER TABLE strategy_group_instance MODIFY COLUMN jsmind_data mediumtext COMMENT '策略关系';
+ALTER TABLE strategy_group_instance MODIFY COLUMN run_jsmind_data mediumtext COMMENT '策略实例关系';
+ALTER TABLE strategy_instance MODIFY COLUMN jsmind_data mediumtext COMMENT '策略关系';
+ALTER TABLE strategy_instance MODIFY COLUMN run_jsmind_data mediumtext COMMENT '策略实例关系';
+update role_resource_info set product_code ='zdh';
+
+alter table account_info add index idx_username(user_name);
+alter table apply_info add index idx_approve_id(approve_id);
+alter table approval_config_info add index idx_code(code);
+alter table approval_event_info add index idx_event_code(product_code,event_code);
+alter table data_sources_info add index idx_data_source_type(data_source_type);
+alter table data_tag_group_info add index idx_data_source_type(product_code,tag_group_code);
+alter table data_tag_info add index idx_tag_code(product_code,tag_code);
+alter table enum_info add index idx_enum_code(enum_code);
+alter table etl_apply_task_info add index idx_owner(owner);
+alter table etl_drools_task_info add index idx_owner(owner);
+alter table etl_more_task_info add index idx_owner(owner);
+alter table etl_task_batch_info add index idx_owner(owner);
+alter table etl_task_datax_auto_info add index idx_owner(owner);
+alter table etl_task_datax_info add index idx_owner(owner);
+alter table etl_task_flink_info add index idx_owner(owner);
+alter table etl_task_info add index idx_owner(owner);
+alter table etl_task_jdbc_info add index idx_owner(owner);
+alter table etl_task_log_info add index idx_owner(owner);
+alter table etl_task_unstructure_info add index idx_owner(owner);
+
+alter table filter_info add index idx_owner(owner);
+alter table filter_info add index idx_filter_code(filter_code);
+alter table issue_data_info add index idx_owner(owner);
+
+alter table label_info add index idx_label_code(label_code);
+alter table notice_info add index idx_owner(owner);
+alter table param_info add index idx_param_name(param_name);
+alter table permission_apply_info add index idx_product_code_owner(product_code,owner);
+alter table permission_dimension_info add index idx_product_code_dim(product_code,dim_code);
+alter table permission_dimension_value_info add index idx_product_code_dim_value(product_code,dim_code,dim_value_code);
+alter table permission_user_dimension_value_info add index idx_product_code_user_dim(product_code,user_account,dim_code);
+alter table permission_user_info add index idx_product_code_user(product_code,user_account);
+alter table permission_usergroup_dimension_value_info add index idx_product_code_group_dim(product_code,group_code,dim_code);
+alter table plugin_info add index idx_plugin_code(plugin_code);
+
+alter table product_tag_info add index idx_product_code(product_code);
+alter table resource_tree_info add index idx_product_code(product_code);
+alter table role_info add index idx_product_code(product_code);
+alter table role_resource_info add index idx_product_code(product_code,role_code);
+
+alter table self_history add index idx_owner(owner);
+alter table sql_task_info add index idx_owner(owner);
+alter table ssh_task_info add index idx_owner(owner);
+
+alter table strategy_group_info add index idx_owner(owner);
+alter table strategy_group_instance add index idx_strategy_group_id_owner(strategy_group_id,owner);
+alter table strategy_instance add index idx_strategy_group_id_owner(group_id,group_strategy_id,owner);
+
+alter table task_group_log_instance add index idx_job_id_owner(job_id,owner);
+alter table task_log_instance add index idx_job_id_owner(group_id,owner);
+
+alter table touch_config_info add index idx_template_code_owner(template_code,owner);
+alter table user_group_info add index idx_product_code_owner(product_code,group_code);
+
+alter table user_operate_log add index idx_create_time(create_time);
+alter table user_resource_info add index idx_user_id(user_id);
+
+alter table we_mock_tree_info add index idx_product_code_owner(product_code,owner);
+alter table zdh_download_info add index idx_owner(owner);
+alter table zdh_ha_info add index idx_zdh_instance(zdh_instance);
+alter table zdh_logs add index idx_task_logs_id(task_logs_id);
+alter table zdh_nginx add index idx_owner(owner);
+
+alter table resource_tree_info add column qps varchar(16) not null default '' comment 'qps限制';
+
 -- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;

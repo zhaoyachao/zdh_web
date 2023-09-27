@@ -107,13 +107,14 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">指定计算集群</label>
+                            <label class="col-sm-2 control-label">依赖级别</label>
                             <div class="col-sm-10">
-                                <select id="zdh_instance" name="zdh_instance" data-placeholder="集群名"
+                                <select id="depend_level" name="depend_level" data-placeholder="依赖级别"
                                         class="chosen-select form-control m-b" tabindex="2">
                                     <option value="0" mytype="">成功触发</option>
                                     <option value="1" mytype="">杀死触发</option>
                                     <option value="2" mytype="">失败触发</option>
+                                    <option value="3" mytype="">上游完成触发</option>
                                 </select>
                             </div>
                         </div>
@@ -295,7 +296,7 @@
             }
 
 
-            init_plugin_sources();
+            //init_plugin_sources();
 
             function getPluginParam(plugin_code){
                 $.ajax({
@@ -349,8 +350,8 @@
                 $("#is_base").val(s.is_base);
                 $("#is_base").trigger("chosen:updated");
 
-                $("#zdh_instance").val(s["zdh_instance"]);
-                $("#zdh_instance").trigger("chosen:updated");
+                $("#depend_level").val(s["depend_level"]);
+                $("#depend_level").trigger("chosen:updated");
                 if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
                     $("#time_out").val(s["time_out"]);
                 }
@@ -387,7 +388,7 @@
         var touch_type=$('#touch_type').find("option:selected").val();
         var is_base=$('#is_base').find("option:selected").val();
 
-        var zdh_instance=$('#zdh_instance').find("option:selected").val();
+        var depend_level=$('#depend_level').find("option:selected").val();
         var time_out=$('#time_out').val();
         var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
@@ -437,16 +438,19 @@
             result.push(param);
         }
 
+        var more_task = 'plugin';
         let data={
+            "more_task": more_task,
             "operate": operate,
             "touch_type": touch_type,
+            "is_disenable":is_disenable,
+            "depend_level":depend_level,
+            "time_out": time_out,
             "is_base": is_base,
+
             "rule_context":rule_context,
             "rule_id":rule_id,
-            "more_task":'plugin',
-            "is_disenable":is_disenable,
-            "zdh_instance":zdh_instance,
-            "time_out": time_out,
+
             "rule_param": JSON.stringify(result),
             "rule_expression_cn": rule_context,
         };

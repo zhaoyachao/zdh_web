@@ -65,6 +65,17 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">是否BASE数据</label>
+                            <div class="col-sm-10">
+                                <select id="is_base" name="is_base" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="true" mytype="">是</option>
+                                    <option value="false" mytype="" selected>否</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">MAPPING</label>
                             <div class="col-sm-10">
                                 <select id="id_mapping_code" name="id_mapping_code" data-placeholder="选择MAPPING..."
@@ -104,9 +115,11 @@
                                     <option value="0" mytype="">成功触发</option>
                                     <option value="1" mytype="">杀死触发</option>
                                     <option value="2" mytype="">失败触发</option>
+                                    <option value="3" mytype="">上游完成触发</option>
                                 </select>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label">超时时间</label>
                             <div class="col-sm-10">
@@ -246,6 +259,9 @@
                 $("#touch_type").val(s.touch_type);
                 $("#touch_type").trigger("chosen:updated");
 
+                $("#is_base").val(s.is_base);
+                $("#is_base").trigger("chosen:updated");
+
                 var is_disenable=s['is_disenable'];
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
@@ -263,6 +279,7 @@
         var filter_context = "MAPPING";
         var operate=$('#operate').find("option:selected").val();
         var touch_type=$('#touch_type').find("option:selected").val();
+        var is_base=$('#is_base').find("option:selected").val();
 
         var depend_level=$('#depend_level').find("option:selected").val();
         var time_out=$('#time_out').val();
@@ -273,13 +290,15 @@
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
         }
-        data={
-            "more_task": "id_mapping",
+        var more_task = "id_mapping";
+        let data={
+            "more_task": more_task,
+            "operate": operate,
+            "touch_type": touch_type,
             "is_disenable":is_disenable,
             "depend_level":depend_level,
             "time_out": time_out,
-            "operate": operate,
-            "touch_type": touch_type,
+            "is_base": is_base,
 
             "id_mapping_code": id_mapping_code,
             "rule_context":id_mapping_name,

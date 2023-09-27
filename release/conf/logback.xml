@@ -3,23 +3,33 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger[%L] - %msg %n</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>info</level>
         </filter>
     </appender>
+    <appender name="DEBUG_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger[%L] - %msg %n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+    </appender>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
-            <fileNamePattern>logs/stdout.%d{yyyyMMdd}.%i.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
-            <maxHistory>30</maxHistory>
-            <maxFileSize>100MB</maxFileSize>
+            <fileNamePattern>logs/out.%d{yyyyMMddHH}.log</fileNamePattern>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>1</maxHistory>
+            <!--            <maxFileSize>4096MB</maxFileSize>-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger[%L] - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -27,15 +37,16 @@
         </filter>
     </appender>
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
-            <fileNamePattern>logs/stderr.%d{yyyyMMdd}.%i.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
-            <maxHistory>30</maxHistory>
-            <maxFileSize>100MB</maxFileSize>
+            <fileNamePattern>logs/error.%d{yyyyMMddHH}.log</fileNamePattern>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>1</maxHistory>
+            <!--            <maxFileSize>4096MB</maxFileSize>-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger[%L] - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -46,15 +57,16 @@
     </appender>
 
     <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
-            <fileNamePattern>logs/stdinfo.%d{yyyyMMdd}.%i.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
-            <maxHistory>30</maxHistory>
-            <maxFileSize>100MB</maxFileSize>
+            <fileNamePattern>logs/info.%d{yyyyMMddHH}.log</fileNamePattern>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>1</maxHistory>
+            <!--            <maxFileSize>4096MB</maxFileSize>-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger[%L] - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -64,15 +76,36 @@
         </filter>
     </appender>
     <appender name="SQL_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
-            <fileNamePattern>logs/stdsql.%d{yyyyMMdd}.%i.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
-            <maxHistory>30</maxHistory>
-            <maxFileSize>100MB</maxFileSize>
+            <fileNamePattern>logs/sql.%d{yyyyMMddHH}.log</fileNamePattern>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>1</maxHistory>
+            <!--            <maxFileSize>4096MB</maxFileSize>-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %X{user_id} - %msg %n</pattern>
+            <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger[%L] - %msg %n</pattern>
+            <charset>UTF-8</charset> <!-- 此处设置字符集 -->
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>debug</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="CUSTOMER_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
+            <fileNamePattern>logs/request.%d{yyyyMMddHH}.log</fileNamePattern>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>1</maxHistory>
+            <!--            <maxFileSize>4096MB</maxFileSize>-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[LOGID:%X{logId}][USERID:%X{user_id:-system}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger[%L] - %msg %n</pattern>
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -83,7 +116,9 @@
     </appender>
 
     <logger name="com.zyc.zdh.shiro" level="info" />
-    <logger name="com.zyc.zdh.dao" level="debug"></logger>
+    <logger name="com.zyc.zdh.dao" level="debug">
+        <appender-ref ref="SQL_DEBUG"></appender-ref>
+    </logger>
     <logger name="com.zyc.zdh.dao.ZdhHaInfoMapper" level="debug">
         <appender-ref ref="SQL_DEBUG"></appender-ref>
     </logger>
@@ -93,15 +128,15 @@
     <logger name="com.zyc.zdh.dao.TaskGroupLogInstanceMapper" level="debug">
         <appender-ref ref="SQL_DEBUG"></appender-ref>
     </logger>
-    <logger name="com.zyc.zdh.dao.ZdhDownloadMapper" level="debug"></logger>
-    <logger name="com.zyc.zdh.dao.PermissionMapper" level="debug"></logger>
-    <logger name="com.zyc.zdh.util.SpringLoadInit" level="info"></logger>
-    <logger name="com.zyc.zdh.dao.QuartzJobMapper" level="debug"></logger>
-    <logger name="com.zyc.zdh.dao.ServerTaskMapper" level="debug"></logger>
-    <logger name="com.zyc.zdh.dao.ApplyMapper" level="debug"></logger>
-    <logger name="com.zyc.zdh.netty" level="info"></logger>
-    <logger name="com.zyc.zdh.aop" level="debug"></logger>
 
+    <logger name="com.zyc.zdh.util.SpringLoadInit" level="info"></logger>
+    <logger name="com.zyc.zdh.aop" level="debug">
+        <appender-ref ref="CUSTOMER_DEBUG"></appender-ref>
+        <!-- 正式环境,DEBUG_CONSOLE 可注释 -->
+        <appender-ref ref="DEBUG_CONSOLE"></appender-ref>
+    </logger>
+
+    <logger name="com.zyc.zdh.job" level="debug"/>
 
     <root level="debug">
         <appender-ref ref="CONSOLE"></appender-ref>
