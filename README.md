@@ -79,31 +79,20 @@
    + 编译包下载地址(只提供最新编译包下载,历史版本需要手动从源码构建)：
    + 执行编译好的包需要提前安装mysql8,redis
    
-   + 历史版本(>4.7.11)只提供最近2个版本目录下载,下载历史版本,点击下方下载连接,修改链接中的版本号,可下载历史版本
-     建议使用最新版本(功能更多)
+   + 历史版本不进行维护,可下载历史版本, 建议使用最新版本(功能更多)
      
    + 4.7.18版本全部采用maven管理,并重构quartz源码,4.7.18不可和之前任何历史版本重用
    + 4.7.18为4.x最后一个版本,5.x版本会重构所有代码,自2022-02-06~2022-06-01不进行新功能开发,此段时间会完善使用文档
- 
-   + 5.0.0
-     +  [zdh_web_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_web.tar)
-     +  [zdh_server_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_server.tar)
-     +  [zdh_flink_5.0.0](http://zycblog.cn:8080/zdh/download/5.0.0/zdh_flink.tar)
-        
-   + 5.0.1
-     +  [zdh_web_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_web.tar)
-     +  [zdh_server_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_server.tar)
-     +  [zdh_flink_5.0.1](http://zycblog.cn:8080/zdh/download/5.0.1/zdh_flink.tar)  
-     
-   + 5.1.0
-     +  [zdh_web_5.1.0](http://zycblog.cn:8080/zdh/download/5.1.0/zdh_web.tar)
-     +  [zdh_server_5.1.0](http://zycblog.cn:8080/zdh/download/5.1.0/zdh_server.tar)
-     +  [zdh_flink_5.1.0](http://zycblog.cn:8080/zdh/download/5.1.0/zdh_flink.tar)
      
    + 5.1.1
      +  [zdh_web_5.1.1](http://zycblog.cn:8080/zdh/download/5.1.1/zdh_web.tar)
      +  [zdh_server_5.1.1](http://zycblog.cn:8080/zdh/download/5.1.1/zdh_server.tar)
-     +  [zdh_flink_5.1.1](http://zycblog.cn:8080/zdh/download/5.1.1/zdh_flink.tar)     
+     +  [zdh_flink_5.1.1](http://zycblog.cn:8080/zdh/download/5.1.1/zdh_flink.tar)
+     
+   + 5.1.2
+     +  [zdh_web_5.1.2](http://zycblog.cn:8080/zdh/download/5.1.2/zdh_web.tar)
+     +  [zdh_server_5.1.2](http://zycblog.cn:8080/zdh/download/5.1.2/zdh_server.tar)
+     +  [zdh_flink_5.1.2](http://zycblog.cn:8080/zdh/download/5.1.2/zdh_flink.tar)
                      
    + 如果链接失效,可通过邮件方式(见底部)通知作者,作者会通过邮件发送编译包,也可登陆ZDH预览页面下载
 
@@ -726,8 +715,8 @@
   + v5.1.2 [zdh_web]启动脚本增加多pfofiles选择
   + v5.1.2 [zdh_web]智能营销-实现数据下载
   + v5.1.2 [zdh_web]新增filter初始化参数
-  + v5.1.2 [zdh_web]新增sentinel流量控制(结合zdh权限控制实现动态流控-未使用sentinel控制台之后版本会考虑整合)
-  + v5.1.2 [zdh_web]智能营销模块-增加数据权限控制
+  + v5.1.2 [zdh_web]新增sentinel流量控制(结合zdh权限控制实现动态流控-未使用sentinel控制台,之后版本会考虑整合)
+  + v5.1.2 [zdh_web]智能营销模块-增加数据权限控制(基于oa系统ABAC模式权限改造)
   
   
   

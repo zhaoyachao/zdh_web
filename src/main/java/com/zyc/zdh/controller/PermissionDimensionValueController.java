@@ -1,12 +1,10 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
+import com.zyc.zdh.dao.PermissionDimensionValueMapper;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
-import com.zyc.zdh.dao.PermissionDimensionValueMapper;
-
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -43,7 +39,6 @@ public class PermissionDimensionValueController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/permission_dimension_value_index", method = RequestMethod.GET)
-    @White
     public String permission_dimension_value_index() {
 
         return "admin/permission_dimension_value_index";
@@ -58,7 +53,6 @@ public class PermissionDimensionValueController extends BaseController {
     @SentinelResource(value = "permission_dimension_value_node", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PermissionDimensionValueNodeInfo>> permission_dimension_value_node(String product_code, String dim_code) {
         try{
             Example example=new Example(PermissionDimensionValueInfo.class);
@@ -90,7 +84,6 @@ public class PermissionDimensionValueController extends BaseController {
     @SentinelResource(value = "permission_dimension_value_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PermissionDimensionValueInfo>> permission_dimension_value_list(String product_code, String dim_code) {
         try{
             Example example=new Example(PermissionDimensionValueInfo.class);
@@ -114,21 +107,21 @@ public class PermissionDimensionValueController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/permission_dimension_value_add_index", method = RequestMethod.GET)
-    @White
     public String permission_dimension_value_add_index() {
 
         return "admin/permission_dimension_value_add_index";
     }
 
     /**
-     * xx明细
-     * @param id 主键ID
+     * 查询维度值明细
+     * @param product_code 产品code
+     * @param dim_code 维度code
+     * @param dim_value_code 维度值code
      * @return
      */
     @SentinelResource(value = "permission_dimension_value_detail_by_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PermissionDimensionValueInfo> permission_dimension_value_detail_by_code(String product_code, String dim_code,String dim_value_code) {
         try {
             PermissionDimensionValueInfo permissionDimensionValueInfo=new PermissionDimensionValueInfo();
@@ -152,7 +145,6 @@ public class PermissionDimensionValueController extends BaseController {
     @SentinelResource(value = "permission_dimension_value_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_value_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PermissionDimensionValueInfo> permission_dimension_value_detail(String id) {
         try {
             PermissionDimensionValueInfo permissionDimensionValueInfo = permissionDimensionValueMapper.selectByPrimaryKey(id);
@@ -171,7 +163,6 @@ public class PermissionDimensionValueController extends BaseController {
     @RequestMapping(value = "/permission_dimension_value_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PermissionDimensionValueInfo> permission_dimension_value_update(PermissionDimensionValueInfo permissionDimensionValueInfo) {
         try {
 
@@ -198,7 +189,6 @@ public class PermissionDimensionValueController extends BaseController {
     @RequestMapping(value = "/permission_dimension_value_parent", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PermissionDimensionValueInfo> permission_dimension_value_parent(PermissionDimensionValueInfo permissionDimensionValueInfo) {
         try {
 
@@ -227,7 +217,6 @@ public class PermissionDimensionValueController extends BaseController {
     @RequestMapping(value = "/permission_dimension_value_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PermissionDimensionValueInfo> permission_dimension_value_add(PermissionDimensionValueInfo permissionDimensionValueInfo) {
         try {
             permissionDimensionValueInfo.setOwner(getOwner());
@@ -251,7 +240,6 @@ public class PermissionDimensionValueController extends BaseController {
     @RequestMapping(value = "/permission_dimension_value_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo permission_dimension_value_delete(String id) {
         try {
             permissionDimensionValueMapper.deleteLogicByIds("permission_dimension_value_info",new String[]{id}, new Timestamp(new Date().getTime()));

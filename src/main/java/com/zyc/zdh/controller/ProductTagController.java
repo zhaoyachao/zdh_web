@@ -58,7 +58,6 @@ public class ProductTagController extends BaseController {
     @SentinelResource(value = "product_tag_all", blockHandler = "handleReturn")
     @RequestMapping(value = "/product_tag_all", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<ProductTagInfo>> product_tag_all(String tag_context) {
         try{
             Example example=new Example(ProductTagInfo.class);

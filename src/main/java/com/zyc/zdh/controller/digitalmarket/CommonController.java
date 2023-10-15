@@ -45,14 +45,6 @@ public class CommonController extends BaseController {
     @Autowired
     private CrowdFileMapper crowdFileMapper;
     @Autowired
-    private Environment env;
-    @Autowired
-    private PermissionUserGroupDimensionValueController permissionUserGroupDimensionValueController;
-    @Autowired
-    private PermissionUserDimensionValueController permissionUserDimensionValueController;
-    @Autowired
-    private PermissionApiController permissionApiController;
-    @Autowired
     private ZdhPermissionService zdhPermissionService;
 
 
@@ -97,7 +89,7 @@ public class CommonController extends BaseController {
      * 人群运算模板页面
      * @return
      */
-    @White()
+    @White
     @RequestMapping(value = "/crowd_operate_detail", method = RequestMethod.GET)
     public String crowd_operate_detail() {
         return "digitalmarket/crowd_operate_detail";
@@ -135,7 +127,6 @@ public class CommonController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/rights_detail", method = RequestMethod.GET)
-    @White
     public String rights_detail() {
         return "digitalmarket/rights_detail";
     }
@@ -145,7 +136,6 @@ public class CommonController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/tn_detail", method = RequestMethod.GET)
-    @White
     public String tn_detail() {
         return "digitalmarket/tn_detail";
     }
@@ -156,7 +146,6 @@ public class CommonController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/manual_confirm_detail", method = RequestMethod.GET)
-    @White
     public String manual_confirm_detail() {
         return "digitalmarket/manual_confirm_detail";
     }
@@ -167,7 +156,6 @@ public class CommonController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/code_block_detail", method = RequestMethod.GET)
-    @White
     public String code_block_detail() {
         return "digitalmarket/code_block_detail";
     }
@@ -179,7 +167,6 @@ public class CommonController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/custom_list_detail", method = RequestMethod.GET)
-    @White
     public String custom_list_detail() {
         return "digitalmarket/custom_list_detail";
     }
@@ -192,7 +179,6 @@ public class CommonController extends BaseController {
     @SentinelResource(value = "crowd_file_list_by_owner", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_file_list_by_owner", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<CrowdFileInfo>> crowd_file_list_by_owner(String rule_context) {
         try{
             Example example=new Example(CrowdFileInfo.class);
@@ -219,7 +205,6 @@ public class CommonController extends BaseController {
     @SentinelResource(value = "get_dim_group", blockHandler = "handleReturn")
     @RequestMapping(value = "/get_dim_group", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White()
     public ReturnInfo<List<PermissionDimensionValueInfo>> get_dim_group() {
         try {
             String owner = getOwner();
@@ -240,17 +225,9 @@ public class CommonController extends BaseController {
     @SentinelResource(value = "get_dim_product", blockHandler = "handleReturn")
     @RequestMapping(value = "/get_dim_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White()
     public ReturnInfo<List<PermissionDimensionValueInfo>> get_dim_product() {
         try {
             String owner = getOwner();
-            String product_code = env.getProperty("zdp.product");
-            String ak = env.getProperty("zdp.ak");
-            String sk = env.getProperty("zdp.sk");
-
-
-            List<String> dim_value_codes = new ArrayList();
-
             List<PermissionDimensionValueInfo> result = zdhPermissionService.get_dim_product(owner);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", result);

@@ -566,7 +566,6 @@ public class StrategyGroupController extends BaseController {
     @SentinelResource(value = "killStrategyGroup", blockHandler = "handleReturn")
     @RequestMapping(value = "/killStrategyGroup", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo killJobGroup(String id) {
         //执行中,跳过,失败的任务保留,其余策略状态都改为已杀死,策略组实例改为kill杀死中
         try {
@@ -611,7 +610,6 @@ public class StrategyGroupController extends BaseController {
     @SentinelResource(value = "strategy_skip", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_skip", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo strategy_skip(String id) {
         try {
             StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
@@ -641,7 +639,6 @@ public class StrategyGroupController extends BaseController {
     @RequestMapping(value = "/strategy_retry", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo strategy_retry(String id) {
         try {
             StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);

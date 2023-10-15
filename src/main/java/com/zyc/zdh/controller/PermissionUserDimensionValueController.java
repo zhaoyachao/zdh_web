@@ -43,7 +43,6 @@ public class PermissionUserDimensionValueController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/permission_user_dimension_value_index", method = RequestMethod.GET)
-    @White
     public String permission_user_dimension_value_index() {
 
         return "admin/permission_user_dimension_value_index";
@@ -57,7 +56,6 @@ public class PermissionUserDimensionValueController extends BaseController {
     @SentinelResource(value = "permission_user_dimension_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_user_dimension_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PermissionDimensionInfo>> permission_user_dimension_list(String context,String product_code, String user_account) {
         try{
 
@@ -89,7 +87,6 @@ public class PermissionUserDimensionValueController extends BaseController {
     @SentinelResource(value = "permission_user_dimension_value_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_user_dimension_value_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PermissionUserDimensionValueInfo>> permission_user_dimension_value_list(String context,String product_code, String user_account, String dim_code) {
         try{
 
@@ -118,7 +115,6 @@ public class PermissionUserDimensionValueController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/permission_user_dimension_value_add_index", method = RequestMethod.GET)
-    @White
     public String permission_user_dimension_value_add_index() {
 
         return "admin/permission_user_dimension_value_add_index";
@@ -132,7 +128,6 @@ public class PermissionUserDimensionValueController extends BaseController {
     @SentinelResource(value = "permission_user_dimension_value_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_user_dimension_value_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PermissionUserDimensionValueInfo> permission_user_dimension_value_detail(String id) {
         try {
             PermissionUserDimensionValueInfo permissionUserDimensionValueInfo = permissionUserDimensionValueMapper.selectByPrimaryKey(id);
@@ -154,7 +149,6 @@ public class PermissionUserDimensionValueController extends BaseController {
     @RequestMapping(value = "/permission_user_dimension_value_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PermissionUserDimensionValueInfo> permission_user_dimension_value_update(String product_code, String dim_code, String user_account, String[] dim_value_codes) {
         try {
 

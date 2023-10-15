@@ -35,7 +35,6 @@ public class VariableController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/variable_index", method = RequestMethod.GET)
-    @White
     public String label_index() {
 
         return "digitalmarket/variable_index";
@@ -51,7 +50,6 @@ public class VariableController extends BaseController {
     @SentinelResource(value = "variable_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/variable_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<Map> variable_detail(String product_code, String uid, String variable_code) {
         try{
             String variable_uid="tag_"+uid;
@@ -72,7 +70,6 @@ public class VariableController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/variable_add_index", method = RequestMethod.GET)
-    @White
     public String variable_add_index() {
 
         return "digitalmarket/variable_add_index";
@@ -90,7 +87,6 @@ public class VariableController extends BaseController {
     @SentinelResource(value = "variable_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/variable_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo variable_update(String product_code, String uid, String variable_code, String param) {
         try {
             String variable_uid="tag_"+uid;
@@ -111,7 +107,6 @@ public class VariableController extends BaseController {
     @SentinelResource(value = "variable_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/variable_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo label_delete(String product_code, String uid, String variable_code) {
         try {
             String variable_uid="tag_"+uid;

@@ -753,7 +753,6 @@ public class PermissionController extends BaseController {
     @SentinelResource(value = "jstree_get_desc", blockHandler = "handleReturn")
     @RequestMapping(value = "/jstree_get_desc", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<String> jstree_get_desc(String url){
         try{
             Example example=new Example(ResourceTreeInfo.class);

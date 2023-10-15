@@ -39,7 +39,6 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
      * @return
      */
     @RequestMapping(value = "/permission_usergroup_dimension_value_index", method = RequestMethod.GET)
-    @White
     public String permission_usergroup_dimension_value_index() {
 
         return "admin/permission_usergroup_dimension_value_index";
@@ -54,7 +53,6 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
     @SentinelResource(value = "permission_usergroup_dimension_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_usergroup_dimension_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PermissionDimensionInfo>> permission_usergroup_dimension_list(String context, String product_code, String group_code) {
         try{
 
@@ -86,7 +84,6 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
     @SentinelResource(value = "permission_usergroup_dimension_value_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_usergroup_dimension_value_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PermissionUserGroupDimensionValueInfo>> permission_usergroup_dimension_value_list(String context,String product_code, String group_code, String dim_code) {
         try{
             checkPermissionByOwner(product_code);
@@ -121,7 +118,6 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
      * @return
      */
     @RequestMapping(value = "/permission_usergroup_dimension_value_add_index", method = RequestMethod.GET)
-    @White
     public String permission_usergroup_dimension_value_add_index() {
 
         return "admin/permission_usergroup_dimension_value_add_index";
@@ -139,7 +135,6 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
     @RequestMapping(value = "/permission_usergroup_dimension_value_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PermissionUserGroupDimensionValueInfo> permission_usergroup_dimension_value_update(String product_code, String dim_code, String group_code, String[] dim_value_codes) {
         try {
             Example example=new Example(PermissionUserGroupDimensionValueInfo.class);

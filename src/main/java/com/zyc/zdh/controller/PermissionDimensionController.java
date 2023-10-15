@@ -43,7 +43,6 @@ public class PermissionDimensionController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/permission_dimension_index", method = RequestMethod.GET)
-    @White
     public String permission_dimension_index() {
 
         return "admin/permission_dimension_index";
@@ -57,7 +56,6 @@ public class PermissionDimensionController extends BaseController {
     @SentinelResource(value = "permission_dimension_list_by_product_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_list_by_product_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PermissionDimensionInfo>> permission_dimension_list_by_product_code(String product_code) {
         try{
 
@@ -86,7 +84,6 @@ public class PermissionDimensionController extends BaseController {
     @SentinelResource(value = "permission_dimension_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<PermissionDimensionInfo>>> permission_dimension_list(String context,String product_code,int limit, int offset) {
         try{
 
@@ -125,7 +122,6 @@ public class PermissionDimensionController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/permission_dimension_add_index", method = RequestMethod.GET)
-    @White
     public String permission_dimension_add_index() {
 
         return "admin/permission_dimension_add_index";
@@ -136,7 +132,6 @@ public class PermissionDimensionController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/permission_dimension_detail", method = RequestMethod.GET)
-    @White
     public String permission_dimension_detail() {
 
         return "admin/permission_dimension_detail";
@@ -149,7 +144,6 @@ public class PermissionDimensionController extends BaseController {
     @SentinelResource(value = "permission_dimension_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_dimension_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PermissionDimensionInfo> permission_dimension_detail(String id) {
         try {
             PermissionDimensionInfo permissionDimensionInfo = permissionDimensionMapper.selectByPrimaryKey(id);
@@ -168,7 +162,6 @@ public class PermissionDimensionController extends BaseController {
     @RequestMapping(value = "/permission_dimension_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PermissionDimensionInfo> permission_dimension_update(PermissionDimensionInfo permissionDimensionInfo) {
         try {
 
@@ -197,7 +190,6 @@ public class PermissionDimensionController extends BaseController {
     @RequestMapping(value = "/permission_dimension_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PermissionDimensionInfo> permission_dimension_add(PermissionDimensionInfo permissionDimensionInfo) {
         try {
             permissionDimensionInfo.setOwner(getOwner());
@@ -221,7 +213,6 @@ public class PermissionDimensionController extends BaseController {
     @RequestMapping(value = "/permission_dimension_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo permission_dimension_delete(String[] ids) {
         try {
             permissionDimensionMapper.deleteLogicByIds("permission_dimension_info",ids, new Timestamp(new Date().getTime()));
