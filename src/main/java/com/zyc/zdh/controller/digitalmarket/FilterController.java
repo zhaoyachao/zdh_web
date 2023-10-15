@@ -7,6 +7,7 @@ import com.zyc.zdh.entity.FilterInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,6 +38,9 @@ public class FilterController extends BaseController {
     @Autowired
     private FilterMapper filterMapper;
 
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
+
     /**
      * 过滤列表首页
      * @return
@@ -55,11 +59,22 @@ public class FilterController extends BaseController {
     @SentinelResource(value = "filter_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/filter_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public  ReturnInfo<List<FilterInfo>> filter_list(String filter_name) {
+    public  ReturnInfo<List<FilterInfo>> filter_list(String filter_name, String product_code, String dim_group) {
         try{
             Example example=new Example(FilterInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+
+            //动态增加数据权限控制
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
+
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(filter_name)){
                 criteria2.orLike("filter_name", getLikeCondition(filter_name));
@@ -127,7 +142,7 @@ public class FilterController extends BaseController {
             filterInfo.setCreate_time(oldFilterInfo.getCreate_time());
             filterInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             filterInfo.setIs_delete(Const.NOT_DELETE);
-            filterMapper.updateByPrimaryKey(filterInfo);
+            filterMapper.updateByPrimaryKeySelective(filterInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", filterInfo);
         } catch (Exception e) {
@@ -155,7 +170,7 @@ public class FilterController extends BaseController {
             filterInfo.setIs_delete(Const.NOT_DELETE);
             filterInfo.setCreate_time(new Timestamp(new Date().getTime()));
             filterInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            filterMapper.insert(filterInfo);
+            filterMapper.insertSelective(filterInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

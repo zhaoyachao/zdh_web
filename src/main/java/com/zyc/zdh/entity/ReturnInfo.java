@@ -119,4 +119,15 @@ public class ReturnInfo<T> {
         ri.e=e;
         return ri;
     }
+
+
+    /**
+     * 检查结果是否异常,异常则直接抛出
+     * @throws Exception
+     */
+    public void checkExeception() throws Exception {
+        if(!this.getCode().equalsIgnoreCase(RETURN_CODE.SUCCESS.getCode())){
+            throw this.getE();
+        }
+    }
 }

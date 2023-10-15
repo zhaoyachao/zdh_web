@@ -4,17 +4,22 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
+import com.zyc.zdh.controller.PermissionApiController;
+import com.zyc.zdh.controller.PermissionUserDimensionValueController;
+import com.zyc.zdh.controller.PermissionUserGroupDimensionValueController;
 import com.zyc.zdh.dao.CrowdFileMapper;
 import com.zyc.zdh.dao.CrowdRuleMapper;
 import com.zyc.zdh.dao.FilterMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 智能营销-配置策略时使用的配置页面
@@ -40,6 +44,16 @@ public class CommonController extends BaseController {
     private CrowdRuleMapper crowdRuleMapper;
     @Autowired
     private CrowdFileMapper crowdFileMapper;
+    @Autowired
+    private Environment env;
+    @Autowired
+    private PermissionUserGroupDimensionValueController permissionUserGroupDimensionValueController;
+    @Autowired
+    private PermissionUserDimensionValueController permissionUserDimensionValueController;
+    @Autowired
+    private PermissionApiController permissionApiController;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
 
     /**
@@ -195,6 +209,56 @@ public class CommonController extends BaseController {
             return ReturnInfo.buildError("人群文件查询失败", e);
         }
 
+    }
+
+
+    /**
+     * 获取当前登录用户的归属组
+     * @return
+     */
+    @SentinelResource(value = "get_dim_group", blockHandler = "handleReturn")
+    @RequestMapping(value = "/get_dim_group", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White()
+    public ReturnInfo<List<PermissionDimensionValueInfo>> get_dim_group() {
+        try {
+            String owner = getOwner();
+            List<PermissionDimensionValueInfo> result = zdhPermissionService.get_dim_group(owner);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", result);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+    /**
+     * 获取当前登录用户的归属产品
+     * @return
+     */
+    @SentinelResource(value = "get_dim_product", blockHandler = "handleReturn")
+    @RequestMapping(value = "/get_dim_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White()
+    public ReturnInfo<List<PermissionDimensionValueInfo>> get_dim_product() {
+        try {
+            String owner = getOwner();
+            String product_code = env.getProperty("zdp.product");
+            String ak = env.getProperty("zdp.ak");
+            String sk = env.getProperty("zdp.sk");
+
+
+            List<String> dim_value_codes = new ArrayList();
+
+            List<PermissionDimensionValueInfo> result = zdhPermissionService.get_dim_product(owner);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", result);
+        } catch (Exception e) {
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
     }
 
     public User getUser() {

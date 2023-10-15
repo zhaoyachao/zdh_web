@@ -727,6 +727,8 @@
   + v5.1.2 [zdh_web]智能营销-实现数据下载
   + v5.1.2 [zdh_web]新增filter初始化参数
   + v5.1.2 [zdh_web]新增sentinel流量控制(结合zdh权限控制实现动态流控-未使用sentinel控制台之后版本会考虑整合)
+  + v5.1.2 [zdh_web]智能营销模块-增加数据权限控制
+  
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -2434,6 +2436,50 @@
      alter table zdh_ha_info add index idx_zdh_instance(zdh_instance);
      alter table zdh_logs add index idx_task_logs_id(task_logs_id);
      alter table zdh_nginx add index idx_owner(owner);
+ 
+     alter table strategy_group_info add index idx_dim_group_owner(dim_group, owner);
+     
+     alter table resource_tree_info add column qps varchar(16) not null default '' comment 'qps限制';
+     
+     alter table strategy_group_info add column dim_group varchar(64) not null default '' comment '用户组';
+     alter table strategy_group_instance add column dim_group varchar(64) not null default '' comment '用户组';
+     
+     alter table label_info add column product_code varchar(64) not null default '' comment '产品code';
+     update label_info set product_code ='zdh';
+     
+     alter table strategy_group_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table strategy_group_instance add column product_code varchar(64) not null default '' comment '产品code';
+     update strategy_group_info set product_code ='zdh';
+     update strategy_group_info set dim_group ='group3';
+     
+     alter table risk_event_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table risk_event_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update risk_event_info set product_code ='zdh';
+     update risk_event_info set dim_group ='group3';
+     
+     alter table filter_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table filter_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update filter_info set product_code ='zdh';
+     update filter_info set dim_group ='group3';
+     
+     
+     alter table crowd_file_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table crowd_file_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update crowd_file_info set product_code ='zdh';
+     update crowd_file_info set dim_group ='group3';
+     
+     
+     alter table touch_config_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table touch_config_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update touch_config_info set product_code ='zdh';
+     update touch_config_info set dim_group ='group3';
+     
+     alter table plugin_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table plugin_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update plugin_info set product_code ='zdh';
+     update plugin_info set dim_group ='group3';     
+     
+     
      
      
 # 未完成的功能

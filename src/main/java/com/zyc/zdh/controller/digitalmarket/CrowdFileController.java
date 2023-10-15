@@ -7,6 +7,7 @@ import com.zyc.zdh.entity.CrowdFileInfo;
 import com.zyc.zdh.entity.PageResult;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.SFTPUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +50,10 @@ public class CrowdFileController extends BaseController {
     @Autowired
     private Environment env;
 
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
+
+
     /**
      * 人群文件列表首页
      * @return
@@ -67,11 +72,22 @@ public class CrowdFileController extends BaseController {
     @SentinelResource(value = "crowd_file_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/crowd_file_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public  ReturnInfo<PageResult<List<CrowdFileInfo>>> crowd_file_list(String file_name,int limit, int offset) {
+    public  ReturnInfo<PageResult<List<CrowdFileInfo>>> crowd_file_list(String file_name,String product_code, String dim_group, int limit, int offset) {
         try{
             Example example=new Example(CrowdFileInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+
+            //动态增加数据权限控制
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
+
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(file_name)){
                 criteria2.orLike("file_name", getLikeCondition(file_name));
@@ -146,7 +162,7 @@ public class CrowdFileController extends BaseController {
             crowdFileInfo.setCreate_time(oldCrowdFileInfo.getCreate_time());
             crowdFileInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             crowdFileInfo.setIs_delete(Const.NOT_DELETE);
-            crowdFileMapper.updateByPrimaryKey(crowdFileInfo);
+            crowdFileMapper.updateByPrimaryKeySelective(crowdFileInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", crowdFileInfo);
         } catch (Exception e) {
@@ -220,7 +236,7 @@ public class CrowdFileController extends BaseController {
                             sftp.logout();
                         }
 
-                        crowdFileMapper.insert(crowdFile);
+                        crowdFileMapper.insertSelective(crowdFile);
                     } catch (Exception e) {
                         logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
                         throw e;

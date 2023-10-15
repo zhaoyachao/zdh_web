@@ -86,7 +86,7 @@ public class ProductTagController extends BaseController {
     }
 
     /**
-     * 产品列表
+     * 产品列表(带权限控制)
      * @param tag_context 关键字
      * @return
      */

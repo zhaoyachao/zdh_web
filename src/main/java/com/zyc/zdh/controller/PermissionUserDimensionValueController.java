@@ -111,7 +111,6 @@ public class PermissionUserDimensionValueController extends BaseController {
             logger.error(error, e);
             return ReturnInfo.buildError("用户维度关系信息列表查询失败", e);
         }
-
     }
 
     /**

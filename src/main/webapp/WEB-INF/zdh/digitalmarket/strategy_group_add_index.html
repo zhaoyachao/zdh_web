@@ -67,6 +67,27 @@
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
                         <input type="hidden" id="jsmind_data" name="jsmind_data" value="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="归属产品...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属组</label>
+                            <div class="col-sm-10">
+                                <select id="dim_group" name="dim_group"
+                                        data-placeholder="归属组...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label">策略组说明</label>
                             <div class="col-sm-10">
@@ -239,6 +260,9 @@
 <script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script src="js/admin/dim_product_common.js"></script>
+<script src="js/admin/dim_group_common.js"></script>
 
 <script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
 <script type="text/javascript" src="js/digitalmarket/strategy_group_add.js"></script>
@@ -764,6 +788,14 @@
                         //获取调度任务说明
                         var group_context=data.result.group_context;
                         $("#group_context").val(group_context);
+
+                        var product_code=data.result.product_code;
+                        $("#product_code").val(product_code);
+                        $("#product_code").trigger("chosen:updated");
+
+                        var dim_group=data.result.dim_group;
+                        $("#dim_group").val(dim_group);
+                        $("#dim_group").trigger("chosen:updated");
 
                         var group_type=data.result.group_type;
                         $("#group_type").val(group_type);

@@ -8,6 +8,7 @@ import com.zyc.zdh.entity.PageResult;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.TouchConfigInfo;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
@@ -40,6 +41,8 @@ public class TouchController extends BaseController {
     @Autowired
     private TouchConfigMapper touchConfigMapper;
 
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 在线节点配置首页
@@ -75,13 +78,24 @@ public class TouchController extends BaseController {
     @White
     @RequestMapping(value = "/touch_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<PageResult<List<TouchConfigInfo>>> touch_list(String touch_context, int limit, int offset) {
+    public ReturnInfo<PageResult<List<TouchConfigInfo>>> touch_list(String touch_context, String product_code, String dim_group, int limit, int offset) {
         try {
             Example example=new Example(TouchConfigInfo.class);
             List<TouchConfigInfo> touchConfigInfos = new ArrayList<>();
-            Example.Criteria cri = example.createCriteria();
-            cri.andEqualTo("is_delete", Const.NOT_DELETE);
-            cri.andEqualTo("owner",getOwner());
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+
+            //动态增加数据权限控制
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
+
+            //criteria.andEqualTo("owner",getOwner());
             if (!StringUtils.isEmpty(touch_context)) {
                 Example.Criteria cri2 = example.and();
                 cri2.andLike("touch_context", getLikeCondition(touch_context));
@@ -164,7 +178,7 @@ public class TouchController extends BaseController {
             touchConfigInfo.setCreate_time(oldTouchConfigInfo.getCreate_time());
             touchConfigInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             touchConfigInfo.setIs_delete(Const.NOT_DELETE);
-            touchConfigMapper.updateByPrimaryKey(touchConfigInfo);
+            touchConfigMapper.updateByPrimaryKeySelective(touchConfigInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", touchConfigInfo);
         } catch (Exception e) {
@@ -199,7 +213,7 @@ public class TouchController extends BaseController {
             touchConfigInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             touchConfigInfo.setIs_delete(Const.NOT_DELETE);
 
-            touchConfigMapper.insert(touchConfigInfo);
+            touchConfigMapper.insertSelective(touchConfigInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

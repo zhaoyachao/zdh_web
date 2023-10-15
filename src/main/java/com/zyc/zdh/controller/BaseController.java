@@ -2,20 +2,24 @@ package com.zyc.zdh.controller;
 
 import com.zyc.zdh.config.DateConverter;
 import com.zyc.zdh.dao.ProductTagMapper;
+import com.zyc.zdh.entity.PermissionDimensionValueInfo;
 import com.zyc.zdh.entity.ProductTagInfo;
 import com.zyc.zdh.entity.User;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import tk.mybatis.mapper.entity.Example;
 
 import java.beans.PropertyEditorSupport;
 import java.sql.Timestamp;
+import java.util.List;
 
 public class BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -42,6 +46,30 @@ public class BaseController {
             throw new Exception("获取用户失败,请检查用户是否登录");
         }
         return user.getUserName();
+    }
+
+    public String getProductCode(){
+        Environment environment= (Environment) SpringContext.getBean("environment");
+        return environment.getProperty("zdp.product","");
+    }
+
+    /**
+     * 通过归属产品+归属组双重控制数据权限
+     * @param zdhPermissionService
+     * @param criteria
+     * @throws Exception
+     */
+    public void dynamicPermissionByProductAndGroup(ZdhPermissionService zdhPermissionService,  Example.Criteria criteria) throws Exception {
+        //根据账号,查询归属组
+        List<PermissionDimensionValueInfo> dim_group_pdvi = zdhPermissionService.get_dim_group(getOwner());
+        List<String> dim_groups = zdhPermissionService.dim_value2code(dim_group_pdvi);
+
+        //根据账号,查询归属组
+        List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
+        List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
+
+        criteria.andIn("dim_group", dim_groups);
+        criteria.andIn("product_code", dim_products);
     }
 
     /**

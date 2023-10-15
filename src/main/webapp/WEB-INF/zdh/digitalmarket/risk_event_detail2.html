@@ -233,9 +233,13 @@
                     data: '',
                     //成功返回
                     success: function (data) {
+
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                        }
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.length; i++) {
-                            str += '<option value=\"' + data[i].event_code + "\" mytype=\"" + data[i].event_code + "\" hassubinfo=\"true\">" + data[i].event_name + "</option>"
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].event_code + "\" mytype=\"" + data.result[i].event_code + "\" hassubinfo=\"true\">" + data.result[i].event_name + "</option>"
                         }
                         $('#rule_id').empty();
                         $("#rule_id").chosen("destroy");

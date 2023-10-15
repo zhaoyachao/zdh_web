@@ -68,7 +68,7 @@ public class AspectConfig implements Ordered {
     public void pointcutMethod2() {
     }
 
-    @Pointcut("execution(* com.zyc.zdh.controller.*.*.*(..)) || (execution(* com.zyc.zdh.controller.*.*(..)) && !execution(* com.zyc.zdh.controller.MyErrorConroller.*(..)) && !execution(* com.zyc.zdh.controller.LoginController.getLogin(..)) && !execution(* com.zyc.zdh.controller.LoginController.captcha(..)) && !execution(* com.zyc.zdh.controller.LoginController.login(..)) && !execution(* com.zyc.zdh.controller.LoginController.login1(..)) && !execution(* com.zyc.zdh.controller.LoginController.getIndex(..)))")
+    @Pointcut("execution(* com.zyc.zdh.controller.*.*.*(..)) || (execution(* com.zyc.zdh.controller.*.*(..)) && !execution(* com.zyc.zdh.controller.MyErrorConroller.*(..)) && !execution(* com.zyc.zdh.controller.LoginController.getLogin(..)) && !execution(* com.zyc.zdh.controller.LoginController.captcha(..)) && !execution(* com.zyc.zdh.controller.LoginController.login(..)) && !execution(* com.zyc.zdh.controller.LoginController.login1(..)) && !execution(* com.zyc.zdh.controller.LoginController.getIndex(..)) && !execution(* com.zyc.zdh.controller.PermissionApiController.*(..)) && !execution(* com.zyc.zdh.controller.BaseController.*(..)) )")
     public void pointcutMethod3() {
     }
 

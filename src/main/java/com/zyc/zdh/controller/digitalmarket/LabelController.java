@@ -58,11 +58,12 @@ public class LabelController extends BaseController {
     @SentinelResource(value = "label_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/label_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<LabelInfo>> label_list(String label_context) {
+    public ReturnInfo<List<LabelInfo>> label_list(String label_context, String product_code) {
         try{
             Example example=new Example(LabelInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("product_code", product_code);
             Example.Criteria criteria2=example.createCriteria();
             if(!org.apache.commons.lang3.StringUtils.isEmpty(label_context)){
                 criteria2.orLike("label_code", getLikeCondition(label_context));

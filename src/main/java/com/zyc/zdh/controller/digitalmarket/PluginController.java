@@ -10,6 +10,7 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.User;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -40,6 +41,9 @@ public class PluginController extends BaseController {
     @Autowired
     private PluginMapper pluginMapper;
 
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
+
     /**
      * 插件列表首页
      * @return
@@ -58,11 +62,21 @@ public class PluginController extends BaseController {
     @SentinelResource(value = "plugin_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/plugin_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<PluginInfo>> plugin_list(String plugin_name) {
+    public ReturnInfo<List<PluginInfo>> plugin_list(String plugin_name, String product_code, String dim_group) {
         try{
             Example example=new Example(PluginInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            //动态增加数据权限控制
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
+
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(plugin_name)){
                 criteria2.orLike("plugin_code", getLikeCondition(plugin_name));
@@ -179,7 +193,7 @@ public class PluginController extends BaseController {
             pluginInfo.setCreate_time(oldPluginInfo.getCreate_time());
             pluginInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             pluginInfo.setIs_delete(Const.NOT_DELETE);
-            pluginMapper.updateByPrimaryKey(pluginInfo);
+            pluginMapper.updateByPrimaryKeySelective(pluginInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", pluginInfo);
         } catch (Exception e) {
@@ -229,7 +243,7 @@ public class PluginController extends BaseController {
             pluginInfo.setIs_delete(Const.NOT_DELETE);
             pluginInfo.setCreate_time(new Timestamp(new Date().getTime()));
             pluginInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            pluginMapper.insert(pluginInfo);
+            pluginMapper.insertSelective(pluginInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", pluginInfo);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

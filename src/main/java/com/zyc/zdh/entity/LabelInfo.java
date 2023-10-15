@@ -114,6 +114,8 @@ public class LabelInfo {
      */
     private String label_default;
 
+    private String product_code;
+
     @Transient
     private JSONArray param_json_object;
 
@@ -405,5 +407,13 @@ public class LabelInfo {
 
     public void setLabel_default(String label_default) {
         this.label_default = label_default;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }

@@ -745,7 +745,41 @@
             },
             'click #strategy_task_download': function (e, value, row, index) {
                 window.open(server_context+"/strategy_task_download?id="+row.id);
-            }
+            },
+            'click #edit': function (e, value, row, index) {
+                layer.confirm('确定编辑修改吗?', {
+                    btn: ['确定编辑', '放弃'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    btn1:function(){
+                        var id = row.id;
+                        // 根据id获取具体信息
+                        parent.layer.msg("暂未实现");
+                        // parent.layer.open({
+                        //     type: 2,
+                        //     title: '编辑新任务',
+                        //     shadeClose: false,
+                        //     resize: true,
+                        //     fixed: false,
+                        //     maxmin: true,
+                        //     shade: 0.1,
+                        //     area : ['60%', '80%'],
+                        //     //area: ['450px', '500px'],
+                        //     content: server_context+"/xxx_index?id="+row.id, //iframe的url
+                        //     end : function () {
+                        //         console.info("弹框结束");
+                        //         $('#exampleTableEvents').bootstrapTable('refresh', {
+                        //             url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
+                        //         });
+                        //     }
+                        // });
+                    },
+                    btn2:function () {
+                        layer.close();
+                    }
+                });
+            },
         };
 
         function operateFormatter(value, row, index) {
@@ -955,6 +989,7 @@
                         '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+
                         //'</div>'+
                         '<button type="button" id="strategy_task_download" class="btn btn-success btn-xs">下载</button>'+
+                        '<button type="button" id="edit" class="btn btn-warning btn-xs">编辑</button>'+
                         '</div>'+
                         '</div>'
                     ].join('');

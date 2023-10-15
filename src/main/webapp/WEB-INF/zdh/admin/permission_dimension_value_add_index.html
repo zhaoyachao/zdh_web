@@ -115,7 +115,7 @@
                                         <div class="panel-body">
                                             <form id="jstree_update_node_from" name="jstree_update_node_from" method="post" class="form-horizontal"
                                                   action="">
-                                                <input type="hidden" name="id" value="" id="id">
+                                                <input type="hidden" name="id" value="" id="id2">
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">本节点名称</label>
                                                     <div class="col-sm-10">
@@ -284,6 +284,7 @@
                         return ;
                     }
                     $('#id').val(data.result.id);
+                    $('#id2').val(data.result.id);
                     $('#id3').val(data.result.id);
                     $('#parent_dim_value_code').val(data.result.dim_value_code);
 
@@ -448,7 +449,7 @@
             url: server_context+"/permission_dimension_value_update",
             dataType: 'json',
             async:'false',
-            data: $("#jstree_update_node_from").serialize()+"&id="+s.id+"&level="+s.level,
+            data: $("#jstree_update_node_from").serialize()+"&level="+s.level,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交

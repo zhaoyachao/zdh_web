@@ -12,13 +12,13 @@ import com.zyc.zdh.dao.StrategyInstanceMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +67,8 @@ public class StrategyGroupController extends BaseController {
     @Autowired
     private Environment env;
 
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     @RequestMapping(value = "/get_id", method = RequestMethod.GET)
     @ResponseBody
@@ -85,6 +87,7 @@ public class StrategyGroupController extends BaseController {
         return "digitalmarket/strategy_group_index";
     }
 
+
     /**
      * 策略组列表
      * @param group_context 关键字
@@ -93,11 +96,22 @@ public class StrategyGroupController extends BaseController {
     @SentinelResource(value = "strategy_group_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<PageResult<List<StrategyGroupInfo>>> strategy_group_list(String group_context, int limit, int offset) {
+    public ReturnInfo<PageResult<List<StrategyGroupInfo>>> strategy_group_list(String group_context, String product_code, String dim_group, int limit, int offset) {
         try{
+
             Example example=new Example(StrategyGroupInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            //动态增加数据权限控制
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
+
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(group_context)){
                 criteria2.orLike("group_context", getLikeCondition(group_context));
@@ -114,14 +128,12 @@ public class StrategyGroupController extends BaseController {
             pageResult.setTotal(total);
             pageResult.setRows(strategyGroupInfos);
 
-
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
-
     }
 
     /**
@@ -174,7 +186,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInfo.setCreate_time(oldStrategyGroupInfo.getCreate_time());
             strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             strategyGroupInfo.setIs_delete(Const.NOT_DELETE);
-            strategyGroupMapper.updateByPrimaryKey(strategyGroupInfo);
+            strategyGroupMapper.updateByPrimaryKeySelective(strategyGroupInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", strategyGroupInfo);
         } catch (Exception e) {
@@ -206,7 +218,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInfo.setTime_diff("0");
             strategyGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
             strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            strategyGroupMapper.insert(strategyGroupInfo);
+            strategyGroupMapper.insertSelective(strategyGroupInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
@@ -729,7 +741,6 @@ public class StrategyGroupController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
     }
-
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

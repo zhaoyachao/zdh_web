@@ -84,9 +84,9 @@
                                 <select id="code_type" name="code_type" data-placeholder="代码类型..."
                                          class="chosen-select form-control m-b" tabindex="2">
                                     <option value="" mytype=""></option>
-                                    <option value="python" mytype="">python</option>
                                     <option value="java" mytype="">java</option>
-                                    <option value="drools" mytype="">drools</option>
+                                    <option value="groovy" mytype="">groovy</option>
+                                    <option value="python" mytype="">python(未实现)</option>
                                 </select>
                             </div>
                         </div>
@@ -237,7 +237,7 @@
             });
 
             function init_editor(code_type) {
-                if(code_type == "drools"){
+                if(code_type == "groovy"){
                     code_type = "java";
                 }
                 var command=window.editor.getValue();

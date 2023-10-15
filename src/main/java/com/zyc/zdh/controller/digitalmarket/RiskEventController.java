@@ -6,11 +6,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.RiskEventMapper;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.RiskEventInfo;
-import com.zyc.zdh.entity.User;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +42,10 @@ public class RiskEventController extends BaseController {
     private RiskEventMapper riskEventMapper;
 
     @Autowired
-    Environment ev;
+    private Environment ev;
+
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 风控事件测试首页
@@ -112,20 +113,36 @@ public class RiskEventController extends BaseController {
     @RequestMapping(value = "/risk_event_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public String risk_event_list(String context) {
-        Example example=new Example(RiskEventInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        Example.Criteria criteria2=example.createCriteria();
-        if(!StringUtils.isEmpty(context)){
-            criteria2.orLike("event_name", getLikeCondition(context));
-            criteria2.orLike("event_code", getLikeCondition(context));
+    public ReturnInfo<List<RiskEventInfo>> risk_event_list(String context, String product_code, String dim_group) {
+
+        try{
+            Example example=new Example(RiskEventInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            //动态增加数据权限控制
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
+
+            Example.Criteria criteria2=example.createCriteria();
+            if(!StringUtils.isEmpty(context)){
+                criteria2.orLike("event_name", getLikeCondition(context));
+                criteria2.orLike("event_code", getLikeCondition(context));
+            }
+            example.and(criteria2);
+
+            List<RiskEventInfo> riskEventInfos = riskEventMapper.selectByExample(example);
+
+            return ReturnInfo.buildSuccess(riskEventInfos);
+        }catch (Exception e){
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
-        example.and(criteria2);
-
-        List<RiskEventInfo> riskEventInfos = riskEventMapper.selectByExample(example);
-
-        return JSONObject.toJSONString(riskEventInfos);
     }
 
     /**

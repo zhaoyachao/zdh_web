@@ -52,6 +52,17 @@ public class RiskEventInfo {
      */
     private String event_json;
 
+    /**
+     * 归属组
+     */
+    private String dim_group;
+
+    /**
+     * 归属产品
+     */
+    private String product_code;
+
+
     @Transient
     private JSONArray param_json_object;
 
@@ -218,5 +229,21 @@ public class RiskEventInfo {
      */
     public void setEvent_json(String event_json) {
         this.event_json = event_json;
+    }
+
+    public String getDim_group() {
+        return dim_group;
+    }
+
+    public void setDim_group(String dim_group) {
+        this.dim_group = dim_group;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }
