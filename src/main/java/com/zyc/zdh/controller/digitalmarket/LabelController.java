@@ -10,6 +10,7 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.User;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -40,6 +41,9 @@ public class LabelController extends BaseController {
     @Autowired
     private LabelMapper labelMapper;
 
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
+
     /**
      * 标签列表首页
      * @return
@@ -63,7 +67,14 @@ public class LabelController extends BaseController {
             Example example=new Example(LabelInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-            criteria.andEqualTo("product_code", product_code);
+
+            //动态增加数据权限控制
+            dynamicPermissionByProduct(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+
             Example.Criteria criteria2=example.createCriteria();
             if(!org.apache.commons.lang3.StringUtils.isEmpty(label_context)){
                 criteria2.orLike("label_code", getLikeCondition(label_context));

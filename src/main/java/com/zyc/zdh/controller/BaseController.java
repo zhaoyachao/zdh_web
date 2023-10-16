@@ -64,11 +64,26 @@ public class BaseController {
         List<PermissionDimensionValueInfo> dim_group_pdvi = zdhPermissionService.get_dim_group(getOwner());
         List<String> dim_groups = zdhPermissionService.dim_value2code(dim_group_pdvi);
 
-        //根据账号,查询归属组
+        //根据账号,查询归属产品
         List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
         List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
 
         criteria.andIn("dim_group", dim_groups);
+        criteria.andIn("product_code", dim_products);
+    }
+
+    /**
+     * 通过归属产品控制数据权限
+     * @param zdhPermissionService
+     * @param criteria
+     * @throws Exception
+     */
+    public void dynamicPermissionByProduct(ZdhPermissionService zdhPermissionService,  Example.Criteria criteria) throws Exception {
+
+        //根据账号,查询归属产品
+        List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
+        List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
+
         criteria.andIn("product_code", dim_products);
     }
 

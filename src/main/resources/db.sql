@@ -2492,7 +2492,197 @@ alter table zdh_ha_info add index idx_zdh_instance(zdh_instance);
 alter table zdh_logs add index idx_task_logs_id(task_logs_id);
 alter table zdh_nginx add index idx_owner(owner);
 
+alter table strategy_group_info add index idx_dim_group_owner(dim_group, owner);
+
 alter table resource_tree_info add column qps varchar(16) not null default '' comment 'qps限制';
+
+alter table strategy_group_info add column dim_group varchar(64) not null default '' comment '用户组';
+alter table strategy_group_instance add column dim_group varchar(64) not null default '' comment '用户组';
+
+alter table label_info add column product_code varchar(64) not null default '' comment '产品code';
+update label_info set product_code ='zdh';
+
+alter table strategy_group_info add column product_code varchar(64) not null default '' comment '产品code';
+alter table strategy_group_instance add column product_code varchar(64) not null default '' comment '产品code';
+update strategy_group_info set product_code ='zdh';
+update strategy_group_info set dim_group ='group3';
+
+alter table risk_event_info add column product_code varchar(64) not null default '' comment '产品code';
+alter table risk_event_info add column dim_group varchar(64) not null default '' comment '用户组';
+update risk_event_info set product_code ='zdh';
+update risk_event_info set dim_group ='group3';
+
+alter table filter_info add column product_code varchar(64) not null default '' comment '产品code';
+alter table filter_info add column dim_group varchar(64) not null default '' comment '用户组';
+update filter_info set product_code ='zdh';
+update filter_info set dim_group ='group3';
+
+alter table crowd_file_info add column product_code varchar(64) not null default '' comment '产品code';
+alter table crowd_file_info add column dim_group varchar(64) not null default '' comment '用户组';
+update crowd_file_info set product_code ='zdh';
+update crowd_file_info set dim_group ='group3';
+
+alter table touch_config_info add column product_code varchar(64) not null default '' comment '产品code';
+alter table touch_config_info add column dim_group varchar(64) not null default '' comment '用户组';
+update touch_config_info set product_code ='zdh';
+update touch_config_info set dim_group ='group3';
+
+alter table plugin_info add column product_code varchar(64) not null default '' comment '产品code';
+alter table plugin_info add column dim_group varchar(64) not null default '' comment '用户组';
+update plugin_info set product_code ='zdh';
+update plugin_info set dim_group ='group3';
+
+
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1129779712252448768, '963925904835219456', '风控事件', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2023-07-15 14:21:14', '2023-07-15 14:21:14', 'risk_event_index', '2', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1129876614897733632, '963925904835219456', '风控测试', '3', 'zyc', 'fa fa-coffee', '', '20', '1', '2023-07-15 20:46:17', '2023-07-15 20:46:17', 'risk_test_index', '2', '测试', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1135693658922684416, '963925904835219456', '变量服务', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2023-07-31 22:01:08', '2023-07-31 22:01:08', 'variable_index', '2', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1135693780490391552, '1135693658922684416', '变量查询', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2023-07-31 22:01:37', '2023-07-31 22:01:37', 'variable_detail', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1135693826770341888, '1135693658922684416', '变量更新', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2023-07-31 22:01:48', '2023-07-31 22:01:48', 'variable_update', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1135693883263422464, '1135693658922684416', '变量删除', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2023-07-31 22:02:02', '2023-07-31 22:02:02', 'variable_delete', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1135694022996660224, '1135693658922684416', '变量新增首页', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2023-07-31 22:02:35', '2023-07-31 22:02:35', 'variable_add_index', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1141158177291636736, '938783170151583744', '维度管理', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2023-08-15 23:55:11', '2023-08-15 23:55:11', 'permission_dimension_index', '2', '', '', 'zdh', '');
+
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163129500876148736, '1141158177291636736', '维度列表-查询', '5', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-10-15 15:01:23', '2023-10-15 15:01:23', 'permission_dimension_list', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163129640751992832, '1141158177291636736', '维度新增页面', '5', 'zyc', 'fa fa-coffee', '', '3', '1', '2023-10-15 15:01:56', '2023-10-15 15:01:56', 'permission_dimension_add_index', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163129724076036096, '1141158177291636736', '维度列表-明细', '5', 'zyc', 'fa fa-coffee', '', '4', '1', '2023-10-15 15:02:16', '2023-10-15 15:03:52', 'permission_dimension_detail', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163129902422036480, '1141158177291636736', '维度列表-更新', '5', 'zyc', 'fa fa-coffee', '', '5', '1', '2023-10-15 15:02:59', '2023-10-15 15:03:58', 'permission_dimension_update', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163129946898436096, '1141158177291636736', '维度列表-新增', '5', 'zyc', 'fa fa-coffee', '', '6', '1', '2023-10-15 15:03:09', '2023-10-15 15:04:05', 'permission_dimension_add', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163130030486720512, '1141158177291636736', '维度列表-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2023-10-15 15:03:29', '2023-10-15 15:04:13', 'permission_dimension_delete', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163130743853944832, '1141158177291636736', '维度值列表-页面', '5', 'zyc', 'fa fa-coffee', '', '11', '1', '2023-10-15 15:06:19', '2023-10-15 15:06:19', 'permission_dimension_value_index', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163130889614397440, '1141158177291636736', '维度值列表-查询', '5', 'zyc', 'fa fa-coffee', '', '11', '1', '2023-10-15 15:06:54', '2023-10-15 15:06:54', 'permission_dimension_value_list', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163130997894549504, '1141158177291636736', '维度值列表-新增页面', '5', 'zyc', 'fa fa-coffee', '', '13', '1', '2023-10-15 15:07:20', '2023-10-15 15:07:20', 'permission_dimension_value_add_index', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163131113439236096, '1141158177291636736', '维度值列表-更新', '5', 'zyc', 'fa fa-coffee', '', '14', '1', '2023-10-15 15:07:47', '2023-10-15 15:07:47', 'permission_dimension_value_update', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163131211195879424, '1141158177291636736', '维度值列表-新增', '5', 'zyc', 'fa fa-coffee', '', '15', '1', '2023-10-15 15:08:11', '2023-10-15 15:08:11', 'permission_dimension_value_add', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163131275121266688, '1141158177291636736', '维度值列表-删除', '5', 'zyc', 'fa fa-coffee', '', '15', '1', '2023-10-15 15:08:26', '2023-10-15 15:08:26', 'permission_dimension_value_delete', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163131406742720512, '1141158177291636736', '维度值列表-更新父节点', '5', 'zyc', 'fa fa-coffee', '', '16', '1', '2023-10-15 15:08:57', '2023-10-15 15:08:57', 'permission_dimension_value_parent', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163131508848857088, '1141158177291636736', '维度值列表-明细', '5', 'zyc', 'fa fa-coffee', '', '17', '1', '2023-10-15 15:09:22', '2023-10-15 15:09:22', 'permission_dimension_value_detail', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163131762461642752, '1141158177291636736', '维度值列表-根据维度值code查询维度值', '5', 'zyc', 'fa fa-coffee', '', '18', '1', '2023-10-15 15:10:22', '2023-10-15 15:10:22', 'permission_dimension_value_detail_by_code', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163132274800070656, '1141158177291636736', '维度值列表-维度值信息列表(根据维度code查询所有维度值)', '5', 'zyc', 'fa fa-coffee', '', '18', '1', '2023-10-15 15:12:24', '2023-10-15 15:12:24', 'permission_dimension_value_node', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163132951395831808, '1141158177291636736', '维度列表-查询维度明细(根据产品code查询)', '5', 'zyc', 'fa fa-coffee', '', '8', '1', '2023-10-15 15:15:06', '2023-10-15 15:15:06', 'permission_dimension_list_by_product_code', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163133585738174464, '893817125867622400', '用户配置-维度页面', '4', 'zyc', 'fa fa-coffee', '', '11', '1', '2023-10-15 15:17:37', '2023-10-15 15:17:37', 'permission_user_dimension_value_index', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163133715493163008, '893817125867622400', '用户配置-维度列表', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:18:08', '2023-10-15 15:18:08', 'permission_user_dimension_list', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163133813501464576, '893817125867622400', '用户配置-维度值列表', '4', 'zyc', 'fa fa-coffee', '', '13', '1', '2023-10-15 15:18:31', '2023-10-15 15:18:31', 'permission_user_dimension_value_list', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163133972306202624, '893817125867622400', '用户配置-维度值页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:19:09', '2023-10-15 15:19:09', 'permission_user_dimension_value_add_index', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163134061577768960, '893817125867622400', '用户配置-维度值明细', '4', 'zyc', 'fa fa-coffee', '', '14', '1', '2023-10-15 15:19:30', '2023-10-15 15:20:13', 'permission_user_dimension_value_detail', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163134143626743808, '893817125867622400', '用户配置-维度值更新', '4', 'zyc', 'fa fa-coffee', '', '15', '1', '2023-10-15 15:19:50', '2023-10-15 15:19:50', 'permission_user_dimension_value_update', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163134766648659968, '1050183823079247872', '用户组-维度页面', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2023-10-15 15:22:18', '2023-10-15 15:22:18', 'permission_usergroup_dimension_value_index', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163134908525187072, '1050183823079247872', '用户组-维度列表', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2023-10-15 15:22:52', '2023-10-15 15:22:52', 'permission_usergroup_dimension_list', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163134982940528640, '1050183823079247872', '用户组-维度值列表', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2023-10-15 15:23:10', '2023-10-15 15:23:10', 'permission_usergroup_dimension_value_list', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163135062913323008, '1050183823079247872', '用户组-维度值页面', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2023-10-15 15:23:29', '2023-10-15 15:23:29', 'permission_usergroup_dimension_value_add_index', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163135177799503872, '1050183823079247872', '用户组-维度值更新', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2023-10-15 15:23:56', '2023-10-15 15:23:56', 'permission_usergroup_dimension_value_update', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163136555754196992, '938785006883442688', '查询所有产品', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2023-10-15 15:29:25', '2023-10-15 15:29:25', 'product_tag_all', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163136793244078080, '893810193274507264', '菜单配置-查询资源说明', '5', 'zyc', 'fa fa-coffee', '', '8', '1', '2023-10-15 15:30:22', '2023-10-15 15:30:22', 'jstree_get_desc', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163137319918637056, '963932648793706496', '策略手动重试', '4', 'zyc', 'fa fa-coffee', '', '30', '1', '2023-10-15 15:32:27', '2023-10-15 15:32:27', 'strategy_retry', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163137449908506624, '963932648793706496', '策略手动跳过', '4', 'zyc', 'fa fa-coffee', '', '31', '1', '2023-10-15 15:32:58', '2023-10-15 15:32:58', 'strategy_skip', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163137896278921216, '963932648793706496', '策略组实例杀死', '4', 'zyc', 'fa fa-coffee', '', '27', '1', '2023-10-15 15:34:45', '2023-10-15 15:34:45', 'killStrategyGroup', '1', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163139082172239872, '1141158177291636736', '维度值查询-获取当前用户绑定的归属组', '5', 'zyc', 'fa fa-coffee', '', '21', '1', '2023-10-15 15:39:27', '2023-10-15 15:39:27', 'get_dim_group', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163139161562025984, '1141158177291636736', '维度值查询-获取当前用户绑定的归属产品', '5', 'zyc', 'fa fa-coffee', '', '22', '1', '2023-10-15 15:39:46', '2023-10-15 15:39:46', 'get_dim_product', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163139680552620032, '963932648793706496', '代码块页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:41:50', '2023-10-15 15:41:50', 'code_block_detail', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163140002545143808, '963932648793706496', 'tn页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:43:07', '2023-10-15 15:43:07', 'tn_detail', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163140084707364864, '963932648793706496', '人工确认页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:43:26', '2023-10-15 15:43:26', 'manual_confirm_detail', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163140168496975872, '963932648793706496', '自定义名单页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:43:46', '2023-10-15 15:43:46', 'custom_list_detail', '3', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163140436072599552, '963932648793706496', '查询用户上传人群文件', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:44:50', '2023-10-15 15:44:50', 'crowd_file_list_by_owner', '5', '', '', 'zdh', '');
+INSERT INTO resource_tree_info
+(id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+VALUES(1163140754785177600, '963932648793706496', '权益页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:46:06', '2023-10-15 15:46:06', 'rights_detail', '3', '', '', 'zdh', '');
+
+
 
 -- quartz;
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
