@@ -4,7 +4,7 @@ bin_path=`dirname "$0"`
 cd "$bin_path/.."
 pt=`pwd`
 APP_NAME=${pt}"/zdh_web.jar"
-RUN_MODE=pro
+RUN_MODE=prod
 
 #APP_DIR=./
 APP_DIR=`pwd`
