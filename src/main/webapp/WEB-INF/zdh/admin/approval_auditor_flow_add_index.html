@@ -178,8 +178,10 @@
 <script src="js/plugins/layer/laydate/laydate.js"></script>
 
 <script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
-<script type="text/javascript" src="js/admin/approval_auditor_flow_add.js"></script>
 
+<script src="js/admin/dim_product_common.js"></script>
+
+<script type="text/javascript" src="js/admin/approval_auditor_flow_add.js"></script>
 
 <script type="text/javascript">
 
@@ -475,35 +477,40 @@
 
             $('#product_code').chosen();
             function init_product_code(){
-                $.ajax({
-                    type: 'POST',
-                    url: server_context+"/product_tag_list",
-                    async:false,
-                    dataType: 'json',
-                    data: "",
-                    //成功返回
-                    success: function (data) {
-                        if(data.code != "200"){
-                            layer.msg(data.msg);
-                            return ;
-                        }
-                        var str = '<option value=\"' + '\" hassubinfo=\"true\">空</option>';
-                        for (var i = 0; i < data.result.length; i++) {
-                            str += '<option value=\"' + data.result[i].product_code + '\" hassubinfo=\"true\">' + data.result[i].product_name + '</option>';
-                        }
-                        $('#product_code').html(str);
-                        $("#product_code").trigger("chosen:updated");
-                        $('#product_code').chosen().on("change", function (evt, params) {
-                            init_code($("#product_code").val());
-                        });
-                    },
-                    //处理完成
-                    complete: function () {
-                    },
-                    //报错
-                    error: function (data) {
-                    }
+
+                $('#product_code').chosen().on("change", function (evt, params) {
+                    init_code($("#product_code").val());
                 });
+
+                // $.ajax({
+                //     type: 'POST',
+                //     url: server_context+"/get_dim_product",
+                //     async:false,
+                //     dataType: 'json',
+                //     data: "",
+                //     //成功返回
+                //     success: function (data) {
+                //         if(data.code != "200"){
+                //             layer.msg(data.msg);
+                //             return ;
+                //         }
+                //         var str = '<option value=\"' + '\" hassubinfo=\"true\">空</option>';
+                //         for (var i = 0; i < data.result.length; i++) {
+                //             str += '<option value=\"' + data.result[i].product_code + '\" hassubinfo=\"true\">' + data.result[i].product_name + '</option>';
+                //         }
+                //         $('#product_code').html(str);
+                //         $("#product_code").trigger("chosen:updated");
+                //         $('#product_code').chosen().on("change", function (evt, params) {
+                //             init_code($("#product_code").val());
+                //         });
+                //     },
+                //     //处理完成
+                //     complete: function () {
+                //     },
+                //     //报错
+                //     error: function (data) {
+                //     }
+                // });
             }
             init_product_code();
 

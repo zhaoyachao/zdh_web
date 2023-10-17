@@ -6,6 +6,7 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.EmailJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
@@ -33,27 +34,29 @@ public class ZdhProcessFlowController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    ProcessFlowMapper processFlowMapper;
+    private ProcessFlowMapper processFlowMapper;
     @Autowired
-    IssueDataMapper issueDataMapper;
+    private IssueDataMapper issueDataMapper;
     @Autowired
-    ApplyMapper applyMapper;
+    private ApplyMapper applyMapper;
     @Autowired
-    ApprovalAuditorMapper approvalAuditorMapper;
+    private ApprovalAuditorMapper approvalAuditorMapper;
     @Autowired
-    ApprovalEventMapper approvalEventMapper;
+    private ApprovalEventMapper approvalEventMapper;
     @Autowired
-    PermissionApplyMapper permissionApplyMapper;
+    private PermissionApplyMapper permissionApplyMapper;
     @Autowired
-    PermissionMapper permissionMapper;
+    private PermissionMapper permissionMapper;
     @Resource
-    PermissionController permissionController;
+    private PermissionController permissionController;
     @Autowired
-    ProductTagMapper productTagMapper;
+    private ProductTagMapper productTagMapper;
     @Autowired
-    RedisUtil redisUtil;
+    private RedisUtil redisUtil;
     @Autowired
-    Environment ev;
+    private Environment ev;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 流程审批页面
@@ -86,13 +89,19 @@ public class ZdhProcessFlowController extends BaseController {
     @RequestMapping(value = "/process_flow_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ProcessFlowInfo>> process_flow_list(String context) {
-
-        String product_code = ev.getProperty("zdh.product", "zdh");
-        if(!StringUtils.isEmpty(context)){
-            context = getLikeCondition(context);
+        try{
+            List<String> product_codes = getPermissionByProduct(zdhPermissionService);
+            if(!StringUtils.isEmpty(context)){
+                context = getLikeCondition(context);
+            }
+            List<ProcessFlowInfo> pfis = processFlowMapper.selectByAuditorId(Const.SHOW, getUser().getUserName(), context, product_codes);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "获取流程列表", e);
         }
-        List<ProcessFlowInfo> pfis = processFlowMapper.selectByAuditorId(Const.SHOW, getUser().getUserName(), context, product_code);
-        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
+
     }
 
     /**
@@ -105,12 +114,20 @@ public class ZdhProcessFlowController extends BaseController {
     @RequestMapping(value = "/process_flow_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<ProcessFlowInfo>> process_flow_list2(String context) {
-        String product_code = ev.getProperty("zdh.product", "zdh");
-        if(!StringUtils.isEmpty(context)){
-            context = getLikeCondition(context);
+        try{
+            //String product_code = ev.getProperty("zdh.product", "zdh");
+            List<String> product_codes = getPermissionByProduct(zdhPermissionService);
+            if(!StringUtils.isEmpty(context)){
+                context = getLikeCondition(context);
+            }
+            List<ProcessFlowInfo> pfis = processFlowMapper.selectByOwner(getUser().getUserName(), context, product_codes);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "获取流程列表", e);
         }
-        List<ProcessFlowInfo> pfis = processFlowMapper.selectByOwner(getUser().getUserName(), context, product_code);
-        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
+
     }
 
     /**

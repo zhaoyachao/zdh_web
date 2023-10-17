@@ -88,6 +88,40 @@ public class BaseController {
     }
 
     /**
+     * 查询用户及用户组绑定的产品code集合
+     * @param zdhPermissionService
+     * @return
+     * @throws Exception
+     */
+    public List<String> getPermissionByProduct(ZdhPermissionService zdhPermissionService) throws Exception {
+
+        //根据账号,查询归属产品
+        List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
+        List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
+
+        return dim_products;
+    }
+
+    /**
+     * 通过归属产品控制数据权限
+     * @param zdhPermissionService
+     * @param criteria
+     * @throws Exception
+     */
+    public void dynamicPermissionByProductAndFilterProduct(ZdhPermissionService zdhPermissionService,  Example.Criteria criteria, String product_code) throws Exception {
+
+        //根据账号,查询归属产品
+        List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
+        List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
+
+        criteria.andIn("product_code", dim_products);
+
+        if(!StringUtils.isEmpty(product_code)){
+            criteria.andEqualTo("product_code", product_code);
+        }
+    }
+
+    /**
      * 返回 %conditon% 格式
      * @param condition
      * @return

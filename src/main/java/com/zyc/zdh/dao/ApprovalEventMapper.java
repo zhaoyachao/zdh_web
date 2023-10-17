@@ -22,6 +22,7 @@ public interface ApprovalEventMapper extends BaseApprovalEventMapper<ApprovalEve
      */
     @Select({"<script>",
             "SELECT a.*,b.code_name,b.type FROM approval_event_info a inner join approval_config_info b on a.code=b.code ",
+            "and a.product_code=b.product_code",
             "WHERE 1=1",
             "<when test='event_context!=null and event_context !=\"\"'>",
             "AND (a.code like #{event_context}",
@@ -29,8 +30,12 @@ public interface ApprovalEventMapper extends BaseApprovalEventMapper<ApprovalEve
             "or event_context like #{event_context}",
             "or a.id like #{event_context})",
             "</when>",
+            "and a.product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
             "</script>"})
-    public List<ApprovalEventInfo> selectByContext(@Param("event_context") String event_context);
+    public List<ApprovalEventInfo> selectByContext(@Param("event_context") String event_context, @Param("product_codes")List<String> product_codes);
 
     @Select({"<script>",
             "SELECT a.*,b.code_name,b.type FROM approval_event_info a inner join approval_config_info b on a.code=b.code",

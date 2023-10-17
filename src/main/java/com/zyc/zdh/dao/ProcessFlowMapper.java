@@ -22,12 +22,15 @@ public interface ProcessFlowMapper extends BaseProcessFlowMapper<ProcessFlowInfo
             "<when test='context!=null and context !=\"\"'>",
             "and context like #{context}",
             "</when>",
-            " and pfi.product_code = #{product_code}",
+            " and pfi.product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
             "order by pfi.create_time desc",
             "</script>"
 
     })
-    public List<ProcessFlowInfo> selectByAuditorId(@Param("is_show") String is_show, @Param("auditor_id") String auditor_id,@Param("context") String context, @Param("product_code") String product_code);
+    public List<ProcessFlowInfo> selectByAuditorId(@Param("is_show") String is_show, @Param("auditor_id") String auditor_id,@Param("context") String context, @Param("product_codes") List<String> product_codes);
 
     @Update(
             {
@@ -71,13 +74,16 @@ public interface ProcessFlowMapper extends BaseProcessFlowMapper<ProcessFlowInfo
             "<when test='context!=null and context !=\"\"'>",
             "and context like #{context}",
             "</when>",
-            " and product_code = #{product_code}",
+            " and product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
             "group by owner,flow_id",
             "order by create_time desc ",
             "</script>"
 
     })
-    public List<ProcessFlowInfo> selectByOwner(@Param("owner") String owner,@Param("context") String context, @Param("product_code") String product_code);
+    public List<ProcessFlowInfo> selectByOwner(@Param("owner") String owner,@Param("context") String context, @Param("product_codes") List<String> product_codes);
 
     @Select({
             "<script>",

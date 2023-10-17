@@ -7,6 +7,7 @@ import com.zyc.zdh.dao.ApprovalConfigMapper;
 import com.zyc.zdh.dao.ApprovalEventMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +47,9 @@ public class ZdhApprovalController extends BaseController{
     @Autowired
     ApprovalAuditorFlowMapper approvalAuditorFlowMapper;
 
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
+
     /**
      * 审批节点首页
      * @return
@@ -67,9 +71,12 @@ public class ZdhApprovalController extends BaseController{
     @ResponseBody
     public ReturnInfo<List<ApprovalConfigInfo>> approve_config_list(String product_code,String approval_context) {
         try{
-            checkPermissionByOwner(product_code);
+            //checkPermissionByOwner(product_code);
             Example example=new Example(ApprovalConfigInfo.class);
             Example.Criteria criteria = example.createCriteria();
+            //动态增加数据权限控制
+            dynamicPermissionByProductAndFilterProduct(zdhPermissionService, criteria, product_code);
+
             if(!StringUtils.isEmpty(approval_context)){
                 criteria.orLike("code", getLikeCondition(approval_context));
                 criteria.orLike("code_name", getLikeCondition(approval_context));
@@ -313,11 +320,13 @@ public class ZdhApprovalController extends BaseController{
     @SentinelResource(value = "approval_auditor_flow_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/approval_auditor_flow_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<PageResult<List<ApprovalAuditorFlowInfo>>> approval_auditor_flow_list(String flow_context, int limit, int offset) {
+    public ReturnInfo<PageResult<List<ApprovalAuditorFlowInfo>>> approval_auditor_flow_list(String flow_context, int limit, int offset, String product_code) {
         try{
 
             Example example=new Example(ApprovalAuditorFlowInfo.class);
             Example.Criteria criteria=example.createCriteria();
+
+            dynamicPermissionByProductAndFilterProduct(zdhPermissionService, criteria, product_code);
 
             if(!StringUtils.isEmpty(flow_context)){
                 flow_context = getLikeCondition(flow_context);
@@ -505,11 +514,12 @@ public class ZdhApprovalController extends BaseController{
     @ResponseBody
     public ReturnInfo<List<ApprovalEventInfo>> approval_event_list(String product_code,String event_context) {
         try{
-            checkPermissionByOwner(product_code);
+            List<String> product_codes = getPermissionByProduct(zdhPermissionService);
+            //checkPermissionByOwner(product_code);
             if(!StringUtils.isEmpty(event_context)){
                 event_context = getLikeCondition(event_context);
             }
-            List<ApprovalEventInfo> approvalEventInfos=approvalEventMapper.selectByContext(event_context);
+            List<ApprovalEventInfo> approvalEventInfos=approvalEventMapper.selectByContext(event_context, product_codes);
             return ReturnInfo.buildSuccess(approvalEventInfos);
         }catch (Exception e){
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
