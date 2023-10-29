@@ -137,7 +137,7 @@ public class ZdhDataxController extends BaseController{
             etlTaskDataxInfo.setCreate_time(new Timestamp(new Date().getTime()));
             etlTaskDataxInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskDataxInfo.setIs_delete(Const.NOT_DELETE);
-            etlTaskDataxMapper.insert(etlTaskDataxInfo);
+            etlTaskDataxMapper.insertSelective(etlTaskDataxInfo);
 
             if (etlTaskDataxInfo.getUpdate_context() != null && !etlTaskDataxInfo.getUpdate_context().equals("")) {
                 //插入更新日志表
@@ -146,7 +146,7 @@ public class ZdhDataxController extends BaseController{
                 etlTaskUpdateLogs.setUpdate_context(etlTaskDataxInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
@@ -176,7 +176,7 @@ public class ZdhDataxController extends BaseController{
             etlTaskDataxInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskDataxInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskDataxInfo);
-            etlTaskDataxMapper.updateByPrimaryKey(etlTaskDataxInfo);
+            etlTaskDataxMapper.updateByPrimaryKeySelective(etlTaskDataxInfo);
 
             EtlTaskDataxInfo sti = etlTaskDataxMapper.selectByPrimaryKey(etlTaskDataxInfo.getId());
 
@@ -188,7 +188,7 @@ public class ZdhDataxController extends BaseController{
                 etlTaskUpdateLogs.setUpdate_context(etlTaskDataxInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);

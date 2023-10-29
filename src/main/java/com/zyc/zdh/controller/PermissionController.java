@@ -289,14 +289,14 @@ public class PermissionController extends BaseController {
                 }
                 user.setEnable(Const.FALSE);
                 user.setId(null);
-                permissionMapper.insert(user);
+                permissionMapper.insertSelective(user);
             } else {
                 PermissionUserInfo pui = permissionMapper.selectByPrimaryKey(user.getId());
                 if (user.getUser_password().equalsIgnoreCase("")) {
                     user.setUser_password(pui.getUser_password());
                     user.setEnable(pui.getEnable());
                 }
-                permissionMapper.updateByPrimaryKey(user);
+                permissionMapper.updateByPrimaryKeySelective(user);
                 //
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", getBaseException());
@@ -342,7 +342,7 @@ public class PermissionController extends BaseController {
             ugi.setEnable("true");
             ugi.setCreate_time(new Timestamp(new Date().getTime()));
             ugi.setUpdate_time(new Timestamp(new Date().getTime()));
-            userGroupMapper.insert(ugi);
+            userGroupMapper.insertSelective(ugi);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
@@ -528,7 +528,7 @@ public class PermissionController extends BaseController {
                 rti.setQps("");
             }
             debugInfo(rti);
-            resourceTreeMapper.insert(rti);
+            resourceTreeMapper.insertSelective(rti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -587,7 +587,7 @@ public class PermissionController extends BaseController {
                 rti.setQps("");
             }
             debugInfo(rti);
-            resourceTreeMapper.insert(rti);
+            resourceTreeMapper.insertSelective(rti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -667,7 +667,7 @@ public class PermissionController extends BaseController {
                 rti.setQps("");
             }
             debugInfo(rti);
-            resourceTreeMapper.updateByPrimaryKey(rti);
+            resourceTreeMapper.updateByPrimaryKeySelective(rti);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
@@ -1044,7 +1044,7 @@ public class PermissionController extends BaseController {
             permissionApplyInfo.setIs_delete(Const.NOT_DELETE);
             permissionApplyInfo.setStatus(Const.PERMISSION_APPLY_INIT);
             permissionApplyInfo.setFlow_id("0");
-            int result = permissionApplyMapper.insert(permissionApplyInfo);
+            int result = permissionApplyMapper.insertSelective(permissionApplyInfo);
 
             String event_code=EventCode.PERMISSION_APPLY.getCode();
             String event_context="权限申请-"+permissionApplyInfo.getApply_type()+'-'+apply_context;
@@ -1066,7 +1066,7 @@ public class PermissionController extends BaseController {
 
                 String flow_id = zdhProcessFlowController.createProcessByAuditor(getUser().getUserName(),productTagInfo.getProduct_admin(),event_code, event_context, event_id, pui.getProduct_code());
                 permissionApplyInfo.setFlow_id(flow_id);
-                permissionApplyMapper.updateByPrimaryKey(permissionApplyInfo);
+                permissionApplyMapper.updateByPrimaryKeySelective(permissionApplyInfo);
             }else{
                 pui.setUser_account(getOwner());
                 pui.setProduct_code(permissionApplyInfo.getProduct_code());
@@ -1080,7 +1080,7 @@ public class PermissionController extends BaseController {
 
                 String flow_id = zdhProcessFlowController.createProcess(getUser().getUserName(),pui.getUser_group(),event_code, event_context, event_id, pui.getProduct_code());
                 permissionApplyInfo.setFlow_id(flow_id);
-                permissionApplyMapper.updateByPrimaryKey(permissionApplyInfo);
+                permissionApplyMapper.updateByPrimaryKeySelective(permissionApplyInfo);
             }
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", permissionApplyInfo);
@@ -1366,7 +1366,7 @@ public class PermissionController extends BaseController {
             permissionBigdataInfo.setIs_delete(Const.NOT_DELETE);
             permissionBigdataInfo.setUpdate_time(new Timestamp(new Date().getTime()));
 
-            int result = permissionBigdataMapper.insert(permissionBigdataInfo);
+            int result = permissionBigdataMapper.insertSelective(permissionBigdataInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionBigdataInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -1396,7 +1396,7 @@ public class PermissionController extends BaseController {
             permissionBigdataInfo.setIs_delete(Const.NOT_DELETE);
             permissionBigdataInfo.setUpdate_time(new Timestamp(new Date().getTime()));
 
-            int result = permissionBigdataMapper.updateByPrimaryKey(permissionBigdataInfo);
+            int result = permissionBigdataMapper.updateByPrimaryKeySelective(permissionBigdataInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionBigdataInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

@@ -8,6 +8,7 @@ import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.DispatchTaskService;
 import com.zyc.zdh.service.EtlTaskService;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import org.apache.commons.beanutils.BeanUtils;
@@ -58,6 +59,8 @@ public class ZdhDispatchController extends BaseController {
     QuartzExecutorMapper quartzExecutorMapper;
     @Autowired
     JdbcTemplate jdbcTemplate;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 调度任务首页
@@ -78,14 +81,15 @@ public class ZdhDispatchController extends BaseController {
     @SentinelResource(value = "dispatch_task_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/dispatch_task_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<QuartzJobInfo>> dispatch_task_list(String[] ids) {
+    public ReturnInfo<List<QuartzJobInfo>> dispatch_task_list(String[] ids, String product_code, String dim_group) {
         try{
             List<QuartzJobInfo> list = new ArrayList<>();
             QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
             quartzJobInfo.setOwner(getOwner());
-            if (ids == null)
-                list = quartzJobMapper.selectByOwner(quartzJobInfo.getOwner());
-            else {
+            if (ids == null){
+                Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+                list = quartzJobMapper.selectByOwner(quartzJobInfo.getOwner(), product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
+            } else {
                 quartzJobInfo.setJob_id(ids[0]);
                 list.add(quartzJobMapper.selectByPrimaryKey(quartzJobInfo));
             }
@@ -111,7 +115,7 @@ public class ZdhDispatchController extends BaseController {
     @SentinelResource(value = "dispatch_task_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/dispatch_task_list2",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<QuartzJobInfo>> dispatch_task_list2(String job_context, String etl_context, String status, String last_status) {
+    public ReturnInfo<List<QuartzJobInfo>> dispatch_task_list2(String job_context, String etl_context, String status, String last_status, String product_code, String dim_group) {
         try{
             List<QuartzJobInfo> list = new ArrayList<>();
             if(!StringUtils.isEmpty(job_context)){
@@ -120,7 +124,8 @@ public class ZdhDispatchController extends BaseController {
             if(!StringUtils.isEmpty(etl_context)){
                 etl_context=getLikeCondition(etl_context);
             }
-            list = quartzJobMapper.selectByParams(getOwner(), job_context, etl_context, status, last_status);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            list = quartzJobMapper.selectByParams(getOwner(), job_context, etl_context, status, last_status, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -265,7 +270,7 @@ public class ZdhDispatchController extends BaseController {
                 }
             }
             debugInfo(quartzJobInfo);
-            quartzJobMapper.insert(quartzJobInfo);
+            quartzJobMapper.insertSelective(quartzJobInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -317,7 +322,7 @@ public class ZdhDispatchController extends BaseController {
             QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);
             //每次更新都重新设置任务实例id
             qji.setTask_log_id(null);
-            quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
+            quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -358,7 +363,7 @@ public class ZdhDispatchController extends BaseController {
             //dti.setTask_log_id(null);
             //dti.setLast_time(null);
             //dti.setNext_time(null);
-            quartzJobMapper.updateByPrimaryKey(dti);
+            quartzJobMapper.updateByPrimaryKeySelective(dti);
             for(int i=0;i<dates.size();i++){
                 TaskGroupLogInstance tgli=new TaskGroupLogInstance();
                 BeanUtils.copyProperties(tgli, dti);
@@ -644,7 +649,7 @@ public class ZdhDispatchController extends BaseController {
             qei.setInstance_name(instance_name);
             qei.setStatus(status);
             qei.setIs_handle(Const.FALSE);
-            quartzExecutorMapper.insert(qei);
+            quartzExecutorMapper.insertSelective(qei);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -729,7 +734,7 @@ public class ZdhDispatchController extends BaseController {
     public ReturnInfo dispatch_system_task_update(QuartzJobInfo quartzJobInfo) {
         try{
 
-            quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
+            quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

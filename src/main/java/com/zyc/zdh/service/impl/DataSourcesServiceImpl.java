@@ -28,7 +28,7 @@ public class DataSourcesServiceImpl implements DataSourcesService {
 
     @Override
     public int insert(DataSourcesInfo dataSourcesInfo) {
-        return dataSourcesMapper.insert(dataSourcesInfo);
+        return dataSourcesMapper.insertSelective(dataSourcesInfo);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class DataSourcesServiceImpl implements DataSourcesService {
 
     @Override
     public int update(DataSourcesInfo dataSourcesInfo) {
-        return dataSourcesMapper.updateByPrimaryKey(dataSourcesInfo);
+        return dataSourcesMapper.updateByPrimaryKeySelective(dataSourcesInfo);
     }
 
     @Override

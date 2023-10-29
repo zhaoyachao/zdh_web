@@ -153,7 +153,7 @@
                 dataType : "json",
                 success : function(data) {
                     console.info("success");
-                    $("#risk_data").val(JSON.stringify(data.result['strategyGroupResults']));
+                    $("#risk_data").val(JSON.stringify(data.result));
                 },
                 error: function (data) {
                     console.info("error: " + data.responseText);

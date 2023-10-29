@@ -6,6 +6,7 @@ import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SFTPUtil;
@@ -34,6 +35,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SSH服务
@@ -52,7 +54,8 @@ public class ZdhSshController extends BaseController{
     JarFileMapper jarFileMapper;
     @Autowired
     SshTaskMapper sshTaskMapper;
-
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
     /**
      * SSH 任务首页
      * @return
@@ -93,7 +96,7 @@ public class ZdhSshController extends BaseController{
 //        jarTaskInfo.setFiles("");
 //        jarTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
 //        debugInfo(jarTaskInfo);
-//        jarTaskMapper.insert(jarTaskInfo);
+//        jarTaskMapper.insertSelective(jarTaskInfo);
 //        System.out.println(json_str);
 //        System.out.println(jar_files);
 //        if (jar_files != null && jar_files.length > 0) {
@@ -106,7 +109,7 @@ public class ZdhSshController extends BaseController{
 //                jarFileInfo.setFile_name(fileName);
 //                jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
 //                jarFileInfo.setOwner(owner);
-//                jarFileMapper.insert(jarFileInfo);
+//                jarFileMapper.insertSelective(jarFileInfo);
 //
 //                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
 //                File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
@@ -127,7 +130,7 @@ public class ZdhSshController extends BaseController{
 //                        sftp.logout();
 //                    }
 //                    jarFileInfo.setStatus("success");
-//                    jarFileMapper.updateByPrimaryKey(jarFileInfo);
+//                    jarFileMapper.updateByPrimaryKeySelective(jarFileInfo);
 //                } catch (IOException e) {
 //                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
 //                } catch (SftpException e) {
@@ -161,7 +164,7 @@ public class ZdhSshController extends BaseController{
 //            String id =jarTaskInfo.getId();
 //            jarTaskInfo.setOwner(owner);
 //            debugInfo(jarTaskInfo);
-//            jarTaskMapper.updateByPrimaryKey(jarTaskInfo);
+//            jarTaskMapper.updateByPrimaryKeySelective(jarTaskInfo);
 //            System.out.println(json_str);
 //
 //            if (jar_files != null && jar_files.length > 0) {
@@ -178,7 +181,7 @@ public class ZdhSshController extends BaseController{
 //                    jarFileInfo.setFile_name(fileName);
 //                    jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
 //                    jarFileInfo.setOwner(owner);
-//                    jarFileMapper.insert(jarFileInfo);
+//                    jarFileMapper.insertSelective(jarFileInfo);
 //
 //                    ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
 //                    File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
@@ -199,7 +202,7 @@ public class ZdhSshController extends BaseController{
 //                            sftp.logout();
 //                        }
 //                        jarFileInfo.setStatus("success");
-//                        jarFileMapper.updateByPrimaryKey(jarFileInfo);
+//                        jarFileMapper.updateByPrimaryKeySelective(jarFileInfo);
 //                    } catch (IOException e) {
 //                         logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
 //                        throw e;
@@ -299,13 +302,14 @@ public class ZdhSshController extends BaseController{
     @SentinelResource(value = "etl_task_ssh_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_ssh_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<SshTaskInfo>> etl_task_ssh_list(String ssh_context, String id) {
+    public ReturnInfo<List<SshTaskInfo>> etl_task_ssh_list(String ssh_context, String id, String product_code, String dim_group) {
         try{
             List<SshTaskInfo> sshTaskInfos = new ArrayList<>();
             if(!StringUtils.isEmpty(ssh_context)){
                 ssh_context=getLikeCondition(ssh_context);
             }
-            sshTaskInfos = sshTaskMapper.selectByParams(getOwner(), ssh_context, id);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            sshTaskInfos = sshTaskMapper.selectByParams(getOwner(), ssh_context, id, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
 
             return ReturnInfo.buildSuccess(sshTaskInfos);
         }catch (Exception e){
@@ -360,7 +364,7 @@ public class ZdhSshController extends BaseController{
             sshTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sshTaskInfo);
 
-            sshTaskMapper.insert(sshTaskInfo);
+            sshTaskMapper.insertSelective(sshTaskInfo);
 
 
             if (sshTaskInfo.getUpdate_context() != null && !sshTaskInfo.getUpdate_context().equals("")) {
@@ -370,7 +374,7 @@ public class ZdhSshController extends BaseController{
                 etlTaskUpdateLogs.setUpdate_context(sshTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
 
             if (jar_files != null && jar_files.length > 0) {
@@ -386,7 +390,7 @@ public class ZdhSshController extends BaseController{
                     jarFileInfo.setFile_name(fileName);
                     jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
                     jarFileInfo.setOwner(owner);
-                    jarFileMapper.insert(jarFileInfo);
+                    jarFileMapper.insertSelective(jarFileInfo);
 
                     ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
                     File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
@@ -407,7 +411,7 @@ public class ZdhSshController extends BaseController{
                             sftp.logout();
                         }
                         jarFileInfo.setStatus("success");
-                        jarFileMapper.updateByPrimaryKey(jarFileInfo);
+                        jarFileMapper.updateByPrimaryKeySelective(jarFileInfo);
                     } catch (IOException e) {
                          logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
                         throw e;
@@ -445,7 +449,7 @@ public class ZdhSshController extends BaseController{
             sshTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sshTaskInfo);
             String id=sshTaskInfo.getId();
-            sshTaskMapper.updateByPrimaryKey(sshTaskInfo);
+            sshTaskMapper.updateByPrimaryKeySelective(sshTaskInfo);
 
             SshTaskInfo sti = sshTaskMapper.selectByPrimaryKey(sshTaskInfo.getId());
 
@@ -457,7 +461,7 @@ public class ZdhSshController extends BaseController{
                 etlTaskUpdateLogs.setUpdate_context(sshTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
 
             if (jar_files != null && jar_files.length > 0) {
@@ -474,7 +478,7 @@ public class ZdhSshController extends BaseController{
                     jarFileInfo.setFile_name(fileName);
                     jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
                     jarFileInfo.setOwner(owner);
-                    jarFileMapper.insert(jarFileInfo);
+                    jarFileMapper.insertSelective(jarFileInfo);
 
                     ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
                     File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
@@ -496,7 +500,7 @@ public class ZdhSshController extends BaseController{
                             sftp.logout();
                         }
                         jarFileInfo.setStatus("success");
-                        jarFileMapper.updateByPrimaryKey(jarFileInfo);
+                        jarFileMapper.updateByPrimaryKeySelective(jarFileInfo);
                     } catch (IOException e) {
                          logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
                         throw e;

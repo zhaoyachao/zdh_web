@@ -24,7 +24,7 @@ public class DispatchTaskServiceImpl implements DispatchTaskService {
 
     @Override
     public int insert(DispatchTaskInfo dispatchTaskInfo) {
-        return dispatchTaskMapper.insert(dispatchTaskInfo);
+        return dispatchTaskMapper.insertSelective(dispatchTaskInfo);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class DispatchTaskServiceImpl implements DispatchTaskService {
 
     @Override
     public int update(DispatchTaskInfo dispatchTaskInfo) {
-        return dispatchTaskMapper.updateByPrimaryKey(dispatchTaskInfo);
+        return dispatchTaskMapper.updateByPrimaryKeySelective(dispatchTaskInfo);
     }
 
     @Override

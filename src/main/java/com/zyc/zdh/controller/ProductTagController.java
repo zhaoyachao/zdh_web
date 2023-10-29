@@ -173,7 +173,7 @@ public class ProductTagController extends BaseController {
             productTagInfo.setAk(oldProductTagInfo.getAk());
             productTagInfo.setSk(oldProductTagInfo.getSk());
             productTagInfo.setStatus(oldProductTagInfo.getStatus());
-            productTagMapper.updateByPrimaryKey(productTagInfo);
+            productTagMapper.updateByPrimaryKeySelective(productTagInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
@@ -214,7 +214,7 @@ public class ProductTagController extends BaseController {
             }
             productTagInfo.setCreate_time(new Timestamp(new Date().getTime()));
             productTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            productTagMapper.insert(productTagInfo);
+            productTagMapper.insertSelective(productTagInfo);
             //创建产品资源
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {

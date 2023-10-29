@@ -104,7 +104,7 @@ public class CrowdRuleController extends BaseController {
             crowdRuleInfo.setCreate_time(oldCrowdRuleInfo.getCreate_time());
             crowdRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             crowdRuleInfo.setIs_delete(Const.NOT_DELETE);
-            crowdRuleMapper.updateByPrimaryKey(crowdRuleInfo);
+            crowdRuleMapper.updateByPrimaryKeySelective(crowdRuleInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", crowdRuleInfo);
         } catch (Exception e) {
@@ -132,7 +132,7 @@ public class CrowdRuleController extends BaseController {
             crowdRuleInfo.setIs_delete(Const.NOT_DELETE);
             crowdRuleInfo.setCreate_time(new Timestamp(new Date().getTime()));
             crowdRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            crowdRuleMapper.insert(crowdRuleInfo);
+            crowdRuleMapper.insertSelective(crowdRuleInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

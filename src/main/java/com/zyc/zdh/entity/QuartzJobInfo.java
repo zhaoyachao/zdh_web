@@ -214,6 +214,16 @@ public class QuartzJobInfo implements Serializable {
      */
     private String is_delete="0";
 
+    /**
+     * 归属组
+     */
+    private String dim_group;
+
+    /**
+     * 归属产品
+     */
+    private String product_code;
+
     public String getNotice_error() {
         return notice_error;
     }
@@ -589,5 +599,21 @@ public class QuartzJobInfo implements Serializable {
 
     public void setIs_delete(String is_delete) {
         this.is_delete = is_delete;
+    }
+
+    public String getDim_group() {
+        return dim_group;
+    }
+
+    public void setDim_group(String dim_group) {
+        this.dim_group = dim_group;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }

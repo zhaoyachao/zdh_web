@@ -131,6 +131,16 @@ public class TaskGroupLogInstance implements Serializable {
     private String notice_finish="off";
     private String notice_timeout="off";
 
+    /**
+     * 归属组
+     */
+    private String dim_group;
+
+    /**
+     * 归属产品
+     */
+    private String product_code;
+
     public String getNotice_error() {
         return notice_error;
     }
@@ -671,6 +681,22 @@ public class TaskGroupLogInstance implements Serializable {
 
     public void setSchedule_source(String schedule_source) {
         this.schedule_source = schedule_source;
+    }
+
+    public String getDim_group() {
+        return dim_group;
+    }
+
+    public void setDim_group(String dim_group) {
+        this.dim_group = dim_group;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 
     public String getProcess_msg() {

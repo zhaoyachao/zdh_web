@@ -19,7 +19,9 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.beans.PropertyEditorSupport;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -51,6 +53,26 @@ public class BaseController {
     public String getProductCode(){
         Environment environment= (Environment) SpringContext.getBean("environment");
         return environment.getProperty("zdp.product","");
+    }
+
+    /**
+     * 通过归属产品+归属组双重控制数据权限
+     * @param zdhPermissionService
+     * @throws Exception
+     */
+    public Map<String,List<String>> dynamicPermissionByProductAndGroup(ZdhPermissionService zdhPermissionService) throws Exception {
+        Map<String,List<String>> dimMap = new HashMap<>();
+        //根据账号,查询归属组
+        List<PermissionDimensionValueInfo> dim_group_pdvi = zdhPermissionService.get_dim_group(getOwner());
+        List<String> dim_groups = zdhPermissionService.dim_value2code(dim_group_pdvi);
+
+        //根据账号,查询归属产品
+        List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
+        List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
+
+        dimMap.put("dim_groups", dim_groups);
+        dimMap.put("product_codes", dim_products);
+        return dimMap;
     }
 
     /**

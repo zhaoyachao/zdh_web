@@ -6,6 +6,7 @@ import com.zyc.zdh.entity.EtlMoreTaskInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 多源ETL服务
@@ -34,7 +36,8 @@ public class ZdhMoreEtlController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     EtlMoreTaskMapper etlMoreTaskMapper;
-
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 多源ETL任务首页
@@ -77,7 +80,7 @@ public class ZdhMoreEtlController extends BaseController {
     @SentinelResource(value = "etl_task_more_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_more_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<EtlMoreTaskInfo>> etl_task_more_list2(String etl_context, String file_name) {
+    public ReturnInfo<List<EtlMoreTaskInfo>> etl_task_more_list2(String etl_context, String file_name, String product_code, String dim_group) {
         try{
             List<EtlMoreTaskInfo> etlMoreTaskInfos = new ArrayList<EtlMoreTaskInfo>();
             if(!StringUtils.isEmpty(etl_context)){
@@ -86,7 +89,8 @@ public class ZdhMoreEtlController extends BaseController {
             if(!StringUtils.isEmpty(file_name)){
                 file_name=getLikeCondition(file_name);
             }
-            etlMoreTaskInfos = etlMoreTaskMapper.selectByParams(getOwner(), etl_context, file_name);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            etlMoreTaskInfos = etlMoreTaskMapper.selectByParams(getOwner(), etl_context, file_name, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
             return ReturnInfo.buildSuccess(etlMoreTaskInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -125,7 +129,7 @@ public class ZdhMoreEtlController extends BaseController {
             etlMoreTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlMoreTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlMoreTaskInfo);
-            etlMoreTaskMapper.insert(etlMoreTaskInfo);
+            etlMoreTaskMapper.insertSelective(etlMoreTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
 
         } catch (Exception e) {
@@ -174,7 +178,7 @@ public class ZdhMoreEtlController extends BaseController {
             etlMoreTaskInfo.setOwner(owner);
             debugInfo(etlMoreTaskInfo);
 
-            etlMoreTaskMapper.updateByPrimaryKey(etlMoreTaskInfo);
+            etlMoreTaskMapper.updateByPrimaryKeySelective(etlMoreTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

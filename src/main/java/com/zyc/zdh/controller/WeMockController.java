@@ -132,7 +132,7 @@ public class WeMockController extends BaseController{
                 wmti.setIcon("fa fa-folder");
             }
 
-            weMockTreeMapper.insert(wmti);
+            weMockTreeMapper.insertSelective(wmti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -203,7 +203,7 @@ public class WeMockController extends BaseController{
             if(StringUtils.isEmpty(wmti.getUrl())){
                 wmti.setUrl("");
             }
-            weMockTreeMapper.updateByPrimaryKey(wmti);
+            weMockTreeMapper.updateByPrimaryKeySelective(wmti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", wmti);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -251,7 +251,7 @@ public class WeMockController extends BaseController{
             if(StringUtils.isEmpty(wmti.getUrl())){
                 wmti.setUrl("");
             }
-            weMockTreeMapper.insert(wmti);
+            weMockTreeMapper.insertSelective(wmti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", wmti);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -432,7 +432,7 @@ public class WeMockController extends BaseController{
             weMockDataInfo.setCreate_time(new Timestamp(new Date().getTime()));
             weMockDataInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             weMockDataInfo.setIs_delete(Const.NOT_DELETE);
-           weMockDataMapper.insert(weMockDataInfo);
+           weMockDataMapper.insertSelective(weMockDataInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", weMockDataInfo);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);

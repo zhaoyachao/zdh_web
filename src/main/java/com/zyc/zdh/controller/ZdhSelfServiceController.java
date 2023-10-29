@@ -131,7 +131,7 @@ public class ZdhSelfServiceController extends BaseController {
             selfHistory.setCreate_time(oldSelfHistory.getCreate_time());
             selfHistory.setUpdate_time(new Timestamp(new Date().getTime()));
             selfHistory.setIs_delete(Const.NOT_DELETE);
-            selfHistoryMapper.updateByPrimaryKey(selfHistory);
+            selfHistoryMapper.updateByPrimaryKeySelective(selfHistory);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
@@ -161,7 +161,7 @@ public class ZdhSelfServiceController extends BaseController {
             selfHistory.setIs_delete(Const.NOT_DELETE);
             selfHistory.setCreate_time(new Timestamp(new Date().getTime()));
             selfHistory.setUpdate_time(new Timestamp(new Date().getTime()));
-            selfHistoryMapper.insert(selfHistory);
+            selfHistoryMapper.insertSelective(selfHistory);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {

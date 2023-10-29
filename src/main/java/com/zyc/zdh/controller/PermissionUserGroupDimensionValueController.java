@@ -155,7 +155,7 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
             permissionUserDimensionValueInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             for (String dim_value_code: dim_value_codes){
                 permissionUserDimensionValueInfo.setDim_value_code(dim_value_code);
-                permissionUserGroupDimensionValueMapper.insert(permissionUserDimensionValueInfo);
+                permissionUserGroupDimensionValueMapper.insertSelective(permissionUserDimensionValueInfo);
             }
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", permissionUserDimensionValueInfo);

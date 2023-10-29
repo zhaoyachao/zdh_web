@@ -116,7 +116,7 @@ public class PermissionApiController {
             check_exist_user(product_code, permissionUserInfo.getUser_account());
 
             //新增用户
-            permissionMapper.insert(permissionUserInfo);
+            permissionMapper.insertSelective(permissionUserInfo);
 
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
@@ -151,7 +151,7 @@ public class PermissionApiController {
             check_user(permissionUserInfo);
 
             //新增用户
-            permissionMapper.updateByPrimaryKey(permissionUserInfo);
+            permissionMapper.updateByPrimaryKeySelective(permissionUserInfo);
 
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
@@ -464,7 +464,7 @@ public class PermissionApiController {
             userGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
             userGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
 
-            userGroupMapper.insert(userGroupInfo);
+            userGroupMapper.insertSelective(userGroupInfo);
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
@@ -696,7 +696,7 @@ public class PermissionApiController {
         try{
             check_aksk(product_code, ak, sk);
             resource_tree_info.setProduct_code(product_code);
-            int result = resourceTreeMapper.insert(resource_tree_info);
+            int result = resourceTreeMapper.insertSelective(resource_tree_info);
 
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
@@ -722,7 +722,7 @@ public class PermissionApiController {
             check_aksk(product_code, ak, sk);
             for (ResourceTreeInfo rti:resource_tree_info){
                 rti.setProduct_code(product_code);
-                int result = resourceTreeMapper.insert(rti);
+                int result = resourceTreeMapper.insertSelective(rti);
             }
 
             //返回统一信息
@@ -819,7 +819,7 @@ public class PermissionApiController {
                 throw new Exception("数据标识code已存在");
             }
 
-            dataTagMapper.insert(dataTagInfo);
+            dataTagMapper.insertSelective(dataTagInfo);
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", null);
         }catch (Exception e){
@@ -850,7 +850,7 @@ public class PermissionApiController {
                 throw new Exception("数据标识所属产品不可更改");
             }
 
-            dataTagMapper.updateByPrimaryKey(dataTagInfo);
+            dataTagMapper.updateByPrimaryKeySelective(dataTagInfo);
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
@@ -883,7 +883,7 @@ public class PermissionApiController {
                 throw new Exception("数据组标识code已存在");
             }
 
-            dataTagGroupMapper.insert(dataTagGroupInfo);
+            dataTagGroupMapper.insertSelective(dataTagGroupInfo);
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
@@ -914,7 +914,7 @@ public class PermissionApiController {
                 throw new Exception("数据组标识所属产品不可更改");
             }
 
-            dataTagGroupMapper.updateByPrimaryKey(dataTagGroupInfo);
+            dataTagGroupMapper.updateByPrimaryKeySelective(dataTagGroupInfo);
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){

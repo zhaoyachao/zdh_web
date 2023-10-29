@@ -10,6 +10,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.DispatchTaskService;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +31,7 @@ import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据源服务
@@ -39,18 +41,19 @@ public class ZdhDataSourcesController extends BaseController{
 
     public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
-    DataSourcesMapper dataSourcesMapper;
+    private DataSourcesMapper dataSourcesMapper;
     @Autowired
-    EtlTaskService etlTaskService;
+    private EtlTaskService etlTaskService;
     @Autowired
-    DispatchTaskService dispatchTaskService;
+    private DispatchTaskService dispatchTaskService;
     @Autowired
-    ZdhLogsService zdhLogsService;
+    private ZdhLogsService zdhLogsService;
     @Autowired
-    PermissionMapper permissionMapper;
+    private PermissionMapper permissionMapper;
     @Autowired
-    Environment ev;
-
+    private Environment ev;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
     /**
      * 数据源列表首页
      * @return
@@ -68,27 +71,28 @@ public class ZdhDataSourcesController extends BaseController{
     @SentinelResource(value = "data_sources_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_sources_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<DataSourcesInfo>> data_sources_list() {
+    public ReturnInfo<List<DataSourcesInfo>> data_sources_list(String product_code, String dim_group) {
         //获取数据权限
         try{
             String[] tag_group_code = "".split(",");
 
-            PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
-            permissionUserInfo.setUser_account(getUser().getUserName());
-            Example example=new Example(PermissionUserInfo.class);
-            Example.Criteria criteria = example.createCriteria();
-            criteria.andEqualTo("user_account",getUser().getUserName());
-            criteria.andEqualTo("product_code", ev.getProperty("zdp.product", "zdh"));
-            criteria.andEqualTo("enable",Const.TRUR);
-            List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
-
-            if(permissionUserInfos!=null && permissionUserInfos.size()>=1){
-                tag_group_code = permissionUserInfos.get(0).getTag_group_code().split(",");
-            }
+//            PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
+//            permissionUserInfo.setUser_account(getUser().getUserName());
+//            Example example=new Example(PermissionUserInfo.class);
+//            Example.Criteria criteria = example.createCriteria();
+//            criteria.andEqualTo("user_account",getUser().getUserName());
+//            criteria.andEqualTo("product_code", ev.getProperty("zdp.product", "zdh"));
+//            criteria.andEqualTo("enable",Const.TRUR);
+//            List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
+//
+//            if(permissionUserInfos!=null && permissionUserInfos.size()>=1){
+//                tag_group_code = permissionUserInfos.get(0).getTag_group_code().split(",");
+//            }
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
             DataSourcesInfo dataSourcesInfo = new DataSourcesInfo();
             dataSourcesInfo.setOwner(getOwner());
             dataSourcesInfo.setIs_delete(Const.NOT_DELETE);
-            List<DataSourcesInfo> list = dataSourcesMapper.selectByParams(getOwner(), tag_group_code);
+            List<DataSourcesInfo> list = dataSourcesMapper.selectByParams(getOwner(), tag_group_code, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
             if(list != null && list.size()>0){
                 for (DataSourcesInfo dsi: list){
                     dsi.setPassword("");
@@ -113,37 +117,47 @@ public class ZdhDataSourcesController extends BaseController{
     @SentinelResource(value = "data_sources_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_sources_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<DataSourcesInfo>> data_sources_list2(String data_source_context, String data_source_type, String url) {
+    public ReturnInfo<List<DataSourcesInfo>> data_sources_list2(String data_source_context, String data_source_type, String url, String product_code, String dim_group) {
 
         try{
-            Example example = new Example(DataSourcesInfo.class);
-            Example.Criteria criteria = example.createCriteria();
+//            Example example = new Example(DataSourcesInfo.class);
+//            Example.Criteria criteria = example.createCriteria();
+//
+//            criteria.andEqualTo("owner", getOwner());
+//            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+//            //动态增加数据权限控制
+//            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+//
+//            if(!StringUtils.isEmpty(product_code)){
+//                criteria.andEqualTo("product_code", product_code);
+//            }
+//            if(!StringUtils.isEmpty(dim_group)){
+//                criteria.andEqualTo("dim_group", dim_group);
+//            }
+//
+//            if(!StringUtils.isEmpty(data_source_context)){
+//                criteria.andLike("data_source_context", getLikeCondition(data_source_context));
+//            }
+//            if(!StringUtils.isEmpty(data_source_type)){
+//                criteria.andEqualTo("data_source_type", data_source_type);
+//            }
+//            if(!StringUtils.isEmpty(url)){
+//                criteria.andLike("url", getLikeCondition(url));
+//            }
+//            String[] tag_group_code = "".split(",");
 
-            criteria.andEqualTo("owner", getOwner());
-            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-            if(!StringUtils.isEmpty(data_source_context)){
-                criteria.andLike("data_source_context", getLikeCondition(data_source_context));
-            }
-            if(!StringUtils.isEmpty(data_source_type)){
-                criteria.andEqualTo("data_source_type", data_source_type);
-            }
-            if(!StringUtils.isEmpty(url)){
-                criteria.andLike("url", getLikeCondition(url));
-            }
-            String[] tag_group_code = "".split(",");
+//            PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
+//            permissionUserInfo.setUser_account(getUser().getUserName());
+//            Example example2=new Example(PermissionUserInfo.class);
+//            Example.Criteria criteria2 = example2.createCriteria();
+//            criteria2.andEqualTo("user_account",getUser().getUserName());
+//            criteria2.andEqualTo("product_code", ev.getProperty("zdp.product", "zdh"));
+//            criteria2.andEqualTo("enable",Const.TRUR);
+//            List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example2);
 
-            PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
-            permissionUserInfo.setUser_account(getUser().getUserName());
-            Example example2=new Example(PermissionUserInfo.class);
-            Example.Criteria criteria2 = example2.createCriteria();
-            criteria2.andEqualTo("user_account",getUser().getUserName());
-            criteria2.andEqualTo("product_code", ev.getProperty("zdp.product", "zdh"));
-            criteria2.andEqualTo("enable",Const.TRUR);
-            List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example2);
-
-            if(permissionUserInfos!=null && permissionUserInfos.size()>=1){
-                tag_group_code = permissionUserInfos.get(0).getTag_group_code().split(",");
-            }
+//            if(permissionUserInfos!=null && permissionUserInfos.size()>=1){
+//                tag_group_code = permissionUserInfos.get(0).getTag_group_code().split(",");
+//            }
 
             if(!StringUtils.isEmpty(data_source_context)){
                 data_source_context = getLikeCondition(data_source_context);
@@ -151,7 +165,8 @@ public class ZdhDataSourcesController extends BaseController{
             if(!StringUtils.isEmpty(url)){
                 url = getLikeCondition(url);
             }
-            List<DataSourcesInfo> list = dataSourcesMapper.selectByParams2(getOwner(), tag_group_code, url, data_source_context, data_source_type);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            List<DataSourcesInfo> list = dataSourcesMapper.selectByParams2(getOwner(), null, url, data_source_context, data_source_type, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
 
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
@@ -225,7 +240,7 @@ public class ZdhDataSourcesController extends BaseController{
             dataSourcesInfo.setOwner(getOwner());
             dataSourcesInfo.setIs_delete("0");
             dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            dataSourcesMapper.insert(dataSourcesInfo);
+            dataSourcesMapper.insertSelective(dataSourcesInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -248,7 +263,7 @@ public class ZdhDataSourcesController extends BaseController{
             dataSourcesInfo.setOwner(oldDataSourcesInfo.getOwner());
             dataSourcesInfo.setIs_delete("0");
             dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            dataSourcesMapper.updateByPrimaryKey(dataSourcesInfo);
+            dataSourcesMapper.updateByPrimaryKeySelective(dataSourcesInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

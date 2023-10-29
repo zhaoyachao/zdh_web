@@ -7,6 +7,7 @@ import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 申请源ETL任务服务
@@ -43,6 +45,8 @@ public class ZdhEtlApplyController extends BaseController{
     EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
     @Autowired
     ZdhNginxMapper zdhNginxMapper;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
 
     /**
@@ -84,7 +88,7 @@ public class ZdhEtlApplyController extends BaseController{
     @SentinelResource(value = "etl_task_apply_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_apply_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<EtlTaskInfo>> etl_task_apply_list2(String etl_context, String file_name) {
+    public ReturnInfo<List<EtlTaskInfo>> etl_task_apply_list2(String etl_context, String file_name, String product_code, String dim_group) {
         try{
             List<EtlTaskInfo> list = new ArrayList<>();
             if(!StringUtils.isEmpty(etl_context)){
@@ -93,7 +97,8 @@ public class ZdhEtlApplyController extends BaseController{
             if(!StringUtils.isEmpty(file_name)){
                 file_name=getLikeCondition(file_name);
             }
-            list = etlApplyTaskMapper.selectByParams(getOwner(), etl_context, file_name);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            list = etlApplyTaskMapper.selectByParams(getOwner(), etl_context, file_name, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -162,7 +167,7 @@ public class ZdhEtlApplyController extends BaseController{
             etlApplyTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlApplyTaskInfo.setIs_delete(Const.NOT_DELETE);
 
-            etlApplyTaskMapper.insert(etlApplyTaskInfo);
+            etlApplyTaskMapper.insertSelective(etlApplyTaskInfo);
             if (etlApplyTaskInfo.getUpdate_context() != null && !etlApplyTaskInfo.getUpdate_context().equals("")) {
                 //插入更新日志表
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
@@ -170,7 +175,7 @@ public class ZdhEtlApplyController extends BaseController{
                 etlTaskUpdateLogs.setUpdate_context(etlApplyTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
@@ -219,7 +224,7 @@ public class ZdhEtlApplyController extends BaseController{
             //获取旧数据是否更新说明
             EtlApplyTaskInfo etlApplyTaskInfo1 = etlApplyTaskMapper.selectByIds(new String[]{etlApplyTaskInfo.getId()});
 
-            etlApplyTaskMapper.updateByPrimaryKey(etlApplyTaskInfo);
+            etlApplyTaskMapper.updateByPrimaryKeySelective(etlApplyTaskInfo);
 
             if (etlApplyTaskInfo.getUpdate_context() != null && !etlApplyTaskInfo.getUpdate_context().equals("")
                     && !etlApplyTaskInfo1.getUpdate_context().equals(etlApplyTaskInfo.getUpdate_context())) {
@@ -229,7 +234,7 @@ public class ZdhEtlApplyController extends BaseController{
                 etlTaskUpdateLogs.setUpdate_context(etlApplyTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){

@@ -159,7 +159,7 @@ public class DataTagController extends BaseController {
             dataTagInfo.setCreate_time(oldDataTagInfo.getCreate_time());
             dataTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             dataTagInfo.setIs_delete(Const.NOT_DELETE);
-            dataTagMapper.updateByPrimaryKey(dataTagInfo);
+            dataTagMapper.updateByPrimaryKeySelective(dataTagInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", dataTagInfo);
         } catch (Exception e) {
@@ -186,7 +186,7 @@ public class DataTagController extends BaseController {
             dataTagInfo.setIs_delete(Const.NOT_DELETE);
             dataTagInfo.setCreate_time(new Timestamp(new Date().getTime()));
             dataTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            dataTagMapper.insert(dataTagInfo);
+            dataTagMapper.insertSelective(dataTagInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

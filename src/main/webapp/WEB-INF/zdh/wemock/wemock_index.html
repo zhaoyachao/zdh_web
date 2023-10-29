@@ -131,7 +131,7 @@
 
         $.ajax({
             type: 'POST',
-            url: server_context+"/product_tag_list",
+            url: server_context+"/get_dim_product",
             async:false,
             dataType: 'json',
             data: "",
@@ -143,7 +143,7 @@
                 }
                 var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
                 for (var i = 0; i < data.result.length; i++) {
-                    str += '<option value=\"' + data.result[i].product_code + '\" hassubinfo=\"true\">' + data.result[i].product_name + '</option>';
+                    str += '<option value=\"' + data.result[i].dim_value_code + '\" hassubinfo=\"true\">' + data.result[i].dim_value_name + '</option>';
                 }
                 $('#product_code').html(str);
                 $("#product_code").trigger("chosen:updated");

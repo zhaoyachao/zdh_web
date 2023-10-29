@@ -6,6 +6,7 @@ import com.zyc.zdh.entity.EtlDroolsTaskInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * drools服务-废弃
@@ -33,7 +35,8 @@ public class ZdhDroolsController extends BaseController{
     public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
     EtlDroolsTaskMapper etlDroolsTaskMapper;
-
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * drools任务首页
@@ -83,7 +86,7 @@ public class ZdhDroolsController extends BaseController{
     @SentinelResource(value = "etl_task_drools_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_drools_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<EtlDroolsTaskInfo>> etl_task_drools_list2(String etl_context, String file_name) throws Exception {
+    public ReturnInfo<List<EtlDroolsTaskInfo>> etl_task_drools_list2(String etl_context, String file_name, String product_code, String dim_group) throws Exception {
         try{
             List<EtlDroolsTaskInfo> etlDroolsTaskInfos = new ArrayList<EtlDroolsTaskInfo>();
             if(!StringUtils.isEmpty(etl_context)){
@@ -92,7 +95,8 @@ public class ZdhDroolsController extends BaseController{
             if(!StringUtils.isEmpty(file_name)){
                 file_name=getLikeCondition(file_name);
             }
-            etlDroolsTaskInfos = etlDroolsTaskMapper.selectByParams(getOwner(), etl_context, file_name);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            etlDroolsTaskInfos = etlDroolsTaskMapper.selectByParams(getOwner(), etl_context, file_name, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
             return ReturnInfo.buildSuccess(etlDroolsTaskInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -118,7 +122,7 @@ public class ZdhDroolsController extends BaseController{
             etlDroolsTaskInfo.setOwner(getOwner());
             etlDroolsTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
             debugInfo(etlDroolsTaskInfo);
-            etlDroolsTaskMapper.insert(etlDroolsTaskInfo);
+            etlDroolsTaskMapper.insertSelective(etlDroolsTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -166,7 +170,7 @@ public class ZdhDroolsController extends BaseController{
             etlDroolsTaskInfo.setOwner(owner);
             debugInfo(etlDroolsTaskInfo);
 
-            etlDroolsTaskMapper.updateByPrimaryKey(etlDroolsTaskInfo);
+            etlDroolsTaskMapper.updateByPrimaryKeySelective(etlDroolsTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

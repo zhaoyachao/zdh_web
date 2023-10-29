@@ -165,7 +165,7 @@ public class ZdhDownController extends BaseController{
             logger.error(error, e);
         } finally {
             zdhDownloadInfo.setDown_count(zdhDownloadInfo.getDown_count() + 1);
-            zdhDownloadMapper.updateByPrimaryKey(zdhDownloadInfo);
+            zdhDownloadMapper.updateByPrimaryKeySelective(zdhDownloadInfo);
 
             if (bis != null) {
                 try {

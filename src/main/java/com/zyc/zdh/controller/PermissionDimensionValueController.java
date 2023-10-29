@@ -198,7 +198,7 @@ public class PermissionDimensionValueController extends BaseController {
             oldPermissionDimensionValueInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             oldPermissionDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
             oldPermissionDimensionValueInfo.setParent_dim_value_code(permissionDimensionValueInfo.getParent_dim_value_code());
-            permissionDimensionValueMapper.updateByPrimaryKey(oldPermissionDimensionValueInfo);
+            permissionDimensionValueMapper.updateByPrimaryKeySelective(oldPermissionDimensionValueInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", oldPermissionDimensionValueInfo);
         } catch (Exception e) {

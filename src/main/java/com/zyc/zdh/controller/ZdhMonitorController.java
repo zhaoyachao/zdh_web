@@ -290,7 +290,7 @@ public class ZdhMonitorController extends BaseController {
         try {
             TaskLogInstance tli = taskLogInstanceMapper.selectByPrimaryKey(id);
             tli.setIs_retryed("1");
-            taskLogInstanceMapper.updateByPrimaryKey(tli);
+            taskLogInstanceMapper.updateByPrimaryKeySelective(tli);
             QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(tli.getJob_id());
 
             //重试最新版-拉去quartJobInfo 中的shell 及参数
@@ -322,7 +322,7 @@ public class ZdhMonitorController extends BaseController {
             tli.setRun_time(new Timestamp(new Date().getTime()));
             tli.setUpdate_time(new Timestamp(new Date().getTime()));
             tli.setStatus(JobStatus.CREATE.getValue());
-            taskLogInstanceMapper.insert(tli);
+            taskLogInstanceMapper.insertSelective(tli);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "重试任务成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

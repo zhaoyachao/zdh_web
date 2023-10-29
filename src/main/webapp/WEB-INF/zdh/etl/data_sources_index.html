@@ -48,6 +48,24 @@
                 <form role="form" class="form-inline" id="data_sources_form">
 
                     <div class="form-group">
+                        <div class="input-group">
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code...."
+                                    class="chosen-select form-control m-b" >
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select id="dim_group" name="dim_group"
+                                    data-placeholder="归属组code...."
+                                    class="chosen-select form-control m-b" >
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <div class="input-group" >
                             <input id="data_source_context" name="data_source_context" class="form-control" type="text" value="" placeholder="数据源说明">
                             <span class="add-on"><i class="icon-remove"></i></span>
@@ -116,13 +134,13 @@
     <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
-    <!-- Peity -->
-    <script src="js/etl/data_sources.js"></script>
-
     <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
+    <script src="js/admin/dim_product_common.js"></script>
+    <script src="js/admin/dim_group_common.js"></script>
 
-
+    <!-- Peity -->
+    <script src="js/etl/data_sources.js"></script>
 
 <script>
     $(document).ready(function () {

@@ -25,7 +25,7 @@ public class ZdhLogsServiceImpl implements ZdhLogsService {
 
     @Override
     public int insert(ZdhLogs zdhLogs) {
-        return zdhLogsMapper.insert(zdhLogs);
+        return zdhLogsMapper.insertSelective(zdhLogs);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ZdhLogsServiceImpl implements ZdhLogsService {
 
     @Override
     public int update(ZdhLogs zdhLogs) {
-        return zdhLogsMapper.updateByPrimaryKey(zdhLogs);
+        return zdhLogsMapper.updateByPrimaryKeySelective(zdhLogs);
     }
 
     @Override

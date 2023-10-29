@@ -134,3 +134,22 @@ function getResourceDesc(){
         }
     });
 }
+
+function getBrowserType(){
+    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    var browser='unknown';
+    if (userAgent.indexOf("IE")!=-1) {//字符串含有IE字段，表明是IE浏览器
+        browser="IE";
+    }else if(userAgent.indexOf('Firefox')!=-1){//字符串含有Firefox字段，表明是火狐浏览器
+        browser="Firefox";
+    }else if(userAgent.indexOf('OPR')!=-1){//Opera
+        browser="Opera";
+    }else if(userAgent.indexOf('Chrome')!=-1){//Chrome
+        browser="Chrome";
+    }else if(userAgent.indexOf('Safari')!=-1){//Safari
+        browser="Safari";
+    }else if(userAgent.indexOf('Trident')!=-1){//IE内核
+        browser='IE 11';
+    }
+    return browser;
+}

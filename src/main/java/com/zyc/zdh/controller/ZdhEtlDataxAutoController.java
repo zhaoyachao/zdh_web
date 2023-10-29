@@ -9,6 +9,7 @@ import com.zyc.zdh.entity.PageResult;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
@@ -41,7 +42,8 @@ public class ZdhEtlDataxAutoController extends BaseController{
     DataSourcesMapper dataSourcesMapper;
     @Autowired
     EtlTaskDataxAutoMapper etlTaskDataxAutoMapper;
-
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 单源ETL首页
@@ -80,14 +82,23 @@ public class ZdhEtlDataxAutoController extends BaseController{
     @SentinelResource(value = "etl_task_datax_auto_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_datax_auto_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<PageResult<List<EtlTaskDataxAutoInfo>>> etl_task_datax_auto_list(String etl_context, String file_name,int limit, int offset) {
+    public ReturnInfo<PageResult<List<EtlTaskDataxAutoInfo>>> etl_task_datax_auto_list(String etl_context, String file_name,int limit, int offset, String product_code, String dim_group) {
         try{
             EtlTaskDataxAutoInfo etlTaskDataxAutoInfo = new EtlTaskDataxAutoInfo();
             Example example = new Example(etlTaskDataxAutoInfo.getClass());
             List<EtlTaskDataxAutoInfo> etlTaskDataxAutoInfos = new ArrayList<>();
-            Example.Criteria cri = example.createCriteria();
-            cri.andEqualTo("owner", getOwner());
-            cri.andEqualTo("is_delete", Const.NOT_DELETE);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("owner", getOwner());
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            //动态增加数据权限控制
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
+
             if (!StringUtils.isEmpty(etl_context)) {
                 Example.Criteria cri2 = example.and();
                 cri2.andLike("etl_context", getLikeCondition(etl_context));
@@ -106,7 +117,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return  ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", e);
+            return  ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
     }
@@ -138,7 +149,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return  ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", e);
+            return  ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
     }
@@ -195,7 +206,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
             etlTaskDataxAutoInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskDataxAutoInfo.setIs_delete(Const.NOT_DELETE);
 
-            etlTaskDataxAutoMapper.insert(etlTaskDataxAutoInfo);
+            etlTaskDataxAutoMapper.insertSelective(etlTaskDataxAutoInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -225,7 +236,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
             etlTaskDataxAutoInfo.setCreate_time(oldEtlTaskDataxAutoInfo.getCreate_time());
             etlTaskDataxAutoInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskDataxAutoInfo.setIs_delete(Const.NOT_DELETE);
-            etlTaskDataxAutoMapper.updateByPrimaryKey(etlTaskDataxAutoInfo);
+            etlTaskDataxAutoMapper.updateByPrimaryKeySelective(etlTaskDataxAutoInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){

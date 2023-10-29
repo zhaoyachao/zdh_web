@@ -10,6 +10,7 @@ import com.zyc.zdh.entity.EtlTaskUpdateLogs;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * FLINK采集服务
@@ -45,7 +47,8 @@ public class ZdhFlinkController extends BaseController {
     EtlTaskFlinkMapper etlTaskFlinkMapper;
     @Autowired
     MetaDatabaseMapper metaDatabaseMapper;
-
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
     /**
      * flink任务首页
      * @return
@@ -76,14 +79,15 @@ public class ZdhFlinkController extends BaseController {
     @SentinelResource(value = "etl_task_flink_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_flink_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<EtlTaskFlinkInfo>> etl_task_flink_list(String sql_context, String id) {
+    public ReturnInfo<List<EtlTaskFlinkInfo>> etl_task_flink_list(String sql_context, String id, String product_code, String dim_group) {
 
         try{
             List<EtlTaskFlinkInfo> sqlTaskInfos = new ArrayList<>();
             if(!StringUtils.isEmpty(sql_context)){
                 sql_context=getLikeCondition(sql_context);
             }
-            sqlTaskInfos = etlTaskFlinkMapper.selectByParams(getOwner(), sql_context, id);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            sqlTaskInfos = etlTaskFlinkMapper.selectByParams(getOwner(), sql_context, id, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
 
             return ReturnInfo.buildSuccess(sqlTaskInfos);
         }catch (Exception e){
@@ -137,7 +141,7 @@ public class ZdhFlinkController extends BaseController {
             etlTaskFlinkInfo.setIs_delete(Const.NOT_DELETE);
 
             debugInfo(etlTaskFlinkInfo);
-            etlTaskFlinkMapper.insert(etlTaskFlinkInfo);
+            etlTaskFlinkMapper.insertSelective(etlTaskFlinkInfo);
 
 
             if (etlTaskFlinkInfo.getUpdate_context() != null && !etlTaskFlinkInfo.getUpdate_context().equals("")) {
@@ -147,7 +151,7 @@ public class ZdhFlinkController extends BaseController {
                 etlTaskUpdateLogs.setUpdate_context(etlTaskFlinkInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -177,7 +181,7 @@ public class ZdhFlinkController extends BaseController {
             etlTaskFlinkInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskFlinkInfo);
 
-            etlTaskFlinkMapper.updateByPrimaryKey(etlTaskFlinkInfo);
+            etlTaskFlinkMapper.updateByPrimaryKeySelective(etlTaskFlinkInfo);
 
             EtlTaskFlinkInfo sti = etlTaskFlinkMapper.selectByPrimaryKey(etlTaskFlinkInfo.getId());
 
@@ -189,7 +193,7 @@ public class ZdhFlinkController extends BaseController {
                 etlTaskUpdateLogs.setUpdate_context(etlTaskFlinkInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(getOwner());
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {

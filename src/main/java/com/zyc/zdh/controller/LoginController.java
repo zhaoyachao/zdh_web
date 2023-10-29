@@ -152,7 +152,7 @@ public class LoginController {
                 pui.setRoles(roleInfo.getCode());
             }
             pui.setTag_group_code("");
-            permissionMapper.insert(pui);
+            permissionMapper.insertSelective(pui);
             if (result > 0) {
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "注册成功", null);
             } else {

@@ -287,7 +287,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInstance.setMisfire("0");
 
             debugInfo(strategyGroupInstance);
-            strategyGroupInstanceMapper.insert(strategyGroupInstance);
+            strategyGroupInstanceMapper.insertSelective(strategyGroupInstance);
 
             List<StrategyInstance> strategyInstances=JobDigitalMarket.sub_strategy_instance(strategyGroupInstance, null);
 
@@ -620,7 +620,7 @@ public class StrategyGroupController extends BaseController {
             jsonObject.put("is_disenable","true");
             strategyInstance.setRun_jsmind_data(jsonObject.toJSONString());
             strategyInstance.setIs_disenable("true");
-            strategyInstanceMapper.updateByPrimaryKey(strategyInstance);
+            strategyInstanceMapper.updateByPrimaryKeySelective(strategyInstance);
             strategyGroupInstanceMapper.updateStatusById3(JobStatus.CREATE.getValue(), DateUtil.getCurrentTime(),strategyInstance.getGroup_instance_id());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
         } catch (Exception e) {

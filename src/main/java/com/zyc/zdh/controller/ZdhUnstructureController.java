@@ -8,6 +8,7 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
 import com.zyc.zdh.util.DateUtil;
@@ -62,7 +63,8 @@ public class ZdhUnstructureController extends BaseController{
     DataSourcesMapper dataSourcesMapper;
     @Autowired
     EtlTaskUnstructureLogMapper etlTaskUnstructureLogMapper;
-
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 非结构化任务首页
@@ -113,7 +115,7 @@ public class ZdhUnstructureController extends BaseController{
     @SentinelResource(value = "etl_task_unstructure_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_unstructure_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<EtlTaskUnstructureInfo>> etl_task_unstructure_list(String unstructure_context, String id) {
+    public ReturnInfo<List<EtlTaskUnstructureInfo>> etl_task_unstructure_list(String unstructure_context, String id, String product_code, String dim_group) {
 
         try{
             List<EtlTaskUnstructureInfo> etlTaskUnstructureInfos = new ArrayList<>();
@@ -122,6 +124,16 @@ public class ZdhUnstructureController extends BaseController{
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("owner",getOwner());
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            //动态增加数据权限控制
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
+
             if(!StringUtils.isEmpty(id)){
                 criteria.andEqualTo("id", id);
             }
@@ -134,7 +146,7 @@ public class ZdhUnstructureController extends BaseController{
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.buildError("", e);
+            return ReturnInfo.buildError("查询失败", e);
         }
 
     }
@@ -183,7 +195,7 @@ public class ZdhUnstructureController extends BaseController{
             etlTaskUnstructureInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskUnstructureInfo);
 
-            etlTaskUnstructureMapper.insert(etlTaskUnstructureInfo);
+            etlTaskUnstructureMapper.insertSelective(etlTaskUnstructureInfo);
 
 
             if (etlTaskUnstructureInfo.getUpdate_context() != null && !etlTaskUnstructureInfo.getUpdate_context().equals("")) {
@@ -193,7 +205,7 @@ public class ZdhUnstructureController extends BaseController{
                 etlTaskUpdateLogs.setUpdate_context(etlTaskUnstructureInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
@@ -224,7 +236,7 @@ public class ZdhUnstructureController extends BaseController{
             etlTaskUnstructureInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskUnstructureInfo);
             String id=etlTaskUnstructureInfo.getId();
-            etlTaskUnstructureMapper.updateByPrimaryKey(etlTaskUnstructureInfo);
+            etlTaskUnstructureMapper.updateByPrimaryKeySelective(etlTaskUnstructureInfo);
 
             EtlTaskUnstructureInfo etui = etlTaskUnstructureMapper.selectByPrimaryKey(etlTaskUnstructureInfo.getId());
 
@@ -236,7 +248,7 @@ public class ZdhUnstructureController extends BaseController{
                 etlTaskUpdateLogs.setUpdate_context(etlTaskUnstructureInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
@@ -367,18 +379,18 @@ public class ZdhUnstructureController extends BaseController{
             if(result[0].equalsIgnoreCase("false")){
                 etlTaskUnstructureLogInfo.setStatus(Const.FALSE);
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                etlTaskUnstructureLogMapper.insert(etlTaskUnstructureLogInfo);
+                etlTaskUnstructureLogMapper.insertSelective(etlTaskUnstructureLogInfo);
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", result[1]);
             }
             etlTaskUnstructureLogInfo.setStatus(Const.TRUR);
-            etlTaskUnstructureLogMapper.insert(etlTaskUnstructureLogInfo);
+            etlTaskUnstructureLogMapper.insertSelective(etlTaskUnstructureLogInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             etlTaskUnstructureLogInfo.setStatus(Const.FALSE);
             etlTaskUnstructureLogInfo.setMsg(e.getMessage());
-            etlTaskUnstructureLogMapper.insert(etlTaskUnstructureLogInfo);
+            etlTaskUnstructureLogMapper.insertSelective(etlTaskUnstructureLogInfo);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }

@@ -82,6 +82,7 @@ public class RiskEventController extends BaseController {
             jsonObject.put("source", source);
             jsonObject.put("id_type", id_type);
             jsonObject.put("param", param);
+            jsonObject.put("product_code", source);
 
             String url = ev.getProperty("zdh.ship.url", "http://127.0.0.1:9002/api/v1/ship/accept");
             String ret = HttpUtil.postJSON(url, jsonObject.toJSONString());
@@ -220,7 +221,7 @@ public class RiskEventController extends BaseController {
             riskEventInfo.setCreate_time(oldRiskEventInfo.getCreate_time());
             riskEventInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             riskEventInfo.setIs_delete(Const.NOT_DELETE);
-            riskEventMapper.updateByPrimaryKey(riskEventInfo);
+            riskEventMapper.updateByPrimaryKeySelective(riskEventInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", riskEventInfo);
         } catch (Exception e) {
@@ -265,7 +266,7 @@ public class RiskEventController extends BaseController {
             riskEventInfo.setIs_delete(Const.NOT_DELETE);
             riskEventInfo.setCreate_time(new Timestamp(new Date().getTime()));
             riskEventInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            riskEventMapper.insert(riskEventInfo);
+            riskEventMapper.insertSelective(riskEventInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", riskEventInfo);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

@@ -8,6 +8,7 @@ import com.zyc.zdh.entity.EtlTaskLogInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,7 +44,8 @@ public class ZdhEtlLogController extends BaseController{
     ZdhNginxMapper zdhNginxMapper;
     @Autowired
     com.zyc.zdh.dao.EtlTaskLogMapper etlTaskLogMapper;
-
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
     /**
      * 日志采集首页
      * @return
@@ -80,28 +82,36 @@ public class ZdhEtlLogController extends BaseController{
     @SentinelResource(value = "etl_task_log_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_log_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<EtlTaskLogInfo>> etl_task_log_list2(String log_context) {
+    public ReturnInfo<List<EtlTaskLogInfo>> etl_task_log_list2(String log_context, String product_code, String dim_group) {
         try{
             List<EtlTaskLogInfo> list = new ArrayList<>();
             Example example = new Example(EtlTaskLogInfo.class);
 
-            Example.Criteria criteria2 = example.createCriteria();
-            criteria2.andEqualTo("owner", getOwner());
-            criteria2.andEqualTo("is_delete", Const.NOT_DELETE);
-
             Example.Criteria criteria = example.createCriteria();
-            if (!StringUtils.isEmpty(log_context)) {
-                criteria.andLike("log_context", getLikeCondition(log_context));
-                criteria.orLike("data_sources_output", getLikeCondition(log_context));
+            criteria.andEqualTo("owner", getOwner());
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            //动态增加数据权限控制
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
             }
-            example.and(criteria);
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
+
+            Example.Criteria criteria2 = example.createCriteria();
+            if (!StringUtils.isEmpty(log_context)) {
+                criteria2.andLike("log_context", getLikeCondition(log_context));
+                criteria2.orLike("data_sources_output", getLikeCondition(log_context));
+            }
+            example.and(criteria2);
 
             list = etlTaskLogMapper.selectByExample(example);
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.buildError("", e);
+            return ReturnInfo.buildError("查询失败", e);
         }
 
     }
@@ -159,7 +169,7 @@ public class ZdhEtlLogController extends BaseController{
             etlTasklogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTasklogInfo.setIs_delete(Const.NOT_DELETE);
 
-            etlTaskLogMapper.insert(etlTasklogInfo);
+            etlTaskLogMapper.insertSelective(etlTasklogInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

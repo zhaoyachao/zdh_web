@@ -170,7 +170,7 @@ public class PermissionDimensionController extends BaseController {
             permissionDimensionInfo.setCreate_time(oldPermissionDimensionInfo.getCreate_time());
             permissionDimensionInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             permissionDimensionInfo.setIs_delete(Const.NOT_DELETE);
-            permissionDimensionMapper.updateByPrimaryKey(permissionDimensionInfo);
+            permissionDimensionMapper.updateByPrimaryKeySelective(permissionDimensionInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", permissionDimensionInfo);
         } catch (Exception e) {
@@ -196,7 +196,7 @@ public class PermissionDimensionController extends BaseController {
             permissionDimensionInfo.setIs_delete(Const.NOT_DELETE);
             permissionDimensionInfo.setCreate_time(new Timestamp(new Date().getTime()));
             permissionDimensionInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            permissionDimensionMapper.insert(permissionDimensionInfo);
+            permissionDimensionMapper.insertSelective(permissionDimensionInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", permissionDimensionInfo);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

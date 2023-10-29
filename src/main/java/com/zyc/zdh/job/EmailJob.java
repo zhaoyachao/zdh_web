@@ -167,7 +167,7 @@ public class EmailJob {
                     alarmSmsInfo.setUpdate_time(new Timestamp(new Date().getTime()));
                     for(String phone:phones){
                         alarmSmsInfo.setPhone(phone);
-                        alarmSmsMapper.insert(alarmSmsInfo);
+                        alarmSmsMapper.insertSelective(alarmSmsInfo);
                     }
                 }catch (Exception e){
                     String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -188,7 +188,7 @@ public class EmailJob {
                     ni.setOwner(user.getUserName());
                     ni.setCreate_time(new Timestamp(new Date().getTime()));
                     ni.setUpdate_time(new Timestamp(new Date().getTime()));
-                    noticeMapper.insert(ni);
+                    noticeMapper.insertSelective(ni);
                 }
             }
             taskLogInstanceMapper.updateNoticeById(Const.TRUR,tli.getId());
@@ -239,7 +239,7 @@ public class EmailJob {
                     alarmSmsInfo.setUpdate_time(new Timestamp(new Date().getTime()));
                     for(String phone:phones){
                         alarmSmsInfo.setPhone(phone);
-                        alarmSmsMapper.insert(alarmSmsInfo);
+                        alarmSmsMapper.insertSelective(alarmSmsInfo);
                     }
                 }catch (Exception e){
                     String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -260,7 +260,7 @@ public class EmailJob {
                     ni.setOwner(user.getUserName());
                     ni.setCreate_time(new Timestamp(new Date().getTime()));
                     ni.setUpdate_time(new Timestamp(new Date().getTime()));
-                    noticeMapper.insert(ni);
+                    noticeMapper.insertSelective(ni);
                 }
             }
         }catch (Exception e){
@@ -284,7 +284,7 @@ public class EmailJob {
             while (iterator.hasNext()){
                 ZdhDownloadInfo zdhDownloadInfo=iterator.next();
                 zdhDownloadInfo.setIs_notice(Const.TRUR);
-                zdhDownloadMapper.updateByPrimaryKey(zdhDownloadInfo);
+                zdhDownloadMapper.updateByPrimaryKeySelective(zdhDownloadInfo);
                 NoticeInfo ni=new NoticeInfo();
                 ni.setMsg_type("文件下载");
                 ni.setMsg_title("文件下载:"+zdhDownloadInfo.getJob_context());
@@ -294,7 +294,7 @@ public class EmailJob {
                 ni.setOwner(zdhDownloadInfo.getOwner());
                 ni.setCreate_time(new Timestamp(new Date().getTime()));
                 ni.setUpdate_time(new Timestamp(new Date().getTime()));
-                noticeMapper.insert(ni);
+                noticeMapper.insertSelective(ni);
 
 //            if(map.containsKey(zdhDownloadInfo.getOwner())){
 //                map.get(zdhDownloadInfo.getOwner()).add(zdhDownloadInfo);
@@ -333,7 +333,7 @@ public class EmailJob {
                 while (iterator2.hasNext()){
                     ApplyInfo applyInfo=iterator2.next();
                     applyInfo.setIs_notice(Const.TRUR);
-                    applyMapper.updateByPrimaryKey(applyInfo);
+                    applyMapper.updateByPrimaryKeySelective(applyInfo);
                     NoticeInfo ni=new NoticeInfo();
                     ni.setMsg_type("审批");
                     ni.setMsg_title("审批通知:"+applyInfo.getApply_context());
@@ -342,7 +342,7 @@ public class EmailJob {
                     ni.setOwner(applyInfo.getOwner());
                     ni.setCreate_time(new Timestamp(new Date().getTime()));
                     ni.setUpdate_time(new Timestamp(new Date().getTime()));
-                    noticeMapper.insert(ni);
+                    noticeMapper.insertSelective(ni);
 
 //                if(map2.containsKey(applyInfo.getApprove_id())){
 //                    map2.get(applyInfo.getApprove_id()).add(applyInfo);
@@ -377,7 +377,7 @@ public class EmailJob {
             ni.setOwner(owner);
             ni.setCreate_time(new Timestamp(new Date().getTime()));
             ni.setUpdate_time(new Timestamp(new Date().getTime()));
-            noticeMapper.insert(ni);
+            noticeMapper.insertSelective(ni);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);

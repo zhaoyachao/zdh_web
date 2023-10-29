@@ -42,8 +42,28 @@ public interface QuartzJobMapper extends BaseQuartzJobMapper<QuartzJobInfo> {
     public int updateTaskLogId(@Param("job_id") String job_id,@Param("task_log_id") String task_log_id);
 
 
-    @Select(value="select * from quartz_job_info where owner=#{owner} and is_delete=0")
-    public List<QuartzJobInfo> selectByOwner(@Param("owner") String owner);
+    @Select({ "<script>",
+            "select * from quartz_job_info where is_delete=0",
+            "and product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and dim_group in ",
+            "<foreach collection='dim_groups' item='dim_group' open='(' separator=',' close=')'>",
+            "#{dim_group}",
+            "</foreach>",
+            "<when test='product_code!=null and product_code !=\"\"'>",
+            "AND product_code = #{product_code}",
+            "</when>",
+            "<when test='dim_group!=null and dim_group !=\"\"'>",
+            "AND dim_group = #{dim_group}",
+            "</when>",
+            "</script>"
+    })
+    public List<QuartzJobInfo> selectByOwner(@Param("owner") String owner,
+                                             @Param("product_code") String product_code, @Param("dim_group") String dim_group,
+                                             @Param("product_codes") List<String> product_codes,
+                                             @Param("dim_groups") List<String> dim_groups);
 
     //finish,etl,error
     @Select(value = "select count(1),last_status from quartz_job_info where owner=#{owner} and is_delete=0 group by last_status")
@@ -72,7 +92,7 @@ public interface QuartzJobMapper extends BaseQuartzJobMapper<QuartzJobInfo> {
 
     @Select({"<script>",
             "SELECT * FROM quartz_job_info",
-            "WHERE owner=#{owner} and is_delete=0",
+            "WHERE is_delete=0",
             "<when test='etl_context!=null and etl_context !=\"\"'>",
             "AND etl_context like #{etl_context}",
             "</when>",
@@ -93,9 +113,26 @@ public interface QuartzJobMapper extends BaseQuartzJobMapper<QuartzJobInfo> {
             "<when test='last_status!=null and last_status !=\"\"'>",
             "AND last_status = #{last_status}",
             "</when>",
+            "and product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and dim_group in ",
+            "<foreach collection='dim_groups' item='dim_group' open='(' separator=',' close=')'>",
+            "#{dim_group}",
+            "</foreach>",
+            "<when test='product_code!=null and product_code !=\"\"'>",
+            "AND product_code = #{product_code}",
+            "</when>",
+            "<when test='dim_group!=null and dim_group !=\"\"'>",
+            "AND dim_group = #{dim_group}",
+            "</when>",
             "</script>"})
     public List<QuartzJobInfo> selectByParams(@Param("owner") String owner,@Param("job_context") String job_context,@Param("etl_context") String etl_context,
-                                              @Param("status") String status,@Param("last_status") String last_stauts);
+                                              @Param("status") String status,@Param("last_status") String last_stauts,
+                                              @Param("product_code") String product_code, @Param("dim_group") String dim_group,
+                                              @Param("product_codes") List<String> product_codes,
+                                              @Param("dim_groups") List<String> dim_groups);
 
     @Select({
             "<script>",

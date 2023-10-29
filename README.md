@@ -59,16 +59,17 @@
       项目涉及方向较多,技术杂乱
       包含以下几个项目,以下几个项目都是单独的git仓库
       zdh_web: zdh系列项目web管理端,提供可视化配置,比如ETL,调度,mock服务,权限管理,数仓模块等
-      zdh_spark: 基于spark的etl处理,必须依赖zdh_web
-      zdh_flinkx: 基于flink sql的etl处理,必须依赖zdh_web
-      zdh_mock: 基于netty的http-mock服务,必须依赖zdh_web
+      zdh_spark: 基于spark的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_server
+      zdh_flinkx: 基于flink sql的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_flinkx
+      zdh_mock: 基于netty的http-mock服务,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_mock
       zdh_queue: 计划开发一个非高性能的优先级可控队列(用于etl任务优先级控制),开发失败,废弃
       zdh_auth: 大数据统一权限管理(hadoop,hive,hbase,presto),开发中
-      coustomer: 是一个客户管理模块, 开发中,计划做客户画像,智能营销等服务,主要包括label, plugin, ship, variable, 4个模块
-         coustomer-label: 客户管理-标签服务,必须依赖zdh_web,主要提供离线批量圈人功能
-         coustomer-plugin: 客户管理-通用插件服务,提供id_mapping,过滤,触达用户(发送短信,邮件等)
-         coustomer-ship: 客户管理-实时经营服务,实时接入用户流量,对用户做经营
-         coustomer-variable: 客户管理-变量服务,和label服务能力一样,区别在于一个离线处理,一个实时处理
+      zdh_magic_mirror: 是一个客户管理模块, 开发中,计划做客户画像,智能营销等服务,主要包括common,label, plugin, ship, variable, 5个模块 github: https://github.com/zhaoyachao/zdh_magic_mirror
+         common: 公共模块
+         label: 客户管理-标签服务,必须依赖zdh_web,主要提供离线批量圈人功能
+         plugin: 客户管理-通用插件服务,提供id_mapping,过滤,触达用户(发送短信,邮件等)
+         ship: 客户管理-实时经营服务,实时接入用户流量,对用户做经营
+         variable: 客户管理-变量服务,和label服务能力一样,区别在于一个离线处理,一个实时处理
     
    
 # 开源/闭源版本
@@ -711,6 +712,12 @@
   + v5.1.2 [zdh_web]新增sentinel流量控制(结合zdh权限控制实现动态流控-未使用sentinel控制台,之后版本会考虑整合)
   + v5.1.2 [zdh_web]智能营销模块-增加数据权限控制(基于oa系统ABAC模式权限改造)
   
+  + v5.1.3 [zdh_web]审批流模块接入数据权限控制
+  + v5.1.3 [zdh_web]优化mybatis使用
+  + v5.1.3 [zdh_web]etl,调度模块接入数据权限控制
+  + v5.1.3 [zdh_web]优化数据insert/update逻辑,并修复数据库新增字段异常
+  + v5.1.3 [zdh_web]数据权限控制-为什么需要选择归属产品和归属组,归属产品可以认为是公司所属平台分类,归属组是平台下业务线的分类
+  + v5.1.3 [zdh_web]多数模块接入数据权限,简单做saas服务雏形,目前还不完善
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -2611,7 +2618,82 @@
      (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
      VALUES(1163140754785177600, '963932648793706496', '权益页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:46:06', '2023-10-15 15:46:06', 'rights_detail', '3', '', '', 'zdh', '');
 
+
+# 5.1.2迁移5.1.3
+
+     INSERT INTO resource_tree_info
+     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+     VALUES(1163975745324716032, '802848818109353984', '烽火台', '2', 'zyc', 'fa fa-fire', '', '14', '1', '2023-10-17 23:04:03', '2023-10-17 23:09:37', 'beacon_fire_index', '1', '告警', '', 'zdh', '');
+
+     alter table etl_apply_task_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table etl_apply_task_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update etl_apply_task_info set product_code ='zdh';
+     update etl_apply_task_info set dim_group ='group3';
      
+     alter table etl_task_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table etl_task_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update etl_task_info set product_code ='zdh';
+     update etl_task_info set dim_group ='group3';
+     
+     alter table etl_more_task_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table etl_more_task_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update etl_more_task_info set product_code ='zdh';
+     update etl_more_task_info set dim_group ='group3';
+     
+     alter table sql_task_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table sql_task_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update sql_task_info set product_code ='zdh';
+     update sql_task_info set dim_group ='group3';
+     
+     alter table ssh_task_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table ssh_task_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update ssh_task_info set product_code ='zdh';
+     update ssh_task_info set dim_group ='group3';
+     
+     alter table etl_task_flink_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table etl_task_flink_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update etl_task_flink_info set product_code ='zdh';
+     update etl_task_flink_info set dim_group ='group3';
+     
+     alter table etl_task_jdbc_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table etl_task_jdbc_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update etl_task_jdbc_info set product_code ='zdh';
+     update etl_task_jdbc_info set dim_group ='group3';
+     
+     alter table etl_task_datax_auto_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table etl_task_datax_auto_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update etl_task_datax_auto_info set product_code ='zdh';
+     update etl_task_datax_auto_info set dim_group ='group3';
+     
+     alter table etl_task_datax_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table etl_task_datax_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update etl_task_datax_info set product_code ='zdh';
+     update etl_task_datax_info set dim_group ='group3';
+     
+     alter table etl_task_unstructure_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table etl_task_unstructure_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update etl_task_unstructure_info set product_code ='zdh';
+     update etl_task_unstructure_info set dim_group ='group3';
+     
+     alter table etl_task_log_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table etl_task_log_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update etl_task_log_info set product_code ='zdh';
+     update etl_task_log_info set dim_group ='group3';
+     
+     alter table etl_task_batch_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table etl_task_batch_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update etl_task_batch_info set product_code ='zdh';
+     update etl_task_batch_info set dim_group ='group3';
+     
+     alter table quartz_job_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table quartz_job_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update quartz_job_info set product_code ='zdh';
+     update quartz_job_info set dim_group ='group3';
+     
+     alter table data_sources_info add column product_code varchar(64) not null default '' comment '产品code';
+     alter table data_sources_info add column dim_group varchar(64) not null default '' comment '用户组';
+     update data_sources_info set product_code ='zdh';
+     update data_sources_info set dim_group ='group3';
      
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

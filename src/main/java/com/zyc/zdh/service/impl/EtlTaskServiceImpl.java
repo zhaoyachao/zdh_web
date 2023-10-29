@@ -28,7 +28,7 @@ public class EtlTaskServiceImpl implements EtlTaskService {
 
     @Override
     public int insert(EtlTaskInfo etlTaskInfo) {
-        return etlTaskMapper.insert(etlTaskInfo);
+        return etlTaskMapper.insertSelective(etlTaskInfo);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class EtlTaskServiceImpl implements EtlTaskService {
 
     @Override
     public int update(EtlTaskInfo etlTaskInfo) {
-        return etlTaskMapper.updateByPrimaryKey(etlTaskInfo);
+        return etlTaskMapper.updateByPrimaryKeySelective(etlTaskInfo);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class EtlTaskServiceImpl implements EtlTaskService {
 
     @Override
     public List<EtlTaskInfo> selectByParams(String owner, String etl_context,String file_name) {
-        return etlTaskMapper.selectByParams(owner,etl_context,file_name);
+        return null;
     }
 
     @Override

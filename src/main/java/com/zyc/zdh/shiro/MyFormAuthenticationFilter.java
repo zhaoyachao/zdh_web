@@ -51,7 +51,7 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 		// user.setStatus(SysUser.STATUS_ENABLE);
 		// sysUserService.updateByPrimaryKeySelective(user);
 		// 认证通过后的跳转地址
-		System.out.println("认证通过后的跳转地址"+getSuccessUrl());
+		//System.out.println("认证通过后的跳转地址"+getSuccessUrl());
 		WebUtils.issueRedirect(request, response, getSuccessUrl(), null, true);
 	}
 
@@ -75,15 +75,15 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 		String session_captcha = (String)((HttpServletRequest) request).getSession().getAttribute(MyAuthenticationToken.captcha_key);
 
 
-		System.out.println("create Token");
+		//System.out.println("create Token");
 		String username = getUsername(request);
 		String password = getPassword(request);
 		boolean remberMe = isRememberMe(request);
 		String host = "";
 		String captcha = getCaptcha(request);
 		String ipAddr = "";
-		System.out.println("captcha: "+captcha);
-		System.out.println("session_captcha: "+session_captcha);
+		//System.out.println("captcha: "+captcha);
+		//System.out.println("session_captcha: "+session_captcha);
 		return new MyAuthenticationToken(username, password, remberMe, host,
 				captcha, ipAddr, session_captcha);
 	}

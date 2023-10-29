@@ -162,9 +162,9 @@ public class SystemController extends BaseController{
             }
             if (zdhNginx1 != null) {
                 zdhNginx.setId(zdhNginx1.getId());
-                zdhNginxMapper.updateByPrimaryKey(zdhNginx);
+                zdhNginxMapper.updateByPrimaryKeySelective(zdhNginx);
             } else {
-                zdhNginxMapper.insert(zdhNginx);
+                zdhNginxMapper.insertSelective(zdhNginx);
             }
 
             return ReturnInfo.buildSuccess("200");
@@ -289,7 +289,7 @@ public class SystemController extends BaseController{
             if(ni!=null && ni.getIs_see().equalsIgnoreCase("false")){
                 ni.setIs_see("true");
                 ni.setUpdate_time(new Timestamp(new Date().getTime()));
-                noticeMapper.updateByPrimaryKey(ni);
+                noticeMapper.updateByPrimaryKeySelective(ni);
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", ni);
         }catch (Exception e){
@@ -500,7 +500,7 @@ public class SystemController extends BaseController{
             everyDayNotice.setIs_delete(Const.NOT_DELETE);
             everyDayNotice.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             everyDayNotice.setShow_type(show_type);
-            everyDayNoticeMapper.insert(everyDayNotice);
+            everyDayNoticeMapper.insertSelective(everyDayNotice);
             return ReturnInfo.buildSuccess("");
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";

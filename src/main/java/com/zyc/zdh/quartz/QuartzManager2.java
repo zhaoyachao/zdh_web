@@ -74,7 +74,7 @@ public class QuartzManager2 {
 	 */
 	//@Transactional(value="platformTransactionManager")
 	public void addQuartzJobInfo(QuartzJobInfo quartzJobInfo){
-		quartzJobMapper.insert(quartzJobInfo);
+		quartzJobMapper.insertSelective(quartzJobInfo);
 	}
 	
 	/**
@@ -149,7 +149,7 @@ public class QuartzManager2 {
 //			if (!schedulerFactoryBean.getScheduler().isStarted()) {
 //				schedulerFactoryBean.getScheduler().start();
 //			}
-			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
+			quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
 		} catch (SecurityException e) {
 			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
@@ -218,7 +218,7 @@ public class QuartzManager2 {
 			strategyGroupInfo.setStatus("running");
 			schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
 
-			strategyGroupMapper.updateByPrimaryKey(strategyGroupInfo);
+			strategyGroupMapper.updateByPrimaryKeySelective(strategyGroupInfo);
 		} catch (SecurityException e) {
 			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
 			logger.error(error, e);
@@ -289,7 +289,7 @@ public class QuartzManager2 {
 		}
 		// 下方可以做一些更新数据库中任务的操作
 		quartzJobInfo.setStatus("runing");
-		quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
+		quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
 		return quartzJobInfo;
 	}
 	/**
@@ -400,7 +400,7 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().pauseJob(jobKey);
 			// 更新定时任务状态
 			quartzJobInfo.setStatus("pause");
-			quartzJobMapper.updateByPrimaryKey(quartzJobInfo);
+			quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
 			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

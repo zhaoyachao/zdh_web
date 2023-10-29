@@ -276,10 +276,12 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                                 is_run = JobDigitalMarket.checkTnDepends(tl, dagStrategyInstance);
                                 if(is_run){
                                     //更新任务状态为完成
-                                    tl.setStatus(JobStatus.FINISH.getValue());
+                                    tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                                     JobDigitalMarket.updateTaskLog(tl,sim);
                                     JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",检查完成:"+tl.getStatus());
                                     continue;
+                                }else{
+                                    JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",检查TN时间不满足,当前不可运行");
                                 }
                             }
                         }

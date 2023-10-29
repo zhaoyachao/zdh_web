@@ -45,7 +45,7 @@ public interface SshTaskMapper extends BaseSshTaskMapper<SshTaskInfo> {
 
     @Select({"<script>",
             "SELECT * FROM ssh_task_info",
-            "WHERE owner=#{owner}",
+            "WHERE is_delete=0",
             "<when test='ssh_context!=null and ssh_context !=\"\"'>",
             "AND ( ssh_context like #{ssh_context}",
             "OR ID like #{ssh_context}",
@@ -59,10 +59,26 @@ public interface SshTaskMapper extends BaseSshTaskMapper<SshTaskInfo> {
             "<when test='id!=null and id !=\"\"'>",
             "AND id = #{id}",
             "</when>",
-            "and is_delete=0",
+            "and product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and dim_group in ",
+            "<foreach collection='dim_groups' item='dim_group' open='(' separator=',' close=')'>",
+            "#{dim_group}",
+            "</foreach>",
+            "<when test='product_code!=null and product_code !=\"\"'>",
+            "AND product_code = #{product_code}",
+            "</when>",
+            "<when test='dim_group!=null and dim_group !=\"\"'>",
+            "AND dim_group = #{dim_group}",
+            "</when>",
             "</script>"})
     public List<SshTaskInfo> selectByParams(@Param("owner") String owner, @Param("ssh_context") String ssh_context,
-                                            @Param("id") String id);
+                                            @Param("id") String id,
+                                            @Param("product_code") String product_code, @Param("dim_group") String dim_group,
+                                            @Param("product_codes") List<String> product_codes,
+                                            @Param("dim_groups") List<String> dim_groups);
 
 
 

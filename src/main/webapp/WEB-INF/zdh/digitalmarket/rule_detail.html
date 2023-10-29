@@ -361,10 +361,11 @@
                     data:{"label_code": label_code},
                     //成功返回
                     success: function (data) {
-                        var param = data.result.param_json_object;
                         if(data.code != "200"){
                             layer.msg(data.msg);
+                            return ;
                         }
+                        var param = data.result.param_json_object;
                         $('#label_div').html("");
                         for (var i=0;i<param.length;i++){
                             var tmp = template;

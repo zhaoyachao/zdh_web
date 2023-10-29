@@ -56,6 +56,26 @@
                           action="" enctype="multipart/form-data">
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">归属产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="归属产品...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属组</label>
+                            <div class="col-sm-10">
+                                <select id="dim_group" name="dim_group"
+                                        data-placeholder="归属组...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">JAR任务说明</label>
                             <div class="col-sm-10">
                                 <input id="etl_context" name="etl_context" type="text"
@@ -186,6 +206,8 @@
 <!-- Toastr script -->
 <script src="js/plugins/toastr/toastr.min.js"></script>
 
+<script src="js/admin/dim_product_common.js"></script>
+<script src="js/admin/dim_group_common.js"></script>
 
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
@@ -276,6 +298,13 @@
                         success : function(data) {
                             console.info("success");
 
+                            var product_code=data[0].product_code;
+                            $("#product_code").val(product_code);
+                            $("#product_code").trigger("chosen:updated");
+
+                            var dim_group=data[0].dim_group;
+                            $("#dim_group").val(dim_group);
+                            $("#dim_group").trigger("chosen:updated");
 
                             //获取输入数据源id
                             var id=data[0].id;

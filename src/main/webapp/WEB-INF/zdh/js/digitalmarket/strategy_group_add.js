@@ -450,9 +450,9 @@ function doubleclick_crowd_operate(id) {
 function doubleclick_filter(id) {
     $(id).dblclick(function () {
         $("#etl_task_text").val("");
-        var filter_context = $(this).text();
+
         var div = $(this);
-        var filter_context=div.attr("filter_context");
+        var rule_context=div.attr("rule_context");
         var filter=div.attr("filter");
         var operate=div.attr("operate");
         var url=server_context+'/filter_detail.html';
@@ -464,7 +464,7 @@ function doubleclick_filter(id) {
             var touch_type = div.attr("touch_type");
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
-            url=url+"?filter_context="+filter_context+"&depend_level="+depend_level +"&time_out="+time_out+"&filter="+filter+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&filter="+filter+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -488,7 +488,7 @@ function doubleclick_filter(id) {
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
 
-                div.attr("filter_context",etl_task_info.filter_context);
+                div.attr("rule_context",etl_task_info.rule_context);
                 div.attr("filter_title",etl_task_info.filter_title);
                 div.attr("filter",etl_task_info.filter);
 
@@ -496,7 +496,7 @@ function doubleclick_filter(id) {
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
-                div.html("("+ etl_task_info.operate +")"+etl_task_info.filter_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
                 div.attr("title", etl_task_info.filter_title);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
@@ -507,9 +507,8 @@ function doubleclick_filter(id) {
 function doubleclick_shunt(id) {
     $(id).dblclick(function () {
         $("#etl_task_text").val("");
-        var shunt_context = $(this).text();
         var div = $(this);
-        var shunt_context=div.attr("shunt_context");
+        var rule_context=div.attr("rule_context");
         var shunt=div.attr("shunt");
         var shunt_param=div.attr("shunt_param");
         var operate=div.attr("operate");
@@ -523,7 +522,7 @@ function doubleclick_shunt(id) {
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
             $('#shunt_param').val(shunt_param);
-            url=url+"?shunt_context="+shunt_context+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&shunt="+shunt+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&shunt="+shunt+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
         }
         layer.open({
             type: 2,
@@ -548,15 +547,15 @@ function doubleclick_shunt(id) {
                 div.attr("depend_level",etl_task_info.depend_level);
 
                 div.attr("shunt_param",etl_task_info.shunt_param);
-                div.attr("shunt_context",etl_task_info.shunt_context);
+                div.attr("rule_context",etl_task_info.rule_context);
                 div.attr("shunt",etl_task_info.shunt);
 
                 div.css("width","auto");
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
-                div.html("("+ etl_task_info.operate +")"+etl_task_info.shunt_context);
-                div.attr("title", etl_task_info.shunt_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                div.attr("title", etl_task_info.rule_context);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });

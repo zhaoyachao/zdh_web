@@ -130,12 +130,15 @@ public class LabelController extends BaseController {
     @SentinelResource(value = "label_detail_by_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/label_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo label_detail_by_code(String label_code) {
+    public ReturnInfo label_detail_by_code(String label_code, String label_use_type) {
         try {
 
             LabelInfo labelInfo = new LabelInfo();
             labelInfo.setLabel_code(label_code);
-            labelInfo = labelMapper.selectOne(labelInfo);
+            List<LabelInfo> labelInfos = labelMapper.select(labelInfo);
+            if(labelInfos != null ){
+                labelInfo = labelInfos.get(0);
+            }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", labelInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -293,7 +296,7 @@ public class LabelController extends BaseController {
             LabelInfo labelInfo = labelMapper.selectByPrimaryKey(id);
             labelInfo.setStatus(labelInfo.getStatus().equalsIgnoreCase("2")?"1":"2");
             labelInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            labelMapper.updateByPrimaryKey(labelInfo);
+            labelMapper.updateByPrimaryKeySelective(labelInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

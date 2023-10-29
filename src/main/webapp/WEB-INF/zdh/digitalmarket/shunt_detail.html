@@ -74,7 +74,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">分流器名称</label>
                             <div class="col-sm-10">
-                                <input id="shunt_context" name="shunt_context" type="text"
+                                <input id="rule_context" name="rule_context" type="text"
                                        placeholder="分流器名称" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
@@ -312,7 +312,7 @@
                 $("#is_base").val(s.is_base);
                 $("#is_base").trigger("chosen:updated");
 
-                $("#shunt_context").val(s["shunt_context"]);
+                $("#rule_context").val(s["rule_context"]);
                 //解析参数
                 var shunt_param = $("#shunt_param",window.parent.document).val();
                 var shunt_param_object = JSON.parse(shunt_param);
@@ -368,7 +368,7 @@
             is_disenable="true"
         }
 
-        var shunt_context=$('#shunt_context').val();
+        var rule_context=$('#rule_context').val();
         var ary = new Array();
         var ary2 = new Array();
         var ary3 = new Array();
@@ -411,7 +411,7 @@
 
 
             "shunt": shunt,
-            "shunt_context":shunt_context,
+            "rule_context":rule_context,
             "shunt_param": JSON.stringify(result)
         };
         console.info("rule_detail:"+JSON.stringify(data));

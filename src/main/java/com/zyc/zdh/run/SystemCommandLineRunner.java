@@ -376,7 +376,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                             q.setIs_handle(Const.TRUR);
                             q.setUpdate_time(new Timestamp(new Date().getTime()));
                             //更新上下线任务已处理
-                            quartzExecutorMapper.updateByPrimaryKey(q);
+                            quartzExecutorMapper.updateByPrimaryKeySelective(q);
 
 
                             //更新executor状态

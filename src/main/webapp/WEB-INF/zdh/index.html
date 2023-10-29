@@ -864,6 +864,13 @@
             });
         }
 
+        function check_browser(){
+            var browserType = getBrowserType();
+            if(browserType != "Chrome" && browserType != "Firefox"){
+                layer.msg("使用谷歌浏览器或火狐浏览器体验更好");
+            }
+        }
+        check_browser();
         every_day_notice();
         function jump_spark_web() {
             $.ajax({

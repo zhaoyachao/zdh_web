@@ -125,7 +125,7 @@ public class ZdhParamController extends BaseController {
             paramInfo.setOwner(getUser().getUserName());
             paramInfo.setCreate_time(new Timestamp(new Date().getTime()));
             paramInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            paramMapper.insert(paramInfo);
+            paramMapper.insertSelective(paramInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -148,7 +148,7 @@ public class ZdhParamController extends BaseController {
             paramInfo.setIs_delete(Const.NOT_DELETE);
             paramInfo.setOwner(getUser().getUserName());
             paramInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            paramMapper.updateByPrimaryKey(paramInfo);
+            paramMapper.updateByPrimaryKeySelective(paramInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

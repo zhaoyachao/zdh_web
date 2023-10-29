@@ -65,6 +65,27 @@
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
                         <input type="hidden" id="jsmind_data" name="jsmind_data" value="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="归属产品...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属组</label>
+                            <div class="col-sm-10">
+                                <select id="dim_group" name="dim_group"
+                                        data-placeholder="归属组...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label">调度说明</label>
                             <div class="col-sm-10">
@@ -355,6 +376,9 @@
 <script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script src="js/admin/dim_product_common.js"></script>
+<script src="js/admin/dim_group_common.js"></script>
 
 <script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
 <script type="text/javascript" src="js/jsplumb/index.js"></script>
@@ -1298,6 +1322,15 @@
                             return ;
                         }
                         console.info("success");
+
+                        var product_code=data.result[0].product_code;
+                        $("#product_code").val(product_code);
+                        $("#product_code").trigger("chosen:updated");
+
+                        var dim_group=data.result[0].dim_group;
+                        $("#dim_group").val(dim_group);
+                        $("#dim_group").trigger("chosen:updated");
+
                        // layer.alert(JSON.stringify(data[0]))
                         //获取调度任务说明
                         var job_context=data.result[0].job_context;

@@ -53,6 +53,26 @@
                         <input type="hidden" name="status" id="status">
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">归属产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="归属产品...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属组</label>
+                            <div class="col-sm-10">
+                                <select id="dim_group" name="dim_group"
+                                        data-placeholder="归属组...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">ETL说明前缀</label>
                             <div class="col-sm-10">
                                 <input id="etl_pre_context" name="etl_pre_context" type="text"
@@ -385,6 +405,8 @@
 
 <!--<script src="js/demo/webuploader-demo.js"></script>-->
 
+<script src="js/admin/dim_product_common.js"></script>
+<script src="js/admin/dim_group_common.js"></script>
 
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
@@ -748,6 +770,14 @@
                         success: function (data) {
                             console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
+
+                            var product_code=data.result.product_code;
+                            $("#product_code").val(product_code);
+                            $("#product_code").trigger("chosen:updated");
+
+                            var dim_group=data.result.dim_group;
+                            $("#dim_group").val(dim_group);
+                            $("#dim_group").trigger("chosen:updated");
 
                             //获取输入数据源id
                             var data_sources_choose_input = data.result.data_sources_choose_input;

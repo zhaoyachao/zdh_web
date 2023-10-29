@@ -240,7 +240,7 @@ public class ZdhIssueDataController extends BaseController {
                 issueDataInfo.setData_sources_table_columns(issueDataInfo.getData_sources_file_columns());
             }
             debugInfo(issueDataInfo);
-            issueDataMapper.insert(issueDataInfo);
+            issueDataMapper.insertSelective(issueDataInfo);
             //根据资源信息获取审批流
 
             Example example = new Example(ResourceTreeInfo.class);
@@ -266,7 +266,7 @@ public class ZdhIssueDataController extends BaseController {
                 if(Arrays.asList(approvalEventInfos.get(0).getSkip_account().split(",")).contains(getUser().getUserName())){
                     //跳过审批
                     issueDataInfo.setStatus(Const.STATUS_PUB);
-                    issueDataMapper.updateByPrimaryKey(issueDataInfo);
+                    issueDataMapper.updateByPrimaryKeySelective(issueDataInfo);
                     return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功,且跳过审批", null);
                 }
             }
@@ -304,7 +304,7 @@ public class ZdhIssueDataController extends BaseController {
             }
             debugInfo(issueDataInfo);
             IssueDataInfo issueDataInfo2 = issueDataMapper.selectById(issueDataInfo.getId());
-            issueDataMapper.updateByPrimaryKey(issueDataInfo);
+            issueDataMapper.updateByPrimaryKeySelective(issueDataInfo);
             String line = Const.LINE_SEPARATOR;
             String change_message = "";
             if (!idi.getIssue_context().equalsIgnoreCase(issueDataInfo.getIssue_context())) {
@@ -404,7 +404,7 @@ public class ZdhIssueDataController extends BaseController {
             applyInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             applyInfo.setStatus(Const.APPLY_STATUS_INIT);
             debugInfo(applyInfo);
-            applyMapper.insert(applyInfo);
+            applyMapper.insertSelective(applyInfo);
 
             //根据资源信息获取审批流
             Example example = new Example(ResourceTreeInfo.class);
@@ -432,7 +432,7 @@ public class ZdhIssueDataController extends BaseController {
                 if(Arrays.asList(approvalEventInfos.get(0).getSkip_account().split(",")).contains(getUser().getUserName())){
                     //跳过审批
                     applyInfo.setStatus(Const.APPLY_STATUS_SUCCESS);
-                    applyMapper.updateByPrimaryKey(applyInfo);
+                    applyMapper.updateByPrimaryKeySelective(applyInfo);
                     return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "申请成功,且跳过审批", null);
                 }
             }

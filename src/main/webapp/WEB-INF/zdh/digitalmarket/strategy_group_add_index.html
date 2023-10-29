@@ -395,15 +395,15 @@
             if(tp == "filter"){
                 $("#" + divId).attr("filter",rs.filter);
                 $("#" + divId).attr("title",rs.filter_title);
-                $("#" + divId).attr("filter_context",rs.filter_context);
-                $("#" + divId).html("("+ rs.operate +")"+rs.filter_context);
+                //$("#" + divId).attr("filter_context",rs.filter_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             if(tp == "shunt"){
                 $("#" + divId).attr("shunt_param",rs.shunt_param);
-                $("#" + divId).attr("shunt_context",rs.shunt_context);
+                $("#" + divId).attr("rule_context",rs.rule_context);
                 $("#" + divId).attr("shunt",rs.shunt);
-                $("#" + divId).html("("+ rs.operate +")"+rs.shunt_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             if(tp == "rights"){
@@ -529,7 +529,7 @@
 
                 crowd_operate_context: $elem.attr('crowd_operate_context'),
 
-                filter_context: $elem.attr('filter_context'),
+                //filter_context: $elem.attr('filter_context'),
                 filter_title: $elem.attr('filter_title'),
                 filter: $elem.attr('filter'),
 

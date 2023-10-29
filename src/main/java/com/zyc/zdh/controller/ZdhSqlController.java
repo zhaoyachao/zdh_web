@@ -11,6 +11,7 @@ import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +47,8 @@ public class ZdhSqlController extends BaseController {
     SqlTaskMapper sqlTaskMapper;
     @Autowired
     MetaDatabaseMapper metaDatabaseMapper;
-
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
     /**
      * spark sql任务首页
      * @return
@@ -78,14 +80,15 @@ public class ZdhSqlController extends BaseController {
     @SentinelResource(value = "sql_task_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/sql_task_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<SqlTaskInfo>> sql_task_list(String sql_context, String id) {
+    public ReturnInfo<List<SqlTaskInfo>> sql_task_list(String sql_context, String id, String product_code, String dim_group) {
 
         try{
             List<SqlTaskInfo> sqlTaskInfos = new ArrayList<>();
             if(!StringUtils.isEmpty(sql_context)){
                 sql_context=getLikeCondition(sql_context);
             }
-            sqlTaskInfos = sqlTaskMapper.selectByParams(getOwner(), sql_context, id);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            sqlTaskInfos = sqlTaskMapper.selectByParams(getOwner(), sql_context, id, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
 
             return ReturnInfo.buildSuccess(sqlTaskInfos);
         }catch (Exception e){
@@ -141,7 +144,7 @@ public class ZdhSqlController extends BaseController {
             sqlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             sqlTaskInfo.setIs_delete(Const.NOT_DELETE);
 
-            sqlTaskMapper.insert(sqlTaskInfo);
+            sqlTaskMapper.insertSelective(sqlTaskInfo);
 
 
             if (sqlTaskInfo.getUpdate_context() != null && !sqlTaskInfo.getUpdate_context().equals("")) {
@@ -151,7 +154,7 @@ public class ZdhSqlController extends BaseController {
                 etlTaskUpdateLogs.setUpdate_context(sqlTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -180,7 +183,7 @@ public class ZdhSqlController extends BaseController {
             sqlTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sqlTaskInfo);
 
-            sqlTaskMapper.updateByPrimaryKey(sqlTaskInfo);
+            sqlTaskMapper.updateByPrimaryKeySelective(sqlTaskInfo);
 
             SqlTaskInfo sti = sqlTaskMapper.selectByPrimaryKey(sqlTaskInfo.getId());
 
@@ -192,7 +195,7 @@ public class ZdhSqlController extends BaseController {
                 etlTaskUpdateLogs.setUpdate_context(sqlTaskInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
@@ -240,7 +243,7 @@ public class ZdhSqlController extends BaseController {
                     meta_database_info.setTb_name("");
                     meta_database_info.setOwner(owner);
                     meta_database_info.setCreate_time(new Timestamp(new Date().getTime()));
-                    metaDatabaseMapper.insert(meta_database_info);
+                    metaDatabaseMapper.insertSelective(meta_database_info);
                 }
 
                 for (Object t : tableAry) {
@@ -250,7 +253,7 @@ public class ZdhSqlController extends BaseController {
                     meta_database_info.setOwner(owner);
                     meta_database_info.setCreate_time(new Timestamp(new Date().getTime()));
                     meta_database_infos.add(meta_database_info);
-                    metaDatabaseMapper.insert(meta_database_info);
+                    metaDatabaseMapper.insertSelective(meta_database_info);
                 }
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "同步成功", null);

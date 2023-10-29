@@ -114,6 +114,16 @@ public class EtlApplyTaskInfo {
 
     private Timestamp update_time;
 
+    /**
+     * 归属组
+     */
+    private String dim_group;
+
+    /**
+     * 归属产品
+     */
+    private String product_code;
+
     @Transient
     private String merge;
 
@@ -489,6 +499,22 @@ public class EtlApplyTaskInfo {
 
     public void setUpdate_time(Timestamp update_time) {
         this.update_time = update_time;
+    }
+
+    public String getDim_group() {
+        return dim_group;
+    }
+
+    public void setDim_group(String dim_group) {
+        this.dim_group = dim_group;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }
 

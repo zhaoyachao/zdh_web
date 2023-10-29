@@ -39,7 +39,7 @@ public class CheckBloodSourceJob {
             for (BloodSourceInfo bsi : bsis) {
                 if (!StringUtils.isEmpty(bsi.getInput())&& !StringUtils.isEmpty(bsi.getOutput_type())){
                     System.out.println("Blood: "+JSON.toJSONString(bsi));
-                    bloodSourceMapper.insert(bsi);
+                    bloodSourceMapper.insertSelective(bsi);
                 }
 
             }

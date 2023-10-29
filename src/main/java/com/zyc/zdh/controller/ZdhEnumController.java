@@ -169,7 +169,7 @@ public class ZdhEnumController extends BaseController{
             enumInfo.setCreate_time(new Timestamp(new Date().getTime()));
             enumInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             enumInfo.setIs_delete(Const.NOT_DELETE);
-            enumMapper.insert(enumInfo);
+            enumMapper.insertSelective(enumInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -210,7 +210,7 @@ public class ZdhEnumController extends BaseController{
 
             enumInfo.setEnum_json(jsonArray.toJSONString());
             debugInfo(enumInfo);
-            enumMapper.updateByPrimaryKey(enumInfo);
+            enumMapper.updateByPrimaryKeySelective(enumInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

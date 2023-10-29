@@ -141,7 +141,7 @@ public class HelpDocumentController extends BaseController {
             helpDocumentInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             helpDocumentInfo.setIs_delete(Const.NOT_DELETE);
             helpDocumentInfo.setOwner(oldHelpDocumentInfo.getOwner());
-            helpDocumentMapper.updateByPrimaryKey(helpDocumentInfo);
+            helpDocumentMapper.updateByPrimaryKeySelective(helpDocumentInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", helpDocumentInfo);
         } catch (Exception e) {
@@ -168,7 +168,7 @@ public class HelpDocumentController extends BaseController {
             helpDocumentInfo.setIs_delete(Const.NOT_DELETE);
             helpDocumentInfo.setCreate_time(new Timestamp(new Date().getTime()));
             helpDocumentInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            helpDocumentMapper.insert(helpDocumentInfo);
+            helpDocumentMapper.insertSelective(helpDocumentInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", helpDocumentInfo);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

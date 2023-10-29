@@ -170,7 +170,7 @@ public class AspectConfig implements Ordered {
 
                 userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
                 userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-                userOperateLogMapper.insert(userOperateLogInfo);
+                userOperateLogMapper.insertSelective(userOperateLogInfo);
                 MDC.remove("user_id");
                 if (request.getMethod().equalsIgnoreCase("get")) {
                     return "redirect:403";
@@ -236,7 +236,7 @@ public class AspectConfig implements Ordered {
                     }
                     userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
                     userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-                    userOperateLogMapper.insert(userOperateLogInfo);
+                    userOperateLogMapper.insertSelective(userOperateLogInfo);
                 } catch (Exception ex) {
                     String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
                     logger.error(error, ex);
@@ -330,7 +330,7 @@ public class AspectConfig implements Ordered {
                         //未知的object类型
                         userOperateLogInfo.setOperate_output(JSON.toJSONString("未知的返回值类型,请管理员确认"));
                     }
-                    userOperateLogMapper.insert(userOperateLogInfo);
+                    userOperateLogMapper.insertSelective(userOperateLogInfo);
                 }
             } catch (Exception e) {
                 String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -449,7 +449,7 @@ public class AspectConfig implements Ordered {
             ni.setOwner(user.getUserName());
             ni.setCreate_time(new Timestamp(new Date().getTime()));
             ni.setUpdate_time(new Timestamp(new Date().getTime()));
-            noticeMapper.insert(ni);
+            noticeMapper.insertSelective(ni);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);

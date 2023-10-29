@@ -132,7 +132,7 @@ public class DataTagGroupController extends BaseController {
             dataTagGroupInfo.setCreate_time(oldDataTagGroupInfo.getCreate_time());
             dataTagGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             dataTagGroupInfo.setIs_delete(Const.NOT_DELETE);
-            dataTagGroupMapper.updateByPrimaryKey(dataTagGroupInfo);
+            dataTagGroupMapper.updateByPrimaryKeySelective(dataTagGroupInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
@@ -159,7 +159,7 @@ public class DataTagGroupController extends BaseController {
             dataTagGroupInfo.setIs_delete(Const.NOT_DELETE);
             dataTagGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
             dataTagGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            dataTagGroupMapper.insert(dataTagGroupInfo);
+            dataTagGroupMapper.insertSelective(dataTagGroupInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

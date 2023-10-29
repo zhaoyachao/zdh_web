@@ -8,6 +8,7 @@ import com.zyc.zdh.entity.EtlTaskUpdateLogs;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * MPP jdbc服务
@@ -39,7 +41,8 @@ public class ZdhJdbcController extends BaseController {
     EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
     @Autowired
     EtlTaskJdbcMapper etlTaskJdbcMapper;
-
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * jdbc任务首页
@@ -72,14 +75,15 @@ public class ZdhJdbcController extends BaseController {
     @SentinelResource(value = "etl_task_jdbc_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_jdbc_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<EtlTaskJdbcInfo>> etl_task_jdbc_list(String etl_context, String id) {
+    public ReturnInfo<List<EtlTaskJdbcInfo>> etl_task_jdbc_list(String etl_context, String id, String product_code, String dim_group) {
 
         try{
             List<EtlTaskJdbcInfo> etlTaskJdbcInfos = new ArrayList<>();
             if(!StringUtils.isEmpty(etl_context)){
                 etl_context=getLikeCondition(etl_context);
             }
-            etlTaskJdbcInfos = etlTaskJdbcMapper.selectByParams(getOwner(), etl_context, id);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            etlTaskJdbcInfos = etlTaskJdbcMapper.selectByParams(getOwner(), etl_context, id, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
 
             return ReturnInfo.buildSuccess(etlTaskJdbcInfos);
         }catch (Exception e){
@@ -134,7 +138,7 @@ public class ZdhJdbcController extends BaseController {
             etlTaskJdbcInfo.setIs_delete(Const.NOT_DELETE);
 
             debugInfo(etlTaskJdbcInfo);
-            etlTaskJdbcMapper.insert(etlTaskJdbcInfo);
+            etlTaskJdbcMapper.insertSelective(etlTaskJdbcInfo);
 
 
             if (etlTaskJdbcInfo.getUpdate_context() != null && !etlTaskJdbcInfo.getUpdate_context().equals("")) {
@@ -144,7 +148,7 @@ public class ZdhJdbcController extends BaseController {
                 etlTaskUpdateLogs.setUpdate_context(etlTaskJdbcInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(owner);
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -173,7 +177,7 @@ public class ZdhJdbcController extends BaseController {
             etlTaskJdbcInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskJdbcInfo);
 
-            etlTaskJdbcMapper.updateByPrimaryKey(etlTaskJdbcInfo);
+            etlTaskJdbcMapper.updateByPrimaryKeySelective(etlTaskJdbcInfo);
 
             EtlTaskJdbcInfo sti = etlTaskJdbcMapper.selectByPrimaryKey(etlTaskJdbcInfo.getId());
 
@@ -185,7 +189,7 @@ public class ZdhJdbcController extends BaseController {
                 etlTaskUpdateLogs.setUpdate_context(etlTaskJdbcInfo.getUpdate_context());
                 etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
                 etlTaskUpdateLogs.setOwner(getOwner());
-                etlTaskUpdateLogsMapper.insert(etlTaskUpdateLogs);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {

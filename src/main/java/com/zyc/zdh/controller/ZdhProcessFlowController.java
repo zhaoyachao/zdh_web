@@ -195,7 +195,7 @@ public class ZdhProcessFlowController extends BaseController {
                 //审批通过
                 idi.setStatus(Const.STATUS_PUB);//发布
             }
-            issueDataMapper.updateByPrimaryKey(idi);
+            issueDataMapper.updateByPrimaryKeySelective(idi);
         }
         if (pfi.getEvent_code().equalsIgnoreCase(EventCode.DATA_APPLY.getCode())) {
             //更新申请表
@@ -205,7 +205,7 @@ public class ZdhProcessFlowController extends BaseController {
                 //审批通过
                 ai.setStatus(Const.STATUS_PUB);
             }
-            applyMapper.updateByPrimaryKey(ai);
+            applyMapper.updateByPrimaryKeySelective(ai);
         }
         if (pfi.getEvent_code().equalsIgnoreCase(EventCode.PERMISSION_APPLY.getCode())) {
             //更新权限申请表
@@ -216,7 +216,7 @@ public class ZdhProcessFlowController extends BaseController {
                 pai.setStatus(Const.PERMISSION_APPLY_SUCCESS);//通过
                 permission_apply_event(pai);
             }
-            permissionApplyMapper.updateByPrimaryKey(pai);
+            permissionApplyMapper.updateByPrimaryKeySelective(pai);
         }
 
         //此处增加回调机制(只有回调才能做到,万能审批流,调用方可以不关心审批流程,但是必须提供一个审批完成/失败后的回调接口(http))
@@ -278,12 +278,12 @@ public class ZdhProcessFlowController extends BaseController {
                 productTagInfo.setProduct_admin(productTagInfo.getProduct_admin()+","+pai.getOwner());
             }
             productTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            productTagMapper.updateByPrimaryKey(productTagInfo);
+            productTagMapper.updateByPrimaryKeySelective(productTagInfo);
         }else{
 
         }
 
-        permissionMapper.updateByPrimaryKey(permissionUserInfo1);
+        permissionMapper.updateByPrimaryKeySelective(permissionUserInfo1);
     }
 
 
@@ -401,7 +401,7 @@ public class ZdhProcessFlowController extends BaseController {
                 pfi.setEvent_id(event_id);
                 pfi.setOther_handle(Const.PROCESS_OTHER_STATUS_INIT);
                 pfi.setAgent_user("");
-                processFlowMapper.insert(pfi);
+                processFlowMapper.insertSelective(pfi);
                 pre_id = id;
             }
             processFlowMapper.updateIsEnd(pre_id, Const.END);
@@ -508,7 +508,7 @@ public class ZdhProcessFlowController extends BaseController {
             pfi.setEvent_id(event_id);
             pfi.setOther_handle(Const.PROCESS_OTHER_STATUS_INIT);
             pfi.setAgent_user("");
-            processFlowMapper.insert(pfi);
+            processFlowMapper.insertSelective(pfi);
             pre_id = id;
         }
         processFlowMapper.updateIsEnd(pre_id, Const.END);
@@ -579,7 +579,7 @@ public class ZdhProcessFlowController extends BaseController {
             pfi.setEvent_id(event_id);
             pfi.setOther_handle(Const.PROCESS_OTHER_STATUS_INIT);
             pfi.setAgent_user("");
-            processFlowMapper.insert(pfi);
+            processFlowMapper.insertSelective(pfi);
             pre_id = id;
         }
         processFlowMapper.updateIsEnd(pre_id, Const.END);

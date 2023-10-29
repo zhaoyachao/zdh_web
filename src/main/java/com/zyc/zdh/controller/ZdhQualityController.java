@@ -126,7 +126,7 @@ public class ZdhQualityController extends BaseController {
             qualityRuleInfo.setCreate_time(new Timestamp(new Date().getTime()));
             qualityRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             qualityRuleInfo.setOwner(getOwner());
-            qualityRuleMapper.insert(qualityRuleInfo);
+            qualityRuleMapper.insertSelective(qualityRuleInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -149,7 +149,7 @@ public class ZdhQualityController extends BaseController {
         try {
             qualityRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             qualityRuleInfo.setOwner(getOwner());
-            qualityRuleMapper.updateByPrimaryKey(qualityRuleInfo);
+            qualityRuleMapper.updateByPrimaryKeySelective(qualityRuleInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -247,7 +247,7 @@ public class ZdhQualityController extends BaseController {
                 jsonArray.add(jsonObject);
             }
             qualityTaskInfo.setQuality_rule_config(jsonArray.toJSONString());
-            qualityTaskMapper.insert(qualityTaskInfo);
+            qualityTaskMapper.insertSelective(qualityTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -280,7 +280,7 @@ public class ZdhQualityController extends BaseController {
                 jsonArray.add(jsonObject);
             }
             qualityTaskInfo.setQuality_rule_config(jsonArray.toJSONString());
-            qualityTaskMapper.updateByPrimaryKey(qualityTaskInfo);
+            qualityTaskMapper.updateByPrimaryKeySelective(qualityTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
