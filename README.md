@@ -2771,5 +2771,7 @@
 ![调度任务界面](img/dispatch_list.jpg)
 
 ![调度任务配置界面](img/dispatch_add.jpg)
+
+![风控引擎配置界面](img/risk_engine.jpg)
  
  
