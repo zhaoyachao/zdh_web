@@ -2,6 +2,7 @@ function guid2() {
 
     return $.ajax({
         url: server_context+"/get_id",
+        cache: false,
         async: false
     }).responseText;
 }

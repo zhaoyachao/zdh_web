@@ -52,7 +52,7 @@ public class VariableController extends BaseController {
     @ResponseBody
     public ReturnInfo<Map> variable_detail(String product_code, String uid, String variable_code) {
         try{
-            String variable_uid="tag_"+uid;
+            String variable_uid=product_code+"_tag_"+uid;
             String params = redisUtil.getRedisTemplate().opsForHash().get(variable_uid, variable_code).toString();
 
             Map map = JSONObject.parseObject(params, Map.class);
@@ -89,11 +89,11 @@ public class VariableController extends BaseController {
     @ResponseBody
     public ReturnInfo variable_update(String product_code, String uid, String variable_code, String param) {
         try {
-            String variable_uid="tag_"+uid;
+            String variable_uid=product_code+"_tag_"+uid;
             redisUtil.getRedisTemplate().opsForHash().put(variable_uid, variable_code, param);
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", "");
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", "");
         } catch (Exception e) {
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 
@@ -109,7 +109,7 @@ public class VariableController extends BaseController {
     @ResponseBody
     public ReturnInfo label_delete(String product_code, String uid, String variable_code) {
         try {
-            String variable_uid="tag_"+uid;
+            String variable_uid=product_code+"_tag_"+uid;
             redisUtil.getRedisTemplate().opsForHash().delete(variable_uid, variable_code);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
