@@ -3,7 +3,7 @@ package com.zyc.notscan.base;
 import com.zyc.notscan.BaseMapper;
 
 /**
- * ClassName: NoticeMapper
+ * ClassName: BaseNoticeMapper
  * @author zyc-admin
  * @date 2021年09月19日
  * @Description: TODO  

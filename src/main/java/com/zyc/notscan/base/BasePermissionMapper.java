@@ -4,7 +4,7 @@ import com.zyc.notscan.BaseMapper;
 
 
 /**
- * ClassName: AccountDao   
+ * ClassName: BasePermissionMapper
  * @author zyc-admin
  * @date 2018年2月6日  
  * @Description: TODO  

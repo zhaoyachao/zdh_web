@@ -3,7 +3,7 @@ package com.zyc.notscan.base;
 import com.zyc.notscan.BaseMapper;
 
 /**
- * ClassName: ApprovalEventMapper
+ * ClassName: BaseApprovalEventMapper
  * @author zyc-admin
  * @date 2021年10月12日
  * @Description: TODO  
