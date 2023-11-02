@@ -10,7 +10,6 @@ import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.shiro.SecurityUtils;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
@@ -409,11 +408,6 @@ public class SystemController extends BaseController{
         return "read_me";
     }
 
-
-    public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
-    }
 
     /**
      * 解析quartz表达式

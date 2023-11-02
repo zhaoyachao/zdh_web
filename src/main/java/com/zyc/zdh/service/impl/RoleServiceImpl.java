@@ -1,12 +1,5 @@
 package com.zyc.zdh.service.impl;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
@@ -16,6 +9,12 @@ import com.zyc.zdh.dao.RoleDao;
 import com.zyc.zdh.entity.PageBase;
 import com.zyc.zdh.entity.RoleInfo;
 import com.zyc.zdh.service.RoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Field;
+import java.util.List;
 
 @Service("roleService")
 public class RoleServiceImpl implements RoleService {

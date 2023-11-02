@@ -1,5 +1,8 @@
 package com.zyc.zdh.aop;
 
+import com.zyc.zdh.entity.ResultInfo;
+import com.zyc.zdh.entity.User;
+import com.zyc.zdh.shiro.RedisOtherDb;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -7,9 +10,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
-import com.zyc.zdh.entity.ResultInfo;
-import com.zyc.zdh.entity.User;
-import com.zyc.zdh.shiro.RedisOtherDb;
 
 /**
  * ClassName: AspectLoginConfig   

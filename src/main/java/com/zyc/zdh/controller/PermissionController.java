@@ -3,7 +3,6 @@ package com.zyc.zdh.controller;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
@@ -12,8 +11,6 @@ import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.poi.ss.extractor.ExcelExtractor;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1463,12 +1460,6 @@ public class PermissionController extends BaseController {
             logger.error(error, e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
-    }
-
-
-    public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
     }
 
 

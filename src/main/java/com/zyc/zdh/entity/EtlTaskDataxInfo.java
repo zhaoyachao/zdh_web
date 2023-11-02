@@ -2,8 +2,9 @@ package com.zyc.zdh.entity;
 
 import com.zyc.zdh.util.Const;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.sql.Timestamp;
-import javax.persistence.*;
 
 @Table(name = "etl_task_datax_info")
 public class EtlTaskDataxInfo {

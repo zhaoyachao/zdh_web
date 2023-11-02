@@ -3,6 +3,7 @@ package com.zyc.zdh.config;
 import com.zyc.zdh.cache.MyCacheManager;
 import com.zyc.zdh.cache.MyCacheTemplate;
 import com.zyc.zdh.cache.MyRedisCache;
+import com.zyc.zdh.shiro.RedisUtil;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
@@ -27,7 +28,6 @@ import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import redis.clients.jedis.JedisPoolConfig;
@@ -190,11 +190,19 @@ public class RedisConfig extends CachingConfigurerSupport {
 		redisTemplate.setConnectionFactory(redisConnectionFactory);
 		RedisSerializer<String> redisSerializer = new StringRedisSerializer();
 		redisTemplate.setKeySerializer(redisSerializer);
-		JdkSerializationRedisSerializer jdkSerializationRedisSerializer = new JdkSerializationRedisSerializer();
-		redisTemplate.setValueSerializer(jdkSerializationRedisSerializer);
+		//JdkSerializationRedisSerializer jdkSerializationRedisSerializer = new JdkSerializationRedisSerializer();
+		redisTemplate.setValueSerializer(redisSerializer);
+		redisTemplate.setHashKeySerializer(redisSerializer);
+		redisTemplate.setHashValueSerializer(redisSerializer);
 		return redisTemplate;
 	}
 
+	@Bean
+	public RedisUtil redisUtil(RedisTemplate<String,Object> redisTemplate) {
+		RedisUtil redisUtil = new RedisUtil();
+		redisUtil.setRedisTemplate(redisTemplate);
+		return redisUtil;
+	}
 	/**
 	 * redis缓存管理器
 	 * @param redisTemplate

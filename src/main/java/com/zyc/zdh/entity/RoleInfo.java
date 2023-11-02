@@ -1,8 +1,5 @@
 package com.zyc.zdh.entity;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zyc.zdh.annotation.SortMark;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -10,6 +7,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Table(name="role_info")
 public class RoleInfo extends PageBase implements Serializable {

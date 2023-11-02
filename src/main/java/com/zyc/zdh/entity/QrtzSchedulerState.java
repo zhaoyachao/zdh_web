@@ -2,7 +2,10 @@ package com.zyc.zdh.entity;
 
 import com.zyc.zdh.util.Const;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Table(name = "QRTZ_SCHEDULER_STATE")
 public class QrtzSchedulerState {

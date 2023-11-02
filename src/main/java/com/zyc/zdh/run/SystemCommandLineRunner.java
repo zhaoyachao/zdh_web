@@ -1,6 +1,5 @@
 package com.zyc.zdh.run;
 
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.RuleConstant;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
@@ -8,11 +7,9 @@ import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.controller.SystemController;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.*;
-import com.zyc.zdh.monitor.Sys;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.queue.Message;
 import com.zyc.zdh.service.ZdhLogsService;
@@ -28,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.entity.Example;
@@ -532,11 +530,12 @@ public class SystemCommandLineRunner implements CommandLineRunner {
             @Override
             public void run() {
                 RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
+                RedisTemplate shirRedisTemplate=(RedisTemplate) SpringContext.getBean("shirRedisTemplate");
                 try{
                     while (true){
                         Set<String> sets = redisUtil.scan("shiro:cache:shiro-activeSessionCache1*");
                         for(String key:sets){
-                            if( !((SimpleSession) redisUtil.get(key)).isValid()){
+                            if( !((SimpleSession) shirRedisTemplate.opsForValue().get(key)).isValid()){
                                 logger.info("检测到过期session: "+ JSON.toJSONString(redisUtil.get(key)));
                                 redisUtil.remove(key);
                             }

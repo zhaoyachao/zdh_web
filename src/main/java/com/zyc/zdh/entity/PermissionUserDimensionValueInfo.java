@@ -1,7 +1,8 @@
 package com.zyc.zdh.entity;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.sql.Timestamp;
-import javax.persistence.*;
 
 @Table(name = "permission_user_dimension_value_info")
 public class PermissionUserDimensionValueInfo {

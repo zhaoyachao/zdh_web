@@ -1,9 +1,10 @@
 package com.zyc.zdh.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
-
-import javax.persistence.*;
 
 @Table(name = "task_info")
 public class TaskInfo extends PageBase implements Serializable{

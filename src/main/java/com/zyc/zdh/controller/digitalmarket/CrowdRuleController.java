@@ -7,11 +7,9 @@ import com.zyc.zdh.dao.CrowdRuleMapper;
 import com.zyc.zdh.entity.CrowdRuleInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.User;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,10 +180,5 @@ public class CrowdRuleController extends BaseController {
         return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "功能暂未支持", "功能暂未支持");
     }
 
-
-    public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
-    }
 
 }

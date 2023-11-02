@@ -1,7 +1,9 @@
 package com.zyc.zdh.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.sql.Timestamp;
-import javax.persistence.*;
 
 @Table(name = "we_mock_tree_info")
 public class WeMockTreeInfo {

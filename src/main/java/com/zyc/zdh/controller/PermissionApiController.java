@@ -7,7 +7,6 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.Encrypt;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.session.Session;
 import org.slf4j.Logger;

@@ -1,6 +1,7 @@
 package com.zyc.zdh.entity;
 
-import javax.persistence.*;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Table(name = "account_info")
 public class AccountInfo {

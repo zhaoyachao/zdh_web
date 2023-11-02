@@ -2,14 +2,9 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.DataSourcesMapper;
-import com.zyc.zdh.dao.PermissionMapper;
 import com.zyc.zdh.entity.DataSourcesInfo;
-import com.zyc.zdh.entity.PermissionUserInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.service.DispatchTaskService;
-import com.zyc.zdh.service.EtlTaskService;
-import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
@@ -25,7 +20,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -42,14 +36,6 @@ public class ZdhDataSourcesController extends BaseController{
     public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
     private DataSourcesMapper dataSourcesMapper;
-    @Autowired
-    private EtlTaskService etlTaskService;
-    @Autowired
-    private DispatchTaskService dispatchTaskService;
-    @Autowired
-    private ZdhLogsService zdhLogsService;
-    @Autowired
-    private PermissionMapper permissionMapper;
     @Autowired
     private Environment ev;
     @Autowired

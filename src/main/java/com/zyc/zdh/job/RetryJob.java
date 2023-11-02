@@ -1,13 +1,18 @@
 package com.zyc.zdh.job;
 
-import com.zyc.zdh.dao.*;
-import com.zyc.zdh.entity.*;
+import com.zyc.zdh.dao.QuartzJobMapper;
+import com.zyc.zdh.dao.TaskLogInstanceMapper;
+import com.zyc.zdh.dao.ZdhHaInfoMapper;
+import com.zyc.zdh.entity.QuartzJobInfo;
+import com.zyc.zdh.entity.TaskLogInstance;
+import com.zyc.zdh.entity.ZdhDownloadInfo;
+import com.zyc.zdh.entity.ZdhHaInfo;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.HttpUtil;
 import com.zyc.zdh.util.SpringContext;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

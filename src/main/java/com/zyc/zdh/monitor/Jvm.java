@@ -1,7 +1,6 @@
 package com.zyc.zdh.monitor;
 
 import com.zyc.zdh.ZdhApplication;
-import com.zyc.zdh.util.DateUtil;
 
 import java.lang.management.ManagementFactory;
 import java.sql.Timestamp;

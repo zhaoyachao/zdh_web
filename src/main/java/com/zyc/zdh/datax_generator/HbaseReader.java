@@ -1,7 +1,6 @@
 package com.zyc.zdh.datax_generator;
 
 import com.alibaba.fastjson.JSONObject;
-import org.assertj.core.util.Lists;
 
 import java.util.Arrays;
 import java.util.HashMap;

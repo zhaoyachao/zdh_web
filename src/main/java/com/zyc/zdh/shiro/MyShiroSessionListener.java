@@ -1,9 +1,8 @@
 package com.zyc.zdh.shiro;
 
+import com.zyc.zdh.util.SpringContext;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.SessionListener;
-
-import com.zyc.zdh.util.SpringContext;
 
 public class MyShiroSessionListener implements SessionListener {
 

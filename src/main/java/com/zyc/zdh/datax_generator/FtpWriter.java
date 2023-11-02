@@ -3,7 +3,6 @@ package com.zyc.zdh.datax_generator;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

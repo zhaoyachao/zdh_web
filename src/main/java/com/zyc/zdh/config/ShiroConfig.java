@@ -1,11 +1,5 @@
 package com.zyc.zdh.config;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import javax.servlet.Filter;
-
 import com.zyc.zdh.filter.ZdhFilter;
 import com.zyc.zdh.shiro.*;
 import org.apache.shiro.SecurityUtils;
@@ -30,8 +24,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.web.filter.DelegatingFilterProxy;
+
+import javax.servlet.Filter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Configuration
 public class ShiroConfig {
@@ -42,11 +46,31 @@ public class ShiroConfig {
 	@Value("${cookie.path:'/'}")
 	private String cookiePath;
 
+
+	/**
+	 * 单独实现shiro 使用的redisTemplate,原因:shiro session 存储到redis时需要使用jdk序列化方式,因此单独新增一个redis序列化方式为jdk
+	 *
+	 * @param redisConnectionFactory
+	 * @return shirRedisTemplate
+	 */
+	@Bean(name = "shirRedisTemplate")
+	public RedisTemplate<String, Object> shirRedisTemplate(
+			JedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+		redisTemplate.setConnectionFactory(redisConnectionFactory);
+		RedisSerializer<String> redisSerializer = new StringRedisSerializer();
+		redisTemplate.setKeySerializer(redisSerializer);
+		JdkSerializationRedisSerializer jdkSerializationRedisSerializer = new JdkSerializationRedisSerializer();
+		redisTemplate.setValueSerializer(jdkSerializationRedisSerializer);
+		redisTemplate.setHashKeySerializer(redisSerializer);
+		redisTemplate.setHashValueSerializer(redisSerializer);
+		return redisTemplate;
+	}
 	
 	@Bean(name="shiroRedisCacheManager")
-	public ShiroRedisCacheManager shiroRedisCacheManager(RedisTemplate redisTemplate){
+	public ShiroRedisCacheManager shiroRedisCacheManager(RedisTemplate shirRedisTemplate){
 		ShiroRedisCacheManager shiroRedisCacheManager=new ShiroRedisCacheManager();
-		shiroRedisCacheManager.setRedisTemplate(redisTemplate);
+		shiroRedisCacheManager.setRedisTemplate(shirRedisTemplate);
 		return shiroRedisCacheManager;
 	}
 
@@ -205,14 +229,6 @@ public class ShiroConfig {
 	 sessionDao.setRedisUtil(redisUtil);
 	 return sessionDao;
 	 }
-	
-	 @Bean
-	 public RedisUtil redisUtil(RedisTemplate<String,Object> redisTemplate) {
-	 RedisUtil redisUtil = new RedisUtil();
-	 redisUtil.setRedisTemplate(redisTemplate);
-	 return redisUtil;
-	 }
-
 
 
 	@Bean(name = "filterRegistrationBean1")

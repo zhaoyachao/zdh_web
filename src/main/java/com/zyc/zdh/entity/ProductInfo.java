@@ -1,8 +1,8 @@
 package com.zyc.zdh.entity;
 
-import java.io.Serializable;
-
 import com.zyc.zdh.annotation.SortMark;
+
+import java.io.Serializable;
 
 /**
  * ClassName: ProductInfo   

@@ -1,7 +1,7 @@
 package com.zyc.zdh.entity;
 
+import javax.persistence.Table;
 import java.sql.Timestamp;
-import javax.persistence.*;
 
 @Table(name = "quality")
 public class QualityInfo {

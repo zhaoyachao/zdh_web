@@ -1,36 +1,23 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
-import com.zyc.zdh.controller.PermissionApiController;
-import com.zyc.zdh.controller.PermissionUserDimensionValueController;
-import com.zyc.zdh.controller.PermissionUserGroupDimensionValueController;
 import com.zyc.zdh.dao.CrowdFileMapper;
 import com.zyc.zdh.dao.CrowdRuleMapper;
-import com.zyc.zdh.dao.FilterMapper;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.List;
 
 /**
  * 智能营销-配置策略时使用的配置页面
@@ -236,11 +223,6 @@ public class CommonController extends BaseController {
             logger.error(error, e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
-    }
-
-    public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
     }
 
 }

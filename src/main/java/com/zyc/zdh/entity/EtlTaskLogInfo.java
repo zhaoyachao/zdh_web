@@ -1,7 +1,8 @@
 package com.zyc.zdh.entity;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.sql.Timestamp;
-import javax.persistence.*;
 
 @Table(name = "etl_task_log_info")
 public class EtlTaskLogInfo {

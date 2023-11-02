@@ -1,7 +1,9 @@
 package com.zyc.zdh.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import javax.persistence.*;
 
 @Table(name = "server_task_info")
 public class ServerTaskInfo {

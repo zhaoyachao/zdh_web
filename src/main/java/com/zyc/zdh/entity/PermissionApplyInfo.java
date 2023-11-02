@@ -2,8 +2,10 @@ package com.zyc.zdh.entity;
 
 import com.zyc.zdh.util.Const;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
-import javax.persistence.*;
 
 @Table(name = "permission_apply_info")
 public class PermissionApplyInfo {

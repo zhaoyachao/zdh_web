@@ -1,8 +1,7 @@
 package com.zyc.zdh.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Transient;
+import java.io.Serializable;
 
 /**
  * ClassName: Page   

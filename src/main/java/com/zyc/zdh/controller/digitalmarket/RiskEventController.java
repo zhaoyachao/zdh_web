@@ -6,13 +6,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.RiskEventMapper;
-import com.zyc.zdh.entity.*;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.entity.RiskEventInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -314,11 +315,6 @@ public class RiskEventController extends BaseController {
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
-    }
-
-    public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
     }
 
 }
