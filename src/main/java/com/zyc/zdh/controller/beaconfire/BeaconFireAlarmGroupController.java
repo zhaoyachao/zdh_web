@@ -1,14 +1,15 @@
 package com.zyc.zdh.controller.beaconfire;
 
 import com.alibaba.fastjson.JSON;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.BeaconFireAlarmGroupMapper;
-import com.zyc.zdh.entity.*;
+import com.zyc.zdh.entity.BeaconFireAlarmGroupInfo;
+import com.zyc.zdh.entity.PageResult;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
-import io.reactivex.rxjava3.internal.util.HalfSerializer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -47,7 +48,6 @@ public class BeaconFireAlarmGroupController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/beacon_fire_alarm_group_index", method = RequestMethod.GET)
-    @White
     public String beacon_fire_alarm_group_index() {
 
         return "beaconfire/beacon_fire_alarm_group_index";
@@ -60,7 +60,6 @@ public class BeaconFireAlarmGroupController extends BaseController {
      */
     @RequestMapping(value = "/beacon_fire_alarm_group_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<BeaconFireAlarmGroupInfo>>> beacon_fire_alarm_group_list(String context,String product_code, String dim_group, int limit, int offset) {
         try{
             Example example=new Example(BeaconFireAlarmGroupInfo.class);
@@ -105,7 +104,6 @@ public class BeaconFireAlarmGroupController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/beacon_fire_alarm_group_add_index", method = RequestMethod.GET)
-    @White
     public String beacon_fire_alarm_group_add_index() {
 
         return "beaconfire/beacon_fire_alarm_group_add_index";
@@ -118,7 +116,6 @@ public class BeaconFireAlarmGroupController extends BaseController {
      */
     @RequestMapping(value = "/beacon_fire_alarm_group_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<BeaconFireAlarmGroupInfo> beacon_fire_alarm_group_detail(String id) {
         try {
             BeaconFireAlarmGroupInfo beaconFireAlarmGroupInfo = beaconFireAlarmGroupMapper.selectByPrimaryKey(id);
@@ -136,7 +133,6 @@ public class BeaconFireAlarmGroupController extends BaseController {
     @RequestMapping(value = "/beacon_fire_alarm_group_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<BeaconFireAlarmGroupInfo> beacon_fire_alarm_group_update(BeaconFireAlarmGroupInfo beaconFireAlarmGroupInfo,String[] phone, String[] sms, String[] email) {
         try {
 
@@ -171,7 +167,6 @@ public class BeaconFireAlarmGroupController extends BaseController {
     @RequestMapping(value = "/beacon_fire_alarm_group_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<BeaconFireAlarmGroupInfo> beacon_fire_alarm_group_add(BeaconFireAlarmGroupInfo beaconFireAlarmGroupInfo,String[] phone, String[] sms, String[] email) {
         try {
 
@@ -202,7 +197,6 @@ public class BeaconFireAlarmGroupController extends BaseController {
     @RequestMapping(value = "/beacon_fire_alarm_group_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo beacon_fire_alarm_group_delete(String[] ids) {
         try {
             beaconFireAlarmGroupMapper.deleteLogicByIds("beacon_fire_alarm_group_info",ids, new Timestamp(new Date().getTime()));
@@ -222,7 +216,6 @@ public class BeaconFireAlarmGroupController extends BaseController {
      */
     @RequestMapping(value = "/beacon_fire_alarm_group_list_by_owner", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<BeaconFireAlarmGroupInfo>> beacon_fire_alarm_group_list_by_owner(String product_code, String dim_group) {
         try{
             Example example=new Example(BeaconFireAlarmGroupInfo.class);

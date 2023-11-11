@@ -2720,6 +2720,58 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1170343925882294272, '963932648793706496', '策略组分流同步生效', '4', 'zyc', 'fa fa-coffee', '', '52', '1', '2023-11-04 12:48:56', '2023-11-04 12:48:56', 'small_flow_rate_refash', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170678293867794432, '1163975745324716032', '告警任务', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2023-11-05 10:57:35', '2023-11-05 10:57:35', 'beacon_fire_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170678953501790208, '1163975745324716032', '告警组', '3', 'zyc', 'fa fa-coffee', '', '8', '1', '2023-11-05 11:00:13', '2023-11-05 11:00:13', 'beacon_fire_alarm_group_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170680193438715904, '1170678293867794432', '告警任务新增页面', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-11-05 11:05:08', '2023-11-05 11:05:08', 'beacon_fire_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170680256411996160, '1170678293867794432', '告警任务新增', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2023-11-05 11:05:23', '2023-11-05 11:05:23', 'beacon_fire_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170680341342457856, '1170678293867794432', '告警任务更新', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2023-11-05 11:05:44', '2023-11-05 11:05:44', 'beacon_fire_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170680409818664960, '1170678293867794432', '告警任务删除', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2023-11-05 11:06:00', '2023-11-05 11:06:00', 'beacon_fire_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170681277829877760, '1170678293867794432', '告警任务明细', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2023-11-05 11:09:27', '2023-11-05 11:09:27', 'beacon_fire_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170681616238907392, '1170678293867794432', '告警任务列表', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2023-11-05 11:10:48', '2023-11-05 11:10:48', 'beacon_fire_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1172299587939995648, '1163975745324716032', '告警记录', '3', 'zyc', 'fa fa-coffee', '', '3', '1', '2023-11-09 22:20:02', '2023-11-09 22:20:02', 'beacon_fire_alarm_msg_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1172992401774481408, '1170678953501790208', '告警组列表', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-11-11 20:13:02', '2023-11-11 20:13:02', 'beacon_fire_alarm_group_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1172992468912705536, '1170678953501790208', '告警组新增', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-11-11 20:13:18', '2023-11-11 20:13:18', 'beacon_fire_alarm_group_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1172992518313218048, '1170678953501790208', '告警组更新', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2023-11-11 20:13:30', '2023-11-11 20:13:30', 'beacon_fire_alarm_group_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1172992577394184192, '1170678953501790208', '告警组明细', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2023-11-11 20:13:44', '2023-11-11 20:13:44', 'beacon_fire_alarm_group_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1172992674496516096, '1170678953501790208', '告警组新增页面', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2023-11-11 20:14:07', '2023-11-11 20:14:07', 'beacon_fire_alarm_group_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1172992785742041088, '1170678953501790208', '告警组删除', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2023-11-11 20:14:33', '2023-11-11 20:14:33', 'beacon_fire_alarm_group_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1172992900204597248, '1172299587939995648', '告警记录列表', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-11-11 20:15:01', '2023-11-11 20:15:01', 'beacon_fire_alarm_msg_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1172999782117937152, '1170678293867794432', '告警任务状态', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2023-11-11 20:42:21', '2023-11-11 20:42:21', 'beacon_fire_status', '5', '', '', 'zdh', '');
+
 
     INSERT INTO role_info
     (id, code, name, enable, create_time, update_time, product_code)

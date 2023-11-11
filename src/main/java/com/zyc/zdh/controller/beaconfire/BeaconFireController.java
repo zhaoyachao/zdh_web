@@ -1,9 +1,9 @@
 package com.zyc.zdh.controller.beaconfire;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
+import com.zyc.zdh.dao.BeaconFireMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobModel;
 import com.zyc.zdh.job.SnowflakeIdWorker;
@@ -12,7 +12,6 @@ import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
-import com.zyc.zdh.dao.BeaconFireMapper;
-
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -213,7 +210,6 @@ public class BeaconFireController extends BaseController {
     @RequestMapping(value = "/beacon_fire_status", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo beacon_fire_status(String id, String status) {
         try {
             BeaconFireInfo beaconFireInfo = new BeaconFireInfo();

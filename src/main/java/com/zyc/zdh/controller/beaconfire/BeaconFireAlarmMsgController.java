@@ -1,15 +1,15 @@
 package com.zyc.zdh.controller.beaconfire;
 
-import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
-import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.dao.BeaconFireAlarmMsgMapper;
+import com.zyc.zdh.entity.BeaconFireAlarmMsgInfo;
+import com.zyc.zdh.entity.PageResult;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
-import com.zyc.zdh.dao.BeaconFireAlarmMsgMapper;
-
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -46,7 +44,6 @@ public class BeaconFireAlarmMsgController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/beacon_fire_alarm_msg_index", method = RequestMethod.GET)
-    @White
     public String beacon_fire_alarm_msg_index() {
 
         return "beaconfire/beacon_fire_alarm_msg_index";
@@ -59,7 +56,6 @@ public class BeaconFireAlarmMsgController extends BaseController {
      */
     @RequestMapping(value = "/beacon_fire_alarm_msg_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<BeaconFireAlarmMsgInfo>>> beacon_fire_alarm_msg_list(String context,String product_code, String dim_group, int limit, int offset) {
         try{
             Example example=new Example(BeaconFireAlarmMsgInfo.class);
@@ -107,7 +103,6 @@ public class BeaconFireAlarmMsgController extends BaseController {
     @RequestMapping(value = "/beacon_fire_alarm_msg_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo beacon_fire_alarm_msg_delete(String[] ids) {
         try {
             beaconFireAlarmMsgMapper.deleteLogicByIds("beacon_fire_alarm_msg_info",ids, new Timestamp(new Date().getTime()));
