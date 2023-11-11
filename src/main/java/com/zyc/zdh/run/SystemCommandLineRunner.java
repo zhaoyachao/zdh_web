@@ -43,7 +43,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
     private Logger logger = LoggerFactory.getLogger(SystemCommandLineRunner.class);
 
-    public ThreadPoolExecutor threadPool = new ThreadPoolExecutor(10, 50, 60, TimeUnit.HOURS, new LinkedBlockingQueue<>(), new ThreadFactory() {
+    public ThreadPoolExecutor threadPool = new ThreadPoolExecutor(Const.SYSTEM_THREAD_MIN_NUM,
+            Const.SYSTEM_THREAD_MAX_NUM, Const.SYSTEM_THREAD_KEEP_ACTIVE_TIME, TimeUnit.HOURS, new LinkedBlockingQueue<>(), new ThreadFactory() {
 
         @Override
         public Thread newThread(Runnable r) {
@@ -66,6 +67,9 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
+        String line = "----------------------------------------------------------";
+        logger.info(line);
+        logger.info("系统初始化...");
         clearQueue();
         runSnowflakeIdWorker();
         runRetryMQ();
@@ -74,54 +78,16 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         init2Ip();
         scheduleByCurrentServer();
         removeValidSession();
-        logger.info("初始化通知事件");
-        EmailJob.notice_event();
+
+        //EmailJob.notice_event();
         initSentinelRule();
-        logger.info("初始化失败任务监控程序");
-        //检测是否有email 任务 如果没有则添加
-        QuartzJobInfo qj = new QuartzJobInfo();
-        qj.setJob_type("EMAIL");
-        List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.selectByJobType("EMAIL");
-        if (quartzJobInfos.size() > 0) {
-            logger.info("已经存在[EMAIL]历史监控任务...");
-        }else{
-            logger.info("自动生成监控任务");
-            String expr = ev.getProperty("email.schedule.interval");
-            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查告警任务", expr, "-1", "", "email");
-            quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
-            quartzManager2.addQuartzJobInfo(quartzJobInfo);
-            quartzManager2.addTaskToQuartz(quartzJobInfo);
-        }
-
-        //检测是否有email 任务 如果没有则添加
-        QuartzJobInfo qj_retry = new QuartzJobInfo();
-        qj_retry.setJob_type("RETRY");
-        List<QuartzJobInfo> quartzJobInfos2 = quartzJobMapper.selectByJobType("RETRY");
-        if (quartzJobInfos2.size() > 0) {
-            logger.info("已经存在[RETRY]历史监控任务...");
-        }else{
-            logger.info("自动生成监控任务");
-            String expr = ev.getProperty("retry.schedule.interval");
-            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查失败重试任务", expr, "-1", "", "retry");
-            quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
-            quartzManager2.addQuartzJobInfo(quartzJobInfo);
-            quartzManager2.addTaskToQuartz(quartzJobInfo);
-        }
-
-        //检测是否有check_dep 任务 如果没有则添加
-        QuartzJobInfo qj_check = new QuartzJobInfo();
-        qj_retry.setJob_type("CHECK");
-        List<QuartzJobInfo> quartzJobInfos3 = quartzJobMapper.selectByJobType("CHECK");
-        if (quartzJobInfos3.size() > 0) {
-            logger.info("已经存在[CHECK]历史监控任务...");
-        }else{
-            logger.info("自动生成监控任务");
-            String expr = "30s" ;//ev.getProperty("retry.schedule.interval");
-            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查依赖任务", expr, "-1", "", "retry");
-            quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
-            quartzManager2.addQuartzJobInfo(quartzJobInfo);
-            quartzManager2.addTaskToQuartz(quartzJobInfo);
-        }
+        initBeaconFireConsumer();
+        initAlarmEmail();
+        initRetry();
+        initCheck();
+        logger.info("系统初始化完成...");
+        logger.info(line);
+        Thread.sleep(1000*2);
     }
 
     public void clearQueue(){
@@ -349,6 +315,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void quartzExecutor(){
+        logger.info("初始化调度器监控");
         ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
 
             @Override
@@ -420,6 +387,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void scheduleByCurrentServer(){
+        logger.info("初始化当前系统执行器监听任务");
         ZdhRunableTask zdhRunableTask = new ZdhRunableTask(){
 
             @Override
@@ -462,6 +430,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
      */
     public void initSentinelRule(){
         try{
+            logger.info("初始化限流插件");
             String product_code = ev.getProperty("zdp.product");
             ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
                 @Override
@@ -525,6 +494,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void removeValidSession(){
+        logger.info("初始化session失效监听任务");
         Thread t = new Thread(new Runnable() {
 
             @Override
@@ -549,6 +519,81 @@ public class SystemCommandLineRunner implements CommandLineRunner {
             }
         });
        t.start();
+    }
+
+    public void initBeaconFireConsumer(){
+        try{
+            logger.info("初始化烽火台监听任务");
+            ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
+                @Override
+                public void run() {
+                    try {
+                        JobBeaconFire.consumer();
+                        Thread.sleep(1000*60);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public String name() {
+                    return "schedule init beaconfire consumer";
+                }
+            };
+
+            threadPool.submit(zdhRunableTask);
+        }catch (Exception e){
+
+        }
+    }
+
+    public void initAlarmEmail() throws Exception {
+        logger.info("初始化告警任务");
+        //检测是否有email 任务 如果没有则添加
+        QuartzJobInfo qj = new QuartzJobInfo();
+        qj.setJob_type("EMAIL");
+        List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.selectByJobType("EMAIL");
+        if (quartzJobInfos.size() > 0) {
+            logger.info("已经存在[EMAIL]历史监控任务...");
+        }else{
+            String expr = ev.getProperty("email.schedule.interval");
+            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查告警任务", expr, "-1", "", "email");
+            quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+            quartzManager2.addQuartzJobInfo(quartzJobInfo);
+            quartzManager2.addTaskToQuartz(quartzJobInfo);
+        }
+    }
+
+    public void initRetry() throws Exception {
+        logger.info("初始化重试任务");
+        //检测是否有retry 任务 如果没有则添加
+        QuartzJobInfo qj_retry = new QuartzJobInfo();
+        qj_retry.setJob_type("RETRY");
+        List<QuartzJobInfo> quartzJobInfos2 = quartzJobMapper.selectByJobType("RETRY");
+        if (quartzJobInfos2.size() > 0) {
+            logger.info("已经存在[RETRY]历史监控任务...");
+        }else{
+            String expr = ev.getProperty("retry.schedule.interval");
+            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查失败重试任务", expr, "-1", "", "retry");
+            quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+            quartzManager2.addQuartzJobInfo(quartzJobInfo);
+            quartzManager2.addTaskToQuartz(quartzJobInfo);
+        }
+    }
+
+    public void initCheck() throws Exception {
+        logger.info("初始化依赖检查任务");
+        //检测是否有check_dep 任务 如果没有则添加
+        List<QuartzJobInfo> quartzJobInfos3 = quartzJobMapper.selectByJobType("CHECK");
+        if (quartzJobInfos3.size() > 0) {
+            logger.info("已经存在[CHECK]历史监控任务...");
+        }else{
+            String expr = "30s" ;//ev.getProperty("retry.schedule.interval");
+            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查依赖任务", expr, "-1", "", "retry");
+            quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
+            quartzManager2.addQuartzJobInfo(quartzJobInfo);
+            quartzManager2.addTaskToQuartz(quartzJobInfo);
+        }
     }
 
     public Thread createThread(ZdhRunableTask zdhRunableTask){

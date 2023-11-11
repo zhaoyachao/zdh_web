@@ -66,9 +66,16 @@ public class BaseController {
         List<PermissionDimensionValueInfo> dim_group_pdvi = zdhPermissionService.get_dim_group(getOwner());
         List<String> dim_groups = zdhPermissionService.dim_value2code(dim_group_pdvi);
 
+        if(dim_groups != null && dim_groups.size() == 0){
+            dim_groups.add("-1");
+        }
         //根据账号,查询归属产品
         List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
         List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
+
+        if(dim_products != null && dim_products.size() == 0){
+            dim_products.add("-1");
+        }
 
         dimMap.put("dim_groups", dim_groups);
         dimMap.put("product_codes", dim_products);
@@ -85,11 +92,17 @@ public class BaseController {
         //根据账号,查询归属组
         List<PermissionDimensionValueInfo> dim_group_pdvi = zdhPermissionService.get_dim_group(getOwner());
         List<String> dim_groups = zdhPermissionService.dim_value2code(dim_group_pdvi);
+        if(dim_groups != null && dim_groups.size() == 0){
+            dim_groups.add("-1");
+        }
 
         //根据账号,查询归属产品
         List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
         List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
 
+        if(dim_products != null && dim_products.size() == 0){
+            dim_products.add("-1");
+        }
         criteria.andIn("dim_group", dim_groups);
         criteria.andIn("product_code", dim_products);
     }
@@ -105,7 +118,9 @@ public class BaseController {
         //根据账号,查询归属产品
         List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
         List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
-
+        if(dim_products != null && dim_products.size()==0){
+            dim_products.add("-1");
+        }
         criteria.andIn("product_code", dim_products);
     }
 
@@ -120,7 +135,9 @@ public class BaseController {
         //根据账号,查询归属产品
         List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
         List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
-
+        if(dim_products != null && dim_products.size()==0){
+            dim_products.add("-1");
+        }
         return dim_products;
     }
 
@@ -136,6 +153,9 @@ public class BaseController {
         List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
         List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
 
+        if(dim_products != null && dim_products.size()==0){
+            dim_products.add("-1");
+        }
         criteria.andIn("product_code", dim_products);
 
         if(!StringUtils.isEmpty(product_code)){

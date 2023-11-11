@@ -64,7 +64,8 @@ public class JobCommon2 {
 
     public static DelayQueue<RetryJobInfo> retryQueue = new DelayQueue<>();
 
-    public static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1000, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    public static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(Const.ETL_THREAD_MIN_NUM,
+            Const.ETL_THREAD_MAX_NUM, Const.ETL_THREAD_KEEP_ACTIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
     public static void logThread(ZdhLogsService zdhLogsService) {
         new Thread(new Runnable() {
@@ -2536,7 +2537,7 @@ public class JobCommon2 {
             }
         }
         //debugInfo(tli);
-        tlim.updateByPrimaryKey(tli);
+        tlim.updateByPrimaryKeySelective(tli);
     }
 
     public static void updateTaskLog(TaskGroupLogInstance tgli, TaskGroupLogInstanceMapper tglim) {
@@ -2548,7 +2549,7 @@ public class JobCommon2 {
             }
         }
         // debugInfo(tgli);
-        tglim.updateByPrimaryKey(tgli);
+        tglim.updateByPrimaryKeySelective(tgli);
     }
 
     /**
@@ -3122,6 +3123,7 @@ public class JobCommon2 {
             logger.debug("调度任务[EMAIL],开始调度");
             EmailJob.run(quartzJobInfo);
             EmailJob.notice_event();
+            EmailJob.beaconFireAlarm();
             return;
         } else if (quartzJobInfo.getJob_type().equals("RETRY")) {
             logger.debug("调度任务[RETRY],开始调度");
@@ -3211,13 +3213,13 @@ public class JobCommon2 {
                     //此处更新主要是为了 日期超时时 也能记录下日志
                     if (is_retry == 1) {
                         insertLog(tgli, "INFO", "重试任务组更新信息,任务组数据处理日期:" + tgli.getEtl_date());
-                        tglim.updateByPrimaryKey(tgli);
+                        tglim.updateByPrimaryKeySelective(tgli);
                     } else {
                         insertLog(tgli, "INFO", "生成任务组信息,任务组数据处理日期:" + tgli.getEtl_date());
-                        tglim.insert(tgli);
+                        tglim.insertSelective(tgli);
                     }
                     //此处需要更新状态和last_time
-                    //qjm.updateByPrimaryKey(quartzJobInfo);
+                    //qjm.updateByPrimaryKeySelective(quartzJobInfo);
                     qjm.updateStatusLastTime(quartzJobInfo.getJob_id(), quartzJobInfo.getStatus(),quartzJobInfo.getLast_time());
                     //公共设置
                     tgli.setStatus(JobStatus.NON.getValue());//新实例状态设置为dispatch
@@ -3228,7 +3230,7 @@ public class JobCommon2 {
                     sub_task_log_instance(tgli, sub_tasks);
                     tglim.updateStatus2Create(new String[]{tgli.getId()});
                     debugInfo(tgli);
-                    //tglim.updateByPrimaryKey(tgli);
+                    //tglim.updateByPrimaryKeySelective(tgli);
 
                     //检查任务依赖,和并行不冲突--此逻辑删除,目前任务组之间的依赖以子任务检查逻辑实现
                     //boolean dep = checkDep(quartzJobInfo.getJob_type(), tgli);
@@ -3799,7 +3801,7 @@ public class JobCommon2 {
             jsonObject.put("run_line", jary_line);
             tgli.setRun_jsmind_data(jsonObject.toJSONString());
             tgli.setProcess("6.5");
-            tglim.updateByPrimaryKey(tgli);
+            tglim.updateByPrimaryKeySelective(tgli);
             //debugInfo(tgli);
 
 
@@ -3826,7 +3828,7 @@ public class JobCommon2 {
                     }
                 }
 
-                tlim.insert(tli);
+                tlim.insertSelective(tli);
                 // debugInfo(tli);
             }
         } catch (Exception e) {

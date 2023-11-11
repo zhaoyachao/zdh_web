@@ -2,14 +2,13 @@ package com.zyc.zdh.entity;
 
 import com.zyc.zdh.util.Const;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Table(name = "permission_apply_info")
 public class PermissionApplyInfo {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "JDBC")
     private String id;
 
     /**

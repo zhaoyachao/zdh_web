@@ -2,6 +2,7 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Sets;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.EmailJob;
@@ -254,6 +255,7 @@ public class ZdhProcessFlowController extends BaseController {
             if(!StringUtils.isEmpty(permissionUserInfo1.getRoles())){
                 roles=permissionUserInfo1.getRoles()+","+pai.getApply_code();
             }
+            roles = StringUtils.join(Sets.newHashSet(roles.split(",")).toArray(new String[]{}), ",");
             permissionUserInfo1.setRoles(roles);
         }else if(pai.getApply_type().equalsIgnoreCase("data_group")){
             String data_group=pai.getApply_code();
@@ -275,7 +277,9 @@ public class ZdhProcessFlowController extends BaseController {
             if(StringUtils.isEmpty(productTagInfo.getProduct_admin())){
                 productTagInfo.setProduct_admin(pai.getOwner());
             }else{
-                productTagInfo.setProduct_admin(productTagInfo.getProduct_admin()+","+pai.getOwner());
+                String admin  = productTagInfo.getProduct_admin()+","+pai.getOwner();
+                admin = StringUtils.join(Sets.newHashSet(admin.split(",")).toArray(new String[]{}), ",");
+                productTagInfo.setProduct_admin(admin);
             }
             productTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             productTagMapper.updateByPrimaryKeySelective(productTagInfo);
@@ -468,6 +472,7 @@ public class ZdhProcessFlowController extends BaseController {
             pfi.setOwner(user_account);
             pfi.setFlow_id(uid);
             pfi.setEvent_code(event_code);
+            pfi.setProduct_code(product_code);
             Set<String> sb = new TreeSet<>();
             for (ApprovalAuditorInfo aai : approvalAuditorInfos) {
                 if (aai.getLevel().equalsIgnoreCase(i + "")) {
@@ -549,6 +554,7 @@ public class ZdhProcessFlowController extends BaseController {
             pfi.setOwner(user_account);
             pfi.setFlow_id(uid);
             pfi.setEvent_code(event_code);
+            pfi.setProduct_code(product_code);
             Set<String> sb = new TreeSet<>();
             if(!StringUtils.isEmpty(auditor)){
                 sb.addAll(Arrays.asList(auditor.split(",")));

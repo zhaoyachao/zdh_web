@@ -40,7 +40,8 @@ public class JobDigitalMarket {
 
     public static DelayQueue<RetryJobInfo> retryQueue = new DelayQueue<>();
 
-    public static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1000, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    public static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(Const.DIGITAL_MARKET_THREAD_MIN_NUM,
+            Const.DIGITAL_MARKET_THREAD_MAX_NUM, Const.DIGITAL_MARKET_THREAD_KEEP_ACTIVE_TIME, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 
     public static void logThread(ZdhLogsService zdhLogsService) {
         new Thread(new Runnable() {
@@ -65,12 +66,12 @@ public class JobDigitalMarket {
 
     public static void updateTaskLog(StrategyGroupInstance sgi, StrategyGroupInstanceMapper sgim) {
         // debugInfo(tgli);
-        sgim.updateByPrimaryKey(sgi);
+        sgim.updateByPrimaryKeySelective(sgi);
     }
 
     public static void updateTaskLog(StrategyInstance si, StrategyInstanceMapper sim) {
         // debugInfo(tgli);
-        sim.updateByPrimaryKey(si);
+        sim.updateByPrimaryKeySelective(si);
     }
 
     public static void insertLog(StrategyGroupInstance sgi, String level, String msg) {
@@ -296,9 +297,9 @@ public class JobDigitalMarket {
 
                         //此处更新主要是为了 日期超时时 也能记录下日志
                         //insertLog(tgli, "INFO", "生成任务组信息,任务组数据处理日期:" + tgli.getEtl_date());
-                        sgim.insert(sgi);
+                        sgim.insertSelective(sgi);
 
-                        sgm.updateByPrimaryKey(strategyGroupInfo);
+                        sgm.updateByPrimaryKeySelective(strategyGroupInfo);
                         //公共设置
                         sgi.setStatus(JobStatus.NON.getValue());//新实例状态设置为dispatch
                         //设置调度器唯一标识,调度故障转移时使用,如果服务器重启会自动生成新的唯一标识
@@ -475,7 +476,7 @@ public class JobDigitalMarket {
             jsonObject.put("run_line", jary_line);
             sgi.setRun_jsmind_data(jsonObject.toJSONString());
             //sgi.setProcess("6.5");
-            sgim.updateByPrimaryKey(sgi);
+            sgim.updateByPrimaryKeySelective(sgi);
             //debugInfo(tgli);
 
 

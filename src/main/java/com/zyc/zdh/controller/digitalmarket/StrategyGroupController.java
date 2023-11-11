@@ -3,6 +3,7 @@ package com.zyc.zdh.controller.digitalmarket;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.QuartzJobMapper;
@@ -13,6 +14,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SFTPUtil;
@@ -36,10 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 智能营销-策略组服务
@@ -69,6 +68,9 @@ public class StrategyGroupController extends BaseController {
 
     @Autowired
     private ZdhPermissionService zdhPermissionService;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @RequestMapping(value = "/get_id", method = RequestMethod.GET)
     @ResponseBody
@@ -556,6 +558,86 @@ public class StrategyGroupController extends BaseController {
             }
         }
     }
+
+
+    /**
+     * 小流量配置页面
+     * @return
+     */
+    @RequestMapping(value = "/small_flow_rate_index", method = RequestMethod.GET)
+    public String small_flow_rate_index() {
+
+        return "digitalmarket/small_flow_rate_index";
+    }
+
+
+
+
+    /**
+     * 小流量更新
+     * @param id
+     * @param small_flow_rate
+     * @return
+     */
+    @SentinelResource(value = "small_flow_rate_update", blockHandler = "handleReturn")
+    @RequestMapping(value = "/small_flow_rate_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo small_flow_rate_update(String id, String small_flow_rate) {
+        try {
+
+            StrategyGroupInstance oldStrategyGroupInstance = strategyGroupInstanceMapper.selectByPrimaryKey(id);
+
+            //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
+
+            oldStrategyGroupInstance.setUpdate_time(new Timestamp(new Date().getTime()));
+            oldStrategyGroupInstance.setSmall_flow_rate(small_flow_rate.replace(";",","));
+
+            strategyGroupInstanceMapper.updateByPrimaryKeySelective(oldStrategyGroupInstance);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", oldStrategyGroupInstance);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
+    }
+
+    /**
+     * 小流量-生效
+     * @param ids
+     * @return
+     */
+    @SentinelResource(value = "small_flow_rate_refash", blockHandler = "handleReturn")
+    @RequestMapping(value = "/small_flow_rate_refash", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo small_flow_rate_refash(String[] ids) {
+        try {
+
+            Example example = new Example(StrategyGroupInstance.class);
+
+            Example.Criteria criteria = example.createCriteria();
+
+            criteria.andIn("id", Lists.newArrayList(ids));
+            List<StrategyGroupInstance> strategyGroupInstances = strategyGroupInstanceMapper.selectByExample(example);
+
+            String strategyGroupId="";
+            Map<String, String> tmp = new HashMap<>();
+
+            for (StrategyGroupInstance strategyGroupInstance: strategyGroupInstances){
+                strategyGroupId = strategyGroupInstance.getStrategy_group_id();
+                tmp.put(strategyGroupInstance.getId(), strategyGroupInstance.getSmall_flow_rate());
+            }
+            redisUtil.set("small_flow_rate_"+strategyGroupId, JSON.toJSONString(tmp));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
+    }
+
 
     /**
      * 杀死策略组

@@ -17,7 +17,7 @@
           }, function(index){
               var ids = new Array();// 声明一个数组
 
-              openTabPage(server_context+"/role_add_index.html?id=-1", "角色配置");
+              openTabPage(server_context+"/role_add_index.html?id=-1", "角色-新增");
               //enableUsers(ids, "true")
               layer.close(layer.index);
           }, function(){
@@ -72,7 +72,7 @@
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
-              openTabPage(server_context+"/role_add_index.html?id="+row.id+"&code="+row.code, "角色配置");
+              openTabPage(server_context+"/role_add_index.html?id="+row.id+"&code="+row.code, "角色配置-"+row.name);
           }
       };
 
@@ -210,7 +210,7 @@
             columns: [{
                 checkbox: true,
                 field:'state',
-                sortable:true
+                sortable:false
             }, {
                 field: 'id',
                 title: 'ID',

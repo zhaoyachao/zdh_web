@@ -5,7 +5,7 @@
 
     <groupId>com.zyc</groupId>
     <artifactId>zdh</artifactId>
-    <version>5.1.3-RELEASE</version>
+    <version>5.2.0-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>zdh_web</name>
@@ -23,13 +23,67 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <shiro.version>1.7.1</shiro.version>
+        <lombok.version>1.16.20</lombok.version>
+        <mybatis.spring.version>1.3.1</mybatis.spring.version>
+        <pagehelper.version>3.7.5</pagehelper.version>
+        <jsqlparser.version>0.9.1</jsqlparser.version>
+        <tk.mapper.spring.version>1.1.7</tk.mapper.spring.version>
+        <redisson.version>3.22.0</redisson.version>
+        <druid.version>1.1.5</druid.version>
+        <mysql.version>8.0.13</mysql.version>
+        <fastjson.version>1.2.69</fastjson.version>
+        <quartz.version>2.3.2</quartz.version>
+        <disruptor.version>3.3.6</disruptor.version>
+        <qrcode.version>2.1</qrcode.version>
+        <zookeeper.version>3.4.11</zookeeper.version>
+        <spring-kafka.version>1.0.6.RELEASE</spring-kafka.version>
+        <httpclient.version>4.5.13</httpclient.version>
+        <httpmime.version>4.5.13</httpmime.version>
+        <commons-lang3.version>3.5</commons-lang3.version>
+        <commons-exec.version>1.3</commons-exec.version>
+        <ojdbc6.version>11.2</ojdbc6.version>
+        <jsch.version>0.1.55</jsch.version>
+        <commons-io.version>2.7</commons-io.version>
+        <hutool-all.version>4.4.5</hutool-all.version>
+        <hadoop.version>2.7.5</hadoop.version>
+        <clickhouse-native-jdbc.version>2.1-stable</clickhouse-native-jdbc.version>
+        <greenplum-jdbc.version>5.1.4</greenplum-jdbc.version>
+        <mariadb-java-client.version>2.6.2</mariadb-java-client.version>
+        <presto-jdbc.version>0.240</presto-jdbc.version>
+        <redshift-jdbc42.version>1.2.41.1067</redshift-jdbc42.version>
+        <postgresql.version>42.2.25</postgresql.version>
+        <kylin-jdbc.version>3.0.2</kylin-jdbc.version>
+        <terajdbc4.version>16.10.00.05</terajdbc4.version>
+        <tdgssconfig.version>16.00.00.01</tdgssconfig.version>
+        <kingbasejdbc3.version>7.1.2.0711</kingbasejdbc3.version>
+        <gbase-connector-java-8.3.81.53-build52.8-bin.version>8.3.81.53-build52.8</gbase-connector-java-8.3.81.53-build52.8-bin.version>
+        <zdh_queue.version>1.0-SNAPSHOT</zdh_queue.version>
+        <jinjava.version>2.5.6</jinjava.version>
+        <jackson-annotations.version>2.9.10</jackson-annotations.version>
+        <ganymed-ssh2.version>262</ganymed-ssh2.version>
+        <oshi-core.version>3.9.1</oshi-core.version>
+        <jna.version>4.5.2</jna.version>
+        <springdoc-openapi-ui.version>1.4.8</springdoc-openapi-ui.version>
+        <poi.version>3.17</poi.version>
+        <ooxml-schemas.version>1.3</ooxml-schemas.version>
+        <elasticsearch.version>7.6.1</elasticsearch.version>
+        <mongodb-driver.version>3.12.11</mongodb-driver.version>
+        <guava.version>31.1-jre</guava.version>
+        <mybatis-generator-core.version>1.3.5</mybatis-generator-core.version>
+        <freemarker.version>2.3.23</freemarker.version>
+        <sentinel.version>1.8.6</sentinel.version>
+        <groovy-all.version>2.4.17</groovy-all.version>
+        <groovy-sandbox.version>1.7</groovy-sandbox.version>
+        <aliyun-java-sdk-core.version>4.6.1</aliyun-java-sdk-core.version>
+        <aliyun-java-sdk-dysmsapi.version>2.2.1</aliyun-java-sdk-dysmsapi.version>
+
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.20</version>
+            <version>${lombok.version}</version>
         </dependency>
         <!-- 热部署模块 -->
        <!-- <dependency>
@@ -86,22 +140,22 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>1.3.1</version>
+            <version>${mybatis.spring.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
-            <version>3.7.5</version>
+            <version>${pagehelper.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.jsqlparser</groupId>
             <artifactId>jsqlparser</artifactId>
-            <version>0.9.1</version>
+            <version>${jsqlparser.version}</version>
         </dependency>
         <dependency>
             <groupId>tk.mybatis</groupId>
             <artifactId>mapper-spring-boot-starter</artifactId>
-            <version>1.1.7</version>
+            <version>${tk.mapper.spring.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -127,7 +181,7 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
-            <version>3.22.0</version>
+            <version>${redisson.version}</version>
         </dependency>
 
         <!-- aop -->
@@ -149,19 +203,19 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
-            <version>1.1.5</version>
+            <version>${druid.version}</version>
         </dependency>
 
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.13</version>
+            <version>${mysql.version}</version>
         </dependency>
         <!-- fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.69</version>
+            <version>${fastjson.version}</version>
         </dependency>
         <!-- shiro -->
         <dependency>
@@ -204,7 +258,7 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.3.2</version>
+            <version>${quartz.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -222,13 +276,13 @@
         <dependency>
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
-            <version>3.3.6</version>
+            <version>${disruptor.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.swetake.util</groupId>
             <artifactId>Qrcode</artifactId>
-            <version>2.1</version>
+            <version>${qrcode.version}</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/Qrcode.jar</systemPath>
         </dependency>
@@ -236,7 +290,7 @@
         <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
-            <version>3.4.11</version>
+            <version>${zookeeper.version}</version>
             <!--self4j-log4j12 和logback-classic有冲突，这里选择将self4j-log4j12删除-->
             <exclusions>
                 <exclusion>
@@ -255,40 +309,40 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-            <version>1.0.6.RELEASE</version>
+            <version>${spring-kafka.version}</version>
         </dependency>
 
         <!--httpclient-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
+            <version>${httpclient.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>4.5.13</version>
+            <version>${httpmime.version}</version>
         </dependency>
 
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
+            <version>${commons-lang3.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-exec</artifactId>
-            <version>1.3</version>
+            <version>${commons-exec.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
-            <version>11.2</version>
+            <version>${ojdbc6.version}</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/ojdbc6.jar</systemPath>
         </dependency>
@@ -302,26 +356,26 @@
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.55</version>
+            <version>${jsch.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.7</version>
+            <version>${commons-io.version}</version>
         </dependency>
 
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>4.4.5</version>
+            <version>${hutool-all.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
-            <version>2.7.5</version>
+            <version>${hadoop.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -340,7 +394,7 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-hdfs</artifactId>
-            <version>2.7.5</version>
+            <version>${hadoop.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
@@ -355,7 +409,7 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
-            <version>2.7.5</version>
+            <version>${hadoop.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -371,13 +425,13 @@
         <dependency>
             <groupId>com.github.housepower</groupId>
             <artifactId>clickhouse-native-jdbc</artifactId>
-            <version>2.1-stable</version>
+            <version>${clickhouse-native-jdbc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.pivotal</groupId>
             <artifactId>greenplum-jdbc</artifactId>
-            <version>5.1.4</version>
+            <version>${greenplum-jdbc.version}</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/greenplum-jdbc-5.1.4.jar</systemPath>
         </dependency>
@@ -385,21 +439,21 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>2.6.2</version>
+            <version>${mariadb-java-client.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.facebook.presto/presto-jdbc -->
         <dependency>
             <groupId>com.facebook.presto</groupId>
             <artifactId>presto-jdbc</artifactId>
-            <version>0.240</version>
+            <version>${presto-jdbc.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.amazon.redshift/redshift-jdbc42 -->
         <dependency>
             <groupId>com.amazon.redshift</groupId>
             <artifactId>redshift-jdbc42</artifactId>
-            <version>1.2.41.1067</version>
+            <version>${redshift-jdbc42.version}</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/redshift-jdbc42-1.2.43.1067.jar</systemPath>
         </dependency>
@@ -408,20 +462,20 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.25</version>
+            <version>${postgresql.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.kylin/kylin-jdbc -->
         <dependency>
             <groupId>org.apache.kylin</groupId>
             <artifactId>kylin-jdbc</artifactId>
-            <version>3.0.2</version>
+            <version>${kylin-jdbc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.teradata.jdbc</groupId>
             <artifactId>terajdbc4</artifactId>
-            <version>16.10.00.05</version>
+            <version>${terajdbc4.version}</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/terajdbc4.jar</systemPath>
         </dependency>
@@ -429,7 +483,7 @@
         <dependency>
             <groupId>com.teradata.tdgss</groupId>
             <artifactId>tdgssconfig</artifactId>
-            <version>16.00.00.01</version>
+            <version>${tdgssconfig.version}</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/tdgssconfig.jar</systemPath>
         </dependency>
@@ -437,7 +491,7 @@
         <dependency>
             <groupId>com.kingbase</groupId>
             <artifactId>kingbasejdbc3</artifactId>
-            <version>7.1.2.0711</version>
+            <version>${kingbasejdbc3.version}</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/kingbasejdbc3.jar</systemPath>
         </dependency>
@@ -445,7 +499,7 @@
         <dependency>
             <groupId>com.gbase.jdbc</groupId>
             <artifactId>gbase-connector-java-8.3.81.53-build52.8-bin</artifactId>
-            <version>8.3.81.53-build52.8</version>
+            <version>${gbase-connector-java-8.3.81.53-build52.8-bin.version}</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/gbase-connector-java-8.3.81.53-build52.8-bin.jar</systemPath>
         </dependency>
@@ -454,7 +508,7 @@
             <groupId>com.zyc</groupId>
             <artifactId>zdh_queue</artifactId>
             <scope>system</scope>
-            <version>1.0-SNAPSHOT</version>
+            <version>${zdh_queue.version}</version>
             <systemPath>${basedir}/lib/zdh_queue.jar</systemPath>
         </dependency>
 
@@ -462,7 +516,7 @@
         <dependency>
             <groupId>com.hubspot.jinjava</groupId>
             <artifactId>jinjava</artifactId>
-            <version>2.5.6</version>
+            <version>${jinjava.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -474,19 +528,19 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.9.10</version>
+            <version>${jackson-annotations.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.ethz.ganymed</groupId>
             <artifactId>ganymed-ssh2</artifactId>
-            <version>262</version>
+            <version>${ganymed-ssh2.version}</version>
         </dependency>
 
         <!-- 获取系统信息 -->
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>3.9.1</version>
+            <version>${oshi-core.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>net.java.dev.jna</groupId>
@@ -498,7 +552,7 @@
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna-platform</artifactId>
-            <version>4.5.2</version>
+            <version>${jna.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>net.java.dev.jna</groupId>
@@ -509,39 +563,39 @@
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
-            <version>4.5.2</version>
+            <version>${jna.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.4.8</version>
+            <version>${springdoc-openapi-ui.version}</version>
         </dependency>
 
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.17</version>
+            <version>${poi.version}</version>
         </dependency>
 
         <!--xlsx-->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.17</version>
+            <version>${poi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>ooxml-schemas</artifactId>
-            <version>1.3</version>
+            <version>${ooxml-schemas.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.6.1</version>
+            <version>${elasticsearch.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.elasticsearch</groupId>
@@ -552,7 +606,7 @@
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>7.6.1</version>
+            <version>${elasticsearch.version}</version>
         </dependency>
 
         <!-- urule规则引擎 -->
@@ -570,37 +624,62 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver</artifactId>
-            <version>3.12.11</version>
+            <version>${mongodb-driver.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.1-jre</version>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mybatis.generator</groupId>
             <artifactId>mybatis-generator-core</artifactId>
-            <version>1.3.5</version>
+            <version>${mybatis-generator-core.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>2.3.23</version>
+            <version>${freemarker.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-core</artifactId>
-            <version>1.8.6</version>
+            <version>${sentinel.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-annotation-aspectj</artifactId>
-            <version>1.8.6</version>
+            <version>${sentinel.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy-all.version}</version>
+<!--            <type>pom</type>-->
+        </dependency>
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>groovy-sandbox</artifactId>
+            <version>${groovy-sandbox.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>${aliyun-java-sdk-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+            <version>${aliyun-java-sdk-dysmsapi.version}</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>

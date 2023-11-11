@@ -144,13 +144,9 @@ public class LoginController {
             pui.setProduct_code(product_code);
             pui.setEnable(Const.TRUR);
 
-            RoleInfo roleInfo = new RoleInfo();
-            roleInfo.setProduct_code(product_code);
-            roleInfo.setCode("role_base");//此角色code 不可变
-            roleInfo = roleDao.selectOne(roleInfo);
-            if (roleInfo != null) {
-                pui.setRoles(roleInfo.getCode());
-            }
+            String roles = ev.getProperty("zdp.init.roles","role_base");
+            pui.setRoles(roles);
+
             pui.setTag_group_code("");
             permissionMapper.insertSelective(pui);
             if (result > 0) {

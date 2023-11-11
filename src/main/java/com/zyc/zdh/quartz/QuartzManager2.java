@@ -76,7 +76,93 @@ public class QuartzManager2 {
 	public void addQuartzJobInfo(QuartzJobInfo quartzJobInfo){
 		quartzJobMapper.insertSelective(quartzJobInfo);
 	}
-	
+
+	/**
+	 * 添加烽火台任务到调度器(不更新quart_job_info)
+	 * 执行定时任务
+	 *
+	 * @param quartzJobInfo
+	 */
+	public void addBeaconFireTaskToQuartz(QuartzJobInfo quartzJobInfo) throws Exception {
+		try {
+			//根据调度id 和etl任务id 确定唯一的triggerkey
+			if(schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()))!=null){
+				logger.info("已经存在同名的triggerkey,请重新创建");
+				throw new Exception("已经存在同名的triggerkey,请重新创建");
+			}
+
+			boolean recovery = false;
+			switch (quartzJobInfo.getJob_type().toLowerCase()){
+				case "email":
+					recovery=true;
+					break;
+				case "retry":
+					recovery=true;
+					break;
+				case "check":
+					recovery=true;
+					break;
+				case "blood":
+					recovery=true;
+					break;
+				default:
+					recovery=false;
+					break;
+			}
+
+			JobDetail jobDetail = JobBuilder
+					.newJob(MyJobBean.class)
+					.requestRecovery(recovery) // quartz 自动故障转移
+					.withDescription(quartzJobInfo.getJob_context())
+					.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).build();
+			Trigger trigger = null;
+			// CronScheduleBuilder.cronSchedule(taskInfo.getTaskExpression())
+			String expression = quartzJobInfo.getExpr();
+			if (expression.contains("s") || expression.contains("m")
+					|| expression.contains("h") || expression.contains("d")) {
+				SimpleScheduleBuilder simpleScheduleBuilder = getSimpleScheduleBuilder(
+						expression, -1,quartzJobInfo.getMisfire());
+
+
+
+				trigger = TriggerBuilder
+						.newTrigger()
+						.withPriority(Integer.valueOf(StringUtils.isEmpty(quartzJobInfo.getPriority())?"5":quartzJobInfo.getPriority())) //设置优先级
+						.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).startNow()
+						.withSchedule(simpleScheduleBuilder).build();
+			} else {
+				CronScheduleBuilder cronScheduleBuilder = getCronScheduleBuilder(expression,quartzJobInfo.getMisfire());
+				trigger = TriggerBuilder
+						.newTrigger()
+						.withPriority(Integer.valueOf(StringUtils.isEmpty(quartzJobInfo.getPriority())?"5":quartzJobInfo.getPriority())) //设置优先级
+						.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).startNow()
+						.withSchedule(cronScheduleBuilder).build();
+			}
+
+			logger.debug("任务的trigger创建完成triggerkey is {}", trigger.getKey()
+					.toString());
+			JobDataMap jobDataMap = trigger.getJobDataMap();
+			jobDataMap.put(MyJobBean.TASK_ID, quartzJobInfo.getJob_id());
+			jobDataMap.put(MyJobBean.TASK_TYPE, "BEACONFIRE");//烽火台告警
+			quartzJobInfo.setStatus("running");
+			schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
+
+		} catch (SecurityException e) {
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+			logger.error(error, e);
+			throw e;
+		} catch (SchedulerException e) {
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+			logger.error(error, e);
+			throw e;
+		} catch (Exception e) {
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+			logger.error(error, e);
+			throw e;
+		}
+
+	}
+
 	/**
 	 * 添加任务到调度器
 	 * 执行定时任务
@@ -302,7 +388,27 @@ public class QuartzManager2 {
 		deleteTask(quartzJobInfo,"finish");
 		addTaskToQuartz(quartzJobInfo);
 	}
-	
+
+
+	/**
+	 * 删除任务
+	 *
+	 * @param jobId
+	 * @param etl_task_id
+	 * @return
+	 */
+	public void deleteTask(String jobId, String etl_task_id) {
+		try {
+			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			JobKey jobKey = new JobKey(jobId, etl_task_id);
+			scheduler.pauseJob(jobKey);
+			scheduler.deleteJob(jobKey);
+		} catch (SchedulerException e) {
+			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+			logger.error(error, e);
+		}
+	}
+
 	/**
 	 * 删除任务
 	 * 

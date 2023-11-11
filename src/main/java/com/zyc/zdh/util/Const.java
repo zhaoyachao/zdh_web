@@ -20,6 +20,13 @@ public class Const {
     public static String END="1";
     public static String NOT_END="0";
 
+    //通用任务类状态管理
+    public static String STATUS_COMMON_INIT="1";
+    public static String STATUS_COMMON_RUNNING="2";
+    public static String STATUS_COMMON_SUCCESS="3";
+    public static String STATUS_COMMON_FAIL="4";
+
+
     //流程状态,0:未审批,1:审批完成,2:不通过,3:撤销
     public static String STATUS_INIT="0";
     public static String STATUS_SUCCESS="1";
@@ -119,6 +126,22 @@ public class Const {
 
     public static String TN_TYPE_RELATIVE="relative";
     public static String TN_TYPE_ABSOLUTE="absolute";
+
+    public static int ETL_THREAD_MIN_NUM = 1;
+    public static int ETL_THREAD_MAX_NUM = 1000;
+    public static long ETL_THREAD_KEEP_ACTIVE_TIME=180;
+
+    public static int DIGITAL_MARKET_THREAD_MIN_NUM = 1;
+    public static int DIGITAL_MARKET_THREAD_MAX_NUM = 1000;
+    public static long DIGITAL_MARKET_THREAD_KEEP_ACTIVE_TIME=120;
+
+    public static int SYSTEM_THREAD_MIN_NUM = 12;
+    public static int SYSTEM_THREAD_MAX_NUM = 50;
+    public static long SYSTEM_THREAD_KEEP_ACTIVE_TIME=120;
+
+    public static int BEACON_FIRE_THREAD_MIN_NUM = 1;
+    public static int BEACON_FIRE_THREAD_MAX_NUM = 10;
+    public static long BEACON_FIRE_THREAD_KEEP_ACTIVE_TIME=180;
 
     public static String getEnumName(String type,String code){
         Map<String, Map<String, String>> enumMap=new HashMap<>();

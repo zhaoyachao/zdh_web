@@ -8,6 +8,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ClassName: BaseMapper   
@@ -45,4 +46,26 @@ public interface BaseMapper<T> extends Mapper<T> {
     }
     )
     public List<T> selectObjectByIds(@Param("table_name") String table_name, @Param("ids") String[] ids);
+
+    @Select({
+            "<script>",
+            "select * from ${table_name} where 1=1 ",
+            "<foreach collection='map' index='key' item='value' open='' close='' separator=''>",
+            "and #{key}= ${value}",
+            "</foreach>",
+            "</script>"
+    }
+    )
+    public List<T> selectObjectByMap(@Param("table_name") String table_name, @Param("map") Map<String,Object> map);
+
+    @Select({
+            "<script>",
+            "select * from ${table_name} where 1=1 ",
+            "<foreach collection='map' index='key' item='value' open='' close='' separator=''>",
+            "and #{key}= ${value}",
+            "</foreach>",
+            "</script>"
+    }
+    )
+    public T selectByMap(@Param("table_name") String table_name, @Param("map") Map<String,Object> map);
 }

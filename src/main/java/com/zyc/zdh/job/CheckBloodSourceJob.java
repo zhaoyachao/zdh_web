@@ -203,19 +203,15 @@ public class CheckBloodSourceJob {
                     bsi.setOutput_type(etlTaskJdbcInfo.getData_source_type_input());
                     bsi.setOutput(StringUtils.join(output_tables, ","));
                     bsi.setVersion(version);
-                    bloodSourceMappeer.insert(bsi);
+                    bloodSourceMappeer.insertSelective(bsi);
                     bsis.add(bsi);
                 } catch (Exception e) {
                      logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
                     continue;
                 }
-
             }
-
         }
-
         return bsis;
-
     }
 
     public static List<BloodSourceInfo> check_spark_sql_blood_source(String version) {
@@ -274,7 +270,7 @@ public class CheckBloodSourceJob {
                 if(!StringUtils.isEmpty(out)) output_tables.add(out);
                 bsi.setOutput(StringUtils.join(output_tables, ","));
                 bsi.setVersion(version);
-                bloodSourceMappeer.insert(bsi);
+                bloodSourceMappeer.insertSelective(bsi);
                 System.out.println("Spark: "+JSON.toJSONString(bsi));
                 bsis.add(bsi);
             }

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 策略组新增首页</title>
+    <meta name="keywords" content="ZDH 策略组新增首页">
+    <meta name="description" content="ZDH 策略组新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+
+    <link href="css/plugins/jasny/jasny-bootstrap.min.css" rel="stylesheet">
+
+    <link href="css/plugins/nouslider/jquery.nouislider.css" rel="stylesheet">
+
+    <link href="css/plugins/ionRangeSlider/ion.rangeSlider.css" rel="stylesheet">
+    <link href="css/plugins/ionRangeSlider/ion.rangeSlider.skinFlat.css" rel="stylesheet">
+
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>小流量</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="form_advanced.html#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="form_advanced.html#">选项1</a>
+                                </li>
+                                <li><a href="form_advanced.html#">选项2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <p>
+                            在指定范围内选择
+                        </p>
+                        <div class="m-b-sm">
+                            <small><strong>示例：</strong> 设置值为1-100</small>
+                        </div>
+                        <div id="small_flow_rate"></div>
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="execute" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">执行
+                                </button>
+                                <button id="cancel" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                        type="button">取消
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <!-- layer javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+    <!-- NouSlider -->
+    <script src="js/plugins/nouslider/jquery.nouislider.min.js"></script>
+
+    <!-- IonRangeSlider -->
+    <script src="js/plugins/ionRangeSlider/ion.rangeSlider.min.js"></script>
+
+    <!-- iCheck -->
+    <script src="js/plugins/iCheck/icheck.min.js"></script>
+
+    <script>
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+        var start = s.small_flow_rate.split(",")[0];
+        var end = s.small_flow_rate.split(",")[1];
+        $("#small_flow_rate").ionRangeSlider({
+            min: 1,
+            max: 100,
+            step: 1,
+            type: 'double',
+            prefix: "",
+            postfix: "%",
+            prettify: false,
+            hasGrid: true,
+            from: start,
+            to: end
+        });
+        $('#execute').click(function () {
+            var values = $('#small_flow_rate').attr("value");
+
+            $.ajax({
+                url: server_context+"/small_flow_rate_update",
+                data:  {"id": s.id, "small_flow_rate": values},
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    layer.msg(data.msg);
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index); //再执行关闭
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                },
+                //处理完成
+                complete: function () {
+                    console.info("complete")
+                }
+            });
+
+
+        });
+
+        $('#cancel').click(function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+
+        })
+
+    </script>
+</body>
+
+</html>

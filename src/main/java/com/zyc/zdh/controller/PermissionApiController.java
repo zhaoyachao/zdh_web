@@ -526,7 +526,7 @@ public class PermissionApiController {
             roleInfo.setEnable(role_info.getEnable());
             roleInfo.setCreate_time(new Timestamp(new Date().getTime()));
             roleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
-            roleDao.updateByPrimaryKey(roleInfo);
+            roleDao.updateByPrimaryKeySelective(roleInfo);
 
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);

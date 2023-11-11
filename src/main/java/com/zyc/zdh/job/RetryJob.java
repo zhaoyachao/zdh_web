@@ -87,7 +87,7 @@ public class RetryJob {
                     logger.info("检测到任务意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
                     JobCommon2.insertLog(t2,"INFO","检测到任务意外死亡,将在本节点自动重试任务,任务id: "+t2.getId());
                     t2.setServer_id(JobCommon2.web_application_id);
-                    tlim.updateByPrimaryKey(t2);
+                    tlim.updateByPrimaryKeySelective(t2);
                     JobCommon2.chooseJobBean(t2);
                     continue;
                 }
@@ -100,7 +100,7 @@ public class RetryJob {
                         logger.info("检测到执行任务的调度器意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
                         JobCommon2.insertLog(t2,"INFO","检测到执行任务的调度器意外死亡,将在本节点自动重试任务,任务id: "+t2.getId());
                         t2.setServer_id(JobCommon2.web_application_id);
-                        tlim.updateByPrimaryKey(t2);
+                        tlim.updateByPrimaryKeySelective(t2);
                         JobCommon2.chooseJobBean(t2);
                     }
                     continue; // dispatch 状态表示 还未执行到具体采集任务 所以直接跳过不进行exector存活判断

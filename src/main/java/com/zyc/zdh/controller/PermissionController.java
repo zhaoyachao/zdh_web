@@ -816,7 +816,7 @@ public class PermissionController extends BaseController {
                 if(!roleInfo.getProduct_code().equalsIgnoreCase(product_code)){
                     throw new Exception("无法更新产品");
                 }
-                roleDao.updateByPrimaryKey(roleInfo);
+                roleDao.updateByPrimaryKeySelective(roleInfo);
             }
 
             debugInfo(resource_id);
@@ -1137,6 +1137,7 @@ public class PermissionController extends BaseController {
     private  JSONArray get_role_by_product_code(String product_code){
         RoleInfo roleInfo=new RoleInfo();
         roleInfo.setProduct_code(product_code);
+        roleInfo.setEnable(Const.TRUR);
         List<RoleInfo> roleInfos = roleDao.select(roleInfo);
         JSONArray jsonArray=new JSONArray();
         if(roleInfos != null){
@@ -1153,6 +1154,7 @@ public class PermissionController extends BaseController {
     private JSONArray get_user_group_by_product_code(String product_code){
         UserGroupInfo userGroupInfo=new UserGroupInfo();
         userGroupInfo.setProduct_code(product_code);
+        userGroupInfo.setEnable(Const.TRUR);
 
         List<UserGroupInfo> userGroupInfos = userGroupMapper.select(userGroupInfo);
         JSONArray jsonArray=new JSONArray();
@@ -1170,7 +1172,7 @@ public class PermissionController extends BaseController {
     private JSONArray get_group_by_product_code(String product_code){
         DataTagGroupInfo dataTagGroupInfo=new DataTagGroupInfo();
         dataTagGroupInfo.setProduct_code(product_code);
-
+        dataTagGroupInfo.setIs_delete(Const.NOT_DELETE);
         List<DataTagGroupInfo> dataTagGroupInfos = dataTagGroupMapper.select(dataTagGroupInfo);
         JSONArray jsonArray=new JSONArray();
         if(dataTagGroupInfos != null){

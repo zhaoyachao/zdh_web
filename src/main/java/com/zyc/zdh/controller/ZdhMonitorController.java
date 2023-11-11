@@ -351,7 +351,7 @@ public class ZdhMonitorController extends BaseController {
             }
             TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(id);
             tgli.setIs_retryed("1");
-            tglim.updateByPrimaryKey(tgli);
+            tglim.updateByPrimaryKeySelective(tgli);
             QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(tgli.getJob_id());
 
             //重试最新版-拉去quartJobInfo 中的shell 及参数

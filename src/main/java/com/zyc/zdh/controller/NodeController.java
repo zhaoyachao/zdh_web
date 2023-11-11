@@ -143,7 +143,7 @@ public class NodeController extends BaseController{
             serverTaskInfo.setOwner(getOwner());
             serverTaskInfo.setCreate_time(new Date());
             serverTaskInfo.setUpdate_time(new Date());
-            serverTaskMappeer.insert(serverTaskInfo);
+            serverTaskMappeer.insertSelective(serverTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -166,7 +166,7 @@ public class NodeController extends BaseController{
             serverTaskInfo.setOwner(getOwner());
             serverTaskInfo.setCreate_time(new Date());
             serverTaskInfo.setUpdate_time(new Date());
-            serverTaskMappeer.updateByPrimaryKey(serverTaskInfo);
+            serverTaskMappeer.updateByPrimaryKeySelective(serverTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -218,7 +218,7 @@ public class NodeController extends BaseController{
                 sti.setBuild_branch(build_branch);
             }
 
-            serverTaskInstanceMappeer.insert(sti);
+            serverTaskInstanceMappeer.insertSelective(sti);
 
             new Thread(new Runnable() {
                 @Override

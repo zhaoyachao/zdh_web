@@ -216,7 +216,7 @@
         columns: [{
             checkbox: true,
             field:'state',
-            sortable:true
+            sortable:false
         }, {
             field: 'id',
             title: 'ID',

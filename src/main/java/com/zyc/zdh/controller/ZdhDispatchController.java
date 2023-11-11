@@ -391,7 +391,7 @@ public class ZdhDispatchController extends BaseController {
                     }
                 }
                 JobCommon2.insertLog(tgli,"INFO","生成任务组信息,任务组数据处理日期:"+tgli.getEtl_date());
-                tglim.insert(tgli);
+                tglim.insertSelective(tgli);
                 JobCommon2.sub_task_log_instance(tgli,sub_tasks);
             }
 

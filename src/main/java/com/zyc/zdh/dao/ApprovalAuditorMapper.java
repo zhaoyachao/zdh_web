@@ -47,7 +47,7 @@ public interface ApprovalAuditorMapper extends BaseApprovalAuditorMapper<Approva
             "select auditor.* from approval_auditor_info auditor inner join approval_config_info config on auditor.code = config.code and auditor.product_code=config.product_code",
             " inner join approval_event_info event on event.code=config.code and event.event_code=#{event} and event.product_code=config.product_code",
             "<when test='product_code!=null and product_code !=\"\"'>",
-            " AND product_code=#{product_code}",
+            " AND config.product_code=#{product_code}",
             "</when>",
             " where FIND_IN_SET('${auditor_group}', auditor.auditor_group)>0",
             "</script>"

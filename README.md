@@ -73,6 +73,8 @@
          plugin: 客户管理-通用插件服务,提供id_mapping,过滤,触达用户(发送短信,邮件等)
          ship: 客户管理-实时经营服务,实时接入用户流量,对用户做经营
          variable: 客户管理-变量服务,和label服务能力一样,区别在于一个离线处理,一个实时处理
+     
+   ![zdh模块](img/zdh_family.png)
     
    
 # 开源/闭源版本
@@ -722,6 +724,15 @@
   + v5.1.3 [zdh_web]数据权限控制-为什么需要选择归属产品和归属组,归属产品可以认为是公司所属平台分类,归属组是平台下业务线的分类
   + v5.1.3 [zdh_web]多数模块接入数据权限,简单做saas服务雏形,目前还不完善
   + v5.1.3 [zdh_web]优化shiro-redis集成,删除多余的引用包
+  
+  + v5.2.0 [zdh_web]策略组增加小流量支持
+  + v5.2.0 [zdh_web]优化数据mapper层insert/update
+  + v5.2.0 [zdh_web]修复审批流bug,新增产品线导致
+  + v5.2.0 [zdh_web]新增多种角色控制
+  + v5.2.0 [zdh_web]新注册用户增加默认角色
+  + v5.2.0 [zdh_web]新增烽火台告警模块
+  + v5.2.0 [zdh_web]优化pom引入版本变量
+  + v5.2.0 [zdh_web]修复列表插件多选bug
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -2621,8 +2632,6 @@
      INSERT INTO resource_tree_info
      (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
      VALUES(1163140754785177600, '963932648793706496', '权益页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:46:06', '2023-10-15 15:46:06', 'rights_detail', '3', '', '', 'zdh', '');
-
-
 # 5.1.2迁移5.1.3
 
      INSERT INTO resource_tree_info
@@ -2698,6 +2707,76 @@
      alter table data_sources_info add column dim_group varchar(64) not null default '' comment '用户组';
      update data_sources_info set product_code ='zdh';
      update data_sources_info set dim_group ='group3';
+     
+# 5.1.3迁移5.2.0
+    alter table strategy_group_instance add column small_flow_rate varchar(16) not null default '' comment '小流量比例:1,100';
+    
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170343658487025664, '963932648793706496', '策略组分流页面', '4', 'zyc', 'fa fa-coffee', '', '50', '1', '2023-11-04 12:47:52', '2023-11-04 12:47:52', 'small_flow_rate_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170343820332634112, '963932648793706496', '策略组分流更新', '4', 'zyc', 'fa fa-coffee', '', '51', '1', '2023-11-04 12:48:31', '2023-11-04 12:48:31', 'small_flow_rate_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1170343925882294272, '963932648793706496', '策略组分流同步生效', '4', 'zyc', 'fa fa-coffee', '', '52', '1', '2023-11-04 12:48:56', '2023-11-04 12:48:56', 'small_flow_rate_refash', '5', '', '', 'zdh', '');
+
+    INSERT INTO role_info
+    (id, code, name, enable, create_time, update_time, product_code)
+    VALUES(1172958891420422144, 'role_market', '智能营销模块角色', 'true', '2023-11-11 17:59:52', '2023-11-11 17:59:52', 'zdh');
+    INSERT INTO role_info
+    (id, code, name, enable, create_time, update_time, product_code)
+    VALUES(1172960263029133312, 'role_beaconfire', '烽火台模块角色', 'true', '2023-11-11 18:05:19', '2023-11-11 18:05:19', 'zdh');
+    
+    CREATE TABLE `beacon_fire_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `beacon_fire_context` varchar(128) not null DEFAULT '' COMMENT '输入数据源id',
+      `data_sources_choose_input` varchar(100) not null DEFAULT '' COMMENT '输入数据源id',
+      `data_source_type_input` varchar(100) not null DEFAULT '' COMMENT '输入数据源类型',
+      `sql_script`  text COMMENT 'sql表达式',
+      `groovy_script`  text COMMENT '结果处理脚本',
+      `expr` varchar(100) not null DEFAULT '' COMMENT 'cron表达式/自定义表达式',
+      `time_diff` varchar(50) DEFAULT NULL COMMENT '后退时间差',
+      `alarm_level` varchar(100) not null DEFAULT '' COMMENT '告警级别,p0,p1,p2,p3,数字大小和危险程度成反比',
+      `alarm_group` varchar(100) not null DEFAULT '' COMMENT '告警组',
+      `status` varchar(8) not null DEFAULT 'off' COMMENT '状态,on:开启,off:关闭',
+      `frequency_config` varchar(256) not null DEFAULT '' COMMENT '频次限制:20秒一次,20,1',
+      `product_code` varchar(64) not null default '' comment '产品code',
+      `dim_group` varchar(64) not null default '' comment '用户组',
+      `owner` varchar(100) not null DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      PRIMARY KEY (`id`)
+    ) comment '烽火台信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    
+    CREATE TABLE `beacon_fire_alarm_group_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `alarm_group_code` varchar(128) not null DEFAULT '' COMMENT '告警组code',
+      `alarm_group_context` varchar(128) not null DEFAULT '' COMMENT '告警组说明',
+      `alarm_config`  text COMMENT '告警配置,告警类型及告警账号',
+      `product_code` varchar(64) not null default '' comment '产品code',
+      `dim_group` varchar(64) not null default '' comment '用户组',
+      `owner` varchar(100) not null DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      PRIMARY KEY (`id`)
+    ) comment '烽火台告警组信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    CREATE TABLE `beacon_fire_alarm_msg_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `alarm_msg`  text COMMENT '告警配置,告警类型及告警账号',
+      `status` varchar(8) not null DEFAULT 'off' COMMENT '状态,1:新建,2:处理中,3:成功,4:失败',
+      `product_code` varchar(64) not null default '' comment '产品code',
+      `dim_group` varchar(64) not null default '' comment '用户组',
+      `owner` varchar(100) not null DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      PRIMARY KEY (`id`)
+    ) comment '烽火台告警信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
      
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

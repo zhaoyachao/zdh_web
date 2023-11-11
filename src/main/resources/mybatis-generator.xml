@@ -351,5 +351,27 @@
 <!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--            </table>-->
+
+<!--                <table tableName="beacon_fire_info" domainObjectName="BeaconFireInfo" mapperName="BaseBeaconFireMapper">-->
+<!--                    <property name="useActualColumnNames" value="true" />-->
+<!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--                </table>-->
+
+<!--        <table tableName="beacon_fire_alarm_group_info" domainObjectName="BeaconFireAlarmGroupInfo" mapperName="BaseBeaconFireAlarmGroupMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="beacon_fire_alarm_msg_info" domainObjectName="BeaconFireAlarmMsgInfo" mapperName="BaseBeaconFireAlarmMsgMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
     </context>
 </generatorConfiguration>

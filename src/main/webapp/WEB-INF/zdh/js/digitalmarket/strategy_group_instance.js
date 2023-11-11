@@ -26,6 +26,48 @@
         }
     });
 
+      $('#refash_small_flow').click(function () {
+
+          var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
+          if (rows.length == 0) {// rows 主要是为了判断是否选中，下面的else内容才是主要
+              layer.msg("请先选择要同步小流量的记录!");
+              return;
+          } else {
+              layer.confirm('确定同步小流量', {
+                  btn: ['确定','取消'] //按钮
+              }, function(index){
+                  var ids = new Array();// 声明一个数组
+                  $(rows).each(function () {// 通过获得别选中的来进行遍历
+                      ids.push(this.id);// job_id为获得到的整条数据中的一列
+                  });
+                  console.log(ids);
+                  refashFlows(ids);
+                  layer.close(layer.index);
+              }, function(){
+              });
+          }
+      });
+
+      function refashFlows(ids) {
+          $.ajax({
+              url: server_context+"/small_flow_rate_refash",
+              data: "ids=" + ids,
+              type: "post",
+              async:false,
+              dataType: "json",
+              success: function (data) {
+                  console.info("success");
+                  $('#exampleTableEvents').bootstrapTable('refresh', {
+                      url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
+                  });
+              },
+              error: function (data) {
+                  console.info("error: " + data.responseText);
+              }
+
+          });
+      }
+
       window.operateEvents = {
           'click #log_txt': function (e, value, row, index) {
               window.open(server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.run_time + "&update_time=" + row.update_time);
@@ -87,6 +129,30 @@
                   layer.msg("杀死中")
               }, function () {
 
+              });
+          },
+          'click #small_flow_rate': function (e, value, row, index) {
+              var small_flow_rate = row.small_flow_rate;
+              if(is_empty(small_flow_rate)){
+                  small_flow_rate = '1,1';
+              }
+              parent.layer.open({
+                  type: 2,
+                  title: '小流量配置',
+                  shadeClose: false,
+                  resize: true,
+                  fixed: false,
+                  maxmin: true,
+                  shade: 0.1,
+                  area : ['60%', '80%'],
+                  //area: ['450px', '500px'],
+                  content: server_context+"/small_flow_rate_index?id="+row.id+"&small_flow_rate="+small_flow_rate, //iframe的url
+                  end : function () {
+                      console.info("弹框结束");
+                      $('#exampleTableEvents').bootstrapTable('refresh', {
+                          url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
+                      });
+                  }
               });
           },
       };
@@ -200,7 +266,7 @@
         columns: [{
             checkbox: true,
             field:'state',
-            sortable:true
+            sortable:false
         }, {
             field: 'id',
             title: 'ID',
@@ -222,6 +288,41 @@
             sortable:true,
             formatter: function (value, row, index) {
                 return getMyDate(value);
+            }
+        }, {
+            field: 'small_flow_rate',
+            title: '小流量比例',
+            sortable:true,
+            formatter: function (value, row, index) {
+                var context = "小流量";
+                if(is_empty(value)){
+                    value = '0,0';
+                }
+                var start = value.split(",")[0];
+                var end = value.split(",")[1];
+                var process = end - start;
+                var process2 = 100 - end;
+                var class_str = "progress-bar progress-bar-success";
+                var div_1 = "";
+                var div_2 =   '<div title="'+start+ '%-'+ end + '%" style="width: '+ process + '%"  role="progressbar" class="' + class_str + '">' + '</div>';
+                var div_3 = "";
+                if(start > 1 ){
+                    div_1 =  '<div title="'+0+ '%-'+ (start-1) + '%" style="width: '+ start + '%"  role="progressbar" class="progress-bar progress-bar-warning">' + '</div>';
+                }
+                if(end < 100 && start > 0){
+                    div_3 =  '<div title="'+(end-1+2)+ '%-'+ 100 + '%" style="width: '+ process2 + '%" role="progressbar" class="progress-bar progress-bar-warning">'  + '</div>';
+                }
+                if(value == '0,0'){
+                    div_2 =   '<div title="'+start+ '%-'+ end + '%" style="width: '+ 100 + '%"  role="progressbar" class="progress-bar progress-bar-warning">' + '</div>';
+                }
+                return [
+                    '<small>' + context + start+ '%-'+ end + '%</small>' +
+                    '<div class="progress progress-mini progress-striped">' +
+                    div_1 +
+                    div_2 +
+                    div_3 +
+                    '</div>'
+                ].join('');
             }
         },{
             field: 'process',
@@ -253,7 +354,7 @@
             field: 'status',
             title: '任务执行状态',
             sortable: true,
-            width:230,
+            width:260,
             events: operateEvents,//给按钮注册事件
             formatter: function (value, row, index) {
                 var class_str = "btn-primary  btn-xs";
@@ -317,6 +418,7 @@
                     btn_kill_str +
                     '<button type="button" id="log_txt" class="btn btn-warning btn-xs">组日志</button>'+
                     '<button type="button" id="strategy_instance" class="btn btn-info btn-xs">子任务</button>'+
+                    '<button type="button" id="small_flow_rate" class="btn btn-primary btn-xs">小流量</button>'+
                     '</div>'+
                     '</div>'
                 ].join('');

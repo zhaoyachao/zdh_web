@@ -1,10 +1,14 @@
 package com.zyc.zdh.job;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.hubspot.jinjava.Jinjava;
+import com.zyc.zdh.config.BeaconFireAlarmConfiguration;
 import com.zyc.zdh.controller.ZdhMonitorController;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
+import com.zyc.zdh.push.impl.AliMessageParam;
+import com.zyc.zdh.push.impl.AliMessagePush;
 import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.service.ZdhLogsService;
@@ -486,5 +490,64 @@ public class EmailJob {
             redisUtil.remove("alarm.admin.email_"+subject);
         }
 
+    }
+
+    public static void beaconFireAlarm(){
+        BeaconFireAlarmMsgMapper beaconFireAlarmMsgMapper=(BeaconFireAlarmMsgMapper) SpringContext.getBean("beaconFireAlarmMsgMapper");
+        Environment environment= (Environment) SpringContext.getBean("environment");
+        BeaconFireAlarmConfiguration beaconFireAlarmConfiguration= (BeaconFireAlarmConfiguration) SpringContext.getBean("beaconFireAlarmConfiguration");
+        BeaconFireAlarmMsgInfo beaconFireAlarmMsgInfo = new BeaconFireAlarmMsgInfo();
+        beaconFireAlarmMsgInfo.setStatus(Const.STATUS_COMMON_INIT);
+        List<BeaconFireAlarmMsgInfo> beaconFireAlarmMsgInfos = beaconFireAlarmMsgMapper.select(beaconFireAlarmMsgInfo);
+
+        if(beaconFireAlarmMsgInfos != null && beaconFireAlarmMsgInfos.size() > 0){
+
+            for (BeaconFireAlarmMsgInfo bfami: beaconFireAlarmMsgInfos){
+                String alarm_msg = bfami.getAlarm_msg();
+                if(!StringUtils.isEmpty(alarm_msg)){
+                    JobBeaconFire.Out out = JSON.parseObject(alarm_msg, JobBeaconFire.Out.class);
+                    JSONObject jsonObject = JSON.parseObject(out.getAlarmConfig());
+                    if(jsonObject == null){
+                        bfami.setStatus(Const.STATUS_COMMON_FAIL);
+                        beaconFireAlarmMsgMapper.updateByPrimaryKey(bfami);
+                        continue;
+                    }
+                    if(jsonObject.containsKey("phone")){
+                        //todo 待实现
+                    }
+                    if(jsonObject.containsKey("sms")){
+                        try{
+                            String[] phones = jsonObject.getString("sms").split(",");
+                            AliMessageParam aliMessageParam = build(beaconFireAlarmConfiguration, phones, bfami.getId());
+                            AliMessagePush aliMessagePush = new AliMessagePush();
+                            aliMessagePush.send(aliMessageParam);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                    if(jsonObject.containsKey("email")){
+                        try{
+                            sendHtmlEmail(jsonObject.getString("email").split(","), out.getMessage(), JSONObject.toJSONString(out.o));
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                bfami.setStatus(Const.STATUS_COMMON_SUCCESS);
+                beaconFireAlarmMsgMapper.updateByPrimaryKey(bfami);
+            }
+        }
+    }
+
+    public static AliMessageParam build(BeaconFireAlarmConfiguration beaconFireAlarmConfiguration, String[] phones, String outId){
+        AliMessageParam aliMessageParam = new AliMessageParam();
+        aliMessageParam.setReginId(beaconFireAlarmConfiguration.getReginId());
+        aliMessageParam.setAk(beaconFireAlarmConfiguration.getAk());
+        aliMessageParam.setSk(beaconFireAlarmConfiguration.getSk());
+        aliMessageParam.setTemplateCode(beaconFireAlarmConfiguration.getTemplate());
+        aliMessageParam.setSignName(beaconFireAlarmConfiguration.getSign());
+        aliMessageParam.setPhoneNumbers(StringUtils.join(phones));
+        aliMessageParam.setOutId(outId);
+        return aliMessageParam;
     }
 }

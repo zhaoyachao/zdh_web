@@ -82,7 +82,7 @@ public class TaskGroupLogInstance implements Serializable {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private Timestamp cur_time;// 上次任务执行时间,
+    private Timestamp cur_time;// 当前任务触发时间,
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")

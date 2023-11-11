@@ -432,11 +432,18 @@
                                     $('#'+"ul_"+data.result[i].parent).metisMenu();
                                 }else if(data.result[i].resource_type == "2"){
                                     //菜单
-                                    if($('#ul_'+data.result[i].parent).length>0){
-                                        $('#ul_'+data.result[i].parent).append(li_tmplete);
-                                        $('#'+"ul_"+data.result[i].parent).metisMenu();
+                                    if(runPath.has(data.result[i].parent)){
+                                        if($('#ul_'+data.result[i].parent).length >0 ){
+                                            //多级目录
+                                            $('#ul_'+data.result[i].parent).append(li_tmplete);
+                                            $('#'+"ul_"+data.result[i].parent).metisMenu();
+                                        }else{
+                                            //根级目录
+                                            $('#side-menu').append(li_tmplete);
+                                        }
                                     }else{
                                         //父节点存在,才可展示菜单
+                                        console.info(data.result[i].text+ " , 父节点不存在");
                                         if(runPath.has(data.result[i].parent)){
                                             $('#side-menu').append(li_tmplete);
                                         }

@@ -126,7 +126,7 @@ public class ${ControllerName} extends BaseController {
             ${entityName}.setCreate_time(old${EntityName}.getCreate_time());
             ${entityName}.setUpdate_time(new Timestamp(new Date().getTime()));
             ${entityName}.setIs_delete(Const.NOT_DELETE);
-            ${mapperName}.updateByPrimaryKey(${entityName});
+            ${mapperName}.updateByPrimaryKeySelective(${entityName});
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", ${entityName});
         } catch (Exception e) {
@@ -153,7 +153,7 @@ public class ${ControllerName} extends BaseController {
             ${entityName}.setIs_delete(Const.NOT_DELETE);
             ${entityName}.setCreate_time(new Timestamp(new Date().getTime()));
             ${entityName}.setUpdate_time(new Timestamp(new Date().getTime()));
-            ${mapperName}.insert(${entityName});
+            ${mapperName}.insertSelective(${entityName});
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", ${entityName});
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

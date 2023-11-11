@@ -75,7 +75,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                     if(killed_size>0 || error_size >0){
                         JobCommon2.insertLog(tgli,"INFO","上游依赖任务组存在杀死或者失败任务,将杀死当前任务组");
                         tgli.setStatus(JobStatus.KILLED.getValue());
-                        tglim.updateByPrimaryKey(tgli);
+                        tglim.updateByPrimaryKeySelective(tgli);
                         tlim.updateStatusByGroupId(tgli.getId());
                         JobCommon2.insertLog(tgli,"INFO","当前任务组以杀死");
                     }

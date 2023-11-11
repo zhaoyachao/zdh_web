@@ -145,7 +145,7 @@
       var columns =  [{
           checkbox: true,
           field:'state',
-          sortable:true
+          sortable:false
       }, {
           field: 'dim_code',
           title: '维度code',

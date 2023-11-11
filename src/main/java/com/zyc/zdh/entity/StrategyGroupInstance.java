@@ -135,6 +135,11 @@ public class StrategyGroupInstance {
     private String product_code;
 
     /**
+     * 小流量比例
+     */
+    private String small_flow_rate;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -574,5 +579,13 @@ public class StrategyGroupInstance {
 
     public void setProduct_code(String product_code) {
         this.product_code = product_code;
+    }
+
+    public String getSmall_flow_rate() {
+        return small_flow_rate;
+    }
+
+    public void setSmall_flow_rate(String small_flow_rate) {
+        this.small_flow_rate = small_flow_rate;
     }
 }
