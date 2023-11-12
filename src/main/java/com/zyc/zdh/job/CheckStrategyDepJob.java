@@ -130,7 +130,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                         continue;
                     }
-                    //如果上游任务kill,killed 设置本实例为killed
+                    //如果上游任务kill,killed 设置本实例为kill(设置kill状态后,由后端处理模块监听并修改为killed状态)
                     String pre_tasks=tl.getPre_tasks();
                     if(!StringUtils.isEmpty(pre_tasks)){
                         String[] task_ids=pre_tasks.split(",");
@@ -140,20 +140,26 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                         int level= Integer.valueOf(tl.getDepend_level());
                         if(tlis!=null && tlis.size()>0 && level==0){
                             // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功), 默认成功时运行
-                            tl.setStatus(JobStatus.KILLED.getValue());
+                            // 上游存在失败,更新当前实例状态为kill
+                            tl.setStatus(JobStatus.KILL.getValue());
                             JobDigitalMarket.updateTaskLog(tl,sim);
-                            JobDigitalMarket.insertLog(tl,"INFO","检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为killed");
+                            JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游全部成功时触发,检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为kill");
                             continue;
                         }
                         if(level >= 1 && level <3){
                             // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
-                            //杀死触发,如果所有上游任务都以完成
+                            //杀死触发,如果所有上游任务都以完成finish/skip
                             List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
                             if(tlis_finish.size()==task_ids.length){
-                                tl.setStatus(JobStatus.SKIP.getValue());
+                                tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
+                                String run_jsmind_data = tl.getRun_jsmind_data();
+                                JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
+                                jsonObject.put("is_disenable","true");
+                                tl.setRun_jsmind_data(jsonObject.toJSONString());
+                                tl.setIs_disenable("true");
                                 JobDigitalMarket.updateTaskLog(tl, sim);
                                 //JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
-                                JobDigitalMarket.insertLog(tl,"INFO","检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为SKIP");
+                                JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游存在失败或者杀死时触发,检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为check_dep_finish");
                                 continue;
                             }
                         }
@@ -177,7 +183,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                             }
                         }
                     }
-                    Set<String> parents = dag.getAllParent(tl.getId());
+                    Set<String> parents = dag.getParent(tl.getId());
                     if(parents==null || parents.size()==0){
                         //无父节点直接运行即可
                         System.out.println("根节点模拟发放任务--开始");
@@ -217,58 +223,31 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 
                         //根据执行级别判断上游任务
                         int level= Integer.valueOf(tl.getDepend_level());
-
+                        String msg = "";
                         if(level == 0){
+                            msg = "当前任务依赖级别: 上游全部执行成功触发";
                             //0 成功触发, 上游必须都执行成功/跳过
                             if(success_num != parents.size()){
                                 //当前不可执行
                                 is_run=false;
                             }
                         }else if(level == 3){
+                            msg = "当前任务依赖级别: 上游全部执行后(成功/失败/杀死)可触发";
                             //上游执行完,即可完成触发
-                            if(run_num == 0 && killed_num == 0 && (success_num+error_num)==parents.size()){
+                            if(run_num == 0 && (killed_num+success_num+error_num)==parents.size()){
 
                             }else{
                                 is_run = false;
                             }
                         }else{
-                            if(run_num == 0 && killed_num==0 && error_num >0 && (success_num+error_num)==parents.size()){
+                            msg = "当前任务依赖级别: 上游存在失败,杀死任务可触发";
+                            //1:杀死时运行,2:失败时运行
+                            if(run_num == 0 && (killed_num > 0 || error_num >0) && (success_num+error_num+killed_num)==parents.size()){
 
                             }else{
                                 is_run = false;
                             }
                         }
-
-//                        for (String parent:parents){
-//                            if(!dagStrategyInstance.containsKey(parent)){
-//                                is_run=false;
-//                                System.out.println("未找到任务父节点信息");
-//                                break ;
-//                            }
-//
-//                            if(level == 0){
-//                                //0 成功触发, 上游存在任意的非跳过或者完成,则不可执行
-//                                if(!dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue()) &&
-//                                        !dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue())){
-//                                    //当前不可执行
-//                                    is_run=false;
-//                                    break ;
-//                                }
-//                            }else if(level == 3){
-//                                //上游执行完,即可完成触发
-//                                if(!dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.FINISH.getValue())
-//                                        || !dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.ERROR.getValue())
-//                                        || !dagStrategyInstance.get(parent).getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
-//                                    is_run=false;
-//                                    break ;
-//                                }
-//                            }else if(level >=1 && level < 3){
-//                                //存在失败可触发,且不存在执行中任务
-//                                if(run_num == 0 && (error_num>0 || killed_num >0 )){
-//
-//                                }
-//                            }
-//                        }
 
                         if(is_run){
                             //检查是否tn策略,tn策略动态判断当前时间是否可执行
@@ -278,10 +257,12 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                                     //更新任务状态为完成
                                     tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                                     JobDigitalMarket.updateTaskLog(tl,sim);
-                                    JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",检查完成:"+tl.getStatus());
+                                    JobDigitalMarket.insertLog(tl,"INFO",msg+",当前策略任务:"+tl.getId()+",检查完成:"+tl.getStatus());
                                     continue;
                                 }else{
-                                    JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",检查TN时间不满足,当前不可运行");
+                                    tl.setStatus(JobStatus.CHECK_DEP.getValue());
+                                    JobDigitalMarket.updateTaskLog(tl,sim);
+                                    JobDigitalMarket.insertLog(tl,"INFO",msg+",当前策略任务:"+tl.getId()+",检查TN时间不满足,当前不可运行");
                                 }
                             }
                         }
@@ -303,7 +284,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                             //更新任务状态为检查完成
                             tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                             JobDigitalMarket.updateTaskLog(tl,sim);
-                            JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",检查完成:"+tl.getStatus());
+                            JobDigitalMarket.insertLog(tl,"INFO",msg+",当前策略任务:"+tl.getId()+",检查完成:"+tl.getStatus());
                         }
                     }
                 }catch (Exception e){

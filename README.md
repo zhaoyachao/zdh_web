@@ -734,6 +734,7 @@
   + v5.2.0 [zdh_web]新增烽火台告警模块
   + v5.2.0 [zdh_web]优化pom引入版本变量
   + v5.2.0 [zdh_web]修复列表插件多选bug
+  + v5.2.0 [zdh_web]智能营销模块-执行流程修复bug
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】

@@ -77,6 +77,25 @@ public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<Strat
     )
     public List<StrategyInstance> selectByFinishIds(@Param("ids") String[] ids);
 
+    /**
+     * 获取上游执行完成的任务
+     * 状态包含 'finish','skip','error', 'killed'
+     * @param ids
+     * @return
+     */
+    @Select(
+            {
+                    "<script>",
+                    "select * from strategy_instance si where si.id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "and status in ('finish','skip','error', 'killed')",
+                    "</script>"
+            }
+    )
+    public List<StrategyInstance> selectAllFinished(@Param("ids") String[] ids);
+
     @Select(
             {
                     "<script>",
