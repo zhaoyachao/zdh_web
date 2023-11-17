@@ -38,9 +38,9 @@ public class ZdhJdbcController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
+    private EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
     @Autowired
-    EtlTaskJdbcMapper etlTaskJdbcMapper;
+    private EtlTaskJdbcMapper etlTaskJdbcMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
 
@@ -106,8 +106,8 @@ public class ZdhJdbcController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_jdbc_delete(String[] ids) {
         try {
-            etlTaskJdbcMapper.deleteLogicByIds("etl_task_jdbc_info",ids, new Timestamp(new Date().getTime()));
-
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskJdbcMapper, etlTaskJdbcMapper.getTable(), ids);
+            etlTaskJdbcMapper.deleteLogicByIds(etlTaskJdbcMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -138,6 +138,7 @@ public class ZdhJdbcController extends BaseController {
             etlTaskJdbcInfo.setIs_delete(Const.NOT_DELETE);
 
             debugInfo(etlTaskJdbcInfo);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskJdbcInfo.getProduct_code(), etlTaskJdbcInfo.getDim_group());
             etlTaskJdbcMapper.insertSelective(etlTaskJdbcInfo);
 
 
@@ -177,12 +178,18 @@ public class ZdhJdbcController extends BaseController {
             etlTaskJdbcInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskJdbcInfo);
 
+            EtlTaskJdbcInfo oldEtlTaskJdbcInfo = etlTaskJdbcMapper.selectByPrimaryKey(etlTaskJdbcInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskJdbcInfo.getProduct_code(), etlTaskJdbcInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskJdbcInfo.getProduct_code(), oldEtlTaskJdbcInfo.getDim_group());
+
+
             etlTaskJdbcMapper.updateByPrimaryKeySelective(etlTaskJdbcInfo);
 
-            EtlTaskJdbcInfo sti = etlTaskJdbcMapper.selectByPrimaryKey(etlTaskJdbcInfo.getId());
+
 
             if (etlTaskJdbcInfo.getUpdate_context() != null && !etlTaskJdbcInfo.getUpdate_context().equals("")
-                    && !etlTaskJdbcInfo.getUpdate_context().equals(sti.getUpdate_context())) {
+                    && !etlTaskJdbcInfo.getUpdate_context().equals(oldEtlTaskJdbcInfo.getUpdate_context())) {
                 //插入更新日志表
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskJdbcInfo.getId());

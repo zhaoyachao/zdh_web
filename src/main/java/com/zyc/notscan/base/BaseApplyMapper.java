@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseApplyMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "apply_info";
+    }
 }

@@ -40,17 +40,17 @@ public class ProcessFlowApi {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    SessionDao sessionDao;
+    private SessionDao sessionDao;
     @Autowired
-    ZdhProcessFlowController zdhProcessFlowController;
+    private ZdhProcessFlowController zdhProcessFlowController;
     @Autowired
-    ProductTagMapper productTagMapper;
+    private ProductTagMapper productTagMapper;
     @Autowired
-    ApprovalEventMapper approvalEventMapper;
+    private ApprovalEventMapper approvalEventMapper;
     @Autowired
-    PermissionMapper permissionMapper;
+    private PermissionMapper permissionMapper;
     @Autowired
-    ProcessFlowMapper processFlowMapper;
+    private ProcessFlowMapper processFlowMapper;
 
 
     /**

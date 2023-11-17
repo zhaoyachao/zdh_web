@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.EtlApplyTaskMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
@@ -38,13 +37,11 @@ public class ZdhEtlApplyController extends BaseController{
     public Logger logger= LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    DataSourcesMapper dataSourcesMapper;
+    private EtlApplyTaskMapper etlApplyTaskMapper;
     @Autowired
-    EtlApplyTaskMapper etlApplyTaskMapper;
+    private EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
     @Autowired
-    EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
-    @Autowired
-    ZdhNginxMapper zdhNginxMapper;
+    private ZdhNginxMapper zdhNginxMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
 
@@ -167,6 +164,8 @@ public class ZdhEtlApplyController extends BaseController{
             etlApplyTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlApplyTaskInfo.setIs_delete(Const.NOT_DELETE);
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskInfo.getProduct_code(), etlApplyTaskInfo.getDim_group());
+
             etlApplyTaskMapper.insertSelective(etlApplyTaskInfo);
             if (etlApplyTaskInfo.getUpdate_context() != null && !etlApplyTaskInfo.getUpdate_context().equals("")) {
                 //插入更新日志表
@@ -206,6 +205,13 @@ public class ZdhEtlApplyController extends BaseController{
             etlApplyTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlApplyTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlApplyTaskInfo);
+
+            //获取旧数据是否更新说明
+            EtlApplyTaskInfo oldEtlApplyTaskInfo = etlApplyTaskMapper.selectByPrimaryKey(etlApplyTaskInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskInfo.getProduct_code(), etlApplyTaskInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlApplyTaskInfo.getProduct_code(), oldEtlApplyTaskInfo.getDim_group());
+
             if (etlApplyTaskInfo.getData_source_type_input().equals("外部上传")) {
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
                 String[] file_name_ary = etlApplyTaskInfo.getData_sources_file_name_input().split("/");
@@ -221,13 +227,12 @@ public class ZdhEtlApplyController extends BaseController{
 
             }
 
-            //获取旧数据是否更新说明
-            EtlApplyTaskInfo etlApplyTaskInfo1 = etlApplyTaskMapper.selectByIds(new String[]{etlApplyTaskInfo.getId()});
+
 
             etlApplyTaskMapper.updateByPrimaryKeySelective(etlApplyTaskInfo);
 
             if (etlApplyTaskInfo.getUpdate_context() != null && !etlApplyTaskInfo.getUpdate_context().equals("")
-                    && !etlApplyTaskInfo1.getUpdate_context().equals(etlApplyTaskInfo.getUpdate_context())) {
+                    && !oldEtlApplyTaskInfo.getUpdate_context().equals(etlApplyTaskInfo.getUpdate_context())) {
                 //插入更新日志表
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlApplyTaskInfo.getId());

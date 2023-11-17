@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseEveryDayNoticeMapper<T> extends BaseMapper<T>{
-
+    @Override
+    default String getTable(){
+        return "every_day_notice";
+    }
 }

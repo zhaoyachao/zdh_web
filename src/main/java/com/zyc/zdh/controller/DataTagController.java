@@ -7,6 +7,7 @@ import com.zyc.zdh.entity.PageResult;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -35,7 +36,9 @@ public class DataTagController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    DataTagMapper dataTagMapper;
+    private DataTagMapper dataTagMapper;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 数据标识首页
@@ -155,6 +158,9 @@ public class DataTagController extends BaseController {
         try {
             DataTagInfo oldDataTagInfo = dataTagMapper.selectByPrimaryKey(dataTagInfo.getId());
 
+            checkPermissionByProduct(zdhPermissionService, dataTagInfo.getProduct_code());
+            checkPermissionByProduct(zdhPermissionService, oldDataTagInfo.getProduct_code());
+
             dataTagInfo.setOwner(oldDataTagInfo.getOwner());
             dataTagInfo.setCreate_time(oldDataTagInfo.getCreate_time());
             dataTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -186,6 +192,7 @@ public class DataTagController extends BaseController {
             dataTagInfo.setIs_delete(Const.NOT_DELETE);
             dataTagInfo.setCreate_time(new Timestamp(new Date().getTime()));
             dataTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            checkPermissionByProduct(zdhPermissionService, dataTagInfo.getProduct_code());
             dataTagMapper.insertSelective(dataTagInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -205,7 +212,8 @@ public class DataTagController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<Object> data_tag_delete(String[] ids) {
         try {
-            dataTagMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, dataTagMapper, dataTagMapper.getTable(), ids);
+            dataTagMapper.deleteLogicByIds(dataTagMapper.getTable(), ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

@@ -31,7 +31,7 @@ public class PermissionApi {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    SessionDao sessionDao;
+    private SessionDao sessionDao;
     @Autowired
     private PermissionApiController permissionApiController;
 

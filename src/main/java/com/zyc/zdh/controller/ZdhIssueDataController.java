@@ -2,12 +2,15 @@ package com.zyc.zdh.controller;
 
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.dao.*;
+import com.zyc.zdh.dao.ApplyMapper;
+import com.zyc.zdh.dao.ApprovalEventMapper;
+import com.zyc.zdh.dao.IssueDataMapper;
+import com.zyc.zdh.dao.ResourceTreeMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.EmailJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.JemailService;
-import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,39 +40,21 @@ import java.util.List;
 public class ZdhIssueDataController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
-
 
     @Autowired
-    IssueDataMapper issueDataMapper;
-
+    private IssueDataMapper issueDataMapper;
     @Autowired
-    ApplyMapper applyMapper;
-
+    private ApplyMapper applyMapper;
     @Autowired
-    RedisUtil redisUtil;
-
+    private JemailService jemailService;
     @Autowired
-    JemailService jemailService;
-
+    private ZdhProcessFlowController zdhProcessFlowController;
     @Autowired
-    ApprovalConfigMapper approvalConfigMapper;
-
+    private ResourceTreeMapper resourceTreeMapper;
     @Autowired
-    ApprovalAuditorMapper approvalAuditorMapper;
-
+    private ApprovalEventMapper approvalEventMapper;
     @Autowired
-    ProcessFlowMapper processFlowMapper;
-
-    @Autowired
-    ZdhProcessFlowController zdhProcessFlowController;
-
-    @Autowired
-    ResourceTreeMapper resourceTreeMapper;
-
-    @Autowired
-    ApprovalEventMapper approvalEventMapper;
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 数据发布首页
@@ -240,6 +225,7 @@ public class ZdhIssueDataController extends BaseController {
                 issueDataInfo.setData_sources_table_columns(issueDataInfo.getData_sources_file_columns());
             }
             debugInfo(issueDataInfo);
+            //checkPermissionByProductAndDimGroup(zdhPermissionService, issueDataInfo.getProduct_code(), issueDataInfo.getDim_group());
             issueDataMapper.insertSelective(issueDataInfo);
             //根据资源信息获取审批流
 
@@ -347,6 +333,7 @@ public class ZdhIssueDataController extends BaseController {
         //String json_str=JSON.toJSONString(request.getParameterMap());
 
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService, issueDataMapper, issueDataMapper.getTable(), ids);
             issueDataMapper.deleteBatchByIds(ids);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

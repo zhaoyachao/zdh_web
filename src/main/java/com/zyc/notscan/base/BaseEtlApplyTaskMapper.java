@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseEtlApplyTaskMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "etl_apply_task_info";
+    }
 }

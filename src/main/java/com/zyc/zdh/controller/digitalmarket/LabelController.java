@@ -188,6 +188,9 @@ public class LabelController extends BaseController {
 
             LabelInfo oldLabelInfo = labelMapper.selectByPrimaryKey(labelInfo.getId());
 
+            checkPermissionByProduct(zdhPermissionService, labelInfo.getProduct_code());
+            checkPermissionByProduct(zdhPermissionService, oldLabelInfo.getProduct_code());
+
             labelInfo.setParam_json(jsonArray.toJSONString());
             labelInfo.setOwner(oldLabelInfo.getOwner());
             labelInfo.setCreate_time(oldLabelInfo.getCreate_time());
@@ -223,7 +226,9 @@ public class LabelController extends BaseController {
             if(param_code==null || param_code.length<1){
                throw new Exception("参数不可为空");
             }
-
+            if(StringUtils.isEmpty(labelInfo.getData_sources_choose_input())){
+                throw new Exception("数据源参数不可为空");
+            }
             checkParam(labelInfo.getLabel_code(),"标签名");
             if(!labelInfo.getLabel_code().startsWith("tag_")){
                 throw new Exception("标签code 必须以tag_开头");
@@ -252,6 +257,9 @@ public class LabelController extends BaseController {
             labelInfo.setCreate_time(new Timestamp(new Date().getTime()));
             labelInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             labelInfo.setStatus(Const.STATUS_NOT_PUB);
+
+            checkPermissionByProduct(zdhPermissionService, labelInfo.getProduct_code());
+
             labelMapper.insertSelective(labelInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -271,7 +279,8 @@ public class LabelController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo label_delete(String[] ids) {
         try {
-            labelMapper.deleteLogicByIds("label_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, labelMapper, labelMapper.getTable(), ids);
+            labelMapper.deleteLogicByIds(labelMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

@@ -137,6 +137,8 @@ public class BeaconFireAlarmGroupController extends BaseController {
         try {
 
             BeaconFireAlarmGroupInfo oldBeaconFireAlarmGroupInfo = beaconFireAlarmGroupMapper.selectByPrimaryKey(beaconFireAlarmGroupInfo.getId());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupInfo.getProduct_code(), beaconFireAlarmGroupInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldBeaconFireAlarmGroupInfo.getProduct_code(), oldBeaconFireAlarmGroupInfo.getDim_group());
 
             Map<String, String> tmp = new HashMap<>();
             tmp.put("phone", StringUtils.join(phone, ","));
@@ -181,6 +183,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
             beaconFireAlarmGroupInfo.setIs_delete(Const.NOT_DELETE);
             beaconFireAlarmGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
             beaconFireAlarmGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupInfo.getProduct_code(), beaconFireAlarmGroupInfo.getDim_group());
             beaconFireAlarmGroupMapper.insertSelective(beaconFireAlarmGroupInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", beaconFireAlarmGroupInfo);
         } catch (Exception e) {
@@ -199,7 +202,8 @@ public class BeaconFireAlarmGroupController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo beacon_fire_alarm_group_delete(String[] ids) {
         try {
-            beaconFireAlarmGroupMapper.deleteLogicByIds("beacon_fire_alarm_group_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupMapper, beaconFireAlarmGroupMapper.getTable(), ids);
+            beaconFireAlarmGroupMapper.deleteLogicByIds(beaconFireAlarmGroupMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

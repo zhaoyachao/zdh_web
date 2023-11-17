@@ -2,7 +2,6 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.annotation.White;
-import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.EtlTaskDataxAutoMapper;
 import com.zyc.zdh.entity.EtlTaskDataxAutoInfo;
 import com.zyc.zdh.entity.PageResult;
@@ -38,10 +37,9 @@ import java.util.List;
 public class ZdhEtlDataxAutoController extends BaseController{
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
-    DataSourcesMapper dataSourcesMapper;
-    @Autowired
-    EtlTaskDataxAutoMapper etlTaskDataxAutoMapper;
+    private EtlTaskDataxAutoMapper etlTaskDataxAutoMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
 
@@ -166,7 +164,8 @@ public class ZdhEtlDataxAutoController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_datax_auto_delete(String[] ids) {
         try{
-            etlTaskDataxAutoMapper.deleteLogicByIds("etl_task_datax_auto_info", ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoMapper, etlTaskDataxAutoMapper.getTable(), ids);
+            etlTaskDataxAutoMapper.deleteLogicByIds(etlTaskDataxAutoMapper.getTable(), ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -200,6 +199,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
     public ReturnInfo etl_task_datax_auto_add(EtlTaskDataxAutoInfo etlTaskDataxAutoInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoInfo.getProduct_code(), etlTaskDataxAutoInfo.getDim_group());
             etlTaskDataxAutoInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             etlTaskDataxAutoInfo.setOwner(getOwner());
             etlTaskDataxAutoInfo.setCreate_time(new Timestamp(new Date().getTime()));
@@ -231,6 +231,9 @@ public class ZdhEtlDataxAutoController extends BaseController{
         try{
 
             EtlTaskDataxAutoInfo oldEtlTaskDataxAutoInfo= etlTaskDataxAutoMapper.selectByPrimaryKey(etlTaskDataxAutoInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoInfo.getProduct_code(), etlTaskDataxAutoInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskDataxAutoInfo.getProduct_code(), oldEtlTaskDataxAutoInfo.getDim_group());
 
             etlTaskDataxAutoInfo.setOwner(oldEtlTaskDataxAutoInfo.getOwner());
             etlTaskDataxAutoInfo.setCreate_time(oldEtlTaskDataxAutoInfo.getCreate_time());

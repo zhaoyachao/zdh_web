@@ -287,7 +287,8 @@ public class RiskEventController extends BaseController {
     @White
     public ReturnInfo risk_event_delete(String[] ids) {
         try {
-            riskEventMapper.deleteLogicByIds("risk_event_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, riskEventMapper, riskEventMapper.getTable(), ids);
+            riskEventMapper.deleteLogicByIds(riskEventMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

@@ -2,10 +2,12 @@ package com.zyc.zdh.entity;
 
 import com.alibaba.fastjson.JSON;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.*;
 
 @Table(name = "beacon_fire_alarm_group_info")
 public class BeaconFireAlarmGroupInfo {

@@ -25,9 +25,9 @@ public class AuthorController extends BaseController{
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    JemailService jemailService;
+    private JemailService jemailService;
     @Autowired
-    Environment ev;
+    private Environment ev;
 
     /**
      * 邮件页面

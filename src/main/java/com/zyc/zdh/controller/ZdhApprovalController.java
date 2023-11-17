@@ -36,16 +36,16 @@ public class ZdhApprovalController extends BaseController{
 
     public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
-    ApprovalConfigMapper approvalConfigMapper;
+    private ApprovalConfigMapper approvalConfigMapper;
 
     @Autowired
-    ApprovalAuditorMapper approvalAuditorMapper;
+    private ApprovalAuditorMapper approvalAuditorMapper;
 
     @Autowired
-    ApprovalEventMapper approvalEventMapper;
+    private ApprovalEventMapper approvalEventMapper;
 
     @Autowired
-    ApprovalAuditorFlowMapper approvalAuditorFlowMapper;
+    private ApprovalAuditorFlowMapper approvalAuditorFlowMapper;
 
     @Autowired
     private ZdhPermissionService zdhPermissionService;
@@ -136,6 +136,9 @@ public class ZdhApprovalController extends BaseController{
             }
             approvalConfigInfo.setEmployee_id(getOwner());
             approvalConfigInfo.setCreate_time(new Timestamp(new Date().getTime()));
+
+            checkPermissionByProduct(zdhPermissionService, approvalConfigInfo.getProduct_code());
+
             approvalConfigMapper.insertSelective(approvalConfigInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
@@ -154,8 +157,12 @@ public class ZdhApprovalController extends BaseController{
     @ResponseBody
     public ReturnInfo<Object> approval_config_update(ApprovalConfigInfo approvalConfigInfo) {
         try{
-            ApprovalConfigInfo apc=approvalConfigMapper.selectByPrimaryKey(approvalConfigInfo.getId());
-            BeanUtils.copyProperties(apc, approvalConfigInfo);
+            ApprovalConfigInfo oldApprovalConfigInfo=approvalConfigMapper.selectByPrimaryKey(approvalConfigInfo.getId());
+
+            checkPermissionByProduct(zdhPermissionService, approvalConfigInfo.getProduct_code());
+            checkPermissionByProduct(zdhPermissionService, oldApprovalConfigInfo.getProduct_code());
+
+            BeanUtils.copyProperties(oldApprovalConfigInfo, approvalConfigInfo);
             approvalConfigInfo.setEmployee_id(getOwner());
             approvalConfigMapper.updateByPrimaryKeySelective(approvalConfigInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);

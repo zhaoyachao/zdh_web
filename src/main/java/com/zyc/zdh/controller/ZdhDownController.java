@@ -7,7 +7,6 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.ZdhDownloadInfo;
 import com.zyc.zdh.entity.ZdhNginx;
-import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -35,11 +34,9 @@ public class ZdhDownController extends BaseController{
 
     public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
-    ZdhDownloadMapper zdhDownloadMapper;
+    private ZdhDownloadMapper zdhDownloadMapper;
     @Autowired
-    RedisUtil redisUtil;
-    @Autowired
-    ZdhNginxMapper zdhNginxMapper;
+    private ZdhNginxMapper zdhNginxMapper;
 
     /**
      * 文件下载首页

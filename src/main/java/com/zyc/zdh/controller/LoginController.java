@@ -2,15 +2,15 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.dao.AccountMapper;
 import com.zyc.zdh.dao.PermissionMapper;
-import com.zyc.zdh.dao.RoleDao;
-import com.zyc.zdh.entity.*;
+import com.zyc.zdh.entity.PermissionUserInfo;
+import com.zyc.zdh.entity.RETURN_CODE;
+import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.entity.User;
 import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.MyRealm;
-import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.Encrypt;
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,21 +64,15 @@ public class LoginController {
     public static ApplicationContext context = null;
 
     @Autowired
-    AccountService accountService;
+    private AccountService accountService;
     @Autowired
-    MyRealm myRealm;
+    private MyRealm myRealm;
     @Autowired
-    JemailService jemailService;
+    private JemailService jemailService;
     @Autowired
-    AccountMapper accountMapper;
+    private PermissionMapper permissionMapper;
     @Autowired
-    PermissionMapper permissionMapper;
-    @Autowired
-    RoleDao roleDao;
-    @Autowired
-    Environment ev;
-    @Autowired
-    RedisUtil redisUtil;
+    private Environment ev;
 
     /**
      * 系统根页面

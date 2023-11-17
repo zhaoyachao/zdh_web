@@ -3,19 +3,18 @@ package com.zyc.zdh.controller;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.dao.*;
+import com.zyc.zdh.dao.ServerTaskInstanceMappeer;
+import com.zyc.zdh.dao.ServerTaskMappeer;
+import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SetUpJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.DateUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,21 +37,11 @@ public class NodeController extends BaseController{
     public Logger logger= LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    ZdhNginxMapper zdhNginxMapper;
+    private ZdhHaInfoMapper zdhHaInfoMapper;
     @Autowired
-    RedisUtil redisUtil;
+    private ServerTaskMappeer serverTaskMappeer;
     @Autowired
-    JdbcTemplate jdbcTemplate;
-    @Autowired
-    QuartzJobMapper quartzJobMapper;
-    @Autowired
-    ZdhHaInfoMapper zdhHaInfoMapper;
-    @Autowired
-    ServerTaskMappeer serverTaskMappeer;
-    @Autowired
-    ServerTaskInstanceMappeer serverTaskInstanceMappeer;
-    @Autowired
-    Environment ev;
+    private ServerTaskInstanceMappeer serverTaskInstanceMappeer;
 
     /**
      * server构建首页

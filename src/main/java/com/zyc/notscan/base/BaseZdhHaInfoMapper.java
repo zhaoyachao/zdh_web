@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseZdhHaInfoMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "zdh_ha_info";
+    }
 }

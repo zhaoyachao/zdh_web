@@ -10,5 +10,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BasePermissionMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "permission_user_info";
+    }
 }

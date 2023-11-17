@@ -3,10 +3,13 @@ package com.zyc.zdh.controller;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.dao.*;
+import com.zyc.zdh.dao.EtlTaskMapper;
+import com.zyc.zdh.dao.QualityMapper;
+import com.zyc.zdh.dao.QualityRuleMapper;
+import com.zyc.zdh.dao.QualityTaskMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.service.EtlTaskService;
+import com.zyc.zdh.service.ZdhPermissionService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,17 +38,15 @@ public class ZdhQualityController extends BaseController {
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    EtlTaskService etlTaskService;
+    private QualityMapper qualityMapper;
     @Autowired
-    QualityMapper qualityMapper;
+    private QualityRuleMapper qualityRuleMapper;
     @Autowired
-    QualityRuleMapper qualityRuleMapper;
+    private QualityTaskMapper qualityTaskMapper;
     @Autowired
-    QualityTaskMapper qualityTaskMapper;
+    private EtlTaskMapper etlTaskMapper;
     @Autowired
-    ZdhHaInfoMapper zdhHaInfoMapper;
-    @Autowired
-    EtlTaskMapper etlTaskMapper;
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 质量检测规则首页
@@ -126,6 +127,8 @@ public class ZdhQualityController extends BaseController {
             qualityRuleInfo.setCreate_time(new Timestamp(new Date().getTime()));
             qualityRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             qualityRuleInfo.setOwner(getOwner());
+            //checkPermissionByProductAndDimGroup(zdhPermissionService, qualityRuleInfo.getProduct_code(), qualityRuleInfo.getDim_group());
+
             qualityRuleMapper.insertSelective(qualityRuleInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -301,6 +304,7 @@ public class ZdhQualityController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo quality_task_delete(String[] ids) {
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService, qualityTaskMapper, qualityTaskMapper.getTable(), ids);
             Example example = new Example(QualityTaskInfo.class);
             Example.Criteria criteria = example.createCriteria();
             criteria.andIn("id", Arrays.asList(ids));

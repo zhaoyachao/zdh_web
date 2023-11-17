@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseSshTaskMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "ssh_task_info";
+    }
 }

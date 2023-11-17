@@ -34,7 +34,7 @@ public class ZdhDroolsController extends BaseController{
 
     public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
-    EtlDroolsTaskMapper etlDroolsTaskMapper;
+    private EtlDroolsTaskMapper etlDroolsTaskMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
 
@@ -122,6 +122,7 @@ public class ZdhDroolsController extends BaseController{
             etlDroolsTaskInfo.setOwner(getOwner());
             etlDroolsTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
             debugInfo(etlDroolsTaskInfo);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskInfo.getProduct_code(), etlDroolsTaskInfo.getDim_group());
             etlDroolsTaskMapper.insertSelective(etlDroolsTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
@@ -169,6 +170,10 @@ public class ZdhDroolsController extends BaseController{
             String owner = getOwner();
             etlDroolsTaskInfo.setOwner(owner);
             debugInfo(etlDroolsTaskInfo);
+            EtlDroolsTaskInfo oldEtlDroolsTaskInfo = etlDroolsTaskMapper.selectByPrimaryKey(etlDroolsTaskInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskInfo.getProduct_code(), etlDroolsTaskInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlDroolsTaskInfo.getProduct_code(), oldEtlDroolsTaskInfo.getDim_group());
 
             etlDroolsTaskMapper.updateByPrimaryKeySelective(etlDroolsTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);

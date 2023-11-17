@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
-import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
 import com.zyc.zdh.dao.StrategyGroupMapper;
 import com.zyc.zdh.dao.StrategyInstanceMapper;
@@ -58,10 +57,7 @@ public class StrategyGroupController extends BaseController {
     private StrategyInstanceMapper strategyInstanceMapper;
 
     @Autowired
-    QuartzJobMapper quartzJobMapper;
-
-    @Autowired
-    QuartzManager2 quartzManager2;
+    private QuartzManager2 quartzManager2;
 
     @Autowired
     private Environment env;
@@ -180,6 +176,9 @@ public class StrategyGroupController extends BaseController {
 
             StrategyGroupInfo oldStrategyGroupInfo = strategyGroupMapper.selectByPrimaryKey(strategyGroupInfo.getId());
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldStrategyGroupInfo.getProduct_code(), oldStrategyGroupInfo.getDim_group());
+
             //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
             strategyGroupInfo.setOwner(oldStrategyGroupInfo.getOwner());
             strategyGroupInfo.setMisfire(oldStrategyGroupInfo.getMisfire());
@@ -220,6 +219,9 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInfo.setTime_diff("0");
             strategyGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
             strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group());
+
             strategyGroupMapper.insertSelective(strategyGroupInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -239,7 +241,8 @@ public class StrategyGroupController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo strategy_group_delete(String[] ids) {
         try {
-            strategyGroupMapper.deleteLogicByIds("strategy_group_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupMapper, strategyGroupMapper.getTable(), ids);
+            strategyGroupMapper.deleteLogicByIds(strategyGroupMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

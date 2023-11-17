@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseApprovalEventMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "approval_event_info";
+    }
 }

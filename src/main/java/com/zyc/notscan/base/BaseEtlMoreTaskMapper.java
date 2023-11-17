@@ -9,4 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseEtlMoreTaskMapper<T> extends BaseMapper<T> {
+    @Override
+    default String getTable(){
+        return "etl_more_task_info";
+    }
 }

@@ -14,6 +14,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.monitor.Server;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhLogsService;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
@@ -47,22 +48,21 @@ public class ZdhMonitorController extends BaseController {
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    QuartzJobMapper quartzJobMapper;
+    private QuartzJobMapper quartzJobMapper;
     @Autowired
-    QuartzManager2 quartzManager2;
+    private QuartzManager2 quartzManager2;
     @Autowired
-    ZdhHaInfoMapper zdhHaInfoMapper;
-
+    private ZdhHaInfoMapper zdhHaInfoMapper;
     @Autowired
-    ZdhLogsService zdhLogsService;
+    private ZdhLogsService zdhLogsService;
     @Autowired
-    TaskLogInstanceMapper taskLogInstanceMapper;
-
+    private TaskLogInstanceMapper taskLogInstanceMapper;
     @Autowired
-    TaskGroupLogInstanceMapper tglim;
-
+    private TaskGroupLogInstanceMapper tglim;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
 
     /**
@@ -165,7 +165,7 @@ public class ZdhMonitorController extends BaseController {
     public ReturnInfo task_logs_delete(String[] ids) {
 
         try {
-            System.out.println("开始删除任务日志");
+            checkPermissionByProductAndDimGroup(zdhPermissionService, taskLogInstanceMapper, taskLogInstanceMapper.getTable(), ids);
             taskLogInstanceMapper.deleteByIds(ids);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

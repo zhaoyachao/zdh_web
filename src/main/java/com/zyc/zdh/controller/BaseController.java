@@ -1,5 +1,6 @@
 package com.zyc.zdh.controller;
 
+import com.zyc.notscan.BaseMapper;
 import com.zyc.zdh.config.DateConverter;
 import com.zyc.zdh.dao.ProductTagMapper;
 import com.zyc.zdh.entity.PermissionDimensionValueInfo;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BaseController {
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Timestamp.class, new PropertyEditorSupport() {
@@ -160,6 +161,64 @@ public class BaseController {
 
         if(!StringUtils.isEmpty(product_code)){
             criteria.andEqualTo("product_code", product_code);
+        }
+    }
+
+    /**
+     * 通过主键查询信息,并验证是否有产品和用户组权限
+     * @param zdhPermissionService
+     * @param baseMapper
+     * @param table
+     * @param ids
+     * @throws Exception
+     */
+    public void checkPermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, BaseMapper baseMapper, String table, String[] ids) throws Exception {
+        Map<String, List<String>> dims = dynamicPermissionByProductAndGroup(zdhPermissionService);
+        List<Map<String,Object>> list = baseMapper.selectListMapByIds(table, ids);
+        for(Map<String, Object> objectMap : list){
+            if(objectMap.containsKey("product_code")){
+                String product_code = objectMap.getOrDefault("product_code", "").toString();
+                if(!dims.get("product_codes").contains(product_code)){
+                    throw new Exception("无产品权限,产品code: "+product_code);
+                }
+            }
+            if(objectMap.containsKey("dim_group")){
+                String dim_group = objectMap.getOrDefault("dim_group", "").toString();
+                if(!dims.get("dim_groups").contains(dim_group)){
+                    throw new Exception("无归属组权限,归属组code: "+dim_group);
+                }
+            }
+        }
+    }
+
+    /**
+     * 通过产品和用户组校验权限
+     * @param zdhPermissionService
+     * @param product_code
+     * @param dim_group
+     * @throws Exception
+     */
+    public void checkPermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, String product_code, String dim_group) throws Exception {
+        Map<String, List<String>> dims = dynamicPermissionByProductAndGroup(zdhPermissionService);
+        if(!dims.get("product_codes").contains(product_code)){
+            throw new Exception("无产品权限,产品code: "+product_code);
+        }
+        if(!dims.get("dim_groups").contains(dim_group)){
+            throw new Exception("无归属组权限,归属组code: "+dim_group);
+        }
+    }
+
+
+    /**
+     * 通过产品校验权限
+     * @param zdhPermissionService
+     * @param product_code
+     * @throws Exception
+     */
+    public void checkPermissionByProduct(ZdhPermissionService zdhPermissionService, String product_code) throws Exception {
+        Map<String, List<String>> dims = dynamicPermissionByProductAndGroup(zdhPermissionService);
+        if(!dims.get("product_codes").contains(product_code)){
+            throw new Exception("无产品权限,产品code: "+product_code);
         }
     }
 

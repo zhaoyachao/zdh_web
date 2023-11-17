@@ -41,9 +41,9 @@ public class ZdhSelfServiceController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    SelfHistoryMapper selfHistoryMapper;
+    private SelfHistoryMapper selfHistoryMapper;
     @Autowired
-    DataSourcesMapper dataSourcesMapper;
+    private DataSourcesMapper dataSourcesMapper;
 
     /**
      * 自助服务首页

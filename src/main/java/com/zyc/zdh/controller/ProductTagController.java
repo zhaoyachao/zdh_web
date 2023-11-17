@@ -35,7 +35,7 @@ public class ProductTagController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    ProductTagMapper productTagMapper;
+    private ProductTagMapper productTagMapper;
 
     /**
      * 产品列表首页

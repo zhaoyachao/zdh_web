@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseJarTaskMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "jar_task_info";
+    }
 }

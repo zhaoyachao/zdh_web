@@ -2,10 +2,11 @@ package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.annotation.White;
-import com.zyc.zdh.dao.*;
+import com.zyc.zdh.dao.EveryDayNoticeMapper;
+import com.zyc.zdh.dao.NoticeMapper;
+import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,23 +39,15 @@ public class SystemController extends BaseController{
 
     public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
-    ZdhNginxMapper zdhNginxMapper;
+    private ZdhNginxMapper zdhNginxMapper;
     @Autowired
-    RedisUtil redisUtil;
+    private RedisUtil redisUtil;
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private Environment ev;
     @Autowired
-    QuartzJobMapper quartzJobMapper;
+    private EveryDayNoticeMapper everyDayNoticeMapper;
     @Autowired
-    QuartzManager2 quartzManager2;
-    @Autowired
-    Environment ev;
-    @Autowired
-    EveryDayNoticeMapper everyDayNoticeMapper;
-    @Autowired
-    ResourceTreeMapper resourceTreeMapper;
-    @Autowired
-    NoticeMapper noticeMapper;
+    private NoticeMapper noticeMapper;
 
 //    @RequestMapping(value = "/{url}", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 //    public String dynApiDemo2(@PathVariable("url") String url) {

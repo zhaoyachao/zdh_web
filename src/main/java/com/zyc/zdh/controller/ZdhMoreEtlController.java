@@ -35,7 +35,7 @@ public class ZdhMoreEtlController extends BaseController {
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    EtlMoreTaskMapper etlMoreTaskMapper;
+    private EtlMoreTaskMapper etlMoreTaskMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
 
@@ -129,6 +129,7 @@ public class ZdhMoreEtlController extends BaseController {
             etlMoreTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlMoreTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlMoreTaskInfo);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlMoreTaskInfo.getProduct_code(), etlMoreTaskInfo.getDim_group());
             etlMoreTaskMapper.insertSelective(etlMoreTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
 
@@ -151,7 +152,8 @@ public class ZdhMoreEtlController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_more_sources_delete(String[] ids) {
         try {
-            etlMoreTaskMapper.deleteLogicByIds("etl_more_task_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlMoreTaskMapper, etlMoreTaskMapper.getTable(), ids);
+            etlMoreTaskMapper.deleteLogicByIds(etlMoreTaskMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -177,6 +179,12 @@ public class ZdhMoreEtlController extends BaseController {
             etlMoreTaskInfo.setIs_delete(Const.NOT_DELETE);
             etlMoreTaskInfo.setOwner(owner);
             debugInfo(etlMoreTaskInfo);
+
+            EtlMoreTaskInfo oldEtlMoreTaskInfo = etlMoreTaskMapper.selectByPrimaryKey(etlMoreTaskInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlMoreTaskInfo.getProduct_code(), etlMoreTaskInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlMoreTaskInfo.getProduct_code(), oldEtlMoreTaskInfo.getDim_group());
+
 
             etlMoreTaskMapper.updateByPrimaryKeySelective(etlMoreTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);

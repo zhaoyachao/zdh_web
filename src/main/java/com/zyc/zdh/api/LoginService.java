@@ -38,9 +38,9 @@ public class LoginService {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    SessionDao sessionDao;
+    private SessionDao sessionDao;
     @Autowired
-    MyRealm myRealm;
+    private MyRealm myRealm;
 
 
     /**

@@ -3,5 +3,8 @@ package com.zyc.notscan.base;
 import com.zyc.notscan.BaseMapper;
 
 public interface BaseBeaconFireAlarmGroupMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "beacon_fire_alarm_group_info";
+    }
 }

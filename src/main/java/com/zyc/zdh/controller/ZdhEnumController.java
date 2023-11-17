@@ -36,7 +36,7 @@ public class ZdhEnumController extends BaseController{
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    EnumMapper enumMapper;
+    private EnumMapper enumMapper;
 
 
     /**

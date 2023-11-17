@@ -25,7 +25,7 @@ public class ZdhRedisApiController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    RedisUtil redisUtil;
+    private RedisUtil redisUtil;
 
 
     /**

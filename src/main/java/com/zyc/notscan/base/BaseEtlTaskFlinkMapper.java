@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseEtlTaskFlinkMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "etl_task_flink_info";
+    }
 }

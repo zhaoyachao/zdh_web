@@ -105,7 +105,8 @@ public class BeaconFireAlarmMsgController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo beacon_fire_alarm_msg_delete(String[] ids) {
         try {
-            beaconFireAlarmMsgMapper.deleteLogicByIds("beacon_fire_alarm_msg_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmMsgMapper, beaconFireAlarmMsgMapper.getTable(), ids);
+            beaconFireAlarmMsgMapper.deleteLogicByIds(beaconFireAlarmMsgMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
-import javax.servlet.ServletRequest;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class ZdhOperateLogController extends BaseController {
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    UserOperateLogMapper userOperateLogMapper;
+    private UserOperateLogMapper userOperateLogMapper;
 
     /**
      * 操作日志首页
@@ -72,13 +71,18 @@ public class ZdhOperateLogController extends BaseController {
      *           },
      *           data-content-type="application/x-www-form-urlencoded" data-query-params="queryParams"
      * @param log_context
-     * @param id
+     * @param owner
+     * @param operate_url
+     * @param start_time
+     * @param end_time
+     * @param limit
+     * @param offset
      * @return
      */
     @SentinelResource(value = "user_operate_log_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/user_operate_log_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<PageResult<List<UserOperateLogInfo>>> user_operate_log_list(String log_context, String id, String start_time, String end_time,int limit, int offset, ServletRequest request) {
+    public ReturnInfo<PageResult<List<UserOperateLogInfo>>> user_operate_log_list(String log_context, String owner, String operate_url, String start_time, String end_time,int limit, int offset) {
 
         try{
             UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();
@@ -86,6 +90,14 @@ public class ZdhOperateLogController extends BaseController {
             List<UserOperateLogInfo> userOperateLogInfos = new ArrayList<>();
             Example.Criteria cri = example.createCriteria();
             cri.andBetween("create_time", start_time, end_time);
+
+            if (!StringUtils.isEmpty(owner)) {
+                cri.andLike("user_name", getLikeCondition(owner));
+            }
+            if (!StringUtils.isEmpty(operate_url)) {
+                cri.andLike("operate_url", getLikeCondition(operate_url));
+            }
+
             if (!StringUtils.isEmpty(log_context)) {
                 Example.Criteria cri2 = example.and();
                 cri2.andLike("user_name", getLikeCondition(log_context));
@@ -94,6 +106,8 @@ public class ZdhOperateLogController extends BaseController {
                 cri2.orLike("operate_context", getLikeCondition(log_context));
                 cri2.orLike("operate_url", getLikeCondition(log_context));
             }
+
+
             example.setOrderByClause("update_time desc");
             RowBounds rowBounds=new RowBounds(offset,limit);
             int total = userOperateLogMapper.selectCountByExample(example);

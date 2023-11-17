@@ -126,7 +126,8 @@ public class ZdhEtlController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_delete(String[] ids) {
         try{
-            etlTaskMapper.deleteLogicByIds("etl_task_info", ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskMapper, etlTaskMapper.getTable(), ids);
+            etlTaskMapper.deleteLogicByIds(etlTaskMapper.getTable(), ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -165,6 +166,7 @@ public class ZdhEtlController extends BaseController{
             etlTaskInfo.setOwner(owner);
             debugInfo(etlTaskInfo);
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskInfo.getProduct_code(), etlTaskInfo.getDim_group());
             etlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
             etlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -261,6 +263,13 @@ public class ZdhEtlController extends BaseController{
             etlTaskInfo.setIs_delete(Const.NOT_DELETE);
             etlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             debugInfo(etlTaskInfo);
+
+            //获取旧数据是否更新说明
+            EtlTaskInfo oldEtlTaskInfo = etlTaskService.selectById(etlTaskInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskInfo.getProduct_code(), etlTaskInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskInfo.getProduct_code(), oldEtlTaskInfo.getDim_group());
+
             if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
                 String[] file_name_ary = etlTaskInfo.getData_sources_file_name_input().split("/");
@@ -276,13 +285,12 @@ public class ZdhEtlController extends BaseController{
 
             }
 
-            //获取旧数据是否更新说明
-            EtlTaskInfo etlTaskInfo1 = etlTaskService.selectById(etlTaskInfo.getId());
+
 
             etlTaskService.update(etlTaskInfo);
 
             if (etlTaskInfo.getUpdate_context() != null && !etlTaskInfo.getUpdate_context().equals("")
-                    && !etlTaskInfo1.getUpdate_context().equals(etlTaskInfo.getUpdate_context())) {
+                    && !oldEtlTaskInfo.getUpdate_context().equals(etlTaskInfo.getUpdate_context())) {
                 //插入更新日志表
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskInfo.getId());

@@ -8,6 +8,7 @@ import com.zyc.zdh.entity.EtlTaskUpdateLogs;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,9 +37,11 @@ public class ZdhDataxController extends BaseController{
 
     public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
-    EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
+    private EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
     @Autowired
-    EtlTaskDataxMapper etlTaskDataxMapper;
+    private EtlTaskDataxMapper etlTaskDataxMapper;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * datax 任务首页
@@ -137,6 +140,9 @@ public class ZdhDataxController extends BaseController{
             etlTaskDataxInfo.setCreate_time(new Timestamp(new Date().getTime()));
             etlTaskDataxInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             etlTaskDataxInfo.setIs_delete(Const.NOT_DELETE);
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxInfo.getProduct_code(), etlTaskDataxInfo.getDim_group());
+
             etlTaskDataxMapper.insertSelective(etlTaskDataxInfo);
 
             if (etlTaskDataxInfo.getUpdate_context() != null && !etlTaskDataxInfo.getUpdate_context().equals("")) {
@@ -178,10 +184,13 @@ public class ZdhDataxController extends BaseController{
             debugInfo(etlTaskDataxInfo);
             etlTaskDataxMapper.updateByPrimaryKeySelective(etlTaskDataxInfo);
 
-            EtlTaskDataxInfo sti = etlTaskDataxMapper.selectByPrimaryKey(etlTaskDataxInfo.getId());
+            EtlTaskDataxInfo oldEtlTaskDataxInfo = etlTaskDataxMapper.selectByPrimaryKey(etlTaskDataxInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxInfo.getProduct_code(), etlTaskDataxInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskDataxInfo.getProduct_code(), oldEtlTaskDataxInfo.getDim_group());
 
             if (etlTaskDataxInfo.getUpdate_context() != null && !etlTaskDataxInfo.getUpdate_context().equals("")
-                    && !etlTaskDataxInfo.getUpdate_context().equals(sti.getUpdate_context())) {
+                    && !etlTaskDataxInfo.getUpdate_context().equals(oldEtlTaskDataxInfo.getUpdate_context())) {
                 //插入更新日志表
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskDataxInfo.getId());

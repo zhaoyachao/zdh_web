@@ -174,6 +174,9 @@ public class TouchController extends BaseController {
 
             TouchConfigInfo oldTouchConfigInfo = touchConfigMapper.selectByPrimaryKey(touchConfigInfo.getId());
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, touchConfigInfo.getProduct_code(), touchConfigInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldTouchConfigInfo.getProduct_code(), oldTouchConfigInfo.getDim_group());
+
             touchConfigInfo.setOwner(oldTouchConfigInfo.getOwner());
             touchConfigInfo.setCreate_time(oldTouchConfigInfo.getCreate_time());
             touchConfigInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -213,6 +216,8 @@ public class TouchController extends BaseController {
             touchConfigInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             touchConfigInfo.setIs_delete(Const.NOT_DELETE);
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, touchConfigInfo.getProduct_code(), touchConfigInfo.getDim_group());
+
             touchConfigMapper.insertSelective(touchConfigInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -233,7 +238,8 @@ public class TouchController extends BaseController {
     @White
     public ReturnInfo touch_delete(String[] ids) {
         try {
-            touchConfigMapper.deleteLogicByIds("touch_config_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, touchConfigMapper, touchConfigMapper.getTable(), ids);
+            touchConfigMapper.deleteLogicByIds(touchConfigMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

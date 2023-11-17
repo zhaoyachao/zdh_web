@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseProcessFlowMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "process_flow_info";
+    }
 }

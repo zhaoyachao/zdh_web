@@ -1,9 +1,7 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.dao.DataSourcesMapper;
-import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
-import com.zyc.zdh.dao.ZdhNginxMapper;
+import com.zyc.zdh.dao.EtlTaskLogMapper;
 import com.zyc.zdh.entity.EtlTaskLogInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
@@ -36,14 +34,9 @@ import java.util.List;
 public class ZdhEtlLogController extends BaseController{
 
     public Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
-    DataSourcesMapper dataSourcesMapper;
-    @Autowired
-    EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
-    @Autowired
-    ZdhNginxMapper zdhNginxMapper;
-    @Autowired
-    com.zyc.zdh.dao.EtlTaskLogMapper etlTaskLogMapper;
+    private EtlTaskLogMapper etlTaskLogMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
     /**
@@ -127,7 +120,8 @@ public class ZdhEtlLogController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_log_delete(String[] ids) {
         try{
-            etlTaskLogMapper.deleteLogicByIds("etl_task_log_info", ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskLogMapper, etlTaskLogMapper.getTable(), ids);
+            etlTaskLogMapper.deleteLogicByIds(etlTaskLogMapper.getTable(), ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -164,6 +158,8 @@ public class ZdhEtlLogController extends BaseController{
             etlTasklogInfo.setOwner(owner);
             debugInfo(etlTasklogInfo);
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTasklogInfo.getProduct_code(), etlTasklogInfo.getDim_group());
+
             etlTasklogInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTasklogInfo.setCreate_time(new Timestamp(new Date().getTime()));
             etlTasklogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -196,6 +192,12 @@ public class ZdhEtlLogController extends BaseController{
             etlTaskLogInfo.setIs_delete(Const.NOT_DELETE);
             etlTaskLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             debugInfo(etlTaskLogInfo);
+
+            EtlTaskLogInfo oldEtlTaskLogInfo = etlTaskLogMapper.selectByPrimaryKey(etlTaskLogInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskLogInfo.getProduct_code(), etlTaskLogInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskLogInfo.getProduct_code(), oldEtlTaskLogInfo.getDim_group());
+
             etlTaskLogMapper.updateByPrimaryKeySelective(etlTaskLogInfo);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);

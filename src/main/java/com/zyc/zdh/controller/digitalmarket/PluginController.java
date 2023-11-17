@@ -186,6 +186,9 @@ public class PluginController extends BaseController {
 
             PluginInfo oldPluginInfo = pluginMapper.selectByPrimaryKey(pluginInfo.getId());
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, pluginInfo.getProduct_code(), pluginInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldPluginInfo.getProduct_code(), oldPluginInfo.getDim_group());
+
             pluginInfo.setPlugin_json(jsonArray.toJSONString());
             pluginInfo.setOwner(oldPluginInfo.getOwner());
             pluginInfo.setCreate_time(oldPluginInfo.getCreate_time());
@@ -241,6 +244,9 @@ public class PluginController extends BaseController {
             pluginInfo.setIs_delete(Const.NOT_DELETE);
             pluginInfo.setCreate_time(new Timestamp(new Date().getTime()));
             pluginInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, pluginInfo.getProduct_code(), pluginInfo.getDim_group());
+
             pluginMapper.insertSelective(pluginInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", pluginInfo);
         } catch (Exception e) {
@@ -260,7 +266,8 @@ public class PluginController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo plugin_delete(String[] ids) {
         try {
-            pluginMapper.deleteLogicByIds("plugin_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, pluginMapper, pluginMapper.getTable(), ids);
+            pluginMapper.deleteLogicByIds(pluginMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

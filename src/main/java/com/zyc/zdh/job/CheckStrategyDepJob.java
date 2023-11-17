@@ -11,6 +11,7 @@ import com.zyc.zdh.entity.StrategyGroupInstance;
 import com.zyc.zdh.entity.StrategyInstance;
 import com.zyc.zdh.entity.ZdhDownloadInfo;
 import com.zyc.zdh.entity.task_num_info;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DAG;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.SpringContext;
@@ -126,7 +127,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             List<StrategyInstance> strategyInstanceList=sim.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()}, "offline");
             for(StrategyInstance tl :strategyInstanceList){
                 try{
-                    //如果skip状态,跳过当前策略实例
+                    //如果skip状态,跳过当前策略实例,理论上不会有skip状态,策略的跳过是通过is_disenable=true实现
                     if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                         continue;
                     }
@@ -253,8 +254,8 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                             //检查是否tn策略,tn策略动态判断当前时间是否可执行
                             if(tl.getInstance_type().equalsIgnoreCase("tn")){
                                 is_run = JobDigitalMarket.checkTnDepends(tl, dagStrategyInstance);
-                                if(is_run){
-                                    //更新任务状态为完成
+                                if(is_run || tl.getIs_disenable().equalsIgnoreCase(Const.TRUR)){
+                                    //可执行,或者跳过任务(策略的跳过-通过is_disenable实现),更新任务状态为完成
                                     tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                                     JobDigitalMarket.updateTaskLog(tl,sim);
                                     JobDigitalMarket.insertLog(tl,"INFO",msg+",当前策略任务:"+tl.getId()+",检查完成:"+tl.getStatus());
@@ -274,7 +275,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                             if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                                 continue;
                             }
-                            if(tl.getTouch_type()==null || !tl.getTouch_type().equalsIgnoreCase("queue")){
+                            if(tl.getTouch_type()==null || tl.getTouch_type().equalsIgnoreCase("queue")){
                                 resovleStrategyInstance(tl);
                             }
                             System.out.println("=======================");

@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.quartz.QuartzManager2;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,44 +37,37 @@ public class PermissionController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    ZdhNginxMapper zdhNginxMapper;
+    private RedisUtil redisUtil;
     @Autowired
-    RedisUtil redisUtil;
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-    @Autowired
-    QuartzJobMapper quartzJobMapper;
-    @Autowired
-    QuartzManager2 quartzManager2;
-    @Autowired
-    Environment ev;
-    @Autowired
-    EveryDayNoticeMapper everyDayNoticeMapper;
-    @Autowired
-    PermissionMapper permissionMapper;
-    @Autowired
-    ResourceTreeMapper resourceTreeMapper;
+    private Environment ev;
 
     @Autowired
-    RoleDao roleDao;
+    private PermissionMapper permissionMapper;
+    @Autowired
+    private ResourceTreeMapper resourceTreeMapper;
 
     @Autowired
-    UserGroupMapper userGroupMapper;
+    private RoleDao roleDao;
 
     @Autowired
-    DataTagGroupMapper dataTagGroupMapper;
-    @Autowired
-    PermissionApplyMapper permissionApplyMapper;
-    @Autowired
-    ZdhProcessFlowController zdhProcessFlowController;
-    @Autowired
-    PermissionBigdataMapper permissionBigdataMapper;
+    private UserGroupMapper userGroupMapper;
 
     @Autowired
-    ProductTagMapper productTagMapper;
+    private DataTagGroupMapper dataTagGroupMapper;
+    @Autowired
+    private PermissionApplyMapper permissionApplyMapper;
+    @Autowired
+    private ZdhProcessFlowController zdhProcessFlowController;
+    @Autowired
+    private PermissionBigdataMapper permissionBigdataMapper;
 
     @Autowired
-    EnumMapper enumMapper;
+    private ProductTagMapper productTagMapper;
+
+    @Autowired
+    private EnumMapper enumMapper;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 权限首页(废弃)
@@ -686,6 +678,7 @@ public class PermissionController extends BaseController {
     public ReturnInfo<Object> jstree_del_node(String id) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService, dataTagGroupMapper, dataTagGroupMapper.getTable(), new String[]{id});
             //校验是否根节点
             ResourceTreeInfo rti = resourceTreeMapper.selectByPrimaryKey(id);
             if(rti.getLevel().equalsIgnoreCase("1")){

@@ -3,7 +3,10 @@ package com.zyc.zdh.controller;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.jcraft.jsch.SftpException;
-import com.zyc.zdh.dao.*;
+import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
+import com.zyc.zdh.dao.JarFileMapper;
+import com.zyc.zdh.dao.SshTaskMapper;
+import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
@@ -45,15 +48,13 @@ public class ZdhSshController extends BaseController{
     public Logger logger= LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    ZdhNginxMapper zdhNginxMapper;
+    private ZdhNginxMapper zdhNginxMapper;
     @Autowired
-    EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
+    private EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
     @Autowired
-    JarTaskMapper jarTaskMapper;
+    private JarFileMapper jarFileMapper;
     @Autowired
-    JarFileMapper jarFileMapper;
-    @Autowired
-    SshTaskMapper sshTaskMapper;
+    private SshTaskMapper sshTaskMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
     /**
@@ -332,7 +333,8 @@ public class ZdhSshController extends BaseController{
     public ReturnInfo etl_task_ssh_delete(String[] ids) {
 
         try{
-            sshTaskMapper.deleteLogicByIds("ssh_task_info", ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, sshTaskMapper, sshTaskMapper.getTable(), ids);
+            sshTaskMapper.deleteLogicByIds(sshTaskMapper.getTable(), ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -363,6 +365,8 @@ public class ZdhSshController extends BaseController{
             sshTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             sshTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sshTaskInfo);
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, sshTaskInfo.getProduct_code(), sshTaskInfo.getDim_group());
 
             sshTaskMapper.insertSelective(sshTaskInfo);
 
@@ -449,12 +453,18 @@ public class ZdhSshController extends BaseController{
             sshTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sshTaskInfo);
             String id=sshTaskInfo.getId();
+
+            SshTaskInfo oldSshTaskInfo = sshTaskMapper.selectByPrimaryKey(sshTaskInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, sshTaskInfo.getProduct_code(), sshTaskInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldSshTaskInfo.getProduct_code(), oldSshTaskInfo.getDim_group());
+
             sshTaskMapper.updateByPrimaryKeySelective(sshTaskInfo);
 
-            SshTaskInfo sti = sshTaskMapper.selectByPrimaryKey(sshTaskInfo.getId());
+
 
             if (sshTaskInfo.getUpdate_context() != null && !sshTaskInfo.getUpdate_context().equals("")
-                    && !sshTaskInfo.getUpdate_context().equals(sti.getUpdate_context())) {
+                    && !sshTaskInfo.getUpdate_context().equals(oldSshTaskInfo.getUpdate_context())) {
                 //插入更新日志表
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(sshTaskInfo.getId());

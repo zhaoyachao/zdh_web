@@ -3,8 +3,6 @@ package com.zyc.zdh.controller;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.dao.EtlTaskFlinkMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
-import com.zyc.zdh.dao.MetaDatabaseMapper;
-import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.EtlTaskFlinkInfo;
 import com.zyc.zdh.entity.EtlTaskUpdateLogs;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -40,13 +38,9 @@ public class ZdhFlinkController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    ZdhHaInfoMapper zdhHaInfoMapper;
+    private EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
     @Autowired
-    EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
-    @Autowired
-    EtlTaskFlinkMapper etlTaskFlinkMapper;
-    @Autowired
-    MetaDatabaseMapper metaDatabaseMapper;
+    private EtlTaskFlinkMapper etlTaskFlinkMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
     /**
@@ -110,7 +104,8 @@ public class ZdhFlinkController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_flink_delete(String[] ids) {
         try {
-            etlTaskFlinkMapper.deleteLogicByIds("etl_task_flink_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskFlinkMapper, etlTaskFlinkMapper.getTable(), ids);
+            etlTaskFlinkMapper.deleteLogicByIds(etlTaskFlinkMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -141,6 +136,9 @@ public class ZdhFlinkController extends BaseController {
             etlTaskFlinkInfo.setIs_delete(Const.NOT_DELETE);
 
             debugInfo(etlTaskFlinkInfo);
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskFlinkInfo.getProduct_code(), etlTaskFlinkInfo.getDim_group());
+
             etlTaskFlinkMapper.insertSelective(etlTaskFlinkInfo);
 
 
@@ -181,12 +179,15 @@ public class ZdhFlinkController extends BaseController {
             etlTaskFlinkInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskFlinkInfo);
 
+            EtlTaskFlinkInfo oldEtlTaskFlinkInfo = etlTaskFlinkMapper.selectByPrimaryKey(etlTaskFlinkInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskFlinkInfo.getProduct_code(), etlTaskFlinkInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskFlinkInfo.getProduct_code(), oldEtlTaskFlinkInfo.getDim_group());
+
             etlTaskFlinkMapper.updateByPrimaryKeySelective(etlTaskFlinkInfo);
 
-            EtlTaskFlinkInfo sti = etlTaskFlinkMapper.selectByPrimaryKey(etlTaskFlinkInfo.getId());
-
             if (etlTaskFlinkInfo.getUpdate_context() != null && !etlTaskFlinkInfo.getUpdate_context().equals("")
-                    && !etlTaskFlinkInfo.getUpdate_context().equals(sti.getUpdate_context())) {
+                    && !etlTaskFlinkInfo.getUpdate_context().equals(oldEtlTaskFlinkInfo.getUpdate_context())) {
                 //插入更新日志表
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskFlinkInfo.getId());

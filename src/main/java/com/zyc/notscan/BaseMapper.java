@@ -18,6 +18,8 @@ import java.util.Map;
  * <br>注意此接口存在泛型，不能被spring和mybatis 扫描到
  */
 public interface BaseMapper<T> extends Mapper<T> {
+
+    public String getTable();
     /**
      * 通用逻辑删除
      * @param table_name
@@ -49,6 +51,17 @@ public interface BaseMapper<T> extends Mapper<T> {
 
     @Select({
             "<script>",
+            "select * from ${table_name} where id in ",
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"
+    }
+    )
+    public List<Map<String,Object>> selectListMapByIds(@Param("table_name") String table_name, @Param("ids") String[] ids);
+
+    @Select({
+            "<script>",
             "select * from ${table_name} where 1=1 ",
             "<foreach collection='map' index='key' item='value' open='' close='' separator=''>",
             "and #{key}= ${value}",
@@ -68,4 +81,22 @@ public interface BaseMapper<T> extends Mapper<T> {
     }
     )
     public T selectByMap(@Param("table_name") String table_name, @Param("map") Map<String,Object> map);
+
+    /**
+     * 测试表是否存在
+     * @param table_name
+     * @param map
+     * @return
+     */
+    @Select({
+            "<script>",
+            "select * from ${table_name} where 1=1 ",
+            "<foreach collection='map' index='key' item='value' open='' close='' separator=''>",
+            "and #{key}= ${value}",
+            "</foreach>",
+            "limit 1",
+            "</script>"
+    }
+    )
+    public T selectTest(@Param("table_name") String table_name, @Param("map") Map<String,Object> map);
 }

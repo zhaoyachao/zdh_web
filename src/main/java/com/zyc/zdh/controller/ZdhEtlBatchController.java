@@ -148,7 +148,8 @@ public class ZdhEtlBatchController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_batch_delete(String[] ids) {
         try {
-            etlTaskBatchMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchMapper, etlTaskBatchMapper.getTable(), ids);
+            etlTaskBatchMapper.deleteLogicByIds(etlTaskBatchMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -176,6 +177,7 @@ public class ZdhEtlBatchController extends BaseController {
             etlTaskBatchInfo.setOwner(owner);
             debugInfo(etlTaskBatchInfo);
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchInfo.getProduct_code(), etlTaskBatchInfo.getDim_group());
             etlTaskBatchInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTaskBatchInfo.setCreate_time(new Timestamp(new Date().getTime()));
             etlTaskBatchInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -223,12 +225,15 @@ public class ZdhEtlBatchController extends BaseController {
 
 
             //获取旧数据是否更新说明
-            EtlTaskBatchInfo etlTaskBatchInfo1 = etlTaskBatchMapper.selectByPrimaryKey(etlTaskBatchInfo.getId());
+            EtlTaskBatchInfo oldEtlTaskBatchInfo = etlTaskBatchMapper.selectByPrimaryKey(etlTaskBatchInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchInfo.getProduct_code(), etlTaskBatchInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskBatchInfo.getProduct_code(), oldEtlTaskBatchInfo.getDim_group());
 
             etlTaskBatchMapper.updateByPrimaryKeySelective(etlTaskBatchInfo);
 
             if (etlTaskBatchInfo.getUpdate_context() != null && !etlTaskBatchInfo.getUpdate_context().equals("")
-                    && !etlTaskBatchInfo1.getUpdate_context().equals(etlTaskBatchInfo.getUpdate_context())) {
+                    && !oldEtlTaskBatchInfo.getUpdate_context().equals(etlTaskBatchInfo.getUpdate_context())) {
                 //插入更新日志表
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskBatchInfo.getId());

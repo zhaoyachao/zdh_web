@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.BloodSourceMapper;
-import com.zyc.zdh.dao.EtlTaskJdbcMapper;
 import com.zyc.zdh.entity.BloodSourceInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
@@ -35,11 +34,9 @@ public class ZdhBloodSourceController extends BaseController{
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    BloodSourceMapper bloodSourceMapper;
+    private BloodSourceMapper bloodSourceMapper;
     @Autowired
-    EtlTaskJdbcMapper etlTaskJdbcMapper;
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * 血缘首页

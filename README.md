@@ -736,6 +736,12 @@
   + v5.2.0 [zdh_web]修复列表插件多选bug
   + v5.2.0 [zdh_web]智能营销模块-执行流程修复bug
   
+  + v5.2.1 [zdh_web]优化代码controller层优化引用,增加变量作用域限制
+  + v5.2.1 [zdh_web]优化代码basemapper层增加默认表名实现
+  + v5.2.1 [zdh_web]数据权限-新增/更新/删除,查询在5.1.3版本以支持 【开发中】
+  + v5.2.1 [zdh_web]智能营销-tn插件支持跳过功能
+  + v5.2.1 [zdh_web]自动生成basemapper模板更新
+  
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】

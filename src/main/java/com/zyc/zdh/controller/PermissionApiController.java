@@ -36,31 +36,31 @@ public class PermissionApiController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    SessionDao sessionDao;
+    private SessionDao sessionDao;
     @Autowired
-    ProductTagMapper productTagMapper;
+    private ProductTagMapper productTagMapper;
     @Autowired
-    ResourceTreeMapper resourceTreeMapper;
+    private ResourceTreeMapper resourceTreeMapper;
     @Autowired
-    PermissionMapper permissionMapper;
+    private PermissionMapper permissionMapper;
     @Autowired
-    UserGroupMapper userGroupMapper;
+    private UserGroupMapper userGroupMapper;
     @Autowired
-    RoleDao roleDao;
+    private RoleDao roleDao;
     @Autowired
-    DataTagMapper dataTagMapper;
+    private DataTagMapper dataTagMapper;
     @Autowired
-    DataTagGroupMapper dataTagGroupMapper;
+    private DataTagGroupMapper dataTagGroupMapper;
     @Autowired
-    PermissionDimensionMapper permissionDimensionMapper;
+    private PermissionDimensionMapper permissionDimensionMapper;
     @Autowired
-    PermissionDimensionValueMapper permissionDimensionValueMapper;
+    private PermissionDimensionValueMapper permissionDimensionValueMapper;
     @Autowired
-    PermissionUserDimensionValueMapper permissionUserDimensionValueMapper;
+    private PermissionUserDimensionValueMapper permissionUserDimensionValueMapper;
     @Autowired
-    PermissionUserGroupDimensionValueMapper permissionUserGroupDimensionValueMapper;
+    private PermissionUserGroupDimensionValueMapper permissionUserGroupDimensionValueMapper;
     @Autowired
-    Environment ev;
+    private Environment ev;
 
 
 

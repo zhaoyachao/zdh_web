@@ -137,6 +137,9 @@ public class FilterController extends BaseController {
 
             FilterInfo oldFilterInfo = filterMapper.selectByPrimaryKey(filterInfo.getId());
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, filterInfo.getProduct_code(), filterInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldFilterInfo.getProduct_code(), oldFilterInfo.getDim_group());
+
             //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
             filterInfo.setOwner(oldFilterInfo.getOwner());
             filterInfo.setCreate_time(oldFilterInfo.getCreate_time());
@@ -170,6 +173,9 @@ public class FilterController extends BaseController {
             filterInfo.setIs_delete(Const.NOT_DELETE);
             filterInfo.setCreate_time(new Timestamp(new Date().getTime()));
             filterInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, filterInfo.getProduct_code(), filterInfo.getDim_group());
+
             filterMapper.insertSelective(filterInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -189,7 +195,8 @@ public class FilterController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo filter_delete(String[] ids) {
         try {
-            filterMapper.deleteLogicByIds("filter_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, filterMapper, filterMapper.getTable(), ids);
+            filterMapper.deleteLogicByIds(filterMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

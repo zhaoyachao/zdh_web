@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseMetaDatabaseMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "meta_database_info";
+    }
 }

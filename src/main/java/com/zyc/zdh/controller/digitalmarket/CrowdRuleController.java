@@ -8,6 +8,7 @@ import com.zyc.zdh.entity.CrowdRuleInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ public class CrowdRuleController extends BaseController {
 
     @Autowired
     private CrowdRuleMapper crowdRuleMapper;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 人群规则列表首页
@@ -97,6 +100,9 @@ public class CrowdRuleController extends BaseController {
 
             CrowdRuleInfo oldCrowdRuleInfo = crowdRuleMapper.selectByPrimaryKey(crowdRuleInfo.getId());
 
+//            checkPermissionByProductAndDimGroup(zdhPermissionService, crowdRuleInfo.getProduct_code(), crowdRuleInfo.getDim_group());
+//            checkPermissionByProductAndDimGroup(zdhPermissionService, oldCrowdRuleInfo.getProduct_code(), oldCrowdRuleInfo.getDim_group());
+
             //crowdRuleInfo.setRule_json(jsonArray.toJSONString());
             crowdRuleInfo.setOwner(oldCrowdRuleInfo.getOwner());
             crowdRuleInfo.setCreate_time(oldCrowdRuleInfo.getCreate_time());
@@ -130,6 +136,8 @@ public class CrowdRuleController extends BaseController {
             crowdRuleInfo.setIs_delete(Const.NOT_DELETE);
             crowdRuleInfo.setCreate_time(new Timestamp(new Date().getTime()));
             crowdRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            //checkPermissionByProductAndDimGroup(zdhPermissionService, crowdRuleInfo.getProduct_code(), crowdRuleInfo.getDim_group());
+
             crowdRuleMapper.insertSelective(crowdRuleInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -149,7 +157,8 @@ public class CrowdRuleController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo crowd_rule_delete(String[] ids) {
         try {
-            crowdRuleMapper.deleteLogicByIds("crowd_rule_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, crowdRuleMapper, crowdRuleMapper.getTable(), ids);
+            crowdRuleMapper.deleteLogicByIds(crowdRuleMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

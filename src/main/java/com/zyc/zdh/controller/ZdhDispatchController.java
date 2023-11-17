@@ -6,8 +6,6 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
-import com.zyc.zdh.service.DispatchTaskService;
-import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
@@ -38,27 +36,21 @@ import java.util.*;
 public class ZdhDispatchController extends BaseController {
 
     public Logger logger= LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    DispatchTaskService dispatchTaskService;
 
     @Autowired
-    QuartzJobMapper quartzJobMapper;
+    private QuartzJobMapper quartzJobMapper;
     @Autowired
-    QuartzManager2 quartzManager2;
+    private QuartzManager2 quartzManager2;
     @Autowired
-    ZdhHaInfoMapper zdhHaInfoMapper;
+    private ZdhHaInfoMapper zdhHaInfoMapper;
     @Autowired
-    EtlTaskService etlTaskService;
+    private TaskGroupLogInstanceMapper tglim;
     @Autowired
-    TaskLogInstanceMapper taskLogInstanceMapper;
+    private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
     @Autowired
-    TaskGroupLogInstanceMapper tglim;
+    private QuartzExecutorMapper quartzExecutorMapper;
     @Autowired
-    QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
-    @Autowired
-    QuartzExecutorMapper quartzExecutorMapper;
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
 
@@ -270,6 +262,7 @@ public class ZdhDispatchController extends BaseController {
                 }
             }
             debugInfo(quartzJobInfo);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, quartzJobInfo.getProduct_code(), quartzJobInfo.getDim_group());
             quartzJobMapper.insertSelective(quartzJobInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
@@ -296,7 +289,8 @@ public class ZdhDispatchController extends BaseController {
 //                quartzJobInfo.setJob_id(id);
 //                quartzJobMapper.deleteByPrimaryKey(quartzJobInfo);
 //            }
-            quartzJobMapper.deleteLogicByIds("quartz_job_info", ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, quartzJobMapper, quartzJobMapper.getTable(), ids);
+            quartzJobMapper.deleteLogicByIds( quartzJobMapper.getTable(), ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -319,9 +313,12 @@ public class ZdhDispatchController extends BaseController {
         try{
             debugInfo(quartzJobInfo);
             quartzJobInfo.setOwner(getOwner());
-            QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);
+            QuartzJobInfo oldQuartzJobInfo = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, quartzJobInfo.getProduct_code(), quartzJobInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldQuartzJobInfo.getProduct_code(), oldQuartzJobInfo.getDim_group());
             //每次更新都重新设置任务实例id
-            qji.setTask_log_id(null);
+            oldQuartzJobInfo.setTask_log_id(null);
             quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){

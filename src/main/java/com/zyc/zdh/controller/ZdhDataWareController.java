@@ -33,15 +33,15 @@ import java.util.Map;
 public class ZdhDataWareController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    IssueDataMapper issueDataMapper;
+    private IssueDataMapper issueDataMapper;
     @Autowired
-    EnumMapper enumMapper;
+    private EnumMapper enumMapper;
     @Autowired
-    DataSourcesMapper dataSourcesMapper;
+    private DataSourcesMapper dataSourcesMapper;
     @Autowired
-    AccountMapper accountMapper;
+    private AccountMapper accountMapper;
     @Autowired
-    ApplyMapper applyMapper;
+    private ApplyMapper applyMapper;
 
     /**
      * 数据资产首页

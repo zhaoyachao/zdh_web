@@ -243,7 +243,7 @@ public class PermissionDimensionValueController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo permission_dimension_value_delete(String id) {
         try {
-            permissionDimensionValueMapper.deleteLogicByIds("permission_dimension_value_info",new String[]{id}, new Timestamp(new Date().getTime()));
+            permissionDimensionValueMapper.deleteLogicByIds(permissionDimensionValueMapper.getTable(),new String[]{id}, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

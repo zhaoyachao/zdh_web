@@ -40,13 +40,13 @@ public class ZdhSqlController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    ZdhHaInfoMapper zdhHaInfoMapper;
+    private ZdhHaInfoMapper zdhHaInfoMapper;
     @Autowired
-    EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
+    private EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
     @Autowired
-    SqlTaskMapper sqlTaskMapper;
+    private SqlTaskMapper sqlTaskMapper;
     @Autowired
-    MetaDatabaseMapper metaDatabaseMapper;
+    private MetaDatabaseMapper metaDatabaseMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
     /**
@@ -111,8 +111,8 @@ public class ZdhSqlController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo sql_task_delete(String[] ids) {
         try {
-            sqlTaskMapper.deleteLogicByIds("sql_task_info",ids, new Timestamp(new Date().getTime()));
-
+            checkPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskMapper, sqlTaskMapper.getTable(), ids);
+            sqlTaskMapper.deleteLogicByIds(sqlTaskMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -143,6 +143,8 @@ public class ZdhSqlController extends BaseController {
             sqlTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
             sqlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             sqlTaskInfo.setIs_delete(Const.NOT_DELETE);
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskInfo.getProduct_code(), sqlTaskInfo.getDim_group());
 
             sqlTaskMapper.insertSelective(sqlTaskInfo);
 
@@ -183,12 +185,15 @@ public class ZdhSqlController extends BaseController {
             sqlTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sqlTaskInfo);
 
+            SqlTaskInfo oldSqlTaskInfo = sqlTaskMapper.selectByPrimaryKey(sqlTaskInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskInfo.getProduct_code(), sqlTaskInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldSqlTaskInfo.getProduct_code(), oldSqlTaskInfo.getDim_group());
+
             sqlTaskMapper.updateByPrimaryKeySelective(sqlTaskInfo);
 
-            SqlTaskInfo sti = sqlTaskMapper.selectByPrimaryKey(sqlTaskInfo.getId());
-
             if (sqlTaskInfo.getUpdate_context() != null && !sqlTaskInfo.getUpdate_context().equals("")
-                    && !sqlTaskInfo.getUpdate_context().equals(sti.getUpdate_context())) {
+                    && !sqlTaskInfo.getUpdate_context().equals(oldSqlTaskInfo.getUpdate_context())) {
                 //插入更新日志表
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(sqlTaskInfo.getId());

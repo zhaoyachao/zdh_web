@@ -9,5 +9,8 @@ import com.zyc.notscan.BaseMapper;
  * @Description: TODO  
  */
 public interface BaseDispatchTaskMapper<T> extends BaseMapper<T> {
-
+    @Override
+    default String getTable(){
+        return "dispatch_task_info";
+    }
 }

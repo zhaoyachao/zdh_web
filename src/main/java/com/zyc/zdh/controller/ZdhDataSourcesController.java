@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +35,6 @@ public class ZdhDataSourcesController extends BaseController{
     public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
     private DataSourcesMapper dataSourcesMapper;
-    @Autowired
-    private Environment ev;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
     /**
@@ -193,7 +190,8 @@ public class ZdhDataSourcesController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<Object> deleteIds(String[] ids) {
         try{
-            dataSourcesMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesMapper, dataSourcesMapper.getTable(), ids);
+            dataSourcesMapper.deleteLogicByIds(dataSourcesMapper.getTable(), ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -226,6 +224,8 @@ public class ZdhDataSourcesController extends BaseController{
             dataSourcesInfo.setOwner(getOwner());
             dataSourcesInfo.setIs_delete("0");
             dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group());
             dataSourcesMapper.insertSelective(dataSourcesInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
@@ -246,6 +246,10 @@ public class ZdhDataSourcesController extends BaseController{
     public ReturnInfo<Object> data_sources_update(DataSourcesInfo dataSourcesInfo) {
         try{
             DataSourcesInfo oldDataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(dataSourcesInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldDataSourcesInfo.getProduct_code(), oldDataSourcesInfo.getDim_group());
+
             dataSourcesInfo.setOwner(oldDataSourcesInfo.getOwner());
             dataSourcesInfo.setIs_delete("0");
             dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));

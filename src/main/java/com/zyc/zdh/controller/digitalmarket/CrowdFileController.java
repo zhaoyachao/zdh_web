@@ -157,6 +157,9 @@ public class CrowdFileController extends BaseController {
 
             CrowdFileInfo oldCrowdFileInfo = crowdFileMapper.selectByPrimaryKey(crowdFileInfo.getId());
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFileInfo.getProduct_code(), crowdFileInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldCrowdFileInfo.getProduct_code(), oldCrowdFileInfo.getDim_group());
+
             //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
             crowdFileInfo.setOwner(oldCrowdFileInfo.getOwner());
             crowdFileInfo.setCreate_time(oldCrowdFileInfo.getCreate_time());
@@ -189,6 +192,8 @@ public class CrowdFileController extends BaseController {
             crowdFile.setIs_delete(Const.NOT_DELETE);
             crowdFile.setCreate_time(new Timestamp(new Date().getTime()));
             crowdFile.setUpdate_time(new Timestamp(new Date().getTime()));
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFile.getProduct_code(), crowdFile.getDim_group());
 
             if (jar_files != null && jar_files.length > 0) {
                 for (MultipartFile jar_file : jar_files) {
@@ -263,7 +268,8 @@ public class CrowdFileController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo crowd_file_delete(String[] ids) {
         try {
-            crowdFileMapper.deleteLogicByIds("crowd_file_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFileMapper, crowdFileMapper.getTable(), ids);
+            crowdFileMapper.deleteLogicByIds(crowdFileMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

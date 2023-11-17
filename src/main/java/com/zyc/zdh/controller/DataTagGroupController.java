@@ -6,11 +6,11 @@ import com.zyc.zdh.entity.DataTagGroupInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +34,9 @@ public class DataTagGroupController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    DataTagGroupMapper dataTagGroupMapper;
+    private DataTagGroupMapper dataTagGroupMapper;
     @Autowired
-    Environment ev;
+    private ZdhPermissionService zdhPermissionService;
 
 
     /**
@@ -128,6 +128,9 @@ public class DataTagGroupController extends BaseController {
         try {
             DataTagGroupInfo oldDataTagGroupInfo = dataTagGroupMapper.selectByPrimaryKey(dataTagGroupInfo.getId());
 
+            checkPermissionByProduct(zdhPermissionService, dataTagGroupInfo.getProduct_code());
+            checkPermissionByProduct(zdhPermissionService, oldDataTagGroupInfo.getProduct_code());
+
             dataTagGroupInfo.setOwner(oldDataTagGroupInfo.getOwner());
             dataTagGroupInfo.setCreate_time(oldDataTagGroupInfo.getCreate_time());
             dataTagGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -159,6 +162,8 @@ public class DataTagGroupController extends BaseController {
             dataTagGroupInfo.setIs_delete(Const.NOT_DELETE);
             dataTagGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
             dataTagGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+
+            checkPermissionByProduct(zdhPermissionService, dataTagGroupInfo.getProduct_code());
             dataTagGroupMapper.insertSelective(dataTagGroupInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -178,7 +183,8 @@ public class DataTagGroupController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<Object> data_tag_group_delete(String[] ids) {
         try {
-            dataTagGroupMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, dataTagGroupMapper, dataTagGroupMapper.getTable(), ids);
+            dataTagGroupMapper.deleteLogicByIds(dataTagGroupMapper.getTable(), ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

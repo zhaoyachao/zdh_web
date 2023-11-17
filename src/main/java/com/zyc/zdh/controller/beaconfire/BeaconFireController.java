@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.beaconfire;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.BeaconFireMapper;
 import com.zyc.zdh.entity.*;
@@ -140,7 +139,8 @@ public class BeaconFireController extends BaseController {
         try {
 
             BeaconFireInfo oldBeaconFireInfo = beaconFireMapper.selectByPrimaryKey(beaconFireInfo.getId());
-
+            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireInfo.getProduct_code(), beaconFireInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldBeaconFireInfo.getProduct_code(), oldBeaconFireInfo.getDim_group());
 
             beaconFireInfo.setCreate_time(oldBeaconFireInfo.getCreate_time());
             beaconFireInfo.setUpdate_time(new Timestamp(new Date().getTime()));
@@ -172,6 +172,9 @@ public class BeaconFireController extends BaseController {
             beaconFireInfo.setIs_delete(Const.NOT_DELETE);
             beaconFireInfo.setCreate_time(new Timestamp(new Date().getTime()));
             beaconFireInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireInfo.getProduct_code(), beaconFireInfo.getDim_group());
+
             beaconFireMapper.insertSelective(beaconFireInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", beaconFireInfo);
         } catch (Exception e) {
@@ -191,7 +194,8 @@ public class BeaconFireController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo beacon_fire_delete(String[] ids) {
         try {
-            beaconFireMapper.deleteLogicByIds("beacon_fire_info",ids, new Timestamp(new Date().getTime()));
+            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireMapper, beaconFireMapper.getTable(), ids);
+            beaconFireMapper.deleteLogicByIds(beaconFireMapper.getTable(),ids, new Timestamp(new Date().getTime()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

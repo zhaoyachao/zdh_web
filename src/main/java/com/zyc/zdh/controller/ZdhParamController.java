@@ -36,10 +36,10 @@ public class ZdhParamController extends BaseController {
     public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    RedisUtil redisUtil;
+    private RedisUtil redisUtil;
 
     @Autowired
-    ParamMapper paramMapper;
+    private ParamMapper paramMapper;
 
     /**
      * 系统参数首页
