@@ -698,6 +698,8 @@ public class StrategyGroupController extends BaseController {
     public ReturnInfo strategy_skip(String id) {
         try {
             StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
+
+            StrategyGroupInstance strategyGroupInstance = strategyGroupInstanceMapper.selectByPrimaryKey(strategyInstance.getGroup_instance_id());
             //此处需要修改策略实例状态新建,策略组状态新建
             strategyInstance.setStatus(JobStatus.CREATE.getValue());
             String run_jsmind_data = strategyInstance.getRun_jsmind_data();
@@ -706,7 +708,9 @@ public class StrategyGroupController extends BaseController {
             strategyInstance.setRun_jsmind_data(jsonObject.toJSONString());
             strategyInstance.setIs_disenable("true");
             strategyInstanceMapper.updateByPrimaryKeySelective(strategyInstance);
-            strategyGroupInstanceMapper.updateStatusById3(JobStatus.CREATE.getValue(), DateUtil.getCurrentTime(),strategyInstance.getGroup_instance_id());
+            if(strategyGroupInstance.getGroup_type().equalsIgnoreCase("offline")){
+                strategyGroupInstanceMapper.updateStatusById3(JobStatus.CREATE.getValue(), DateUtil.getCurrentTime(),strategyInstance.getGroup_instance_id());
+            }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

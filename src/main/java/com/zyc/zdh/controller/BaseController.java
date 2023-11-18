@@ -1,12 +1,17 @@
 package com.zyc.zdh.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.google.common.collect.Lists;
 import com.zyc.notscan.BaseMapper;
 import com.zyc.zdh.config.DateConverter;
 import com.zyc.zdh.dao.ProductTagMapper;
 import com.zyc.zdh.entity.PermissionDimensionValueInfo;
+import com.zyc.zdh.entity.PermissionUserDimensionValueInfo;
 import com.zyc.zdh.entity.ProductTagInfo;
 import com.zyc.zdh.entity.User;
 import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class BaseController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -56,13 +62,36 @@ public class BaseController {
         return environment.getProperty("zdp.product","");
     }
 
+
+    public void setCache(String key, String data){
+        RedisUtil redisUtil= (RedisUtil) SpringContext.getBean("redisUtil");
+        redisUtil.set(key, data, 300L, TimeUnit.SECONDS);
+    }
+
+    public String getCache(String key){
+        RedisUtil redisUtil= (RedisUtil) SpringContext.getBean("redisUtil");
+        return redisUtil.get(key,"").toString();
+    }
+
     /**
      * 通过归属产品+归属组双重控制数据权限
+     *
+     * 对于查询权限,支持外部归属组控制,需要单独配置dim_group_select维度信息
+     *
+     * 支持缓存查询
      * @param zdhPermissionService
      * @throws Exception
      */
     public Map<String,List<String>> dynamicPermissionByProductAndGroup(ZdhPermissionService zdhPermissionService) throws Exception {
         Map<String,List<String>> dimMap = new HashMap<>();
+
+        String cacheKey = "zdh_permission_product_dim_group_select_"+getOwner();
+        //检查缓存
+        String cache = getCache(cacheKey);
+        if(!StringUtils.isEmpty(cache)){
+            return JSON.parseObject(cache, new TypeReference<Map<String,List<String>>>(){});
+        }
+
         //根据账号,查询归属组
         List<PermissionDimensionValueInfo> dim_group_pdvi = zdhPermissionService.get_dim_group(getOwner());
         List<String> dim_groups = zdhPermissionService.dim_value2code(dim_group_pdvi);
@@ -70,6 +99,15 @@ public class BaseController {
         if(dim_groups != null && dim_groups.size() == 0){
             dim_groups.add("-1");
         }
+
+        //根据账号-查询组外查询权限
+        List<PermissionUserDimensionValueInfo> permissionUserDimensionValueInfos = zdhPermissionService.get_dim_value_by_user_account(getOwner(), "dim_group_select");
+        if(permissionUserDimensionValueInfos !=  null && permissionUserDimensionValueInfos.size() >= 1){
+            for (PermissionUserDimensionValueInfo permissionUserDimensionValueInfo: permissionUserDimensionValueInfos){
+                dim_groups.add(permissionUserDimensionValueInfo.getDim_value_code());
+            }
+        }
+
         //根据账号,查询归属产品
         List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
         List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
@@ -80,21 +118,45 @@ public class BaseController {
 
         dimMap.put("dim_groups", dim_groups);
         dimMap.put("product_codes", dim_products);
+
+        setCache(cacheKey, JSON.toJSONString(dimMap));
         return dimMap;
     }
 
     /**
      * 通过归属产品+归属组双重控制数据权限
+     *
+     * 对于查询权限,支持外部归属组控制,需要单独配置dim_group_select维度信息
+     *
      * @param zdhPermissionService
      * @param criteria
      * @throws Exception
      */
     public void dynamicPermissionByProductAndGroup(ZdhPermissionService zdhPermissionService,  Example.Criteria criteria) throws Exception {
+        Map<String,List<String>> dimMap = new HashMap<>();
+        String cacheKey = "zdh_permission_product_dim_group_select_"+getOwner();
+        //检查缓存
+        String cache = getCache(cacheKey);
+        if(!StringUtils.isEmpty(cache)){
+            dimMap = JSON.parseObject(cache, new TypeReference<Map<String,List<String>>>(){});
+            criteria.andIn("dim_group", dimMap.getOrDefault("dim_groups", Lists.newArrayList("-1")));
+            criteria.andIn("product_code", dimMap.getOrDefault("product_codes", Lists.newArrayList("-1")));
+            return;
+        }
+
         //根据账号,查询归属组
         List<PermissionDimensionValueInfo> dim_group_pdvi = zdhPermissionService.get_dim_group(getOwner());
         List<String> dim_groups = zdhPermissionService.dim_value2code(dim_group_pdvi);
         if(dim_groups != null && dim_groups.size() == 0){
             dim_groups.add("-1");
+        }
+
+        //根据账号-查询组外查询权限
+        List<PermissionUserDimensionValueInfo> permissionUserDimensionValueInfos = zdhPermissionService.get_dim_value_by_user_account(getOwner(), "dim_group_select");
+        if(permissionUserDimensionValueInfos !=  null && permissionUserDimensionValueInfos.size() >= 1){
+            for (PermissionUserDimensionValueInfo permissionUserDimensionValueInfo: permissionUserDimensionValueInfos){
+                dim_groups.add(permissionUserDimensionValueInfo.getDim_value_code());
+            }
         }
 
         //根据账号,查询归属产品
@@ -104,6 +166,10 @@ public class BaseController {
         if(dim_products != null && dim_products.size() == 0){
             dim_products.add("-1");
         }
+        dimMap.put("dim_groups", dim_groups);
+        dimMap.put("product_codes", dim_products);
+
+        setCache(cacheKey, JSON.toJSONString(dimMap));
         criteria.andIn("dim_group", dim_groups);
         criteria.andIn("product_code", dim_products);
     }
