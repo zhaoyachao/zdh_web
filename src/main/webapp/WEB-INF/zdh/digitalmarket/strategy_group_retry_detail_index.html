@@ -347,6 +347,7 @@
 
             if(tp == "id_mapping"){
                 $("#" + divId).attr("id_mapping_code",rs.id_mapping_code);
+                $("#" + divId).attr("data_engine",rs.data_engine);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "risk"){

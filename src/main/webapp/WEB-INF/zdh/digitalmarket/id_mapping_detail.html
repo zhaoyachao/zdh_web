@@ -85,6 +85,17 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">MAPPING引擎</label>
+                            <div class="col-sm-10">
+                                <select id="data_engine" name="data_engine" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="file" mytype="" selected>文件</option>
+                                    <option value="rocksdb" mytype="" >rocksdb</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">是否禁用</label>
@@ -256,6 +267,10 @@
                 $("#id_mapping_code").val(s["id_mapping_code"]);
                 $("#id_mapping_code").trigger("chosen:updated");
 
+                $("#data_engine").val(s["data_engine"]);
+                $("#data_engine").trigger("chosen:updated");
+
+
                 $("#touch_type").val(s.touch_type);
                 $("#touch_type").trigger("chosen:updated");
 
@@ -285,6 +300,7 @@
         var time_out=$('#time_out').val();
         var id_mapping_code = $('#id_mapping_code').val();
         var id_mapping_name = $('#id_mapping_code').find("option:selected").text();
+        var data_engine = $('#data_engine').val();
 
         var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
@@ -301,6 +317,7 @@
             "is_base": is_base,
 
             "id_mapping_code": id_mapping_code,
+            "data_engine": data_engine,
             "rule_context":id_mapping_name,
         };
         console.info("job_detail:"+JSON.stringify(data));

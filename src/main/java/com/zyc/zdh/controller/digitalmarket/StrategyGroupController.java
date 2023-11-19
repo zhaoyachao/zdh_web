@@ -644,7 +644,7 @@ public class StrategyGroupController extends BaseController {
 
     /**
      * 杀死策略组
-     *
+     * 杀死策略组-不走策略流转逻辑(杀死整个策略组时,意味着用户想要终结当前组下所有的操作)
      * @param id 策略组实例ID
      * @return
      */

@@ -819,8 +819,9 @@ function doubleclick_id_mapping(id) {
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
             var id_mapping_code = div.attr("id_mapping_code");
+            var data_engine = div.attr("data_engine");
             var rule_context = div.attr("rule_context");
-            url=url+"?id_mapping_code="+id_mapping_code+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&rule_context="+rule_context
+            url=url+"?id_mapping_code="+id_mapping_code+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&rule_context="+rule_context+"&data_engine="+data_engine
         }
         layer.open({
             type: 2,
@@ -844,6 +845,7 @@ function doubleclick_id_mapping(id) {
                 div.attr("depend_level",etl_task_info.depend_level);
 
                 div.attr("id_mapping_code",etl_task_info.id_mapping_code);
+                div.attr("data_engine",etl_task_info.data_engine);
                 div.attr("rule_context",etl_task_info.rule_context);
                 //div.width(etl_task_info.etl_context.length*16)
                 div.css("width","auto");

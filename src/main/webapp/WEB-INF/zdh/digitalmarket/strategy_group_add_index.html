@@ -429,6 +429,7 @@
             }
             if(tp == "id_mapping"){
                 $("#" + divId).attr("id_mapping_code",rs.id_mapping_code);
+                $("#" + divId).attr("data_engine",rs.data_engine);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "risk"){
@@ -548,6 +549,7 @@
                 data_node: $elem.attr('data_node'),
 
                 id_mapping_code: $elem.attr('id_mapping_code'),
+                data_engine: $elem.attr('data_engine'),
 
                 tn_unit: $elem.attr('tn_unit'),
                 tn_type: $elem.attr('tn_type'),
