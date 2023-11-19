@@ -2,7 +2,6 @@ package com.zyc.zdh.util;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -128,8 +127,6 @@ public class ResoveExcel {
         try {
             wb = WorkbookFactory.create(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidFormatException e) {
             e.printStackTrace();
         }finally {
             if(inputStream != null){

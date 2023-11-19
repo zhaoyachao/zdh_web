@@ -39,9 +39,9 @@ public class ZdhDataWareController extends BaseController {
     @Autowired
     private DataSourcesMapper dataSourcesMapper;
     @Autowired
-    private AccountMapper accountMapper;
-    @Autowired
     private ApplyMapper applyMapper;
+    @Autowired
+    private PermissionMapper permissionMapper;
 
     /**
      * 数据资产首页
@@ -166,13 +166,15 @@ public class ZdhDataWareController extends BaseController {
         //验证权限,验证当前数据是否同一个组下的人申请
         String user_group = getUser().getUser_group();
 
-        Example example=new Example(AccountInfo.class);
+        String product_code = getProductCode();
+        Example example=new Example(PermissionUserInfo.class);
         Example.Criteria criteria=example.createCriteria();
         criteria.andEqualTo("user_group", user_group);
-        List<AccountInfo> accountInfos=accountMapper.selectByExample(example);
+        criteria.andEqualTo("product_code", product_code);
+        List<PermissionUserInfo> permissionUserInfos=permissionMapper.selectByExample(example);
         List<String> owners = new ArrayList<>();
-        for (AccountInfo accountInfo: accountInfos){
-            owners.add(accountInfo.getUser_name());
+        for (PermissionUserInfo permissionUserInfo: permissionUserInfos){
+            owners.add(permissionUserInfo.getUser_account());
         }
 
         Example example2=new Example(ApplyInfo.class);
@@ -228,13 +230,15 @@ public class ZdhDataWareController extends BaseController {
         //验证权限,验证当前数据是否同一个组下的人申请
         String user_group = getUser().getUser_group();
 
-        Example example=new Example(AccountInfo.class);
+        String product_code = getProductCode();
+        Example example=new Example(PermissionUserInfo.class);
         Example.Criteria criteria=example.createCriteria();
         criteria.andEqualTo("user_group", user_group);
-        List<AccountInfo> accountInfos=accountMapper.selectByExample(example);
+        criteria.andEqualTo("product_code", product_code);
+        List<PermissionUserInfo> permissionUserInfos=permissionMapper.selectByExample(example);
         List<String> owners = new ArrayList<>();
-        for (AccountInfo accountInfo: accountInfos){
-            owners.add(accountInfo.getId().toString());
+        for (PermissionUserInfo permissionUserInfo: permissionUserInfos){
+            owners.add(permissionUserInfo.getUser_account());
         }
 
         Example example2=new Example(ApplyInfo.class);
