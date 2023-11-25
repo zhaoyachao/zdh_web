@@ -1,14 +1,19 @@
 package ${ControllerPackage};
 
+
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.annotation.White;
+import com.zyc.zdh.entity.PageResult;
 import ${EntityPackage}.${EntityName};
 import ${EntityPackage}.RETURN_CODE;
 import ${EntityPackage}.ReturnInfo;
 import ${EntityPackage}.User;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.service.ZdhPermissionService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.RowBounds;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +43,8 @@ public class ${ControllerName} extends BaseController {
 
     @Autowired
     private ${MapperName} ${mapperName};
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * ${tableDesc}列表首页
@@ -55,6 +62,7 @@ public class ${ControllerName} extends BaseController {
      * @param context 关键字
      * @return
      */
+    @SentinelResource(value = "${controller}_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/${controller}_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -80,6 +88,59 @@ public class ${ControllerName} extends BaseController {
 
     }
 
+
+    /**
+    * ${tableDesc}列表
+    * @param context 关键字
+    * @param product_code 产品code
+    * @param dim_group 归属组code
+    * @param limit 分页大小
+    * @param offset 分页下标
+    * @return
+    */
+    @SentinelResource(value = "${controller}_list_by_page", blockHandler = "handleReturn")
+    @RequestMapping(value = "/${controller}_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public ReturnInfo<PageResult<List<${EntityName}>>> ${controller}_list_by_page(String context,String product_code, String dim_group, int limit, int offset) {
+        try{
+            Example example=new Example(${EntityName}.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
+
+            Example.Criteria criteria2=example.createCriteria();
+            if(!StringUtils.isEmpty(context)){
+                criteria2.orLike("context", getLikeCondition(context));
+            }
+            example.and(criteria2);
+
+            RowBounds rowBounds=new RowBounds(offset,limit);
+            int total = ${mapperName}.selectCountByExample(example);
+
+            List<${EntityName}> ${entityName}s = ${mapperName}.selectByExampleAndRowBounds(example, rowBounds);
+
+            PageResult<List<${EntityName}>> pageResult=new PageResult<>();
+            pageResult.setTotal(total);
+            pageResult.setRows(${entityName}s);
+
+            return ReturnInfo.buildSuccess(pageResult);
+        }catch(Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("烽火台信息列表查询失败", e);
+        }
+
+    }
+
     /**
      * ${tableDesc}新增首页
      * @return
@@ -96,6 +157,7 @@ public class ${ControllerName} extends BaseController {
      * @param id 主键ID
      * @return
      */
+    @SentinelResource(value = "${controller}_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/${controller}_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
@@ -113,6 +175,7 @@ public class ${ControllerName} extends BaseController {
      * @param ${entityName}
      * @return
      */
+    @SentinelResource(value = "${controller}_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/${controller}_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -142,6 +205,7 @@ public class ${ControllerName} extends BaseController {
      * @param ${entityName}
      * @return
      */
+    @SentinelResource(value = "${controller}_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/${controller}_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -166,6 +230,7 @@ public class ${ControllerName} extends BaseController {
      * @param ids
      * @return
      */
+    @SentinelResource(value = "${controller}_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/${controller}_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
@@ -180,10 +245,4 @@ public class ${ControllerName} extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
     }
-
-    public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
-    }
-
 }

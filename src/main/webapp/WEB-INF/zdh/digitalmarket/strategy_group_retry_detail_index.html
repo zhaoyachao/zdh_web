@@ -372,6 +372,10 @@
                 $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
+            if(tp == "function"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html(rs.rule_context);
+            }
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto");
             $("#" + divId).css("display","inline-block");

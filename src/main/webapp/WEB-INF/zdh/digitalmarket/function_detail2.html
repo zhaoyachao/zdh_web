@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 函数配置首页</title>
+    <meta name="keywords" content="ZDH 函数配置首页">
+    <meta name="description" content="ZDH 函数配置首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>函数配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">运算符</label>
+                            <div class="col-sm-10">
+                                <select id="operate" name="operate" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="and" mytype="">AND</option>
+                                    <option value="or" mytype="">OR</option>
+                                    <option value="not" mytype="">NOT</option>
+                                    <option value="not_use" mytype="">NOT_USE</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否BASE数据</label>
+                            <div class="col-sm-10">
+                                <select id="is_base" name="is_base" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="true" mytype="">是</option>
+                                    <option value="false" mytype="" selected>否</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">函数</label>
+                            <div class="col-sm-10">
+                                <select id="rule_id" name="rule_id" data-placeholder="函数..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">函数...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="label_div">
+
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否禁用</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="is_disenable" name='is_disenable'  type="checkbox"><i></i> 禁用</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">推送类型</label>
+                            <div class="col-sm-10">
+                                <select id="touch_type" name="touch_type" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="database" mytype="" selected>数据库</option>
+                                    <option value="queue" mytype="">消息队列</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">依赖级别</label>
+                            <div class="col-sm-10">
+                                <select id="depend_level" name="depend_level" data-placeholder="依赖级别"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="0" mytype="">成功触发</option>
+                                    <option value="1" mytype="">杀死触发</option>
+                                    <option value="2" mytype="">失败触发</option>
+                                    <option value="3" mytype="">上游完成触发</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">超时时间</label>
+                            <div class="col-sm-10">
+                                <input id="time_out" name="time_out" type="text" value="86400"
+                                   placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            var template = '<div class="ibox-content col-sm-12"  id="template">\n' +
+                '<label class="col-sm-2 control-label">参数</label>\n' +
+                '        <div class="col-sm-2" >\n' +
+                '            <input name="param_code" type="text"\n' +
+                '                   placeholder="参数code" class="form-control param_code" aria-required="true" value="zdh_param_code" readonly>\n' +
+                '        </div>\n' +
+                '        <div class="col-sm-2">\n' +
+                '            <input name="param_context" type="text"\n' +
+                '                   placeholder="参数说明" class="form-control param_context" aria-required="true" value="zdh_param_context" readonly>\n' +
+                '        </div>\n' +
+                '        <div class="col-sm-2">\n' +
+                '            <input name="param_context" type="text"\n' +
+                '                   placeholder="参数类型" class="form-control param_type" aria-required="true" value="zdh_param_type" readonly>\n' +
+                '        </div>\n' +
+                '        <div class="col-sm-2">\n' +
+                '            <input name="param_value" type="text"\n' +
+                '                   placeholder="参数值" class="form-control param_value" aria-required="true" value="" id="zdh_param_value_id">\n' +
+                '        </div>\n' +
+                '\n' +
+                // '    </div>\n' +
+                '</div>';
+
+            var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            function getFunctionParam(function_name){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/function_detail_by_code",
+                    dataType: 'json',
+                    data:{"function_name": function_name},
+                    //成功返回
+                    success: function (data) {
+                        var param = data.result.param_json_object;
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                        }
+                        $('#label_div').html("");
+                        for (var i=0;i<param.length;i++){
+                            var tmp = template;
+                            tmp = tmp.replace("zdh_param_code", param[i].param_code);
+                            tmp = tmp.replace("zdh_param_context", param[i].param_context);
+                            tmp = tmp.replace("zdh_param_type", param[i].param_type);
+                            tmp = tmp.replace("zdh_param_value_id", "zdh_param_value_"+i);
+                            $('#label_div').append(tmp);
+                        }
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_error: " + data.responseText);
+                    }
+                });
+            }
+
+            $('#rule_id').chosen();
+            //初始化数据源
+            function init_rule_id(){
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: server_context+"/function_list",
+                    dataType: 'json',
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].function_name + "\" mytype=\"" + data.result[i].function_name + "\" hassubinfo=\"true\">" + data.result[i].function_context + "</option>"
+                        }
+                        $('#rule_id').empty();
+                        $("#rule_id").chosen("destroy");
+                        $('#rule_id').html(str);
+                        $('#rule_id').chosen().on("change", function (evt, params) {
+                            getFunctionParam($('#rule_id').val())
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("etl_task_complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("etl_task_error: " + data.responseText);
+                    }
+                });
+            }
+
+            init_rule_id();
+
+            $('#operate').chosen();
+
+
+            if(s["rule_id"] != '-1'){
+                console.info("更新触发");
+                $("#rule_id").val(s["rule_id"]);
+                $("#rule_id").trigger("chosen:updated");
+                $("#operate").val(s.operate);
+                $("#operate").trigger("chosen:updated");
+                $("#touch_type").val(s.touch_type);
+                $("#touch_type").trigger("chosen:updated");
+                $("#is_base").val(s.is_base);
+                $("#is_base").trigger("chosen:updated");
+
+                $("#depend_level").val(s["depend_level"]);
+                $("#depend_level").trigger("chosen:updated");
+                if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
+                    $("#time_out").val(s["time_out"]);
+                }
+                var is_disenable=s.is_disenable;
+                if(is_disenable == "true"){
+                    $('#is_disenable').iCheck('check');
+                }
+
+                //参数
+                getFunctionParam($('#rule_id').val());
+
+                var rule_param = $("#rule_param",window.parent.document).val();
+                console.info("rule_detail:"+rule_param);
+                //替换参数内容
+                for(var i=0;i<JSON.parse(rule_param).length;i++){
+                    $('#zdh_param_value_'+i).val(JSON.parse(rule_param)[i].param_value);
+                }
+            }
+        })();
+
+
+
+    })(document, window, jQuery);
+
+    $('#save_etl_info').click(function () {
+
+        //自定义实现
+        var rule_context=$('#rule_id').find("option:selected").text();
+        var rule_id=$('#rule_id').find("option:selected").val();
+        //var more_task=$('#more_task').find("option:selected").val();
+        var operate=$('#operate').find("option:selected").val();
+        var touch_type=$('#touch_type').find("option:selected").val();
+        var is_base=$('#is_base').find("option:selected").val();
+
+        var depend_level=$('#depend_level').find("option:selected").val();
+        var time_out=$('#time_out').val();
+        var is_disenable = "false";
+        if($('#is_disenable').is(':checked')){
+            is_disenable="true"
+        }
+
+        var ary = new Array();
+        var ary2 = new Array();
+        var ary3 = new Array();
+        var ary4 = new Array();
+
+
+        $(".param_code").each(function(index){
+            ary[index] = $(this).val();
+        });
+        $(".param_context").each(function(index){
+            ary2[index] =$(this).val();
+        });
+
+
+        $(".param_value").each(function(index){
+            ary3[index] =  $(this).val();
+        });
+
+        $(".param_type").each(function(index){
+            ary4[index] =$(this).val();
+        });
+
+        var result = [];
+        for (var i=0;i<ary.length;i++){
+            var param={
+                "param_code":ary[i],
+                "param_context":ary2[i],
+                "param_value":ary3[i],
+                "param_type":ary4[i],
+            };
+            result.push(param);
+        }
+
+        var more_task = 'function';
+        let data={
+            "more_task": more_task,
+            "operate": operate,
+            "touch_type": touch_type,
+            "is_disenable":is_disenable,
+            "depend_level":depend_level,
+            "time_out": time_out,
+            "is_base": is_base,
+
+            "rule_context":rule_context,
+            "rule_id":rule_id,
+
+            "rule_param": JSON.stringify(result),
+            "rule_expression_cn": rule_context,
+        };
+        console.info("rule_detail:"+JSON.stringify(data));
+        $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+    })
+</script>
+
+
+</body>
+
+</html>

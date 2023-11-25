@@ -3,12 +3,14 @@ package com.zyc.zdh.util;
 
 
 
+import com.google.common.collect.Lists;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
+import org.codehaus.groovy.runtime.InvokerHelper;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
+import javax.script.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,4 +39,21 @@ public class GroovyFactory {
         }
         return scriptEngine.eval(script);
     }
+
+    public static Object execExpress(String script, String function_name, Map<String,Object> params) throws ScriptException, NoSuchMethodException {
+        GroovyScriptEngineFactory scriptEngineFactory = new GroovyScriptEngineFactory();
+        ScriptEngine scriptEngine = scriptEngineFactory.getScriptEngine();
+        Bindings bindings = scriptEngine.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
+        List<String> list = new ArrayList<>();
+
+        if(params != null && params.size()>0){
+            for (String key: params.keySet()){
+                bindings.put(key, params.get(key));
+                list.add(params.get(key).toString());
+            }
+        }
+        scriptEngine.eval(script);
+        return ((Invocable)scriptEngine).invokeFunction(function_name, list.toArray());
+    }
+
 }

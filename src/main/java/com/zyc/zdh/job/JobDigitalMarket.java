@@ -271,6 +271,9 @@ public class JobDigitalMarket {
                         sgi.setStrategy_group_id(strategyGroupInfo.getId());
                         sgi.setCreate_time(new Timestamp(new Date().getTime()));
                         sgi.setUpdate_time(new Timestamp(new Date().getTime()));
+                        if(sgi.getGroup_type().equalsIgnoreCase("offline")){
+                            sgi.setSmall_flow_rate("1,100");
+                        }
                         //逻辑发送错误代码捕获发生自动重试(retry_job) 不重新生成实例id,使用旧的实例id
                         String last_task_id = "";
                         if (is_retry == 0) {

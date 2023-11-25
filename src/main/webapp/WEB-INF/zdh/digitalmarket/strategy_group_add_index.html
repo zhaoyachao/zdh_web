@@ -63,6 +63,7 @@
                     <input type="hidden" id="shunt_param" name="shunt_param" value="">
                     <input type="hidden" id="rights_param" name="rights_param" value="">
                     <input type="hidden" id="code_text" name="code_text" value="">
+                    <input type="hidden" id="function_text" name="function_text" value="">
 
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
@@ -174,6 +175,7 @@
                                             <div class="node nodemanual_confirmcss" data-type="manual_confirm">人工确认</div>
                                             <div class="node nodecode_blockcss" data-type="code_block">代码块</div>
                                             <div class="node nodecustom_listcss" data-type="custom_list">用户名单</div>
+                                            <div class="node nodefunctioncss" data-type="function">函数</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight2">
@@ -464,6 +466,10 @@
                 $("#" + divId).attr("title",rs.rule_context);
                 $("#" + divId).attr("rule_context",rs.rule_context);
                 $("#" + divId).attr("name_list",rs.name_list);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "function"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 

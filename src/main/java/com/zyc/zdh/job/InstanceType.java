@@ -17,7 +17,9 @@ public enum InstanceType {
     CODE_BLOCK("code_block","code_block","代码块","true"),
     DATA_NODE("data_node","data_node","在线节点","true"),
     RISK("risk","risk","决策事件","true"),
-    TN("tn","tn","t+n时间","true");
+    TN("tn","tn","t+n时间","true"),
+    FUNCTION("function","function","函数","true");
+
 
     private String value;
     private String code;

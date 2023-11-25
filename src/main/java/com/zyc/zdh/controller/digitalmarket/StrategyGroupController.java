@@ -290,6 +290,9 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInstance.setCreate_time(new Timestamp(new Date().getTime()));
             strategyGroupInstance.setUpdate_time(new Timestamp(new Date().getTime()));
             strategyGroupInstance.setMisfire("0");
+            if(strategyGroupInstance.getGroup_type().equalsIgnoreCase("offline")){
+                strategyGroupInstance.setSmall_flow_rate("1,100");
+            }
 
             debugInfo(strategyGroupInstance);
             strategyGroupInstanceMapper.insertSelective(strategyGroupInstance);

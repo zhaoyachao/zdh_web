@@ -8,28 +8,31 @@
 - [开源/闭源版本](#%E5%BC%80%E6%BA%90%E9%97%AD%E6%BA%90%E7%89%88%E6%9C%AC)
 - [下载编译包](#%E4%B8%8B%E8%BD%BD%E7%BC%96%E8%AF%91%E5%8C%85)
 - [在线预览](#%E5%9C%A8%E7%BA%BF%E9%A2%84%E8%A7%88)
+- [快速开始](#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
+  - [基础环境](#%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83)
+  - [配置修改(最少修改如下配置)](#%E9%85%8D%E7%BD%AE%E4%BF%AE%E6%94%B9%E6%9C%80%E5%B0%91%E4%BF%AE%E6%94%B9%E5%A6%82%E4%B8%8B%E9%85%8D%E7%BD%AE)
+  - [源码编译](#%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91)
+  - [运行](#%E8%BF%90%E8%A1%8C)
+- [FAQ](#faq)
 - [提示](#%E6%8F%90%E7%A4%BA)
 - [特色](#%E7%89%B9%E8%89%B2)
 - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
 - [主要功能](#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD)
 - [用到的技术体系](#%E7%94%A8%E5%88%B0%E7%9A%84%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB)
-- [下载修改基础配置](#%E4%B8%8B%E8%BD%BD%E4%BF%AE%E6%94%B9%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE)
-- [基础环境](#%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83)
-- [源码自定义打包](#%E6%BA%90%E7%A0%81%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%93%E5%8C%85)
-- [运行](#%E8%BF%90%E8%A1%8C)
-- [FAQ](#faq)
 - [功能图](#%E5%8A%9F%E8%83%BD%E5%9B%BE)
 - [版本更新说明](#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0%E8%AF%B4%E6%98%8E)
-- [4.7.15迁移4.7.16](#4715%E8%BF%81%E7%A7%BB4716)
-- [4.7.16迁移4.7.17](#4716%E8%BF%81%E7%A7%BB4717)
-- [4.7.17迁移4.7.18](#4717%E8%BF%81%E7%A7%BB4718)
-- [4.7.18迁移5.0.0](#4718%E8%BF%81%E7%A7%BB500)
-- [5.0.0迁移5.1.0](#500%E8%BF%81%E7%A7%BB510)
-- [5.1.0迁移5.1.1](#510%E8%BF%81%E7%A7%BB511)
-- [5.1.1迁移5.1.2](#511%E8%BF%81%E7%A7%BB512)
-- [5.1.2迁移5.1.3](#512%E8%BF%81%E7%A7%BB513)
-- [5.1.3迁移5.2.0](#513%E8%BF%81%E7%A7%BB520)
-- [5.2.0迁移5.2.1](#520%E8%BF%81%E7%A7%BB521)
+- [版本迁移步骤](#%E7%89%88%E6%9C%AC%E8%BF%81%E7%A7%BB%E6%AD%A5%E9%AA%A4)
+  - [4.7.15迁移4.7.16](#4715%E8%BF%81%E7%A7%BB4716)
+  - [4.7.16迁移4.7.17](#4716%E8%BF%81%E7%A7%BB4717)
+  - [4.7.17迁移4.7.18](#4717%E8%BF%81%E7%A7%BB4718)
+  - [4.7.18迁移5.0.0](#4718%E8%BF%81%E7%A7%BB500)
+  - [5.0.0迁移5.1.0](#500%E8%BF%81%E7%A7%BB510)
+  - [5.1.0迁移5.1.1](#510%E8%BF%81%E7%A7%BB511)
+  - [5.1.1迁移5.1.2](#511%E8%BF%81%E7%A7%BB512)
+  - [5.1.2迁移5.1.3](#512%E8%BF%81%E7%A7%BB513)
+  - [5.1.3迁移5.2.0](#513%E8%BF%81%E7%A7%BB520)
+  - [5.2.0迁移5.2.1](#520%E8%BF%81%E7%A7%BB521)
+  - [5.2.1迁移5.2.2](#521%E8%BF%81%E7%A7%BB522)
 - [未完成的功能](#%E6%9C%AA%E5%AE%8C%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD)
 - [支持的数据源](#%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E6%BA%90)
 - [支持的调度对象](#%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E5%BA%A6%E5%AF%B9%E8%B1%A1)
@@ -103,6 +106,54 @@
     
     服务器资源有限,界面只供预览,不包含数据处理部分,谢码友们手下留情
 
+# 快速开始
+
+## 基础环境
+    1 执行编译好的包需要提前安装mysql8,redis
+    2 jdk1.8
+    
+## 配置修改(最少修改如下配置)
+    1 修改服务器端口默认8081
+       对应参数server.port = 8081
+    2 修改数据源连接(默认支持mysql8),外部数据库必须引入
+       
+    3 修改redis配置
+      
+    4 修改application-*配置文件中myid(多个集群依次1,2,3,...)
+       对应参数myid=1
+    
+## 源码编译
+    sh build.sh
+
+## 运行
+    4.7.13 之前
+      在target 目录下找到zdh_web.jar
+      执行 java  -Dfile.encoding=utf-8 -jar zdh_web.jar  
+    4.7.13及之后5.1.1之前
+      进入在xxx-RELEASE 目录下
+      执行 java -jar -Dfile.encoding=utf-8 -Dloader.path=libs/,conf zdh_web.jar 
+      
+    5.1.1及之后
+      进入在xxx-RELEASE 目录下
+      启动执行 sh bin/start.sh 或者 sh bin/zdh_web.sh start
+      关闭执行 sh bin/stop.sh 或者 sh bin/zdh_web.sh stop
+
+# FAQ
+
+   + sql结构报错
+     quartz 相关的表必须大写
+     
+   + 日志级别修改
+     修改日志文件logback 相关等级即可
+     
+   + 调度串行并行模式
+     串行模式:会判断上次任务运行状态
+     并行模式:不判断上次任务状态,时间会自动生成 
+     
+   + 数据表结构以release/db/zdh_xxx.sql 为准
+   
+   + 暂不支持读取kerberos 认证的hadoop,hive,hbase 服务,预计在5.x 版本实现kerberos 认证      
+    
 # 提示
    
     zdh 分2部分,前端配置+后端数据ETL处理,此部分只包含前端配置
@@ -159,57 +210,6 @@
     后端：Springboot+shiro+redis+mybatis
     数据ETL引擎:Spark(hadoop,hive 可选择部署)
     
-# 下载修改基础配置
-
-    打开resources/application-dev.properties
-     1 修改服务器端口默认8081
-     2 修改数据源连接(默认支持mysql8),外部数据库必须引入
-     3 修改redis配置
-     4 修改application-*配置文件中myid(多个集群依次1,2,3,...)
-
-    创建需要的数据库配置
-     1 执行sql脚本release/db/zdh_xxx.sql
-     
-    依赖
-     1 必须提前安装redis 
-
-# 基础环境
-    1 执行编译好的包需要提前安装mysql8,redis
-    2 jdk1.8
-
-# 源码自定义打包
-    
-    清理命令 mvn clean
-    打包命令 mvn package -Dmaven.test.skip=true
-
-# 运行
-    4.7.13 之前
-      在target 目录下找到zdh_web.jar
-      执行 java  -Dfile.encoding=utf-8 -jar zdh_web.jar  
-    4.7.13及之后5.1.1之前
-      进入在xxx-RELEASE 目录下
-      执行 java -jar -Dfile.encoding=utf-8 -Dloader.path=libs/,conf zdh_web.jar 
-      
-    5.1.1及之后
-      进入在xxx-RELEASE 目录下
-      启动执行 sh bin/start.sh 或者 sh bin/zdh_web.sh start
-      关闭执行 sh bin/stop.sh 或者 sh bin/zdh_web.sh stop
-
-# FAQ
-
-   + sql结构报错
-     quartz 相关的表必须大写
-     
-   + 日志级别修改
-     修改日志文件logback 相关等级即可
-     
-   + 调度串行并行模式
-     串行模式:会判断上次任务运行状态
-     并行模式:不判断上次任务状态,时间会自动生成 
-     
-   + 数据表结构以release/db/zdh_xxx.sql 为准
-   
-   + 暂不支持读取kerberos 认证的hadoop,hive,hbase 服务,预计在5.x 版本实现kerberos 认证
   
 # 功能图
 ![功能图](img/zdh_web.png)  
@@ -746,6 +746,10 @@
   + v5.2.1 [zdh_web]依赖三方版本升级
   + v5.2.1 [zdh_web]智能营销-idmapping模块支持数据引擎
   
+  + v5.2.2 [zdh_web]优化小流量管理
+  + v5.2.2 [zdh_web]新增函数管理模块
+  + v5.2.2 [zdh_web]优化代码
+  
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
@@ -763,8 +767,8 @@
   
   
   
-  
-# 4.7.15迁移4.7.16
+# 版本迁移步骤  
+## 4.7.15迁移4.7.16
     alter table data_sources_info add column update_time timestamp default null comment '更新时间';
     alter table etl_task_info add column update_time timestamp default current_timestamp() comment '更新时间';
     alter table etl_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
@@ -816,7 +820,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
   
   
-# 4.7.16迁移4.7.17
+## 4.7.16迁移4.7.17
      CREATE TABLE `etl_task_batch_info` (
        `id` bigint NOT NULL AUTO_INCREMENT,
        `etl_pre_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
@@ -860,7 +864,7 @@
 
     alter table resource_tree_info add column notice_title varchar(8) not null default '' comment '提示语';
   
-# 4.7.17迁移4.7.18
+## 4.7.17迁移4.7.18
     CREATE TABLE `quartz_executor_info` (
       `id` bigint NOT NULL AUTO_INCREMENT,
       `instance_name` varchar(512) DEFAULT NULL COMMENT '调度器唯一实例名',
@@ -1087,7 +1091,7 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
     VALUES(939848526425231360, '936943441596649472', '同步redis', '4', '1', 'fa fa-coffee', '', '7', '1', '2022-02-06 11:42:30', '2022-02-06 11:42:30', 'param_to_redis', '5', '', '');
-# 4.7.18迁移5.0.0
+## 4.7.18迁移5.0.0
 
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
@@ -1400,7 +1404,7 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
     VALUES(969710130591436800, '964797665709658112', '导出', '3', '1', 'fa fa-coffee', '', '8', '1', '2022-04-29 21:21:51', '2022-04-29 21:21:51', 'self_service_export', '5', '', '', 'zdh');
-# 5.0.0迁移5.1.0
+## 5.0.0迁移5.1.0
 
 
      INSERT INTO resource_tree_info
@@ -1896,7 +1900,7 @@
 
 
      
-# 5.1.0迁移5.1.1
+## 5.1.0迁移5.1.1
     CREATE TABLE `we_mock_tree_info` (
       `id` bigint NOT NULL AUTO_INCREMENT,
       `parent` varchar(100) DEFAULT NULL,
@@ -2255,7 +2259,7 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
     VALUES(1122102818098909184, '963932648793706496', 'idmapping页面', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2023-06-24 09:55:59', '2023-06-24 09:55:59', 'id_mapping_detail', '3', '', '', 'zdh');
     
-# 5.1.1迁移5.1.2
+## 5.1.1迁移5.1.2
      CREATE TABLE `risk_event_info` (
        `id` bigint NOT NULL AUTO_INCREMENT,
        `event_type` varchar(200) not null DEFAULT '' COMMENT '事件类型',
@@ -2644,7 +2648,7 @@
      INSERT INTO resource_tree_info
      (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
      VALUES(1163140754785177600, '963932648793706496', '权益页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-10-15 15:46:06', '2023-10-15 15:46:06', 'rights_detail', '3', '', '', 'zdh', '');
-# 5.1.2迁移5.1.3
+## 5.1.2迁移5.1.3
 
      INSERT INTO resource_tree_info
      (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
@@ -2720,7 +2724,7 @@
      update data_sources_info set product_code ='zdh';
      update data_sources_info set dim_group ='group3';
      
-# 5.1.3迁移5.2.0
+## 5.1.3迁移5.2.0
     alter table strategy_group_instance add column small_flow_rate varchar(16) not null default '' comment '小流量比例:1,100';
     
     INSERT INTO resource_tree_info
@@ -2842,8 +2846,65 @@
       PRIMARY KEY (`id`)
     ) comment '烽火台告警信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
      
-# 5.2.0迁移5.2.1
-    无变动,仅优化逻辑     
+## 5.2.0迁移5.2.1
+    无变动,仅优化逻辑
+## 5.2.1迁移5.2.2
+    CREATE TABLE `function_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `function_context`  varchar(128) COMMENT '函数说明',
+      `function_name`  varchar(64) not null default '' COMMENT '函数名',
+      `function_class`  varchar(64) not null default '' COMMENT '函数全类名',
+      `function_load_path`  varchar(64) not null default '' COMMENT '函数加载路径',
+      `function_scope`  varchar(64) not null default 'local' COMMENT '作用域,global:全局,local:局部',
+      `param_json`  text COMMENT '函数参数',
+      `function_script`  mediumtext COMMENT '函数逻辑',
+      `return_type`  varchar(256) default 'string' COMMENT '函数返回类型,int,long,string,array,map,object',
+      `status` varchar(8) not null DEFAULT 'off' COMMENT '状态,offline:下线,online:上线',
+      `product_code` varchar(64) not null default '' comment '产品code',
+      `owner` varchar(100) not null DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      PRIMARY KEY (`id`)
+    ) comment '函数信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    alter table function_info add index idx_dim_product_function(product_code, function_name);
+    
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1176308421654220800, '963925904835219456', '函数管理', '3', 'zyc', 'fa fa-coffee', '', '25', '1', '2023-11-20 23:49:42', '2023-11-20 23:49:42', 'function_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1176308658741448704, '1176308421654220800', '函数管理-分页列表', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-11-20 23:50:39', '2023-11-20 23:50:39', 'function_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1178084803161886720, '1176308421654220800', '函数管理-列表', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-11-25 21:28:25', '2023-11-25 21:28:25', 'function_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1178084884246171648, '1176308421654220800', '函数管理-新增', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2023-11-25 21:28:44', '2023-11-25 21:28:44', 'function_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1178084936725303296, '1176308421654220800', '函数管理-更新', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2023-11-25 21:28:57', '2023-11-25 21:28:57', 'function_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1178084996754182144, '1176308421654220800', '函数管理-删除', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2023-11-25 21:29:11', '2023-11-25 21:29:11', 'function_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1178085224798490624, '1176308421654220800', '函数管理-根据函数名查询函数信息', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2023-11-25 21:30:05', '2023-11-25 21:30:05', 'function_detail_by_code', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1178085325616975872, '1176308421654220800', '函数管理-明细', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2023-11-25 21:30:29', '2023-11-25 21:30:29', 'function_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1178085481473118208, '1176308421654220800', '函数管理-函数测试', '4', 'zyc', 'fa fa-coffee', '', '9', '1', '2023-11-25 21:31:07', '2023-11-25 21:31:07', 'function_execute', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1178085570597883904, '1176308421654220800', '函数管理-函数新增页面', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2023-11-25 21:31:28', '2023-11-25 21:31:28', 'function_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1178086181741531136, '963932648793706496', '函数页面', '4', 'zyc', 'fa fa-coffee', '', '15', '1', '2023-11-25 21:33:54', '2023-11-25 21:34:05', 'function_detail2', '3', '', '', 'zdh', '');
+
+        
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
   + v4.7.x 接入flink引擎,实现流采集 已完成

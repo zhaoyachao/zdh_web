@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 函数新增首页</title>
+    <meta name="keywords" content="ZDH 函数新增首页">
+    <meta name="description" content="ZDH 函数新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>函数配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="function_add_form" name="function_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">产品code</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="产品code...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">函数说明</label>
+                            <div class="col-sm-10">
+                                <input id="function_context" name="function_context" type="text"
+                                       placeholder="函数说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">函数英文名</label>
+                            <div class="col-sm-10">
+                                <input id="function_name" name="function_name" type="text"
+                                       placeholder="函数英文名" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">作用域</label>
+                            <div class="col-sm-10">
+                                <select id="function_scope" name="function_scope"
+                                        data-placeholder="选择作用域..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                    <option value="local" mytype="">内部</option>
+                                    <option value="global" mytype="">全局</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2" style="text-align: right">
+                                <button id="btn_enum" name="btn_enum" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">新增参数
+                                </button>
+                            </div>
+                            <div class="col-sm-2" ></div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group" id="function_div">
+
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">函数类</label>
+                            <div class="col-sm-10">
+                                <input id="function_class" name="function_class" type="text"
+                                       placeholder="函数类" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">函数加载路径</label>
+                            <div class="col-sm-10">
+                                <input id="function_load_path" name="function_load_path" type="text"
+                                       placeholder="函数加载路径" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">返回类型</label>
+                            <div class="col-sm-10">
+                                <select id="return_type" name="return_type"
+                                        data-placeholder="选择返回类型..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                    <option value="int" mytype="">int</option>
+                                    <option value="long" mytype="">long</option>
+                                    <option value="boolean" mytype="">布尔</option>
+                                    <option value="string" mytype="">字符串</option>
+                                    <option value="array" mytype="">数组</option>
+                                    <option value="map" mytype="">字典</option>
+                                    <option value="object" mytype="">object</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">函数逻辑</label>
+                            <div class="col-sm-10">
+                                <div id="function_script" name="function_script" class="monaco_div"></div>
+                                <span class="help-block m-b-none"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">创建时间</label>
+                            <div class="col-sm-10">
+                                <input id="create_time" name="create_time" type="text" readonly
+                                       placeholder="创建时间" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <!-- 输出数据源结束-->
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/java/java.js"></script>
+
+
+<script src="js/admin/dim_product_common.js"></script>
+<script>
+
+
+
+    window.editor_function_script = monaco.editor.create(document.getElementById('function_script'), {
+        value: 'groovy语法',
+        language: 'java',
+        theme:'vs-dark'
+    });
+
+    var template = '<div class="from-group col-sm-12"  id="template">\n' +
+        '<label class="col-sm-2 control-label">参数</label>\n' +
+        '        <div class="col-sm-2" >\n' +
+        '            <input name="param_code" type="text"\n' +
+        '                   placeholder="参数code" class="form-control param_code" aria-required="true" value="zdh_param_code">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-2">\n' +
+        '            <input name="param_context" type="text"\n' +
+        '                   placeholder="参数说明" class="form-control param_context" aria-required="true" value="zdh_param_context">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-2">\n' +
+        '            <select class="form-control m-b param_type" data-live-search="true" name="param_type" id="zdh_param_type">\n' +
+        '<option value="string">字符串</option>\n'+
+        '<option value="int">数值</option>\n'+
+        '<option value="long">数值(10亿以上)</option>\n'+
+        '<option value="double">小数</option>\n'+
+        '<option value="boolean">布尔</option>\n'+
+        '<option value="date">日期</option>\n'+
+        '<option value="timestamp">日期timestamp</option>\n'+
+        '<option value="ts">日期时间戳</option>\n'+
+        '            </select>\n' +
+        '        </div>\n' +
+
+        '        <div class="col-sm-1">\n' +
+        '            <button id="delete" name="delete" class="btn btn-danger"\n' +
+        '                    οnsubmit=\'return false\'\n' +
+        '                    type="button">删除\n' +
+        '            </button>\n' +
+        '        </div>\n' +
+        '\n' +
+        // '    </div>\n' +
+        '</div>';
+
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+    (function (document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            $("#btn_enum").click(function () {
+                var tmp = template;
+                tmp = tmp.replace("zdh_param_code", "");
+                tmp = tmp.replace("zdh_param_context", "");
+                tmp = tmp.replace("zdh_param_type", "");
+                $('#function_div').append(tmp);
+                $('#function_div #delete').click(function () {
+                    $(this).parent().parent().remove();
+                });
+            });
+            $('#function_scope').chosen();
+            $('#return_type').chosen();
+
+            //s.id=-1 表示新增,否则表示更新
+            if (s.id == -1) {
+                console.info("新增按钮触发");
+                $('#update_etl_task').hide();
+                $('#save_etl_task').show();
+
+            } else {
+
+                if (s.is_copy == "true") {
+                    console.info("拷贝按钮触发");
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').show();
+                } else {
+                    console.info("更新按钮触发");
+                    $('#save_etl_task').hide();
+                    $('#update_etl_task').show();
+                }
+
+                if (s.only_read == "true") {
+                    $('#update_etl_task').hide();
+                    $('#save_etl_task').hide();
+                    $('#reset').hide();
+                }
+                buildParam();
+            }
+
+            function getMyDate(str) {
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth() + 1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + " " + getzf(oHour) + ":" + getzf(oMin) + ":" + getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            //补0操作
+            function getzf(num) {
+                if (parseInt(num) < 10) {
+                    num = '0' + num;
+                }
+                return num;
+            }
+
+            function buildConfig(i,param_code, param_context,param_type, param_operate, param_value, param_enum_key) {
+
+                if(is_empty(param_code)){
+                    param_code="";
+                }
+                if(is_empty(param_context)){
+                    param_context="";
+                }
+                var tmp=template;
+                tmp = tmp.replace("zdh_param_code", param_code);
+                tmp = tmp.replace("zdh_param_context", param_context);
+                tmp = tmp.replace("zdh_param_type", "zdh_param_type"+i);
+                $('#function_div').append(tmp);
+                $("#zdh_param_type"+i).val(param_type);
+                $('#function_div #delete').click(function () {
+                    $(this).parent().parent().remove();
+                });
+
+            }
+            function buildParam() {
+                if (s.id != '-1') {
+                    console.info("更新按钮触发--开始赋值对应参数");
+                    //开始赋值
+
+                    $.ajax({
+                        url: server_context+"/function_detail",
+                        data: "id=" + s.id,
+                        type: "post",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            console.info("success");
+                            // layer.alert(JSON.stringify(data[0]))
+
+                            var product_code = data.result.product_code;
+                            $("#product_code").val(product_code);
+                            $("#product_code").trigger("chosen:updated");
+
+                            //获取ETL 说明
+                            var function_context = data.result.function_context;
+                            $("#function_context").val(function_context);
+
+                            var function_name = data.result.function_name;
+                            $("#function_name").val(function_name);
+
+                            var function_class = data.result.function_class;
+                            $("#function_class").val(function_class);
+
+                            var function_load_path = data.result.function_load_path;
+                            $("#function_load_path").val(function_load_path);
+
+                            var function_scope = data.result.function_scope;
+                            $("#function_scope").val(function_scope);
+                            $("#function_scope").trigger("chosen:updated");
+
+                            var return_type = data.result.return_type;
+                            $("#return_type").val(return_type);
+                            $("#return_type").trigger("chosen:updated");
+
+                            var function_script = data.result.function_script;
+                            //$("#touch_config").val(touch_config);
+                            window.editor_function_script.setValue(function_script);
+
+
+                            var create_time = data.result.create_time;
+                            $("#create_time").val(getMyDate(create_time));
+
+                            //解析json
+                            if(data.result.param_json_object.length>0){
+                                for(var i=0;i<data.result.param_json_object.length;i++){
+                                    buildConfig(i,data.result.param_json_object[i].param_code, data.result.param_json_object[i].param_context, data.result.param_json_object[i].param_type,data.result.param_json_object[i].param_operate,
+                                        data.result.param_json_object[i].param_value, data.result.param_json_object[i].param_enum_key);
+                                }
+                            }
+
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+
+
+                }
+            }
+
+        })();
+
+    })(document, window, jQuery);
+
+
+    $('#save_etl_task').click(function () {
+
+        if ($('#function_context').val() == '') {
+            layer.msg("函数说明不能为空！");
+            return;
+        }
+
+
+        var ary1 = new Array();
+        var ary2 = new Array();
+        var ary3 = new Array();
+
+        $(".param_code").each(function(index){
+            ary1[index] = $(this).val();
+        });
+        $(".param_context").each(function(index){
+            ary2[index] =$(this).val();
+        });
+
+        $(".param_type").each(function(index){
+            ary3[index] =$(this).val();
+        });
+
+        var result = [];
+        for (var i=0;i<ary1.length;i++){
+            var param={
+                "param_code":ary1[i],
+                "param_context":ary2[i],
+                "param_type":ary3[i]
+            };
+            result.push(param);
+        }
+
+        var formData = new FormData(document.getElementById("function_add_form"));
+        formData.set("function_script",window.editor_function_script.getValue());
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/function_add",
+            async: false,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            data: formData,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
+                    return ;
+                }
+                parent.layer.msg("执行成功");
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                $("#save_etl_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_etl_task").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+
+    $('#update_etl_task').click(function () {
+
+        if ($('#function_context').val() == '') {
+            layer.msg("函数说明不能为空！");
+            return;
+        }
+
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var ary1 = new Array();
+        var ary2 = new Array();
+        var ary3 = new Array();
+
+        $(".param_code").each(function(index){
+            ary1[index] = $(this).val();
+        });
+        $(".param_context").each(function(index){
+            ary2[index] =$(this).val();
+        });
+
+        $(".param_type").each(function(index){
+            ary3[index] =$(this).val();
+        });
+
+        var result = [];
+        for (var i=0;i<ary1.length;i++){
+            var param={
+                "param_code":ary1[i],
+                "param_context":ary2[i],
+                "param_type":ary3[i]
+            };
+            result.push(param);
+        }
+
+        var formData = new FormData(document.getElementById("function_add_form"));
+        formData.set("function_script",window.editor_function_script.getValue());
+        formData.set("id", s.id);
+
+        $.ajax({
+            url: server_context+"/function_update",
+            type: 'post',
+            dataType: "json",
+            processData: false,
+            contentType: false,
+            async: 'false',
+            data: formData,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
+                    return ;
+                }
+                parent.layer.msg(data.msg);
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                layer.error(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
+
+</script>
+
+</body>
+
+</html>
