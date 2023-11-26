@@ -2903,6 +2903,9 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1178086181741531136, '963932648793706496', '函数页面', '4', 'zyc', 'fa fa-coffee', '', '15', '1', '2023-11-25 21:33:54', '2023-11-25 21:34:05', 'function_detail2', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1178451081701625856, '1176308421654220800', '函数管理-测试页面', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2023-11-26 21:43:52', '2023-11-26 21:43:52', 'function_execute_index', '3', '', '', 'zdh', '');
 
         
 # 未完成的功能
