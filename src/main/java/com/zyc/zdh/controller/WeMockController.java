@@ -1,16 +1,20 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.WeMockDataMapper;
 import com.zyc.zdh.dao.WeMockTreeMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,6 +39,8 @@ public class WeMockController extends BaseController{
 
     @Autowired
     private WeMockDataMapper weMockDataMapper;
+    @Autowired
+    private Environment ev;
 
     /**
      * mock数据首页
@@ -488,4 +494,35 @@ public class WeMockController extends BaseController{
         }
     }
 
+
+    /**
+     * mock数据-短链生成页面
+     * @return
+     */
+    @RequestMapping("/short_url_index")
+    public String short_url_generator() {
+        return "wemock/short_url_index";
+    }
+
+    /**
+     * 短链生成
+     * @param param
+     * @return
+     */
+    @SentinelResource(value = "short_url_generator", blockHandler = "handleReturn")
+    @RequestMapping(value = "/short_url_generator", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<JSONObject> short_url_generator(String param) {
+        try{
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("url", param);
+            String host = ev.getProperty("zdh.wemock.short.host", "http://127.0.0.1:9001");
+            String path = ev.getProperty("zdh.wemock.short.generator", "/api/short/generator");
+            String ret = HttpUtil.postJSON(host+path, jsonObject.toJSONString());
+            return ReturnInfo.buildSuccess(JSONObject.parseObject(ret));
+        }catch (Exception e){
+            e.printStackTrace();
+            return ReturnInfo.buildError(e);
+        }
+    }
 }

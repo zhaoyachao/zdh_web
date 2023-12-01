@@ -749,6 +749,8 @@
   + v5.2.2 [zdh_web]优化小流量管理
   + v5.2.2 [zdh_web]新增函数管理模块
   + v5.2.2 [zdh_web]优化代码
+  + v5.2.2 [zdh_web]支持短链mock
+  + v5.2.2 [zdh_web]智能营销模块流程执行引擎优化
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -2906,6 +2908,12 @@
     INSERT INTO resource_tree_info
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1178451081701625856, '1176308421654220800', '函数管理-测试页面', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2023-11-26 21:43:52', '2023-11-26 21:43:52', 'function_execute_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1179204615170691072, '926763179978002432', '短链服务', '3', 'zyc', 'fa fa-coffee', '', '15', '1', '2023-11-28 23:38:09', '2023-11-30 00:00:36', 'short_url_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1179572594626531328, '1179204615170691072', '短链生成', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-11-30 00:00:22', '2023-11-30 00:00:22', 'short_url_generator', '5', '', '', 'zdh', '');
 
         
 # 未完成的功能
