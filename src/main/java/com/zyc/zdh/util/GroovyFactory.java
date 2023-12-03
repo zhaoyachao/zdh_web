@@ -1,15 +1,9 @@
 package com.zyc.zdh.util;
 
-
-
-
-import com.google.common.collect.Lists;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
-import org.codehaus.groovy.runtime.InvokerHelper;
 
 import javax.script.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

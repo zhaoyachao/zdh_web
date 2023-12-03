@@ -3,8 +3,10 @@ package com.zyc.zdh.entity;
 import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
-import javax.persistence.*;
 
 @Table(name = "function_info")
 public class FunctionInfo {
