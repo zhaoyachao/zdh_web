@@ -2916,6 +2916,58 @@
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1179572594626531328, '1179204615170691072', '短链生成', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-11-30 00:00:22', '2023-11-30 00:00:22', 'short_url_generator', '5', '', '', 'zdh', '');
 
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188435003374047232, '1129779712252448768', '风控事件列表', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-12-24 10:56:25', '2023-12-24 10:56:25', 'risk_event_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188435130465652736, '1129779712252448768', '风控事件新增页面', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-12-24 10:56:55', '2023-12-24 10:56:55', 'risk_event_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188435293334671360, '1129779712252448768', '风控事件新增', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2023-12-24 10:57:34', '2023-12-24 10:57:34', 'risk_event_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188435352470163456, '1129779712252448768', '风控事件更新', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2023-12-24 10:57:48', '2023-12-24 10:57:48', 'risk_event_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188435403317710848, '1129779712252448768', '风控事件删除', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2023-12-24 10:58:00', '2023-12-24 10:58:00', 'risk_event_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188435527305531392, '1129779712252448768', '风控事件明细', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2023-12-24 10:58:30', '2023-12-24 10:58:30', 'risk_event_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188436156769898496, '1129779712252448768', '风控事件明细页', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2023-12-24 11:01:00', '2023-12-24 11:01:00', 'risk_event_detail2', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188436549084123136, '1129876614897733632', '风控测试接口', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-12-24 11:02:33', '2023-12-24 11:02:33', 'risk_test', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188437182428221440, '1129779712252448768', '风控事件-根据code查询', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2023-12-24 11:05:04', '2023-12-24 11:05:04', 'risk_event_detail_by_code', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188438178466369536, '963932648793706496', '运算符页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2023-12-24 11:09:02', '2023-12-24 11:09:02', 'crowd_operate_detail', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188438896954839040, '1038453020246937600', '触达管理-列表', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2023-12-24 11:11:53', '2023-12-24 11:11:53', 'touch_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188439012172369920, '1038453020246937600', '触达管理-新增页面', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2023-12-24 11:12:21', '2023-12-24 11:12:21', 'touch_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188439112252657664, '1038453020246937600', '触达管理-明细', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2023-12-24 11:12:44', '2023-12-24 11:12:44', 'touch_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188439297678643200, '1038453020246937600', '触达管理-新增', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2023-12-24 11:13:29', '2023-12-24 11:13:29', 'touch_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188439341672697856, '1038453020246937600', '触达管理-更新', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2023-12-24 11:13:39', '2023-12-24 11:13:39', 'touch_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188439382189674496, '1038453020246937600', '触达管理-删除', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2023-12-24 11:13:49', '2023-12-24 11:13:49', 'touch_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188439569721200640, '1038453020246937600', '触达管理-根据类型获取触达列表', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2023-12-24 11:14:34', '2023-12-24 11:14:34', 'touch_list_by_task', '5', '', '', 'zdh', '');
+
         
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
