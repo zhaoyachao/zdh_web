@@ -2967,6 +2967,9 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1188439569721200640, '1038453020246937600', '触达管理-根据类型获取触达列表', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2023-12-24 11:14:34', '2023-12-24 11:14:34', 'touch_list_by_task', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1188458463701766144, '1170678953501790208', '告警组-按用户查询列表', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2023-12-24 12:29:38', '2023-12-24 12:31:05', 'beacon_fire_alarm_group_list_by_owner', '5', '', '', 'zdh', '');
 
         
 # 未完成的功能
