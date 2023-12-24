@@ -3,7 +3,6 @@ package com.zyc.zdh.controller.digitalmarket;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.RiskEventMapper;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -53,7 +52,6 @@ public class RiskEventController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/risk_test_index", method = RequestMethod.GET)
-    @White
     public String risk_test_index() {
 
         return "digitalmarket/risk_test_index";
@@ -72,7 +70,6 @@ public class RiskEventController extends BaseController {
     @SentinelResource(value = "risk_test", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_test", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<JSONObject> risk_test(String uid, String data_node, String scene, String source, String id_type, String param) {
 
         try{
@@ -100,7 +97,6 @@ public class RiskEventController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/risk_event_index", method = RequestMethod.GET)
-    @White
     public String risk_event_index() {
 
         return "digitalmarket/risk_event_index";
@@ -114,7 +110,6 @@ public class RiskEventController extends BaseController {
     @SentinelResource(value = "risk_event_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_event_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<RiskEventInfo>> risk_event_list(String context, String product_code, String dim_group) {
 
         try{
@@ -152,7 +147,6 @@ public class RiskEventController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/risk_event_add_index", method = RequestMethod.GET)
-    @White
     public String risk_event_add_index() {
 
         return "digitalmarket/risk_event_add_index";
@@ -164,7 +158,6 @@ public class RiskEventController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/risk_event_detail2", method = RequestMethod.GET)
-    @White
     public String risk_event_detail2() {
 
         return "digitalmarket/risk_event_detail2";
@@ -177,7 +170,6 @@ public class RiskEventController extends BaseController {
     @SentinelResource(value = "risk_event_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_event_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<RiskEventInfo> risk_event_detail(String id) {
         try {
             RiskEventInfo riskEventInfo = riskEventMapper.selectByPrimaryKey(id);
@@ -196,7 +188,6 @@ public class RiskEventController extends BaseController {
     @RequestMapping(value = "/risk_event_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<RiskEventInfo> risk_event_update(RiskEventInfo riskEventInfo, String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value) {
         try {
 
@@ -242,7 +233,6 @@ public class RiskEventController extends BaseController {
     @RequestMapping(value = "/risk_event_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<RiskEventInfo> risk_event_add(RiskEventInfo riskEventInfo,String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value) {
         try {
             riskEventInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
@@ -284,7 +274,6 @@ public class RiskEventController extends BaseController {
     @RequestMapping(value = "/risk_event_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo risk_event_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, riskEventMapper, riskEventMapper.getTable(), ids);
@@ -305,7 +294,6 @@ public class RiskEventController extends BaseController {
     @SentinelResource(value = "risk_event_detail_by_code", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_event_detail_by_code", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<RiskEventInfo> risk_event_detail_by_code(String plugin_code) {
         try {
 

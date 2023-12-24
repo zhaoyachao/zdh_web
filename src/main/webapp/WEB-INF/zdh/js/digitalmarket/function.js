@@ -12,7 +12,7 @@
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
-              title: '过滤规则配置',
+              title: '新增函数配置',
               shadeClose: false,
               resize: true,
               fixed: false,
@@ -88,7 +88,7 @@
               $("#id").val(row.id);
               top.layer.open({
                   type: 2,
-                  title: '过滤规则配置',
+                  title: '编辑函数配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
@@ -109,7 +109,7 @@
               $("#id").val(row.id);
               top.layer.open({
                   type: 2,
-                  title: '过滤规则配置',
+                  title: '编辑函数配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
@@ -129,7 +129,7 @@
 
           },
           'click #del': function (e, value, row, index) {
-              layer.confirm('是否删除任务', {
+              layer.confirm('是否删除函数', {
                   btn: ['确定','取消'] //按钮
               }, function(index){
                   var ids = new Array();// 声明一个数组
@@ -141,13 +141,13 @@
               });
           },
           'click #test': function (e, value, row, index) {
-              layer.confirm('是否测试任务', {
+              layer.confirm('是否测试函数', {
                   btn: ['确定','取消'] //按钮
               }, function(index){
                   $("#id").val(row.id);
                   top.layer.open({
                       type: 2,
-                      title: '过滤规则配置',
+                      title: '函数配置',
                       shadeClose: false,
                       resize: true,
                       fixed: false,
@@ -275,11 +275,11 @@
             sortable:false
         }, {
             field: 'function_context',
-            title: '过滤说明',
+            title: '函数说明',
             sortable:false
         }, {
             field: 'function_name',
-            title: '过滤名称',
+            title: '函数名称',
             sortable:false
         }, {
             field: 'create_time',

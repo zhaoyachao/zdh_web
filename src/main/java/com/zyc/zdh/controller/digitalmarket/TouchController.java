@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.TouchConfigMapper;
 import com.zyc.zdh.entity.PageResult;
@@ -59,7 +58,6 @@ public class TouchController extends BaseController {
      * 触达配置首页
      * @return
      */
-    @White
     @RequestMapping(value = "/touch_index", method = RequestMethod.GET)
     public String touch_index() {
 
@@ -75,7 +73,6 @@ public class TouchController extends BaseController {
      * @return
      */
     @SentinelResource(value = "touch_list", blockHandler = "handleReturn")
-    @White
     @RequestMapping(value = "/touch_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PageResult<List<TouchConfigInfo>>> touch_list(String touch_context, String product_code, String dim_group, int limit, int offset) {
@@ -125,7 +122,6 @@ public class TouchController extends BaseController {
      * 触达配置新增首页
      * @return
      */
-    @White
     @RequestMapping(value = "/touch_add_index", method = RequestMethod.GET)
     public String touch_add_index() {
 
@@ -138,7 +134,6 @@ public class TouchController extends BaseController {
      * @return
      */
     @SentinelResource(value = "touch_detail", blockHandler = "handleReturn")
-    @White
     @RequestMapping(value = "/touch_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<TouchConfigInfo> touch_detail(String id) {
@@ -162,7 +157,6 @@ public class TouchController extends BaseController {
     @RequestMapping(value = "/touch_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo touch_update(TouchConfigInfo touchConfigInfo) {
         try {
             if(StringUtils.isEmpty(touchConfigInfo.getTouch_context())){
@@ -201,7 +195,6 @@ public class TouchController extends BaseController {
     @RequestMapping(value = "/touch_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo touch_add(TouchConfigInfo touchConfigInfo) {
         try {
             if(StringUtils.isEmpty(touchConfigInfo.getTouch_context())){
@@ -235,7 +228,6 @@ public class TouchController extends BaseController {
     @RequestMapping(value = "/touch_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo touch_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, touchConfigMapper, touchConfigMapper.getTable(), ids);
@@ -266,7 +258,6 @@ public class TouchController extends BaseController {
      * @return
      */
     @SentinelResource(value = "touch_list_by_task", blockHandler = "handleReturn")
-    @White
     @RequestMapping(value = "/touch_list_by_task", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<TouchConfigInfo>> touch_list_by_task(String touch_task) {

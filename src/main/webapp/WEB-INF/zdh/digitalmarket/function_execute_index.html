@@ -50,7 +50,13 @@
 
                     <form id="function_add_form" name="function_add_form" method="post" class="form-horizontal"
                           action="">
-
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">函数说明</label>
+                            <div class="col-sm-10">
+                                <input id="function_context" name="function_context" type="text"
+                                       placeholder="函数说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
                         <div class="form-group" id="function_div">
 
                         </div>
@@ -252,6 +258,8 @@
                         success: function (data) {
                             console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
+                            var function_context = data.result.function_context;
+                            $("#function_context").val(function_context);
 
                             var function_class = data.result.function_class;
                             $("#function_class").val(function_class);

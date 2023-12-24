@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.CrowdFileMapper;
 import com.zyc.zdh.dao.CrowdRuleMapper;
@@ -76,7 +75,6 @@ public class CommonController extends BaseController {
      * 人群运算模板页面
      * @return
      */
-    @White
     @RequestMapping(value = "/crowd_operate_detail", method = RequestMethod.GET)
     public String crowd_operate_detail() {
         return "digitalmarket/crowd_operate_detail";
