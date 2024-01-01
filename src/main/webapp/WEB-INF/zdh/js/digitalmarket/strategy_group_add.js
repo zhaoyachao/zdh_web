@@ -235,8 +235,9 @@ function doubleclick_label(id) {
             var touch_type = div.attr("touch_type");
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
+            var data_status = div.attr("data_status");
             $("#rule_param").val(div.attr("rule_param"));
-            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -258,7 +259,7 @@ function doubleclick_label(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
-
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("rule_id",etl_task_info.rule_id);
                 div.attr("rule_context",etl_task_info.rule_context);
@@ -298,7 +299,8 @@ function doubleclick_crowd_file(id) {
             var touch_type = div.attr("touch_type");
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
-            url=url+"?crowd_file_context="+crowd_file_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_file="+crowd_file+"&more_task="+more_task+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            var data_status = div.attr("data_status");
+            url=url+"?crowd_file_context="+crowd_file_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_file="+crowd_file+"&more_task="+more_task+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -321,6 +323,7 @@ function doubleclick_crowd_file(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("crowd_file_context",etl_task_info.crowd_file_context);
                 div.attr("crowd_file",etl_task_info.crowd_file);
@@ -355,7 +358,8 @@ function doubleclick_crowd_rule(id) {
             var touch_type = div.attr("touch_type");
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
-            url=url+"?crowd_rule_context="+crowd_rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_rule="+crowd_rule+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            var data_status = div.attr("data_status");
+            url=url+"?crowd_rule_context="+crowd_rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&crowd_rule="+crowd_rule+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -378,6 +382,7 @@ function doubleclick_crowd_rule(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("crowd_rule_context",etl_task_info.crowd_rule_context);
                 div.attr("crowd_rule",etl_task_info.crowd_rule);
@@ -412,7 +417,8 @@ function doubleclick_crowd_operate(id) {
             var touch_type = div.attr("touch_type");
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
-            url=url+"?crowd_operate_context="+crowd_operate_context+"&depend_level="+depend_level +"&time_out="+time_out+"&more_task="+more_task+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            var data_status = div.attr("data_status");
+            url=url+"?crowd_operate_context="+crowd_operate_context+"&depend_level="+depend_level +"&time_out="+time_out+"&more_task="+more_task+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -435,6 +441,7 @@ function doubleclick_crowd_operate(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("crowd_operate_context",etl_task_info.crowd_operate_context);
 
@@ -468,7 +475,8 @@ function doubleclick_filter(id) {
             var touch_type = div.attr("touch_type");
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
-            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&filter="+filter+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            var data_status = div.attr("data_status");
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&filter="+filter+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -491,6 +499,7 @@ function doubleclick_filter(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("rule_context",etl_task_info.rule_context);
                 div.attr("filter_title",etl_task_info.filter_title);
@@ -525,8 +534,9 @@ function doubleclick_shunt(id) {
             var touch_type = div.attr("touch_type");
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
+            var data_status = div.attr("data_status");
             $('#shunt_param').val(shunt_param);
-            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&shunt="+shunt+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&shunt="+shunt+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -549,6 +559,7 @@ function doubleclick_shunt(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("shunt_param",etl_task_info.shunt_param);
                 div.attr("rule_context",etl_task_info.rule_context);
@@ -585,7 +596,8 @@ function doubleclick_rights(id) {
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
             var operate=div.attr("operate");
-            url=url+"?rights_context="+rights_context+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&rights="+rights+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            var data_status = div.attr("data_status");
+            url=url+"?rights_context="+rights_context+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&rights="+rights+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -608,6 +620,7 @@ function doubleclick_rights(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("rights_param",etl_task_info.rights_param);
                 div.attr("rights_context",etl_task_info.rights_context);
@@ -642,7 +655,8 @@ function doubleclick_touch(id) {
             var touch_type = div.attr("touch_type");
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
-            url=url+"?touch_id="+touch_id+"&touch_task="+touch_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            var data_status = div.attr("data_status");
+            url=url+"?touch_id="+touch_id+"&touch_task="+touch_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -664,6 +678,7 @@ function doubleclick_touch(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("touch_task",etl_task_info.touch_task);
                 div.attr("touch_id",etl_task_info.touch_id);
@@ -700,8 +715,9 @@ function doubleclick_plugin(id) {
             var touch_type = div.attr("touch_type");
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
+            var data_status = div.attr("data_status");
             $("#rule_param").val(div.attr("rule_param"));
-            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -723,6 +739,7 @@ function doubleclick_plugin(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("rule_id",etl_task_info.rule_id);
                 div.attr("rule_context",etl_task_info.rule_context);
@@ -763,7 +780,8 @@ function doubleclick_online(id) {
             var is_disenable = div.attr("is_disenable");
             var data_node = div.attr("data_node");
             var rule_context = div.attr("rule_context");
-            url=url+"?data_node="+data_node+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&rule_context="+rule_context
+            var data_status = div.attr("data_status");
+            url=url+"?data_node="+data_node+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&rule_context="+rule_context+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -785,6 +803,7 @@ function doubleclick_online(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("data_node",etl_task_info.data_node);
                 div.attr("rule_context",etl_task_info.rule_context);
@@ -824,7 +843,8 @@ function doubleclick_id_mapping(id) {
             var id_mapping_code = div.attr("id_mapping_code");
             var data_engine = div.attr("data_engine");
             var rule_context = div.attr("rule_context");
-            url=url+"?id_mapping_code="+id_mapping_code+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&rule_context="+rule_context+"&data_engine="+data_engine
+            var data_status = div.attr("data_status");
+            url=url+"?id_mapping_code="+id_mapping_code+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&rule_context="+rule_context+"&data_engine="+data_engine+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -846,6 +866,7 @@ function doubleclick_id_mapping(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("id_mapping_code",etl_task_info.id_mapping_code);
                 div.attr("data_engine",etl_task_info.data_engine);
@@ -883,8 +904,9 @@ function doubleclick_risk(id) {
             var touch_type = div.attr("touch_type");
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
+            var data_status = div.attr("data_status");
             $("#rule_param").val(div.attr("rule_param"));
-            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -906,6 +928,7 @@ function doubleclick_risk(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("rule_id",etl_task_info.rule_id);
                 div.attr("rule_context",etl_task_info.rule_context);
@@ -946,7 +969,8 @@ function doubleclick_tn(id) {
             var touch_type = div.attr("touch_type");
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
-            url=url+"?rule_id="+rule_id+"&tn_unit="+tn_unit+"&tn_type="+tn_type+"&tn_value="+tn_value+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            var data_status = div.attr("data_status");
+            url=url+"?rule_id="+rule_id+"&tn_unit="+tn_unit+"&tn_type="+tn_type+"&tn_value="+tn_value+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -968,6 +992,7 @@ function doubleclick_tn(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("tn_unit",etl_task_info.tn_unit);
                 div.attr("tn_type",etl_task_info.tn_type);
@@ -1006,7 +1031,8 @@ function doubleclick_manual_confirm(id) {
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
             var confirm_notice_type=div.attr("confirm_notice_type");
-            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&confirm_notice_type="+confirm_notice_type+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            var data_status = div.attr("data_status");
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&confirm_notice_type="+confirm_notice_type+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -1029,6 +1055,7 @@ function doubleclick_manual_confirm(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("rule_context",etl_task_info.rule_context);
                 div.attr("rule_id",etl_task_info.rule_id);
@@ -1065,8 +1092,9 @@ function doubleclick_code_block(id) {
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
             var code_type=div.attr("code_type");
+            var data_status = div.attr("data_status");
             $("#code_text").val(command);
-            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&code_type="+code_type+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&code_type="+code_type+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -1089,6 +1117,7 @@ function doubleclick_code_block(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("rule_context",etl_task_info.rule_context);
                 div.attr("rule_id",etl_task_info.rule_id);
@@ -1126,8 +1155,9 @@ function doubleclick_custom_list(id) {
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
             var code_type=div.attr("code_type");
+            var data_status = div.attr("data_status");
             $("#code_text").val(name_list);
-            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&code_type="+code_type+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&code_type="+code_type+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -1150,6 +1180,7 @@ function doubleclick_custom_list(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("rule_context",etl_task_info.rule_context);
                 div.attr("rule_id",etl_task_info.rule_id);
@@ -1185,8 +1216,9 @@ function doubleclick_function(id) {
             var touch_type = div.attr("touch_type");
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
+            var data_status = div.attr("data_status");
             $("#rule_param").val(div.attr("rule_param"));
-            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -1209,6 +1241,7 @@ function doubleclick_function(id) {
                 div.attr("operate",etl_task_info.operate);
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
+                div.attr("data_status",etl_task_info.data_status);
 
                 div.attr("rule_context",etl_task_info.rule_context);
                 div.attr("rule_id",etl_task_info.rule_id);

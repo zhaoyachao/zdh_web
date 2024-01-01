@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 标签新增首页</title>
-    <meta name="keywords" content="ZDH 标签新增首页">
-    <meta name="description" content="ZDH 标签新增首页">
+    <title>ZDH 在线标签新增值首页</title>
+    <meta name="keywords" content="ZDH 在线标签新增值首页">
+    <meta name="description" content="ZDH 在线标签新增值首页">
 
     <link rel="shortcut icon" href="img/favicon.ico">
 
@@ -78,46 +78,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">数据时效性</label>
-                            <div class="col-sm-10">
-                                <select id="label_data_time_effect" name="label_data_time_effect"
-                                        data-placeholder="选择标签数据时效..."
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">空</option>
-                                    <option value="day" mytype="">天级</option>
-                                    <option value="hour" mytype="">小时级</option>
-                                    <option value="second" mytype="">准实时</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">数据更新类型</label>
-                            <div class="col-sm-10">
-                                <select id="label_data_update_type" name="label_data_update_type"
-                                        data-placeholder="选择标签更新类型..."
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">空</option>
-                                    <option value="overwrite" mytype="">覆盖</option>
-                                    <option value="append" mytype="">追加</option>
-                                    <option value="get_append" mytype="">获取值追加</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">事件时间字段</label>
-                            <div class="col-sm-10">
-                                <input id="label_event_time_column" name="label_event_time_column" type="text"
-                                       placeholder="事件时间字段,默认为空" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">数据标识</label>
-                            <div class="col-sm-10">
-                                <input id="label_data_code" name="label_data_code" type="text"
-                                       placeholder="数据标识,在线实时标签使用,kafka数据带此标识,标签处根据此标识查找可以计算的标签" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label">标签类别</label>
                             <div class="col-sm-10">
@@ -136,45 +97,13 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">联系人</label>
+                            <label class="col-sm-2 control-label">账号</label>
                             <div class="col-sm-10">
-                                <input id="label_person" name="label_person" type="text"
-                                       placeholder="联系人" class="form-control" aria-required="true"> </span>
+                                <input id="uid" name="uid" type="text"
+                                       placeholder="账号" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">引擎</label>
-                            <div class="col-sm-10">
-                                <select id="label_engine" name="label_engine"
-                                        data-placeholder="引擎..."
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">选择引擎类型...</option>
-                                    <option value="mysql" mytype="">MYSQL</option>
-                                    <option value="hive" mytype="">HIVE</option>
-                                    <option value="spark" mytype="">SPARK</option>
-                                    <option value="presto" mytype="">PRESTO</option>
-                                </select>
-                            </div>
-                            <div class="form-group"></div>
-                            <label class="col-sm-2 control-label">数据源</label>
-                            <div class="col-sm-10">
-                                <select id="data_sources_choose_input" name="data_sources_choose_input"
-                                        data-placeholder="选择数据源..."
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">选择数据源...</option>
-                                </select>
-                            </div>
-                            <div class="form-group"></div>
-                            <label class="col-sm-2 control-label">运算逻辑</label>
-                            <div class="col-sm-10">
-                                <textarea id="label_expression" name="label_expression"  class="form-control" rows="4"  placeholder="运算逻辑,目前仅支持sql运算"></textarea></span>
-                            </div>
-                            <div class="form-group"></div>
-                            <label class="col-sm-2 control-label">默认值</label>
-                            <div class="col-sm-10">
-                                <textarea id="label_default" name="label_default"  class="form-control" rows="2"  placeholder="json格式{'k1': 'v1', 'k2':'v2'}"></textarea></span>
-                            </div>
-                        </div>
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label">创建时间</label>
                             <div class="col-sm-10">
@@ -183,12 +112,6 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <div class="col-sm-2" style="text-align: right">
-                                <button id="btn_enum" name="btn_enum" class="btn btn-primary"
-                                        οnsubmit='return false'
-                                        type="button">新增参数
-                                </button>
-                            </div>
                             <div class="col-sm-2" ></div>
                         </div>
 
@@ -204,10 +127,6 @@
 
                         <div class="form-group">
                             <div class="text-center">
-                                <button id="save_etl_task" name="save_zdh" class="btn btn-primary"
-                                        οnsubmit='return false'
-                                        type="button">保存
-                                </button>
                                 <button id="update_etl_task" name="save_zdh" class="btn btn-primary"
                                         οnsubmit='return false'
                                         type="button">更新
@@ -275,33 +194,11 @@
         '<option value="ts">日期时间戳</option>\n'+
         '            </select>\n' +
         '        </div>\n' +
-        '        <div class="col-sm-1">\n' +
-        '            <select class="form-control m-b param_operate" data-live-search="true" name="param_operate" id="zdh_param_operate">\n' +
-        '<option value="=">等于</option>\n'+
-        '<option value="in">包含</option>\n'+
-        '<option value=">">大于</option>\n'+
-        '<option value=">=">大于等于</option>\n'+
-        '<option value="<">小于</option>\n'+
-        '<option value="<=">小于等于</option>\n'+
-        '<option value="<">小于</option>\n'+
-        '<option value="between">区间(左闭右开)</option>\n'+
-        '<option value="relative_time">相对时间</option>\n'+
-        '            </select>\n' +
-        '        </div>\n' +
         '        <div class="col-sm-2">\n' +
         '            <input name="param_value" type="text"\n' +
         '                   placeholder="参数值,多个分号分割" class="form-control param_value" aria-required="true" value="zdh_param_value">\n' +
         '        </div>\n' +
-        '        <div class="col-sm-1">\n' +
-        '            <input name="param_enum_key" type="text"\n' +
-        '                   placeholder="枚举key" class="form-control param_enum_key" aria-required="true" value="zdh_param_enum_key">\n' +
-        '        </div>\n' +
-        '        <div class="col-sm-1">\n' +
-        '            <button id="delete" name="delete" class="btn btn-danger"\n' +
-        '                    οnsubmit=\'return false\'\n' +
-        '                    type="button">删除\n' +
-        '            </button>\n' +
-        '        </div>\n' +
+
         '\n' +
         // '    </div>\n' +
         '</div>';
@@ -331,9 +228,7 @@
                 tmp = tmp.replace("zdh_param_code", "");
                 tmp = tmp.replace("zdh_param_context", "");
                 tmp = tmp.replace("zdh_param_type", "");
-                tmp = tmp.replace("zdh_param_operate", "");
                 tmp = tmp.replace("zdh_param_value", "");
-                tmp = tmp.replace("zdh_param_enum_key", "0");
                 $('#label_div').append(tmp);
                 $('#label_div #delete').click(function () {
                     $(this).parent().parent().remove();
@@ -343,7 +238,6 @@
             $('#label_use_type').chosen();
             $('#label_data_time_effect').chosen();
             $('#label_data_update_type').chosen();
-            $('#label_engine').chosen();
 
             function init_label_type() {
                 $.ajax({
@@ -413,52 +307,8 @@
                 });
             }
 
-            function init_data_sources() {
-                $.ajax({
-                    type: 'POST',
-                    url: server_context+"/data_sources_list",
-                    dataType: 'json',
-                    async: false,
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        if(data.code != "200"){
-                            layer.msg(data.msg);
-                            return ;
-                        }
-                        let str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
-                        for (let i = 0; i < data.result.length; i++) {
-                            str += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].data_source_type + "\" hassubinfo=\"true\">" + data.result[i].data_source_context + "</option>"
-                        }
-                        //输入数据源类型下拉框
-                        $('#data_sources_choose_input').html(str);
-                        $('#data_sources_choose_input').chosen();
-
-                        //输出数据源类型下拉框
-                        $('#data_sources_choose_output').html(str);
-
-                        $('#data_sources_choose_output').chosen().on("change", function (evt, params) {
-                            // alert($('#data_sources_choose_input').val())
-                            $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
-                            $("#data_sources_choose_output").trigger("chosen:updated");
-                        });
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-                });
-            }
-
             init_label_type();
             init_label_engine();
-            init_data_sources();
-
 
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
@@ -522,9 +372,7 @@
                 tmp = tmp.replace("zdh_param_code", param_code);
                 tmp = tmp.replace("zdh_param_context", param_context);
                 tmp = tmp.replace("zdh_param_value", param_value);
-                tmp = tmp.replace("zdh_param_operate", "zdh_param_operate"+i);
                 tmp = tmp.replace("zdh_param_type", "zdh_param_type"+i);
-                tmp = tmp.replace("zdh_param_enum_key", param_enum_key);
                 $('#label_div').append(tmp);
                 $("#zdh_param_operate"+i).val(param_operate);
                 $("#zdh_param_type"+i).val(param_type);
@@ -564,40 +412,11 @@
                             $("#label_use_type").val(label_use_type);
                             $("#label_use_type").trigger("chosen:updated");
 
-                            var label_data_time_effect = data.result.label_data_time_effect;
-                            $("#label_data_time_effect").val(label_data_time_effect);
-                            $("#label_data_time_effect").trigger("chosen:updated");
 
-                            var label_data_update_type = data.result.label_data_update_type;
-                            $("#label_data_update_type").val(label_data_update_type);
-                            $("#label_data_update_type").trigger("chosen:updated");
-
-                            var label_event_time_column = data.result.label_event_time_column;
-                            $("#label_event_time_column").val(label_event_time_column);
-
-                            var label_data_code = data.result.label_data_code;
-                            $("#label_data_code").val(label_data_code);
 
                             var label_code = data.result.label_code;
                             $("#label_code").val(label_code);
                             $("#label_code").attr("readonly","readonly");
-
-                            var label_person = data.result.label_person;
-                            $("#label_person").val(label_person);
-
-                            var label_engine = data.result.label_engine;
-                            $("#label_engine").val(label_engine);
-                            $("#label_engine").trigger("chosen:updated");
-
-                            var data_sources_choose_input = data.result.data_sources_choose_input;
-                            $("#data_sources_choose_input").val(data_sources_choose_input);
-                            $("#data_sources_choose_input").trigger("chosen:updated");
-
-                            var label_expression = data.result.label_expression;
-                            $("#label_expression").val(label_expression);
-
-                            var label_default = data.result.label_default;
-                            $("#label_default").val(label_default);
 
                             var create_time = data.result.create_time;
                             $("#create_time").val(getMyDate(create_time));
@@ -626,49 +445,6 @@
     })(document, window, jQuery);
 
 
-    $('#save_etl_task').click(function () {
-
-        if ($('#label_context').val() == '') {
-            layer.msg("标签说明不能为空！");
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: server_context+"/label_add",
-            async: false,
-            dataType: 'json',
-            data: $("#label_add_form").serialize(),
-            //发送数据前
-            beforeSend: function () {
-                // 禁用按钮防止重复提交
-                $("#save_etl_task").attr({disabled: "disabled"});
-            },
-            //成功返回
-            success: function (data) {
-                $("#save_etl_task").removeAttr('disabled');
-                if(data.code != '200'){
-                    console.error(data.msg);
-                    parent.layer.msg("执行失败");
-                    return ;
-                }
-                parent.layer.msg("执行成功");
-                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                parent.layer.close(index); //再执行关闭
-            },
-            //处理完成
-            complete: function () {
-                $("#save_etl_task").removeAttr('disabled');
-                console.info("complete")
-            },
-            //报错
-            error: function (data) {
-                $("#save_etl_task").removeAttr('disabled');
-                console.info("error: " + data.responseText);
-            }
-        });
-
-    });
-
 
     $('#update_etl_task').click(function () {
 
@@ -687,7 +463,7 @@
         }
 
         $.ajax({
-            url: server_context+"/label_update",
+            url: server_context+"/label_online_add_value",
             type: 'post',
             dataType: "json",
             async: 'false',

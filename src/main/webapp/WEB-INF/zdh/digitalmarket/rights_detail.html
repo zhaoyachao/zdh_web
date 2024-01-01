@@ -133,6 +133,18 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">数据流转状态</label>
+                            <div class="col-sm-10">
+                                <select id="data_status" name="data_status" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="1" mytype="">成功数据</option>
+                                    <option value="2" mytype="">失败数据</option>
+                                    <option value="3" mytype="">所有数据</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">超时时间</label>
                             <div class="col-sm-10">
                                 <input id="time_out" name="time_out" type="text" value="86400"
@@ -280,6 +292,7 @@
 
             //init_zdh_instance();
             $('#operate').chosen();
+            $('#data_status').chosen();
             $('#depend_level').chosen();
             if(s["rights"] != '-1'){
                 console.info("更新触发");
@@ -289,6 +302,8 @@
                 $("#operate").val(s.operate);
                 $("#operate").trigger("chosen:updated");
 
+                $("#data_status").val(s["data_status"]);
+                $("#data_status").trigger("chosen:updated");
 
                 if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
                     $("#time_out").val(s["time_out"]);
@@ -357,6 +372,8 @@
         var touch_type=$('#touch_type').find("option:selected").val();
         var time_out=$('#time_out').val();
         var is_base=$('#is_base').find("option:selected").val();
+        var data_status=$('#data_status').find("option:selected").val();
+
         var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -397,6 +414,7 @@
             "depend_level":depend_level,
             "time_out": time_out,
             "is_base": is_base,
+            "data_status": data_status,
 
             "rights": rights,
             "rights_context":rights_context,

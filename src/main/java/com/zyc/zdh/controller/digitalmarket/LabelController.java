@@ -10,6 +10,7 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 智能营销-标签服务
@@ -38,9 +40,10 @@ public class LabelController extends BaseController {
 
     @Autowired
     private LabelMapper labelMapper;
-
     @Autowired
     private ZdhPermissionService zdhPermissionService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * 标签列表首页
@@ -309,6 +312,62 @@ public class LabelController extends BaseController {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e.getMessage());
+        }
+    }
+
+
+    /**
+     * 标签值新增首页
+     * @return
+     */
+    @RequestMapping(value = "/label_online_add_value_index", method = RequestMethod.GET)
+    public String label_online_add_value_index() {
+
+        return "digitalmarket/label_online_add_value_index";
+    }
+
+    /**
+     * 标签值新增
+     * @param labelInfo
+     * @param param_code 参数code
+     * @param param_context 参数说明
+     * @param param_value 参数可选值
+     * @return
+     */
+    @SentinelResource(value = "label_online_add_value", blockHandler = "handleReturn")
+    @RequestMapping(value = "/label_online_add_value", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo label_online_add_value(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_type, String[] param_value, String uid) {
+        try {
+            if(param_code==null || param_code.length<1){
+                throw new Exception("参数不可为空");
+            }
+            checkParam(labelInfo.getLabel_code(),"标签名");
+            if(!labelInfo.getLabel_code().startsWith("tag_")){
+                throw new Exception("标签code 必须以tag_开头");
+            }
+            if(StringUtils.isEmpty(uid)){
+                throw new Exception("账号参数不可为空");
+            }
+            JSONObject jsonObject=new JSONObject();
+            for (int i=0;i<param_code.length;i++){
+                if(i>=param_value.length){
+                    jsonObject.put(param_code[i], "");
+                }else{
+                    jsonObject.put(param_code[i], param_value[i]);
+                }
+            }
+
+            checkPermissionByProduct(zdhPermissionService, labelInfo.getProduct_code());
+
+            String variable_uid=labelInfo.getProduct_code()+"_tag_"+uid;
+            redisUtil.getRedisTemplate().opsForHash().put(variable_uid, labelInfo.getLabel_code(), jsonObject.toJSONString());
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
 

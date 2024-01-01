@@ -126,6 +126,18 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">数据流转状态</label>
+                            <div class="col-sm-10">
+                                <select id="data_status" name="data_status" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="1" mytype="">成功数据</option>
+                                    <option value="2" mytype="">失败数据</option>
+                                    <option value="3" mytype="">所有数据</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">超时时间</label>
                             <div class="col-sm-10">
                                 <input id="time_out" name="time_out" type="text" value="86400"
@@ -210,12 +222,20 @@
             }
 
             $('#operate').chosen();
+            $('#data_status').chosen();
             $('#depend_level').chosen();
             $("#confirm_notice_type").chosen();
             $("#rule_id").val(guid3());
             if(s["rule_id"] != '-1'){
                 console.info("更新触发");
                 $('#rule_context').val(s.rule_context);
+
+                $("#operate").val(s["operate"]);
+                $("#operate").trigger("chosen:updated");
+
+                $("#data_status").val(s["data_status"]);
+                $("#data_status").trigger("chosen:updated");
+
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
                 if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
@@ -251,6 +271,7 @@
         var operate=$('#operate').find("option:selected").val();
         var touch_type=$('#touch_type').find("option:selected").val();
         var is_base=$('#is_base').find("option:selected").val();
+        var data_status=$('#data_status').find("option:selected").val();
 
         var depend_level=$('#depend_level').find("option:selected").val();
         var time_out=$('#time_out').val();
@@ -270,7 +291,7 @@
             "depend_level":depend_level,
             "time_out": time_out,
             "is_base": is_base,
-
+            "data_status": data_status,
 
             "confirm_notice_type": confirm_notice_type.join(","),
             "rule_context":rule_context,

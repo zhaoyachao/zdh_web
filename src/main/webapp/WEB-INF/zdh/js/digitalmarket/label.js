@@ -148,7 +148,28 @@
               }, function(){
 
               });
-          }
+          },
+          'click #edit_value': function (e, value, row, index) {
+              $("#id").val(row.id);
+              top.layer.open({
+                  type: 2,
+                  title: '标签配置',
+                  shadeClose: false,
+                  resize: true,
+                  fixed: false,
+                  maxmin: true,
+                  shade: 0.1,
+                  area : ['45%', '60%'],
+                  //area: ['450px', '500px'],
+                  content: server_context+"/label_online_add_value_index?id="+row.id, //iframe的url
+                  end:function () {
+                      $('#exampleTableEvents').bootstrapTable('refresh', {
+                          url : server_context+'/label_list'
+                      });
+                  }
+              });
+
+          },
       };
 
       window.operateEvents3 = {
@@ -203,6 +224,9 @@
               '                                    </button>',
               ' <button id="tasks" name="tasks" type="button" class="btn btn-outline btn-sm" title="标签加工任务">\n' +
               '                                        <i class="glyphicon glyphicon-tasks" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="edit_value" name="edit_value" type="button" class="btn btn-outline btn-sm" title="标签值">\n' +
+              '                                        <i class="glyphicon glyphicon-camera" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +
               '</div>'
@@ -333,7 +357,7 @@
             field: 'operate',
             title: '常用操作按钮事件',
             events: operateEvents,//给按钮注册事件
-            width:150,
+            width:200,
             formatter: operateFormatter //表格中增加按钮
         }]
     });

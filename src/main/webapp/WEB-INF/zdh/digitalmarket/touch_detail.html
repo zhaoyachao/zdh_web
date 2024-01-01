@@ -141,6 +141,18 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">数据流转状态</label>
+                            <div class="col-sm-10">
+                                <select id="data_status" name="data_status" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="1" mytype="">成功数据</option>
+                                    <option value="2" mytype="">失败数据</option>
+                                    <option value="3" mytype="">所有数据</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">超时时间</label>
                             <div class="col-sm-10">
                                 <input id="time_out" name="time_out" type="text" value="86400"
@@ -304,6 +316,7 @@
             $('#touch_id').chosen();
 
             $('#operate').chosen();
+            $('#data_status').chosen();
             //init_zdh_instance();
 
             if(s["touch_id"] != '-1'){
@@ -318,6 +331,10 @@
                 $("#touch_id").trigger("chosen:updated");
                 $("#operate").val(s.operate);
                 $("#operate").trigger("chosen:updated");
+
+                $("#data_status").val(s["data_status"]);
+                $("#data_status").trigger("chosen:updated");
+
                 $("#touch_type").val(s.touch_type);
                 $("#touch_type").trigger("chosen:updated");
                 $("#is_base").val(s.is_base);
@@ -346,6 +363,7 @@
         var touch_id=$('#touch_id').find("option:selected").val();
         var touch_task=$('#touch_task').find("option:selected").val();
         var operate=$('#operate').find("option:selected").val();
+        var data_status=$('#data_status').find("option:selected").val();
         var touch_type=$('#touch_type').find("option:selected").val();
         var is_base=$('#is_base').find("option:selected").val();
 
@@ -364,6 +382,7 @@
             "depend_level":depend_level,
             "time_out": time_out,
             "is_base": is_base,
+            "data_status": data_status,
 
             "touch_context":touch_context,
             "touch_id":touch_id,
