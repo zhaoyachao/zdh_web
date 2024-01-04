@@ -68,6 +68,46 @@
           });
       }
 
+      $('#priority').click(function () {
+
+          var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
+          if (rows.length == 0) {// rows 主要是为了判断是否选中，下面的else内容才是主要
+              layer.msg("请先选择要修改优先级的记录!");
+              return;
+          } else {
+
+              var ids2 = new Array();// 声明一个数组
+              $(rows).each(function () {// 通过获得别选中的来进行遍历
+                  ids2.push(this.id);// job_id为获得到的整条数据中的一列
+              });
+
+              layer.use('extend/layer.ext.js', function () {
+                  layer.prompt({title: '确定修改优先级(值越大优先级越高)', formType: 2}, function(pass, index){
+                      layer.close(index);
+                      $.ajax({
+                          url: server_context+"/strategy_instance_priority",
+                          data: "ids="+ids2 +"&priority="+ pass,
+                          type: "post",
+                          async:false,
+                          dataType: "json",
+                          success: function (data) {
+                              console.info("success");
+                              $('#exampleTableEvents').bootstrapTable('refresh', {
+                                  url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
+                              });
+                          },
+                          error: function (data) {
+                              console.info("error: " + data.responseText);
+                          }
+
+                      });
+
+                  });
+
+              });
+          }
+      });
+
       window.operateEvents = {
           'click #log_txt': function (e, value, row, index) {
               window.open(server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.run_time + "&update_time=" + row.update_time);

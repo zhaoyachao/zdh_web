@@ -150,7 +150,11 @@ public class ZdhDataSourcesController extends BaseController{
             }
             Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
             List<DataSourcesInfo> list = dataSourcesMapper.selectByParams2(getOwner(), null, url, data_source_context, data_source_type, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
-
+            if(list != null && list.size()>0){
+                for (DataSourcesInfo dsi: list){
+                    dsi.setPassword("");
+                }
+            }
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -171,6 +175,9 @@ public class ZdhDataSourcesController extends BaseController{
     public ReturnInfo<DataSourcesInfo> data_sources_info(String id) {
         try{
             DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
+            if(dataSourcesInfo != null){
+                dataSourcesInfo.setPassword("");
+            }
             return ReturnInfo.buildSuccess(dataSourcesInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -219,11 +226,14 @@ public class ZdhDataSourcesController extends BaseController{
     @SentinelResource(value = "data_sources_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_sources_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<Object> data_sources_add(DataSourcesInfo dataSourcesInfo) {
+    public ReturnInfo<Object> data_sources_add(DataSourcesInfo dataSourcesInfo, String check_password) {
         try{
             dataSourcesInfo.setOwner(getOwner());
             dataSourcesInfo.setIs_delete("0");
             dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            if(StringUtils.isEmpty(check_password) || check_password.equalsIgnoreCase("off")){
+                dataSourcesInfo.setPassword(null);
+            }
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group());
             dataSourcesMapper.insertSelective(dataSourcesInfo);
@@ -243,13 +253,16 @@ public class ZdhDataSourcesController extends BaseController{
     @SentinelResource(value = "data_sources_update", blockHandler = "handleReturn")
     @RequestMapping(value="/data_sources_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<Object> data_sources_update(DataSourcesInfo dataSourcesInfo) {
+    public ReturnInfo<Object> data_sources_update(DataSourcesInfo dataSourcesInfo, String check_password) {
         try{
             DataSourcesInfo oldDataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(dataSourcesInfo.getId());
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group());
             checkPermissionByProductAndDimGroup(zdhPermissionService, oldDataSourcesInfo.getProduct_code(), oldDataSourcesInfo.getDim_group());
 
+            if(StringUtils.isEmpty(check_password) || check_password.equalsIgnoreCase("off")){
+                dataSourcesInfo.setPassword(null);
+            }
             dataSourcesInfo.setOwner(oldDataSourcesInfo.getOwner());
             dataSourcesInfo.setIs_delete("0");
             dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));

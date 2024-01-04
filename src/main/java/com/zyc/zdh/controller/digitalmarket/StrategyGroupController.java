@@ -831,6 +831,37 @@ public class StrategyGroupController extends BaseController {
         }
     }
 
+    /**
+     * 更新优先级
+     * @param ids
+     * @param priority
+     * @return
+     */
+    @SentinelResource(value = "strategy_instance_priority", blockHandler = "handleReturn")
+    @RequestMapping(value = "/strategy_instance_priority", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo strategy_instance_priority(String[] ids, String priority) {
+
+        try{
+            StrategyInstance strategyInstance = new StrategyInstance();
+            strategyInstance.setPriority(priority);
+
+            Example example = new Example(StrategyInstance.class);
+
+            Example.Criteria criteria = example.createCriteria();
+
+            criteria.andIn("group_instance_id", Lists.newArrayList(ids));
+
+            strategyInstanceMapper.updateByExampleSelective(strategyInstance, example);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
+        }
+    }
+
+
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (int i = 0, len = fields.length; i < len; i++) {

@@ -755,6 +755,7 @@
   
   + v5.2.3 [zdh_web]智能营销-标签管理-新增用户标签值修改
   + v5.2.3 [zdh_web]智能营销-新增根据数据状态流转功能
+  + v5.2.3 [zdh_web]数据源管理-删除密码展示
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -2969,6 +2970,17 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1188458463701766144, '1170678953501790208', '告警组-按用户查询列表', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2023-12-24 12:29:38', '2023-12-24 12:31:05', 'beacon_fire_alarm_group_list_by_owner', '5', '', '', 'zdh', '');
 
+        
+## 5.2.2迁移5.2.3
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1191144927833100288, '963926116140060672', '标签值新增页面', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2023-12-31 22:24:41', '2023-12-31 22:25:06', 'label_online_add_value_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1191144971562913792, '963926116140060672', '标签值新增', '4', 'zyc', 'fa fa-coffee', '', '11', '1', '2023-12-31 22:24:52', '2023-12-31 22:25:13', 'label_online_add_value', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1191876453948461056, '963932648793706496', '更新策略实例优先级', '4', 'zyc', 'fa fa-coffee', '', '60', '1', '2024-01-02 22:51:31', '2024-01-02 22:51:31', 'strategy_instance_priority', '5', '', '', 'zdh', '');
         
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
