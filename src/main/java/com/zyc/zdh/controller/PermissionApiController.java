@@ -184,6 +184,8 @@ public class PermissionApiController {
             criteria.andEqualTo("product_code", product_code);
             PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
             permissionUserInfo.setEnable(enable);
+            permissionUserInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+
             permissionMapper.updateByExampleSelective(permissionUserInfo, example);
 
             //返回统一信息
@@ -217,6 +219,7 @@ public class PermissionApiController {
             criteria.andEqualTo("product_code", product_code);
             PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
             permissionUserInfo.setEnable(enable);
+            permissionUserInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             permissionMapper.updateByExampleSelective(permissionUserInfo, example);
 
             //返回统一信息

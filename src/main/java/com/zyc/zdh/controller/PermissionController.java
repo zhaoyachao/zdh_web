@@ -278,12 +278,15 @@ public class PermissionController extends BaseController {
                 }
                 user.setEnable(Const.FALSE);
                 user.setId(null);
+                user.setCreate_time(new Timestamp(new Date().getTime()));
+                user.setUpdate_time(new Timestamp(new Date().getTime()));
                 permissionMapper.insertSelective(user);
             } else {
                 PermissionUserInfo pui = permissionMapper.selectByPrimaryKey(user.getId());
                 if (user.getUser_password().equalsIgnoreCase("")) {
                     user.setUser_password(pui.getUser_password());
                     user.setEnable(pui.getEnable());
+                    user.setUpdate_time(new Timestamp(new Date().getTime()));
                 }
                 permissionMapper.updateByPrimaryKeySelective(user);
                 //

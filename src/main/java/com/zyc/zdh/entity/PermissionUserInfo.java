@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Table(name = "permission_user_info")
 public class PermissionUserInfo implements Serializable {
@@ -77,6 +78,10 @@ public class PermissionUserInfo implements Serializable {
 	 * 产品代码
 	 */
 	private String product_code;
+
+	private Timestamp create_time;
+
+	private Timestamp update_time;
 
 
 	public String getId() {
@@ -189,5 +194,21 @@ public class PermissionUserInfo implements Serializable {
 
 	public void setProduct_code(String product_code) {
 		this.product_code = product_code;
+	}
+
+	public Timestamp getCreate_time() {
+		return create_time;
+	}
+
+	public void setCreate_time(Timestamp create_time) {
+		this.create_time = create_time;
+	}
+
+	public Timestamp getUpdate_time() {
+		return update_time;
+	}
+
+	public void setUpdate_time(Timestamp update_time) {
+		this.update_time = update_time;
 	}
 }

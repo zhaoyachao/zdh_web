@@ -62,6 +62,7 @@
    + 通过工具完成大部分工作,减少开发者的工作量
    + 降低使用者标准,通过拖拉拽实现数据的采集(任务依赖关系由自带调度完成-优势)
    + 本平台的初衷及目的尽量减少开发者的工作量及降低数据开发者的使用门槛
+   + 基于当前大数据平台开发智能营销系统
    + 记录平时工作中遇到的挑战
    
 # 项目模块划分
@@ -73,7 +74,7 @@
       zdh_mock: 基于netty的http-mock服务,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_mock
       zdh_queue: 计划开发一个非高性能的优先级可控队列(用于etl任务优先级控制),开发失败,废弃
       zdh_auth: 大数据统一权限管理(hadoop,hive,hbase,presto),开发中
-      zdh_magic_mirror: 是一个客户管理模块, 开发中,计划做客户画像,智能营销等服务,主要包括common,label, plugin, ship, variable, 5个模块 github: https://github.com/zhaoyachao/zdh_magic_mirror
+      zdh_magic_mirror: 是一个客户管理模块,客户画像,智能营销等服务,主要包括common,label, plugin, ship, variable, 5个模块 github: https://github.com/zhaoyachao/zdh_magic_mirror
          common: 公共模块
          label: 客户管理-标签服务,必须依赖zdh_web,主要提供离线批量圈人功能
          plugin: 客户管理-通用插件服务,提供id_mapping,过滤,触达用户(发送短信,邮件等)
@@ -84,8 +85,7 @@
     
    
 # 开源/闭源版本
-   + 5.1.1之前版本不开放源代码且不在继续维护
-   + 5.1.1及之后版本开放所有源代码
+   + 全部开放源代码
    
 # 下载编译包   
    + 编译包下载地址(只提供最新编译包下载,历史版本需要手动从源码构建)：
@@ -119,8 +119,9 @@
     2 修改数据源连接(默认支持mysql8),外部数据库必须引入
        
     3 修改redis配置
-      
-    4 修改application-*配置文件中myid(多个集群依次1,2,3,...)
+        spring.redis.开头参数
+        
+    4 修改application-*配置文件中myid(多个服务依次1,2,3,...)
        对应参数myid=1
     
 ## 源码编译
@@ -758,6 +759,7 @@
   + v5.2.3 [zdh_web]智能营销-新增根据数据状态流转功能
   + v5.2.3 [zdh_web]数据源管理-删除密码展示
   
+  + v5.3.0 [zdh_web]权限模块-用户配置新增创建,更新时间
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
@@ -2982,7 +2984,12 @@
     INSERT INTO resource_tree_info
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1191876453948461056, '963932648793706496', '更新策略实例优先级', '4', 'zyc', 'fa fa-coffee', '', '60', '1', '2024-01-02 22:51:31', '2024-01-02 22:51:31', 'strategy_instance_priority', '5', '', '', 'zdh', '');
-        
+      
+## 5.2.3迁移5.3.0
+    alter table permission_user_info add column `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间';
+    alter table permission_user_info add column `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间';
+    
+    
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
   + v4.7.x 接入flink引擎,实现流采集 已完成

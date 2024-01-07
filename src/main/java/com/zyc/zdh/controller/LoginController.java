@@ -47,10 +47,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -137,6 +136,8 @@ public class LoginController {
             String product_code = ev.getProperty("zdh.product", "zdh");
             pui.setProduct_code(product_code);
             pui.setEnable(Const.TRUR);
+            pui.setCreate_time(new Timestamp(new Date().getTime()));
+            pui.setUpdate_time(new Timestamp(new Date().getTime()));
 
             String roles = ev.getProperty("zdp.init.roles","role_base");
             pui.setRoles(roles);

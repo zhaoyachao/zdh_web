@@ -28,7 +28,6 @@ import tk.mybatis.mapper.entity.Example;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 智能营销-标签服务
