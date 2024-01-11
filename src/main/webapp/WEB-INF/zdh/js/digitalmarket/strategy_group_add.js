@@ -236,8 +236,9 @@ function doubleclick_label(id) {
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
             var data_status = div.attr("data_status");
+            var label_use_type = div.attr("label_use_type");
             $("#rule_param").val(div.attr("rule_param"));
-            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
+            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status+"&label_use_type="+label_use_type
         }
         layer.open({
             type: 2,
@@ -261,6 +262,7 @@ function doubleclick_label(id) {
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("data_status",etl_task_info.data_status);
 
+                div.attr("label_use_type",etl_task_info.label_use_type);
                 div.attr("rule_id",etl_task_info.rule_id);
                 div.attr("rule_context",etl_task_info.rule_context);
                 div.attr("rule_param",etl_task_info.rule_param);

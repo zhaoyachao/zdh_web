@@ -254,9 +254,10 @@ public class JobDigitalMarket {
      * @param sub_tasks     重试的子任务divId,如果全部重试可传null,或者所有的divId
      */
     public static void chooseJobBean(StrategyGroupInfo strategyGroupInfo, int is_retry, StrategyGroupInstance retry_sgi, String[] sub_tasks) {
+        RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
         StrategyGroupMapper sgm = (StrategyGroupMapper) SpringContext.getBean("strategyGroupMapper");
-
         StrategyGroupInstanceMapper sgim = (StrategyGroupInstanceMapper) SpringContext.getBean("strategyGroupInstanceMapper");
+
         //手动重试增加重试实例,自动重试在原来的基础上
         //线程池执行具体调度任务
         threadPoolExecutor.execute(new Runnable() {
@@ -271,7 +272,7 @@ public class JobDigitalMarket {
                         sgi.setStrategy_group_id(strategyGroupInfo.getId());
                         sgi.setCreate_time(new Timestamp(new Date().getTime()));
                         sgi.setUpdate_time(new Timestamp(new Date().getTime()));
-                        if(sgi.getGroup_type().equalsIgnoreCase("offline")){
+                        if(sgi.getGroup_type().equalsIgnoreCase(JobGroupType.OFFLINE.getValue())){
                             sgi.setSmall_flow_rate("1,100");
                         }
                         //逻辑发送错误代码捕获发生自动重试(retry_job) 不重新生成实例id,使用旧的实例id
@@ -311,6 +312,13 @@ public class JobDigitalMarket {
                         //todo 生成具体任务组下任务实例
                         sub_strategy_instance(sgi, sub_tasks);
                         sgim.updateStatus2Create(new String[]{sgi.getId()});
+
+                        //在线策略小流量生效
+                        if(!StringUtils.isEmpty(sgi.getSmall_flow_rate()) && sgi.getGroup_type().equalsIgnoreCase(JobGroupType.ONLINE.getValue())){
+                            Map<String, String> tmp = new HashMap<>();
+                            tmp.put(sgi.getId(), sgi.getSmall_flow_rate());
+                            redisUtil.set("small_flow_rate_"+sgi.getStrategy_group_id(), JSON.toJSONString(tmp));
+                        }
                         debugInfo(sgi);
 
                     } catch (IllegalAccessException e) {

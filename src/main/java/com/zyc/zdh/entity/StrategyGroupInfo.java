@@ -128,6 +128,11 @@ public class StrategyGroupInfo {
     private String product_code;
 
     /**
+     * 默认小流量配置example: 1,100
+     */
+    private String small_flow_rate;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -495,5 +500,13 @@ public class StrategyGroupInfo {
 
     public void setProduct_code(String product_code) {
         this.product_code = product_code;
+    }
+
+    public String getSmall_flow_rate() {
+        return small_flow_rate;
+    }
+
+    public void setSmall_flow_rate(String small_flow_rate) {
+        this.small_flow_rate = small_flow_rate;
     }
 }

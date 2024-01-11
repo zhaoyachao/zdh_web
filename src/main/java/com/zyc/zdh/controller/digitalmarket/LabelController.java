@@ -57,12 +57,14 @@ public class LabelController extends BaseController {
     /**
      * 标签列表
      * @param label_context 关键字
+     * @param label_use_type 标签使用场景
+     * @param product_code 产品code
      * @return
      */
     @SentinelResource(value = "label_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/label_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<LabelInfo>> label_list(String label_context, String product_code) {
+    public ReturnInfo<List<LabelInfo>> label_list(String label_context, String label_use_type, String product_code) {
         try{
             Example example=new Example(LabelInfo.class);
             Example.Criteria criteria=example.createCriteria();
@@ -73,6 +75,9 @@ public class LabelController extends BaseController {
 
             if(!StringUtils.isEmpty(product_code)){
                 criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(label_use_type)){
+                criteria.andEqualTo("label_use_type", label_use_type);
             }
 
             Example.Criteria criteria2=example.createCriteria();

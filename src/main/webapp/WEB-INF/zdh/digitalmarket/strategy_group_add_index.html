@@ -377,6 +377,7 @@
 
             if(tp == "label"){
                 $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).attr("label_use_type",rs.label_use_type);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "crowd_file"){
@@ -522,6 +523,7 @@
                 operate: $elem.attr('operate'),
 
                 rule_id: $elem.attr('rule_id'),
+                label_use_type: $elem.attr('label_use_type'),
                 rule_context:$elem.attr('rule_context'),
                 rule_param: $elem.attr('rule_param'),
 

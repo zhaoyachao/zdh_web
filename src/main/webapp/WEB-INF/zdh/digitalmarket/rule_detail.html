@@ -72,6 +72,17 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">标签使用场景</label>
+                            <div class="col-sm-10">
+                                <select id="label_use_type" name="label_use_type" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="batch" mytype="" selected>值查人</option>
+                                    <option value="single" mytype="">人查值</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">规则模板</label>
                             <div class="col-sm-10">
                                 <select id="more_task" name="more_task" data-placeholder=""
@@ -254,7 +265,7 @@
                     async: false,
                     url: server_context+"/label_list",
                     dataType: 'json',
-                    data: '',
+                    data: {'label_use_type': $("#label_use_type").val()},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -403,6 +414,7 @@
             }
             //启动数据源select 初始化函数
             $('#rule_id').chosen();
+            $('#label_use_type').chosen();
 
             $('#operate').chosen();
             $('#data_status').chosen();
@@ -410,13 +422,21 @@
 
             if(s["rule_id"] != '-1'){
                 console.info("更新触发");
+
+                if(!is_empty(s["label_use_type"])){
+                    $("#label_use_type").val(s["label_use_type"]);
+                    $("#label_use_type").trigger("chosen:updated");
+                }
+
                 var more_task=s["more_task"];
                 console.info("more_task:"+more_task);
                 choseMoreTask(more_task);
                 $("#more_task").val(more_task);
                 $("#more_task").trigger("chosen:updated");
+
                 $("#rule_id").val(s["rule_id"]);
                 $("#rule_id").trigger("chosen:updated");
+
                 $("#operate").val(s.operate);
                 $("#operate").trigger("chosen:updated");
 
@@ -466,6 +486,7 @@
         var touch_type=$('#touch_type').find("option:selected").val();
         var is_base=$('#is_base').find("option:selected").val();
         var data_status=$('#data_status').find("option:selected").val();
+        var label_use_type=$('#label_use_type').find("option:selected").val();
 
         var depend_level=$('#depend_level').find("option:selected").val();
         var time_out=$('#time_out').val();
@@ -530,6 +551,7 @@
 
             "rule_context":rule_expression_cn,
             "rule_id":rule_id,
+            "label_use_type": label_use_type,
 
             "rule_param": JSON.stringify(result),
             "rule_expression_cn": rule_expression_cn,

@@ -313,6 +313,15 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
         List<StrategyGroupInstance> sgis=sgim.selectTaskGroupByStatus(new String[]{JobStatus.SUB_TASK_DISPATCH.getValue(),JobStatus.KILL.getValue()});
 
         for(StrategyGroupInstance sgi:sgis){
+
+            //策略组实例到期自动结束
+            if(sgi.getGroup_type().equalsIgnoreCase("online") && sgi.getStatus().equalsIgnoreCase(JobStatus.SUB_TASK_DISPATCH.getValue())){
+                if(new Date().getTime() > sgi.getEnd_time().getTime()){
+                    sgim.updateStatusById3(JobStatus.FINISH.getValue(), DateUtil.getCurrentTime(), sgi.getId());
+                    sim.updateStatusKillByGroupInstanceId(sgi.getId(), JobStatus.FINISH.getValue());
+                }
+            }
+
             //run_date 结构：run_date:[{task_log_instance_id,etl_task_id,etl_context,more_task}]
             //System.out.println(tgli.getRun_jsmind_data());
             if(StringUtils.isEmpty(sgi.getRun_jsmind_data())){

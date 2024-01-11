@@ -155,4 +155,14 @@ public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<Strat
             }
     )
     public int updateStatusKillByIds(@Param("ids") String[] ids);
+
+    @Update(
+            {
+                    "<script>",
+                    "update strategy_instance set status=#{status} where group_instance_id =",
+                    "#{group_instance_id}",
+                    "</script>"
+            }
+    )
+    public int updateStatusByGroupInstanceId(@Param("group_instance_id") String group_instance_id, @Param("status") String status);
 }
