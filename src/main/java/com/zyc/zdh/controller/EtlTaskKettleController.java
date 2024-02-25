@@ -1,20 +1,17 @@
 package com.zyc.zdh.controller;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
-import com.zyc.zdh.entity.PageResult;
+import com.zyc.zdh.dao.EtlTaskKettleMapper;
 import com.zyc.zdh.entity.EtlTaskKettleInfo;
+import com.zyc.zdh.entity.PageResult;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.User;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.util.Const;
 import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
-import com.zyc.zdh.dao.EtlTaskKettleMapper;
-
 
 import java.sql.Timestamp;
 import java.util.Date;
