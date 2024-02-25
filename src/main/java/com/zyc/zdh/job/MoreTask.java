@@ -11,7 +11,13 @@ public enum MoreTask {
     SQL("4","SQL","SQL"),
     Drools("5","DROOLS","DROOLS"),
     APPLY("6","APPLY","申请源ETL"),
-    FLINK("7","FLINK","FLINK");
+    FLINK("7","FLINK","FLINK"),
+    JDBC("8","JDBC","JDBC"),
+    DATAX("9","DATAX","DATAX"),
+    QUALITY("10","QUALITY","质量检测"),
+    UNSTRUCTURE("11","UNSTRUCTURE","非结构化采集"),
+    DATAX_WEB("12","DATAX_WEB","DATAX_WEB"),
+    KETTLE("13","KETTLE","KETTLE");
 
 
     private String value;

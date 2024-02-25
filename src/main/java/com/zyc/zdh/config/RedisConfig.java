@@ -4,6 +4,7 @@ import com.zyc.zdh.cache.MyCacheManager;
 import com.zyc.zdh.cache.MyCacheTemplate;
 import com.zyc.zdh.cache.MyRedisCache;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.ParamUtil;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
@@ -139,7 +140,7 @@ public class RedisConfig extends CachingConfigurerSupport {
 	}
 
 	@Autowired
-	Environment ev;
+	public Environment ev;
 
 	@Bean("jedisPoolConfig")
 	public JedisPoolConfig jedisPoolConfig() {
@@ -202,6 +203,14 @@ public class RedisConfig extends CachingConfigurerSupport {
 		RedisUtil redisUtil = new RedisUtil();
 		redisUtil.setRedisTemplate(redisTemplate);
 		return redisUtil;
+	}
+
+	@Bean
+	public ParamUtil paramUtil(RedisUtil redisUtil){
+		ParamUtil paramUtil = new ParamUtil();
+		paramUtil.setRedisUtil(redisUtil);
+		paramUtil.setVersion(ev.getProperty("version", ""));
+		return paramUtil;
 	}
 	/**
 	 * redis缓存管理器

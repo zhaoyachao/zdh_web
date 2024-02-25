@@ -62,6 +62,8 @@ public class ParamInfo {
      */
     private String param_value;
 
+    private String version;
+
     @Transient
     private String param_type_name;
 
@@ -261,5 +263,13 @@ public class ParamInfo {
      */
     public void setParam_value(String param_value) {
         this.param_value = param_value;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

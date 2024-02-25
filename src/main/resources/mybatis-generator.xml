@@ -380,5 +380,11 @@
 <!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--                </table>-->
 
+<!--        <table tableName="etl_task_kettle_info" domainObjectName="EtlTaskKettleInfo" mapperName="BaseEtlTaskKettleMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
     </context>
 </generatorConfiguration>

@@ -139,7 +139,40 @@
               }, function(){
 
               });
-          }
+          },
+
+          'click #refash2redis': function (e, value, row, index) {
+              layer.confirm('是否同步redis', {
+                  btn: ['确定','取消'] //按钮
+              }, function(index){
+                  $.ajax({
+                      url : server_context+"/crowd_file_refash2redis",
+                      data : "id=" + row.id,
+                      type : "post",
+                      dataType : "json",
+                      success : function(data) {
+                          if(data.code != '200'){
+                              console.error(data.msg);
+                              parent.layer.msg("执行失败");
+                              return ;
+                          }
+                          parent.layer.msg("执行成功");
+                          $('#exampleTableEvents').bootstrapTable('refresh', {
+                              url: server_context+"/crowd_file_list?"+$("#crowd_file_form").serialize(),
+                              contentType: "application/json;charset=utf-8",
+                              dataType: "json"
+                          });
+                      },
+                      error: function (data) {
+                          console.info("error: " + data.responseText);
+                      }
+                  });
+                  layer.close(layer.index)
+              }, function(){
+
+              });
+          },
+
       };
 
       function operateFormatter(value, row, index) {
@@ -151,6 +184,9 @@
               '                                    </button>',
               ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="refash2redis" name="refash2redis" type="button" class="btn btn-outline btn-sm" title="同步redis">\n' +
+              '                                        <i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +
               '</div>'

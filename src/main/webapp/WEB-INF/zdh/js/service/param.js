@@ -173,6 +173,62 @@
 
               });
           },
+          'click #merge': function (e, value, row, index) {
+
+              layer.use('extend/layer.ext.js', function () {
+                  layer.prompt({title: '同步当前参数到指定版本,为空标识同步默认版本,同步后当前参数会删除',
+                      formType: 2,
+                      value:"default",
+                      btn: ['合并','合并后删除', '取消'],
+                      btn2: function(index, elem){
+                          //合并后删除逻辑
+                          var value = $('#layui-layer'+index + " .layui-layer-input").val();
+                          $.ajax({
+                              url: server_context+"/param_merge",
+                              data: "id="+row.id +"&version="+ value+"&is_delete=true",
+                              type: "post",
+                              async:false,
+                              dataType: "json",
+                              success: function (data) {
+                                  console.info("success");
+                                  $('#exampleTableEvents').bootstrapTable('refresh', {
+                                      url: server_context+"/param_list"
+                                  });
+                              },
+                              error: function (data) {
+                                  console.info("error: " + data.responseText);
+                              }
+
+                          });
+                      },
+                  }, function(pass, index){
+
+                      $.ajax({
+                          url: server_context+"/param_merge",
+                          data: "id="+row.id +"&version="+ pass,
+                          type: "post",
+                          async:false,
+                          dataType: "json",
+                          success: function (data) {
+                              if(data.code != "200"){
+                                  parent.layer.msg(data.msg);
+                                  return ;
+                              }
+                              $('#exampleTableEvents').bootstrapTable('refresh', {
+                                  url: server_context+"/param_list"
+                              });
+                              layer.close(index);
+                          },
+                          error: function (data) {
+                              console.info("error: " + data.responseText);
+                          }
+
+                      });
+
+                  });
+
+              });
+          },
       };
 
       function operateFormatter(value, row, index) {
@@ -184,6 +240,9 @@
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="toredis" name="toredis" type="button" class="btn btn-outline btn-sm" title="同步redis">\n' +
+              '                                        <i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="merge" name="merge" type="button" class="btn btn-outline btn-sm" title="合并参数">\n' +
               '                                        <i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +

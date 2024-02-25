@@ -471,6 +471,10 @@
             title: 'ID',
             sortable:false
         }, {
+            field: 'group_type',
+            title: '策略组类型',
+            sortable:false
+        },  {
             field: 'group_context',
             title: '策略组说明',
             sortable:false

@@ -1,5 +1,7 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.CrowdFileMapper;
@@ -8,6 +10,7 @@ import com.zyc.zdh.entity.PageResult;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.SFTPUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +36,8 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -52,6 +57,9 @@ public class CrowdFileController extends BaseController {
 
     @Autowired
     private ZdhPermissionService zdhPermissionService;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
 
     /**
@@ -275,6 +283,62 @@ public class CrowdFileController extends BaseController {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+        }
+    }
+
+    @SentinelResource(value = "crowd_file_refash2redis", blockHandler = "handleReturn")
+    @RequestMapping(value = "/crowd_file_refash2redis", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo crowd_file_refash2redis(String id) {
+        try {
+            CrowdFileInfo oldCrowdFileInfo = crowdFileMapper.selectByPrimaryKey(id);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldCrowdFileInfo.getProduct_code(), oldCrowdFileInfo.getDim_group());
+
+            //读取数据
+            String store = env.getProperty("digitalmarket.store.type","local");
+            String host = env.getProperty("digitalmarket.sftp.host","");
+            String port = env.getProperty("digitalmarket.sftp.port","22");
+            String username = env.getProperty("digitalmarket.sftp.username","");
+            String password = env.getProperty("digitalmarket.sftp.password","");
+            String path = env.getProperty("digitalmarket.sftp.path","");
+            List<String> lines = new ArrayList<>();
+            if(store.equalsIgnoreCase("local")){
+                //本地目录
+                String localPath = env.getProperty("digitalmarket.local.path","/home/data/file");
+                File fileDir = new File(localPath);
+                if (!fileDir.exists()) {
+                    fileDir.mkdirs();
+                }
+
+                File localFile = new File( fileDir + "/" +oldCrowdFileInfo.getFile_url());
+                logger.info("crowd file upload store type: {}, path: {}", store, localFile.getAbsolutePath());
+                lines = FileUtil.readLines(localFile, "utf-8");
+
+            }else if(store.equalsIgnoreCase("sftp")){
+                logger.info("crowd file upload store type: {}, path: {}", store, path+oldCrowdFileInfo.getFile_url());
+                //sftp
+                SFTPUtil sftp = new SFTPUtil(username, password,
+                        host, new Integer(port));
+                sftp.login();
+                sftp.download(path, oldCrowdFileInfo.getFile_url(), "/tmp/"+oldCrowdFileInfo.getFile_url());
+                lines = FileUtil.readLines("/tmp/"+oldCrowdFileInfo.getFile_url(), "utf-8");
+                sftp.logout();
+            }
+
+            //遍历lines 写入redis
+            if(lines.size() > 100000){
+                throw new Exception("人群文件量级超过100000,禁止同步redis");
+            }
+
+            for (String line: lines){
+                redisUtil.set(oldCrowdFileInfo.getProduct_code()+"_crowd_file_"+oldCrowdFileInfo.getId()+"_"+line, line);
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "同步成功", null);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "同步失败", e.getMessage());
         }
     }
 

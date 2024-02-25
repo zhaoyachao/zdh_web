@@ -34,6 +34,7 @@
   - [5.2.0迁移5.2.1](#520%E8%BF%81%E7%A7%BB521)
   - [5.2.1迁移5.2.2](#521%E8%BF%81%E7%A7%BB522)
   - [5.2.2迁移5.2.3](#522%E8%BF%81%E7%A7%BB523)
+  - [5.2.3迁移5.3.0](#523%E8%BF%81%E7%A7%BB530)
 - [未完成的功能](#%E6%9C%AA%E5%AE%8C%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD)
 - [支持的数据源](#%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E6%BA%90)
 - [支持的调度对象](#%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E5%BA%A6%E5%AF%B9%E8%B1%A1)
@@ -762,14 +763,15 @@
   + v5.3.0 [zdh_web]权限模块-用户配置新增创建,更新时间
   + v5.3.0 [zdh_web]智能营销-在线策略组增加自动结束
   + v5.3.0 [zdh_web]智能营销-策略配置标签新增场景选择(离线策略支持实时标签)
-  + v5.3.0
+  + v5.3.0 [zdh_web]智能营销-新增人群同步redis
+  + v5.3.0 [zdh_web]新增参数版本-灰度上线时,解决参数多版本冲突
+  + v5.3.0 [zdh_web]etl新增kettle类任务(新增kettle相关jar)
+  + v5.3.0 [zdh_web]代码生成模板优化
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]历史遗留支持spark-greenplum 链接器【未完成】
-  
-  
   + v5.1.0 标签模块-增加标签加工任务【开发中】
  
   
@@ -2991,7 +2993,142 @@
 ## 5.2.3迁移5.3.0
     alter table permission_user_info add column `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间';
     alter table permission_user_info add column `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间';
+    alter table strategy_group_info add column small_flow_rate varchar(16) not null default '' comment '默认小流量比例:1,100';
+    alter table param_info add column version varchar(64) not null default '' comment '版本,默认为空不区分版本';
     
+    CREATE TABLE `etl_task_kettle_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `etl_context` varchar(200) DEFAULT NULL COMMENT '任务说明',
+      `kettle_repository_type` varchar(100) DEFAULT NULL COMMENT '存储库类型,可选值:db,file',
+      `kettle_repository_user` varchar(100) DEFAULT NULL COMMENT 'kettle存储库账号',
+      `kettle_repository_password` varchar(100) DEFAULT NULL COMMENT 'kettle存储库密码',
+      `data_sources_choose_input` varchar(100) DEFAULT NULL COMMENT '输入数据源id',
+      `data_source_type_input` varchar(100) DEFAULT NULL COMMENT '输入数据源类型',
+      `data_sources_params_input` varchar(500) DEFAULT NULL COMMENT '输入数据源参数',
+      `kettle_repository` varchar(100) DEFAULT NULL COMMENT '存储库',
+      `kettle_repository_path` varchar(100) DEFAULT NULL COMMENT '存储库类型,可选值:db,file',
+      `kettle_type` varchar(100) DEFAULT NULL COMMENT 'kettle类型，可选值,job,trans',
+      `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `company` varchar(100) DEFAULT NULL COMMENT '表所属公司',
+      `section` varchar(100) DEFAULT NULL COMMENT '表所属部门',
+      `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
+      `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+      `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
+      PRIMARY KEY (`id`),
+      KEY `idx_owner` (`owner`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
+    
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1195487861827178496, '1013053374364389376', '人群文件同步redis', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2024-01-12 22:01:57', '2024-01-12 22:01:57', 'crowd_file_refash2redis', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1210897256677380096, '802852358580080640', 'KETTLE任务', '3', 'zyc', 'non', '', '15', '1', '2024-02-24 10:33:23', '2024-02-24 16:36:20', 'etl_task_kettle_index.html', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1210897515604348928, '1210897256677380096', '查询按钮', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-02-24 10:34:25', '2024-02-24 10:34:25', 'etl_task_kettle_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1210897611150594048, '1210897256677380096', '新增kettle任务', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2024-02-24 10:34:48', '2024-02-24 10:34:48', 'etl_task_kettle_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1210897662052667392, '1210897256677380096', '更新kettle任务', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2024-02-24 10:35:00', '2024-02-24 10:35:00', 'etl_task_kettle_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1210897757775073280, '1210897256677380096', '删除kettle任务', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2024-02-24 10:35:23', '2024-02-24 10:35:23', 'etl_task_kettle_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1210897852641841152, '1210897256677380096', '查询kettle明细', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2024-02-24 10:35:45', '2024-02-24 10:35:45', 'etl_task_kettle_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1210897944585179136, '1210897256677380096', '新增kettle页面', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2024-02-24 10:36:07', '2024-02-24 10:36:07', 'etl_task_kettle_add_index', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1211343323873153024, '1210897256677380096', '分页查询按钮', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-02-25 16:05:54', '2024-02-25 16:05:54', 'etl_task_kettle_list_by_page', '5', '', '', 'zdh', '');
+
+    alter table account_info comment '用户账号表';
+    alter table  alarm_sms_info	comment '短信告警信息表';
+    alter table  apply_info	comment '申请信息表';
+    alter table  approval_auditor_flow_info	comment '审批流配置表';
+    alter table  approval_auditor_info	comment '审批人-审批节点信息表';
+    alter table  approval_config_info	comment '审批节点信息表';
+    alter table  approval_event_info	comment '审批事件信息表';
+    alter table  blood_source_info	comment '数据血缘关系表';
+    alter table  crowd_file_info	comment '智能营销-人群文件信息表';
+    alter table  crowd_rule_info	comment '智能营销-人群规则信息表';
+    alter table  data_sources_info	comment '数据源信息表';
+    alter table  data_sources_type_info	comment '数据源类型表';
+    alter table  data_tag_group_info	comment '权限-数据标识组信息表';
+    alter table  data_tag_info	comment '权限-数据标识信息表';
+    alter table  dispatch_task_info	comment '调度任务表(废弃)';
+    alter table  enum_info	comment '枚举信息表';
+    alter table  etl_apply_task_info comment 'etl申请源任务信息表';
+    alter table  etl_drools_task_info	comment 'etl-drools任务表(废弃-不在更新维护)';
+    alter table  etl_more_task_info comment 'etl多源任务信息表';	
+    alter table  etl_task_batch_info	comment '批量etl任务生成配置信息表';
+    alter table  etl_task_datax_auto_info	comment 'etl-datax-web任务信息表';
+    alter table  etl_task_datax_info	comment 'etl-datax任务信息表';
+    alter table  etl_task_flink_info	comment 'etl-flink任务信息表';
+    alter table  etl_task_info	comment 'etl-spark任务信息表';
+    alter table  etl_task_jdbc_info	comment 'etl-jdbc任务信息表';
+    alter table  etl_task_kettle_info	comment 'etl-kettle任务信息表';
+    alter table  etl_task_log_info	comment 'etl-日志采集信息表';
+    alter table  etl_task_meta	comment 'etl-任务相关元信息配置(废弃)';
+    alter table  etl_task_unstructure_info	comment 'etl-非结构化任务信息表';
+    alter table  etl_task_unstructure_log_info	comment 'etl-非结构化任务日志表';
+    alter table  etl_task_update_logs	comment 'etl-任务更新日志表';
+    alter table  every_day_notice	comment '系统通知信息表';
+    alter table  filter_info	comment '智能营销-过滤信息表';
+    
+    alter table  issue_data_info	comment '发布数据信息表';
+    alter table  jar_file_info	comment 'jar文件上传信息表';
+    alter table  jar_task_info	comment 'jar任务信息表';
+    alter table  label_info	comment '智能营销-标签信息表';
+    alter table  meta_database_info	comment '数据库元信息表';
+    alter table  notice_info	comment '消息盒子表';
+    alter table  param_info	comment '参数配置信息表';
+    alter table  permission_apply_info	comment '权限-申请信息表';
+    alter table  permission_bigdata_info	comment '权限-大数据权限信息表';
+    alter table  permission_user_info	comment '权限-账户信息表';
+    alter table  plugin_info	comment '智能营销-插件信息表';
+    alter table  process_flow_info	comment '流程-审批流信息表';
+    alter table  product_tag_info	comment '权限-产品信息表';
+    
+    alter table  quality	comment '质量报告信息表';
+    alter table  quality_rule_info	comment '质量检测规则信息表';
+    alter table  quality_task_info	comment '质量检测任务信息表';
+    alter table  quartz_executor_info	comment '调度-执行器信息表';
+    alter table  quartz_job_info	comment '调度-任务信息表';
+    alter table  resource_tree_info	comment '权限-资源树信息表';
+    
+    alter table  role_info	comment '权限-角色信息表';
+    alter table  role_resource_info	comment '权限-角色资源树关系表';
+    alter table  self_history	comment '自助服务-个人历史信息表';
+    alter table  server_task_info	comment '服务器-服务部署任务信息表';
+    alter table  server_task_instance	comment '服务器-服务部署日志表';
+    alter table  sql_task_info	comment 'etl-sql任务信息表';
+    alter table  ssh_task_info	comment 'etl-ssh任务信息表';
+    alter table  strategy_group_info	comment '智能营销-策略组信息表';
+    alter table  strategy_group_instance	comment '智能营销-策略组实例任务表';
+    alter table  strategy_instance	comment '智能营销-策略实例任务表';
+    alter table  task_group_log_instance	comment '调度-任务组实例表';
+    alter table  task_log_instance	comment '调度-任务实例表';
+    alter table  test_info	comment '测试表(废弃)';
+    alter table  touch_config_info	comment '智能营销-触达配置信息表';
+    alter table  user_group_info	comment '权限-用户组信息表';
+    alter table  user_operate_log	comment '操作日志表';
+    alter table  user_resource_info	comment '权限-用户资源关系表(废弃)';
+    alter table  we_mock_data_info	comment 'mock-mock数据信息表';
+    alter table  we_mock_tree_info	comment 'mock-mock团队树信息表';
+    alter table  zdh_download_info	comment '下载信息表';
+    alter table  zdh_ha_info	comment 'zdh-ha表';
+    alter table  zdh_logs	comment 'zdh-日志表';
+    alter table  zdh_nginx	comment 'zdh-文件服务器信息表';
+
     
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

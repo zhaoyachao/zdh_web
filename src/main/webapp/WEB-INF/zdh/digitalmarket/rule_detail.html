@@ -224,7 +224,7 @@
                 '            <input name="param_context" type="text"\n' +
                 '                   placeholder="参数说明" class="form-control param_context" aria-required="true" value="zdh_param_context" readonly>\n' +
                 '        </div>\n' +
-                '        <div class="col-sm-2">\n' +
+                '        <div class="col-sm-1">\n' +
                 '            <input name="param_context" type="text"\n' +
                 '                   placeholder="参数类型" class="form-control param_type" aria-required="true" value="zdh_param_type" readonly>\n' +
                 '        </div>\n' +
@@ -245,6 +245,10 @@
                 '        <div class="col-sm-2">\n' +
                 '            <input name="param_value" type="text"\n' +
                 '                   placeholder="参数值,多个分号分割" class="form-control param_value" aria-required="true" value="zdh_param_value" id="zdh_param_value_id">\n' +
+                '        </div>\n' +
+                '        <div class="col-sm-1">\n' +
+                '            <input name="param_return_type" type="text"\n' +
+                '                   placeholder="参数返回值类型,多个分号分割" class="form-control param_return_type" aria-required="true" value="zdh_param_return_type" id="zdh_param_return_type">\n' +
                 '        </div>\n' +
                 '\n' +
                 '    </div>\n' +
@@ -280,7 +284,7 @@
                         $("#rule_id").chosen("destroy");
                         $('#rule_id').html(str);
                         $('#rule_id').chosen().on("change", function (evt, params) {
-                            getLabelParam($('#rule_id').val())
+                            getLabelParam($('#rule_id').val(), $("#label_use_type").val())
                         });
 
                     },
@@ -375,13 +379,13 @@
                 }
             }
 
-            function getLabelParam(label_code){
+            function getLabelParam(label_code, label_use_type){
                 $.ajax({
                     type: 'POST',
                     async: false,
                     url: server_context+"/label_detail_by_code",
                     dataType: 'json',
-                    data:{"label_code": label_code},
+                    data:{"label_code": label_code, "label_use_type": label_use_type},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -398,6 +402,7 @@
                             tmp = tmp.replace("zdh_param_operate", "zdh_param_operate_"+i);
                             tmp = tmp.replace("zdh_param_value_id", "zdh_param_value_"+i);
                             tmp = tmp.replace("zdh_param_value", param[i].param_value);
+                            tmp = tmp.replace("zdh_param_return_type", param[i].param_return_type);
                             $('#label_div').append(tmp);
                             $('#label_div #zdh_param_operate_'+i).val(param[i].param_operate);
                         }
@@ -459,7 +464,7 @@
                 }
 
                 //参数
-                getLabelParam($('#rule_id').val());
+                getLabelParam($('#rule_id').val(), s["label_use_type"]);
 
                 var rule_param = $("#rule_param",window.parent.document).val();
                 console.info("rule_detail:"+rule_param);
@@ -500,6 +505,7 @@
         var ary3 = new Array();
         var ary4 = new Array();
         var ary5 = new Array();
+        var ary6 = new Array();
 
         $(".param_code").each(function(index){
             ary[index] = $(this).val();
@@ -520,6 +526,11 @@
             ary5[index] =$(this).val();
         });
 
+        $(".param_return_type").each(function(index){
+            ary6[index] =$(this).val();
+        });
+
+
         var result = [];
         var rule_expression_cn = "";
         for (var i=0;i<ary.length;i++){
@@ -529,6 +540,7 @@
                 "param_operate":ary3[i],
                 "param_value":ary4[i],
                 "param_type":ary5[i],
+                "param_return_type":ary6[i],
             };
             if(is_empty(rule_expression_cn)){
                 rule_expression_cn = rule_expression_cn + " ("+ary2[i]+ " " + ary3[i] + " "+ary4[i] + ")";

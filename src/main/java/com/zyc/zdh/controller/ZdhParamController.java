@@ -1,6 +1,7 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.ParamMapper;
 import com.zyc.zdh.entity.ParamInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -64,24 +65,29 @@ public class ZdhParamController extends BaseController {
     /**
      * 系统参数列表
      * @param param_context 关键字
+     * @param version 版本号
      * @return
      */
     @SentinelResource(value = "param_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/param_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<ParamInfo>> param_list(String param_context) {
+    public ReturnInfo<List<ParamInfo>> param_list(String param_context, String version) {
         try{
             Example example=new Example(ParamInfo.class);
-            Example.Criteria criteria2 = example.createCriteria();
-            criteria2.andEqualTo("is_delete", Const.NOT_DELETE);
             Example.Criteria criteria = example.createCriteria();
-            if(!StringUtils.isEmpty(param_context)){
-                criteria.orLike("param_name", getLikeCondition(param_context));
-                criteria.orLike("param_context", getLikeCondition(param_context));
-                criteria.orLike("param_value", getLikeCondition(param_context));
-                criteria.orLike("param_type", getLikeCondition(param_context));
-                example.and(criteria);
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            if(!StringUtils.isEmpty(version)){
+                criteria.andEqualTo("version", version);
             }
+            Example.Criteria criteria2 = example.createCriteria();
+            if(!StringUtils.isEmpty(param_context)){
+                criteria2.orLike("param_name", getLikeCondition(param_context));
+                criteria2.orLike("param_context", getLikeCondition(param_context));
+                criteria2.orLike("param_value", getLikeCondition(param_context));
+                criteria2.orLike("param_type", getLikeCondition(param_context));
+                example.and(criteria2);
+            }
+
             List<ParamInfo> paramInfos = paramMapper.selectByExample(example);
             return ReturnInfo.buildSuccess(paramInfos);
         }catch (Exception e){
@@ -149,6 +155,7 @@ public class ZdhParamController extends BaseController {
             paramInfo.setOwner(getUser().getUserName());
             paramInfo.setUpdate_time(new Timestamp(new Date().getTime()));
             paramMapper.updateByPrimaryKeySelective(paramInfo);
+            //改动后邮件通知
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -206,6 +213,54 @@ public class ZdhParamController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
+
+    /**
+     * 参数合并
+     * 用于多版本参数上线后使用 比如 把默认版本参数同步到指定版本
+     * @param id
+     * @param version
+     * @param is_delete
+     * @return
+     */
+    @SentinelResource(value = "param_merge", blockHandler = "handleReturn")
+    @RequestMapping(value = "/param_merge", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo param_merge(String id, String version, String is_delete) {
+        try{
+            ParamInfo paramInfo = paramMapper.selectByPrimaryKey(id);
+
+            if(version.equalsIgnoreCase("default")){
+                version = "";
+            }
+            //根据版本和参数code查询
+            Example example=new Example(ParamInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("version", version);
+            criteria.andEqualTo("param_name", paramInfo.getParam_name());
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            List<ParamInfo> paramInfos = paramMapper.selectByExample(example);
+            if(paramInfos == null || paramInfos.size() > 1 || paramInfos.size() == 0){
+                throw new Exception("未找到参数或者存在多个参数,无法更新");
+            }
+            ParamInfo oldVersionParamInfo = paramInfos.get(0);
+            oldVersionParamInfo.setParam_value(paramInfo.getParam_value());
+            paramMapper.updateByPrimaryKey(oldVersionParamInfo);
+            if(!StringUtils.isEmpty(is_delete)){
+                if(is_delete.equalsIgnoreCase(Const.TRUR)){
+                    paramMapper.deleteLogicByIds(paramMapper.getTable(), new String[]{id}, new Timestamp(new Date().getTime()));
+                }
+            }
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
+    }
+
 
 
     private void debugInfo(Object obj) {

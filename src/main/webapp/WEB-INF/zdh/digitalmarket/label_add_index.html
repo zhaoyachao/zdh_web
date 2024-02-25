@@ -263,7 +263,7 @@
         '            <input name="param_context" type="text"\n' +
         '                   placeholder="参数说明" class="form-control param_context" aria-required="true" value="zdh_param_context">\n' +
         '        </div>\n' +
-        '        <div class="col-sm-2">\n' +
+        '        <div class="col-sm-1">\n' +
         '            <select class="form-control m-b param_type" data-live-search="true" name="param_type" id="zdh_param_type">\n' +
         '<option value="string">字符串</option>\n'+
         '<option value="int">数值</option>\n'+
@@ -295,6 +295,13 @@
         '        <div class="col-sm-1">\n' +
         '            <input name="param_enum_key" type="text"\n' +
         '                   placeholder="枚举key" class="form-control param_enum_key" aria-required="true" value="zdh_param_enum_key">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-1">\n' +
+        '            <select class="form-control m-b param_return_type" data-live-search="true" name="param_return_type" id="zdh_param_return_type">\n' +
+        '<option value="sign" selected>单个值</option>\n'+
+        '<option value="array">数组</option>\n'+
+        '<option value="dict">字典</option>\n'+
+        '            </select>\n' +
         '        </div>\n' +
         '        <div class="col-sm-1">\n' +
         '            <button id="delete" name="delete" class="btn btn-danger"\n' +
@@ -334,6 +341,7 @@
                 tmp = tmp.replace("zdh_param_operate", "");
                 tmp = tmp.replace("zdh_param_value", "");
                 tmp = tmp.replace("zdh_param_enum_key", "0");
+                tmp = tmp.replace("zdh_param_return_type", "");
                 $('#label_div').append(tmp);
                 $('#label_div #delete').click(function () {
                     $(this).parent().parent().remove();
@@ -506,7 +514,7 @@
                 return num;
             }
 
-            function buildConfig(i,param_code, param_context,param_type, param_operate, param_value, param_enum_key) {
+            function buildConfig(i,param_code, param_context,param_type, param_operate, param_value, param_enum_key, param_return_type) {
                 if(is_empty(param_enum_key)){
                     param_enum_key="0";
                 }
@@ -525,9 +533,11 @@
                 tmp = tmp.replace("zdh_param_operate", "zdh_param_operate"+i);
                 tmp = tmp.replace("zdh_param_type", "zdh_param_type"+i);
                 tmp = tmp.replace("zdh_param_enum_key", param_enum_key);
+                tmp = tmp.replace("zdh_param_return_type", "zdh_param_return_type"+i);
                 $('#label_div').append(tmp);
                 $("#zdh_param_operate"+i).val(param_operate);
                 $("#zdh_param_type"+i).val(param_type);
+                $("#zdh_param_return_type"+i).val(param_return_type);
                 $('#label_div #delete').click(function () {
                     $(this).parent().parent().remove();
                 });
@@ -606,7 +616,7 @@
                             if(data.result.param_json_object.length>0){
                                 for(var i=0;i<data.result.param_json_object.length;i++){
                                     buildConfig(i,data.result.param_json_object[i].param_code, data.result.param_json_object[i].param_context, data.result.param_json_object[i].param_type,data.result.param_json_object[i].param_operate,
-                                        data.result.param_json_object[i].param_value, data.result.param_json_object[i].param_enum_key);
+                                        data.result.param_json_object[i].param_value, data.result.param_json_object[i].param_enum_key,  data.result.param_json_object[i].param_return_type);
                                 }
                             }
 

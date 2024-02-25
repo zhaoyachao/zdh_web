@@ -24,6 +24,7 @@ html,body{height:100%;}
 .device .nodehttpcss{border:indigo  1px solid;}
 .device .nodeemailcss{border:red   1px solid;}
 .device .nodeflumecss{border: #9E792E   1px solid;}
+.device .nodekettlecss{border: #fff000   1px solid;}
 
 .device .deviceLeft2{width:210px;height:750px;border-right:1px solid #ccc;float:left;overflow: auto;}
 .device .deviceLeft2 h3{padding-left:10px;font-size:14px;background:#ddd;line-height:36px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}

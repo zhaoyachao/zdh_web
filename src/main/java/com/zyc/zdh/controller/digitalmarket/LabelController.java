@@ -140,6 +140,9 @@ public class LabelController extends BaseController {
 
             LabelInfo labelInfo = new LabelInfo();
             labelInfo.setLabel_code(label_code);
+            if(!StringUtils.isEmpty(label_use_type)){
+                labelInfo.setLabel_use_type(label_use_type);
+            }
             List<LabelInfo> labelInfos = labelMapper.select(labelInfo);
             if(labelInfos != null ){
                 labelInfo = labelInfos.get(0);
@@ -163,7 +166,7 @@ public class LabelController extends BaseController {
     @RequestMapping(value = "/label_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo label_update(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value, String[] param_enum_key) {
+    public ReturnInfo label_update(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_type,String[] param_operate, String[] param_value, String[] param_enum_key, String[] param_return_type) {
         try {
             if(param_code==null || param_code.length<1){
                 throw new Exception("参数不可为空");
@@ -185,6 +188,7 @@ public class LabelController extends BaseController {
                 jsonObject.put("param_operate", param_operate[i]);
                 jsonObject.put("param_type", param_type[i]);
                 jsonObject.put("param_enum_key", param_enum_key[i]);
+                jsonObject.put("param_return_type", param_return_type[i]);
                 if(i>=param_value.length){
                     jsonObject.put("param_value", "");
                 }else{
@@ -228,7 +232,7 @@ public class LabelController extends BaseController {
     @RequestMapping(value = "/label_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo label_add(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_type, String[] param_operate, String[] param_value, String[] param_enum_key) {
+    public ReturnInfo label_add(LabelInfo labelInfo,String[] param_code, String[] param_context, String[] param_type, String[] param_operate, String[] param_value, String[] param_enum_key, String[] param_return_type) {
         try {
             if(param_code==null || param_code.length<1){
                throw new Exception("参数不可为空");
@@ -249,6 +253,7 @@ public class LabelController extends BaseController {
                 jsonObject.put("param_operate", param_operate[i]);
                 jsonObject.put("param_type", param_type[i]);
                 jsonObject.put("param_enum_key", param_enum_key[i]);
+                jsonObject.put("param_return_type", param_return_type[i]);
                 if(i>=param_value.length){
                     jsonObject.put("param_value", "");
                 }else{

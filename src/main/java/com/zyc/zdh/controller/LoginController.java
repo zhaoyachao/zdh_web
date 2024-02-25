@@ -135,6 +135,10 @@ public class LoginController {
             pui.setUser_name(user.getUserName());
             String product_code = ev.getProperty("zdh.product", "zdh");
             pui.setProduct_code(product_code);
+            List<PermissionUserInfo> puis = permissionMapper.select(pui);
+            if(puis != null && puis.size() > 0){
+                throw new Exception("存在重复账号");
+            }
             pui.setEnable(Const.TRUR);
             pui.setCreate_time(new Timestamp(new Date().getTime()));
             pui.setUpdate_time(new Timestamp(new Date().getTime()));

@@ -76,8 +76,28 @@
         <groovy-sandbox.version>1.7</groovy-sandbox.version>
         <aliyun-java-sdk-core.version>4.6.1</aliyun-java-sdk-core.version>
         <aliyun-java-sdk-dysmsapi.version>2.2.1</aliyun-java-sdk-dysmsapi.version>
-
+        <kettle.version>9.4.0.1-467</kettle.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>alimaven</id>
+            <name>aliyun maven</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>maven</id>
+            <name>maven</name>
+            <url>http://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </repository>
+
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -680,20 +700,26 @@
             <version>${aliyun-java-sdk-dysmsapi.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>pentaho-kettle</groupId>
+            <artifactId>kettle-core</artifactId>
+            <scope>system</scope>
+            <version>${kettle.version}</version>
+            <systemPath>${project.basedir}/lib/kettle-core-${kettle.version}.jar</systemPath>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/pentaho-kettle/kettle-engine -->
+        <dependency>
+            <groupId>pentaho-kettle</groupId>
+            <artifactId>kettle-engine</artifactId>
+            <scope>system</scope>
+            <version>${kettle.version}</version>
+            <systemPath>${project.basedir}/lib/kettle-engine-${kettle.version}.jar</systemPath>
+        </dependency>
+
+
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>alimaven</id>
-            <name>aliyun maven</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>maven</id>
-            <name>maven</name>
-            <url>http://repository.mulesoft.org/nexus/content/repositories/public/</url>
-        </repository>
-    </repositories>
 
     <build>
         <finalName>zdh_web</finalName>

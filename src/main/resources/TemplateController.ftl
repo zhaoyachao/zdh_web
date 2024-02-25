@@ -60,17 +60,27 @@ public class ${ControllerName} extends BaseController {
     /**
      * ${tableDesc}列表
      * @param context 关键字
+     * @param product_code 产品
+     * @param dim_group 归属组
      * @return
      */
     @SentinelResource(value = "${controller}_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/${controller}_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @White
-    public ReturnInfo<List<${EntityName}>> ${controller}_list(String context) {
+    public ReturnInfo<List<${EntityName}>> ${controller}_list(String context, String product_code, String dim_group) {
         try{
             Example example=new Example(${EntityName}.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+            if(!StringUtils.isEmpty(dim_group)){
+                criteria.andEqualTo("dim_group", dim_group);
+            }
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
             criteria2.orLike("context", getLikeCondition(context));
