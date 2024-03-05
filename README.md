@@ -767,6 +767,7 @@
   + v5.3.0 [zdh_web]新增参数版本-灰度上线时,解决参数多版本冲突
   + v5.3.0 [zdh_web]etl新增kettle类任务(新增kettle相关jar)
   + v5.3.0 [zdh_web]代码生成模板优化
+  + v5.3.0 [zdh_web]调度任务禁用
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
