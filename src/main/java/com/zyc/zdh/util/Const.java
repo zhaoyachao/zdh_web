@@ -90,6 +90,9 @@ public class Const {
 
     public static String ZDH_FLOW_DEFAULT_USER = "zdh_flow_default_user";//审批流默认user
 
+    public static String ZDH_DISENABLE_MORE_TASK = "zdh.disenable.more_task";//禁用more_task
+    public static String ZDH_DISENABLE_JOB_TYPE = "zdh.disenable.job_type";//禁用job_type
+
     public static String HTTP_POST = "0";
     public static  String HTTP_GET = "1";
 

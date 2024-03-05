@@ -1200,7 +1200,7 @@ public class JobCommon2 {
             JSONObject json = new JSONObject();
             String date = DateUtil.formatTime(tli.getCur_time());
             json.put("ETL_DATE", date);
-            logger.info(" JOB ,DATAX,处理当前日期,传递参数ETL_DATE 为" + date);
+            logger.info(" JOB ,KETTLE,处理当前日期,传递参数ETL_DATE 为" + date);
             String params = tli.getParams();
             if(StringUtils.isEmpty(params)){
                 tli.setParams(json.toJSONString());
@@ -1232,9 +1232,9 @@ public class JobCommon2 {
             }
 
             if (dataSourcesInfoInput == null) {
-                logger.info("[DATAX]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
+                logger.info("[KETTLE]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
                 //JobCommon2.insertLog(tli,"WARN","[DATAX]无法找到对应的[输入]数据源,任务id:" + etl_task_id+",数据源id:"+data_sources_choose_input);
-                throw new Exception("[DATAX]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
+                throw new Exception("[KETTLE]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
             }
 
             ZdhKettleAutoInfo zdhKettleAutoInfo = new ZdhKettleAutoInfo();
@@ -1747,6 +1747,13 @@ public class JobCommon2 {
                 String executor = zdhHaInfo.getId();
                 String url_tmp = "";
                 String etl_info = "";
+                //校验是否禁用任务类型
+                if(ConfigUtil.isInValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task()) || ConfigUtil.isInRedisValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
+                    logger.error("当前【"+tli.getMore_task()+"】类任务,被系统禁用,具体可咨询管理员");
+                    insertLog(tli, "ERROR", "当前【"+tli.getMore_task()+"】类任务,被系统禁用,具体可咨询管理员");
+                    throw new Exception("当前【"+tli.getMore_task()+"】类任务,被系统禁用,具体可咨询管理员");
+                }
+
                 if (tli.getMore_task().equalsIgnoreCase(MoreTask.MORE_ETL.getValue())) {
                     url_tmp = url + "/more";
                     etl_info = JSON.toJSONString(zdhMoreInfo);
@@ -1767,6 +1774,7 @@ public class JobCommon2 {
                     etl_info = JSON.toJSONString(zdhSshInfo);
                     logger.info("[调度平台]:SSH,参数:" + JSON.toJSONString(zdhSshInfo));
                     insertLog(tli, "DEBUG", "[调度平台]:SSH,参数:" + JSON.toJSONString(zdhSshInfo));
+
                     tli.setEtl_info(etl_info);
                     tli.setStatus(JobStatus.ETL.getValue());
                     updateTaskLog(tli, tlim);
@@ -3456,6 +3464,15 @@ public class JobCommon2 {
             boolean end = isCount(jobType, tli);
             if (end == true) return;
             Boolean exe_status = true;
+            //判断是否禁用任务类型
+            if(ConfigUtil.isInValue(Const.ZDH_DISENABLE_JOB_TYPE, jobType)  || ConfigUtil.isInRedisValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
+                logger.error("[" + jobType + "] JOB, 任务被禁用,具体可咨询系统管理员");
+                insertLog(tli, "ERROR", "[" + jobType + "] JOB,任务被禁用,具体可咨询系统管理员");
+                tli.setStatus(JobStatus.ERROR.getValue());
+                tli.setProcess("100");
+                updateTaskLog(tli, tlim);
+                return ;
+            }
             if (jobType.equalsIgnoreCase(JobType.ETL.getCode())) {
                 //拼接任务信息发送请求
                 if (tli.getJob_model().equals(JobModel.TIME_SEQ.getValue())) {

@@ -97,7 +97,7 @@ public class KettleJob extends JobCommon2 {
         System.out.println(uri.getHost());
         System.out.println(uri.getPort());
         System.out.println(uri.getPath());
-        KettleUtil.DataSource dataSource = new KettleUtil.DataSource("", dbType, "",uri.getHost(), zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository(),String.valueOf(uri.getPort()), zdhKettleAutoInfo.getDsi_Input().getUser(), zdhKettleAutoInfo.getDsi_Input().getPassword());
+        KettleUtil.DataSource dataSource = new KettleUtil.DataSource(zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository(), dbType, "Native",uri.getHost(), zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository(),String.valueOf(uri.getPort()), zdhKettleAutoInfo.getDsi_Input().getUser(), zdhKettleAutoInfo.getDsi_Input().getPassword());
         return dataSource;
     }
 

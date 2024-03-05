@@ -36,6 +36,14 @@ public class ParamUtil {
         return redisUtil.get(key);
     }
 
+    public Object getValue(String key, String value){
+        //根据version_key获取参数,如果不存在则获取key
+        if(redisUtil.exists(getKey(key))){
+            return redisUtil.get(getKey(key));
+        }
+        return redisUtil.get(key, value);
+    }
+
     private String getKey(String key){
         return version + "_" + key;
     }
