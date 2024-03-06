@@ -119,8 +119,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     public void runSnowflakeIdWorker() {
         logger.info("初始化分布式id生成器");
         //获取服务id
-        String myid = ev.getProperty("myid", "0");
-        String instance=ev.getProperty("instance","zdh_web");
+        String myid = ConfigUtil.getValue("myid", "0");
+        String instance=ConfigUtil.getValue("instance","zdh_web");
         JobCommon2.myid=myid;
         SnowflakeIdWorker.init(Integer.parseInt(myid), 0);
         JobCommon2.web_application_id=instance+"_"+myid+":"+SnowflakeIdWorker.getInstance().nextId();
@@ -171,7 +171,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         TaskGroupLogInstanceMapper taskGroupLogInstanceMapper = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         TaskLogInstanceMapper taskLogInstanceMapper = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         ZdhHaInfoMapper zdhHaInfoMapper = (ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
-        String myid = ev.getProperty("myid", "0");
+        String myid = ConfigUtil.getValue("myid", "0");
 
         ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
 
@@ -382,7 +382,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
     public void init2Ip(){
         logger.info("初始化IP库");
-        String dbPath = ev.getProperty("ip2region.path","");
+        String dbPath = ConfigUtil.getValue("ip2region.path","");
         //IpUtil.init(dbPath);
     }
 
@@ -431,7 +431,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     public void initSentinelRule(){
         try{
             logger.info("初始化限流插件");
-            String product_code = ev.getProperty("zdp.product");
+            String product_code = ConfigUtil.getValue("zdp.product");
             ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
                 @Override
                 public void run() {
@@ -556,7 +556,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         if (quartzJobInfos.size() > 0) {
             logger.info("已经存在[EMAIL]历史监控任务...");
         }else{
-            String expr = ev.getProperty("email.schedule.interval");
+            String expr = ConfigUtil.getValue("email.schedule.interval");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查告警任务", expr, "-1", "", "email");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
@@ -573,7 +573,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         if (quartzJobInfos2.size() > 0) {
             logger.info("已经存在[RETRY]历史监控任务...");
         }else{
-            String expr = ev.getProperty("retry.schedule.interval");
+            String expr = ConfigUtil.getValue("retry.schedule.interval");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查失败重试任务", expr, "-1", "", "retry");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);

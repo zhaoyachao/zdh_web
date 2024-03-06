@@ -6,6 +6,7 @@ import cn.hutool.crypto.symmetric.AES;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.SessionDao;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.session.Session;
@@ -263,7 +264,7 @@ public class PermissionApiController {
 
     private ReturnInfo password(String product_code,String ak, String sk, String user_account,String password){
         //password解密
-        String user_password = aes(password, ev.getProperty("zdh.auth.password.key").toString(), ev.getProperty("zdh.auth.password.iv").toString());
+        String user_password = aes(password, ConfigUtil.getValue("zdh.auth.password.key").toString(), ConfigUtil.getValue("zdh.auth.password.iv").toString());
 
         //更新用户
         Example example=new Example(PermissionUserInfo.class);
@@ -308,7 +309,7 @@ public class PermissionApiController {
             check_aksk(product_code, ak, sk);
 
             //password解密
-            String user_password = aes(password, ev.getProperty("zdh.auth.password.key").toString(), ev.getProperty("zdh.auth.password.iv").toString());
+            String user_password = aes(password, ConfigUtil.getValue("zdh.auth.password.key").toString(), ConfigUtil.getValue("zdh.auth.password.iv").toString());
 
             //更新用户
             Example example=new Example(PermissionUserInfo.class);

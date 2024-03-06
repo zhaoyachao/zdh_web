@@ -9,6 +9,7 @@ import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.DBUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -69,10 +70,10 @@ public class QueueController extends BaseController {
             SQL = SQL + " order by priority desc  limit "+offset+" , "+ limit +" ";
 
             DBUtil dbUtil=new DBUtil();
-            String url = ev.getProperty("queue.server.db.url");
-            String driver = ev.getProperty("queue.server.db.driver");
-            String user = ev.getProperty("queue.server.db.user");
-            String password = ev.getProperty("queue.server.db.password");
+            String url = ConfigUtil.getValue("queue.server.db.url");
+            String driver = ConfigUtil.getValue("queue.server.db.driver");
+            String user = ConfigUtil.getValue("queue.server.db.user");
+            String password = ConfigUtil.getValue("queue.server.db.password");
 
             logger.info(SQL);
             Map<String,String> asParams=new HashMap<>();
@@ -109,10 +110,10 @@ public class QueueController extends BaseController {
 
 
             DBUtil dbUtil=new DBUtil();
-            String url = ev.getProperty("queue.server.db.url");
-            String driver = ev.getProperty("queue.server.db.driver");
-            String user = ev.getProperty("queue.server.db.user");
-            String password = ev.getProperty("queue.server.db.password");
+            String url = ConfigUtil.getValue("queue.server.db.url");
+            String driver = ConfigUtil.getValue("queue.server.db.driver");
+            String user = ConfigUtil.getValue("queue.server.db.user");
+            String password = ConfigUtil.getValue("queue.server.db.password");
 
             logger.info(SQL);
             Map<String,String> asParams=new HashMap<>();
@@ -154,8 +155,8 @@ public class QueueController extends BaseController {
             }
             //获取数据信息
 
-            String host = ev.getProperty("queue.server.host","127.0.0.1");
-            int port = Integer.parseInt(ev.getProperty("queue.server.port","9001"));
+            String host = ConfigUtil.getValue("queue.server.host","127.0.0.1");
+            int port = Integer.parseInt(ConfigUtil.getValue("queue.server.port","9001"));
 
             queueDataInfo.setRequest_id(UUID.randomUUID().toString());
             debugInfo(queueDataInfo);
@@ -194,13 +195,13 @@ public class QueueController extends BaseController {
             }
             //获取数据信息
             DBUtil dbUtil=new DBUtil();
-            String url = ev.getProperty("queue.server.db.url");
-            String driver = ev.getProperty("queue.server.db.driver");
-            String user = ev.getProperty("queue.server.db.user");
-            String password = ev.getProperty("queue.server.db.password");
+            String url = ConfigUtil.getValue("queue.server.db.url");
+            String driver = ConfigUtil.getValue("queue.server.db.driver");
+            String user = ConfigUtil.getValue("queue.server.db.user");
+            String password = ConfigUtil.getValue("queue.server.db.password");
 
-            String host = ev.getProperty("queue.server.host","127.0.0.1");
-            int port = Integer.parseInt(ev.getProperty("queue.server.port","9001"));
+            String host = ConfigUtil.getValue("queue.server.host","127.0.0.1");
+            int port = Integer.parseInt(ConfigUtil.getValue("queue.server.port","9001"));
 
             String SQL="select a.* from queue_data_info a where id='"+queueDataInfo.getId()+"'";
             List<Map<String,Object>> result = dbUtil.R6(driver,url,user,password,SQL,null);

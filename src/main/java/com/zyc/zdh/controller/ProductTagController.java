@@ -50,6 +50,7 @@ public class ProductTagController extends BaseController {
 
     /**
      * 产品列表
+     * 所有平台可用,查询当前所有产品列表-一般用在申请产品权限
      * @param tag_context 关键字
      * @return
      */
@@ -84,6 +85,7 @@ public class ProductTagController extends BaseController {
 
     /**
      * 产品列表(带权限控制)
+     * 当前仅支持zdh平台权限是使用,原因如下：zdh和权限平台在同一个项目中,无法使用zdh权限控制zdh
      * @param tag_context 关键字
      * @return
      */

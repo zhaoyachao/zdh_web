@@ -8,6 +8,7 @@ import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
@@ -504,7 +505,7 @@ public class SystemController extends BaseController{
     @RequestMapping(value = "/version", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> version() {
-        String version=ev.getProperty("version","");
+        String version= ConfigUtil.getValue("version","");
         return  ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", "当前版本:"+version);
     }
 

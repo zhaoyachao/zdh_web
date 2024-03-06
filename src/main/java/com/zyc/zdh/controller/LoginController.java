@@ -11,6 +11,7 @@ import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.MyRealm;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.Encrypt;
 import io.swagger.v3.oas.annotations.Operation;
@@ -133,7 +134,7 @@ public class LoginController {
             PermissionUserInfo pui = new PermissionUserInfo();
             pui.setUser_account(user.getUserName());
             pui.setUser_name(user.getUserName());
-            String product_code = ev.getProperty("zdh.product", "zdh");
+            String product_code = ConfigUtil.getValue("zdh.product", "zdh");
             pui.setProduct_code(product_code);
             List<PermissionUserInfo> puis = permissionMapper.select(pui);
             if(puis != null && puis.size() > 0){
@@ -143,7 +144,7 @@ public class LoginController {
             pui.setCreate_time(new Timestamp(new Date().getTime()));
             pui.setUpdate_time(new Timestamp(new Date().getTime()));
 
-            String roles = ev.getProperty("zdp.init.roles","role_base");
+            String roles = ConfigUtil.getValue("zdp.init.roles","role_base");
             pui.setRoles(roles);
 
             pui.setTag_group_code("");

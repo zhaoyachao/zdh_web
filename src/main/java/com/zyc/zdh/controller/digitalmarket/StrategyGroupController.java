@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
+import com.zyc.zdh.dao.StrategyGroupLogMapper;
 import com.zyc.zdh.dao.StrategyGroupMapper;
 import com.zyc.zdh.dao.StrategyInstanceMapper;
 import com.zyc.zdh.entity.*;
@@ -67,6 +68,10 @@ public class StrategyGroupController extends BaseController {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private StrategyGroupLogMapper strategyGroupLogMapper;
+
 
     @RequestMapping(value = "/get_id", method = RequestMethod.GET)
     @ResponseBody
@@ -860,6 +865,61 @@ public class StrategyGroupController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
     }
+
+    /**
+     * 策略组版本保存
+     * @param strategyGroupInfo
+     * @return
+     */
+    @SentinelResource(value = "strategy_group_version_add", blockHandler = "handleReturn")
+    @RequestMapping(value = "/strategy_group_version_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    @White
+    public ReturnInfo strategy_group_version_add(StrategyGroupInfo strategyGroupInfo) {
+        try {
+
+            StrategyGroupInfo oldStrategyGroupInfo = strategyGroupMapper.selectByPrimaryKey(strategyGroupInfo.getId());
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldStrategyGroupInfo.getProduct_code(), oldStrategyGroupInfo.getDim_group());
+
+            //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
+            strategyGroupInfo.setOwner(oldStrategyGroupInfo.getOwner());
+            strategyGroupInfo.setMisfire(oldStrategyGroupInfo.getMisfire());
+            strategyGroupInfo.setSchedule_source(oldStrategyGroupInfo.getSchedule_source());
+            strategyGroupInfo.setUse_quartz_time(oldStrategyGroupInfo.getUse_quartz_time());
+            strategyGroupInfo.setCreate_time(oldStrategyGroupInfo.getCreate_time());
+            strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            strategyGroupInfo.setIs_delete(Const.NOT_DELETE);
+
+            StrategyGroupLog strategyGroupLog = new StrategyGroupLog();
+            strategyGroupLog.setLog_type("strategy_group");
+            strategyGroupLog.setLog_object_id(Long.valueOf(strategyGroupInfo.getId()));
+
+            //此处必须设置同步
+            synchronized (strategyGroupInfo.getId().intern()){
+                Integer log_version = strategyGroupLogMapper.selectMaxLogVersion("strategy_group", strategyGroupInfo.getId());
+                if(log_version == null){
+                    log_version = 1;
+                }else{
+                    log_version = log_version + 1;
+                }
+                strategyGroupLog.setLog_json(JSON.toJSONString(strategyGroupInfo));
+                strategyGroupLog.setOwner(getOwner());
+                strategyGroupLog.setProduct_code(strategyGroupInfo.getProduct_code());
+                strategyGroupLog.setDim_group(strategyGroupInfo.getDim_group());
+                strategyGroupLog.setLog_type("strategy_group");
+                strategyGroupLog.setLog_version(log_version);
+                strategyGroupLogMapper.insertSelective(strategyGroupLog);
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+        }
+    }
+
 
 
     private void debugInfo(Object obj) {

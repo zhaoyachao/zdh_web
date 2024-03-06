@@ -768,6 +768,8 @@
   + v5.3.0 [zdh_web]etl新增kettle类任务(新增kettle相关jar)
   + v5.3.0 [zdh_web]代码生成模板优化
   + v5.3.0 [zdh_web]调度任务禁用
+  + v5.3.0 [zdh_web]统一参数获取工具类
+  + v5.3.0 [zdh_web]新增策略版本日志
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
@@ -3129,6 +3131,23 @@
     alter table  zdh_ha_info	comment 'zdh-ha表';
     alter table  zdh_logs	comment 'zdh-日志表';
     alter table  zdh_nginx	comment 'zdh-文件服务器信息表';
+    
+    CREATE TABLE `strategy_group_log` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `log_object_id` bigint NOT NULL DEFAULT '0' COMMENT 'log对象主键id',
+      `log_type` varchar(200) DEFAULT '' COMMENT '日志分类',
+      `log_version` int NOT NULL DEFAULT '0' COMMENT '日志分类',
+      `log_json` mediumtext COMMENT '日志信息',
+      `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `update_context` varchar(100) DEFAULT '' COMMENT '更新说明',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+      `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
+      PRIMARY KEY (`id`),
+      KEY `idx_owner` (`log_object_id`,`owner`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
 
     
 # 未完成的功能

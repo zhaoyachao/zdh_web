@@ -6,6 +6,7 @@ import com.zyc.zdh.dao.WeMockDataMapper;
 import com.zyc.zdh.dao.WeMockTreeMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -515,8 +516,8 @@ public class WeMockController extends BaseController{
         try{
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("url", param);
-            String host = ev.getProperty("zdh.wemock.short.host", "http://127.0.0.1:9001");
-            String path = ev.getProperty("zdh.wemock.short.generator", "/api/short/generator");
+            String host = ConfigUtil.getValue("zdh.wemock.short.host", "http://127.0.0.1:9001");
+            String path = ConfigUtil.getValue("zdh.wemock.short.generator", "/api/short/generator");
             String ret = HttpUtil.postJSON(host+path, jsonObject.toJSONString());
             return ReturnInfo.buildSuccess(JSONObject.parseObject(ret));
         }catch (Exception e){

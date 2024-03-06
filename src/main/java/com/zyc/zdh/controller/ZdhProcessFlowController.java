@@ -9,6 +9,7 @@ import com.zyc.zdh.job.EmailJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -348,7 +349,7 @@ public class ZdhProcessFlowController extends BaseController {
     public void createProcess(String event_code, String context, String event_id) throws Exception{
         try{
             String group = getUser().getUser_group();
-            String product_code = ev.getProperty("zdp.product", "zdh");
+            String product_code = ConfigUtil.getValue("zdp.product", "zdh");
             //获取事件对应的审批流code
             List<ApprovalAuditorInfo> approvalAuditorInfos = approvalAuditorMapper.selectByEvent(event_code, group, product_code);
 

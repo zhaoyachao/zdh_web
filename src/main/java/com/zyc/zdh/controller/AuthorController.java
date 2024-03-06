@@ -4,6 +4,7 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.JemailService;
+import com.zyc.zdh.util.ConfigUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public class AuthorController extends BaseController{
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    String to=ev.getProperty("spring.mail.username");
+                    String to= ConfigUtil.getValue("spring.mail.username");
                     jemailService.sendHtmlEmail(new String[]{to},subject+":"+receiver,context);
                     if(!StringUtils.isEmpty(receiver))
                         jemailService.sendEmail(new String[]{receiver},"ZDH","系统已将信息通知作者,作者会尽快查看并回复");

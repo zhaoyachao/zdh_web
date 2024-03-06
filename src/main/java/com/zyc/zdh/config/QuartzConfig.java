@@ -70,7 +70,7 @@ public class QuartzConfig {
 		// ClassPathResource("quartz.properties");
 		// schedulerFactoryBean.setConfigLocation(res);
 		schedulerFactoryBean.setQuartzProperties(quartzProperties(cev));
-		boolean autoStartup = ev.getProperty("zdh.schedule.quartz.auto.startup", Boolean.TYPE, false);
+		boolean autoStartup = ev.getProperty("zdh.schedule.quartz.auto.startup", Boolean.TYPE,false);
 		schedulerFactoryBean.setAutoStartup(autoStartup);
 		// 延迟25s启动quartz
 		schedulerFactoryBean.setStartupDelay(25);

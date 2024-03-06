@@ -2,20 +2,12 @@ package com.zyc.zdh.job;
 
 import com.alibaba.druid.util.JdbcUtils;
 import com.alibaba.fastjson.JSON;
-import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.entity.ZdhKettleAutoInfo;
-import com.zyc.zdh.util.CommandUtils;
-import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.KettleUtil;
 
-import java.io.*;
 import java.net.URI;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 public class KettleJob extends JobCommon2 {
 

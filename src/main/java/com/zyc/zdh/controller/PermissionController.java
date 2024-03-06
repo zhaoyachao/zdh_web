@@ -8,6 +8,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
@@ -873,7 +874,7 @@ public class PermissionController extends BaseController {
         try{
             List<UserResourceInfo2> uris = new ArrayList<>();
             String user_account = getUser().getUserName();
-            String product_code = ev.getProperty("zdp.product", "zdh");
+            String product_code = ConfigUtil.getValue("zdp.product", "zdh");
             uris = resourceTreeMapper.selectResourceByUserAccount(user_account, product_code);
             uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
             return ReturnInfo.buildSuccess(uris);
@@ -911,7 +912,7 @@ public class PermissionController extends BaseController {
             Example example2=new Example(PermissionUserInfo.class);
             Example.Criteria criteria2 = example2.createCriteria();
             criteria2.andEqualTo("user_account",getUser().getUserName());
-            criteria2.andEqualTo("product_code", ev.getProperty("zdp.product", "zdh"));
+            criteria2.andEqualTo("product_code", ConfigUtil.getValue("zdp.product", "zdh"));
             criteria2.andEqualTo("enable",Const.TRUR);
             List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example2);
 

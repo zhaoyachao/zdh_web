@@ -10,6 +10,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.RiskEventInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -82,7 +83,7 @@ public class RiskEventController extends BaseController {
             jsonObject.put("param", param);
             jsonObject.put("product_code", source);
 
-            String url = ev.getProperty("zdh.ship.url", "http://127.0.0.1:9002/api/v1/ship/accept");
+            String url = ConfigUtil.getValue("zdh.ship.url", "http://127.0.0.1:9002/api/v1/ship/accept");
             String ret = HttpUtil.postJSON(url, jsonObject.toJSONString());
             System.out.println(ret);
             return ReturnInfo.buildSuccess(JSONObject.parseObject(ret));

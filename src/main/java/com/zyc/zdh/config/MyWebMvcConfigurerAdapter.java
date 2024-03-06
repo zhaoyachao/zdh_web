@@ -1,5 +1,6 @@
 package com.zyc.zdh.config;
 
+import com.zyc.zdh.util.ConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +62,8 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 	public InternalResourceViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 		// viewResolver.setPrefix("/WEB-INF/classes/views/");
-		logger.info("web.path:"+ev.getProperty("web.path"));
-		viewResolver.setPrefix(ev.getProperty("web.path"));
+		logger.info("web.path:"+ConfigUtil.getValue("web.path"));
+		viewResolver.setPrefix(ConfigUtil.getValue("web.path"));
 		viewResolver.setSuffix(".html");
 		viewResolver.setViewClass(JstlView.class);
 		return viewResolver;
@@ -76,16 +77,16 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 				project_pre+"/img/**",project_pre+"/smart_doc/**",
 				project_pre+"/plugins/**",project_pre+"/zdh_flow/**",project_pre+"/favicon.ico",project_pre+"/etl/js/**",project_pre+"/etl/css/**",
 				project_pre+"/statics/**",project_pre+"/404**",project_pre+"/cron/**",project_pre+"/download/**")
-				.addResourceLocations(ev.getProperty("web.path"))
-				.addResourceLocations(ev.getProperty("web.path")+"favicon.ico")
-				.addResourceLocations(ev.getProperty("web.path")+"download/")
-				.addResourceLocations(ev.getProperty("web.path")+"css/")
-				.addResourceLocations(ev.getProperty("web.path")+"cron/")
-				.addResourceLocations(ev.getProperty("web.path")+"js/")
-				.addResourceLocations(ev.getProperty("web.path")+"fonts/")
-				.addResourceLocations(ev.getProperty("web.path")+"img/")
-				.addResourceLocations(ev.getProperty("web.path")+"smart_doc/")
-				.addResourceLocations(ev.getProperty("web.path")+"plugins/");
+				.addResourceLocations(ConfigUtil.getValue("web.path"))
+				.addResourceLocations(ConfigUtil.getValue("web.path")+"favicon.ico")
+				.addResourceLocations(ConfigUtil.getValue("web.path")+"download/")
+				.addResourceLocations(ConfigUtil.getValue("web.path")+"css/")
+				.addResourceLocations(ConfigUtil.getValue("web.path")+"cron/")
+				.addResourceLocations(ConfigUtil.getValue("web.path")+"js/")
+				.addResourceLocations(ConfigUtil.getValue("web.path")+"fonts/")
+				.addResourceLocations(ConfigUtil.getValue("web.path")+"img/")
+				.addResourceLocations(ConfigUtil.getValue("web.path")+"smart_doc/")
+				.addResourceLocations(ConfigUtil.getValue("web.path")+"plugins/");
 
 	}
 

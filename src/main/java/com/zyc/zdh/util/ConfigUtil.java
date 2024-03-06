@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 /**
  * 当前项目配置参数工具类
  * 单独写此工具的作用: 屏蔽env配置
+ *
+ * 使用限制：redis, paramutil初始化相关配置不可使用,因当前类使用了redis,paramutil不可循环引用
  */
 public class ConfigUtil {
 
