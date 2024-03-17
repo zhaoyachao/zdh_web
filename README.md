@@ -35,6 +35,7 @@
   - [5.2.1迁移5.2.2](#521%E8%BF%81%E7%A7%BB522)
   - [5.2.2迁移5.2.3](#522%E8%BF%81%E7%A7%BB523)
   - [5.2.3迁移5.3.0](#523%E8%BF%81%E7%A7%BB530)
+  - [5.3.0迁移5.3.1](#530%E8%BF%81%E7%A7%BB531)
 - [未完成的功能](#%E6%9C%AA%E5%AE%8C%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD)
 - [支持的数据源](#%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E6%BA%90)
 - [支持的调度对象](#%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E5%BA%A6%E5%AF%B9%E8%B1%A1)
@@ -73,7 +74,7 @@
       zdh_spark: 基于spark的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_server
       zdh_flinkx: 基于flink sql的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_flinkx
       zdh_mock: 基于netty的http-mock服务,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_mock
-      zdh_queue: 计划开发一个非高性能的优先级可控队列(用于etl任务优先级控制),开发失败,废弃
+      zdh_rqueue: 计划开发一个非高性能的优先级可控队列(用于etl任务优先级控制),github: https://github.com/zhaoyachao/zdh_rqueue
       zdh_auth: 大数据统一权限管理(hadoop,hive,hbase,presto),开发中
       zdh_magic_mirror: 是一个客户管理模块,客户画像,智能营销等服务,主要包括common,label, plugin, ship, variable, 5个模块 github: https://github.com/zhaoyachao/zdh_magic_mirror
          common: 公共模块
@@ -770,6 +771,8 @@
   + v5.3.0 [zdh_web]调度任务禁用
   + v5.3.0 [zdh_web]统一参数获取工具类
   + v5.3.0 [zdh_web]新增策略版本日志
+  
+  + v5.3.1 [zdh_web]重构zdh_queue(为后期实时经营做基础)
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
@@ -3148,6 +3151,11 @@
       PRIMARY KEY (`id`),
       KEY `idx_owner` (`log_object_id`,`owner`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
+
+## 5.3.0迁移5.3.1
+    INSERT INTO role_info
+    (id, code, name, enable, create_time, update_time, product_code)
+    VALUES(1218937706952790016, 'role_rqueue', '优先级队列角色', 'true', '2024-03-17 15:03:16', '2024-03-17 15:03:16', 'zdh');
 
     
 # 未完成的功能

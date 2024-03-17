@@ -3,8 +3,9 @@ package com.zyc.zdh.job;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zyc.queue.client.ConsumerHandlerImpl;
-import com.zyc.queue.client.ProducerImpl;
+import com.zyc.rqueue.RQueueClient;
+import com.zyc.rqueue.RQueueManager;
+import com.zyc.rqueue.RQueueMode;
 import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
 import com.zyc.zdh.dao.StrategyInstanceMapper;
 import com.zyc.zdh.entity.StrategyGroupInstance;
@@ -19,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -394,52 +394,14 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             return ;
         }
 
-        ProducerImpl producer=getProduct();
+        RQueueClient<String> rQueueClient = RQueueManager.getRQueueClient(StrategyInstanceType.LABEL.getCode(), RQueueMode.PRIORITYQUEUE);
 
         String priority = strategyInstance.getPriority();
         if(StringUtils.isEmpty(priority)){
-            priority="0";
+            priority="10";
         }
-        //标签任务,发往标签计算服务
-        if(strategyInstance.getInstance_type().equalsIgnoreCase(StrategyInstanceType.LABEL.getCode())){
-            send(producer, Integer.parseInt(priority), strategyInstance, StrategyInstanceType.LABEL.getCode());
-        }
+        rQueueClient.offer(JSON.toJSONString(strategyInstance), Integer.valueOf(priority));
 
-        producer.close();
-
-    }
-
-    public static ProducerImpl getProduct() throws Exception {
-        try{
-            Environment environment= (Environment) SpringContext.getBean("environment");
-            ProducerImpl producer=new ProducerImpl();
-            String host = environment.getProperty("queue.server.host","127.0.0.1");
-            int port = Integer.parseInt(environment.getProperty("queue.server.port","9001"));
-            producer.init(host, port);
-            producer.setConsumerHandler(new ConsumerHandlerImpl());//已废弃,必须写,历史版本兼容使用
-            if(!producer.is_connect(5)){
-               throw new Exception("链接队列失败");
-            }
-            return producer;
-        }catch (Exception e){
-            logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            throw e;
-        }
-
-
-    }
-
-    /**
-     * 废弃,如果需要已队列方式运行,需要重新实现
-     * @param producer
-     * @param priority
-     * @param msg
-     * @param queue_name
-     * @throws Exception
-     */
-    public static void send(ProducerImpl producer,int priority, Object msg,String queue_name) throws Exception {
-        producer.setQueue(queue_name);
-        producer.send(msg, priority,5);
     }
 
     public static void debugInfo(Object obj) {

@@ -7,6 +7,7 @@ import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zyc.rqueue.RQueueManager;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.*;
@@ -70,6 +71,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         String line = "----------------------------------------------------------";
         logger.info(line);
         logger.info("系统初始化...");
+        initRQueue();
         clearQueue();
         runSnowflakeIdWorker();
         runRetryMQ();
@@ -85,9 +87,22 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         initAlarmEmail();
         initRetry();
         initCheck();
+
         logger.info("系统初始化完成...");
         logger.info(line);
         Thread.sleep(1000*2);
+    }
+
+    public void initRQueue(){
+        logger.info("初始分布式队列RQueue");
+        String redisHost = ConfigUtil.getValue("spring.redis.hostName");
+        String redisPort = ConfigUtil.getValue("spring.redis.port");
+        String redisPassword = ConfigUtil.getValue("spring.redis.password");
+        if(redisHost.contains(",")){
+            RQueueManager.buildDefault(redisHost, redisPassword);
+        }else{
+            RQueueManager.buildDefault(redisHost+":"+redisPort, redisPassword);
+        }
     }
 
     public void clearQueue(){
