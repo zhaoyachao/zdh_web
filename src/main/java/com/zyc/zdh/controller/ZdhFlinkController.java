@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -105,7 +104,7 @@ public class ZdhFlinkController extends BaseController {
     public ReturnInfo etl_task_flink_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskFlinkMapper, etlTaskFlinkMapper.getTable(), ids);
-            etlTaskFlinkMapper.deleteLogicByIds(etlTaskFlinkMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            etlTaskFlinkMapper.deleteLogicByIds(etlTaskFlinkMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -131,8 +130,8 @@ public class ZdhFlinkController extends BaseController {
             String owner = getOwner();
             etlTaskFlinkInfo.setOwner(owner);
             etlTaskFlinkInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            etlTaskFlinkInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlTaskFlinkInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskFlinkInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskFlinkInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskFlinkInfo.setIs_delete(Const.NOT_DELETE);
 
             debugInfo(etlTaskFlinkInfo);
@@ -147,7 +146,7 @@ public class ZdhFlinkController extends BaseController {
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskFlinkInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskFlinkInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -175,7 +174,7 @@ public class ZdhFlinkController extends BaseController {
         try {
             String owner = getOwner();
             etlTaskFlinkInfo.setOwner(owner);
-            etlTaskFlinkInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskFlinkInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskFlinkInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskFlinkInfo);
 
@@ -192,7 +191,7 @@ public class ZdhFlinkController extends BaseController {
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskFlinkInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskFlinkInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(getOwner());
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }

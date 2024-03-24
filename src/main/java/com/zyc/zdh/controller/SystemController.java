@@ -280,7 +280,7 @@ public class SystemController extends BaseController{
             ni = noticeMapper.selectOne(ni);
             if(ni!=null && ni.getIs_see().equalsIgnoreCase("false")){
                 ni.setIs_see("true");
-                ni.setUpdate_time(new Timestamp(new Date().getTime()));
+                ni.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 noticeMapper.updateByPrimaryKeySelective(ni);
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", ni);

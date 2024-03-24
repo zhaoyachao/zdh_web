@@ -24,8 +24,9 @@ public class ZdhStdJDBCDelegate extends StdJDBCDelegate {
             ps = conn.prepareStatement(rtp(SELECT_NEXT_TRIGGER_TO_ACQUIRE));
 
             // Set max rows to retrieve
-            if (maxCount < 1)
+            if (maxCount < 1) {
                 maxCount = 1; // we want at least one trigger back.
+            }
             ps.setMaxRows(maxCount);
 
             // Try to give jdbc driver a hint to hopefully not pull over more than the few rows we actually need.

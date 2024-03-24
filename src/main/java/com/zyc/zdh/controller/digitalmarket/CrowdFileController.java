@@ -36,7 +36,6 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -169,7 +168,7 @@ public class CrowdFileController extends BaseController {
             //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
             crowdFileInfo.setOwner(oldCrowdFileInfo.getOwner());
             crowdFileInfo.setCreate_time(oldCrowdFileInfo.getCreate_time());
-            crowdFileInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            crowdFileInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             crowdFileInfo.setIs_delete(Const.NOT_DELETE);
             crowdFileMapper.updateByPrimaryKeySelective(crowdFileInfo);
 
@@ -196,8 +195,8 @@ public class CrowdFileController extends BaseController {
 
             crowdFile.setOwner(getOwner());
             crowdFile.setIs_delete(Const.NOT_DELETE);
-            crowdFile.setCreate_time(new Timestamp(new Date().getTime()));
-            crowdFile.setUpdate_time(new Timestamp(new Date().getTime()));
+            crowdFile.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            crowdFile.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFile.getProduct_code(), crowdFile.getDim_group());
 
@@ -275,7 +274,7 @@ public class CrowdFileController extends BaseController {
     public ReturnInfo crowd_file_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFileMapper, crowdFileMapper.getTable(), ids);
-            crowdFileMapper.deleteLogicByIds(crowdFileMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            crowdFileMapper.deleteLogicByIds(crowdFileMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -152,8 +151,8 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
             permissionUserDimensionValueInfo.setGroup_code(group_code);
             permissionUserDimensionValueInfo.setOwner(getOwner());
             permissionUserDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
-            permissionUserDimensionValueInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            permissionUserDimensionValueInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            permissionUserDimensionValueInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            permissionUserDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             for (String dim_value_code: dim_value_codes){
                 permissionUserDimensionValueInfo.setDim_value_code(dim_value_code);
                 permissionUserGroupDimensionValueMapper.insertSelective(permissionUserDimensionValueInfo);

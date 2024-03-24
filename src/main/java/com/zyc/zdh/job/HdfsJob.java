@@ -10,7 +10,6 @@ import org.apache.hadoop.fs.Path;
 
 import java.net.URI;
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * 废弃,查询hdfs 文件是否存在,请使用shell,或者ssh 任务代替
@@ -37,7 +36,7 @@ public class HdfsJob extends JobCommon2 {
                 if (tli.getStart_time() == null) {
                     logger.info("[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
                     insertLog(tli, "info", "[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
-                    tli.setStart_time(new Timestamp(new Date().getTime()));
+                    tli.setStart_time(new Timestamp(System.currentTimeMillis()));
                 }
                 logger.info("上次执行日期,下次执行日期均为空,赋值为:" + tli.getStart_time());
                 insertLog(tli, "info", "上次执行日期,下次执行日期均为空,赋值为:" + tli.getStart_time());

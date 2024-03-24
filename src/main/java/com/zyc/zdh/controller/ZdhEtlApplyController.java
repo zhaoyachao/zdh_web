@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -116,7 +115,7 @@ public class ZdhEtlApplyController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_apply_task_delete(String[] ids) {
         try{
-            etlApplyTaskMapper.deleteLogicByIds("etl_apply_task_info",ids, new Timestamp(new Date().getTime()));
+            etlApplyTaskMapper.deleteLogicByIds("etl_apply_task_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -160,8 +159,8 @@ public class ZdhEtlApplyController extends BaseController{
             debugInfo(etlApplyTaskInfo);
 
             etlApplyTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            etlApplyTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlApplyTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlApplyTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlApplyTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlApplyTaskInfo.setIs_delete(Const.NOT_DELETE);
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskInfo.getProduct_code(), etlApplyTaskInfo.getDim_group());
@@ -172,7 +171,7 @@ public class ZdhEtlApplyController extends BaseController{
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlApplyTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlApplyTaskInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -202,7 +201,7 @@ public class ZdhEtlApplyController extends BaseController{
         try{
             String owner = getOwner();
             etlApplyTaskInfo.setOwner(owner);
-            etlApplyTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlApplyTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlApplyTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlApplyTaskInfo);
 
@@ -216,8 +215,9 @@ public class ZdhEtlApplyController extends BaseController{
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
                 String[] file_name_ary = etlApplyTaskInfo.getData_sources_file_name_input().split("/");
                 String file_name = file_name_ary[0];
-                if (file_name_ary.length > 0)
+                if (file_name_ary.length > 0) {
                     file_name = file_name_ary[file_name_ary.length - 1];
+                }
 
                 if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
                     etlApplyTaskInfo.setData_sources_file_name_input(zdhNginx.getNginx_dir() + "/" + owner + "/" + file_name);
@@ -237,7 +237,7 @@ public class ZdhEtlApplyController extends BaseController{
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlApplyTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlApplyTaskInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }

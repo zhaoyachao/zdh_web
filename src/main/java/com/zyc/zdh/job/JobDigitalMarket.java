@@ -78,7 +78,7 @@ public class JobDigitalMarket {
 
         ZdhLogs zdhLogs = new ZdhLogs();
         zdhLogs.setJob_id(sgi.getStrategy_group_id());
-        Timestamp lon_time = new Timestamp(new Date().getTime());
+        Timestamp lon_time = new Timestamp(System.currentTimeMillis());
         zdhLogs.setTask_logs_id(sgi.getId());
         zdhLogs.setLog_time(lon_time);
         zdhLogs.setMsg(msg);
@@ -101,7 +101,7 @@ public class JobDigitalMarket {
 
         ZdhLogs zdhLogs = new ZdhLogs();
         zdhLogs.setJob_id(si.getStrategy_id());
-        Timestamp lon_time = new Timestamp(new Date().getTime());
+        Timestamp lon_time = new Timestamp(System.currentTimeMillis());
         zdhLogs.setTask_logs_id(si.getId());
         zdhLogs.setLog_time(lon_time);
         zdhLogs.setMsg(msg);
@@ -270,8 +270,8 @@ public class JobDigitalMarket {
                         BeanUtils.copyProperties(sgi, strategyGroupInfo);
                         sgi.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                         sgi.setStrategy_group_id(strategyGroupInfo.getId());
-                        sgi.setCreate_time(new Timestamp(new Date().getTime()));
-                        sgi.setUpdate_time(new Timestamp(new Date().getTime()));
+                        sgi.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                        sgi.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         if(sgi.getGroup_type().equalsIgnoreCase(JobGroupType.OFFLINE.getValue())){
                             sgi.setSmall_flow_rate("1,100");
                         }
@@ -282,8 +282,8 @@ public class JobDigitalMarket {
                             Timestamp cur = getCurTime(strategyGroupInfo);
                             sgi.setCur_time(cur);
                             sgi.setSchedule_source(ScheduleSource.SYSTEM.getCode());
-                            sgi.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
-                            sgi.setUpdate_time(new Timestamp(new Date().getTime()));
+                            sgi.setRun_time(new Timestamp(System.currentTimeMillis()));//实例开始时间
+                            sgi.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         }
                         if (is_retry == 2) {
                             //手动点击重试按钮触发
@@ -291,8 +291,8 @@ public class JobDigitalMarket {
                             sgi = retry_sgi;
                             //retry_sgii.setProcess("1");
                             sgi.setSchedule_source(ScheduleSource.MANUAL.getCode());
-                            sgi.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
-                            sgi.setUpdate_time(new Timestamp(new Date().getTime()));
+                            sgi.setRun_time(new Timestamp(System.currentTimeMillis()));//实例开始时间
+                            sgi.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                             //retry_sgii.setCount(0L);
                             //retry_sgii.setIs_retryed("0");
                             sgi.setId(SnowflakeIdWorker.getInstance().nextId() + "");
@@ -413,7 +413,7 @@ public class JobDigitalMarket {
                     data_node = "";
                 }
 
-                si.setRun_time(new Timestamp(new Date().getTime()));
+                si.setRun_time(new Timestamp(System.currentTimeMillis()));
 
 
                 si.setJsmind_data("");

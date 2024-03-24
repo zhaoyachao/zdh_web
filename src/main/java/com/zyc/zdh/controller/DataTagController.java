@@ -24,7 +24,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -163,7 +162,7 @@ public class DataTagController extends BaseController {
 
             dataTagInfo.setOwner(oldDataTagInfo.getOwner());
             dataTagInfo.setCreate_time(oldDataTagInfo.getCreate_time());
-            dataTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            dataTagInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             dataTagInfo.setIs_delete(Const.NOT_DELETE);
             dataTagMapper.updateByPrimaryKeySelective(dataTagInfo);
 
@@ -190,8 +189,8 @@ public class DataTagController extends BaseController {
             dataTagInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             dataTagInfo.setOwner(getOwner());
             dataTagInfo.setIs_delete(Const.NOT_DELETE);
-            dataTagInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            dataTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            dataTagInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            dataTagInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             checkPermissionByProduct(zdhPermissionService, dataTagInfo.getProduct_code());
             dataTagMapper.insertSelective(dataTagInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
@@ -213,7 +212,7 @@ public class DataTagController extends BaseController {
     public ReturnInfo<Object> data_tag_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, dataTagMapper, dataTagMapper.getTable(), ids);
-            dataTagMapper.deleteLogicByIds(dataTagMapper.getTable(), ids, new Timestamp(new Date().getTime()));
+            dataTagMapper.deleteLogicByIds(dataTagMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

@@ -81,8 +81,9 @@ public class RetryJob {
                 && ( !redisUtil.exists(t2.getServer_id().split(":")[0]) || !redisUtil.get(t2.getServer_id().split(":")[0]).toString().equalsIgnoreCase(t2.getServer_id()) )
                 ){
                     if(t2.getJob_type().equalsIgnoreCase("shell")){
-                        if(JobCommon2.check_thread_limit(t2))
+                        if(JobCommon2.check_thread_limit(t2)) {
                             continue;
+                        }
                     }
                     logger.info("检测到任务意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
                     JobCommon2.insertLog(t2,"INFO","检测到任务意外死亡,将在本节点自动重试任务,任务id: "+t2.getId());
@@ -93,7 +94,9 @@ public class RetryJob {
                 }
                 if(t2.getStatus().equalsIgnoreCase("dispatch")){
                     //如果调度标识为空则直接跳过
-                    if(t2.getServer_id()==null || t2.getServer_id().equalsIgnoreCase("")) continue;
+                    if(t2.getServer_id()==null || t2.getServer_id().equalsIgnoreCase("")) {
+                        continue;
+                    }
                     //判断标识是否有效
                     if(!redisUtil.get(t2.getServer_id().split(":")[0]).toString().equalsIgnoreCase(t2.getServer_id())){
                         //调度异常,进行故障转移,同自动重试
@@ -126,8 +129,9 @@ public class RetryJob {
                     q2.setJob_id(t2.getJob_id());
                     //此处再次确认是否正在执行中执行器发生死亡
                     TaskLogInstance second_task_logs=tlim.selectByPrimaryKey(t2.getId());
-                    if(second_task_logs.getStatus().equalsIgnoreCase(task_log_status))
-                    logger.info("检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
+                    if(second_task_logs.getStatus().equalsIgnoreCase(task_log_status)) {
+                        logger.info("检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
+                    }
                     JobCommon2.insertLog(t2,"INFO","检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
                     ZdhHaInfo zdhHaInfo=JobCommon2.getZdhUrl(zdhHaInfoMapper,t2.getParams());
                     URI old_uri=URI.create(t2.getUrl());
@@ -138,7 +142,7 @@ public class RetryJob {
                     HttpUtil.postJSON(new_url, t2.getEtl_info());
                     t2.setExecutor(zdhHaInfo.getId());
                     t2.setUrl(new_url);
-                    t2.setUpdate_time(new Timestamp(new Date().getTime()));
+                    t2.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                     JobCommon2.updateTaskLog(t2, tlim);
                 }
 

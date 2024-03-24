@@ -39,7 +39,6 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -161,7 +160,7 @@ public class ZdhUnstructureController extends BaseController{
     public ReturnInfo etl_task_unstructure_delete(String[] ids) {
 
         try{
-            etlTaskUnstructureMapper.deleteLogicByIds("etl_task_unstructure_info",ids, new Timestamp(new Date().getTime()));
+            etlTaskUnstructureMapper.deleteLogicByIds("etl_task_unstructure_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -188,8 +187,8 @@ public class ZdhUnstructureController extends BaseController{
             etlTaskUnstructureInfo.setOwner(owner);
             String id=SnowflakeIdWorker.getInstance().nextId() + "";
             etlTaskUnstructureInfo.setId(id);
-            etlTaskUnstructureInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlTaskUnstructureInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskUnstructureInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskUnstructureInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskUnstructureInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskUnstructureInfo);
 
@@ -203,7 +202,7 @@ public class ZdhUnstructureController extends BaseController{
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskUnstructureInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskUnstructureInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -232,7 +231,7 @@ public class ZdhUnstructureController extends BaseController{
         try{
             String owner = getOwner();
             etlTaskUnstructureInfo.setOwner(owner);
-            etlTaskUnstructureInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskUnstructureInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskUnstructureInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskUnstructureInfo);
             String id=etlTaskUnstructureInfo.getId();
@@ -251,7 +250,7 @@ public class ZdhUnstructureController extends BaseController{
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskUnstructureInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskUnstructureInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -295,8 +294,8 @@ public class ZdhUnstructureController extends BaseController{
             BeanUtils.copyProperties(etlTaskUnstructureLogInfo, etlTaskUnstructureInfo);
             etlTaskUnstructureLogInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             etlTaskUnstructureLogInfo.setUnstructure_id(etlTaskUnstructureInfo.getId());
-            etlTaskUnstructureLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlTaskUnstructureLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskUnstructureLogInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskUnstructureLogInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskUnstructureLogInfo.setIs_delete(Const.NOT_DELETE);
             etlTaskUnstructureLogInfo.setOwner(owner);
         } catch (Exception e) {
@@ -325,7 +324,7 @@ public class ZdhUnstructureController extends BaseController{
                     jarFileInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                     jarFileInfo.setJar_etl_id(id);
                     jarFileInfo.setFile_name(fileName);
-                    jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
+                    jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(System.currentTimeMillis())));
                     jarFileInfo.setOwner(owner);
                     etlTaskUnstructureInfo.setInput_path(fileName);
                     ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
@@ -368,7 +367,7 @@ public class ZdhUnstructureController extends BaseController{
 
                     //解析etl模板,目前先支持当前时间
                     TaskLogInstance tli=new TaskLogInstance();
-                    tli.setCur_time(new Timestamp(new Date().getTime()));
+                    tli.setCur_time(new Timestamp(System.currentTimeMillis()));
                     tli.setOwner(getOwner());
                     etl_sqls = JobCommon2.getUnstructureEtlSql(tli, etlTaskUnstructureInfo);
 
@@ -523,7 +522,7 @@ public class ZdhUnstructureController extends BaseController{
 
         try{
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureLogMapper, etlTaskUnstructureLogMapper.getTable(), ids);
-            etlTaskUnstructureLogMapper.deleteLogicByIds("etl_task_unstructure_log_info",ids, new Timestamp(new Date().getTime()));
+            etlTaskUnstructureLogMapper.deleteLogicByIds("etl_task_unstructure_log_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

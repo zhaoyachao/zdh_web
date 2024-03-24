@@ -86,8 +86,9 @@ public class ZdhDataWareController extends BaseController {
         }
 
         int total_page = list.size()/page_size;
-        if(list.size()%page_size != 0)
+        if(list.size()%page_size != 0) {
             total_page=total_page+1;
+        }
 
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("total_page",total_page);

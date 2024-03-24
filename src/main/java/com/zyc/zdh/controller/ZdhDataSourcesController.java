@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -198,7 +197,7 @@ public class ZdhDataSourcesController extends BaseController{
     public ReturnInfo<Object> deleteIds(String[] ids) {
         try{
             checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesMapper, dataSourcesMapper.getTable(), ids);
-            dataSourcesMapper.deleteLogicByIds(dataSourcesMapper.getTable(), ids, new Timestamp(new Date().getTime()));
+            dataSourcesMapper.deleteLogicByIds(dataSourcesMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -230,7 +229,7 @@ public class ZdhDataSourcesController extends BaseController{
         try{
             dataSourcesInfo.setOwner(getOwner());
             dataSourcesInfo.setIs_delete("0");
-            dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            dataSourcesInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             if(StringUtils.isEmpty(check_password) || check_password.equalsIgnoreCase("off")){
                 dataSourcesInfo.setPassword(null);
             }
@@ -265,7 +264,7 @@ public class ZdhDataSourcesController extends BaseController{
             }
             dataSourcesInfo.setOwner(oldDataSourcesInfo.getOwner());
             dataSourcesInfo.setIs_delete("0");
-            dataSourcesInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            dataSourcesInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             dataSourcesMapper.updateByPrimaryKeySelective(dataSourcesInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){

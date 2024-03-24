@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -205,7 +204,7 @@ public class LabelController extends BaseController {
             labelInfo.setParam_json(jsonArray.toJSONString());
             labelInfo.setOwner(oldLabelInfo.getOwner());
             labelInfo.setCreate_time(oldLabelInfo.getCreate_time());
-            labelInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            labelInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             labelInfo.setIs_delete(Const.NOT_DELETE);
             labelInfo.setStatus(oldLabelInfo.getStatus());
             labelMapper.updateByPrimaryKeySelective(labelInfo);
@@ -266,8 +265,8 @@ public class LabelController extends BaseController {
             labelInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             labelInfo.setOwner(getOwner());
             labelInfo.setIs_delete(Const.NOT_DELETE);
-            labelInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            labelInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            labelInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            labelInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             labelInfo.setStatus(Const.STATUS_NOT_PUB);
 
             checkPermissionByProduct(zdhPermissionService, labelInfo.getProduct_code());
@@ -292,7 +291,7 @@ public class LabelController extends BaseController {
     public ReturnInfo label_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, labelMapper, labelMapper.getTable(), ids);
-            labelMapper.deleteLogicByIds(labelMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            labelMapper.deleteLogicByIds(labelMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
@@ -314,7 +313,7 @@ public class LabelController extends BaseController {
         try {
             LabelInfo labelInfo = labelMapper.selectByPrimaryKey(id);
             labelInfo.setStatus(labelInfo.getStatus().equalsIgnoreCase("2")?"1":"2");
-            labelInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            labelInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             labelMapper.updateByPrimaryKeySelective(labelInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {

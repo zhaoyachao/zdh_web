@@ -23,7 +23,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -119,8 +118,8 @@ public class WeMockController extends BaseController{
 
             String id = SnowflakeIdWorker.getInstance().nextId() + "";
             wmti.setId(id);
-            wmti.setCreate_time(new Timestamp(new Date().getTime()));
-            wmti.setUpdate_time(new Timestamp(new Date().getTime()));
+            wmti.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            wmti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             wmti.setIs_delete(Const.NOT_DELETE);
             wmti.setOwner(getOwner());
             wmti.setResource_desc("");
@@ -189,7 +188,7 @@ public class WeMockController extends BaseController{
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "主键不可为空", null);
             }
 
-            wmti.setUpdate_time(new Timestamp(new Date().getTime()));
+            wmti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             wmti.setIs_delete(Const.NOT_DELETE);
             wmti.setOwner(getOwner());
 
@@ -236,8 +235,8 @@ public class WeMockController extends BaseController{
 
             String id = SnowflakeIdWorker.getInstance().nextId() + "";
             wmti.setId(id);
-            wmti.setCreate_time(new Timestamp(new Date().getTime()));
-            wmti.setUpdate_time(new Timestamp(new Date().getTime()));
+            wmti.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            wmti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             wmti.setIs_delete(Const.NOT_DELETE);
             wmti.setOwner(getOwner());
 
@@ -278,7 +277,7 @@ public class WeMockController extends BaseController{
             if(wmti.getLevel().equalsIgnoreCase("1")){
                 throw new Exception("根节点不可删除");
             }
-            weMockTreeMapper.deleteLogicByIds("we_mock_tree_info", new String[]{id}, new Timestamp(new Date().getTime()));
+            weMockTreeMapper.deleteLogicByIds("we_mock_tree_info", new String[]{id}, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", "");
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -431,8 +430,8 @@ public class WeMockController extends BaseController{
             }
             weMockDataInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             weMockDataInfo.setOwner(getOwner());
-            weMockDataInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            weMockDataInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            weMockDataInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            weMockDataInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             weMockDataInfo.setIs_delete(Const.NOT_DELETE);
            weMockDataMapper.insertSelective(weMockDataInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", weMockDataInfo);
@@ -462,7 +461,7 @@ public class WeMockController extends BaseController{
             if(StringUtils.isEmpty(weMockDataInfo.getMock_tree_id())){
                 throw new Exception("mock树节点必填");
             }
-            weMockDataInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            weMockDataInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             weMockDataInfo.setOwner(getOwner());
             weMockDataInfo.setIs_delete(Const.NOT_DELETE);
 
@@ -487,7 +486,7 @@ public class WeMockController extends BaseController{
             if(ids==null || ids.length==0){
                 throw new Exception("请选择删除的数据");
             }
-            weMockDataMapper.deleteLogicByIds("we_mock_data_info", ids, new Timestamp(new Date().getTime()));
+            weMockDataMapper.deleteLogicByIds("we_mock_data_info", ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", "");
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);

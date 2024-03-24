@@ -23,8 +23,9 @@ public final class DAG {
 				values= new LinkedHashSet();
 				fMap.put(key, values);
 			}
-			if (val != null)
-				values.add(val);
+			if (val != null) {
+                values.add(val);
+            }
 		}
 
 		/**
@@ -63,13 +64,15 @@ public final class DAG {
 		 */
 		public void remove(Object key, Object val) {
 			Set values= (Set) fMap.get(key);
-			if (values != null)
-				values.remove(val);
+			if (values != null) {
+                values.remove(val);
+            }
 		}
 		
 		/*
 		 * @see java.lang.Object#toString()
 		 */
+		@Override
 		public String toString() {
 			return fMap.toString();
 		}
@@ -93,8 +96,9 @@ public final class DAG {
 //		Assert.isLegal(origin != null);
 //		Assert.isLegal(target != null);
 
-		if (hasPath(target, origin))
-			return false;
+		if (hasPath(target, origin)) {
+            return false;
+        }
 
 		fOut.put(origin, target);
 		fOut.put(target, null);
@@ -122,11 +126,13 @@ public final class DAG {
 	 */
 	public void removeVertex(Object vertex) {
 		Set targets= fOut.removeAll(vertex);
-		for (Iterator it= targets.iterator(); it.hasNext();)
-			fIn.remove(it.next(), vertex);
+		for (Iterator it= targets.iterator(); it.hasNext();) {
+            fIn.remove(it.next(), vertex);
+        }
 		Set origins= fIn.removeAll(vertex);
-		for (Iterator it= origins.iterator(); it.hasNext();)
-			fOut.remove(it.next(), vertex);
+		for (Iterator it= origins.iterator(); it.hasNext();) {
+            fOut.remove(it.next(), vertex);
+        }
 	}
 
 	/**
@@ -154,8 +160,9 @@ public final class DAG {
 		Set roots= new LinkedHashSet(candidates.size());
 		for (Iterator it= candidates.iterator(); it.hasNext();) {
 			Object candidate= it.next();
-			if (map.get(candidate).isEmpty())
-				roots.add(candidate);
+			if (map.get(candidate).isEmpty()) {
+                roots.add(candidate);
+            }
 		}
 		return roots;
 	}
@@ -176,14 +183,18 @@ public final class DAG {
 
 	private boolean hasPath(Object start, Object end) {
 		// break condition
-		if (start == end)
-			return true;
+		if (start == end) {
+            return true;
+        }
 
 		Set children= fOut.get(start);
 		for (Iterator it= children.iterator(); it.hasNext();)
 			// recursion
-			if (hasPath(it.next(), end))
-				return true;
+        {
+            if (hasPath(it.next(), end)) {
+                return true;
+            }
+        }
 		return false;
 	}
 	
@@ -191,6 +202,7 @@ public final class DAG {
 	 * @see java.lang.Object#toString()
 	 * @since 3.3
 	 */
+	@Override
 	public String toString() {
 		return "Out: " + fOut.toString() + " In: " + fIn.toString(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
@@ -206,11 +218,13 @@ public final class DAG {
 		boolean is_run=true;
 		while(is_run){
 			Object p_vertex = queue.poll();
-			if(p_vertex == null)
-				return set;
+			if(p_vertex == null) {
+                return set;
+            }
 			Set p=Collections.unmodifiableSet(fIn.get(p_vertex));
-			if(p.size()>0)
-			  queue.addAll(p);
+			if(p.size()>0) {
+                queue.addAll(p);
+            }
 			  set.addAll(p);
 		}
 

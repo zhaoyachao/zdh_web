@@ -10,10 +10,18 @@ public class BulkItemResponseListener implements ResponseListener<BulkItemRespon
 
     @Override
     public void success(BulkItemResponse bulkItemResponse) {
-        if(bulkItemResponse.getResponse().getResult() == DocWriteResponse.Result.CREATED) System.out.println("ES同步批量创建完成");
-        if(bulkItemResponse.getResponse().getResult() == DocWriteResponse.Result.UPDATED) System.out.println("ES同步批量更新完成");
-        if(bulkItemResponse.getResponse().getResult() == DocWriteResponse.Result.DELETED) System.out.println("ES同步批量删除完成");
-        if(bulkItemResponse.getResponse().getResult() == DocWriteResponse.Result.NOT_FOUND) System.out.println("ES同步批量未找到数据");
+        if(bulkItemResponse.getResponse().getResult() == DocWriteResponse.Result.CREATED) {
+            System.out.println("ES同步批量创建完成");
+        }
+        if(bulkItemResponse.getResponse().getResult() == DocWriteResponse.Result.UPDATED) {
+            System.out.println("ES同步批量更新完成");
+        }
+        if(bulkItemResponse.getResponse().getResult() == DocWriteResponse.Result.DELETED) {
+            System.out.println("ES同步批量删除完成");
+        }
+        if(bulkItemResponse.getResponse().getResult() == DocWriteResponse.Result.NOT_FOUND) {
+            System.out.println("ES同步批量未找到数据");
+        }
     }
 
     @Override

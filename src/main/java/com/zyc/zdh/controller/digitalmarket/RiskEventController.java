@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -212,7 +211,7 @@ public class RiskEventController extends BaseController {
 
             riskEventInfo.setOwner(oldRiskEventInfo.getOwner());
             riskEventInfo.setCreate_time(oldRiskEventInfo.getCreate_time());
-            riskEventInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            riskEventInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             riskEventInfo.setIs_delete(Const.NOT_DELETE);
             riskEventMapper.updateByPrimaryKeySelective(riskEventInfo);
 
@@ -256,8 +255,8 @@ public class RiskEventController extends BaseController {
 
             riskEventInfo.setOwner(getOwner());
             riskEventInfo.setIs_delete(Const.NOT_DELETE);
-            riskEventInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            riskEventInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            riskEventInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            riskEventInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             riskEventMapper.insertSelective(riskEventInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", riskEventInfo);
         } catch (Exception e) {
@@ -278,7 +277,7 @@ public class RiskEventController extends BaseController {
     public ReturnInfo risk_event_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, riskEventMapper, riskEventMapper.getTable(), ids);
-            riskEventMapper.deleteLogicByIds(riskEventMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            riskEventMapper.deleteLogicByIds(riskEventMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

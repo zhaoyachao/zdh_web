@@ -24,7 +24,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -143,7 +142,7 @@ public class FilterController extends BaseController {
             //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
             filterInfo.setOwner(oldFilterInfo.getOwner());
             filterInfo.setCreate_time(oldFilterInfo.getCreate_time());
-            filterInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            filterInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             filterInfo.setIs_delete(Const.NOT_DELETE);
             filterMapper.updateByPrimaryKeySelective(filterInfo);
 
@@ -171,8 +170,8 @@ public class FilterController extends BaseController {
             filterInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             filterInfo.setOwner(getOwner());
             filterInfo.setIs_delete(Const.NOT_DELETE);
-            filterInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            filterInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            filterInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            filterInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, filterInfo.getProduct_code(), filterInfo.getDim_group());
 
@@ -196,7 +195,7 @@ public class FilterController extends BaseController {
     public ReturnInfo filter_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, filterMapper, filterMapper.getTable(), ids);
-            filterMapper.deleteLogicByIds(filterMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            filterMapper.deleteLogicByIds(filterMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

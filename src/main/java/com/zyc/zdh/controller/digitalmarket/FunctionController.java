@@ -32,7 +32,10 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.io.File;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 函数信息服务
@@ -210,7 +213,7 @@ public class FunctionController extends BaseController {
 
             functionInfo.setParam_json(jsonArray.toJSONString());
             functionInfo.setCreate_time(oldFunctionInfo.getCreate_time());
-            functionInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            functionInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             functionInfo.setIs_delete(Const.NOT_DELETE);
             functionMapper.updateByPrimaryKeySelective(functionInfo);
 
@@ -249,8 +252,8 @@ public class FunctionController extends BaseController {
             functionInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             functionInfo.setOwner(getOwner());
             functionInfo.setIs_delete(Const.NOT_DELETE);
-            functionInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            functionInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            functionInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            functionInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             functionMapper.insertSelective(functionInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", functionInfo);
         } catch (Exception e) {
@@ -269,7 +272,7 @@ public class FunctionController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo function_delete(String[] ids) {
         try {
-            functionMapper.deleteLogicByIds(functionMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            functionMapper.deleteLogicByIds(functionMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

@@ -25,7 +25,6 @@ import tk.mybatis.mapper.entity.Example;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -166,8 +165,8 @@ public class ZdhEnumController extends BaseController{
 
             enumInfo.setEnum_json(jsonArray.toJSONString());
             enumInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            enumInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            enumInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            enumInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            enumInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             enumInfo.setIs_delete(Const.NOT_DELETE);
             enumMapper.insertSelective(enumInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
@@ -198,7 +197,7 @@ public class ZdhEnumController extends BaseController{
             String owner = getOwner();
             enumInfo.setOwner(owner);
             enumInfo.setIs_delete(Const.NOT_DELETE);
-            enumInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            enumInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             JSONArray jsonArray=new JSONArray();
 
             for(int i=0;i<enum_value.length;i++){

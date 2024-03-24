@@ -27,7 +27,6 @@ import tk.mybatis.mapper.entity.Example;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -165,7 +164,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
     public ReturnInfo etl_task_datax_auto_delete(String[] ids) {
         try{
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoMapper, etlTaskDataxAutoMapper.getTable(), ids);
-            etlTaskDataxAutoMapper.deleteLogicByIds(etlTaskDataxAutoMapper.getTable(), ids, new Timestamp(new Date().getTime()));
+            etlTaskDataxAutoMapper.deleteLogicByIds(etlTaskDataxAutoMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -202,8 +201,8 @@ public class ZdhEtlDataxAutoController extends BaseController{
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoInfo.getProduct_code(), etlTaskDataxAutoInfo.getDim_group());
             etlTaskDataxAutoInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             etlTaskDataxAutoInfo.setOwner(getOwner());
-            etlTaskDataxAutoInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlTaskDataxAutoInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskDataxAutoInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskDataxAutoInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskDataxAutoInfo.setIs_delete(Const.NOT_DELETE);
 
             etlTaskDataxAutoMapper.insertSelective(etlTaskDataxAutoInfo);
@@ -237,7 +236,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
 
             etlTaskDataxAutoInfo.setOwner(oldEtlTaskDataxAutoInfo.getOwner());
             etlTaskDataxAutoInfo.setCreate_time(oldEtlTaskDataxAutoInfo.getCreate_time());
-            etlTaskDataxAutoInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskDataxAutoInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskDataxAutoInfo.setIs_delete(Const.NOT_DELETE);
             etlTaskDataxAutoMapper.updateByPrimaryKeySelective(etlTaskDataxAutoInfo);
 

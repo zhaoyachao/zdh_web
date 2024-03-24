@@ -29,7 +29,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * spark sql服务
@@ -112,7 +115,7 @@ public class ZdhSqlController extends BaseController {
     public ReturnInfo sql_task_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskMapper, sqlTaskMapper.getTable(), ids);
-            sqlTaskMapper.deleteLogicByIds(sqlTaskMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            sqlTaskMapper.deleteLogicByIds(sqlTaskMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -140,8 +143,8 @@ public class ZdhSqlController extends BaseController {
             debugInfo(sqlTaskInfo);
 
             sqlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            sqlTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            sqlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            sqlTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            sqlTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             sqlTaskInfo.setIs_delete(Const.NOT_DELETE);
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskInfo.getProduct_code(), sqlTaskInfo.getDim_group());
@@ -154,7 +157,7 @@ public class ZdhSqlController extends BaseController {
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(sqlTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(sqlTaskInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -181,7 +184,7 @@ public class ZdhSqlController extends BaseController {
         try {
             String owner = getOwner();
             sqlTaskInfo.setOwner(owner);
-            sqlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            sqlTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             sqlTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sqlTaskInfo);
 
@@ -198,7 +201,7 @@ public class ZdhSqlController extends BaseController {
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(sqlTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(sqlTaskInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -247,7 +250,7 @@ public class ZdhSqlController extends BaseController {
                     meta_database_info.setDb_name(o.toString());
                     meta_database_info.setTb_name("");
                     meta_database_info.setOwner(owner);
-                    meta_database_info.setCreate_time(new Timestamp(new Date().getTime()));
+                    meta_database_info.setCreate_time(new Timestamp(System.currentTimeMillis()));
                     metaDatabaseMapper.insertSelective(meta_database_info);
                 }
 
@@ -256,7 +259,7 @@ public class ZdhSqlController extends BaseController {
                     meta_database_info.setDb_name(o.toString());
                     meta_database_info.setTb_name(t.toString());
                     meta_database_info.setOwner(owner);
-                    meta_database_info.setCreate_time(new Timestamp(new Date().getTime()));
+                    meta_database_info.setCreate_time(new Timestamp(System.currentTimeMillis()));
                     meta_database_infos.add(meta_database_info);
                     metaDatabaseMapper.insertSelective(meta_database_info);
                 }

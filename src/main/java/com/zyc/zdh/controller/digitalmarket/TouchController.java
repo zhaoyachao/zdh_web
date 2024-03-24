@@ -26,7 +26,6 @@ import tk.mybatis.mapper.entity.Example;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -173,7 +172,7 @@ public class TouchController extends BaseController {
 
             touchConfigInfo.setOwner(oldTouchConfigInfo.getOwner());
             touchConfigInfo.setCreate_time(oldTouchConfigInfo.getCreate_time());
-            touchConfigInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            touchConfigInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             touchConfigInfo.setIs_delete(Const.NOT_DELETE);
             touchConfigMapper.updateByPrimaryKeySelective(touchConfigInfo);
 
@@ -205,8 +204,8 @@ public class TouchController extends BaseController {
             }
 
             touchConfigInfo.setOwner(getOwner());
-            touchConfigInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            touchConfigInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            touchConfigInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            touchConfigInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             touchConfigInfo.setIs_delete(Const.NOT_DELETE);
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, touchConfigInfo.getProduct_code(), touchConfigInfo.getDim_group());
@@ -231,7 +230,7 @@ public class TouchController extends BaseController {
     public ReturnInfo touch_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, touchConfigMapper, touchConfigMapper.getTable(), ids);
-            touchConfigMapper.deleteLogicByIds(touchConfigMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            touchConfigMapper.deleteLogicByIds(touchConfigMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

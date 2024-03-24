@@ -42,7 +42,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
@@ -167,8 +170,8 @@ public class AspectConfig implements Ordered {
                 }
                 userOperateLogInfo.setOperate_output(output);
 
-                userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
-                userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+                userOperateLogInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                userOperateLogInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 userOperateLogMapper.insertSelective(userOperateLogInfo);
                 MDC.remove("user_id");
                 if (request.getMethod().equalsIgnoreCase("get")) {
@@ -233,8 +236,8 @@ public class AspectConfig implements Ordered {
                     } else {
                         userOperateLogInfo.setOperate_output(e.getMessage());
                     }
-                    userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
-                    userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+                    userOperateLogInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                    userOperateLogInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                     userOperateLogMapper.insertSelective(userOperateLogInfo);
                 } catch (Exception ex) {
                     String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -290,8 +293,8 @@ public class AspectConfig implements Ordered {
                     userOperateLogInfo.setOperate_input(reqParam);
                     userOperateLogInfo.setIp(ipAddr);
                     userOperateLogInfo.setTime(String.valueOf((System.currentTimeMillis() - start) / 1000.0));
-                    userOperateLogInfo.setCreate_time(new Timestamp(new Date().getTime()));
-                    userOperateLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+                    userOperateLogInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                    userOperateLogInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
                     if (o instanceof String) {
                         if (((String) o).length() > 6400) {
@@ -379,8 +382,9 @@ public class AspectConfig implements Ordered {
         boolean is_white = false;
         for (Annotation annotation : annotations) {
             if (annotation.annotationType().equals(White.class)) {
-                if (targetMethod.getAnnotation(White.class).value())
+                if (targetMethod.getAnnotation(White.class).value()) {
                     is_white = true;
+                }
             }
         }
         for (Annotation annotation : annotations) {
@@ -430,8 +434,9 @@ public class AspectConfig implements Ordered {
 
     private String getUrl(HttpServletRequest request) {
         String url = SystemConfig.urlThread.get().getServletPath();
-        if (url.startsWith("/"))
+        if (url.startsWith("/")) {
             url = url.substring(1).replaceAll("function:", "");
+        }
         url = url.split("\\.")[0];
         return url;
     }
@@ -446,8 +451,8 @@ public class AspectConfig implements Ordered {
             ni.setMsg(msg);
             ni.setIs_see(Const.FALSE);
             ni.setOwner(user.getUserName());
-            ni.setCreate_time(new Timestamp(new Date().getTime()));
-            ni.setUpdate_time(new Timestamp(new Date().getTime()));
+            ni.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            ni.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             noticeMapper.insertSelective(ni);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -460,8 +465,9 @@ public class AspectConfig implements Ordered {
 
         String[] back_urls = new String[]{"etlEcharts", "getTotalNum", "notice_list", "user_operate_log_list", "user_operate_log_index"};
         for (String back_url : back_urls) {
-            if (url.contains(back_url))
+            if (url.contains(back_url)) {
                 return false;
+            }
         }
 
         return true;

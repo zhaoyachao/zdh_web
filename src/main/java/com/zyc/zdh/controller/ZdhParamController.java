@@ -24,7 +24,6 @@ import tk.mybatis.mapper.entity.Example;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -129,8 +128,8 @@ public class ZdhParamController extends BaseController {
         try{
             paramInfo.setIs_delete(Const.NOT_DELETE);
             paramInfo.setOwner(getUser().getUserName());
-            paramInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            paramInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            paramInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            paramInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             paramMapper.insertSelective(paramInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
@@ -153,7 +152,7 @@ public class ZdhParamController extends BaseController {
             debugInfo(paramInfo);
             paramInfo.setIs_delete(Const.NOT_DELETE);
             paramInfo.setOwner(getUser().getUserName());
-            paramInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            paramInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             paramMapper.updateByPrimaryKeySelective(paramInfo);
             //改动后邮件通知
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
@@ -175,7 +174,7 @@ public class ZdhParamController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo param_delete(String[] ids) {
         try {
-            paramMapper.deleteLogicByIds("param_info",ids, new Timestamp(new Date().getTime()));
+            paramMapper.deleteLogicByIds("param_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -249,7 +248,7 @@ public class ZdhParamController extends BaseController {
             paramMapper.updateByPrimaryKey(oldVersionParamInfo);
             if(!StringUtils.isEmpty(is_delete)){
                 if(is_delete.equalsIgnoreCase(Const.TRUR)){
-                    paramMapper.deleteLogicByIds(paramMapper.getTable(), new String[]{id}, new Timestamp(new Date().getTime()));
+                    paramMapper.deleteLogicByIds(paramMapper.getTable(), new String[]{id}, new Timestamp(System.currentTimeMillis()));
                 }
             }
 

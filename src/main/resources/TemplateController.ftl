@@ -197,7 +197,7 @@ public class ${ControllerName} extends BaseController {
 
 
             ${entityName}.setCreate_time(old${EntityName}.getCreate_time());
-            ${entityName}.setUpdate_time(new Timestamp(new Date().getTime()));
+            ${entityName}.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             ${entityName}.setIs_delete(Const.NOT_DELETE);
             ${mapperName}.updateByPrimaryKeySelective(${entityName});
 
@@ -225,8 +225,8 @@ public class ${ControllerName} extends BaseController {
             ${entityName}.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             ${entityName}.setOwner(getOwner());
             ${entityName}.setIs_delete(Const.NOT_DELETE);
-            ${entityName}.setCreate_time(new Timestamp(new Date().getTime()));
-            ${entityName}.setUpdate_time(new Timestamp(new Date().getTime()));
+            ${entityName}.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            ${entityName}.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             ${mapperName}.insertSelective(${entityName});
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", ${entityName});
         } catch (Exception e) {
@@ -247,7 +247,7 @@ public class ${ControllerName} extends BaseController {
     @White
     public ReturnInfo ${controller}_delete(String[] ids) {
         try {
-            ${mapperName}.deleteLogicByIds("${tableName}",ids, new Timestamp(new Date().getTime()));
+            ${mapperName}.deleteLogicByIds("${tableName}",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

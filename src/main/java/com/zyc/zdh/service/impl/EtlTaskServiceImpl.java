@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -54,7 +53,7 @@ public class EtlTaskServiceImpl implements EtlTaskService {
     @Override
     public int deleteBatchById(Long[] ids) {
         String[]  ids2 = (String[])ConvertUtils.convert(ids, String[].class);
-        etlTaskMapper.deleteBatchById(ids2, new Timestamp(new Date().getTime()));
+        etlTaskMapper.deleteBatchById(ids2, new Timestamp(System.currentTimeMillis()));
         return 0;
     }
 

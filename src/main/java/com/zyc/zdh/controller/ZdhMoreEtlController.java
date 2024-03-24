@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -125,8 +124,8 @@ public class ZdhMoreEtlController extends BaseController {
         try {
             etlMoreTaskInfo.setOwner(getOwner());
             etlMoreTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
-            etlMoreTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlMoreTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlMoreTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlMoreTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlMoreTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlMoreTaskInfo);
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlMoreTaskInfo.getProduct_code(), etlMoreTaskInfo.getDim_group());
@@ -153,7 +152,7 @@ public class ZdhMoreEtlController extends BaseController {
     public ReturnInfo etl_task_more_sources_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlMoreTaskMapper, etlMoreTaskMapper.getTable(), ids);
-            etlMoreTaskMapper.deleteLogicByIds(etlMoreTaskMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            etlMoreTaskMapper.deleteLogicByIds(etlMoreTaskMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -175,7 +174,7 @@ public class ZdhMoreEtlController extends BaseController {
     public ReturnInfo etl_task_more_update(EtlMoreTaskInfo etlMoreTaskInfo) {
         try {
             String owner = getOwner();
-            etlMoreTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlMoreTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlMoreTaskInfo.setIs_delete(Const.NOT_DELETE);
             etlMoreTaskInfo.setOwner(owner);
             debugInfo(etlMoreTaskInfo);

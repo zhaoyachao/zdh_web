@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -120,7 +119,7 @@ public class ZdhDroolsController extends BaseController{
             String id=SnowflakeIdWorker.getInstance().nextId() + "";
             etlDroolsTaskInfo.setId(id);
             etlDroolsTaskInfo.setOwner(getOwner());
-            etlDroolsTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            etlDroolsTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             debugInfo(etlDroolsTaskInfo);
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskInfo.getProduct_code(), etlDroolsTaskInfo.getDim_group());
             etlDroolsTaskMapper.insertSelective(etlDroolsTaskInfo);

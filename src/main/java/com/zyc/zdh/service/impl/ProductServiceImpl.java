@@ -94,21 +94,26 @@ public class ProductServiceImpl implements ProductService {
 		// 这里获取从前台传递过来的参数，从而确保是否分页、是否进行查询、是否排序等
 		for (int i = 0; i < jsonarray.size(); i++) {
 			JSONObject obj = (JSONObject) jsonarray.get(i);
-			if (obj.get("name").equals("sEcho"))
-				sEcho = obj.get("value").toString();
+			if (obj.get("name").equals("sEcho")) {
+                sEcho = obj.get("value").toString();
+            }
 
-			if (obj.get("name").equals("iDisplayStart"))
-				iDisplayStart = obj.getIntValue("value");
+			if (obj.get("name").equals("iDisplayStart")) {
+                iDisplayStart = obj.getIntValue("value");
+            }
 
-			if (obj.get("name").equals("iDisplayLength"))
-				iDisplayLength = obj.getIntValue("value");
+			if (obj.get("name").equals("iDisplayLength")) {
+                iDisplayLength = obj.getIntValue("value");
+            }
 
-			if (obj.get("name").equals("iSortCol_0"))
-				t.setSortColumn(getSortColumn(ProductInfo.class,
-						obj.getIntValue("value")));
+			if (obj.get("name").equals("iSortCol_0")) {
+                t.setSortColumn(getSortColumn(ProductInfo.class,
+                        obj.getIntValue("value")));
+            }
 
-			if (obj.get("name").equals("sSortDir_0"))
-				t.setSortDir(obj.get("value").toString());
+			if (obj.get("name").equals("sSortDir_0")) {
+                t.setSortDir(obj.get("value").toString());
+            }
 		}
 		System.out.printf("操作了[ %s ]次\n",sEcho);
 		int n = (iDisplayStart + 1) / iDisplayLength;

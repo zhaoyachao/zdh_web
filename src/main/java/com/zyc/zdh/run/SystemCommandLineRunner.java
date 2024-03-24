@@ -354,7 +354,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                 schedulerFactoryBean.stop();
                             }
                             q.setIs_handle(Const.TRUR);
-                            q.setUpdate_time(new Timestamp(new Date().getTime()));
+                            q.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                             //更新上下线任务已处理
                             quartzExecutorMapper.updateByPrimaryKeySelective(q);
 

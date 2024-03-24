@@ -97,8 +97,9 @@ public class RedisOtherDb extends RedisBase {
 					}
 				});
 
-		if (keys.size() > 0)
-			remove(keys, dbIndex);
+		if (keys.size() > 0) {
+            remove(keys, dbIndex);
+        }
 	}
 
 	/**
@@ -304,6 +305,7 @@ public class RedisOtherDb extends RedisBase {
 	/**
 	 * 使用redisTemplate.execute()示例
 	 */
+	@Override
 	public void execute() {
 		String v1 = redisTemplate.execute(new RedisCallback<String>() {
 			@Override

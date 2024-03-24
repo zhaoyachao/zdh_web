@@ -21,7 +21,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -169,7 +168,7 @@ public class PermissionDimensionValueController extends BaseController {
 
             PermissionDimensionValueInfo oldPermissionDimensionValueInfo = permissionDimensionValueMapper.selectByPrimaryKey(permissionDimensionValueInfo.getId());
 
-            oldPermissionDimensionValueInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            oldPermissionDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             oldPermissionDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
             permissionDimensionValueMapper.updateByPrimaryKeySelective(permissionDimensionValueInfo);
 
@@ -196,7 +195,7 @@ public class PermissionDimensionValueController extends BaseController {
             PermissionDimensionValueInfo oldPermissionDimensionValueInfo = permissionDimensionValueMapper.selectByPrimaryKey(permissionDimensionValueInfo.getId());
 
             oldPermissionDimensionValueInfo.setDim_value_name(permissionDimensionValueInfo.getDim_value_name());
-            oldPermissionDimensionValueInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            oldPermissionDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             oldPermissionDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
             oldPermissionDimensionValueInfo.setParent_dim_value_code(permissionDimensionValueInfo.getParent_dim_value_code());
             permissionDimensionValueMapper.updateByPrimaryKeySelective(oldPermissionDimensionValueInfo);
@@ -222,8 +221,8 @@ public class PermissionDimensionValueController extends BaseController {
         try {
             permissionDimensionValueInfo.setOwner(getOwner());
             permissionDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
-            permissionDimensionValueInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            permissionDimensionValueInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            permissionDimensionValueInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            permissionDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             permissionDimensionValueMapper.insertSelective(permissionDimensionValueInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", permissionDimensionValueInfo);
         } catch (Exception e) {
@@ -243,7 +242,7 @@ public class PermissionDimensionValueController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo permission_dimension_value_delete(String id) {
         try {
-            permissionDimensionValueMapper.deleteLogicByIds(permissionDimensionValueMapper.getTable(),new String[]{id}, new Timestamp(new Date().getTime()));
+            permissionDimensionValueMapper.deleteLogicByIds(permissionDimensionValueMapper.getTable(),new String[]{id}, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

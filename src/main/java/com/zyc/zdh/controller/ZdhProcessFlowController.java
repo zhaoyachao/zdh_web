@@ -282,7 +282,7 @@ public class ZdhProcessFlowController extends BaseController {
                 admin = StringUtils.join(Sets.newHashSet(admin.split(",")).toArray(new String[]{}), ",");
                 productTagInfo.setProduct_admin(admin);
             }
-            productTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            productTagInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             productTagMapper.updateByPrimaryKeySelective(productTagInfo);
         }else{
 
@@ -379,8 +379,9 @@ public class ZdhProcessFlowController extends BaseController {
                         }
                     }
                 }
-                if (StringUtils.isEmpty(pfi.getConfig_code()))
+                if (StringUtils.isEmpty(pfi.getConfig_code())) {
                     continue;
+                }
 
                 String defaultUsers = getDefaultAuditor(product_code);
                 if(!StringUtils.isEmpty(defaultUsers)){
@@ -398,7 +399,7 @@ public class ZdhProcessFlowController extends BaseController {
                     pfi.setIs_show(Const.NOT_SHOW);
                 }
                 pfi.setLevel(i + "");
-                pfi.setCreate_time(new Timestamp(new Date().getTime()));
+                pfi.setCreate_time(new Timestamp(System.currentTimeMillis()));
                 pfi.setPre_id(pre_id);
                 pfi.setContext(context);
                 pfi.setIs_end(Const.NOT_END);
@@ -487,8 +488,9 @@ public class ZdhProcessFlowController extends BaseController {
                     }
                 }
             }
-            if (StringUtils.isEmpty(pfi.getConfig_code()))
+            if (StringUtils.isEmpty(pfi.getConfig_code())) {
                 continue;
+            }
 
             //增加默认审批人
             String defaultUsers = getDefaultAuditor(product_code);
@@ -506,7 +508,7 @@ public class ZdhProcessFlowController extends BaseController {
                 pfi.setIs_show(Const.NOT_SHOW);
             }
             pfi.setLevel(i + "");
-            pfi.setCreate_time(new Timestamp(new Date().getTime()));
+            pfi.setCreate_time(new Timestamp(System.currentTimeMillis()));
             pfi.setPre_id(pre_id);
             pfi.setContext(context);
             pfi.setIs_end(Const.NOT_END);
@@ -578,7 +580,7 @@ public class ZdhProcessFlowController extends BaseController {
             }
             pfi.setLevel(i + "");
             pfi.setConfig_code("");
-            pfi.setCreate_time(new Timestamp(new Date().getTime()));
+            pfi.setCreate_time(new Timestamp(System.currentTimeMillis()));
             pfi.setPre_id(pre_id);
             pfi.setContext(context);
             pfi.setIs_end(Const.NOT_END);

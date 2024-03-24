@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -106,7 +105,7 @@ public class CrowdRuleController extends BaseController {
             //crowdRuleInfo.setRule_json(jsonArray.toJSONString());
             crowdRuleInfo.setOwner(oldCrowdRuleInfo.getOwner());
             crowdRuleInfo.setCreate_time(oldCrowdRuleInfo.getCreate_time());
-            crowdRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            crowdRuleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             crowdRuleInfo.setIs_delete(Const.NOT_DELETE);
             crowdRuleMapper.updateByPrimaryKeySelective(crowdRuleInfo);
 
@@ -134,8 +133,8 @@ public class CrowdRuleController extends BaseController {
             crowdRuleInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             crowdRuleInfo.setOwner(getOwner());
             crowdRuleInfo.setIs_delete(Const.NOT_DELETE);
-            crowdRuleInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            crowdRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            crowdRuleInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            crowdRuleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             //checkPermissionByProductAndDimGroup(zdhPermissionService, crowdRuleInfo.getProduct_code(), crowdRuleInfo.getDim_group());
 
             crowdRuleMapper.insertSelective(crowdRuleInfo);
@@ -158,7 +157,7 @@ public class CrowdRuleController extends BaseController {
     public ReturnInfo crowd_rule_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, crowdRuleMapper, crowdRuleMapper.getTable(), ids);
-            crowdRuleMapper.deleteLogicByIds(crowdRuleMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            crowdRuleMapper.deleteLogicByIds(crowdRuleMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

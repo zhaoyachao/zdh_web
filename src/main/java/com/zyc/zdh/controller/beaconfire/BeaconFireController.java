@@ -143,7 +143,7 @@ public class BeaconFireController extends BaseController {
             checkPermissionByProductAndDimGroup(zdhPermissionService, oldBeaconFireInfo.getProduct_code(), oldBeaconFireInfo.getDim_group());
 
             beaconFireInfo.setCreate_time(oldBeaconFireInfo.getCreate_time());
-            beaconFireInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            beaconFireInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             beaconFireInfo.setIs_delete(Const.NOT_DELETE);
             beaconFireMapper.updateByPrimaryKeySelective(beaconFireInfo);
 
@@ -170,8 +170,8 @@ public class BeaconFireController extends BaseController {
             beaconFireInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             beaconFireInfo.setOwner(getOwner());
             beaconFireInfo.setIs_delete(Const.NOT_DELETE);
-            beaconFireInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            beaconFireInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            beaconFireInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            beaconFireInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireInfo.getProduct_code(), beaconFireInfo.getDim_group());
 
@@ -195,7 +195,7 @@ public class BeaconFireController extends BaseController {
     public ReturnInfo beacon_fire_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireMapper, beaconFireMapper.getTable(), ids);
-            beaconFireMapper.deleteLogicByIds(beaconFireMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            beaconFireMapper.deleteLogicByIds(beaconFireMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

@@ -22,7 +22,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -133,7 +132,7 @@ public class DataTagGroupController extends BaseController {
 
             dataTagGroupInfo.setOwner(oldDataTagGroupInfo.getOwner());
             dataTagGroupInfo.setCreate_time(oldDataTagGroupInfo.getCreate_time());
-            dataTagGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            dataTagGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             dataTagGroupInfo.setIs_delete(Const.NOT_DELETE);
             dataTagGroupMapper.updateByPrimaryKeySelective(dataTagGroupInfo);
 
@@ -160,8 +159,8 @@ public class DataTagGroupController extends BaseController {
             dataTagGroupInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             dataTagGroupInfo.setOwner(getOwner());
             dataTagGroupInfo.setIs_delete(Const.NOT_DELETE);
-            dataTagGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            dataTagGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            dataTagGroupInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            dataTagGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             checkPermissionByProduct(zdhPermissionService, dataTagGroupInfo.getProduct_code());
             dataTagGroupMapper.insertSelective(dataTagGroupInfo);
@@ -184,7 +183,7 @@ public class DataTagGroupController extends BaseController {
     public ReturnInfo<Object> data_tag_group_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, dataTagGroupMapper, dataTagGroupMapper.getTable(), ids);
-            dataTagGroupMapper.deleteLogicByIds(dataTagGroupMapper.getTable(), ids, new Timestamp(new Date().getTime()));
+            dataTagGroupMapper.deleteLogicByIds(dataTagGroupMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

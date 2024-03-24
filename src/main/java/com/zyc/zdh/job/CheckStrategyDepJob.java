@@ -40,6 +40,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 
     }
 
+    @Override
     public void run() {
         try {
             MDC.put("logId", UUID.randomUUID().toString());
@@ -119,7 +120,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             List<StrategyInstance> strategyInstanceOnLineList=sim.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()}, "online");
             for(StrategyInstance tl :strategyInstanceOnLineList){
                 tl.setStatus(JobStatus.ETL.getValue());
-                tl.setUpdate_time(new Timestamp(new Date().getTime()));
+                tl.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 JobDigitalMarket.updateTaskLog(tl,sim);
             }
 
@@ -332,11 +333,13 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             for(Object obj:jary){
                 String tlid=((JSONObject) obj).getString("strategy_instance_id");
                 //System.out.println("task_log_instance_id:"+tlid);
-                if(tlid!=null)
-                  tlidList.add(tlid);
+                if(tlid!=null) {
+                    tlidList.add(tlid);
+                }
             }
-            if (tlidList.size()<1)
+            if (tlidList.size()<1) {
                 continue;
+            }
 
             List<task_num_info> lm=sim.selectStatusByIds(new String[]{sgi.getId()});
             int finish_num=0;

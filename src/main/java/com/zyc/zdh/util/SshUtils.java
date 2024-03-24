@@ -68,12 +68,13 @@ public final class SshUtils {
         URI from = URI.create(fromUri);
         URI to = URI.create(toUri);
 
-        if (SSH.equals(to.getScheme()) && FILE.equals(from.getScheme()))
+        if (SSH.equals(to.getScheme()) && FILE.equals(from.getScheme())) {
             upload(from, to);
-        else if (SSH.equals(from.getScheme()) && FILE.equals(to.getScheme()))
+        } else if (SSH.equals(from.getScheme()) && FILE.equals(to.getScheme())) {
             download(from, to);
-        else
+        } else {
             throw new IllegalArgumentException();
+        }
     }
 
     private static void upload(URI from, URI to) {
@@ -152,8 +153,9 @@ public final class SshUtils {
                 PipedInputStream in = new PipedInputStream(pipe);
                 PrintWriter pw = new PrintWriter(pipe)) {
 
-            if (session.getWorkDir() != null)
+            if (session.getWorkDir() != null) {
                 pw.println("cd " + session.getWorkDir());
+            }
             pw.println(script);
             pw.println("exit");
             pw.flush();
@@ -316,8 +318,9 @@ public final class SshUtils {
         public void execute() throws JSchException, InterruptedException {
             channel.connect();
             channel.start();
-            while (!channel.isEOF())
+            while (!channel.isEOF()) {
                 sleep(DEFAULT_WAIT_TIMEOUT);
+            }
         }
 
         public Session getSession() {
@@ -330,10 +333,12 @@ public final class SshUtils {
 
         @Override
         public void close() {
-            if (channel != null)
+            if (channel != null) {
                 channel.disconnect();
-            if (session != null)
+            }
+            if (session != null) {
                 session.disconnect();
+            }
         }
 
         public String getMaskedUri() {

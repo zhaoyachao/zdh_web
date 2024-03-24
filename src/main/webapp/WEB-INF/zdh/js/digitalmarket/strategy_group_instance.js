@@ -432,6 +432,7 @@
                     context = "杀死中";
                     class_str = "btn-danger btn-xs";
                     btn_kill_str='';
+                    btn_retry_str='';
                 }
                 if (value=="killed" ){
                     context = "已杀死";

@@ -161,7 +161,7 @@ public class CheckBloodSourceJob {
             ArrayList output_tables = new ArrayList<String>();
             DataSourcesInfo ds = dataSourcesMapper.selectByPrimaryKey(etlTaskJdbcInfo.getData_sources_choose_input());
             String dbType = JdbcUtils.getDbType(ds.getUrl(), ds.getDriver());
-            Map<String, Object> jinJavaParam = getJinJavaParam(new Timestamp(new Date().getTime()));
+            Map<String, Object> jinJavaParam = getJinJavaParam(new Timestamp(System.currentTimeMillis()));
             Jinjava jj = new Jinjava();
             String etl_sql = jj.render(etlTaskJdbcInfo.getEtl_sql(), jinJavaParam);
             String[] sqls = etl_sql.split(";\r\n|;\n");
@@ -259,7 +259,9 @@ public class CheckBloodSourceJob {
                 bsi.setInput(StringUtils.join(input_tables, ","));
 
                 DataSourcesInfo dsi_output = dataSourcesMapper.selectByPrimaryKey(sqlTaskInfo.getData_sources_choose_output());
-                if(dsi_output == null) continue;
+                if(dsi_output == null) {
+                    continue;
+                }
                 String md5_output = DigestUtils.md5DigestAsHex((dsi_output.getData_source_type() + dsi_output.getUrl()).getBytes());
 
                 bsi.setOutput_md5(md5_output);
@@ -267,7 +269,9 @@ public class CheckBloodSourceJob {
                 String out = dsi_output.getData_source_type().equalsIgnoreCase("jdbc") ? sqlTaskInfo.getData_sources_table_name_output() : sqlTaskInfo.getData_sources_file_name_output();
                 dsi_output.setPassword("");
                 bsi.setOutput_json(JSON.toJSONString(dsi_output));
-                if(!StringUtils.isEmpty(out)) output_tables.add(out);
+                if(!StringUtils.isEmpty(out)) {
+                    output_tables.add(out);
+                }
                 bsi.setOutput(StringUtils.join(output_tables, ","));
                 bsi.setVersion(version);
                 bloodSourceMappeer.insertSelective(bsi);

@@ -4,7 +4,6 @@ import com.zyc.zdh.ZdhApplication;
 
 import java.lang.management.ManagementFactory;
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * JVM相关信息
@@ -105,7 +104,7 @@ public class Jvm {
      */
     public String getRunTime() {
 
-        Timestamp end = new Timestamp(new Date().getTime());
+        Timestamp end = new Timestamp(System.currentTimeMillis());
         Timestamp start = Timestamp.valueOf(ZdhApplication.start_time);
         long day=(end.getTime() -start.getTime())/(1000 * 60 * 60 * 24);
         long hour = ((end.getTime()-start.getTime()) / (60 * 60 * 1000) - day * 24);

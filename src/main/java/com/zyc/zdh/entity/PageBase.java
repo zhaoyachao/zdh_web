@@ -66,10 +66,11 @@ public class PageBase implements Serializable {
 	}
 	
 	public int getTotalPage() {
-		if(totalResult%pageSize==0)
-			totalPage = totalResult/pageSize;
-		else
-			totalPage = totalResult/pageSize+1;
+		if(totalResult%pageSize==0) {
+            totalPage = totalResult/pageSize;
+        } else {
+            totalPage = totalResult/pageSize+1;
+        }
 		return totalPage;
 	}
 	
@@ -86,10 +87,12 @@ public class PageBase implements Serializable {
 	}
 	
 	public int getPageNum() {
-		if(pageNum<=0)
-			pageNum = 1;
-		if(pageNum>getTotalPage())
-			pageNum = getTotalPage();
+		if(pageNum<=0) {
+            pageNum = 1;
+        }
+		if(pageNum>getTotalPage()) {
+            pageNum = getTotalPage();
+        }
 		return pageNum;
 	}
 	/**
@@ -116,8 +119,9 @@ public class PageBase implements Serializable {
 	
 	public long getCurrentResult() {
 		currentResult = (getPageNum()-1)*getPageSize();
-		if(currentResult<0)
-			currentResult = 0;
+		if(currentResult<0) {
+            currentResult = 0;
+        }
 		return currentResult;
 	}
 	

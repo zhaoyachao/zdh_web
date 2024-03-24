@@ -50,8 +50,9 @@ public class MyRealm extends AuthorizingRealm {
         for(UserResourceInfo2 uri2:uris){
         	if(!StringUtils.isEmpty(uri2.getUrl())){
 				String url = uri2.getUrl();
-				if(url.startsWith("/"))
-					url = url.substring(1).replaceAll("function:","");
+				if(url.startsWith("/")) {
+                    url = url.substring(1).replaceAll("function:","");
+                }
 				url = url.split("\\.")[0];
 				permissions.add(url);
 			}
@@ -159,6 +160,7 @@ public class MyRealm extends AuthorizingRealm {
 		//getAuthorizationCache().remove(key);
 	}
 
+	@Override
 	protected Object getAuthorizationCacheKey(PrincipalCollection principals) {
 		return principals.getPrimaryPrincipal();
 	}

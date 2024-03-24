@@ -182,8 +182,9 @@ public class DBUtil{
                 if(url.startsWith("jdbc:mysql")){
                     result.add(rs.getString("TABLE_NAME"));
                 }else if(url.startsWith("jdbc:oracle")){
-                    if(rs.getString("TABLE_SCHEM").toLowerCase().equals(username.toLowerCase()))
+                    if(rs.getString("TABLE_SCHEM").toLowerCase().equals(username.toLowerCase())) {
                         result.add(rs.getString("TABLE_NAME"));
+                    }
                 }else if(url.startsWith("jdbc:postgresql")){
                     result.add(rs.getString("TABLE_NAME"));
                 }else{

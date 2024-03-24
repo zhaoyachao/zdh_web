@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -106,7 +105,7 @@ public class BeaconFireAlarmMsgController extends BaseController {
     public ReturnInfo beacon_fire_alarm_msg_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmMsgMapper, beaconFireAlarmMsgMapper.getTable(), ids);
-            beaconFireAlarmMsgMapper.deleteLogicByIds(beaconFireAlarmMsgMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            beaconFireAlarmMsgMapper.deleteLogicByIds(beaconFireAlarmMsgMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -166,7 +165,7 @@ public class PermissionDimensionController extends BaseController {
             PermissionDimensionInfo oldPermissionDimensionInfo = permissionDimensionMapper.selectByPrimaryKey(permissionDimensionInfo.getId());
 
             permissionDimensionInfo.setCreate_time(oldPermissionDimensionInfo.getCreate_time());
-            permissionDimensionInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            permissionDimensionInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             permissionDimensionInfo.setIs_delete(Const.NOT_DELETE);
             permissionDimensionMapper.updateByPrimaryKeySelective(permissionDimensionInfo);
 
@@ -192,8 +191,8 @@ public class PermissionDimensionController extends BaseController {
         try {
             permissionDimensionInfo.setOwner(getOwner());
             permissionDimensionInfo.setIs_delete(Const.NOT_DELETE);
-            permissionDimensionInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            permissionDimensionInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            permissionDimensionInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            permissionDimensionInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             permissionDimensionMapper.insertSelective(permissionDimensionInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", permissionDimensionInfo);
         } catch (Exception e) {
@@ -213,7 +212,7 @@ public class PermissionDimensionController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo permission_dimension_delete(String[] ids) {
         try {
-            permissionDimensionMapper.deleteLogicByIds(permissionDimensionMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            permissionDimensionMapper.deleteLogicByIds(permissionDimensionMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

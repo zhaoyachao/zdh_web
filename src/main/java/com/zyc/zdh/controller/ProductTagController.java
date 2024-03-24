@@ -23,7 +23,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -168,7 +167,7 @@ public class ProductTagController extends BaseController {
 
             productTagInfo.setOwner(oldProductTagInfo.getOwner());
             productTagInfo.setCreate_time(oldProductTagInfo.getCreate_time());
-            productTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            productTagInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             productTagInfo.setIs_delete(Const.NOT_DELETE);
             productTagInfo.setAk(oldProductTagInfo.getAk());
             productTagInfo.setSk(oldProductTagInfo.getSk());
@@ -212,8 +211,8 @@ public class ProductTagController extends BaseController {
             if(StringUtils.isEmpty(productTagInfo.getProduct_admin())){
                 productTagInfo.setProduct_admin(getOwner());
             }
-            productTagInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            productTagInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            productTagInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            productTagInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             productTagMapper.insertSelective(productTagInfo);
             //创建产品资源
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
@@ -238,7 +237,7 @@ public class ProductTagController extends BaseController {
             for (ProductTagInfo productTagInfo: productTagInfos){
                 checkPermissionByOwner(productTagInfo.getProduct_code());
             }
-            productTagMapper.deleteLogicByIds("product_info",ids, new Timestamp(new Date().getTime()));
+            productTagMapper.deleteLogicByIds("product_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

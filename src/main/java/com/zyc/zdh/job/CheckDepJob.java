@@ -291,7 +291,9 @@ public class CheckDepJob implements CheckDepJobInterface{
 
                     if(check){
                         String tmp_status=taskLogInstanceMapper.selectByPrimaryKey(tl.getId()).getStatus();
-                        if( tmp_status.equalsIgnoreCase("kill") || tmp_status.equalsIgnoreCase("killed") ) continue; //在检查依赖时杀死任务
+                        if( tmp_status.equalsIgnoreCase("kill") || tmp_status.equalsIgnoreCase("killed") ) {
+                            continue; //在检查依赖时杀死任务
+                        }
 
                         if(tl.getJob_type().equalsIgnoreCase("shell")){
                             if(JobCommon2.check_thread_limit(tl)){
@@ -365,11 +367,13 @@ public class CheckDepJob implements CheckDepJobInterface{
             for(Object obj:jary){
                 String tlid=((JSONObject) obj).getString("task_log_instance_id");
                 //System.out.println("task_log_instance_id:"+tlid);
-                if(tlid!=null)
-                  tlidList.add(tlid);
+                if(tlid!=null) {
+                    tlidList.add(tlid);
+                }
             }
-            if (tlidList.size()<1)
+            if (tlidList.size()<1) {
                 continue;
+            }
 
             List<task_num_info> lm=tlim.selectByIds(tlidList.toArray(new String[]{}));
             int finish_num=0;

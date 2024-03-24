@@ -774,6 +774,9 @@
   
   + v5.3.1 [zdh_web]重构zdh_queue(为后期实时经营做基础)
   
+  + v5.3.2 [zdh_web]所有模块优化代码
+  
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
@@ -3157,6 +3160,8 @@
     (id, code, name, enable, create_time, update_time, product_code)
     VALUES(1218937706952790016, 'role_rqueue', '优先级队列角色', 'true', '2024-03-17 15:03:16', '2024-03-17 15:03:16', 'zdh');
 
+## 5.3.1迁移5.3.2
+    无改动
     
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

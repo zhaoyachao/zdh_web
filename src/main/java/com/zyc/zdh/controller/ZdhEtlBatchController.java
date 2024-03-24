@@ -28,7 +28,6 @@ import tk.mybatis.mapper.entity.Example;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -149,7 +148,7 @@ public class ZdhEtlBatchController extends BaseController {
     public ReturnInfo etl_task_batch_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchMapper, etlTaskBatchMapper.getTable(), ids);
-            etlTaskBatchMapper.deleteLogicByIds(etlTaskBatchMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            etlTaskBatchMapper.deleteLogicByIds(etlTaskBatchMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -179,8 +178,8 @@ public class ZdhEtlBatchController extends BaseController {
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchInfo.getProduct_code(), etlTaskBatchInfo.getDim_group());
             etlTaskBatchInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            etlTaskBatchInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlTaskBatchInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskBatchInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskBatchInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskBatchInfo.setIs_delete(Const.NOT_DELETE);
             etlTaskBatchInfo.setStatus(Const.BATCH_INIT);
             etlTaskBatchMapper.insertSelective(etlTaskBatchInfo);
@@ -190,7 +189,7 @@ public class ZdhEtlBatchController extends BaseController {
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskBatchInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskBatchInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -220,7 +219,7 @@ public class ZdhEtlBatchController extends BaseController {
             String owner = getOwner();
             etlTaskBatchInfo.setOwner(owner);
             etlTaskBatchInfo.setIs_delete(Const.NOT_DELETE);
-            etlTaskBatchInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskBatchInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             debugInfo(etlTaskBatchInfo);
 
 
@@ -238,7 +237,7 @@ public class ZdhEtlBatchController extends BaseController {
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskBatchInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskBatchInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -291,7 +290,7 @@ public class ZdhEtlBatchController extends BaseController {
             }
 
             etbi.setStatus(Const.BATCH_RUNNING);
-            etbi.setUpdate_time(new Timestamp(new Date().getTime()));
+            etbi.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskBatchMapper.updateByPrimaryKeySelective(etbi);
 
             //生成单源ETL
@@ -328,7 +327,7 @@ public class ZdhEtlBatchController extends BaseController {
                 etlTaskService.insert(eti);
             }
             etbi.setStatus(Const.BATCH_SUCCESS);
-            etbi.setUpdate_time(new Timestamp(new Date().getTime()));
+            etbi.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskBatchMapper.updateByPrimaryKeySelective(etbi);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), tab);
@@ -337,7 +336,7 @@ public class ZdhEtlBatchController extends BaseController {
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             etlTaskBatchInfo.setStatus(Const.BATCH_FAIL);
-            etlTaskBatchInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskBatchInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskBatchMapper.updateByPrimaryKeySelective(etlTaskBatchInfo);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), null);
         }

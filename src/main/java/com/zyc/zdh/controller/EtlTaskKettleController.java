@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -188,7 +187,7 @@ public class EtlTaskKettleController extends BaseController {
 
 
             etlTaskKettleInfo.setCreate_time(oldEtlTaskKettleInfo.getCreate_time());
-            etlTaskKettleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskKettleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskKettleInfo.setIs_delete(Const.NOT_DELETE);
             etlTaskKettleMapper.updateByPrimaryKeySelective(etlTaskKettleInfo);
 
@@ -215,8 +214,8 @@ public class EtlTaskKettleController extends BaseController {
             etlTaskKettleInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             etlTaskKettleInfo.setOwner(getOwner());
             etlTaskKettleInfo.setIs_delete(Const.NOT_DELETE);
-            etlTaskKettleInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlTaskKettleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskKettleInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskKettleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskKettleMapper.insertSelective(etlTaskKettleInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", etlTaskKettleInfo);
         } catch (Exception e) {
@@ -236,7 +235,7 @@ public class EtlTaskKettleController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_kettle_delete(String[] ids) {
         try {
-            etlTaskKettleMapper.deleteLogicByIds("etl_task_kettle_info",ids, new Timestamp(new Date().getTime()));
+            etlTaskKettleMapper.deleteLogicByIds("etl_task_kettle_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

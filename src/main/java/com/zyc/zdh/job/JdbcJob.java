@@ -6,7 +6,6 @@ import com.zyc.zdh.util.DBUtil;
 import com.zyc.zdh.util.DateUtil;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,7 +58,7 @@ public class JdbcJob extends JobCommon2 {
                 //第一次执行,下次执行时间为起始时间+1
                 if (tli.getStart_time() == null) {
                     logger.info("[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
-                    tli.setStart_time(new Timestamp(new Date().getTime()));
+                    tli.setStart_time(new Timestamp(System.currentTimeMillis()));
                 }
                 tli.setNext_time(tli.getStart_time());
             }

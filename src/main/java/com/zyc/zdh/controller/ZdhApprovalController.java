@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -135,7 +134,7 @@ public class ZdhApprovalController extends BaseController{
                 throw new Exception("审批节点以存在");
             }
             approvalConfigInfo.setEmployee_id(getOwner());
-            approvalConfigInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            approvalConfigInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
 
             checkPermissionByProduct(zdhPermissionService, approvalConfigInfo.getProduct_code());
 
@@ -251,7 +250,7 @@ public class ZdhApprovalController extends BaseController{
                 throw new Exception("审批节点以存在");
             }
             approvalAuditorInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
-            approvalAuditorInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            approvalAuditorInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             approvalAuditorMapper.insertSelective(approvalAuditorInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", approvalAuditorInfo);
         }catch (Exception e){
@@ -375,8 +374,8 @@ public class ZdhApprovalController extends BaseController{
             approvalAuditorFlowInfo.setOwner(getOwner());
             approvalAuditorFlowInfo.setIs_delete(Const.NOT_DELETE);
             approvalAuditorFlowInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
-            approvalAuditorFlowInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            approvalAuditorFlowInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            approvalAuditorFlowInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            approvalAuditorFlowInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             approvalAuditorFlowMapper.insertSelective(approvalAuditorFlowInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", approvalAuditorFlowInfo);
         }catch (Exception e){
@@ -396,7 +395,7 @@ public class ZdhApprovalController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<Object> approval_auditor_flow_delete(String[] ids) {
         try{
-            approvalAuditorFlowMapper.deleteLogicByIds("approval_auditor_flow_info", ids, new Timestamp(new Date().getTime()));
+            approvalAuditorFlowMapper.deleteLogicByIds("approval_auditor_flow_info", ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -419,7 +418,7 @@ public class ZdhApprovalController extends BaseController{
             approvalAuditorFlowInfo.setCreate_time(old.getCreate_time());
             approvalAuditorFlowInfo.setOwner(old.getOwner());
             approvalAuditorFlowInfo.setIs_delete(Const.NOT_DELETE);
-            approvalAuditorFlowInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            approvalAuditorFlowInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             approvalAuditorFlowMapper.updateByPrimaryKeySelective(approvalAuditorFlowInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", approvalAuditorFlowInfo);
         }catch (Exception e){
@@ -483,8 +482,8 @@ public class ZdhApprovalController extends BaseController{
             if(approvalEventInfos!=null && approvalEventInfos.size()>0){
                 throw new Exception("审批事件已存在");
             }
-            approvalEventInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            approvalEventInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            approvalEventInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            approvalEventInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             approvalEventMapper.insertSelective(approvalEventInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
@@ -546,7 +545,7 @@ public class ZdhApprovalController extends BaseController{
         try{
             ApprovalEventInfo old = approvalEventMapper.selectByPrimaryKey(approvalEventInfo.getId());
             approvalEventInfo.setCreate_time(old.getCreate_time());
-            approvalEventInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            approvalEventInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             approvalEventMapper.updateByPrimaryKeySelective(approvalEventInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", approvalEventInfo);
         }catch (Exception e){

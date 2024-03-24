@@ -27,7 +27,10 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * 权限服务
@@ -279,15 +282,15 @@ public class PermissionController extends BaseController {
                 }
                 user.setEnable(Const.FALSE);
                 user.setId(null);
-                user.setCreate_time(new Timestamp(new Date().getTime()));
-                user.setUpdate_time(new Timestamp(new Date().getTime()));
+                user.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                user.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 permissionMapper.insertSelective(user);
             } else {
                 PermissionUserInfo pui = permissionMapper.selectByPrimaryKey(user.getId());
                 if (user.getUser_password().equalsIgnoreCase("")) {
                     user.setUser_password(pui.getUser_password());
                     user.setEnable(pui.getEnable());
-                    user.setUpdate_time(new Timestamp(new Date().getTime()));
+                    user.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 }
                 permissionMapper.updateByPrimaryKeySelective(user);
                 //
@@ -333,8 +336,8 @@ public class PermissionController extends BaseController {
                 ugi.setId(null);
             }
             ugi.setEnable("true");
-            ugi.setCreate_time(new Timestamp(new Date().getTime()));
-            ugi.setUpdate_time(new Timestamp(new Date().getTime()));
+            ugi.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            ugi.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             userGroupMapper.insertSelective(ugi);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -504,8 +507,8 @@ public class PermissionController extends BaseController {
 
             String id = SnowflakeIdWorker.getInstance().nextId() + "";
             rti.setId(id);
-            rti.setCreate_time(new Timestamp(new Date().getTime()));
-            rti.setUpdate_time(new Timestamp(new Date().getTime()));
+            rti.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            rti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             rti.setIs_enable(Const.ENABLE);
             rti.setOwner(getOwner());
             if(StringUtils.isEmpty(rti.getResource_desc())){
@@ -560,8 +563,8 @@ public class PermissionController extends BaseController {
 
             String id = SnowflakeIdWorker.getInstance().nextId() + "";
             rti.setId(id);
-            rti.setCreate_time(new Timestamp(new Date().getTime()));
-            rti.setUpdate_time(new Timestamp(new Date().getTime()));
+            rti.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            rti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             rti.setIs_enable(Const.ENABLE);
             rti.setOwner(getOwner());
             if(StringUtils.isEmpty(rti.getResource_desc())){
@@ -646,7 +649,7 @@ public class PermissionController extends BaseController {
     public ReturnInfo<Object> jstree_update_node(ResourceTreeInfo rti) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
-            rti.setUpdate_time(new Timestamp(new Date().getTime()));
+            rti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             rti.setCreate_time(null);
             rti.setOwner(getOwner());
             rti.setIs_enable(Const.ENABLE);
@@ -803,8 +806,8 @@ public class PermissionController extends BaseController {
                 role.setName(name);
                 role.setId(id);
                 role.setProduct_code(product_code);
-                role.setCreate_time(new Timestamp(new Date().getTime()));
-                role.setUpdate_time(new Timestamp(new Date().getTime()));
+                role.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                role.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 roleDao.insert(role);
             }else{
                 //获取旧角色信息
@@ -823,8 +826,8 @@ public class PermissionController extends BaseController {
                 rri.setRole_id(id);
                 rri.setResource_id(rid);
                 rri.setRole_code(code);
-                rri.setCreate_time(new Timestamp(new Date().getTime()));
-                rri.setUpdate_time(new Timestamp(new Date().getTime()));
+                rri.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                rri.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 rri.setProduct_code(product_code);
                 rris.add(rri);
             }
@@ -1032,8 +1035,8 @@ public class PermissionController extends BaseController {
     @Transactional
     public ReturnInfo<PermissionApplyInfo> permission_apply_add(PermissionApplyInfo permissionApplyInfo, String apply_context) {
         try{
-            permissionApplyInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            permissionApplyInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            permissionApplyInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            permissionApplyInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             permissionApplyInfo.setOwner(getOwner());
             permissionApplyInfo.setIs_delete(Const.NOT_DELETE);
             permissionApplyInfo.setStatus(Const.PERMISSION_APPLY_INIT);
@@ -1100,7 +1103,7 @@ public class PermissionController extends BaseController {
             Example.Criteria criteria=example.createCriteria();
             criteria.andIn("id", Arrays.asList(id));
             List<PermissionApplyInfo> permissionApplyInfos=permissionApplyMapper.selectByExample(example);
-            int result = permissionApplyMapper.deleteLogicByIds("permission_apply_info",id,new Timestamp(new Date().getTime()));
+            int result = permissionApplyMapper.deleteLogicByIds("permission_apply_info",id,new Timestamp(System.currentTimeMillis()));
             //取消流程
             for (PermissionApplyInfo pai:permissionApplyInfos){
                 ProcessFlowInfo pfi=new ProcessFlowInfo();
@@ -1357,10 +1360,10 @@ public class PermissionController extends BaseController {
     public ReturnInfo<PermissionBigdataInfo> permission_bigdata_add(PermissionBigdataInfo permissionBigdataInfo){
         try{
 
-            permissionBigdataInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            permissionBigdataInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             permissionBigdataInfo.setOwner(getOwner());
             permissionBigdataInfo.setIs_delete(Const.NOT_DELETE);
-            permissionBigdataInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            permissionBigdataInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             int result = permissionBigdataMapper.insertSelective(permissionBigdataInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionBigdataInfo);
@@ -1390,7 +1393,7 @@ public class PermissionController extends BaseController {
             permissionBigdataInfo.setCreate_time(oldPermissionBigdataInfo.getCreate_time());
             permissionBigdataInfo.setOwner(oldPermissionBigdataInfo.getOwner());
             permissionBigdataInfo.setIs_delete(Const.NOT_DELETE);
-            permissionBigdataInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            permissionBigdataInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             int result = permissionBigdataMapper.updateByPrimaryKeySelective(permissionBigdataInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionBigdataInfo);
@@ -1411,7 +1414,7 @@ public class PermissionController extends BaseController {
     @ResponseBody
     public ReturnInfo<List<PermissionApplyInfo>> permission_bigdata_delete(String[] ids){
         try{
-            permissionBigdataMapper.deleteLogicByIds("permission_bigdata_info", ids, new Timestamp(new Date().getTime()));
+            permissionBigdataMapper.deleteLogicByIds("permission_bigdata_info", ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

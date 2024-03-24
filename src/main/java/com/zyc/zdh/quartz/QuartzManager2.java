@@ -422,7 +422,9 @@ public class QuartzManager2 {
 			scheduler.pauseJob(jobKey);
 			scheduler.deleteJob(jobKey);
 			// 在自己定义的任务表中删除任务,状态删除
-			if(status.equals("")) status="finish";
+			if(status.equals("")) {
+                status="finish";
+            }
 			quartzJobInfo.setStatus(status);
 			quartzJobMapper.updateStatus(quartzJobInfo.getJob_id(),status);
 		} catch (SchedulerException e) {
@@ -443,7 +445,9 @@ public class QuartzManager2 {
 			qji.setEtl_task_id(tli.getEtl_task_id());
 			qji.setJob_id(tli.getJob_id());
 			// 在自己定义的任务表中删除任务,状态删除
-			if(status.equals("")) status="finish";
+			if(status.equals("")) {
+                status="finish";
+            }
 			qji.setStatus(status);
 			quartzJobMapper.updateStatus2(tli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
@@ -483,7 +487,9 @@ public class QuartzManager2 {
 			qji.setEtl_task_id(tgli.getEtl_task_id());
 			qji.setJob_id(tgli.getJob_id());
 			// 在自己定义的任务表中删除任务,状态删除
-			if(status.equals("")) status="finish";
+			if(status.equals("")) {
+                status="finish";
+            }
 			qji.setStatus(status);
 			quartzJobMapper.updateStatus2(tgli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
@@ -526,7 +532,7 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().pauseJob(jobKey);
 			// 更新定时任务状态
 			strategyGroupInfo.setStatus("pause");
-			strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+			strategyGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 			strategyGroupMapper.updateByPrimaryKeySelective(strategyGroupInfo);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block

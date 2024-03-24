@@ -26,7 +26,6 @@ import tk.mybatis.mapper.entity.Example;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -110,7 +109,7 @@ public class ZdhDataxController extends BaseController{
     public ReturnInfo<Object> etl_task_datax_delete(String[] ids) {
 
         try{
-            etlTaskDataxMapper.deleteLogicByIds("etl_task_datax_info",ids, new Timestamp(new Date().getTime()));
+            etlTaskDataxMapper.deleteLogicByIds("etl_task_datax_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -137,8 +136,8 @@ public class ZdhDataxController extends BaseController{
             debugInfo(etlTaskDataxInfo);
             String id=SnowflakeIdWorker.getInstance().nextId()+"";
             etlTaskDataxInfo.setId(id);
-            etlTaskDataxInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlTaskDataxInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskDataxInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskDataxInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskDataxInfo.setIs_delete(Const.NOT_DELETE);
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxInfo.getProduct_code(), etlTaskDataxInfo.getDim_group());
@@ -150,7 +149,7 @@ public class ZdhDataxController extends BaseController{
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskDataxInfo.getId().toString());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskDataxInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -179,7 +178,7 @@ public class ZdhDataxController extends BaseController{
             String owner = getOwner();
             etlTaskDataxInfo.setOwner(owner);
             String id=etlTaskDataxInfo.getId();
-            etlTaskDataxInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskDataxInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskDataxInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskDataxInfo);
             etlTaskDataxMapper.updateByPrimaryKeySelective(etlTaskDataxInfo);
@@ -195,7 +194,7 @@ public class ZdhDataxController extends BaseController{
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskDataxInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskDataxInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }

@@ -108,7 +108,7 @@ public class DateUtil {
     }
 
     public static String getCurrentTime(){
-        return df_time.format(new Timestamp(new Date().getTime()));
+        return df_time.format(new Timestamp(System.currentTimeMillis()));
     }
 
     public static Date pase(String date,String format){

@@ -36,7 +36,6 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +94,7 @@ public class ZdhSshController extends BaseController{
 //        jarTaskInfo.setId(id);
 //        jarTaskInfo.setOwner(owner);
 //        jarTaskInfo.setFiles("");
-//        jarTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
+//        jarTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
 //        debugInfo(jarTaskInfo);
 //        jarTaskMapper.insertSelective(jarTaskInfo);
 //        System.out.println(json_str);
@@ -108,7 +107,7 @@ public class ZdhSshController extends BaseController{
 //                jarFileInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
 //                jarFileInfo.setJar_etl_id(id);
 //                jarFileInfo.setFile_name(fileName);
-//                jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
+//                jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(System.currentTimeMillis())));
 //                jarFileInfo.setOwner(owner);
 //                jarFileMapper.insertSelective(jarFileInfo);
 //
@@ -180,7 +179,7 @@ public class ZdhSshController extends BaseController{
 //                    jarFileInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
 //                    jarFileInfo.setJar_etl_id(id);
 //                    jarFileInfo.setFile_name(fileName);
-//                    jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
+//                    jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(System.currentTimeMillis())));
 //                    jarFileInfo.setOwner(owner);
 //                    jarFileMapper.insertSelective(jarFileInfo);
 //
@@ -334,7 +333,7 @@ public class ZdhSshController extends BaseController{
 
         try{
             checkPermissionByProductAndDimGroup(zdhPermissionService, sshTaskMapper, sshTaskMapper.getTable(), ids);
-            sshTaskMapper.deleteLogicByIds(sshTaskMapper.getTable(), ids, new Timestamp(new Date().getTime()));
+            sshTaskMapper.deleteLogicByIds(sshTaskMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -361,8 +360,8 @@ public class ZdhSshController extends BaseController{
             sshTaskInfo.setOwner(owner);
             String id=SnowflakeIdWorker.getInstance().nextId() + "";
             sshTaskInfo.setId(id);
-            sshTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            sshTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            sshTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            sshTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             sshTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sshTaskInfo);
 
@@ -376,7 +375,7 @@ public class ZdhSshController extends BaseController{
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(sshTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(sshTaskInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -392,7 +391,7 @@ public class ZdhSshController extends BaseController{
                     jarFileInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                     jarFileInfo.setJar_etl_id(id);
                     jarFileInfo.setFile_name(fileName);
-                    jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
+                    jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(System.currentTimeMillis())));
                     jarFileInfo.setOwner(owner);
                     jarFileMapper.insertSelective(jarFileInfo);
 
@@ -449,7 +448,7 @@ public class ZdhSshController extends BaseController{
         try{
             String owner = getOwner();
             sshTaskInfo.setOwner(owner);
-            sshTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            sshTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             sshTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sshTaskInfo);
             String id=sshTaskInfo.getId();
@@ -469,7 +468,7 @@ public class ZdhSshController extends BaseController{
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(sshTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(sshTaskInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -486,7 +485,7 @@ public class ZdhSshController extends BaseController{
                     jarFileInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                     jarFileInfo.setJar_etl_id(id);
                     jarFileInfo.setFile_name(fileName);
-                    jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(new Date().getTime())));
+                    jarFileInfo.setCreate_time(DateUtil.formatTime(new Timestamp(System.currentTimeMillis())));
                     jarFileInfo.setOwner(owner);
                     jarFileMapper.insertSelective(jarFileInfo);
 

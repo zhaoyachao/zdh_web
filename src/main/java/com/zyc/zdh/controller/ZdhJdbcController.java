@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -107,7 +106,7 @@ public class ZdhJdbcController extends BaseController {
     public ReturnInfo etl_task_jdbc_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskJdbcMapper, etlTaskJdbcMapper.getTable(), ids);
-            etlTaskJdbcMapper.deleteLogicByIds(etlTaskJdbcMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            etlTaskJdbcMapper.deleteLogicByIds(etlTaskJdbcMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -133,8 +132,8 @@ public class ZdhJdbcController extends BaseController {
             String owner = getOwner();
             etlTaskJdbcInfo.setOwner(owner);
             etlTaskJdbcInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            etlTaskJdbcInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlTaskJdbcInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskJdbcInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskJdbcInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskJdbcInfo.setIs_delete(Const.NOT_DELETE);
 
             debugInfo(etlTaskJdbcInfo);
@@ -147,7 +146,7 @@ public class ZdhJdbcController extends BaseController {
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskJdbcInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskJdbcInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -174,7 +173,7 @@ public class ZdhJdbcController extends BaseController {
         try {
             String owner = getOwner();
             etlTaskJdbcInfo.setOwner(owner);
-            etlTaskJdbcInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskJdbcInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskJdbcInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskJdbcInfo);
 
@@ -194,7 +193,7 @@ public class ZdhJdbcController extends BaseController {
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskJdbcInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskJdbcInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(getOwner());
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }

@@ -38,8 +38,9 @@ public class HttpUtil {
     try {
       HttpResponse response = client.execute(get);
       int code = response.getStatusLine().getStatusCode();
-      if (code >= 400)
-        throw new RuntimeException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
+      if (code >= 400) {
+          throw new RuntimeException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
+      }
       return EntityUtils.toString(response.getEntity());
     }
     catch (ClientProtocolException e) {
@@ -79,8 +80,9 @@ public class HttpUtil {
     try {
       HttpResponse response = client.execute(get);
       int code = response.getStatusLine().getStatusCode();
-      if (code >= 400)
-        throw new RuntimeException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
+      if (code >= 400) {
+          throw new RuntimeException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
+      }
       return EntityUtils.toString(response.getEntity());
     }
     catch (ClientProtocolException e) {
@@ -122,8 +124,9 @@ public class HttpUtil {
       HttpClient client = HttpClientBuilder.create().build();
       HttpResponse response = client.execute(post);
       int code = response.getStatusLine().getStatusCode();
-      if (code >= 400)
-        throw new Exception(EntityUtils.toString(response.getEntity()));
+      if (code >= 400) {
+          throw new Exception(EntityUtils.toString(response.getEntity()));
+      }
       return EntityUtils.toString(response.getEntity());
     }
     catch (ClientProtocolException e) {
@@ -168,8 +171,9 @@ public class HttpUtil {
       HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).setDefaultCookieStore(cookieStore).build();
       HttpResponse response = client.execute(post);
       int code = response.getStatusLine().getStatusCode();
-      if (code >= 400)
-        throw new Exception(EntityUtils.toString(response.getEntity()));
+      if (code >= 400) {
+          throw new Exception(EntityUtils.toString(response.getEntity()));
+      }
       return EntityUtils.toString(response.getEntity());
     }
     catch (ClientProtocolException e) {
@@ -195,8 +199,9 @@ public class HttpUtil {
       HttpClient client = HttpClientBuilder.create().build();
       HttpResponse response = client.execute(patch);
       int code = response.getStatusLine().getStatusCode();
-      if (code >= 400)
-        throw new Exception(EntityUtils.toString(response.getEntity()));
+      if (code >= 400) {
+          throw new Exception(EntityUtils.toString(response.getEntity()));
+      }
       return EntityUtils.toString(response.getEntity());
     }
     catch (ClientProtocolException e) {

@@ -29,7 +29,6 @@ import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -218,7 +217,7 @@ public class ZdhIssueDataController extends BaseController {
             String issue_id = SnowflakeIdWorker.getInstance().nextId() + "";
             issueDataInfo.setId(issue_id);
             issueDataInfo.setOwner(owner);
-            issueDataInfo.setCreate_time(new Timestamp(new Date().getTime()));
+            issueDataInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             issueDataInfo.setStatus(Const.STATUS_NOT_PUB);
             if (!issueDataInfo.getData_source_type_input().equalsIgnoreCase("jdbc") && !StringUtils.isEmpty(issueDataInfo.getData_sources_file_name_input())) {
                 issueDataInfo.setData_sources_table_name_input(issueDataInfo.getData_sources_file_name_input());
@@ -387,8 +386,8 @@ public class ZdhIssueDataController extends BaseController {
             applyInfo.setApprove_id(owner);
             applyInfo.setApply_context(issueDataInfo.getData_sources_table_name_input());
             applyInfo.setOwner(current_owner);
-            applyInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            applyInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            applyInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            applyInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             applyInfo.setStatus(Const.APPLY_STATUS_INIT);
             debugInfo(applyInfo);
             applyMapper.insertSelective(applyInfo);

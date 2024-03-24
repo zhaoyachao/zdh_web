@@ -329,10 +329,11 @@ public class EtlTaskInfo {
     }
 
     public List<column_data> getColumn_data_list() {
-        if (getColumn_datas() != null && !getColumn_datas().equals(""))
+        if (getColumn_datas() != null && !getColumn_datas().equals("")) {
             return JSONArray.parseArray(getColumn_datas(), column_data.class);
-        else
+        } else {
             return null;
+        }
     }
 
     public void setColumn_data_list(List<column_data> column_data_list) {

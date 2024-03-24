@@ -1525,7 +1525,7 @@ public class JobCommon2 {
 
         ZdhLogs zdhLogs = new ZdhLogs();
         zdhLogs.setJob_id(job_id);
-        Timestamp lon_time = new Timestamp(new Date().getTime());
+        Timestamp lon_time = new Timestamp(System.currentTimeMillis());
         zdhLogs.setTask_logs_id(task_logs_id);
         zdhLogs.setLog_time(lon_time);
         zdhLogs.setMsg(msg);
@@ -1556,7 +1556,7 @@ public class JobCommon2 {
 
         ZdhLogs zdhLogs = new ZdhLogs();
         zdhLogs.setJob_id(tli.getJob_id());
-        Timestamp lon_time = new Timestamp(new Date().getTime());
+        Timestamp lon_time = new Timestamp(System.currentTimeMillis());
         zdhLogs.setTask_logs_id(tli.getId());
         zdhLogs.setLog_time(lon_time);
         zdhLogs.setMsg(msg);
@@ -1580,7 +1580,7 @@ public class JobCommon2 {
 
         ZdhLogs zdhLogs = new ZdhLogs();
         zdhLogs.setJob_id(tli.getJob_id());
-        Timestamp lon_time = new Timestamp(new Date().getTime());
+        Timestamp lon_time = new Timestamp(System.currentTimeMillis());
         zdhLogs.setTask_logs_id(tli.getId());
         zdhLogs.setLog_time(lon_time);
         zdhLogs.setMsg(msg);
@@ -1742,7 +1742,7 @@ public class JobCommon2 {
                 insertLog(tli, "DEBUG", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求");
                 //tli.setEtl_date(date);
                 tli.setProcess("10");
-                tli.setUpdate_time(new Timestamp(new Date().getTime()));
+                tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 updateTaskLog(tli, tlim);
                 String executor = zdhHaInfo.getId();
                 String url_tmp = "";
@@ -1784,7 +1784,7 @@ public class JobCommon2 {
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                         tli.setStatus(JobStatus.FINISH.getValue());
                         tli.setProcess("100");
-                        tli.setUpdate_time(new Timestamp(new Date().getTime()));
+                        tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                     }
                     return rs;
@@ -1823,7 +1823,7 @@ public class JobCommon2 {
                         if (result.get("result").toString().equalsIgnoreCase("success")) {
 //                            tli.setStatus(JobStatus.FINISH.getValue());
 //                            tli.setProcess("100");
-//                            tli.setUpdate_time(new Timestamp(new Date().getTime()));
+//                            tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 //                            updateTaskLog(tli, tlim);
                             return true;
                         }
@@ -1856,7 +1856,7 @@ public class JobCommon2 {
                             tli.setStatus(JobStatus.FINISH.getValue());
                             tli.setProcess("100");
                         }
-                        tli.setUpdate_time(new Timestamp(new Date().getTime()));
+                        tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                         return Boolean.valueOf(ret[0]);
                     } else {
@@ -1878,7 +1878,7 @@ public class JobCommon2 {
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                         tli.setStatus(JobStatus.FINISH.getValue());
                         tli.setProcess("100");
-                        tli.setUpdate_time(new Timestamp(new Date().getTime()));
+                        tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                     }
                     return rs;
@@ -1897,7 +1897,7 @@ public class JobCommon2 {
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                         tli.setStatus(JobStatus.FINISH.getValue());
                         tli.setProcess("100");
-                        tli.setUpdate_time(new Timestamp(new Date().getTime()));
+                        tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                     }
                     return rs;
@@ -1914,7 +1914,7 @@ public class JobCommon2 {
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                         tli.setStatus(JobStatus.FINISH.getValue());
                         tli.setProcess("100");
-                        tli.setUpdate_time(new Timestamp(new Date().getTime()));
+                        tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                     }
                     return rs;
@@ -1931,7 +1931,7 @@ public class JobCommon2 {
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                         tli.setStatus(JobStatus.FINISH.getValue());
                         tli.setProcess("100");
-                        tli.setUpdate_time(new Timestamp(new Date().getTime()));
+                        tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                     }
                     return rs;
@@ -1943,7 +1943,7 @@ public class JobCommon2 {
                 tli.setHistory_server(zdhHaInfo.getHistory_server());
                 tli.setMaster(zdhHaInfo.getMaster());
                 tli.setApplication_id(zdhHaInfo.getApplication_id());
-                tli.setUpdate_time(new Timestamp(new Date().getTime()));
+                tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 //debugInfo(tli);
                 updateTaskLog(tli, tlim);
 
@@ -1975,7 +1975,7 @@ public class JobCommon2 {
             insertLog(tli, "ERROR", msg);
             tli.setStatus(JobStatus.ERROR.getValue());
             tli.setProcess("17");
-            tli.setUpdate_time(new Timestamp(new Date().getTime()));
+            tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             updateTaskLog(tli, tlim);
             //更新执行状态为error
             logger.info(model_log + " JOB ,更新调度任务状态为error");
@@ -2051,7 +2051,9 @@ public class JobCommon2 {
                                 logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
                                 throw e;
                             } finally {
-                                if (in != null) in.close();
+                                if (in != null) {
+                                    in.close();
+                                }
                             }
 
                         }
@@ -2599,7 +2601,7 @@ public class JobCommon2 {
         jinJavaParam.put("zdh_second",DateUtil.second(cur_time));
         jinJavaParam.put("zdh_time",cur_time.getTime());
         jinJavaParam.put("zdh_user",tli.getOwner());
-        jinJavaParam.put("zdh_create_time", new Timestamp(new Date().getTime()));
+        jinJavaParam.put("zdh_create_time", new Timestamp(System.currentTimeMillis()));
         jinJavaParam.put("file_name",input_path.substring(input_path.lastIndexOf('/')+1));
         jinJavaParam.put("file_path",etlTaskUnstructureInfo.getOutput_path());
         String params = etlTaskUnstructureInfo.getUnstructure_params_output();
@@ -2652,25 +2654,25 @@ public class JobCommon2 {
      * @param tlim
      */
     public static void updateTaskLogEtlDate(TaskLogInstance tli, TaskLogInstanceMapper tlim) {
-        tli.setUpdate_time(new Timestamp(new Date().getTime()));
+        tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
         tli.setProcess("6");
         updateTaskLog(tli, tlim);
     }
 
 
     public static void updateTaskLogError(TaskLogInstance tli, String process, TaskLogInstanceMapper tlim, String status, int interval_time) {
-        tli.setUpdate_time(new Timestamp(new Date().getTime()));
+        tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
         tli.setStatus(status);//error,retry
         tli.setProcess(process);//调度完成
-        tli.setRetry_time(DateUtil.add(new Timestamp(new Date().getTime()), Calendar.SECOND, interval_time));
+        tli.setRetry_time(DateUtil.add(new Timestamp(System.currentTimeMillis()), Calendar.SECOND, interval_time));
         updateTaskLog(tli, tlim);
     }
 
     public static void updateTaskLogError(TaskGroupLogInstance tgli, String process, TaskGroupLogInstanceMapper tglim, String status, int interval_time) {
-        tgli.setUpdate_time(new Timestamp(new Date().getTime()));
+        tgli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
         tgli.setStatus(status);//error,retry
         tgli.setProcess(process);//调度完成
-        tgli.setRetry_time(DateUtil.add(new Timestamp(new Date().getTime()), Calendar.SECOND, interval_time));
+        tgli.setRetry_time(DateUtil.add(new Timestamp(System.currentTimeMillis()), Calendar.SECOND, interval_time));
         updateTaskLog(tgli, tglim);
     }
 
@@ -2722,7 +2724,9 @@ public class JobCommon2 {
                             || tni.getStatus().equalsIgnoreCase(JobStatus.NON.getValue())) {
                         if (tni.getNum() > 0)
                             //insertLog(tli, "INFO", "所有的父级,祖先级任务存在未完成,跳过当前任务检查");
-                        return false;
+                        {
+                            return false;
+                        }
                     }
                 }
                 logger.info("所有的父级,祖先级任务:" + parents);
@@ -2805,7 +2809,7 @@ public class JobCommon2 {
 
 //            tli.setStatus("check_dep");
 //            tli.setProcess("7");
-//            tli.setUpdate_time(new Timestamp(new Date().getTime()));
+//            tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 //            updateTaskLog(tli,tlim);
             updateTaskStatus(JobStatus.CHECK_DEP.getValue(), tli.getId(), "7", tlim);
 
@@ -2855,7 +2859,7 @@ public class JobCommon2 {
             tli.setThread_id(""); //设置为空主要是为了 在检查依赖任务期间杀死
             tli.setStatus(JobStatus.CHECK_DEP.getValue());
             tli.setProcess("7");
-            tli.setUpdate_time(new Timestamp(new Date().getTime()));
+            tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             updateTaskLog(tli, tlim);
             return false;
         }
@@ -3057,7 +3061,7 @@ public class JobCommon2 {
             if (tli.getEnd_time() == null) {
                 logger.info("[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
                 insertLog(tli, "info", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
-                tli.setEnd_time(new Timestamp(new Date().getTime()));
+                tli.setEnd_time(new Timestamp(System.currentTimeMillis()));
             }
 
         } else {
@@ -3092,7 +3096,7 @@ public class JobCommon2 {
             if (tli.getEnd_time() == null) {
                 logger.info("[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
                 insertLog(tli, "info", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
-                tli.setEnd_time(new Timestamp(new Date().getTime()));
+                tli.setEnd_time(new Timestamp(System.currentTimeMillis()));
             }
             tli.setStatus("finish");
             //插入日志
@@ -3130,7 +3134,7 @@ public class JobCommon2 {
             if (tli.getEnd_time() == null) {
                 logger.info("[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
                 insertLog(tli, "INFO", "[" + jobType + "] JOB ,结束日期为空设置当前日期为结束日期");
-                tli.setEnd_time(new Timestamp(new Date().getTime()));
+                tli.setEnd_time(new Timestamp(System.currentTimeMillis()));
             }
         } else {
             setJobLastStatus(tli, task_logs_id, tlim);
@@ -3277,8 +3281,8 @@ public class JobCommon2 {
                         tgli.setCur_time(cur);
                         tgli.setSchedule_source(ScheduleSource.SYSTEM.getCode());
                         tgli.setEtl_date(DateUtil.formatTime(cur));
-                        tgli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
-                        tgli.setUpdate_time(new Timestamp(new Date().getTime()));
+                        tgli.setRun_time(new Timestamp(System.currentTimeMillis()));//实例开始时间
+                        tgli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         tgli.setStatus(JobStatus.NON.getValue());
                     }
 
@@ -3288,8 +3292,8 @@ public class JobCommon2 {
                         tgli = retry_tgli;
                         tgli.setProcess("1");
                         tgli.setSchedule_source(ScheduleSource.MANUAL.getCode());
-                        tgli.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
-                        tgli.setUpdate_time(new Timestamp(new Date().getTime()));
+                        tgli.setRun_time(new Timestamp(System.currentTimeMillis()));//实例开始时间
+                        tgli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         tgli.setCount(0L);
                         tgli.setIs_retryed("0");
                         tgli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
@@ -3462,7 +3466,9 @@ public class JobCommon2 {
         tli.setThread_id(tk);
         try {
             boolean end = isCount(jobType, tli);
-            if (end == true) return;
+            if (end == true) {
+                return;
+            }
             Boolean exe_status = true;
             //判断是否禁用任务类型
             if(ConfigUtil.isInValue(Const.ZDH_DISENABLE_JOB_TYPE, jobType)  || ConfigUtil.isInRedisValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
@@ -3579,7 +3585,7 @@ public class JobCommon2 {
             }
 
             for (int i = 1; i <= 10; i++) {
-                dates.add(DateUtil.add(new Timestamp(new Date().getTime()), dateType, num * i));
+                dates.add(DateUtil.add(new Timestamp(System.currentTimeMillis()), dateType, num * i));
             }
 
         } else {
@@ -3757,7 +3763,7 @@ public class JobCommon2 {
                 String command = ((JSONObject) job).getString("command");//具体任务id
                 String is_script = ((JSONObject) job).getString("is_script");//是否脚本方式执行
                 String async = ((JSONObject) job).getString("async");//同步/异步
-                taskLogInstance.setRun_time(new Timestamp(new Date().getTime()));
+                taskLogInstance.setRun_time(new Timestamp(System.currentTimeMillis()));
 
                 if (((JSONObject) job).getString("type").equalsIgnoreCase("tasks")) {
                     taskLogInstance.setMore_task(more_task);

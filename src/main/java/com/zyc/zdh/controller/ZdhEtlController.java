@@ -35,7 +35,6 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -127,7 +126,7 @@ public class ZdhEtlController extends BaseController{
     public ReturnInfo etl_task_delete(String[] ids) {
         try{
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskMapper, etlTaskMapper.getTable(), ids);
-            etlTaskMapper.deleteLogicByIds(etlTaskMapper.getTable(), ids, new Timestamp(new Date().getTime()));
+            etlTaskMapper.deleteLogicByIds(etlTaskMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -168,8 +167,8 @@ public class ZdhEtlController extends BaseController{
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskInfo.getProduct_code(), etlTaskInfo.getDim_group());
             etlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            etlTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskInfo.setIs_delete(Const.NOT_DELETE);
             if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
@@ -187,7 +186,7 @@ public class ZdhEtlController extends BaseController{
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }
@@ -261,7 +260,7 @@ public class ZdhEtlController extends BaseController{
             String owner = getOwner();
             etlTaskInfo.setOwner(owner);
             etlTaskInfo.setIs_delete(Const.NOT_DELETE);
-            etlTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             debugInfo(etlTaskInfo);
 
             //获取旧数据是否更新说明
@@ -274,8 +273,9 @@ public class ZdhEtlController extends BaseController{
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
                 String[] file_name_ary = etlTaskInfo.getData_sources_file_name_input().split("/");
                 String file_name = file_name_ary[0];
-                if (file_name_ary.length > 0)
+                if (file_name_ary.length > 0) {
                     file_name = file_name_ary[file_name_ary.length - 1];
+                }
 
                 if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
                     etlTaskInfo.setData_sources_file_name_input(zdhNginx.getNginx_dir() + "/" + owner + "/" + file_name);
@@ -295,7 +295,7 @@ public class ZdhEtlController extends BaseController{
                 EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
                 etlTaskUpdateLogs.setId(etlTaskInfo.getId());
                 etlTaskUpdateLogs.setUpdate_context(etlTaskInfo.getUpdate_context());
-                etlTaskUpdateLogs.setUpdate_time(new Timestamp(new Date().getTime()));
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 etlTaskUpdateLogs.setOwner(owner);
                 etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
             }

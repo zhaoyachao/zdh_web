@@ -80,8 +80,9 @@ public class PageInterceptor implements Interceptor {
 						Field pageField = getFieldByFieldName(parameterObject,"page");
 						if(pageField!=null){
 							page = (PageBase) getValueByFieldName(parameterObject,"page");
-							if(page==null)
-								page = new PageBase();
+							if(page==null) {
+                                page = new PageBase();
+                            }
 							page.setEntityOrField(false);
 							page.setTotalResult(count);
 							setValueByFieldName(parameterObject,"page", page); //通过反射，对实体对象设置分页对象

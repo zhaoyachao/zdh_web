@@ -27,7 +27,6 @@ import tk.mybatis.mapper.entity.Example;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -129,7 +128,7 @@ public class ZdhSelfServiceController extends BaseController {
             }
             selfHistory.setOwner(oldSelfHistory.getOwner());
             selfHistory.setCreate_time(oldSelfHistory.getCreate_time());
-            selfHistory.setUpdate_time(new Timestamp(new Date().getTime()));
+            selfHistory.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             selfHistory.setIs_delete(Const.NOT_DELETE);
             selfHistoryMapper.updateByPrimaryKeySelective(selfHistory);
 
@@ -159,8 +158,8 @@ public class ZdhSelfServiceController extends BaseController {
             selfHistory.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             selfHistory.setOwner(getOwner());
             selfHistory.setIs_delete(Const.NOT_DELETE);
-            selfHistory.setCreate_time(new Timestamp(new Date().getTime()));
-            selfHistory.setUpdate_time(new Timestamp(new Date().getTime()));
+            selfHistory.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            selfHistory.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             selfHistoryMapper.insertSelective(selfHistory);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
@@ -181,7 +180,7 @@ public class ZdhSelfServiceController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo self_service_delete(String[] ids) {
         try {
-            selfHistoryMapper.deleteBatchById(ids, new Timestamp(new Date().getTime()));
+            selfHistoryMapper.deleteBatchById(ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

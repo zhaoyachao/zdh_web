@@ -290,7 +290,7 @@ public class ZdhDispatchController extends BaseController {
 //                quartzJobMapper.deleteByPrimaryKey(quartzJobInfo);
 //            }
             checkPermissionByProductAndDimGroup(zdhPermissionService, quartzJobMapper, quartzJobMapper.getTable(), ids);
-            quartzJobMapper.deleteLogicByIds( quartzJobMapper.getTable(), ids, new Timestamp(new Date().getTime()));
+            quartzJobMapper.deleteLogicByIds( quartzJobMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -372,8 +372,8 @@ public class ZdhDispatchController extends BaseController {
                 tgli.setNext_time(null);
                 tgli.setStatus(JobStatus.NON.getValue());//单独的线程扫描状态时创建并且pre_tasks 不为空的任务
                 tgli.setConcurrency(concurrency);
-                tgli.setRun_time(new Timestamp(new Date().getTime()));
-                tgli.setUpdate_time(new Timestamp(new Date().getTime()));
+                tgli.setRun_time(new Timestamp(System.currentTimeMillis()));
+                tgli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 tgli.setCur_time(new Timestamp(dates.get(i).getTime()));
                 tgli.setEtl_date(DateUtil.formatTime(new Timestamp(dates.get(i).getTime())));
                 tgli.setOwner(getOwner());
@@ -641,8 +641,8 @@ public class ZdhDispatchController extends BaseController {
         try{
 
             QuartzExecutorInfo qei=new QuartzExecutorInfo();
-            qei.setCreate_time(new Timestamp(new Date().getTime()));
-            qei.setUpdate_time(new Timestamp(new Date().getTime()));
+            qei.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            qei.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             qei.setInstance_name(instance_name);
             qei.setStatus(status);
             qei.setIs_handle(Const.FALSE);

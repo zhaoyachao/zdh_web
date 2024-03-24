@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -192,7 +191,7 @@ public class PluginController extends BaseController {
             pluginInfo.setPlugin_json(jsonArray.toJSONString());
             pluginInfo.setOwner(oldPluginInfo.getOwner());
             pluginInfo.setCreate_time(oldPluginInfo.getCreate_time());
-            pluginInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            pluginInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             pluginInfo.setIs_delete(Const.NOT_DELETE);
             pluginMapper.updateByPrimaryKeySelective(pluginInfo);
 
@@ -242,8 +241,8 @@ public class PluginController extends BaseController {
             pluginInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             pluginInfo.setOwner(getOwner());
             pluginInfo.setIs_delete(Const.NOT_DELETE);
-            pluginInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            pluginInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            pluginInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            pluginInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, pluginInfo.getProduct_code(), pluginInfo.getDim_group());
 
@@ -267,7 +266,7 @@ public class PluginController extends BaseController {
     public ReturnInfo plugin_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, pluginMapper, pluginMapper.getTable(), ids);
-            pluginMapper.deleteLogicByIds(pluginMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            pluginMapper.deleteLogicByIds(pluginMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

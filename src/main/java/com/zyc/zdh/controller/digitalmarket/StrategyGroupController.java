@@ -190,7 +190,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInfo.setSchedule_source(oldStrategyGroupInfo.getSchedule_source());
             strategyGroupInfo.setUse_quartz_time(oldStrategyGroupInfo.getUse_quartz_time());
             strategyGroupInfo.setCreate_time(oldStrategyGroupInfo.getCreate_time());
-            strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            strategyGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             strategyGroupInfo.setIs_delete(Const.NOT_DELETE);
             strategyGroupMapper.updateByPrimaryKeySelective(strategyGroupInfo);
 
@@ -222,8 +222,8 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInfo.setSchedule_source(ScheduleSource.SYSTEM.getCode());
             strategyGroupInfo.setUse_quartz_time(Const.OFF);
             strategyGroupInfo.setTime_diff("0");
-            strategyGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            strategyGroupInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            strategyGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group());
 
@@ -247,7 +247,7 @@ public class StrategyGroupController extends BaseController {
     public ReturnInfo strategy_group_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupMapper, strategyGroupMapper.getTable(), ids);
-            strategyGroupMapper.deleteLogicByIds(strategyGroupMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            strategyGroupMapper.deleteLogicByIds(strategyGroupMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
@@ -291,9 +291,9 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInstance.setStrategy_group_id(strategyGroupInfo.getId());
             strategyGroupInstance.setStatus(JobStatus.NON.getValue());
             strategyGroupInstance.setSchedule_source(ScheduleSource.MANUAL.getCode());
-            strategyGroupInstance.setRun_time(new Timestamp(new Date().getTime()));//实例开始时间
-            strategyGroupInstance.setCreate_time(new Timestamp(new Date().getTime()));
-            strategyGroupInstance.setUpdate_time(new Timestamp(new Date().getTime()));
+            strategyGroupInstance.setRun_time(new Timestamp(System.currentTimeMillis()));//实例开始时间
+            strategyGroupInstance.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            strategyGroupInstance.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             strategyGroupInstance.setMisfire("0");
             if(strategyGroupInstance.getGroup_type().equalsIgnoreCase("offline")){
                 strategyGroupInstance.setSmall_flow_rate("1,100");
@@ -601,7 +601,7 @@ public class StrategyGroupController extends BaseController {
 
             //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
 
-            oldStrategyGroupInstance.setUpdate_time(new Timestamp(new Date().getTime()));
+            oldStrategyGroupInstance.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             oldStrategyGroupInstance.setSmall_flow_rate(small_flow_rate.replace(";",","));
 
             strategyGroupInstanceMapper.updateByPrimaryKeySelective(oldStrategyGroupInstance);
@@ -890,7 +890,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInfo.setSchedule_source(oldStrategyGroupInfo.getSchedule_source());
             strategyGroupInfo.setUse_quartz_time(oldStrategyGroupInfo.getUse_quartz_time());
             strategyGroupInfo.setCreate_time(oldStrategyGroupInfo.getCreate_time());
-            strategyGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            strategyGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             strategyGroupInfo.setIs_delete(Const.NOT_DELETE);
 
             StrategyGroupLog strategyGroupLog = new StrategyGroupLog();

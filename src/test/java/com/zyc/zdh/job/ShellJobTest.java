@@ -22,7 +22,7 @@ public class ShellJobTest {
     }
     @Test
     public void run2() throws IOException {
-        String a=new Date().getTime()+".sh";
+        String a=System.currentTimeMillis()+".sh";
         File file=new File("shell_script/"+ "fdfsdsf"+"/");
         System.out.println(file.getPath());
         System.out.println(file.getParent());

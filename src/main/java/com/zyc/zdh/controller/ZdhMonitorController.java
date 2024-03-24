@@ -319,8 +319,8 @@ public class ZdhMonitorController extends BaseController {
             tli.setId(new_id);
             tli.setCount(0);
             tli.setProcess("1");
-            tli.setRun_time(new Timestamp(new Date().getTime()));
-            tli.setUpdate_time(new Timestamp(new Date().getTime()));
+            tli.setRun_time(new Timestamp(System.currentTimeMillis()));
+            tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             tli.setStatus(JobStatus.CREATE.getValue());
             taskLogInstanceMapper.insertSelective(tli);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "重试任务成功", null);
@@ -378,8 +378,8 @@ public class ZdhMonitorController extends BaseController {
             }
             tgli.setOwner(getOwner());
 //        tgli.setStatus(JobStatus.NON.getValue());
-//        tgli.setRun_time(new Timestamp(new Date().getTime()));
-//        tgli.setUpdate_time(new Timestamp(new Date().getTime()));
+//        tgli.setRun_time(new Timestamp(System.currentTimeMillis()));
+//        tgli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 //        tglim.insert(tgli);
 //        JobCommon2.sub_task_log_instance(tgli);
 

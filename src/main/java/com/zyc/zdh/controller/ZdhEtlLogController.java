@@ -24,7 +24,6 @@ import tk.mybatis.mapper.entity.Example;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -121,7 +120,7 @@ public class ZdhEtlLogController extends BaseController{
     public ReturnInfo etl_task_log_delete(String[] ids) {
         try{
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskLogMapper, etlTaskLogMapper.getTable(), ids);
-            etlTaskLogMapper.deleteLogicByIds(etlTaskLogMapper.getTable(), ids, new Timestamp(new Date().getTime()));
+            etlTaskLogMapper.deleteLogicByIds(etlTaskLogMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -161,8 +160,8 @@ public class ZdhEtlLogController extends BaseController{
             checkPermissionByProductAndDimGroup(zdhPermissionService, etlTasklogInfo.getProduct_code(), etlTasklogInfo.getDim_group());
 
             etlTasklogInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            etlTasklogInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            etlTasklogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTasklogInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTasklogInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTasklogInfo.setIs_delete(Const.NOT_DELETE);
 
             etlTaskLogMapper.insertSelective(etlTasklogInfo);
@@ -190,7 +189,7 @@ public class ZdhEtlLogController extends BaseController{
             String owner = getOwner();
             etlTaskLogInfo.setOwner(owner);
             etlTaskLogInfo.setIs_delete(Const.NOT_DELETE);
-            etlTaskLogInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            etlTaskLogInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             debugInfo(etlTaskLogInfo);
 
             EtlTaskLogInfo oldEtlTaskLogInfo = etlTaskLogMapper.selectByPrimaryKey(etlTaskLogInfo.getId());

@@ -27,7 +27,6 @@ import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -124,8 +123,8 @@ public class ZdhQualityController extends BaseController {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", "规则code已存在,不可重复");
             }
             qualityRuleInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            qualityRuleInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            qualityRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            qualityRuleInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            qualityRuleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             qualityRuleInfo.setOwner(getOwner());
             //checkPermissionByProductAndDimGroup(zdhPermissionService, qualityRuleInfo.getProduct_code(), qualityRuleInfo.getDim_group());
 
@@ -150,7 +149,7 @@ public class ZdhQualityController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo quality_rule_update(QualityRuleInfo qualityRuleInfo) {
         try {
-            qualityRuleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            qualityRuleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             qualityRuleInfo.setOwner(getOwner());
             qualityRuleMapper.updateByPrimaryKeySelective(qualityRuleInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
@@ -238,8 +237,8 @@ public class ZdhQualityController extends BaseController {
     public ReturnInfo quality_task_add(QualityTaskInfo qualityTaskInfo, String[] quality_rule, String[] quality_columns) {
         try {
             qualityTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
-            qualityTaskInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            qualityTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            qualityTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            qualityTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             qualityTaskInfo.setOwner(getOwner());
 
             JSONArray jsonArray = new JSONArray();
@@ -273,7 +272,7 @@ public class ZdhQualityController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo quality_task_update(QualityTaskInfo qualityTaskInfo, String[] quality_rule, String[] quality_columns) {
         try {
-            qualityTaskInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            qualityTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             qualityTaskInfo.setOwner(getOwner());
             JSONArray jsonArray = new JSONArray();
             for (int i = 0; i < quality_rule.length; i++) {

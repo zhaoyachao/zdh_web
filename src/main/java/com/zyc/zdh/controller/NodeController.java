@@ -198,8 +198,8 @@ public class NodeController extends BaseController{
             sti.setId(id2);
             sti.setTemplete_id(serverTaskInfo.getId().toString());
             sti.setStatus("0");
-            sti.setCreate_time(new Timestamp(new Date().getTime()));
-            sti.setUpdate_time(new Timestamp(new Date().getTime()));
+            sti.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            sti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             if(StringUtils.isEmpty(sti.getBuild_branch())){
                 sti.setBuild_branch("master");
             }

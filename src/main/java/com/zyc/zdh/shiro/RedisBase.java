@@ -67,8 +67,9 @@ public class RedisBase {
 	 */
 	public void removePattern(final String pattern) {
 		Set<String> keys = redisTemplate.keys(pattern);
-		if (keys.size() > 0)
-			redisTemplate.delete(keys);
+		if (keys.size() > 0) {
+            redisTemplate.delete(keys);
+        }
 	}
 
 	/**

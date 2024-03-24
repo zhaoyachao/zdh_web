@@ -185,7 +185,7 @@ public class PermissionApiController {
             criteria.andEqualTo("product_code", product_code);
             PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
             permissionUserInfo.setEnable(enable);
-            permissionUserInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            permissionUserInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             permissionMapper.updateByExampleSelective(permissionUserInfo, example);
 
@@ -220,7 +220,7 @@ public class PermissionApiController {
             criteria.andEqualTo("product_code", product_code);
             PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
             permissionUserInfo.setEnable(enable);
-            permissionUserInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            permissionUserInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             permissionMapper.updateByExampleSelective(permissionUserInfo, example);
 
             //返回统一信息
@@ -464,8 +464,8 @@ public class PermissionApiController {
             userGroupInfo.setProduct_code(product_code);
             userGroupInfo.setName(user_group);
             userGroupInfo.setEnable(Const.TRUR);
-            userGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            userGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            userGroupInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            userGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             userGroupMapper.insertSelective(userGroupInfo);
             //返回统一信息
@@ -498,8 +498,8 @@ public class PermissionApiController {
             //检查角色code是否存在
             check_exist_role(product_code, role_info.getCode());
 
-            role_info.setCreate_time(new Timestamp(new Date().getTime()));
-            role_info.setUpdate_time(new Timestamp(new Date().getTime()));
+            role_info.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            role_info.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             roleDao.insert(role_info);
 
             //返回统一信息
@@ -528,8 +528,8 @@ public class PermissionApiController {
             //检查角色信息
             RoleInfo roleInfo = roleDao.selectByPrimaryKey(role_info.getId());
             roleInfo.setEnable(role_info.getEnable());
-            roleInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            roleInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            roleInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            roleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             roleDao.updateByPrimaryKeySelective(roleInfo);
 
             //返回统一信息
@@ -563,8 +563,8 @@ public class PermissionApiController {
                 RoleResourceInfo rri = new RoleResourceInfo();
                 rri.setRole_id(role_id);
                 rri.setResource_id(rid);
-                rri.setCreate_time(new Timestamp(new Date().getTime()));
-                rri.setUpdate_time(new Timestamp(new Date().getTime()));
+                rri.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                rri.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 rri.setProduct_code(product_code);
                 rris.add(rri);
             }

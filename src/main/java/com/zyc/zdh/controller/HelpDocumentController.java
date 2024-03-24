@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -134,7 +133,7 @@ public class HelpDocumentController extends BaseController {
 
 
             helpDocumentInfo.setCreate_time(oldHelpDocumentInfo.getCreate_time());
-            helpDocumentInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            helpDocumentInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             helpDocumentInfo.setIs_delete(Const.NOT_DELETE);
             helpDocumentInfo.setOwner(oldHelpDocumentInfo.getOwner());
             helpDocumentMapper.updateByPrimaryKeySelective(helpDocumentInfo);
@@ -162,8 +161,8 @@ public class HelpDocumentController extends BaseController {
         try {
             helpDocumentInfo.setOwner(getOwner());
             helpDocumentInfo.setIs_delete(Const.NOT_DELETE);
-            helpDocumentInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            helpDocumentInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            helpDocumentInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            helpDocumentInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             helpDocumentMapper.insertSelective(helpDocumentInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", helpDocumentInfo);
         } catch (Exception e) {
@@ -184,7 +183,7 @@ public class HelpDocumentController extends BaseController {
     @White
     public ReturnInfo help_document_delete(String[] ids) {
         try {
-            helpDocumentMapper.deleteLogicByIds("help_document_info",ids, new Timestamp(new Date().getTime()));
+            helpDocumentMapper.deleteLogicByIds("help_document_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

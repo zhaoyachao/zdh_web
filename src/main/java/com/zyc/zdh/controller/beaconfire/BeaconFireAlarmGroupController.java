@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +147,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
             beaconFireAlarmGroupInfo.setAlarm_config(JSON.toJSONString(tmp));
 
             beaconFireAlarmGroupInfo.setCreate_time(oldBeaconFireAlarmGroupInfo.getCreate_time());
-            beaconFireAlarmGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            beaconFireAlarmGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             beaconFireAlarmGroupInfo.setIs_delete(Const.NOT_DELETE);
             beaconFireAlarmGroupMapper.updateByPrimaryKeySelective(beaconFireAlarmGroupInfo);
 
@@ -181,8 +180,8 @@ public class BeaconFireAlarmGroupController extends BaseController {
             beaconFireAlarmGroupInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             beaconFireAlarmGroupInfo.setOwner(getOwner());
             beaconFireAlarmGroupInfo.setIs_delete(Const.NOT_DELETE);
-            beaconFireAlarmGroupInfo.setCreate_time(new Timestamp(new Date().getTime()));
-            beaconFireAlarmGroupInfo.setUpdate_time(new Timestamp(new Date().getTime()));
+            beaconFireAlarmGroupInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            beaconFireAlarmGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupInfo.getProduct_code(), beaconFireAlarmGroupInfo.getDim_group());
             beaconFireAlarmGroupMapper.insertSelective(beaconFireAlarmGroupInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", beaconFireAlarmGroupInfo);
@@ -203,7 +202,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
     public ReturnInfo beacon_fire_alarm_group_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupMapper, beaconFireAlarmGroupMapper.getTable(), ids);
-            beaconFireAlarmGroupMapper.deleteLogicByIds(beaconFireAlarmGroupMapper.getTable(),ids, new Timestamp(new Date().getTime()));
+            beaconFireAlarmGroupMapper.deleteLogicByIds(beaconFireAlarmGroupMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
