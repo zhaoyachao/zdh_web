@@ -6,6 +6,8 @@ pt=`pwd`
 APP_NAME=${pt}"/zdh_web.jar"
 RUN_MODE=prod
 
+export ZDH_RUN_MODE=$RUN_MODE
+
 #APP_DIR=./
 APP_DIR=`pwd`
 echo "当前路径"

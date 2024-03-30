@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,8 +72,6 @@ public class LoginController {
     private JemailService jemailService;
     @Autowired
     private PermissionMapper permissionMapper;
-    @Autowired
-    private Environment ev;
 
     /**
      * 系统根页面
@@ -126,7 +123,8 @@ public class LoginController {
             }
 
             //增加特别信息校验
-            Pattern pattern = Pattern.compile("(;|\\*|expr \\s*|delete \\s*)", Pattern.CASE_INSENSITIVE);
+            String pattern_str = "(;|\\*|expr \\s*|delete \\s*)";
+            Pattern pattern = Pattern.compile(pattern_str, Pattern.CASE_INSENSITIVE);
             if (pattern.matcher(user.getUserName()).find() || pattern.matcher(user.getPassword()).find()) {
                 //此处可做校验判断,是否加入ip黑名单
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "账户包含不合法字符,请修改后提交", null);

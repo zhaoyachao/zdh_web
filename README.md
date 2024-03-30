@@ -776,6 +776,7 @@
   + v5.3.1 [zdh_web]重构zdh_queue(为后期实时经营做基础)
   
   + v5.3.2 [zdh_web]所有模块优化代码
+  + v5.3.2 [zdh_web]新增ZDH_RUN_MODE环境变量
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】

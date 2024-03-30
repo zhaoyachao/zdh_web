@@ -4,6 +4,7 @@ package com.zyc.zdh;
 import com.zyc.zdh.annotation.MyMark;
 import com.zyc.zdh.controller.LoginController;
 import com.zyc.zdh.util.DateUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Compatibility;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -37,9 +38,17 @@ public class ZdhApplication {
     public static String start_time = DateUtil.getCurrentTime();
 
     public static void main(String[] args) throws SocketException {
+        //检查必须配置的环境变量
+        String run_mode = System.getenv("ZDH_RUN_MODE");
+        if(StringUtils.isEmpty(run_mode)){
+            System.err.println("启动项目前必须配置ZDH_RUN_MODE环境变量,变量值同spring.active.profile值保持一致, linux: export ZDH_RUN_MODE=prod, windows: set ZDH_RUN_MODE=prod");
+            System.exit(-1);
+        }
+
         SpringApplication springApplication = new SpringApplication(ZdhApplication.class);
         ApplicationContext context = springApplication.run(args);
         LoginController.context = context;
+
         Environment env = context.getEnvironment();
         String envPort = env.getProperty("server.port");
         String envContext = env.getProperty("server.context-path", "");

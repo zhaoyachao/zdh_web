@@ -17,38 +17,24 @@ public class ZdhInstanceIdGenerator implements InstanceIdGenerator {
         try {
             String myid=null;
             String instancename=null;
-           // SystemCommandLineRunner systemCommandLineRunner = (SystemCommandLineRunner) SpringContext.getBean("systemCommandLineRunner");
-            Resource resource = new ClassPathResource("application.properties");
-            InputStream is = resource.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            String data = null;
-            while((data = br.readLine()) != null) {
-               if(data.startsWith("spring.profiles.active")){
-                   Resource app = new ClassPathResource("application-"+data.split("=")[1]+".properties");
-                   InputStream is2 = app.getInputStream();
-                   InputStreamReader isr2 = new InputStreamReader(is2);
-                   BufferedReader br2 = new BufferedReader(isr2);
-                   String data2 = null;
-                   while((data2 = br2.readLine()) != null) {
-                       if(data2.startsWith("myid")){
-                           myid= data2.split("=")[1].trim();
-                       }
-                       if(data2.startsWith("zdh.schedule.quartz.scheduler.instanceName")){
-                           instancename= data2.split("=")[1].trim();
-                       }
-                   }
-                   br2.close();
-                   isr2.close();
-                   is2.close();
-                   break;
-               }
+            String run_mode = System.getenv("ZDH_RUN_MODE");
+
+            Resource app = new ClassPathResource("application-"+run_mode+".properties");
+            InputStream is2 = app.getInputStream();
+            InputStreamReader isr2 = new InputStreamReader(is2);
+            BufferedReader br2 = new BufferedReader(isr2);
+            String data2 = null;
+            while((data2 = br2.readLine()) != null) {
+                if(data2.startsWith("myid")){
+                    myid= data2.split("=")[1].trim();
+                }
+                if(data2.startsWith("zdh.schedule.quartz.scheduler.instanceName")){
+                    instancename= data2.split("=")[1].trim();
+                }
             }
-            br.close();
-            isr.close();
-            is.close();
-
-
+            br2.close();
+            isr2.close();
+            is2.close();
             return instancename+"_"+myid;
 
         } catch (IOException e) {
