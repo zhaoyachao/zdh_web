@@ -142,6 +142,9 @@
       进入在xxx-RELEASE 目录下
       启动执行 sh bin/start.sh 或者 sh bin/zdh_web.sh start
       关闭执行 sh bin/stop.sh 或者 sh bin/zdh_web.sh stop
+      
+    idea开发工具运行源码须知
+       需要提前设置环境变量,edit configurations->enviorment variables-> 新增ZDH_RUN_MODE=prod, 可选值tmp,prod,dev
 
 # FAQ
 
