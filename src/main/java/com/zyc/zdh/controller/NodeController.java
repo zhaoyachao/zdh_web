@@ -10,7 +10,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SetUpJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.DateUtil;
-import org.apache.commons.beanutils.BeanUtils;
+import com.zyc.zdh.util.MapStructMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,7 +192,8 @@ public class NodeController extends BaseController{
         ServerTaskInstance sti=new ServerTaskInstance();
         String id2=SnowflakeIdWorker.getInstance().nextId()+"";
         try {
-            BeanUtils.copyProperties(sti, serverTaskInfo);
+            //BeanUtils.copyProperties(sti, serverTaskInfo);
+            sti = MapStructMapper.INSTANCE.serverTaskInfoToServerTaskInstance(serverTaskInfo);
             sti.setVersion_type("branch");
             sti.setVersion(DateUtil.formatNodash(new Date()));
             sti.setId(id2);
@@ -217,11 +218,7 @@ public class NodeController extends BaseController{
                 }
             }).start();
 
-        } catch (IllegalAccessException e) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"一键部署失败", e);
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"一键部署失败", e);

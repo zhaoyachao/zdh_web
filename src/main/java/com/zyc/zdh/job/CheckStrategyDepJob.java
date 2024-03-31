@@ -117,7 +117,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             StrategyInstanceMapper sim=(StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
 
             //获取所有实时类型的可执行子任务
-            List<StrategyInstance> strategyInstanceOnLineList=sim.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()}, "online");
+            List<StrategyInstance> strategyInstanceOnLineList=sim.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()}, Const.STRATEGY_GROUP_TYPE_ONLINE);
             for(StrategyInstance tl :strategyInstanceOnLineList){
                 tl.setStatus(JobStatus.ETL.getValue());
                 tl.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -125,7 +125,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             }
 
             //获取所有离线类型的可执行的非依赖类型子任务
-            List<StrategyInstance> strategyInstanceList=sim.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()}, "offline");
+            List<StrategyInstance> strategyInstanceList=sim.selectThreadByStatus1(new String[] {JobStatus.CREATE.getValue(),JobStatus.CHECK_DEP.getValue()}, Const.STRATEGY_GROUP_TYPE_OFFLINE);
             for(StrategyInstance tl :strategyInstanceList){
                 try{
                     //如果skip状态,跳过当前策略实例,理论上不会有skip状态,策略的跳过是通过is_disenable=true实现
@@ -316,8 +316,8 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
         for(StrategyGroupInstance sgi:sgis){
 
             //策略组实例到期自动结束
-            if(sgi.getGroup_type().equalsIgnoreCase("online") && sgi.getStatus().equalsIgnoreCase(JobStatus.SUB_TASK_DISPATCH.getValue())){
-                if(new Date().getTime() > sgi.getEnd_time().getTime()){
+            if(sgi.getGroup_type().equalsIgnoreCase(Const.STRATEGY_GROUP_TYPE_ONLINE) && sgi.getStatus().equalsIgnoreCase(JobStatus.SUB_TASK_DISPATCH.getValue())){
+                if(System.currentTimeMillis() > sgi.getEnd_time().getTime()){
                     sgim.updateStatusById3(JobStatus.FINISH.getValue(), DateUtil.getCurrentTime(), sgi.getId());
                     sim.updateStatusKillByGroupInstanceId(sgi.getId(), JobStatus.FINISH.getValue());
                 }

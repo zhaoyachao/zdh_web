@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.zyc.zdh.controller.PermissionApiController;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.service.ZdhPermissionService;
-import org.apache.commons.beanutils.BeanUtils;
+import com.zyc.zdh.util.MapStructMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -68,7 +68,8 @@ public class ZdhPermissionServiceImpl implements ZdhPermissionService {
                 for( PermissionUserGroupDimensionValueInfo permissionUserGroupDimensionValueInfo: ((List<PermissionUserGroupDimensionValueInfo>)gdim.getResult())){
                     if(permissionUserGroupDimensionValueInfo.getDim_code().equalsIgnoreCase(dim_code)){
                         PermissionUserDimensionValueInfo permissionUserDimensionValueInfo = new PermissionUserDimensionValueInfo();
-                        BeanUtils.copyProperties(permissionUserDimensionValueInfo, permissionUserGroupDimensionValueInfo);
+                        //BeanUtils.copyProperties(permissionUserDimensionValueInfo, permissionUserGroupDimensionValueInfo);
+                        permissionUserDimensionValueInfo = MapStructMapper.INSTANCE.permissionUserGroupDimensionValueInfoToPermissionUserDimensionValueInfo(permissionUserGroupDimensionValueInfo);
                         permissionUserDimensionValueInfo.setUser_account(user_account);
                         permissionUserDimensionValueInfos.add(permissionUserDimensionValueInfo);
                     }

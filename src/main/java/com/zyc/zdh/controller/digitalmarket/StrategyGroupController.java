@@ -17,8 +17,8 @@ import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.MapStructMapper;
 import com.zyc.zdh.util.SFTPUtil;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -284,7 +284,8 @@ public class StrategyGroupController extends BaseController {
             sgi.setCur_time(strategyGroupInfo.getStart_time());
 
             StrategyGroupInstance strategyGroupInstance = new StrategyGroupInstance();
-            BeanUtils.copyProperties(strategyGroupInstance, sgi);
+            //BeanUtils.copyProperties(strategyGroupInstance, sgi);
+            strategyGroupInstance = MapStructMapper.INSTANCE.strategyGroupInfoToStrategyGroupInstance(sgi);
 
             strategyGroupInstance.setId(SnowflakeIdWorker.getInstance().nextId() + "");
 
@@ -295,7 +296,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInstance.setCreate_time(new Timestamp(System.currentTimeMillis()));
             strategyGroupInstance.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             strategyGroupInstance.setMisfire("0");
-            if(strategyGroupInstance.getGroup_type().equalsIgnoreCase("offline")){
+            if(strategyGroupInstance.getGroup_type().equalsIgnoreCase(Const.STRATEGY_GROUP_TYPE_OFFLINE)){
                 strategyGroupInstance.setSmall_flow_rate("1,100");
             }
 
@@ -355,6 +356,26 @@ public class StrategyGroupController extends BaseController {
             int total = strategyGroupInstanceMapper.selectCountByExample(example);
 
             strategyGroupInstances = strategyGroupInstanceMapper.selectByExampleAndRowBounds(example, rowBounds);
+
+            //遍历小流量是否同步
+            Map<String, String> tmp = new HashMap<>();
+            String small_flow_key = "small_flow_rate_"+group_id;
+            Object small_flow_value = redisUtil.get(small_flow_key);
+            if(small_flow_value != null){
+                tmp = JSON.parseObject(small_flow_value.toString(), Map.class);
+            }
+            for(StrategyGroupInstance sgi: strategyGroupInstances){
+                if(!StringUtils.isEmpty(sgi.getGroup_type()) && sgi.getGroup_type().equalsIgnoreCase(Const.STRATEGY_GROUP_TYPE_ONLINE)){
+                    if(tmp.containsKey(sgi.getId())){
+                        sgi.setSmall_flow_status(Const.ON);
+                    }else{
+                        sgi.setSmall_flow_status(Const.OFF);
+                    }
+                }
+                if(sgi.getGroup_type().equalsIgnoreCase(Const.STRATEGY_GROUP_TYPE_OFFLINE)){
+                    sgi.setSmall_flow_status(Const.ON);
+                }
+            }
 
             PageResult<List<StrategyGroupInstance>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

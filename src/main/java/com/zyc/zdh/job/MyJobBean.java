@@ -89,6 +89,9 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 				StrategyGroupInfo strategyGroupInfo=new StrategyGroupInfo();
 				strategyGroupInfo = sgm.selectByPrimaryKey(taskId);
 				strategyGroupInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
+				if(context.getTrigger().getNextFireTime()==null){
+					strategyGroupInfo.setStatus(JobStatus.FINISH.getValue());
+				}
 				JobDigitalMarket.chooseJobBean(strategyGroupInfo, 0, null, null);
 			}else if(!StringUtils.isEmpty(taskType) && taskType.equalsIgnoreCase("beaconfire")){
 				//烽火台告警模块调度任务,告警模块计划采用纯内存存储,可以理解,这部分数据可以不做一致性(原因:告警是需要时效性的,错过去的告警已经失去了告警的意义)

@@ -6,7 +6,6 @@ import com.zyc.zdh.util.CommandUtils;
 import com.zyc.zdh.util.Const;
 
 import java.io.*;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -68,7 +67,7 @@ public class ShellJob extends JobCommon2 {
                     if (tli.getIs_script() != null && tli.getIs_script().equals("true")) {
                         logger.info("[" + jobType + "] JOB ,以脚本方式执行");
                         insertLog(tli, "info", "[" + jobType + "] JOB ,以脚本方式执行");
-                        String fileName = new Date().getTime() + "";
+                        String fileName = System.currentTimeMillis() + "";
                         if (system.toLowerCase().startsWith("win")) {
                             fileName = fileName + ".bat";
                         } else {

@@ -12,7 +12,6 @@ import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -267,7 +266,8 @@ public class JobDigitalMarket {
                     StrategyGroupInstance sgi = new StrategyGroupInstance();
                     try {
                         //复制quartzjobinfo到tli,任务基础信息完成复制
-                        BeanUtils.copyProperties(sgi, strategyGroupInfo);
+                        //BeanUtils.copyProperties(sgi, strategyGroupInfo);
+                        sgi = MapStructMapper.INSTANCE.strategyGroupInfoToStrategyGroupInstance(strategyGroupInfo);
                         sgi.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                         sgi.setStrategy_group_id(strategyGroupInfo.getId());
                         sgi.setCreate_time(new Timestamp(System.currentTimeMillis()));
@@ -313,11 +313,16 @@ public class JobDigitalMarket {
                         sub_strategy_instance(sgi, sub_tasks);
                         sgim.updateStatus2Create(new String[]{sgi.getId()});
 
-                        //在线策略小流量生效
+                        //在线策略小流量生效,谨慎操作,不会清理历史小流量配置,清理历史小流量需要在平台手动同步小流量
                         if(!StringUtils.isEmpty(sgi.getSmall_flow_rate()) && sgi.getGroup_type().equalsIgnoreCase(JobGroupType.ONLINE.getValue())){
                             Map<String, String> tmp = new HashMap<>();
+                            String small_flow_key = "small_flow_rate_"+sgi.getStrategy_group_id();
+                            Object small_flow_value = redisUtil.get(small_flow_key);
+                            if(small_flow_value != null){
+                                tmp = JSON.parseObject(small_flow_value.toString(), Map.class);
+                            }
                             tmp.put(sgi.getId(), sgi.getSmall_flow_rate());
-                            redisUtil.set("small_flow_rate_"+sgi.getStrategy_group_id(), JSON.toJSONString(tmp));
+                            redisUtil.set(small_flow_key, JSON.toJSONString(tmp));
                         }
                         debugInfo(sgi);
 
@@ -391,7 +396,8 @@ public class JobDigitalMarket {
             JSONArray lines = JSON.parseObject(sgi.getJsmind_data()).getJSONArray("line");
             for (Object job : tasks) {
                 StrategyInstance si = new StrategyInstance();
-                BeanUtils.copyProperties(si, sgi);
+                //BeanUtils.copyProperties(si, sgi);
+                si = MapStructMapper.INSTANCE.strategyGroupInstanceToStrategyInstance(sgi);
 
                 String pageSourceId = ((JSONObject) job).getString("divId");//前端生成的div 标识
                 String more_task = ((JSONObject) job).getString("more_task");

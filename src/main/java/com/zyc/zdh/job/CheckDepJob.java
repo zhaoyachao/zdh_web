@@ -147,7 +147,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                         if(StringUtils.isEmpty(scheduleId) && !StringUtils.isEmpty(tli.getSchedule_id())){
                             if(!redisUtil.exists("schedule_"+tli.getSchedule_id())){
                                 logger.error("run sub task: {}, not found schedule: {}", tli.getId(), tli.getSchedule_id());
-                                if((new Date().getTime() - tli.getUpdate_time().getTime()) >= (10 * 60 *1000)){
+                                if((System.currentTimeMillis() - tli.getUpdate_time().getTime()) >= (10 * 60 *1000)){
                                     logger.info("run sub task: {}, not found schedule: {}, update status error", tli.getId(), tli.getSchedule_id());
                                     taskLogInstanceMapper.updateStatusById(JobStatus.ERROR.getValue(),DateUtil.getCurrentTime(), tli.getId());
                                 }
@@ -226,7 +226,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                         if(StringUtils.isEmpty(scheduleId) && !StringUtils.isEmpty(tl.getSchedule_id())){
                             if(!redisUtil.exists("schedule_"+tl.getSchedule_id())){
                                 logger.error("run sub task: {}, not found schedule: {}", tl.getId(), tl.getSchedule_id());
-                                if((new Date().getTime() - tl.getUpdate_time().getTime()) >= (10 * 60 *1000)){
+                                if((System.currentTimeMillis() - tl.getUpdate_time().getTime()) >= (10 * 60 *1000)){
                                     logger.info("run sub task: {}, not found schedule: {}, update status error", tl.getId(), tl.getSchedule_id());
                                     taskLogInstanceMapper.updateStatusById(JobStatus.ERROR.getValue(),DateUtil.getCurrentTime(), tl.getId());
                                 }

@@ -11,7 +11,7 @@ import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
-import org.apache.commons.beanutils.BeanUtils;
+import com.zyc.zdh.util.MapStructMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -296,7 +296,8 @@ public class ZdhEtlBatchController extends BaseController {
             //生成单源ETL
             for (String table : tab) {
                 EtlTaskInfo eti = new EtlTaskInfo();
-                BeanUtils.copyProperties(eti, etbi);
+                //BeanUtils.copyProperties(eti, etbi);
+                eti = MapStructMapper.INSTANCE.etlTaskBatchInfoToEtlTaskInfo(etbi);
                 eti.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                 eti.setEtl_context(etbi.getEtl_pre_context() + "_" + table);
                 if (!StringUtils.isEmpty(etbi.getEtl_suffix_context())) {

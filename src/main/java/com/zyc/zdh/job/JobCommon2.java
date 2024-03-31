@@ -16,7 +16,6 @@ import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -37,7 +36,6 @@ import org.springframework.util.FileCopyUtils;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -3267,12 +3265,13 @@ public class JobCommon2 {
                     tgli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                     try {
                         //复制quartzjobinfo到tli,任务基础信息完成复制
-                        BeanUtils.copyProperties(tgli, quartzJobInfo);
-                    } catch (IllegalAccessException e) {
+                        //BeanUtils.copyProperties(tgli, quartzJobInfo);
+                        tgli = MapStructMapper.INSTANCE.quartzJobInfoToTaskGroupLogInstance(quartzJobInfo);
+                    } catch (Exception e) {
                         logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-                    } catch (InvocationTargetException e) {
-                        logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-                    }
+                    } //catch (Exception e) {
+//                        logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+//                    }
                     //逻辑发送错误代码捕获发生自动重试(retry_job) 不重新生成实例id,使用旧的实例id
                     String last_task_id = "";
                     if (is_retry == 0) {
@@ -3737,7 +3736,8 @@ public class JobCommon2 {
             JSONArray lines = JSON.parseObject(tgli.getJsmind_data()).getJSONArray("line");
             for (Object job : tasks) {
                 TaskLogInstance taskLogInstance = new TaskLogInstance();
-                BeanUtils.copyProperties(taskLogInstance, tgli);
+                //BeanUtils.copyProperties(taskLogInstance, tgli);
+                taskLogInstance = MapStructMapper.INSTANCE.taskGroupLogInstanceToTaskLogInstance(tgli);
 
                 String etl_task_id = ((JSONObject) job).getString("etl_task_id");//具体任务id
                 String pageSourceId = ((JSONObject) job).getString("divId");//前端生成的div 标识

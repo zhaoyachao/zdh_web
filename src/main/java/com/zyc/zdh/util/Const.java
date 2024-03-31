@@ -146,6 +146,9 @@ public class Const {
     public static int BEACON_FIRE_THREAD_MAX_NUM = 10;
     public static long BEACON_FIRE_THREAD_KEEP_ACTIVE_TIME=180;
 
+    public static String STRATEGY_GROUP_TYPE_OFFLINE = "offline";
+    public static String STRATEGY_GROUP_TYPE_ONLINE = "online";
+
     public static String getEnumName(String type,String code){
         Map<String, Map<String, String>> enumMap=new HashMap<>();
 

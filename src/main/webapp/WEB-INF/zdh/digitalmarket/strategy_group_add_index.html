@@ -193,6 +193,13 @@
 
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">默认小流量比例</label>
+                            <div class="col-sm-10">
+                                <input id="small_flow_rate" name="small_flow_rate" type="text"
+                                       placeholder="默认小流量比例 默认空,返回[1-100],example:1,100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">优先级</label>
                             <div class="col-sm-10">
                                 <input id="priority" name="priority" type="text"
@@ -842,6 +849,9 @@
 
                         var jsmind_data=data.result.jsmind_data;
                         open_json(jsmind_data,s.is_copy);
+
+                        var small_flow_rate=data.result.small_flow_rate;
+                        $("#small_flow_rate").val(small_flow_rate);
 
                         var priority=data.result.priority;
                         $("#priority").val(priority);

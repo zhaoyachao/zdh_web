@@ -364,7 +364,30 @@
                     '</div>'
                 ].join('');
             }
-        },{
+        }, {
+            field: 'small_flow_status',
+            title: '小流量状态',
+            sortable:true,
+            formatter: function (value, row, index) {
+                var context = value;
+                var class_str = "btn-primary btn-xs";
+                if(value == "on"){
+                    context = "开启";
+                }
+                if(value == "off"){
+                    class_str = "btn-danger btn-xs";
+                    context = "关闭";
+                }
+
+                return [
+                    '<div style="text-align:center" >'+
+                    '<div class="btn-group">'+
+                    '<button type="button" class="btn '+class_str+'">'+context+'</button>'+
+                    '</div>'+
+                    '</div>'
+                ].join('');
+            }
+        }, {
             field: 'process',
             title: '进度',
             sortable: true,

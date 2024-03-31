@@ -780,6 +780,9 @@
   
   + v5.3.2 [zdh_web]所有模块优化代码
   + v5.3.2 [zdh_web]新增ZDH_RUN_MODE环境变量
+  + v5.3.2 [zdh_web]营销模块调度执行完成状态未更新bug修复
+  + v5.3.2 [zdh_web]营销模块新增自动同步小流量
+  + v5.3.2 [zdh_web]使用mapstruct代替apache beanutils工具
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】

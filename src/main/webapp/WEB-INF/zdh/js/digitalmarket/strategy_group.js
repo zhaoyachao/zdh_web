@@ -469,11 +469,30 @@
         }, {
             field: 'id',
             title: 'ID',
-            sortable:false
+            sortable:true
         }, {
             field: 'group_type',
             title: '策略组类型',
-            sortable:false
+            sortable:true,
+            formatter: function (value, row, index) {
+                var context = value;
+                var class_str = "btn-primary btn-xs";
+                if(value == "offline"){
+                    context = "离线策略组";
+                }
+                if(value == "online"){
+                    class_str = "btn-danger btn-xs";
+                    context = "实时策略组";
+                }
+
+                return [
+                    '<div style="text-align:center" >'+
+                    '<div class="btn-group">'+
+                    '<button type="button" class="btn '+class_str+'">'+context+'</button>'+
+                    '</div>'+
+                    '</div>'
+                ].join('');
+            }
         },  {
             field: 'group_context',
             title: '策略组说明',

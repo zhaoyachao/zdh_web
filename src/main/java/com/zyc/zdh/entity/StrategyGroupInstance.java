@@ -2,6 +2,7 @@ package com.zyc.zdh.entity;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -138,6 +139,12 @@ public class StrategyGroupInstance {
      * 小流量比例
      */
     private String small_flow_rate;
+
+    /**
+     * 小流量状态
+     */
+    @Transient
+    private String small_flow_status;
 
     /**
      * @return id
@@ -587,5 +594,13 @@ public class StrategyGroupInstance {
 
     public void setSmall_flow_rate(String small_flow_rate) {
         this.small_flow_rate = small_flow_rate;
+    }
+
+    public String getSmall_flow_status() {
+        return small_flow_status;
+    }
+
+    public void setSmall_flow_status(String small_flow_status) {
+        this.small_flow_status = small_flow_status;
     }
 }
