@@ -482,7 +482,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                 rule.setCount(Integer.valueOf(rti.getQps()));
                                 rules.add(rule);
                             }
-                            logger.info("限流重置规则: "+ JSON.toJSONString(rules));
+                            logger.debug("限流重置规则: "+ JSON.toJSONString(rules));
                             FlowRuleManager.loadRules(rules);
 
                             Thread.sleep(1000*60);

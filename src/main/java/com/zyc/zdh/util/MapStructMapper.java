@@ -9,7 +9,7 @@ public interface MapStructMapper {
     MapStructMapper INSTANCE = Mappers.getMapper(MapStructMapper.class);
 
     /**
-     * User 转 Person
+     * 对象转换
      * 只需要定义这个接口就可以，然后直接调用，不需要手动去实现
      */
     TaskGroupLogInstance quartzJobInfoToTaskGroupLogInstance(QuartzJobInfo quartzJobInfo);

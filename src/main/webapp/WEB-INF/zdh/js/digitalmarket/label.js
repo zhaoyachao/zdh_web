@@ -314,7 +314,31 @@
             sortable:false,
             cellStyle: formatTableUnit,
             formatter: paramsMatter
-        }, {
+        },{
+            field: 'label_use_type',
+            title: '使用场景',
+            sortable:true,
+            formatter: function (value, row, index) {
+                var context = value;
+                var class_str = "btn-info btn-xs";
+                if(value == "batch"){
+                    context = "值查人";
+                }
+                if(value == "single"){
+                    context = "人查值";
+                    class_str = "btn-warning  btn-xs"
+                }
+
+                return [
+                    '<div style="text-align:center" >'+
+                    '<div class="btn-group">'+
+                    '<button type="button" class="btn '+class_str+'">'+context+'</button>'+
+                    '</div>'+
+                    '</div>'
+                ].join('');
+
+            }
+        },  {
           field: 'param_json',
           title: '标签参数',
           sortable:false,
