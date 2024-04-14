@@ -137,7 +137,7 @@ public class CommonController extends BaseController {
 
     /**
      * 代码块
-     * manual_confirm_detail页面
+     * code_block_detail页面
      * @return
      */
     @RequestMapping(value = "/code_block_detail", method = RequestMethod.GET)
@@ -155,6 +155,17 @@ public class CommonController extends BaseController {
     public String custom_list_detail() {
         return "digitalmarket/custom_list_detail";
     }
+
+    /**
+     * 代码块-代码例子页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/code_block_demo_index", method = RequestMethod.GET)
+    public String code_block_demo_index() {
+        return "digitalmarket/code_block_demo_index";
+    }
+
 
     /**
      * 人群文件列表

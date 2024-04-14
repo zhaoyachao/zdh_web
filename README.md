@@ -37,6 +37,7 @@
   - [5.2.3迁移5.3.0](#523%E8%BF%81%E7%A7%BB530)
   - [5.3.0迁移5.3.1](#530%E8%BF%81%E7%A7%BB531)
   - [5.3.1迁移5.3.2](#531%E8%BF%81%E7%A7%BB532)
+  - [5.3.2迁移5.3.3](#532%E8%BF%81%E7%A7%BB533)
 - [未完成的功能](#%E6%9C%AA%E5%AE%8C%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD)
 - [支持的数据源](#%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E6%BA%90)
 - [支持的调度对象](#%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E5%BA%A6%E5%AF%B9%E8%B1%A1)
@@ -785,7 +786,9 @@
   + v5.3.2 [zdh_web]使用mapstruct代替apache beanutils工具
   
   + v5.3.3 [zdh_web]优化营销展示提示
-  
+  + v5.3.3 [zdh_web]新增代码块demo
+  + v5.3.3 [zdh_magic_mirror] 同步优化代码块执行逻辑,修复历史bug
+  + v5.3.3 [zdh_magic_mirror] 修复内存泄漏bug
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
@@ -3174,7 +3177,9 @@
     无改动
     
 ## 5.3.2迁移5.3.3
-    
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1229211615895752704, '963932648793706496', '代码块demo页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2024-04-14 23:28:07', '2024-04-14 23:36:30', 'code_block_demo_index', '3', '', '', 'zdh', '1');
     
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

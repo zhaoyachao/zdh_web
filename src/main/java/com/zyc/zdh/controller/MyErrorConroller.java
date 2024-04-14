@@ -64,13 +64,11 @@ public class MyErrorConroller {
 
 	@ResponseBody
 	public ReturnInfo handleReturn(@NotNull BlockException e){
-		e.printStackTrace();
-		return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+		Exception ex = new Exception("Sentinel Error");
+		return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", ex);
 	}
 
-	@ResponseBody
-	public String handleString(@NotNull BlockException e){
-		e.printStackTrace();
-		return "请求过于频繁";
+	public String handleString(BlockException e){
+		return "403";
 	}
 }

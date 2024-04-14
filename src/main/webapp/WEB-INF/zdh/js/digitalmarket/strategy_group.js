@@ -27,7 +27,17 @@
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/strategy_group_list?"+$("#strategy_group_form").serialize()+"&tm="+new Date(),
                       contentType: "application/json;charset=utf-8",
-                      dataType: "json"
+                      dataType: "json",
+                      queryParams: function (params) {
+                          // 此处使用了LayUi组件 是为加载层
+                          //loadIndex = layer.load(1);
+                          let resRepor = {
+                              //服务端分页所需要的参数
+                              limit: params.limit,
+                              offset: params.offset
+                          };
+                          return resRepor;
+                      }
                   });
               }
           });
@@ -99,7 +109,19 @@
                   content: server_context+"/strategy_group_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/strategy_group_list'
+                          url : server_context+'/strategy_group_list?'+$("#strategy_group_form").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json",
+                          queryParams: function (params) {
+                              // 此处使用了LayUi组件 是为加载层
+                              //loadIndex = layer.load(1);
+                              let resRepor = {
+                                  //服务端分页所需要的参数
+                                  limit: params.limit,
+                                  offset: params.offset
+                              };
+                              return resRepor;
+                          },
                       });
                   }
               });
@@ -122,7 +144,17 @@
                       $('#exampleTableEvents').bootstrapTable('refresh', {
                           url: server_context+"/strategy_group_list?"+$("#strategy_group_form").serialize(),
                           contentType: "application/json;charset=utf-8",
-                          dataType: "json"
+                          dataType: "json",
+                          queryParams: function (params) {
+                              // 此处使用了LayUi组件 是为加载层
+                              //loadIndex = layer.load(1);
+                              let resRepor = {
+                                  //服务端分页所需要的参数
+                                  limit: params.limit,
+                                  offset: params.offset
+                              };
+                              return resRepor;
+                          }
                       });
                   }
               });
