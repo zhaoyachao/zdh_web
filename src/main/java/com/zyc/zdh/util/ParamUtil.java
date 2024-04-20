@@ -28,6 +28,15 @@ public class ParamUtil {
         this.redisUtil = redisUtil;
     }
 
+
+    public boolean exists(String key){
+        if(redisUtil.exists(getKey(key)) || redisUtil.exists(key)){
+            return true;
+        }
+        return false;
+    }
+
+
     public Object getValue(String key){
         //根据version_key获取参数,如果不存在则获取key
         if(redisUtil.exists(getKey(key))){

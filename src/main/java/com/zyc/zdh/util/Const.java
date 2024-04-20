@@ -93,6 +93,10 @@ public class Const {
     public static String ZDH_DISENABLE_MORE_TASK = "zdh.disenable.more_task";//禁用more_task
     public static String ZDH_DISENABLE_JOB_TYPE = "zdh.disenable.job_type";//禁用job_type
 
+    public static String ZDH_SPARK_QUEUE_ENABLE = "zdh.spark.queue_enable";//是否启用spark etl队列
+
+    public static String ZDH_SPARK_QUEUE_PRE_KEY = "zdh.spark.queue_pre_key";//spark etl队列前缀
+
     public static String HTTP_POST = "0";
     public static  String HTTP_GET = "1";
 

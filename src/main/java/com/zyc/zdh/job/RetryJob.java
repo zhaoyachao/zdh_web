@@ -1,5 +1,8 @@
 package com.zyc.zdh.job;
 
+import com.zyc.rqueue.RQueueClient;
+import com.zyc.rqueue.RQueueManager;
+import com.zyc.rqueue.RQueueMode;
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
@@ -8,9 +11,7 @@ import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.entity.ZdhDownloadInfo;
 import com.zyc.zdh.entity.ZdhHaInfo;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.HttpUtil;
-import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -58,7 +59,7 @@ public class RetryJob {
                 //debugInfo(tl);
                 //JobCommon.insertLog(tl, "INFO", "开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 //tl.setRetry_type("auth");
-                BeanUtils.copyProperties(qj,tl);
+                //BeanUtils.copyProperties(qj,tl);
 
                 JobCommon2.chooseJobBean(tl);
 
@@ -122,6 +123,8 @@ public class RetryJob {
                 }
                 //http://ip:port/api/v1/zdh
                 String executor=t2.getExecutor();
+                String queue_enable = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_ENABLE, "false");
+                String redis_queue_enable = ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_QUEUE_ENABLE, "false").toString();
                 if(executor!=null && !executor.trim().equalsIgnoreCase("") && !zdhHaMap.containsKey(executor)){
                     //executor 意外死亡需要重新发送任务
                     QuartzJobInfo q2=new QuartzJobInfo();
@@ -134,12 +137,26 @@ public class RetryJob {
                     }
                     JobCommon2.insertLog(t2,"INFO","检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
                     ZdhHaInfo zdhHaInfo=JobCommon2.getZdhUrl(zdhHaInfoMapper,t2.getParams());
+                    String instance = zdhHaInfo.getZdh_instance();
                     URI old_uri=URI.create(t2.getUrl());
                     String new_authori=URI.create(zdhHaInfo.getZdh_url()).getAuthority();
                     String new_url=old_uri.getScheme()+"://"+new_authori+old_uri.getPath();
                     logger.info("重新发送请求地址:"+new_url+",参数:"+t2.getEtl_info());
                     JobCommon2.insertLog(t2,"INFO","重新发送请求地址:"+new_url+",参数:"+t2.getEtl_info());
-                    HttpUtil.postJSON(new_url, t2.getEtl_info());
+                    if(queue_enable.equalsIgnoreCase("true")){
+                        //本地参数配置-发送队列
+                        String queue = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY, "")+"_"+instance;
+                        RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
+                        rQueueClient.add(t2.getEtl_info());
+                    }else if(redis_queue_enable.equalsIgnoreCase("true")){
+                        //公共参数配置-发送队列
+                        String queue = ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY, "redis")+"_"+instance;
+                        RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
+                        rQueueClient.add(t2.getEtl_info());
+                    }else{
+                        HttpUtil.postJSON(new_url, t2.getEtl_info());
+                    }
+
                     t2.setExecutor(zdhHaInfo.getId());
                     t2.setUrl(new_url);
                     t2.setUpdate_time(new Timestamp(System.currentTimeMillis()));

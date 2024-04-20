@@ -8,6 +8,9 @@ import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
+import com.zyc.rqueue.RQueueClient;
+import com.zyc.rqueue.RQueueManager;
+import com.zyc.rqueue.RQueueMode;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.datax_generator.*;
 import com.zyc.zdh.entity.*;
@@ -1516,6 +1519,7 @@ public class JobCommon2 {
         ZdhHaInfo zdhHaInfo = new ZdhHaInfo();
         zdhHaInfo.setId(id);
         zdhHaInfo.setZdh_url(url);
+        zdhHaInfo.setZdh_instance("default_server");
         return zdhHaInfo;
     }
 
@@ -1635,6 +1639,7 @@ public class JobCommon2 {
         insertLog(tli, "INFO", "获取服务端url,指定参数:" + params);
         ZdhHaInfo zdhHaInfo = getZdhUrl(zdhHaInfoMapper, params);
         String url = zdhHaInfo.getZdh_url();
+        String instance = zdhHaInfo.getZdh_instance();
         JSONObject json = new JSONObject();
         if (!params.equals("")) {
             logger.info(model_log + " JOB ,参数不为空判断是否有url 参数");
@@ -1746,7 +1751,7 @@ public class JobCommon2 {
                 String url_tmp = "";
                 String etl_info = "";
                 //校验是否禁用任务类型
-                if(ConfigUtil.isInValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task()) || ConfigUtil.isInRedisValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
+                if(ConfigUtil.isInValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task()) || ConfigUtil.isInValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
                     logger.error("当前【"+tli.getMore_task()+"】类任务,被系统禁用,具体可咨询管理员");
                     insertLog(tli, "ERROR", "当前【"+tli.getMore_task()+"】类任务,被系统禁用,具体可咨询管理员");
                     throw new Exception("当前【"+tli.getMore_task()+"】类任务,被系统禁用,具体可咨询管理员");
@@ -1956,7 +1961,20 @@ public class JobCommon2 {
                 if (!tli.getMore_task().equalsIgnoreCase("SSH") && !tli.getMore_task().equalsIgnoreCase("FLINK") && is_send_server) {
                     logger.info("[调度平台]:" + url_tmp + " ,参数:" + etl_info);
                     insertLog(tli, "DEBUG", "[调度平台]:" + url_tmp + " ,参数:" + etl_info);
-                    HttpUtil.postJSON(url_tmp, etl_info);
+                    //新增参数判断http发送或者是队列发送
+                    if(ConfigUtil.isInEnv(Const.ZDH_SPARK_QUEUE_ENABLE) && ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_ENABLE, "false").equalsIgnoreCase("true") ){
+                        //本地参数配置-发送队列
+                        String queue = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY)+"_"+instance;
+                        RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
+                        rQueueClient.add(etl_info);
+                    }else if(ConfigUtil.isInRedis(Const.ZDH_SPARK_QUEUE_ENABLE) && ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_QUEUE_ENABLE, "false").toString().equalsIgnoreCase("true") ){
+                        //公共参数配置-发送队列
+                        String queue = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY)+"_"+instance;
+                        RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
+                        rQueueClient.add(etl_info);
+                    }else{
+                        HttpUtil.postJSON(url_tmp, etl_info);
+                    }
                     logger.info(model_log + " JOB ,更新调度任务状态为etl");
                     tli.setLast_status("etl");
                     tli.setStatus(JobStatus.ETL.getValue());
@@ -3470,7 +3488,7 @@ public class JobCommon2 {
             }
             Boolean exe_status = true;
             //判断是否禁用任务类型
-            if(ConfigUtil.isInValue(Const.ZDH_DISENABLE_JOB_TYPE, jobType)  || ConfigUtil.isInRedisValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
+            if(ConfigUtil.isInValue(Const.ZDH_DISENABLE_JOB_TYPE, jobType)  || ConfigUtil.isInValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
                 logger.error("[" + jobType + "] JOB, 任务被禁用,具体可咨询系统管理员");
                 insertLog(tli, "ERROR", "[" + jobType + "] JOB,任务被禁用,具体可咨询系统管理员");
                 tli.setStatus(JobStatus.ERROR.getValue());

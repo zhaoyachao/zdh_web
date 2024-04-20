@@ -1,5 +1,6 @@
 package com.zyc.zdh.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
@@ -35,10 +36,25 @@ public class ConfigUtil {
 
     public static boolean isInValue(String key, String value){
         String tmp = getValue(key, "");
+        if(StringUtils.isEmpty(tmp)){
+            return false;
+        }
         return  Arrays.stream(tmp.split(",")).map(str->str.toLowerCase()).collect(Collectors.toSet()).contains(value.toLowerCase());
     }
+
+    public static boolean isInEnv(String key){
+        return getEnv().containsProperty(key);
+    }
+
+    public static boolean isInRedis(String key){
+        return getParamUtil().exists(key);
+    }
+
     public static boolean isInRedisValue(String key, String value){
-        String tmp = getParamUtil().getValue(key, value).toString();
+        String tmp = getParamUtil().getValue(key, "").toString();
+        if(StringUtils.isEmpty(tmp)){
+            return false;
+        }
         return  Arrays.stream(tmp.split(",")).map(str->str.toLowerCase()).collect(Collectors.toSet()).contains(value.toLowerCase());
     }
 
