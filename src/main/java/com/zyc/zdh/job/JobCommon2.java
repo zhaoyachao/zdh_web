@@ -3262,11 +3262,11 @@ public class JobCommon2 {
                 public void run() {
 
                     TaskGroupLogInstance tgli = new TaskGroupLogInstance();
-                    tgli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                     try {
                         //复制quartzjobinfo到tli,任务基础信息完成复制
                         //BeanUtils.copyProperties(tgli, quartzJobInfo);
                         tgli = MapStructMapper.INSTANCE.quartzJobInfoToTaskGroupLogInstance(quartzJobInfo);
+                        tgli.setId(SnowflakeIdWorker.getInstance().nextId() + "");
                     } catch (Exception e) {
                         logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
                     } //catch (Exception e) {
