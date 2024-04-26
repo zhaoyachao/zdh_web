@@ -43,7 +43,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
     private ZdhPermissionService zdhPermissionService;
 
     /**
-     * 单源ETL首页
+     * DATAX ETL首页
      * @return
      */
     @RequestMapping("/etl_task_datax_auto_index")
@@ -53,7 +53,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
     }
 
     /**
-     * 获取单源ETL任务明细
+     * 获取DATAX ETL任务明细
      * @param id 主键ID
      * @return
      */
@@ -71,7 +71,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
     }
 
     /**
-     * 根据条件模糊查询单源ETL任务信息
+     * 根据条件模糊查询DATAX ETL任务信息
      * @param etl_context 关键字
      * @param file_name 数据源关键字
      * @return
@@ -121,7 +121,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
 
 
     /**
-     * 根据条件模糊查询单源ETL任务信息
+     * 根据条件模糊查询DATAX ETL任务信息
      * @return
      */
     @SentinelResource(value = "etl_task_datax_auto_all_list", blockHandler = "handleReturn")
@@ -153,7 +153,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
 
 
     /**
-     * 批量删除单源ETL任务
+     * 批量删除DATAX ETL任务
      * @param ids id数组
      * @return
      */
@@ -175,7 +175,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
     }
 
     /**
-     * 新增单源ETL任务首页
+     * 新增DATAX ETL任务首页
      * @return
      */
     @RequestMapping("/etl_task_datax_auto_add_index")
@@ -186,7 +186,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
 
 
     /**
-     * 新增单源ETL任务
+     * 新增DATAX ETL任务
      * 如果输入数据源类型是外部上传,会补充文件服务器信息
      * @param etlTaskDataxAutoInfo
      * @return
@@ -217,7 +217,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
 
 
     /**
-     * 单源ETL任务更新
+     * DATAX ETL任务更新
      * todo 此次是否每次都更新文件服务器信息,待优化
      * @param etlTaskDataxAutoInfo
      * @return

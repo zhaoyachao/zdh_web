@@ -86,6 +86,55 @@
 
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">取值表达式</label>
+                            <div class="col-sm-10">
+                                <input id="return_value_express" name="return_value_express" type="text"
+                                       placeholder="默认为空, 返回值参数默认为ret, groovy语法,暂不支持多层复杂结构, 比如获取数组,列表ret[2],获取数组ret下标为2的值, 字典数据ret.key1" class="form-control" aria-required="true" value="">
+                            </div>
+                            <div class="form-group"></div>
+                            <label class="col-sm-2 control-label">开启返回值对比</label>
+                            <div class="col-sm-10">
+                                <select id="return_diff_enable" name="return_diff_enable" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="false" mytype="" selected>关闭</option>
+                                    <option value="true" mytype="">开启</option>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 control-label">返回值类型</label>
+                            <div class="col-sm-10">
+                                <select id="return_value_type" name="return_value_type" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="string" mytype="" selected>字符串</option>
+                                    <option value="long" mytype="" >数值</option>
+                                    <option value="double" mytype="">小数</option>
+                                    <option value="timestamp" mytype="">时间戳</option>
+                                    <option value="date" mytype="">日期(yyyy-MM-dd)</option>
+                                    <option value="array" mytype="">数组</option>
+                                    <option value="list" mytype="">列表</option>
+                                    <option value="map" mytype="">字典</option>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 control-label">对比操作</label>
+                            <div class="col-sm-10">
+                                <select id="return_operate" name="return_operate" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="eq" mytype="" selected>等于</option>
+                                    <option value="neq" mytype="" selected>不等于</option>
+                                    <option value="gt" mytype="">大于</option>
+                                    <option value="lt" mytype="">小于</option>
+                                    <option value="gte" mytype="">大于等于</option>
+                                    <option value="lte" mytype="">小于等于</option>
+                                    <option value="in" mytype="">包含</option>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 control-label">对比值</label>
+                            <div class="col-sm-10">
+                                <input id="return_operate_value" name="return_operate_value" type="text"
+                                       placeholder="默认为空,对比操作 取值表达式输入值和当前值对比 " class="form-control" aria-required="true" value="">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">是否禁用</label>
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
@@ -327,6 +376,19 @@
                 //参数
                 getFunctionParam($('#rule_id').val());
 
+                $("#return_diff_enable").val(s.return_diff_enable);
+                $("#return_diff_enable").trigger("chosen:updated");
+
+                $("#return_value_type").val(s.return_value_type);
+                $("#return_value_type").trigger("chosen:updated");
+
+                $("#return_value_express").val(s.return_value_express);
+
+                $("#return_operate").val(s.return_operate);
+                $("#return_operate").trigger("chosen:updated");
+
+                $("#return_operate_value").val(s.return_operate_value);
+
                 var rule_param = $("#rule_param",window.parent.document).val();
                 console.info("rule_detail:"+rule_param);
                 //替换参数内容
@@ -357,6 +419,12 @@
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
         }
+
+        var return_diff_enable=$('#return_diff_enable').find("option:selected").val();
+        var return_value_type=$('#return_value_type').find("option:selected").val();
+        var return_value_express=$('#return_value_express').val();
+        var return_operate=$('#return_operate').find("option:selected").val();
+        var return_operate_value=$('#return_operate_value').val();
 
         var ary = new Array();
         var ary2 = new Array();
@@ -401,6 +469,12 @@
             "time_out": time_out,
             "is_base": is_base,
             "data_status": data_status,
+
+            'return_diff_enable':return_diff_enable,
+            'return_value_type':return_value_type,
+            'return_value_express':return_value_express,
+            'return_operate':return_operate,
+            'return_operate_value':return_operate_value,
 
             "rule_context":rule_context,
             "rule_id":rule_id,

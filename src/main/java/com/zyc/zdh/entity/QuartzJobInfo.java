@@ -25,7 +25,7 @@ public class QuartzJobInfo implements Serializable {
      */
     private String job_context;//
     /**
-     * 多源任务 值：多源ETL,单源ETL,SQL
+     * 多源任务 值：MORE_ETL,ETL,SQL
      */
     private String more_task;//
     /**

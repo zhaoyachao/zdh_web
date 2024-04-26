@@ -42,12 +42,22 @@ public class EmailJob {
 
     public static void run(QuartzJobInfo quartzJobInfo) {
         try{
-            logger.debug("开始检测失败任务...");
+
+            taskLogInstanceAlarm();
+            strategyInstanceAlarm();
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+        }
+
+    }
+
+
+    public static void taskLogInstanceAlarm(){
+        try{
+            logger.debug("开始检测ETL失败任务...");
             TaskLogInstanceMapper taskLogInstanceMapper = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-            ZdhLogsService zdhLogsService= (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
-            JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
-            QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
-            AccountService accountService=(AccountService) SpringContext.getBean("accountService");
+
             //获取失败的任务
             List<TaskLogInstance> tlis=taskLogInstanceMapper.selectByStatus(JobStatus.ERROR.getValue());
             String line = Const.LINE_SEPARATOR;
@@ -119,6 +129,41 @@ public class EmailJob {
                 }
             }
 
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+        }
+
+    }
+
+    public static void strategyInstanceAlarm(){
+        try{
+            logger.debug("开始检测营销策略失败任务...");
+            StrategyInstanceMapper strategyInstanceMapper= (StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
+
+            //获取失败的任务
+
+            StrategyInstance strategyInstance = new StrategyInstance();
+            strategyInstance.setIs_delete(Const.NOT_DELETE);
+            strategyInstance.setIs_disenable(Const.FALSE);
+            strategyInstance.setStatus(JobStatus.ERROR.getValue());
+            strategyInstance.setIs_notice(Const.FALSE);
+            List<StrategyInstance> strategyInstances = strategyInstanceMapper.select(strategyInstance);
+
+
+            //根据任务执行时间，主键 获取对应的日志信息
+            for(StrategyInstance si:strategyInstances){
+
+                logger.info("检测失败任务:"+si.getStrategy_context()+",对应主键:"+si.getId()+",对应任务组实例id:"+si.getGroup_instance_id()+",对应任务组:"+si.getGroup_context());
+
+                String msg="失败任务:\r\n" +
+                        "策略名:"+si.getStrategy_context()+",策略Id:"+si.getId()+"\r\n"+
+                        "策略组名:"+si.getGroup_context()+",策略组实例ID:"+si.getGroup_instance_id()+"\r\n"+
+                        "日期:"+si.getCur_time()+"\r\n"+
+                        "开始时间:"+DateUtil.format(si.getRun_time(), "yyyy-MM-dd HH:mm:ss")+"\r\n";
+                alarm(si, "营销策略失败通知: "+si.getStrategy_context(),msg);
+                logger.info("检测失败任务:"+si.getStrategy_context()+",对应主键:"+si.getId()+",并完成更新");
+            }
 
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -127,6 +172,49 @@ public class EmailJob {
 
     }
 
+    private static void alarm(StrategyInstance si, String title, String msg){
+        try{
+            StrategyInstanceMapper strategyInstanceMapper= (StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
+            AccountService accountService=(AccountService) SpringContext.getBean("accountService");
+            NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
+
+
+
+            List<User> users=accountService.findByUserName2(si.getOwner().split(","));
+            List<String> emails=new ArrayList<>();
+            List<String> phones=new ArrayList<>();
+            for(User user:users){
+                if(user.getEmail()!=null){
+                    System.out.println("email:"+user.getEmail());
+                    emails.add(user.getEmail());
+                }
+                if(user.getPhone()!=null){
+                    phones.add(user.getPhone());
+                }
+            }
+
+            if(!StringUtils.isEmpty(si.getOwner())){
+                for(User user:users){
+                    NoticeInfo ni=new NoticeInfo();
+                    ni.setMsg_type("通知");
+                    ni.setMsg_title(title);
+                    ni.setMsg_url("log_txt.html?task_log_id="+si.getId()+"&start_time="+si.getRun_time().getTime());
+                    ni.setMsg(msg);
+                    ni.setIs_see(Const.FALSE);
+                    ni.setOwner(user.getUserName());
+                    ni.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                    ni.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                    noticeMapper.insertSelective(ni);
+                }
+            }
+
+            strategyInstanceMapper.updateNoticeById(Const.TRUR,si.getId());
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+        }
+
+    }
 
     private static void alarm(TaskLogInstance tli, String title, String msg){
         try{

@@ -160,6 +160,11 @@ public class StrategyInstance {
     private String data_node;
 
     /**
+     * 是否已通知,false/true
+     */
+    private String is_notice;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -710,5 +715,13 @@ public class StrategyInstance {
 
     public void setData_node(String data_node) {
         this.data_node = data_node;
+    }
+
+    public String getIs_notice() {
+        return is_notice;
+    }
+
+    public void setIs_notice(String is_notice) {
+        this.is_notice = is_notice;
     }
 }

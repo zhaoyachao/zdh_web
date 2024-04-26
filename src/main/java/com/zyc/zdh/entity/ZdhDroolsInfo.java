@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ZdhDroolsInfo {
+public class ZdhDroolsInfo extends ZdhBaseInfo{
 
     //任务记录唯一标识(注意和调度任务的标识不一样)
     private String task_logs_id;

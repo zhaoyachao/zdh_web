@@ -41,7 +41,7 @@
             return;
         } else {
 
-            layer.confirm('是否删除单源ETL任务', {
+            layer.confirm('是否删除批量ETL任务', {
                 btn: ['确定','取消'] //按钮
             }, function(index){
                 var ids = new Array();// 声明一个数组

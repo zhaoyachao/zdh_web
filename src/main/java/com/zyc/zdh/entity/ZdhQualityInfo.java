@@ -2,7 +2,7 @@ package com.zyc.zdh.entity;
 
 
 
-public class ZdhQualityInfo {
+public class ZdhQualityInfo extends ZdhBaseInfo{
 
     //任务记录唯一标识(注意和调度任务的标识不一样)
     private String task_logs_id;

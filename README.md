@@ -3181,6 +3181,24 @@
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1229211615895752704, '963932648793706496', '代码块demo页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2024-04-14 23:28:07', '2024-04-14 23:36:30', 'code_block_demo_index', '3', '', '', 'zdh', '1');
     
+## 5.3.3迁移5.3.4
+    update quartz_job_info set jsmind_data  = regexp_replace(jsmind_data, "\"单源ETL\"", "\"ETL\"");
+    update quartz_job_info set jsmind_data  = regexp_replace(jsmind_data, "\"多源源ETL\"", "\"MORE_ETL\"");
+    
+    update task_group_log_instance set jsmind_data  = regexp_replace(jsmind_data, "\"单源ETL\"", "\"ETL\"");
+    update task_group_log_instance set jsmind_data  = regexp_replace(jsmind_data, "\"多源源ETL\"", "\"MORE_ETL\"");
+    update task_group_log_instance set run_jsmind_data  = regexp_replace(jsmind_data, "\"单源ETL\"", "\"ETL\"");
+    update task_group_log_instance set run_jsmind_data  = regexp_replace(jsmind_data, "\"多源源ETL\"", "\"MORE_ETL\"");
+    
+    update task_log_instance set jsmind_data  = regexp_replace(jsmind_data, "\"单源ETL\"", "\"ETL\"");
+    update task_log_instance set jsmind_data  = regexp_replace(jsmind_data, "\"多源源ETL\"", "\"MORE_ETL\"");
+    update task_log_instance set run_jsmind_data  = regexp_replace(jsmind_data, "\"单源ETL\"", "\"ETL\"");
+    update task_log_instance set run_jsmind_data  = regexp_replace(jsmind_data, "\"多源源ETL\"", "\"MORE_ETL\"");
+
+    alter table strategy_instance add column `is_notice` varchar(16) DEFAULT 'false' COMMENT '是否已通知';
+    alter table strategy_group_instance add column `is_notice` varchar(16) DEFAULT 'false' COMMENT '是否已通知';
+    
+
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中
   + v4.7.x 接入flink引擎,实现流采集 已完成

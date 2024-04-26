@@ -147,6 +147,11 @@ public class StrategyGroupInstance {
     private String small_flow_status;
 
     /**
+     * 是否已通知,false/true
+     */
+    private String is_notice;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -602,5 +607,13 @@ public class StrategyGroupInstance {
 
     public void setSmall_flow_status(String small_flow_status) {
         this.small_flow_status = small_flow_status;
+    }
+
+    public String getIs_notice() {
+        return is_notice;
+    }
+
+    public void setIs_notice(String is_notice) {
+        this.is_notice = is_notice;
     }
 }

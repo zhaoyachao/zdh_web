@@ -93,8 +93,8 @@
                             <div class="col-sm-10">
                                 <select id="more_task" name="more_task" data-placeholder=""
                                         class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="单源ETL" mytype="">单源ETL</option>
-                                    <option value="多源ETL" mytype="">多源ETL</option>
+                                    <option value="ETL" mytype="">单源ETL</option>
+                                    <option value="MORE_ETL" mytype="">多源ETL</option>
                                     <option value="SQL" mytype="">SQL</option>
                                 </select>
                             </div>
@@ -583,10 +583,10 @@
             // ------------------------------------------------------------------
 
             $('#more_task').chosen().on("change", function (evt, params) {
-                if($("#more_task").val()=="多源ETL"){
+                if($("#more_task").val()=="MORE_ETL"){
                     console.info("选中多源ETL");
                     init_etl_task_more_sources()
-                }else if($("#more_task").val()=="单源ETL"){
+                }else if($("#more_task").val()=="ETL"){
                     console.info("选中单源ETL");
                     init_etl_task_sources()
                 }else if($("#more_task").val()=="SQL") {

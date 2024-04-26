@@ -21,7 +21,7 @@ public class EtlDroolsTaskInfo {
     private String etl_id;
 
     /**
-     * 任务模板,单源ETL,多源ETL,SQL
+     * 任务模板,ETL,MORE_ETL,SQL
      */
     private String more_task;
 

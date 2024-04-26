@@ -165,4 +165,8 @@ public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<Strat
             }
     )
     public int updateStatusByGroupInstanceId(@Param("group_instance_id") String group_instance_id, @Param("status") String status);
+
+
+    @Update(value = "update strategy_instance set is_notice=#{is_notice} where id=#{id}")
+    public int updateNoticeById(@Param("is_notice") String is_notice,@Param("id") String id);
 }

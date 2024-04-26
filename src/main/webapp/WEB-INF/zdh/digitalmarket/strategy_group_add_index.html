@@ -489,6 +489,11 @@
             }
             if(tp == "function"){
                 $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).attr("return_diff_enable",rs.return_diff_enable);
+                $("#" + divId).attr("return_value_type",rs.return_value_type);
+                $("#" + divId).attr("return_value_express",rs.return_value_express);
+                $("#" + divId).attr("return_operate",rs.return_operate);
+                $("#" + divId).attr("return_operate_value",rs.return_operate_value);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
@@ -614,6 +619,13 @@
                 code_type: $elem.attr('code_type'),
 
                 name_list: $elem.attr('name_list'),
+
+
+                return_diff_enable: $elem.attr('return_diff_enable'),
+                return_value_type: $elem.attr('return_value_type'),
+                return_value_express: $elem.attr('return_value_express'),
+                return_operate: $elem.attr('return_operate'),
+                return_operate_value: $elem.attr('return_operate_value'),
 
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,

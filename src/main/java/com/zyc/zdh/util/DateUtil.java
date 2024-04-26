@@ -107,6 +107,10 @@ public class DateUtil {
         return df_time.format(dt);
     }
 
+    public static String  format(Date date, String format){
+        return FastDateFormat.getInstance(format).format(date);
+    }
+
     public static String getCurrentTime(){
         return df_time.format(new Timestamp(System.currentTimeMillis()));
     }

@@ -1219,8 +1219,20 @@ function doubleclick_function(id) {
             var is_disenable = div.attr("is_disenable");
             var is_base = div.attr("is_base");
             var data_status = div.attr("data_status");
+
+            var return_diff_enable = div.attr("return_diff_enable");
+            var return_value_type = div.attr("return_value_type");
+            var return_value_express = div.attr("return_value_express");
+            var return_operate = div.attr("return_operate");
+            var return_operate_value = div.attr("return_operate_value");
+
             $("#rule_param").val(div.attr("rule_param"));
-            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
+            url=url+"?rule_context="+rule_context+"&depend_level="+depend_level +"&time_out="+time_out+"&rule_id="+rule_id+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status+
+                '&return_diff_enable='+return_diff_enable+
+                '&return_value_type='+return_value_type+
+                '&return_value_express='+return_value_express+
+                '&return_operate='+return_operate+
+                '&return_operate_value='+return_operate_value
         }
         layer.open({
             type: 2,
@@ -1244,6 +1256,12 @@ function doubleclick_function(id) {
                 div.attr("is_base",etl_task_info.is_base);
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("data_status",etl_task_info.data_status);
+
+                div.attr("return_diff_enable",etl_task_info.return_diff_enable);
+                div.attr("return_value_type",etl_task_info.return_value_type);
+                div.attr("return_value_express",etl_task_info.return_value_express);
+                div.attr("return_operate",etl_task_info.return_operate);
+                div.attr("return_operate_value",etl_task_info.return_operate_value);
 
                 div.attr("rule_context",etl_task_info.rule_context);
                 div.attr("rule_id",etl_task_info.rule_id);

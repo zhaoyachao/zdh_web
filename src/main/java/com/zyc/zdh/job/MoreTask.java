@@ -5,8 +5,8 @@ package com.zyc.zdh.job;
  */
 public enum MoreTask {
 
-    ETL("1","单源ETL","单源ETL"),//为了异步数据一致性
-    MORE_ETL("2","多源ETL","多源ETL"),
+    ETL("1","ETL","单源ETL"),//为了异步数据一致性
+    MORE_ETL("2","MORE_ETL","多源ETL"),
     SSH("3","SSH","SSH"),
     SQL("4","SQL","SQL"),
     Drools("5","DROOLS","DROOLS"),
