@@ -241,6 +241,9 @@ public class BaseController {
     public void checkPermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, BaseMapper baseMapper, String table, String[] ids) throws Exception {
         Map<String, List<String>> dims = dynamicPermissionByProductAndGroup(zdhPermissionService);
         List<Map<String,Object>> list = baseMapper.selectListMapByIds(table, ids);
+        if(list == null || list.size() == 0){
+            throw new Exception("权限验证,未找到相关数据信息");
+        }
         for(Map<String, Object> objectMap : list){
             if(objectMap.containsKey("product_code")){
                 String product_code = objectMap.getOrDefault("product_code", "").toString();

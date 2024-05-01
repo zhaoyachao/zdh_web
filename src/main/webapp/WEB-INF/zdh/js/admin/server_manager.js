@@ -151,7 +151,7 @@
         function operateFormatter(value, row, index) {
 
             return [
-                ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+                ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
                 ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm">更新\n' +
                 '                                    </button>',
                 ' <button id="setup" name="setup" type="button" class="btn btn-outline btn-sm">一键部署\n' +
@@ -217,7 +217,7 @@
         function operateFormatter2(value, row, index) {
 
             return [
-                ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+                ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
 
                 ' <button id="online" name="online" type="button" class="btn btn-outline btn-sm">逻辑上线\n' +
 

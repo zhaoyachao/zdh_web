@@ -133,7 +133,7 @@
 
       function operateFormatter(value, row, index) {
           return [
-              ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+              ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="edit_value" name="edit_value" type="button" class="btn btn-outline btn-sm" title="更新维度值"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>\n'+
               '</div>'

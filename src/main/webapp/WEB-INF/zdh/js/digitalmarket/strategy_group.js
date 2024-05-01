@@ -247,7 +247,7 @@
 
       function operateFormatter(value, row, index) {
           return [
-              ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+              ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="copy" name="copy" type="button" class="btn btn-outline btn-sm" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
@@ -271,7 +271,7 @@
           }
 
           return [
-              ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+              ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
 
               ' <button id="execute_quartz" name="execute_quartz" type="button" class="btn btn-outline btn-sm">调度\n' +
 

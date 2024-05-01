@@ -25,7 +25,7 @@
 <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
     <div id="wrapper">
         <!--左侧导航开始-->
-        <nav class="navbar-default navbar-static-side" role="navigation">
+        <nav class="navbar-default navbar-static-side" role="navigation" style="display: block;">
             <div class="nav-close"><i class="fa fa-times-circle"></i>
             </div>
             <div class="sidebar-collapse">
@@ -72,7 +72,7 @@
                         <!--<li class="hidden-xs">
                             <a href="index_v1.html" class="J_menuItem" data-index="0"><i class="fa fa-cart-arrow-down"></i> 购买</a>
                         </li>-->
-                        <li class="dropdown hidden-xs">
+                        <li class="dropdown">
                             <a class="right-sidebar-toggle" aria-expanded="false">
                                 <i class="fa fa-tasks"></i> 主题
                             </a>
@@ -411,8 +411,8 @@
                                 if(data.result[i].resource_type == "1"){
 
                                     var ul_tmplate =
-                                        "<li>"+
-                                        "<a href=\"\#\"><i class=\""+data.result[i].icon+"\"></i><span class=\"nav-label\">"+data.result[i].text+"</span>"+span_notice_title+"</a>"+
+                                        "<li class=\"\">"+
+                                        "<a href=\"\#\" class=\"J_menuItem\"><i class=\""+data.result[i].icon+"\"></i><span class=\"nav-label\">"+data.result[i].text+"</span>"+span_notice_title+"</a>"+
                                         "<ul class=\""+ul_class+"\" id=\"ul_"+data.result[i].resource_id+"\">"+
                                         "</ul>"+
                                         "</li>";
@@ -427,7 +427,7 @@
                                 }else if(data.result[i].resource_type == "4"){
                                     //函数
                                     li_tmplete =
-                                        "<li><a href=\"javascript:void(0);\" onclick=\"" +data.result[i].url.split("function:")[1] +"\">" + "<i class=\""+ data.result[i].icon+"\"></i>"+data.result[i].text+"</a>";
+                                        "<li class=\"nav-header\"><a href=\"javascript:void(0);\" onclick=\"" +data.result[i].url.split("function:")[1] +"\">" + "<i class=\""+ data.result[i].icon+"\"></i>"+data.result[i].text+"</a>";
                                     $('#ul_'+data.result[i].parent).append(li_tmplete);
                                     $('#'+"ul_"+data.result[i].parent).metisMenu();
                                 }else if(data.result[i].resource_type == "2"){

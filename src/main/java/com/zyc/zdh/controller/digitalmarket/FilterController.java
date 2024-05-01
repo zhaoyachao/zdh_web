@@ -8,6 +8,7 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +40,9 @@ public class FilterController extends BaseController {
 
     @Autowired
     private ZdhPermissionService zdhPermissionService;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * 过滤列表首页
@@ -204,6 +208,43 @@ public class FilterController extends BaseController {
         }
     }
 
+    /**
+     * 过滤值新增首页
+     * @return
+     */
+    @RequestMapping(value = "/filter_add_value_index", method = RequestMethod.GET)
+    public String filter_add_value_index() {
+
+        return "digitalmarket/filter_add_value_index";
+    }
+
+    /**
+     * 过滤值新增
+     * @param id 过滤规则ID
+     * @param filter_value 过滤值
+     * @return
+     */
+    @SentinelResource(value = "filter_add_value", blockHandler = "handleReturn")
+    @RequestMapping(value = "/filter_add_value", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo filter_add_value(String id, String filter_value) {
+        try {
+            if(StringUtils.isEmpty(filter_value)){
+                throw new Exception("过滤值不可为空");
+            }
+            checkPermissionByProductAndDimGroup(zdhPermissionService, filterMapper, filterMapper.getTable(), new String[]{id});
+            FilterInfo filterInfo = filterMapper.selectByPrimaryKey(id);
+            if(!filterInfo.getEngine_type().equalsIgnoreCase("redis")){
+                throw new Exception("过滤值新增当前仅支持redis引擎的过滤规则");
+            }
+            redisUtil.getRedisTemplate().opsForValue().set(filterInfo.getProduct_code()+"_filter:"+filterInfo.getFilter_code()+":"+filter_value, filter_value);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+        }
+    }
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();

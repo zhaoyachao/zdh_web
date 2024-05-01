@@ -790,6 +790,15 @@
   + v5.3.3 [zdh_magic_mirror] 同步优化代码块执行逻辑,修复历史bug
   + v5.3.3 [zdh_magic_mirror] 修复内存泄漏bug
   
+  + v5.3.4 [zdh_web]修复调度etl对象复制bug
+  + v5.3.4 [zdh_web]优化营销模块展示配置
+  + v5.3.4 [zdh_magic_mirror]优化function模块
+  + v5.3.4 [zdh_web]etl任务新增队列方式,优化excutor重试机制,增加有效时间内重试限制
+  + v5.3.4 [zdh_web]优化移动端展示
+  + v5.3.4 [zdh_web]权限管理-优化图标库展示
+  + v5.3.4 [zdh_web]优化告警模块,新增语法例子
+  + v5.3.4 [zdh_web]新增客户管理-客户画像
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
@@ -3198,6 +3207,41 @@
     alter table strategy_instance add column `is_notice` varchar(16) DEFAULT 'false' COMMENT '是否已通知';
     alter table strategy_group_instance add column `is_notice` varchar(16) DEFAULT 'false' COMMENT '是否已通知';
     
+    alter table task_log_instance modify column etl_info mediumtext comment '具体执行任务信息';
+    alter table zdh_logs modify column msg mediumtext comment '日志';
+    
+    alter table task_log_instance modify column jsmind_data mediumtext comment '血源关系';
+    alter table task_log_instance modify column run_jsmind_data mediumtext comment '生成实例血源关系';
+   
+    alter table task_group_log_instance modify column jsmind_data mediumtext comment '血源关系';
+    alter table task_group_log_instance modify column run_jsmind_data mediumtext comment '生成实例血源关系';
+    
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1234638077633236992, '893810193274507264', '菜单配置-图标展示', '5', 'zyc', 'fa fa-coffee', '', '11', '1', '2024-04-29 22:50:56', '2024-04-29 22:50:56', 'fontawesome', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1234647094988378112, '1170678293867794432', '告警任务-处理例子', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2024-04-29 23:26:46', '2024-04-29 23:27:00', 'beacon_fire_demo_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1235175718967578624, '1013053483735060480', '新增过滤值页面', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2024-05-01 10:27:20', '2024-05-01 10:27:20', 'filter_add_value_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1235175766610677760, '1013053483735060480', '新增过滤值', '4', 'zyc', 'fa fa-coffee', '', '9', '1', '2024-05-01 10:27:31', '2024-05-01 10:27:31', 'filter_add_value', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1235189017322983424, '1135693658922684416', '变量所有查询', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2024-05-01 11:20:10', '2024-05-01 11:20:10', 'variable_all', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1235190179082276864, '963925904835219456', '客户管理', '3', 'zyc', 'fa fa-coffee', '', '15', '1', '2024-05-01 11:24:47', '2024-05-01 11:28:51', 'customer_manager', '1', '用户画像', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1235190696558727168, '1235190179082276864', '客户画像', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-05-01 11:26:51', '2024-05-01 11:26:51', 'customer_portrait_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1235194291270193152, '1235190696558727168', '客户画像查询', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-05-01 11:41:08', '2024-05-01 11:41:08', 'customer_portrait_detail', '5', '', '', 'zdh', '');
+
+
 
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

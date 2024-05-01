@@ -144,6 +144,8 @@
                             <label class="col-sm-2 control-label">处理脚本</label>
                             <div class="col-sm-10" id="div_data_sources_params_output">
                                 <div id="groovy_script" name="groovy_script" class="monaco_div_100"></div>
+                                <span class="help-block m-b-none"><a id="a_params" href="javascript:void(0);"
+                                                                     onclick="code_demo()">脚本例子</a></span>
                             </div>
                         </div>
 
@@ -516,6 +518,10 @@
                 console.info("弹框结束")
             }
         });
+    }
+
+    function code_demo() {
+        window.open(server_context+'/beacon_fire_demo_index?id=-1');
     }
 
     $('#save_etl_task').click(function () {

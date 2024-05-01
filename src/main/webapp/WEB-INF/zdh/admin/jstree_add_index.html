@@ -90,7 +90,7 @@
                                                     </div>
                                                     <label class="col-sm-2 control-label"></label>
                                                     <div class="col-sm-10">
-                                                    <span class="help-block m-b-none"><a target="view_window" href="http://www.fontawesome.com.cn/faicons/">图标网站</a></span>
+                                                    <span class="help-block m-b-none"><a href="javascript:void(0);" onclick="open_fontawesome()">图标网站</a></span>
                                                     </div>
 
                                                 </div>
@@ -197,7 +197,7 @@
                                                     </div>
                                                     <label class="col-sm-2 control-label"></label>
                                                     <div class="col-sm-10">
-                                                        <span class="help-block m-b-none"><a target="view_window" href="http://www.fontawesome.com.cn/faicons/">图标网站</a></span>
+                                                        <span class="help-block m-b-none"><a href="javascript:void(0);" onclick="open_fontawesome()">图标网站</a></span>
                                                     </div>
                                                 </div>
 
@@ -585,6 +585,23 @@
 
     });
 
+    function open_fontawesome(){
+        parent.layer.open({
+            type: 2,
+            title: '图标库',
+            shadeClose: false,
+            resize: true,
+            fixed: false,
+            maxmin: true,
+            shade: 0.1,
+            area : ['45%', '60%'],
+            //area: ['450px', '500px'],
+            content: server_context+"/fontawesome.html", //iframe的url
+            end : function () {
+                console.info("弹框结束")
+            }
+        });
+    }
     function cancel(){
         var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
         var params = url.substr(1);//去掉问号

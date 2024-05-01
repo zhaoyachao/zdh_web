@@ -101,7 +101,7 @@
 
       function operateFormatter(value, row, index) {
           return [
-              ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+              ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="log" name="log" type="button" class="btn btn-outline btn-sm" title="日志"><i class="glyphicon glyphicon-file" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +

@@ -153,7 +153,7 @@ function buildTable($el, cells, rows) {
 
       function operateFormatter(value, row, index) {
           return [
-              ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+              ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="download" name="download" type="button" class="btn btn-outline btn-sm"><i class="glyphicon glyphicon-download-alt" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +

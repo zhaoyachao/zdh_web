@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 烽火台处理例子</title>
+    <meta name="keywords" content="ZDH 烽火台处理例子">
+    <meta name="description" content="ZDH 烽火台处理例子">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+<!--    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">-->
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>代码块例子</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="" name="" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <div class="col-sm-12">groovy demo</div>
+                            <div class="col-sm-12">
+                                <div id="groovy_code" name="groovy_code" class="monaco_div"></div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">返回
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+</script>
+
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/shell/shell.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/python/python.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/java/java.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            window.editor = monaco.editor.create(document.getElementById('groovy_code'), {
+                value:'//默认入参: rs: 当前sql的返回结果,是个对象集合,获取第一条获取rs.get(0)\n' +
+                    '//出参结构: 默认名为out的对象,包含out.code, out.o 2个参数, 参数说明：code:状态0成功,非0失败, o:返回结果,object类型\n' +
+                    '//更多语法参考groovy\n' +
+                    '//例子:\n' +
+                    'if(rs != null){\n' +
+                    '    if(rs.size() >= 1){\n' +
+                    '        out.code = \'201\'\n' +
+                    '        out.o = \'测试告警,多条记录\'\n' +
+                    '        return out\n' +
+                    '    }\n' +
+                    '}\n' +
+                    'return out',
+                language: 'java',
+                theme:'vs-dark'
+            });
+
+        })();
+
+
+
+    })(document, window, jQuery);
+</script>
+
+
+</body>
+
+</html>

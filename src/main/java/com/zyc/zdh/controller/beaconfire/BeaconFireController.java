@@ -110,6 +110,16 @@ public class BeaconFireController extends BaseController {
     }
 
     /**
+     * 烽火台-脚本demo首页
+     * @return
+     */
+    @RequestMapping(value = "/beacon_fire_demo_index", method = RequestMethod.GET)
+    public String beacon_fire_demo_index() {
+
+        return "beaconfire/beacon_fire_demo_index";
+    }
+
+    /**
      * xx明细
      * @param id 主键ID
      * @return

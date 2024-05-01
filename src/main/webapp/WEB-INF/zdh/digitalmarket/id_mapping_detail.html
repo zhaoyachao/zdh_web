@@ -76,6 +76,14 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">说明</label>
+                            <div class="col-sm-10">
+                                <input id="rule_context" name="rule_context" type="text"
+                                       placeholder="说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">MAPPING</label>
                             <div class="col-sm-10">
                                 <select id="id_mapping_code" name="id_mapping_code" data-placeholder="选择MAPPING..."
@@ -268,6 +276,8 @@
             if(s["id_mapping_code"] != '-1'){
                 console.info("更新触发");
 
+                $("#rule_context").val(is_empty(s["rule_context"])?"":s["rule_context"]);
+
                 $("#operate").val(s.operate);
                 $("#operate").trigger("chosen:updated");
 
@@ -308,7 +318,7 @@
     $('#save_etl_info').click(function () {
 
         //自定义实现
-        var filter_context = "MAPPING";
+        var rule_context=$('#rule_context').val();
         var operate=$('#operate').find("option:selected").val();
         var touch_type=$('#touch_type').find("option:selected").val();
         var is_base=$('#is_base').find("option:selected").val();
@@ -337,7 +347,7 @@
 
             "id_mapping_code": id_mapping_code,
             "data_engine": data_engine,
-            "rule_context":id_mapping_name,
+            "rule_context":rule_context,
         };
         console.info("job_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

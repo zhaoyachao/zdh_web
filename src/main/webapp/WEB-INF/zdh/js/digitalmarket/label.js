@@ -214,7 +214,7 @@
 
       function operateFormatter(value, row, index) {
           return [
-              ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+              ' <div class="btn-group">' +
               ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="copy" name="copy" type="button" class="btn btn-outline btn-sm" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
@@ -225,7 +225,7 @@
               ' <button id="tasks" name="tasks" type="button" class="btn btn-outline btn-sm" title="标签加工任务">\n' +
               '                                        <i class="glyphicon glyphicon-tasks" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="edit_value" name="edit_value" type="button" class="btn btn-outline btn-sm" title="标签值">\n' +
+              ' <button id="edit_value" name="edit_value" type="button" class="btn btn-outline btn-sm" title="标签试算">\n' +
               '                                        <i class="glyphicon glyphicon-camera" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +

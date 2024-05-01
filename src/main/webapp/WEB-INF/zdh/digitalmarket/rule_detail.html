@@ -248,7 +248,7 @@
                 '        </div>\n' +
                 '        <div class="col-sm-1">\n' +
                 '            <input name="param_return_type" type="text"\n' +
-                '                   placeholder="参数返回值类型,多个分号分割" class="form-control param_return_type" aria-required="true" value="zdh_param_return_type" id="zdh_param_return_type">\n' +
+                '                   placeholder="参数返回值类型" class="form-control param_return_type" aria-required="true" value="zdh_param_return_type" id="zdh_param_return_type">\n' +
                 '        </div>\n' +
                 '\n' +
                 '    </div>\n' +
@@ -402,7 +402,7 @@
                             tmp = tmp.replace("zdh_param_operate", "zdh_param_operate_"+i);
                             tmp = tmp.replace("zdh_param_value_id", "zdh_param_value_"+i);
                             tmp = tmp.replace("zdh_param_value", param[i].param_value);
-                            tmp = tmp.replace("zdh_param_return_type", param[i].param_return_type);
+                            tmp = tmp.replace("zdh_param_return_type", is_empty(param[i].param_return_type)?"":param[i].param_return_type);
                             $('#label_div').append(tmp);
                             $('#label_div #zdh_param_operate_'+i).val(param[i].param_operate);
                         }

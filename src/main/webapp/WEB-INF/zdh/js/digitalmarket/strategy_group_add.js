@@ -275,6 +275,7 @@ function doubleclick_label(id) {
                 div.css("*zoom","1");
                 div.attr("title", etl_task_info.rule_expression_cn);
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 //此处更新中文表达式
                 //create_rule_expression_cn();
@@ -336,7 +337,7 @@ function doubleclick_crowd_file(id) {
                 div.css("*display","inline");
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.crowd_file_context);
-                div.attr("title", etl_task_info.crowd_file_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -394,7 +395,7 @@ function doubleclick_crowd_rule(id) {
                 div.css("*display","inline");
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.crowd_rule_context);
-                div.attr("title", etl_task_info.crowd_rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -453,6 +454,7 @@ function doubleclick_crowd_operate(id) {
                 div.css("*display","inline");
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.crowd_operate_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 //create_rule_expression_cn();
             }
@@ -512,7 +514,7 @@ function doubleclick_filter(id) {
                 div.css("*display","inline");
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
-                div.attr("title", etl_task_info.filter_title);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -572,7 +574,7 @@ function doubleclick_shunt(id) {
                 div.css("*display","inline");
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
-                div.attr("title", etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -633,7 +635,7 @@ function doubleclick_rights(id) {
                 div.css("*display","inline");
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rights_context);
-                div.attr("title", etl_task_info.rights_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -658,7 +660,8 @@ function doubleclick_touch(id) {
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
             var data_status = div.attr("data_status");
-            url=url+"?touch_id="+touch_id+"&touch_task="+touch_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
+            var rule_context = div.attr("rule_context");
+            url=url+"?touch_id="+touch_id+"&rule_context="+rule_context+"&touch_task="+touch_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -682,6 +685,7 @@ function doubleclick_touch(id) {
                 div.attr("depend_level",etl_task_info.depend_level);
                 div.attr("data_status",etl_task_info.data_status);
 
+                div.attr("rule_context",etl_task_info.rule_context);
                 div.attr("touch_task",etl_task_info.touch_task);
                 div.attr("touch_id",etl_task_info.touch_id);
                 div.attr("touch_context",etl_task_info.touch_context);
@@ -692,8 +696,8 @@ function doubleclick_touch(id) {
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
-                div.attr("title", etl_task_info.touch_context);
-                div.html("("+ etl_task_info.operate +")"+etl_task_info.touch_context);
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -706,6 +710,7 @@ function doubleclick_plugin(id) {
         var text = $(this).text();
         var div = $(this);
         var rule_id=div.attr("rule_id");
+        var rule_context=div.attr("rule_context");
         var url=server_context+'/plugin_detail2.html';
         if( div.attr("rule_id") == "" || div.attr("rule_id") == undefined ){
             url=url+"?rule_id=-1"
@@ -719,7 +724,7 @@ function doubleclick_plugin(id) {
             var is_disenable = div.attr("is_disenable");
             var data_status = div.attr("data_status");
             $("#rule_param").val(div.attr("rule_param"));
-            url=url+"?rule_id="+rule_id+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
+            url=url+"?rule_id="+rule_id+"&rule_context="+rule_context+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -755,6 +760,7 @@ function doubleclick_plugin(id) {
                 div.css("*zoom","1");
                 div.attr("title", etl_task_info.rule_expression_cn);
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 //此处更新中文表达式
                 //create_rule_expression_cn();
@@ -817,6 +823,7 @@ function doubleclick_online(id) {
                 div.css("*zoom","1");
                 div.attr("title", etl_task_info.rule_context);
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 //此处更新中文表达式
                 //create_rule_expression_cn();
@@ -881,6 +888,7 @@ function doubleclick_id_mapping(id) {
                 div.css("*zoom","1");
                 div.attr("title", etl_task_info.rule_context);
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 //此处更新中文表达式
                 //create_rule_expression_cn();
@@ -944,6 +952,7 @@ function doubleclick_risk(id) {
                 div.css("*zoom","1");
                 div.attr("title", etl_task_info.rule_expression_cn);
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
                 //此处更新中文表达式
                 //create_rule_expression_cn();
@@ -958,6 +967,7 @@ function doubleclick_tn(id) {
         var text = $(this).text();
         var div = $(this);
         var rule_id=div.attr("rule_id");
+        var rule_context=div.attr("rule_context");
         var url=server_context+'/tn_detail.html';
         if( div.attr("rule_id") == "" || div.attr("rule_id") == undefined ){
             url=url+"?rule_id=-1"
@@ -972,7 +982,7 @@ function doubleclick_tn(id) {
             var is_base = div.attr("is_base");
             var is_disenable = div.attr("is_disenable");
             var data_status = div.attr("data_status");
-            url=url+"?rule_id="+rule_id+"&tn_unit="+tn_unit+"&tn_type="+tn_type+"&tn_value="+tn_value+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
+            url=url+"?rule_id="+rule_id+"&rule_context="+rule_context+"&tn_unit="+tn_unit+"&tn_type="+tn_type+"&tn_value="+tn_value+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status
         }
         layer.open({
             type: 2,
@@ -1009,6 +1019,7 @@ function doubleclick_tn(id) {
                 div.css("*zoom","1");
                 div.attr("title", etl_task_info.rule_context);
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -1068,7 +1079,7 @@ function doubleclick_manual_confirm(id) {
                 div.css("*display","inline");
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
-                div.attr("title", etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -1131,7 +1142,7 @@ function doubleclick_code_block(id) {
                 div.css("*display","inline");
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
-                div.attr("title", etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -1194,6 +1205,7 @@ function doubleclick_custom_list(id) {
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
                 div.attr("title", etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -1203,12 +1215,11 @@ function doubleclick_custom_list(id) {
 function doubleclick_function(id) {
     $(id).dblclick(function () {
         $("#etl_task_text").val("");
-        var rule_context = $(this).text();
+
         var div = $(this);
         var rule_context=div.attr("rule_context");
         var rule_id=div.attr("rule_id");
         var operate=div.attr("operate");
-        var name_list=div.attr("name_list");
         var url=server_context+'/function_detail2.html';
         if( rule_id == "" || rule_id == undefined ){
             url=url+"?rule_id=-1"
@@ -1273,6 +1284,7 @@ function doubleclick_function(id) {
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
                 div.attr("title", etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }
         });
@@ -1372,6 +1384,35 @@ function jsplumb_rule_expression_data(){
     console.info(ojson);
 
     return ojson
+}
+
+function set_new_title(div, tp, rs){
+    var new_title = "表达式: "+div.html();
+    var more_task = "任务类型: "+tp;
+    var chudashiji = "触发时机: 上游成功";
+    var shujuzhuangtai = "依赖数据状态: 上游成功数据";
+    if(!is_empty(rs.depend_level)){
+        if(rs.depend_level == "1"){
+            chudashiji = "触发时机: 上游杀死";
+        }else if(rs.depend_level == "2"){
+            chudashiji = "触发时机: 上游失败";
+        }else if(rs.depend_level == "3"){
+            chudashiji = "触发时机: 上游执行后";
+        }
+    }
+    if(!is_empty(rs.data_status)){
+        if(rs.data_status == "1"){
+            shujuzhuangtai = "依赖数据状态: 上游成功数据";
+        }else if(rs.data_status == "2"){
+            shujuzhuangtai = "依赖数据状态: 上游失败数据";
+        }else if(rs.data_status == "3"){
+            shujuzhuangtai = "依赖数据状态: 上游所有数据";
+        }
+    }
+
+    new_title = more_task + "\n" + chudashiji + "\n" + shujuzhuangtai+ "\n" + new_title;
+
+    div.attr("title", new_title);
 }
  
 

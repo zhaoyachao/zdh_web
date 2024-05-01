@@ -1,5 +1,7 @@
 package com.zyc.zdh.job;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.util.NumberUtil;
 import com.zyc.rqueue.RQueueClient;
 import com.zyc.rqueue.RQueueManager;
 import com.zyc.rqueue.RQueueMode;
@@ -136,31 +138,43 @@ public class RetryJob {
                         logger.info("检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
                     }
                     JobCommon2.insertLog(t2,"INFO","检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
-                    ZdhHaInfo zdhHaInfo=JobCommon2.getZdhUrl(zdhHaInfoMapper,t2.getParams());
-                    String instance = zdhHaInfo.getZdh_instance();
-                    URI old_uri=URI.create(t2.getUrl());
-                    String new_authori=URI.create(zdhHaInfo.getZdh_url()).getAuthority();
-                    String new_url=old_uri.getScheme()+"://"+new_authori+old_uri.getPath();
-                    logger.info("重新发送请求地址:"+new_url+",参数:"+t2.getEtl_info());
-                    JobCommon2.insertLog(t2,"INFO","重新发送请求地址:"+new_url+",参数:"+t2.getEtl_info());
-                    if(queue_enable.equalsIgnoreCase("true")){
-                        //本地参数配置-发送队列
-                        String queue = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY, "")+"_"+instance;
-                        RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
-                        rQueueClient.add(t2.getEtl_info());
-                    }else if(redis_queue_enable.equalsIgnoreCase("true")){
-                        //公共参数配置-发送队列
-                        String queue = ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY, "redis")+"_"+instance;
-                        RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
-                        rQueueClient.add(t2.getEtl_info());
+
+                    //如果任务超过一定时间且executor死亡,则直接置任务失败
+                    String valid_time = ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_SKIP_RETRY_VALID_TIME, "3600").toString();
+                    if(!NumberUtil.isLong(valid_time)){
+                        valid_time = "3600";
+                    }
+                    if(cn.hutool.core.date.DateUtil.between(t2.getUpdate_time(), new Date(), DateUnit.SECOND) <= Long.valueOf(valid_time)){
+                        ZdhHaInfo zdhHaInfo=JobCommon2.getZdhUrl(zdhHaInfoMapper,t2.getParams());
+                        String instance = zdhHaInfo.getZdh_instance();
+                        URI old_uri=URI.create(t2.getUrl());
+                        String new_authori=URI.create(zdhHaInfo.getZdh_url()).getAuthority();
+                        String new_url=old_uri.getScheme()+"://"+new_authori+old_uri.getPath();
+                        logger.info("重新发送请求地址:"+new_url+",参数:"+t2.getEtl_info());
+                        JobCommon2.insertLog(t2,"INFO","重新发送请求地址:"+new_url+",参数:"+t2.getEtl_info());
+                        if(queue_enable.equalsIgnoreCase("true")){
+                            //本地参数配置-发送队列
+                            String queue = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY, "")+"_"+instance;
+                            RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
+                            rQueueClient.add(t2.getEtl_info());
+                        }else if(redis_queue_enable.equalsIgnoreCase("true")){
+                            //公共参数配置-发送队列
+                            String queue = ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY, "redis")+"_"+instance;
+                            RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
+                            rQueueClient.add(t2.getEtl_info());
+                        }else{
+                            HttpUtil.postJSON(new_url, t2.getEtl_info());
+                        }
+
+                        t2.setExecutor(zdhHaInfo.getId());
+                        t2.setUrl(new_url);
+                        t2.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                        JobCommon2.updateTaskLog(t2, tlim);
                     }else{
-                        HttpUtil.postJSON(new_url, t2.getEtl_info());
+                        t2.setStatus(JobStatus.ERROR.getValue());
+                        JobCommon2.updateTaskLog(t2, tlim);
                     }
 
-                    t2.setExecutor(zdhHaInfo.getId());
-                    t2.setUrl(new_url);
-                    t2.setUpdate_time(new Timestamp(System.currentTimeMillis()));
-                    JobCommon2.updateTaskLog(t2, tlim);
                 }
 
             }

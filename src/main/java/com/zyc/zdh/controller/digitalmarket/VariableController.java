@@ -3,6 +3,7 @@ package com.zyc.zdh.controller.digitalmarket;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
+import com.zyc.zdh.dao.LabelMapper;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.shiro.RedisUtil;
@@ -26,6 +27,8 @@ public class VariableController extends BaseController {
 
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private LabelMapper labelMapper;
 
     /**
      * 变量首页
@@ -59,7 +62,6 @@ public class VariableController extends BaseController {
             logger.error(error, e);
             return ReturnInfo.buildError("变量查询失败", e);
         }
-
     }
 
     /**
@@ -112,6 +114,31 @@ public class VariableController extends BaseController {
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+        }
+    }
+
+    /**
+     * 查询所有变量
+     * @param product_code 产品
+     * @param uid 用户id
+     * @return
+     */
+    @SentinelResource(value = "variable_all", blockHandler = "handleReturn")
+    @RequestMapping(value = "/variable_all", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<Map> variable_all(String product_code, String uid) {
+        try{
+            String variable_uid=product_code+"_tag_"+uid;
+
+            //根据product_code获取所有变量
+
+            Map<Object, Object> variable= redisUtil.getRedisTemplate().opsForHash().entries(variable_uid);
+
+            return ReturnInfo.buildSuccess(variable);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("变量查询失败", e);
         }
     }
 

@@ -7,13 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH etl jdbc 任务首页</title>
-    <meta name="keywords" content="ZDH etl jdbc 任务首页">
-    <meta name="description" content="ZDH etl jdbc 任务首页">
+    <title>ZDH 客户画像首页</title>
+    <meta name="keywords" content="ZDH 客户画像首页">
+    <meta name="description" content="ZDH 客户画像首页">
 
     <link rel="shortcut icon" href="img/favicon.ico">
-    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
@@ -27,7 +27,7 @@
         <!-- Panel Other -->
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>ETL JDBC配置列表</h5>
+                <h5>变量操作</h5>
                 <div class="ibox-tools">
                     <a class="collapse-link">
                         <i class="fa fa-chevron-up"></i>
@@ -43,27 +43,20 @@
             </div>
             <div class="ibox-content">
 
-                <form role="form" class="form-inline" id="etl_task_form">
+                <form role="form" class="form-inline" id="variable_form">
 
                     <div class="form-group">
-                        <div class="input-group">
+                        <div class="input-group" >
                             <select id="product_code" name="product_code"
                                     data-placeholder="产品code...."
                                     class="chosen-select form-control m-b" >
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <select id="dim_group" name="dim_group"
-                                    data-placeholder="归属组code...."
-                                    class="chosen-select form-control m-b" >
-                            </select>
-                        </div>
-                    </div>
+
                     <div class="form-group">
                         <div class="input-group" >
-                            <input id="etl_context" name="etl_context" class="form-control" type="text" value="" placeholder="关键字">
+                            <input id="uid" name="uid" class="form-control" type="text" value="" placeholder="用户账号">
                             <span class="add-on"><i class="icon-remove"></i></span>
                             <span class="add-on"><i class="icon-calendar"></i></span>
                         </div>
@@ -73,33 +66,25 @@
                         <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
                     </div>
 
+                    <br/>
+
+
+
                 </form>
 
+                <div class="form-group"></div>
                 <div class="row row-lg">
+                    <div class="form-group col-sm-12">
+                                                <textarea id="variable_data"
+                                                          class="form-control" rows="5"
+                                                          placeholder=""></textarea>
+                    </div>
 
-                    <div class="col-sm-12">
-                        <!-- Example Events -->
-                        <div class="example-wrap">
-                                <div class="btn-group" id="exampleTableEventsToolbar" role="group">
-                                    <button id="add" type="button" class="btn btn-outline btn-default">
-                                        <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
-                                    </button>
-                                    <button id="remove" type="button" class="btn btn-outline btn-default">
-                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true">
-
-                                </table>
-                            </div>
-                        </div>
-                        <!-- End Example Events -->
                 </div>
             </div>
         </div>
-    </div>
         <!-- End Panel Other -->
-<!--    </div>-->
+    </div>
 
     <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
@@ -112,30 +97,38 @@
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
 
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
     <!-- Bootstrap table -->
     <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+
+<!--    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>-->
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
-    <script src="js/plugins/chosen/chosen.jquery.js"></script>
-
     <script src="js/admin/dim_product_common.js"></script>
-    <script src="js/admin/dim_group_common.js"></script>
-
-    <!-- Peity -->
-    <script src="js/etl/etl_task_jdbc.js"></script>
 
 <script>
 
     $(document).ready(function () {
 
         $('#search').click(function () {
-            $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: server_context+"/etl_task_jdbc_list?"+$("#etl_task_form").serialize(),
-                contentType: "application/json;charset=utf-8",
-                dataType: "json"
+            $("#variable_data").val("");
+            $.ajax({
+                url : server_context +"/customer_portrait_detail",
+                data : $('#variable_form').serialize(),
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+                    console.info("success");
+                    $("#variable_data").val(JSON.stringify(data.result));
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
             });
         });
+
     })
 
 

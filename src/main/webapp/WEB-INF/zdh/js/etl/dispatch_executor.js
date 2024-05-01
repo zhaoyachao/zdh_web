@@ -100,7 +100,7 @@
         function operateFormatter2(value, row, index) {
 
             return [
-                ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+                ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
 
                 ' <button id="offline" name="offline" type="button" class="btn btn-outline btn-sm">' + '下线' + '<i class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></i>\n' +
                 '                                    </button>',

@@ -107,7 +107,7 @@ public class LabelInfo {
     private String label_data_update_time;
 
     /**
-     * 1:新建,2:启用,3:禁用
+     * 1:发布,2:未发布
      */
     private String status;
 

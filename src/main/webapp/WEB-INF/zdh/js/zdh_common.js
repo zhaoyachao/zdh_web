@@ -11,6 +11,7 @@ function is_empty(data){
 function guid3() {
     return $.ajax({
         url: server_context+"/get_id",
+        cache: false,
         async: false
     }).responseText;
 }

@@ -344,7 +344,7 @@
 
         function operateFormatter(value, row, index) {
             return [
-                ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+                ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
                 ' <button id="execute" name="execute" type="button" class="btn btn-outline btn-sm" title="手动执行">\n' +
                 '                                        <i class="glyphicon glyphicon-play" aria-hidden="true"></i>\n' +
                 '                                    </button>',
@@ -369,7 +369,7 @@
             }
 
             return [
-                ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+                ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
 
                 ' <button id="execute_quartz" name="execute_quartz" type="button" class="btn btn-outline btn-sm">调度\n' +
 

@@ -136,7 +136,7 @@ function buildTable($el, cells, rows) {
 
       function operateFormatter(value, row, index) {
           return [
-              ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+              ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="search" name="search" type="button" class="btn btn-outline btn-sm" title="查看"><i class="glyphicon glyphicon-search" aria-hidden="true"></i>\n' +
               '                                    </button>'
               +

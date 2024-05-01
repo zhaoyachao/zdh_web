@@ -139,19 +139,45 @@
               }, function(){
 
               });
-          }
+          },
+          'click #edit_value': function (e, value, row, index) {
+              top.layer.open({
+                  type: 2,
+                  title: '新增过滤值',
+                  shadeClose: false,
+                  resize: true,
+                  fixed: false,
+                  maxmin: true,
+                  shade: 0.1,
+                  area : ['100%', '100%'],
+                  //area: ['450px', '500px'],
+                  content: server_context+"/filter_add_value_index?id="+row.id, //iframe的url
+                  end:function () {
+                      $('#exampleTableEvents').bootstrapTable('refresh', {
+                          url: server_context+"/filter_list?"+$("#filter_form").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
+                      });
+                  }
+              });
+          },
+
       };
 
       function operateFormatter(value, row, index) {
           return [
-              ' <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">' +
+              ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="copy" name="copy" type="button" class="btn btn-outline btn-sm" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="edit_value" name="edit_value" type="button" class="btn btn-outline btn-sm" title="新增过滤值">\n' +
+              '                                        <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>\n' +
               '                                    </button>'
+
                +
               '</div>'
 
@@ -234,7 +260,7 @@
             sortable:false
         }, {
             field: 'filter_name',
-            title: '过滤说明',
+            title: '过滤名称',
             sortable:false
         }, {
             field: 'create_time',

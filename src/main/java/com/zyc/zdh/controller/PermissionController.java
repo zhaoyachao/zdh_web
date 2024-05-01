@@ -1464,6 +1464,16 @@ public class PermissionController extends BaseController {
         }
     }
 
+    /**
+     * 图标页
+     * @return
+     */
+    @RequestMapping(value = "/fontawesome", method = RequestMethod.GET)
+    public String fontawesome() {
+
+        return "admin/fontawesome";
+    }
+
 
     private void debugInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();
