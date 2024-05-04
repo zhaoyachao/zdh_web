@@ -236,7 +236,12 @@ public class LabelController extends BaseController {
             if(param_code==null || param_code.length<1){
                throw new Exception("参数不可为空");
             }
-            if(StringUtils.isEmpty(labelInfo.getData_sources_choose_input())){
+
+            if(StringUtils.isEmpty(labelInfo.getLabel_use_type())){
+                throw new Exception("标签使用场景不可为空");
+            }
+
+            if(labelInfo.getLabel_use_type().equalsIgnoreCase("batch") && StringUtils.isEmpty(labelInfo.getData_sources_choose_input())){
                 throw new Exception("数据源参数不可为空");
             }
             checkParam(labelInfo.getLabel_code(),"标签名");

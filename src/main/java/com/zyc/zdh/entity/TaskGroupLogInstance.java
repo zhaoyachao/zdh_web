@@ -64,7 +64,7 @@ public class TaskGroupLogInstance implements Serializable {
 
     private String last_task_log_id;
 
-    private String more_task;//多源任务 值：多源ETL,单源ETL,SQL
+    private String more_task;//多源任务 值：MORE_ETL,ETL,SQL
     private String job_type;// 任务类型,SHELL,FTP,CLASS
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")

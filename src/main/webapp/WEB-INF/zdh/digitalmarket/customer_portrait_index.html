@@ -79,8 +79,15 @@
                                                           class="form-control" rows="5"
                                                           placeholder=""></textarea>
                     </div>
+                    <div class="form-group"></div>
 
+                    <div class="form-group col-sm-12" id="data_div">
+
+                    </div>
                 </div>
+
+
+
             </div>
         </div>
         <!-- End Panel Other -->
@@ -109,6 +116,14 @@
 
 <script>
 
+    var template = "                        <div class=\"form-group\">\n" +
+        "                            <label class=\"col-sm-2 control-label\">label_name</label>\n" +
+        "\n" +
+        "                            <div class=\"col-sm-10\">\n" +
+        "                                <input type=\"text\" class=\"form-control\" value='label_value' readonly>\n" +
+        "                            </div>\n" +
+        "                        </div>";
+
     $(document).ready(function () {
 
         $('#search').click(function () {
@@ -120,7 +135,20 @@
                 dataType : "json",
                 success : function(data) {
                     console.info("success");
+                    if(data.code != "200"){
+                        return ;
+                    }
                     $("#variable_data").val(JSON.stringify(data.result));
+
+                    $("#data_div").empty();
+                    //动态生成页面
+                    for(var i = 0; i < data.result.length; i ++){
+                        var new_template = template.replace("label_name", data.result[i].label_name).replace("label_value", data.result[i].label_value);
+                        $("#data_div").append(new_template);
+                        $("#data_div").append(" <div class=\"form-group\" style='height: 10px'></div>");
+                    }
+
+
                 },
                 error: function (data) {
                     console.info("error: " + data.responseText);

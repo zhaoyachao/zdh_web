@@ -573,7 +573,7 @@ public class JobCommon2 {
             }
 
 
-            if (etlDroolsTaskInfo.getMore_task().equalsIgnoreCase("单源ETL")) {
+            if (etlDroolsTaskInfo.getMore_task().equalsIgnoreCase("ETL")) {
                 //解析Drools任务中的单任务
                 String etl_id = etlDroolsTaskInfo.getEtl_id();
                 //获取etl 任务信息
@@ -608,7 +608,7 @@ public class JobCommon2 {
                 zdhDroolsInfo.setZdhDroolsInfo(dataSourcesInfoInput, etlTaskInfo, dataSourcesInfoOutput, tli, etlDroolsTaskInfo);
             }
 
-            if (etlDroolsTaskInfo.getMore_task().equalsIgnoreCase("多源ETL")) {
+            if (etlDroolsTaskInfo.getMore_task().equalsIgnoreCase("MOER_ETL")) {
                 //获取多源任务id
                 EtlMoreTaskInfo etlMoreTaskInfo = etlMoreTaskMapper.selectByPrimaryKey(etlDroolsTaskInfo.getEtl_id());
                 zdhDroolsInfo.setEtlMoreTaskInfo(etlMoreTaskInfo);

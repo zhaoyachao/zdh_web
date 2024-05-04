@@ -1,6 +1,7 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.LabelMapper;
@@ -8,6 +9,7 @@ import com.zyc.zdh.entity.LabelInfo;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -54,7 +58,7 @@ public class CustomerManageController extends BaseController {
     @SentinelResource(value = "customer_portrait_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/customer_portrait_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<Map> variable_detail(String product_code, String uid) {
+    public ReturnInfo<Collection<Object>> variable_detail(String product_code, String uid) {
         try{
             LabelInfo labelInfo = new LabelInfo();
             labelInfo.setIs_delete(Const.NOT_DELETE);
@@ -71,17 +75,34 @@ public class CustomerManageController extends BaseController {
             Map<Object, Object> variable= redisUtil.getRedisTemplate().opsForHash().entries(variable_uid);
             if(variable != null && variable.size()>0){
 
-
                 for (Object key: variable.keySet()){
                     String value = variable.get(key).toString();
                     JSONObject jsonObject = JSONObject.parseObject(value);
+                    String label_value = "";
                     if(labelInfoMap.containsKey(key.toString())){
                         jsonObject.put("label_name", labelInfoMap.get(key.toString()).getLabel_context());
+                        JSONArray jsonArray = labelInfoMap.get(key.toString()).getParam_json_object();
+                        if(jsonArray.size()>0){
+                            for (Object jobject: jsonArray){
+                                String param_code = ((JSONObject)jobject).getString("param_code");
+                                String param_name = ((JSONObject)jobject).getString("param_context");
+                                if(StringUtils.isEmpty(label_value)){
+                                    label_value = param_name+" : "+ jsonObject.getString(param_code);
+                                }else{
+                                    label_value = label_value + " " + param_name + " : "+ jsonObject.getString(param_code);
+                                }
+                            }
+                        }
                     }
+                    jsonObject.put("label_value",label_value);
+                    jsonObject.put("label_code", key.toString());
                     variable.put(key, jsonObject);
                 }
             }
-            return ReturnInfo.buildSuccess(variable);
+
+            List<String> keys = variable.keySet().stream().map(o->(String)o.toString()).collect(Collectors.toList());
+            Collections.sort(keys);
+            return ReturnInfo.buildSuccess(keys.stream().map(key->variable.get(key)).collect(Collectors.toList()));
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);

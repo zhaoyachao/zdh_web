@@ -63,6 +63,18 @@
                     </div>
 
                     <div class="form-group">
+                        <div class="input-group">
+                            <select id="label_use_type" name="label_use_type"
+                                    data-placeholder="使用场景,默认不区分...."
+                                    class="chosen-select form-control m-b" >
+                                <option value="" mytype="">不  区  分</option>
+                                <option value="batch" mytype="">值查人</option>
+                                <option value="single" mytype="">人查值</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
                     </div>
 
@@ -123,6 +135,8 @@
 <script>
 
     $(document).ready(function () {
+
+        $('#label_use_type').chosen();
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {

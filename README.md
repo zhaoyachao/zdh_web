@@ -38,6 +38,7 @@
   - [5.3.0迁移5.3.1](#530%E8%BF%81%E7%A7%BB531)
   - [5.3.1迁移5.3.2](#531%E8%BF%81%E7%A7%BB532)
   - [5.3.2迁移5.3.3](#532%E8%BF%81%E7%A7%BB533)
+  - [5.3.3迁移5.3.4](#533%E8%BF%81%E7%A7%BB534)
 - [未完成的功能](#%E6%9C%AA%E5%AE%8C%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD)
 - [支持的数据源](#%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E6%BA%90)
 - [支持的调度对象](#%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E5%BA%A6%E5%AF%B9%E8%B1%A1)
@@ -791,6 +792,7 @@
   + v5.3.3 [zdh_magic_mirror] 修复内存泄漏bug
   
   + v5.3.4 [zdh_web]修复调度etl对象复制bug
+  + v5.3.4 [zdh_web]etl任务,单源ETL,多源ETL更改枚举ETL,MORE_ETL
   + v5.3.4 [zdh_web]优化营销模块展示配置
   + v5.3.4 [zdh_magic_mirror]优化function模块
   + v5.3.4 [zdh_web]etl任务新增队列方式,优化excutor重试机制,增加有效时间内重试限制
@@ -3240,6 +3242,9 @@
     INSERT INTO resource_tree_info
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1235194291270193152, '1235190696558727168', '客户画像查询', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-05-01 11:41:08', '2024-05-01 11:41:08', 'customer_portrait_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1236335694494830592, '1235190179082276864', '客户列表', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2024-05-04 15:16:40', '2024-05-04 15:16:40', 'customer_manager_index', '2', '', '', 'zdh', '');
 
 
 
