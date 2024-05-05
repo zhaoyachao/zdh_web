@@ -4,6 +4,7 @@
 
 - [READ MORE](#read-more)
 - [数据采集,处理,监控,调度,管理一体化平台](#%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86%E5%A4%84%E7%90%86%E7%9B%91%E6%8E%A7%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86%E4%B8%80%E4%BD%93%E5%8C%96%E5%B9%B3%E5%8F%B0)
+- [整体系统层次图](#%E6%95%B4%E4%BD%93%E7%B3%BB%E7%BB%9F%E5%B1%82%E6%AC%A1%E5%9B%BE)
 - [项目模块划分](#%E9%A1%B9%E7%9B%AE%E6%A8%A1%E5%9D%97%E5%88%92%E5%88%86)
 - [开源/闭源版本](#%E5%BC%80%E6%BA%90%E9%97%AD%E6%BA%90%E7%89%88%E6%9C%AC)
 - [下载编译包](#%E4%B8%8B%E8%BD%BD%E7%BC%96%E8%AF%91%E5%8C%85)
@@ -19,7 +20,6 @@
 - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
 - [主要功能](#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD)
 - [用到的技术体系](#%E7%94%A8%E5%88%B0%E7%9A%84%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB)
-- [功能图](#%E5%8A%9F%E8%83%BD%E5%9B%BE)
 - [版本更新说明](#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0%E8%AF%B4%E6%98%8E)
 - [版本迁移步骤](#%E7%89%88%E6%9C%AC%E8%BF%81%E7%A7%BB%E6%AD%A5%E9%AA%A4)
   - [4.7.15迁移4.7.16](#4715%E8%BF%81%E7%A7%BB4716)
@@ -69,6 +69,9 @@
    + 本平台的初衷及目的尽量减少开发者的工作量及降低数据开发者的使用门槛
    + 基于当前大数据平台开发智能营销系统
    + 记录平时工作中遇到的挑战
+   
+# 整体系统层次图
+![功能图](img/zdh_web.png)
    
 # 项目模块划分
       项目涉及方向较多,技术杂乱
@@ -192,9 +195,8 @@
   + 质量检测
   + 元数据,指标管理
   + drools灵活动态的数据清洗(废弃)
-  
-  
-  
+
+
 # 主要功能
  zdh 主要的作用 是从hdfs,hive,jdbc,http-json接口 等数据源拉取数据,并转存到hdfs,hive,jdbc等其他数据源
  支持集群式部署
@@ -222,10 +224,7 @@
     前端：Bootstrap
     后端：Springboot+shiro+redis+mybatis
     数据ETL引擎:Spark(hadoop,hive 可选择部署)
-    
-  
-# 功能图
-![功能图](img/zdh_web.png)  
+
   
 # 版本更新说明
   + v1.0 支持常用数据jdbc,hive,kafka,http,flume,redis,es,kudu,mongodb,hbase,cassandra,hdfs(csv,json,orc,parquet,xml,excel...),本地上传数据(csv)
