@@ -128,6 +128,9 @@
         
     4 修改application-*配置文件中myid(多个服务依次1,2,3,...)
        对应参数myid=1
+       
+    5 修改bin/start.sh  bin/zdh_web.sh 脚本RUN_MODE参数用于选择配置文件
+       此步骤最为重要,不可缺少, 默认RUN_MODE=prod 使用application-prod配置文件
     
 ## 源码编译
     sh build.sh
