@@ -112,6 +112,8 @@
                             <div class="col-sm-10">
                                 <select id="return_value_type" name="return_value_type" data-placeholder=""
                                         class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="void" mytype="" selected>无返回值</option>
+                                    <option value="bool" mytype="" selected>布尔值</option>
                                     <option value="string" mytype="" selected>字符串</option>
                                     <option value="long" mytype="" >数值</option>
                                     <option value="double" mytype="">小数</option>
@@ -138,7 +140,7 @@
                             <label class="col-sm-2 control-label">对比值</label>
                             <div class="col-sm-10">
                                 <input id="return_operate_value" name="return_operate_value" type="text"
-                                       placeholder="默认为空,对比操作 取值表达式输入值和当前值对比 " class="form-control" aria-required="true" value="">
+                                       placeholder="默认为空,对比操作 根据取值表达式获取的结果和当前输入值对比 " class="form-control" aria-required="true" value="">
                             </div>
                         </div>
 
