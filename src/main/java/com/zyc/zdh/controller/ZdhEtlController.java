@@ -57,6 +57,18 @@ public class ZdhEtlController extends BaseController{
     private EtlTaskMapper etlTaskMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
+
+
+    /**
+     * 系统参数
+     * @return
+     */
+    @RequestMapping("/system_params_index")
+    public String system_params() {
+
+        return "etl/system_params_index";
+    }
+
     /**
      * 单源ETL首页
      * @return

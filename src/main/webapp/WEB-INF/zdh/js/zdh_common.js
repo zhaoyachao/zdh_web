@@ -154,3 +154,17 @@ function getBrowserType(){
     }
     return browser;
 }
+
+function system_params() {
+
+    parent.layer.open({
+        type: 2,
+        shade: false,
+        title: false, //不显示标题
+        area: ["80%", "90%"],
+        content: server_context+"/system_params_index", //捕获的元素
+        cancel: function (index) {
+            layer.close(index);
+        }
+    });
+}

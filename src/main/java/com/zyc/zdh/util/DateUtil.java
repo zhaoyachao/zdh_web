@@ -43,6 +43,21 @@ public class DateUtil {
     }
 
     /**
+     *
+     * @param start
+     * @param format
+     * @param dateType
+     * @param num
+     * @return
+     */
+    public static Timestamp add(String start, String format,int dateType,int num){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(pase(start, format).getTime());
+        beginDate.add(dateType, num);
+        return new Timestamp(beginDate.getTimeInMillis());
+    }
+
+    /**
      * 天级处理
      * @param start
      * @param num
@@ -77,6 +92,49 @@ public class DateUtil {
     public static Timestamp addMinute(String start,Integer num){
         Calendar beginDate = Calendar.getInstance();
         beginDate.setTimeInMillis(Timestamp.valueOf(start).getTime());
+        beginDate.add(Calendar.MINUTE, num);
+        return new Timestamp(beginDate.getTimeInMillis());
+    }
+
+
+    /**
+     * 天级处理
+     * @param start
+     * @param format
+     * @param num
+     * @return
+     */
+    public static Timestamp addDay(String start, String format,Integer num){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(pase(start, format).getTime());
+        beginDate.add(Calendar.DATE, num);
+        return new Timestamp(beginDate.getTimeInMillis());
+    }
+
+    /**
+     * 小时级处理
+     * @param start
+     * @param format
+     * @param num
+     * @return
+     */
+    public static Timestamp addHour(String start, String format,Integer num){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(pase(start, format).getTime());
+        beginDate.add(Calendar.HOUR_OF_DAY, num);
+        return new Timestamp(beginDate.getTimeInMillis());
+    }
+
+    /**
+     * 分钟级处理
+     * @param start
+     * @param format
+     * @param num
+     * @return
+     */
+    public static Timestamp addMinute(String start, String format,Integer num){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(pase(start, format).getTime());
         beginDate.add(Calendar.MINUTE, num);
         return new Timestamp(beginDate.getTimeInMillis());
     }
@@ -125,38 +183,129 @@ public class DateUtil {
         }
     }
 
+    /**
+     * 返回yyyyy格式
+     * @param date
+     * @return
+     */
     public static String year(Date date) {
         return format(date).substring(0, 4);
     }
 
+    /**
+     * 返回月份,1,2,3,..,12
+     * @param date
+     * @return
+     */
     public static int month(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar.get(Calendar.MONTH) + 1;
     }
 
+    /**
+     * 返回月份01,02,03,...,12
+     * @param date
+     * @return
+     */
+    public static String monthx(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int month = calendar.get(Calendar.MONTH) + 1;
+
+        return month>=10?String.valueOf(month):"0"+month;
+    }
+
+    /**
+     * 返回1,2,3,...,30,31
+     * @param date
+     * @return
+     */
     public static int day(Timestamp date){
         Calendar beginDate = Calendar.getInstance();
         beginDate.setTimeInMillis(date.getTime());
         return beginDate.get(Calendar.DAY_OF_MONTH);
     }
 
+    /**
+     * 返回01,02,03,...,30,31
+     * @param date
+     * @return
+     */
+    public static String dayx(Timestamp date){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(date.getTime());
+        int day = beginDate.get(Calendar.DAY_OF_MONTH);
+        return day>=10?String.valueOf(day):"0"+day;
+    }
+
+    /**
+     * 返回0,1,2...,21,22,23
+     * @param date
+     * @return
+     */
     public static int hour(Timestamp date){
         Calendar beginDate = Calendar.getInstance();
         beginDate.setTimeInMillis(date.getTime());
         return beginDate.get(Calendar.HOUR_OF_DAY);
     }
 
+    /**
+     * 返回00,,01,02,...,21,22,23
+     * @param date
+     * @return
+     */
+    public static String hourx(Timestamp date){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(date.getTime());
+        int hour = beginDate.get(Calendar.HOUR_OF_DAY);
+        return hour>=10?String.valueOf(hour):"0"+hour;
+    }
+
+    /**
+     * 返回0,1,2...,58,59
+     * @param date
+     * @return
+     */
     public static int minute(Timestamp date){
         Calendar beginDate = Calendar.getInstance();
         beginDate.setTimeInMillis(date.getTime());
         return beginDate.get(Calendar.MINUTE);
     }
 
+    /**
+     * 返回0,1,2...,58,59
+     * @param date
+     * @return
+     */
+    public static String minutex(Timestamp date){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(date.getTime());
+        int minute = beginDate.get(Calendar.MINUTE);
+        return minute>=10?String.valueOf(minute):"0"+minute;
+    }
+
+    /**
+     * 返回0,1,2,...,58,59
+     * @param date
+     * @return
+     */
     public static int second(Timestamp date){
         Calendar beginDate = Calendar.getInstance();
         beginDate.setTimeInMillis(date.getTime());
         return beginDate.get(Calendar.SECOND);
+    }
+
+    /**
+     * 返回00,01,02,...,58,59
+     * @param date
+     * @return
+     */
+    public static String secondx(Timestamp date){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(date.getTime());
+        int second = beginDate.get(Calendar.SECOND);
+        return second>=10?String.valueOf(second):"0"+second;
     }
 
 }

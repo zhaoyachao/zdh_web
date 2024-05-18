@@ -802,6 +802,8 @@
   + v5.3.4 [zdh_web]权限管理-优化图标库展示
   + v5.3.4 [zdh_web]优化告警模块,新增语法例子
   + v5.3.4 [zdh_web]新增客户管理-客户画像
+  + v5.3.4 [zdh_web]etl模块优化系统内置参数
+  + v5.3.4 [zdh_web]新增系统内置参数说明页面
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
@@ -3247,6 +3249,9 @@
     INSERT INTO resource_tree_info
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1236335694494830592, '1235190179082276864', '客户列表', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2024-05-04 15:16:40', '2024-05-04 15:16:40', 'customer_manager_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1241379329280053248, '802918760057933824', '查询系统参数', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2024-05-18 13:18:16', '2024-05-18 13:18:16', 'system_params_index', '3', '', '', 'zdh', '');
 
 
 

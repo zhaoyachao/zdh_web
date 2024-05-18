@@ -1259,8 +1259,8 @@ public class JobCommon2 {
      */
     public static Map<String, Object> getJinJavaParam(TaskLogInstance tli) {
         String msg = "目前支持日期参数以下模式: {{zdh_date}} => yyyy-MM-dd ,{{zdh_date_nodash}}=> yyyyMMdd " +
-                ",{{zdh_date_time}}=> yyyy-MM-dd HH:mm:ss,{{zdh_year}}=> 年,{{zdh_month}}=> 月,{{zdh_day}}=> 日," +
-                "{{zdh_hour}}=>24小时制,{{zdh_minute}}=>分钟,{{zdh_second}}=>秒,{{zdh_time}}=>时间戳";
+                ",{{zdh_date_time}}=> yyyy-MM-dd HH:mm:ss,{{zdh_year}}=> yyyy年,{{zdh_month}}=> 月,{{zdh_day}}=> 日," +
+                "{{zdh_hour}}=>24小时制,{{zdh_minute}}=>分钟,{{zdh_second}}=>秒,{{zdh_time}}=>时间戳, 更多参数可参考【系统内置参数】点击链接查看具体使用例子";
         logger.info(msg);
         insertLog(tli, "info", msg);
         Timestamp cur_time = tli.getCur_time();
@@ -1277,6 +1277,12 @@ public class JobCommon2 {
         jinJavaParam.put("zdh_hour", DateUtil.hour(cur_time));
         jinJavaParam.put("zdh_minute", DateUtil.minute(cur_time));
         jinJavaParam.put("zdh_second", DateUtil.second(cur_time));
+        jinJavaParam.put("zdh_monthx", DateUtil.monthx(cur_time));
+        jinJavaParam.put("zdh_dayx", DateUtil.dayx(cur_time));
+        jinJavaParam.put("zdh_hourx", DateUtil.hourx(cur_time));
+        jinJavaParam.put("zdh_minutex", DateUtil.minutex(cur_time));
+        jinJavaParam.put("zdh_secondx", DateUtil.secondx(cur_time));
+
         jinJavaParam.put("zdh_time", cur_time.getTime());
         jinJavaParam.put("zdh_task_log_id", tli.getId());
 
@@ -1300,7 +1306,7 @@ public class JobCommon2 {
             jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "pase",
                     DateUtil.class, "pase", String.class, String.class));
 
-            String msg = "目前支持日期操作: {{add_day('2021-12-01 00:00:00', 1)}} => 2021-12-02 00:00:00 ,{{add_hour('2021-12-01 00:00:00', 1)}} => 2021-12-01 01:00:00,{{add_minute('2021-12-01 00:00:00', 1)}} => 2021-12-01 00:01:00";
+            String msg = "目前支持日期操作: {{add_day('2021-12-01 00:00:00', 1)}} => 2021-12-02 00:00:00 ,{{add_hour('2021-12-01 00:00:00', 1)}} => 2021-12-01 01:00:00,{{add_minute('2021-12-01 00:00:00', 1)}} => 2021-12-01 00:01:00, 更多高级函数, 可参考【系统内置参数】点击链接查看具体使用例子";
             logger.info(msg);
             insertLog(tli, "info", msg);
 
@@ -1319,12 +1325,23 @@ public class JobCommon2 {
                     final String file_name2 = jj.render(etlTaskInfo.getData_sources_file_name_output(), jinJavaParam);
                     final String table_name = jj.render(etlTaskInfo.getData_sources_table_name_input(), jinJavaParam);
                     final String table_name2 = jj.render(etlTaskInfo.getData_sources_table_name_output(), jinJavaParam);
+                    if(!StringUtils.isEmpty(etlTaskInfo.getData_sources_params_input())){
+                        final String params_input = jj.render(etlTaskInfo.getData_sources_params_input(), jinJavaParam);
+                        etlTaskInfo.setData_sources_params_input(params_input);
+                    }
+                    if(StringUtils.isEmpty(etlTaskInfo.getData_sources_params_output())){
+                        final String params_output = jj.render(etlTaskInfo.getData_sources_params_output(), jinJavaParam);
+                        etlTaskInfo.setData_sources_params_output(params_output);
+                    }
+
                     etlTaskInfo.setData_sources_filter_input(filter);
                     etlTaskInfo.setData_sources_clear_output(clear);
                     etlTaskInfo.setData_sources_file_name_input(file_name);
                     etlTaskInfo.setData_sources_file_name_output(file_name2);
                     etlTaskInfo.setData_sources_table_name_input(table_name);
                     etlTaskInfo.setData_sources_table_name_output(table_name2);
+
+
                 }
             }
 
@@ -1336,10 +1353,20 @@ public class JobCommon2 {
                     final String file_name = jj.render(sqlTaskInfo.getData_sources_file_name_output(), jinJavaParam);
                     final String table_name = jj.render(sqlTaskInfo.getData_sources_table_name_output(), jinJavaParam);
 
+                    if(!StringUtils.isEmpty(sqlTaskInfo.getData_sources_params_input())){
+                        final String params_input = jj.render(sqlTaskInfo.getData_sources_params_input(), jinJavaParam);
+                        sqlTaskInfo.setData_sources_params_input(params_input);
+                    }
+                    if(!StringUtils.isEmpty(sqlTaskInfo.getData_sources_params_output())){
+                        final String params_output = jj.render(sqlTaskInfo.getData_sources_params_output(), jinJavaParam);
+                        sqlTaskInfo.setData_sources_params_output(params_output);
+                    }
                     sqlTaskInfo.setEtl_sql(etl_sql);
                     sqlTaskInfo.setData_sources_clear_output(clear);
                     sqlTaskInfo.setData_sources_file_name_output(file_name);
                     sqlTaskInfo.setData_sources_table_name_output(table_name);
+
+
 
                 }
             }
@@ -1364,6 +1391,11 @@ public class JobCommon2 {
                     final String script_context = jj.render(sshTaskInfo.getSsh_script_context(), jinJavaParam);
                     sshTaskInfo.setSsh_script_context(script_context);
 
+                    if(!StringUtils.isEmpty(sshTaskInfo.getSsh_params_input())){
+                        final String params_input = jj.render(sshTaskInfo.getSsh_params_input(), jinJavaParam);
+                        sshTaskInfo.setSsh_params_input(params_input);
+                    }
+
                 }
             }
             if (taskInfo instanceof EtlApplyTaskInfo) {
@@ -1381,6 +1413,16 @@ public class JobCommon2 {
                     etlApplyTaskInfo.setData_sources_file_name_output(file_name2);
                     etlApplyTaskInfo.setData_sources_table_name_input(table_name);
                     etlApplyTaskInfo.setData_sources_table_name_output(table_name2);
+
+                    if(!StringUtils.isEmpty(etlApplyTaskInfo.getData_sources_params_input())){
+                        final String params_input = jj.render(etlApplyTaskInfo.getData_sources_params_input(), jinJavaParam);
+                        etlApplyTaskInfo.setData_sources_params_input(params_input);
+                    }
+                    if(!StringUtils.isEmpty(etlApplyTaskInfo.getData_sources_params_output())){
+                        final String params_output = jj.render(etlApplyTaskInfo.getData_sources_params_output(), jinJavaParam);
+                        etlApplyTaskInfo.setData_sources_params_output(params_output);
+                    }
+
                 }
 
             }
@@ -1391,6 +1433,12 @@ public class JobCommon2 {
                     final String command = jj.render(etlTaskFlinkInfo.getCommand(), jinJavaParam);
                     etlTaskFlinkInfo.setEtl_sql(etl_sql);
                     etlTaskFlinkInfo.setCommand(command);
+
+                    if(!StringUtils.isEmpty(etlTaskFlinkInfo.getData_sources_params_input())){
+                        final String params_input = jj.render(etlTaskFlinkInfo.getData_sources_params_input(), jinJavaParam);
+                        etlTaskFlinkInfo.setData_sources_params_input(params_input);
+                    }
+
                 }
             }
             if (taskInfo instanceof EtlTaskJdbcInfo) {
@@ -1405,6 +1453,12 @@ public class JobCommon2 {
                     etlTaskJdbcInfo.setData_sources_clear_output(clear);
                     etlTaskJdbcInfo.setData_sources_file_name_output(file_name);
                     etlTaskJdbcInfo.setData_sources_table_name_output(table_name);
+
+                    if(!StringUtils.isEmpty(etlTaskJdbcInfo.getData_sources_params_output())){
+                        final String params_output = jj.render(etlTaskJdbcInfo.getData_sources_params_output(), jinJavaParam);
+                        etlTaskJdbcInfo.setData_sources_params_output(params_output);
+                    }
+
                 }
             }
 
@@ -1427,6 +1481,11 @@ public class JobCommon2 {
                     qualityTaskInfo.setData_sources_file_name_input(file_name);
                     qualityTaskInfo.setData_sources_table_name_input(table_name);
                     qualityTaskInfo.setQuality_rule_config(quality_rule_config);
+
+                    if(!StringUtils.isEmpty(qualityTaskInfo.getData_sources_params_input())){
+                        final String params_input = jj.render(qualityTaskInfo.getData_sources_params_input(), jinJavaParam);
+                        qualityTaskInfo.setData_sources_params_input(params_input);
+                    }
                 }
             }
 
@@ -1437,6 +1496,11 @@ public class JobCommon2 {
                     final String output_path = jj.render(etlTaskUnstructureInfo.getOutput_path(), jinJavaParam);
                     etlTaskUnstructureInfo.setInput_path(input_path);
                     etlTaskUnstructureInfo.setOutput_path(output_path);
+
+                    if(!StringUtils.isEmpty(etlTaskUnstructureInfo.getUnstructure_params_output())){
+                        final String params_output = jj.render(etlTaskUnstructureInfo.getUnstructure_params_output(), jinJavaParam);
+                        etlTaskUnstructureInfo.setUnstructure_params_output(params_output);
+                    }
                 }
             }
 
@@ -1453,6 +1517,15 @@ public class JobCommon2 {
                     etlTaskDataxAutoInfo.setData_sources_clear_output(clear);
                     etlTaskDataxAutoInfo.setData_sources_table_name_input(table_name);
                     etlTaskDataxAutoInfo.setData_sources_table_name_output(table_name2);
+
+                    if(!StringUtils.isEmpty(etlTaskDataxAutoInfo.getData_sources_params_input())){
+                        final String params_input = jj.render(etlTaskDataxAutoInfo.getData_sources_params_input(), jinJavaParam);
+                        etlTaskDataxAutoInfo.setData_sources_params_input(params_input);
+                    }
+                    if(!StringUtils.isEmpty(etlTaskDataxAutoInfo.getData_sources_params_output())){
+                        final String params_output = jj.render(etlTaskDataxAutoInfo.getData_sources_params_output(), jinJavaParam);
+                        etlTaskDataxAutoInfo.setData_sources_params_output(params_output);
+                    }
                 }
             }
 
@@ -1461,6 +1534,11 @@ public class JobCommon2 {
                 if (etlTaskKettleInfo != null) {
                     final String kettle_repository_path = jj.render(etlTaskKettleInfo.getKettle_repository_path(), jinJavaParam);
                     etlTaskKettleInfo.setKettle_repository_path(kettle_repository_path);
+
+                    if(!StringUtils.isEmpty(etlTaskKettleInfo.getData_sources_params_input())){
+                        final String params_input = jj.render(etlTaskKettleInfo.getData_sources_params_input(), jinJavaParam);
+                        etlTaskKettleInfo.setData_sources_params_input(params_input);
+                    }
                 }
             }
 
