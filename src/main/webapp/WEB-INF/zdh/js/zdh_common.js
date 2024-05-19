@@ -168,3 +168,21 @@ function system_params() {
         }
     });
 }
+
+function open_fontawesome(){
+    parent.layer.open({
+        type: 2,
+        title: '图标库',
+        shadeClose: false,
+        resize: true,
+        fixed: false,
+        maxmin: true,
+        shade: 0.1,
+        area : ['45%', '60%'],
+        //area: ['450px', '500px'],
+        content: server_context+"/fontawesome.html", //iframe的url
+        end : function () {
+            console.info("弹框结束")
+        }
+    });
+}

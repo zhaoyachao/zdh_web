@@ -72,14 +72,14 @@
 
                 </form>
 
-                <div class="form-group"></div>
+                <div class="form-group col-sm-12"></div>
                 <div class="row row-lg">
                     <div class="form-group col-sm-12">
                                                 <textarea id="variable_data"
                                                           class="form-control" rows="5"
                                                           placeholder=""></textarea>
                     </div>
-                    <div class="form-group"></div>
+                    <div class="form-group col-sm-12"></div>
 
                     <div class="form-group col-sm-12" id="data_div">
 
@@ -145,10 +145,8 @@
                     for(var i = 0; i < data.result.length; i ++){
                         var new_template = template.replace("label_name", data.result[i].label_name).replace("label_value", data.result[i].label_value);
                         $("#data_div").append(new_template);
-                        $("#data_div").append(" <div class=\"form-group\" style='height: 10px'></div>");
+                        $("#data_div").append(" <div class=\"form-group col-sm-12\"></div>");
                     }
-
-
                 },
                 error: function (data) {
                     console.info("error: " + data.responseText);

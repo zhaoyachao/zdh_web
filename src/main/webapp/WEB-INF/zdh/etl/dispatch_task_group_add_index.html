@@ -130,7 +130,6 @@
                                        placeholder="任务状态" class="form-control" aria-required="true" readonly value="ETL"> </span>
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label class="col-sm-2 control-label">表达式</label>
                             <div class="col-sm-10">
@@ -138,7 +137,7 @@
                                        placeholder="example:100s,100m,100h,1d or corn 表达式,默认1d" class="form-control" aria-required="true"> </span>
                                 <span class="help-block m-b-none"><a id="" href="javascript:void(0);" onclick="cron()">生成Cron表达式</a></span>
                             </div>
-                            <div class="form-group"></div>
+<!--                            <div class="form-group col-sm-12"></div>-->
                             <label class="col-sm-2 control-label">调度时间策略</label>
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
@@ -205,13 +204,13 @@
                                 <input id="plan_count" name="plan_count" type="text" value="0"
                                        placeholder="失败重试次数,设置-1 代表无限制" class="form-control" aria-required="true"> </span>
                             </div>
-                            <div class="form-group"></div>
+                            <div class="form-group col-sm-12"></div>
                             <label class="col-sm-2 control-label">重试时间间隔(s)</label>
                             <div class="col-sm-10">
                                 <input id="interval_time" name="interval_time" type="text" value="5"
                                        placeholder="重试时间间隔单位是秒,example: 5" class="form-control" aria-required="true"> </span>
                             </div>
-                            <div class="form-group"></div>
+                            <div class="form-group col-sm-12"></div>
                             <label class="col-sm-2 control-label">重置已执行次数</label>
                             <div class="col-sm-10">
                                 <div class="checkbox i-checks">
@@ -237,11 +236,10 @@
                             <label class="col-sm-2 control-label">其他参数</label>
                             <div class="col-sm-10" id="div_data_sources_params">
                                 <textarea id="params" name="params" class="form-control" rows="2" placeholder="参数使用固定格式{&#34;k&#34;:&#34;v&#34;,&#34;k1&#34;:&#34;v1&#34;}"></textarea>
-                                <span class="help-block m-b-none"><a id="a_params" href="javascript:void(0);" onclick="resovle_params()">详细参数</a></span>
+                                <span class="help-block m-b-none"><a id="a_params" href="javascript:void(0);" onclick="resovle_params()">常用参数</a>; <a id="system_params" href="javascript:void(0);"
+                                                                                                                                                      onclick="system_params()">系统内置参数</a></span>
                             </div>
-
                         </div>
-
                         <div class="form-group">
                             <label class="col-sm-2 control-label">上次执行时间</label>
                             <div class="col-sm-10">
@@ -277,7 +275,7 @@
                                     <input type="text" class="form-control" id="alarm_account" name="alarm_account" placeholder="ZDH用户账号,多用户逗号分隔">
                             </div>
 
-                            <div class="form-group"></div>
+                            <div class="form-group col-sm-12"></div>
                             <label class="col-sm-2 control-label">超时时间</label>
                             <div class="col-sm-10">
                                 <input id="time_out" name="time_out" type="text" value="86400"
