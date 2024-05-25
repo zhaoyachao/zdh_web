@@ -805,14 +805,17 @@
   + v5.3.4 [zdh_web]etl模块优化系统内置参数
   + v5.3.4 [zdh_web]新增系统内置参数说明页面
   
+  + v5.3.5 [zdh_web]优化ip获取方式
+  + v5.3.5 [zdh_web]新增项目管理模块,为后期数据分析做基础
+  + v5.3.5 [zdh_web]优化营销模块,增加关联项目功能
+  + v5.3.5 [zdh_web]营销模块统一参数,处理引擎同步修改
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]历史遗留支持spark-greenplum 链接器【未完成】
   + v5.1.0 标签模块-增加标签加工任务【开发中】
- 
-  
-  
+
   
 # 版本迁移步骤  
 ## 4.7.15迁移4.7.16
@@ -3253,6 +3256,103 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1241379329280053248, '802918760057933824', '查询系统参数', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2024-05-18 13:18:16', '2024-05-18 13:18:16', 'system_params_index', '3', '', '', 'zdh', '');
 
+## 5.3.4迁移5.3.5
+    CREATE TABLE `project_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `project_code` varchar(200) DEFAULT '' COMMENT '项目code',
+      `project_name` varchar(200) DEFAULT '' COMMENT '项目名称',
+      `project_type` varchar(64) DEFAULT '' COMMENT '项目类型',
+      `project_json` text  COMMENT '项目子参数',
+      `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+      `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
+      PRIMARY KEY (`id`),
+      KEY `idx_owner` (`project_code`,`owner`),
+      KEY `idx_product_owner` (`product_code`,`project_code`,`owner`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目信息';
+    
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1242990496440127488, '926763179978002432', '项目管理', '3', 'zyc', 'fa fa-coffee', '项目管理,根据业务场景创建项目,在营销模块策略中绑定项目,可用于后期策略效果分析', '11', '1', '2024-05-23 00:00:28', '2024-05-23 00:00:28', 'project_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1244052222535274496, '1242990496440127488', '查询', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-05-25 22:19:23', '2024-05-25 22:19:23', 'project_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1244052353175261184, '1242990496440127488', '分页查询', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2024-05-25 22:19:54', '2024-05-25 22:19:54', 'project_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1244052515385774080, '1242990496440127488', '新增页面', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2024-05-25 22:20:33', '2024-05-25 22:20:33', 'project_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1244052569974640640, '1242990496440127488', '新增', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2024-05-25 22:20:46', '2024-05-25 22:20:46', 'project_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1244052663427928064, '1242990496440127488', '更新', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2024-05-25 22:21:08', '2024-05-25 22:21:08', 'project_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1244052721875554304, '1242990496440127488', '明细', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2024-05-25 22:21:22', '2024-05-25 22:21:22', 'project_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1244052784299380736, '1242990496440127488', '删除', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2024-05-25 22:21:37', '2024-05-25 22:21:37', 'project_delete', '5', '', '', 'zdh', '');
+
+    update strategy_group_info set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_rule\":", "\"rule_id\":");
+    update strategy_group_info set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_rule_context\":", "\"rule_context\":");
+    update strategy_group_info set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_file\":", "\"rule_id\":");
+    update strategy_group_info set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_file_context\":", "\"rule_context\":");
+    update strategy_group_info set jsmind_data  =regexp_replace(jsmind_data, "\"filter\":", "\"rule_id\":");
+    update strategy_group_info set jsmind_data  = regexp_replace(jsmind_data, "\"id_mapping_code\":", "\"rule_id\":");
+    update strategy_group_info set jsmind_data  = regexp_replace(jsmind_data, "\"rights\":", "\"rule_id\":");
+    update strategy_group_info set jsmind_data  = regexp_replace(jsmind_data, "\"rights_context\":", "\"rule_context\":");
+    update strategy_group_info set jsmind_data  = regexp_replace(jsmind_data, "\"shunt\":", "\"rule_id\":");
+    update strategy_group_info set jsmind_data  = regexp_replace(jsmind_data, "\"touch_id\":", "\"rule_id\":");
+    
+    update strategy_group_instance set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_rule\":", "\"rule_id\":");
+    update strategy_group_instance set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_rule_context\":", "\"rule_context\":");
+    update strategy_group_instance set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_file\":", "\"rule_id\":");
+    update strategy_group_instance set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_file_context\":", "\"rule_context\":");
+    update strategy_group_instance set jsmind_data  =regexp_replace(jsmind_data, "\"filter\":", "\"rule_id\":");
+    update strategy_group_instance set jsmind_data  = regexp_replace(jsmind_data, "\"id_mapping_code\":", "\"rule_id\":");
+    update strategy_group_instance set jsmind_data  = regexp_replace(jsmind_data, "\"rights\":", "\"rule_id\":");
+    update strategy_group_instance set jsmind_data  = regexp_replace(jsmind_data, "\"rights_context\":", "\"rule_context\":");
+    update strategy_group_instance set jsmind_data  = regexp_replace(jsmind_data, "\"shunt\":", "\"rule_id\":");
+    update strategy_group_instance set jsmind_data  = regexp_replace(jsmind_data, "\"touch_id\":", "\"rule_id\":");
+    
+    update strategy_group_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"crowd_rule\":", "\"rule_id\":");
+    update strategy_group_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"crowd_rule_context\":", "\"rule_context\":");
+    update strategy_group_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"crowd_file\":", "\"rule_id\":");
+    update strategy_group_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"crowd_file_context\":", "\"rule_context\":");
+    update strategy_group_instance set run_jsmind_data  =regexp_replace(run_jsmind_data, "\"filter\":", "\"rule_id\":");
+    update strategy_group_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"id_mapping_code\":", "\"rule_id\":");
+    update strategy_group_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"rights\":", "\"rule_id\":");
+    update strategy_group_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"rights_context\":", "\"rule_context\":");
+    update strategy_group_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"shunt\":", "\"rule_id\":");
+    update strategy_group_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"touch_id\":", "\"rule_id\":");
+    
+    update strategy_instance set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_rule\":", "\"rule_id\":");
+    update strategy_instance set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_rule_context\":", "\"rule_context\":");
+    update strategy_instance set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_file\":", "\"rule_id\":");
+    update strategy_instance set jsmind_data  = regexp_replace(jsmind_data, "\"crowd_file_context\":", "\"rule_context\":");
+    update strategy_instance set jsmind_data  =regexp_replace(jsmind_data, "\"filter\":", "\"rule_id\":");
+    update strategy_instance set jsmind_data  = regexp_replace(jsmind_data, "\"id_mapping_code\":", "\"rule_id\":");
+    update strategy_instance set jsmind_data  = regexp_replace(jsmind_data, "\"rights\":", "\"rule_id\":");
+    update strategy_instance set jsmind_data  = regexp_replace(jsmind_data, "\"rights_context\":", "\"rule_context\":");
+    update strategy_instance set jsmind_data  = regexp_replace(jsmind_data, "\"shunt\":", "\"rule_id\":");
+    update strategy_instance set jsmind_data  = regexp_replace(jsmind_data, "\"touch_id\":", "\"rule_id\":");
+    
+    update strategy_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"crowd_rule\":", "\"rule_id\":");
+    update strategy_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"crowd_rule_context\":", "\"rule_context\":");
+    update strategy_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"crowd_file\":", "\"rule_id\":");
+    update strategy_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"crowd_file_context\":", "\"rule_context\":");
+    update strategy_instance set run_jsmind_data  =regexp_replace(run_jsmind_data, "\"filter\":", "\"rule_id\":");
+    update strategy_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"id_mapping_code\":", "\"rule_id\":");
+    update strategy_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"rights\":", "\"rule_id\":");
+    update strategy_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"rights_context\":", "\"rule_context\":");
+    update strategy_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"shunt\":", "\"rule_id\":");
+    update strategy_instance set run_jsmind_data  = regexp_replace(run_jsmind_data, "\"touch_id\":", "\"rule_id\":");
 
 
 # 未完成的功能

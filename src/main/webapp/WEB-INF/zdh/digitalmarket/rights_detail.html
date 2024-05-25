@@ -74,7 +74,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">权益名称</label>
                             <div class="col-sm-10">
-                                <input id="rights_context" name="rights_context" type="text"
+                                <input id="rule_context" name="rule_context" type="text"
                                        placeholder="权益名称" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
@@ -153,6 +153,26 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">关联项目</label>
+                            <div class="col-sm-10">
+                                <select id="project_code" name="project_code" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">关联场景</label>
+                            <div class="col-sm-10">
+                                <select id="project_scene" name="project_scene" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
@@ -192,6 +212,8 @@
 
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/project_common.js"></script>
 
 <script>
 
@@ -294,7 +316,7 @@
             $('#operate').chosen();
             $('#data_status').chosen();
             $('#depend_level').chosen();
-            if(s["rights"] != '-1'){
+            if(s["rule_id"] != '-1'){
                 console.info("更新触发");
                 var more_task=s["more_task"];
                 console.info("more_task:"+more_task);
@@ -322,7 +344,7 @@
                 $("#is_base").val(s.is_base);
                 $("#is_base").trigger("chosen:updated");
 
-                $("#rights_context").val(s["rights_context"]);
+                $("#rule_context").val(s["rule_context"]);
                 //解析参数
                 var rights_param = $("#rights_param",window.parent.document).val();
                 console.info(rights_param);
@@ -332,6 +354,14 @@
                         buildConfig(i,rights_param_object[i].rights_template, rights_param_object[i].rights_name, rights_param_object[i].rights_value);
                     }
                 }
+
+                $("#project_code").val(s["project_code"]);
+                $("#project_code").trigger("chosen:updated");
+                var project_id = $('#project_code').find("option:selected").attr("mytype");
+                project_scene(project_id);
+
+                $("#project_scene").val(s["project_scene"]);
+                $("#project_scene").trigger("chosen:updated");
             }
         })();
 
@@ -360,9 +390,9 @@
         for(var i = 0; i < pa.length; i ++){
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
-        var rights = s['rights'];
-        if(s['rights'] == -1){
-            rights = guid3();
+        var rule_id = s['rule_id'];
+        if(s['rule_id'] == -1){
+            rule_id = guid3();
         }
         //自定义实现
         var more_task="rights";
@@ -373,13 +403,15 @@
         var time_out=$('#time_out').val();
         var is_base=$('#is_base').find("option:selected").val();
         var data_status=$('#data_status').find("option:selected").val();
+        var project_code=$('#project_code').find("option:selected").val();
+        var project_scene=$('#project_scene').find("option:selected").val();
 
         var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
         }
 
-        var rights_context=$('#rights_context').val();
+        var rule_context=$('#rule_context').val();
         var ary = new Array();
         var ary2 = new Array();
 
@@ -415,9 +447,11 @@
             "time_out": time_out,
             "is_base": is_base,
             "data_status": data_status,
+            "project_code": project_code,
+            "project_scene": project_scene,
 
-            "rights": rights,
-            "rights_context":rights_context,
+            "rule_id": rule_id,
+            "rule_context":rule_context,
             "rights_param": JSON.stringify(result)
         };
         console.info("rule_detail:"+JSON.stringify(data));

@@ -117,16 +117,14 @@
             }
 
 
-            if(s.id != '-1'){
-
-                //获取数据
-                build(s.id);
+            if(s.queue_name != '-1'){
+                build(s.queue_name, s.msg, s.priority);
                 $('#btn_up').click(function () {
                     $.ajax({
                         type: 'POST',
                         url: server_context+"/zdh_queue_update",
                         dataType: 'json',
-                        data: $("#signupForm").serialize()+"&id="+s.id,
+                        data: $("#signupForm").serialize()+"&old_priority="+s.priority,
                         //发送数据前
                         beforeSend: function () {
                             // 禁用按钮防止重复提交
@@ -205,43 +203,13 @@
                 });
             }
 
-            function  build(id) {
-                $.ajax({
-                    type: 'POST',
-                    url: server_context+"/zdh_queue_detail",
-                    dataType: 'json',
-                    data: "id="+s.id,
-                    //发送数据前
-                    beforeSend: function () {
-                        // 禁用按钮防止重复提交
-                        $("#btn_up").attr({disabled: "disabled"});
-                    },
-                    //成功返回
-                    success: function (data) {
-                        $("#btn_up").removeAttr('disabled');
-                        if(data.code == "200"){
-                            $('#queue_name').val(data.result.queue_name);
-                            $('#queue_name').attr({ readonly: 'true' });
-                            $('#msg').val(data.result.msg);
-                            $('#msg').attr({ readonly: 'true' });
-                            $('#priority').val(data.result.priority);
-                            layer.msg('查询成功')
-                        }else{
-                            layer.msg('查询失败')
-                        }
-                    },
-                    //处理完成
-                    complete: function () {
-                        $("#btn_up").removeAttr('disabled');
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        $("#btn_up").removeAttr('disabled');
-                        layer.msg(data.responseText);
-                        console.info("error: " + data.responseText);
-                    }
-                });
+            function  build(queue_name, msg, priority) {
+
+                $('#queue_name').val(queue_name);
+                $('#queue_name').attr({ readonly: 'true' });
+                $('#msg').val(msg);
+                $('#msg').attr({ readonly: 'true' });
+                $('#priority').val(priority);
             }
 
         })(document, window, jQuery);

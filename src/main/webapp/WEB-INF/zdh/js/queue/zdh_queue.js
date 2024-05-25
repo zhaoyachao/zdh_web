@@ -12,7 +12,7 @@
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
-              title: '标签配置',
+              title: '新增消息',
               shadeClose: false,
               resize: true,
               fixed: false,
@@ -73,10 +73,10 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: server_context+"/zdh_queue_add_index?id="+row.id, //iframe的url
+                  content: server_context+"/zdh_queue_add_index?queue_name="+row.queue_name+"&msg="+row.msg+"&priority="+row.priority, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/zdh_queue_list'
+                          url : server_context+'/zdh_queue_list?'+$("#label_form").serialize()+"&tm="+new Date()
                       });
                   }
               });
@@ -136,7 +136,7 @@
 
       $('#exampleTableEvents').bootstrapTable('destroy').bootstrapTable({
       method: "POST",
-      url: server_context+"/zdh_queue_list",
+      url: server_context+"/zdh_queue_list?"+$("#label_form").serialize()+"&tm="+new Date(),
       search: true,
       pagination: true,
       showRefresh: true,
@@ -175,10 +175,6 @@
         columns: [{
             checkbox: true,
             field:'state',
-            sortable:false
-        }, {
-            field: 'id',
-            title: 'ID',
             sortable:false
         }, {
             field: 'queue_name',

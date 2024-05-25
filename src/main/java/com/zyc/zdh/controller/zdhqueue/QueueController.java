@@ -1,10 +1,12 @@
 package com.zyc.zdh.controller.zdhqueue;
 
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.zyc.rqueue.RQueueClient;
 import com.zyc.rqueue.RQueueManager;
 import com.zyc.rqueue.RQueueMode;
+import com.zyc.rqueue.RQueuePriorityInfo;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -67,7 +69,11 @@ public class QueueController extends BaseController {
                 ret = Lists.newArrayList(iterator);
             }
 
-            List<String> res =ret.subList( Integer.valueOf(offset), Integer.valueOf(offset)+ Integer.valueOf(limit));
+            int to = Integer.valueOf(offset)+ Integer.valueOf(limit);
+            if(Integer.valueOf(offset)+ Integer.valueOf(limit)>ret.size()){
+                to = ret.size();
+            }
+            List<String> res =ret.subList( Integer.valueOf(offset), to);
             List<JSONObject> rows = new ArrayList<>();
             for (String value: res){
                 JSONObject jsonObject1 = new JSONObject();
@@ -88,7 +94,7 @@ public class QueueController extends BaseController {
     }
 
     /**
-     * 队列消息明细
+     * 队列消息明细(废弃)
      * @param id 主键ID
      * @return
      */
@@ -163,9 +169,22 @@ public class QueueController extends BaseController {
      */
     @RequestMapping(value = "/zdh_queue_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String zdh_queue_update(String queue_name,String msg ,String priority) {
+    public String zdh_queue_update(String queue_name,String msg ,String priority, String old_priority) {
 
         try{
+
+            if(StringUtils.isEmpty(priority)){
+                priority="10";
+            }
+            RQueueClient<String> rQueueClient = RQueueManager.getRQueueClient(queue_name, RQueueMode.PRIORITYQUEUE);
+
+            rQueueClient.remove(msg, Integer.valueOf(old_priority));
+
+            boolean b = rQueueClient.offer(msg, Integer.valueOf(priority));
+
+            if(b){
+                return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(), "修改成功", "");
+            }
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "修改失败", "优先级队列内部错误,请联系管理员解决");
         }catch (Exception e){
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);

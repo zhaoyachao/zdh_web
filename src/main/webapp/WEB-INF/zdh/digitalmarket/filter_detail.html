@@ -86,7 +86,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">过滤规则</label>
                             <div class="col-sm-10">
-                                <select id="filter" name="filter" data-placeholder="选择过滤规则..."
+                                <select id="rule_id" name="rule_id" data-placeholder="选择过滤规则..."
                                         multiple class="chosen-select form-control m-b" tabindex="2">
                                     <option value="" mytype="">过滤规则...</option>
                                 </select>
@@ -147,6 +147,27 @@
                                        placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">关联项目</label>
+                            <div class="col-sm-10">
+                                <select id="project_code" name="project_code" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">关联场景</label>
+                            <div class="col-sm-10">
+                                <select id="project_scene" name="project_scene" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
@@ -200,6 +221,7 @@
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
 
+<script src="js/project_common.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -243,8 +265,8 @@
                             str += '<option value=\"' + data.result[i].filter_code + "\" mytype=\""  + "\" hassubinfo=\"true\">" + data.result[i].filter_name + "</option>"
                         }
                         //输入数据源类型下拉框
-                        $('#filter').html(str);
-                        $('#filter').chosen()
+                        $('#rule_id').html(str);
+                        $('#rule_id').chosen()
                     },
                     //处理完成
                     complete: function () {
@@ -260,8 +282,8 @@
             $('#operate').chosen();
             $('#data_status').chosen();
             $('#depend_level').chosen();
-            $("#filter").chosen();
-            if(s["filter"] != '-1'){
+            $("#rule_id").chosen();
+            if(s["rule_id"] != '-1'){
                 console.info("更新触发");
 
                 $("#operate").val(s.operate);
@@ -277,8 +299,8 @@
                     $("#time_out").val(s["time_out"]);
                 }
 
-                $("#filter").val(s["filter"].split(','));
-                $("#filter").trigger("chosen:updated");
+                $("#rule_id").val(s["rule_id"].split(','));
+                $("#rule_id").trigger("chosen:updated");
 
                 $("#touch_type").val(s.touch_type);
                 $("#touch_type").trigger("chosen:updated");
@@ -290,6 +312,14 @@
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
                 }
+
+                $("#project_code").val(s["project_code"]);
+                $("#project_code").trigger("chosen:updated");
+                var project_id = $('#project_code').find("option:selected").attr("mytype");
+                project_scene(project_id);
+
+                $("#project_scene").val(s["project_scene"]);
+                $("#project_scene").trigger("chosen:updated");
             }
         })();
 
@@ -306,12 +336,14 @@
         var touch_type=$('#touch_type').find("option:selected").val();
         var is_base=$('#is_base').find("option:selected").val();
         var data_status=$('#data_status').find("option:selected").val();
+        var project_code=$('#project_code').find("option:selected").val();
+        var project_scene=$('#project_scene').find("option:selected").val();
 
         var depend_level=$('#depend_level').find("option:selected").val();
         var time_out=$('#time_out').val();
-        var filter = $('#filter').val();
+        var rule_id = $('#rule_id').val();
         var filter_names = new Array();// 声明一个数组
-        $("#filter option:selected").each(function () {
+        $("#rule_id option:selected").each(function () {
             filter_names.push($(this).text());
         });
         var filter_title = filter_names.join(",");
@@ -329,10 +361,12 @@
             "time_out": time_out,
             "is_base": is_base,
             "data_status": data_status,
+            "project_code": project_code,
+            "project_scene": project_scene,
 
             "filter_title": filter_title,
             "rule_context":rule_context,
-            "filter": filter.join(",")
+            "rule_id": rule_id.join(",")
         };
         console.info("job_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

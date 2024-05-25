@@ -80,7 +80,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">人群规则</label>
                             <div class="col-sm-10">
-                                <select id="crowd_rule" name="crowd_rule" data-placeholder="选择人群规则..."
+                                <select id="rule_id" name="rule_id" data-placeholder="选择人群规则..."
                                         class="chosen-select form-control m-b" tabindex="2">
                                     <option value="" mytype="">人群规则...</option>
                                 </select>
@@ -141,6 +141,27 @@
                                        placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">关联项目</label>
+                            <div class="col-sm-10">
+                                <select id="project_code" name="project_code" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">关联场景</label>
+                            <div class="col-sm-10">
+                                <select id="project_scene" name="project_scene" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
@@ -194,6 +215,7 @@
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
 
+<script src="js/project_common.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -233,8 +255,8 @@
                             str += '<option value=\"' + data[i].id + "\" mytype=\""  + "\" hassubinfo=\"true\">" + data[i].rule_context + "</option>"
                         }
                         //输入数据源类型下拉框
-                        $('#crowd_rule').html(str);
-                        $('#crowd_rule').chosen()
+                        $('#rule_id').html(str);
+                        $('#rule_id').chosen()
                     },
                     //处理完成
                     complete: function () {
@@ -250,9 +272,9 @@
             $('#depend_level').chosen();
             $("#operate").chosen();
             $('#data_status').chosen();
-            if(s["crowd_rule"] != '-1'){
+            if(s["rule_id"] != '-1'){
                 console.info("更新触发");
-                $('#crowd_rule_context').val(s.crowd_rule_context);
+
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
                 if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
@@ -268,8 +290,8 @@
                 $("#touch_type").val(s.touch_type);
                 $("#touch_type").trigger("chosen:updated");
 
-                $("#crowd_rule").val(s["crowd_rule"]);
-                $("#crowd_rule").trigger("chosen:updated");
+                $("#rule_id").val(s["rule_id"]);
+                $("#rule_id").trigger("chosen:updated");
 
                 $("#is_base").val(s.is_base);
                 $("#is_base").trigger("chosen:updated");
@@ -278,6 +300,14 @@
                 if(is_disenable=="true"){
                     $('#is_disenable').iCheck('check');
                 }
+
+                $("#project_code").val(s["project_code"]);
+                $("#project_code").trigger("chosen:updated");
+                var project_id = $('#project_code').find("option:selected").attr("mytype");
+                project_scene(project_id);
+
+                $("#project_scene").val(s["project_scene"]);
+                $("#project_scene").trigger("chosen:updated");
             }
         })();
 
@@ -289,15 +319,18 @@
 
         //自定义实现
 
-        var crowd_rule_context= $('#crowd_rule').find("option:selected").text();
+        var rule_context= $('#rule_id').find("option:selected").text();
         var operate=$('#operate').find("option:selected").val();
         var touch_type=$('#touch_type').find("option:selected").val();
         var is_base=$('#is_base').find("option:selected").val();
         var data_status=$('#data_status').find("option:selected").val();
-
         var depend_level=$('#depend_level').find("option:selected").val();
         var time_out=$('#time_out').val();
-        var crowd_rule = $('#crowd_rule').find("option:selected").val();
+        var project_code=$('#project_code').find("option:selected").val();
+        var project_scene=$('#project_scene').find("option:selected").val();
+
+        var rule_id = $('#rule_id').find("option:selected").val();
+
         var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
@@ -312,9 +345,11 @@
             "time_out": time_out,
             "is_base": is_base,
             "data_status": data_status,
+            "project_code": project_code,
+            "project_scene": project_scene,
 
-            "crowd_rule_context":crowd_rule_context,
-            "crowd_rule": crowd_rule
+            "rule_context":rule_context,
+            "rule_id": rule_id
         };
         console.info("job_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

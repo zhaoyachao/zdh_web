@@ -101,7 +101,10 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success");
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
                     $("#risk_data").val(JSON.stringify(data.result));
                 },
                 error: function (data) {

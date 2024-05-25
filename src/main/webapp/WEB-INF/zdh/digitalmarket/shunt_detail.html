@@ -150,6 +150,26 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">关联项目</label>
+                            <div class="col-sm-10">
+                                <select id="project_code" name="project_code" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">关联场景</label>
+                            <div class="col-sm-10">
+                                <select id="project_scene" name="project_scene" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
@@ -189,6 +209,8 @@
 
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/project_common.js"></script>
 
 <script>
 
@@ -298,7 +320,7 @@
             $('#operate').chosen();
             $('#data_status').chosen();
             $('#depend_level').chosen();
-            if(s["shunt"] != '-1'){
+            if(s["rule_id"] != '-1'){
                 console.info("更新触发");
                 var more_task=s["more_task"];
                 console.info("more_task:"+more_task);
@@ -337,6 +359,14 @@
                         buildConfig(i,shunt_param_object[i].shunt_code, shunt_param_object[i].shunt_name, shunt_param_object[i].shunt_type, shunt_param_object[i].shunt_value);
                     }
                 }
+
+                $("#project_code").val(s["project_code"]);
+                $("#project_code").trigger("chosen:updated");
+                var project_id = $('#project_code').find("option:selected").attr("mytype");
+                project_scene(project_id);
+
+                $("#project_scene").val(s["project_scene"]);
+                $("#project_scene").trigger("chosen:updated");
             }
         })();
 
@@ -367,9 +397,9 @@
         for(var i = 0; i < pa.length; i ++){
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
-        var shunt = s['shunt'];
-        if(s['shunt'] == -1){
-            shunt = guid3();
+        var rule_id = s['rule_id'];
+        if(s['rule_id'] == -1){
+            rule_id = guid3();
         }
         //自定义实现
         var more_task="shunt";
@@ -380,6 +410,8 @@
         var time_out=$('#time_out').val();
         var is_base=$('#is_base').find("option:selected").val();
         var data_status=$('#data_status').find("option:selected").val();
+        var project_code=$('#project_code').find("option:selected").val();
+        var project_scene=$('#project_scene').find("option:selected").val();
 
         var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
@@ -427,8 +459,10 @@
             "time_out": time_out,
             "is_base": is_base,
             "data_status": data_status,
+            "project_code": project_code,
+            "project_scene": project_scene,
 
-            "shunt": shunt,
+            "rule_id": rule_id,
             "rule_context":rule_context,
             "shunt_param": JSON.stringify(result)
         };

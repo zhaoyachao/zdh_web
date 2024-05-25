@@ -143,6 +143,26 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">关联项目</label>
+                            <div class="col-sm-10">
+                                <select id="project_code" name="project_code" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">关联场景</label>
+                            <div class="col-sm-10">
+                                <select id="project_scene" name="project_scene" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
@@ -181,6 +201,8 @@
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
+<script src="js/project_common.js"></script>
+
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({
@@ -203,47 +225,12 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            function init_zdh_instance(){
-                $.ajax({
-                    type: 'POST',
-                    url: server_context+"/zdh_instance_list",
-                    dataType: 'json',
-                    async: false,
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        if(data.code != "200"){
-                            layer.msg(data.msg);
-                            return ;
-                        }
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.result.length; i++) {
-                            str += '<option value=\"' + data.result[i]+ "\" mytype=\"" + data.result[i] + "\" hassubinfo=\"true\">" + data.result[i] + "</option>"
-                        }
-                        //ETL单任务下拉框
-                        $('#zdh_instance').html(str);
-                        $('#zdh_instance').chosen().on("change", function (evt, params) {
-                            $("#zdh_instance").trigger("chosen:updated");
-                        });
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-                });
-            }
-
 
             $('#operate').chosen();
             $('#data_status').chosen();
             //init_zdh_instance();
 
-            if(s["data_node"] != '-1'){
+            if(s["rule_id"] != '-1'){
                 console.info("更新触发");
                 $("#operate").val(s.operate);
                 $("#operate").trigger("chosen:updated");
@@ -271,6 +258,14 @@
                     $('#is_disenable').iCheck('check');
                 }
 
+                $("#project_code").val(s["project_code"]);
+                $("#project_code").trigger("chosen:updated");
+                var project_id = $('#project_code').find("option:selected").attr("mytype");
+                project_scene(project_id);
+
+                $("#project_scene").val(s["project_scene"]);
+                $("#project_scene").trigger("chosen:updated");
+
             }
         })();
 
@@ -281,12 +276,25 @@
     $('#save_etl_info').click(function () {
 
         //自定义实现
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
 
+        var rule_id = s['rule_id'];
+        if(is_empty(rule_id) || s['rule_id'] == "-1"){
+            rule_id = guid3();
+        }
         //var more_task=$('#more_task').find("option:selected").val();
         var operate=$('#operate').find("option:selected").val();
         var touch_type=$('#touch_type').find("option:selected").val();
         var is_base=$('#is_base').find("option:selected").val();
         var data_status=$('#data_status').find("option:selected").val();
+        var project_code=$('#project_code').find("option:selected").val();
+        var project_scene=$('#project_scene').find("option:selected").val();
 
         var rule_context=$('#rule_context').val();
         var data_node=$('#data_node').val();
@@ -296,6 +304,8 @@
         if($('#is_disenable').is(':checked')){
             is_disenable="true"
         }
+
+
 
         var more_task = 'data_node';
         let data={
@@ -307,7 +317,10 @@
             "time_out": time_out,
             "is_base": is_base,
             "data_status": data_status,
+            "project_code": project_code,
+            "project_scene": project_scene,
 
+            "rule_id": rule_id,
             "rule_context":rule_context,
             "data_node":data_node,
         };

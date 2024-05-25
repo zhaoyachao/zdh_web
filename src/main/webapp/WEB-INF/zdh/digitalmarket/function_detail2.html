@@ -19,6 +19,8 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 </head>
 
 <body class="gray-bg">
@@ -97,7 +99,7 @@
                             <label class="col-sm-2 control-label">取值表达式</label>
                             <div class="col-sm-10">
                                 <input id="return_value_express" name="return_value_express" type="text"
-                                       placeholder="默认为空, 返回值参数默认为ret, groovy语法,暂不支持多层复杂结构, 比如获取数组,列表ret[2],获取数组ret下标为2的值, 字典数据ret.key1" class="form-control" aria-required="true" value="">
+                                       placeholder="默认为空, uid表示返回上游数据, 函数返回结果默认为ret, groovy语法,暂不支持多层复杂结构, 比如获取数组,列表ret[2],获取数组ret下标为2的值, 字典数据ret.key1" class="form-control" aria-required="true" value="">
                             </div>
                             <div class="form-group col-sm-12"></div>
                             <label class="col-sm-2 control-label">开启返回值对比</label>
@@ -124,23 +126,22 @@
                                     <option value="map" mytype="">字典</option>
                                 </select>
                             </div>
-                            <label class="col-sm-2 control-label">对比操作</label>
+<!--                            <label class="col-sm-2 control-label">对比操作</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <select id="return_operate" name="return_operate" data-placeholder=""-->
+<!--                                        class="chosen-select form-control m-b" tabindex="2">-->
+<!--                                    <option value="eq" mytype="" selected>等于</option>-->
+<!--                                    <option value="neq" mytype="" selected>不等于</option>-->
+<!--                                    <option value="gt" mytype="">大于</option>-->
+<!--                                    <option value="lt" mytype="">小于</option>-->
+<!--                                    <option value="gte" mytype="">大于等于</option>-->
+<!--                                    <option value="lte" mytype="">小于等于</option>-->
+<!--                                    <option value="in" mytype="">包含</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+                            <label class="col-sm-2 control-label">对比表达式</label>
                             <div class="col-sm-10">
-                                <select id="return_operate" name="return_operate" data-placeholder=""
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="eq" mytype="" selected>等于</option>
-                                    <option value="neq" mytype="" selected>不等于</option>
-                                    <option value="gt" mytype="">大于</option>
-                                    <option value="lt" mytype="">小于</option>
-                                    <option value="gte" mytype="">大于等于</option>
-                                    <option value="lte" mytype="">小于等于</option>
-                                    <option value="in" mytype="">包含</option>
-                                </select>
-                            </div>
-                            <label class="col-sm-2 control-label">对比值</label>
-                            <div class="col-sm-10">
-                                <input id="return_operate_value" name="return_operate_value" type="text"
-                                       placeholder="默认为空,对比操作 根据取值表达式获取的结果和当前输入值对比 " class="form-control" aria-required="true" value="">
+                                <div id="return_operate_value" name="return_operate_value" class="monaco_div_100"></div>
                             </div>
                         </div>
 
@@ -216,6 +217,14 @@
 
 
 <script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -223,9 +232,6 @@
 <!-- Bootstrap table -->
 
 <!-- 自定义js -->
-<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
-<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-<script src="js/hplus.js?v=4.1.0"></script>
 <script src="js/content.js?v=1.0.0"></script>
 
 <!-- Chosen -->
@@ -237,6 +243,13 @@
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/java/java.js"></script>
+
+<script src="js/project_common.js"></script>
+
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({
@@ -244,6 +257,12 @@
             radioClass: 'iradio_square-green',
         });
 
+    });
+
+    window.editor_return_operate_value = monaco.editor.create(document.getElementById('return_operate_value'), {
+        value: 'if(ret != null) return true else return false',
+        language: 'java',
+        theme:'vs-dark'
     });
 
     (function(document, window, $) {
@@ -399,7 +418,9 @@
                 $("#return_operate").val(s.return_operate);
                 $("#return_operate").trigger("chosen:updated");
 
-                $("#return_operate_value").val(s.return_operate_value);
+                //$("#return_operate_value").val(s.return_operate_value);
+                window.editor_return_operate_value.setValue($("#code_text",window.parent.document).val());
+                //window.editor_return_operate_value.setValue(s.return_operate_value);
 
                 var rule_param = $("#rule_param",window.parent.document).val();
                 console.info("rule_detail:"+rule_param);
@@ -407,6 +428,14 @@
                 for(var i=0;i<JSON.parse(rule_param).length;i++){
                     $('#zdh_param_value_'+i).val(JSON.parse(rule_param)[i].param_value);
                 }
+
+                $("#project_code").val(s["project_code"]);
+                $("#project_code").trigger("chosen:updated");
+                var project_id = $('#project_code').find("option:selected").attr("mytype");
+                project_scene(project_id);
+
+                $("#project_scene").val(s["project_scene"]);
+                $("#project_scene").trigger("chosen:updated");
             }
         })();
 
@@ -424,6 +453,8 @@
         var touch_type=$('#touch_type').find("option:selected").val();
         var is_base=$('#is_base').find("option:selected").val();
         var data_status=$('#data_status').find("option:selected").val();
+        var project_code=$('#project_code').find("option:selected").val();
+        var project_scene=$('#project_scene').find("option:selected").val();
 
         var depend_level=$('#depend_level').find("option:selected").val();
         var time_out=$('#time_out').val();
@@ -436,7 +467,7 @@
         var return_value_type=$('#return_value_type').find("option:selected").val();
         var return_value_express=$('#return_value_express').val();
         var return_operate=$('#return_operate').find("option:selected").val();
-        var return_operate_value=$('#return_operate_value').val();
+        var return_operate_value=window.editor_return_operate_value.getValue();
 
         var ary = new Array();
         var ary2 = new Array();
@@ -481,6 +512,8 @@
             "time_out": time_out,
             "is_base": is_base,
             "data_status": data_status,
+            "project_code": project_code,
+            "project_scene": project_scene,
 
             'return_diff_enable':return_diff_enable,
             'return_value_type':return_value_type,

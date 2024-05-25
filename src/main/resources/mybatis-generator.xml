@@ -18,7 +18,7 @@
             <property name="mapperPackage" value="com.zyc.zdh.dao"/>
 
             <!--自定义代码生成插件-生成controller,entity,baseMapper, mapper包, 是否启用配置 -->
-            <property name="enableGeneratorController" value="false"/>
+            <property name="enableGeneratorController" value="true"/>
             <property name="enableGeneratorBaseMapper" value="true"/>
             <property name="enableGeneratorMapper" value="true"/>
 
@@ -392,6 +392,13 @@
 <!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--            </table>-->
+
+<!--        <table tableName="project_info" domainObjectName="ProjectInfo" mapperName="BaseProjectMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
 
     </context>
 </generatorConfiguration>

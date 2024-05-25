@@ -371,12 +371,15 @@
             $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background: '+color+'" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
             $("#" + divId).css("left", positionX).css("top", positionY);
             $("#" + divId).attr("type",tp);
+            $("#" + divId).attr("rule_id",rs.rule_id);
             $("#" + divId).attr("rule_context",rs.rule_context);
             $("#" + divId).attr("is_disenable",rs.is_disenable);
             $("#" + divId).attr("depend_level",rs.depend_level);
             $("#" + divId).attr("time_out",rs.time_out);
             $("#" + divId).attr("is_base",rs.is_base);
             $("#" + divId).attr("data_status",rs.data_status);
+            $("#" + divId).attr("project_code",rs.project_code);
+            $("#" + divId).attr("project_scene",rs.project_scene);
 
             $("#" + divId).attr("more_task",rs.more_task);
             $("#" + divId).attr("zdh_instance",rs.zdh_instance);
@@ -394,27 +397,20 @@
             $("#" + divId).css("*zoom","1");
 
             if(tp == "label"){
-                $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).attr("label_use_type",rs.label_use_type);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "crowd_file"){
-                $("#" + divId).attr("crowd_file",rs.crowd_file);
-                $("#" + divId).attr("crowd_file_context",rs.crowd_file_context);
-                $("#" + divId).html("("+ rs.operate +")"+rs.crowd_file_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "crowd_rule"){
-                $("#" + divId).attr("crowd_rule",rs.crowd_rule);
-                $("#" + divId).attr("crowd_rule_context",rs.crowd_rule_context);
-                $("#" + divId).html("("+ rs.operate +")"+rs.crowd_rule_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "crowd_operate"){
-                $("#" + divId).attr("crowd_operate_context",rs.crowd_operate_context);
-                $("#" + divId).html("("+ rs.operate +")"+rs.crowd_operate_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             if(tp == "filter"){
-                $("#" + divId).attr("filter",rs.filter);
                 $("#" + divId).attr("title",rs.filter_title);
                 //$("#" + divId).attr("filter_context",rs.filter_context);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
@@ -422,26 +418,20 @@
 
             if(tp == "shunt"){
                 $("#" + divId).attr("shunt_param",rs.shunt_param);
-                $("#" + divId).attr("rule_context",rs.rule_context);
-                $("#" + divId).attr("shunt",rs.shunt);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             if(tp == "rights"){
                 $("#" + divId).attr("rights_param",rs.rights_param);
-                $("#" + divId).attr("rights_context",rs.rights_context);
-                $("#" + divId).attr("rights",rs.rights);
-                $("#" + divId).html("("+ rs.operate +")"+rs.rights_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             if(tp == "touch"){
-                $("#" + divId).attr("touch_id",rs.touch_id);
                 $("#" + divId).attr("touch_context",rs.touch_context);
                 $("#" + divId).attr("touch_task",rs.touch_task);
-                $("#" + divId).html("("+ rs.operate +")"+rs.touch_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "plugin"){
-                $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "data_node"){
@@ -449,46 +439,36 @@
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "id_mapping"){
-                $("#" + divId).attr("id_mapping_code",rs.id_mapping_code);
                 $("#" + divId).attr("data_engine",rs.data_engine);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "risk"){
-                $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "tn"){
-                $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
                 $("#" + divId).attr("tn_unit",rs.tn_unit);
                 $("#" + divId).attr("tn_type",rs.tn_type);
                 $("#" + divId).attr("tn_value",rs.tn_value);
             }
             if(tp == "manual_confirm"){
-                $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).attr("title",rs.rule_context);
-                $("#" + divId).attr("rule_context",rs.rule_context);
                 $("#" + divId).attr("confirm_notice_type",rs.confirm_notice_type);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             if(tp == "code_block"){
-                $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).attr("title",rs.rule_context);
-                $("#" + divId).attr("rule_context",rs.rule_context);
                 $("#" + divId).attr("code_type",rs.code_type);
                 $("#" + divId).attr("command",rs.command);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "custom_list"){
-                $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).attr("title",rs.rule_context);
-                $("#" + divId).attr("rule_context",rs.rule_context);
                 $("#" + divId).attr("name_list",rs.name_list);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "function"){
-                $("#" + divId).attr("rule_id",rs.rule_id);
                 $("#" + divId).attr("return_diff_enable",rs.return_diff_enable);
                 $("#" + divId).attr("return_value_type",rs.return_value_type);
                 $("#" + divId).attr("return_value_express",rs.return_value_express);
@@ -568,13 +548,16 @@
                 touch_type: $elem.attr('touch_type'),
                 is_base: $elem.attr('is_base'),
                 data_status: $elem.attr('data_status'),
+                project_code: $elem.attr('project_code'),
+                project_scene: $elem.attr('project_scene'),
 
                 id: $elem.attr('id'),
                 operate: $elem.attr('operate'),
 
                 rule_id: $elem.attr('rule_id'),
-                label_use_type: $elem.attr('label_use_type'),
                 rule_context:$elem.attr('rule_context'),
+
+                label_use_type: $elem.attr('label_use_type'),
                 rule_param: $elem.attr('rule_param'),
 
                 rule_expression_cn: $elem.attr('rule_expression_cn'),
