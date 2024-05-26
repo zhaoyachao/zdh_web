@@ -186,3 +186,7 @@ function open_fontawesome(){
         }
     });
 }
+
+function open_sparksql_api(){
+    window.open("https://spark.apache.org/docs/2.4.4/api/sql/index.html");
+}
