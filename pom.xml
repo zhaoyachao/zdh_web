@@ -5,7 +5,7 @@
 
     <groupId>com.zyc</groupId>
     <artifactId>zdh</artifactId>
-    <version>5.3.5-RELEASE</version>
+    <version>5.3.6-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>zdh_web</name>
@@ -78,6 +78,7 @@
         <aliyun-java-sdk-core.version>4.6.1</aliyun-java-sdk-core.version>
         <aliyun-java-sdk-dysmsapi.version>2.2.1</aliyun-java-sdk-dysmsapi.version>
         <kettle.version>9.4.0.1-467</kettle.version>
+        <minio.version>8.5.10</minio.version>
     </properties>
 
     <repositories>
@@ -731,6 +732,11 @@
             <systemPath>${project.basedir}/lib/kettle-engine-${kettle.version}.jar</systemPath>
         </dependency>
 
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
+        </dependency>
 
     </dependencies>
 

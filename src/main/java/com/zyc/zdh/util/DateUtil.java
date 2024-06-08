@@ -59,7 +59,7 @@ public class DateUtil {
 
     /**
      * 天级处理
-     * @param start
+     * @param start yyyy-MM-dd HH:mm:ss 格式
      * @param num
      * @return
      */
@@ -72,7 +72,7 @@ public class DateUtil {
 
     /**
      * 小时级处理
-     * @param start
+     * @param start yyyy-MM-dd HH:mm:ss 格式
      * @param num
      * @return
      */
@@ -85,7 +85,7 @@ public class DateUtil {
 
     /**
      * 分钟级处理
-     * @param start
+     * @param start yyyy-MM-dd HH:mm:ss 格式
      * @param num
      * @return
      */

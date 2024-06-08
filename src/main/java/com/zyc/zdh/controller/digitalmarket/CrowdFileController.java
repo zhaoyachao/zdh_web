@@ -11,7 +11,9 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.MinioUtil;
 import com.zyc.zdh.util.SFTPUtil;
+import io.minio.MinioClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -200,6 +202,8 @@ public class CrowdFileController extends BaseController {
 
             checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFile.getProduct_code(), crowdFile.getDim_group());
 
+            //校验文件名称是否已经存在
+
             if (jar_files != null && jar_files.length > 0) {
                 for (MultipartFile jar_file : jar_files) {
                     String fileName = jar_file.getOriginalFilename();
@@ -215,6 +219,8 @@ public class CrowdFileController extends BaseController {
                     if(tempFile.exists()){
                         return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "文件名重复", "文件名重复");
                     }
+
+                    String crowdFileName = crowdFile.getFile_name();
                     try {
 
                         String store = env.getProperty("digitalmarket.store.type","local");
@@ -222,20 +228,21 @@ public class CrowdFileController extends BaseController {
                         String port = env.getProperty("digitalmarket.sftp.port","22");
                         String username = env.getProperty("digitalmarket.sftp.username","");
                         String password = env.getProperty("digitalmarket.sftp.password","");
-                        String path = env.getProperty("digitalmarket.sftp.path","");
+                        String localPath = env.getProperty("digitalmarket.local.path","/home/data/file");
+                        String path = localPath+"/crowd_file";
+
                         if(store.equalsIgnoreCase("local")){
                             //本地目录
-                            String localPath = env.getProperty("digitalmarket.local.path","/home/data/file");
-                            File fileDir = new File(localPath);
+                            File fileDir = new File(path);
                             if (!fileDir.exists()) {
                                 fileDir.mkdirs();
                             }
-                            File localFile = new File( fileDir + "/" +fileName);
+                            File localFile = new File( path + "/" +crowdFileName);
                             logger.info("crowd file upload store type: {}, path: {}", store, localFile.getAbsolutePath());
                             FileCopyUtils.copy(jar_file.getInputStream(), Files.newOutputStream(localFile.toPath()));
 
                         }else if(store.equalsIgnoreCase("sftp")){
-                            logger.info("crowd file upload store type: {}, path: {}", store, path+fileName);
+                            logger.info("crowd file upload store type: {}, path: {}", store, path+"/"+crowdFileName);
                             FileCopyUtils.copy(jar_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
                             //sftp
                             SFTPUtil sftp = new SFTPUtil(username, password,
@@ -244,6 +251,16 @@ public class CrowdFileController extends BaseController {
                             InputStream is = new FileInputStream(tempFile);
                             sftp.upload(path, fileName, is);
                             sftp.logout();
+                        }else if(store.equalsIgnoreCase("minio")){
+                            logger.info("crowd file upload store type: {}, path: {}", store, path+"/"+crowdFile.getFile_name());
+                            String object_name = path+"/"+crowdFile.getFile_name();
+                            String ak = env.getProperty("digitalmarket.minio.ak");
+                            String sk = env.getProperty("digitalmarket.minio.sk");
+                            String endpoint = env.getProperty("digitalmarket.minio.endpoint");
+                            String region = env.getProperty("digitalmarket.minio.region");
+                            String bucket = env.getProperty("digitalmarket.minio.bucket");
+                            MinioClient minioClient = MinioUtil.buildMinioClient(ak, sk, endpoint);
+                            MinioUtil.putObject(minioClient, bucket, region, "application/octet-stream", object_name, jar_file.getInputStream(), null);
                         }
 
                         crowdFileMapper.insertSelective(crowdFile);

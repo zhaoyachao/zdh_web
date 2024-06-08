@@ -46,4 +46,16 @@ public class JinjavaTest {
         System.out.println(result);
 
     }
+
+    @Test
+    public void jinJavaClass(){
+        Jinjava jinjava=new Jinjava();
+        Map<String,Object> jinJavaParam=new HashMap<>();
+        jinJavaParam.put("zdh_dt", new DateUtil());
+
+        String result = jinjava.render("{{zdh_dt.addDay('2024-06-04 01:00:00', 1)}}", jinJavaParam);
+        System.out.println(result);
+        result = jinjava.render("{{zdh_dt.addDay('2024-06-04','yyyy-MM-dd', 1)}}", jinJavaParam);
+        System.out.println(result);
+    }
 }

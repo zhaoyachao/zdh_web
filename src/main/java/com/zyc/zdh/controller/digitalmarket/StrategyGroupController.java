@@ -15,10 +15,8 @@ import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.MapStructMapper;
-import com.zyc.zdh.util.SFTPUtil;
+import com.zyc.zdh.util.*;
+import io.minio.MinioClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -511,7 +509,7 @@ public class StrategyGroupController extends BaseController {
 
         //根据id 获取策略任务信息
         StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
-        String basePath = "/home/data/label/";
+        String basePath = ConfigUtil.getValue("digitalmarket.local.path", "/home/data/label/");
 
         String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
 
@@ -529,12 +527,12 @@ public class StrategyGroupController extends BaseController {
         response.setHeader("content-type", "text/html;charset=UTF-8");
 
         response.setContentType("text/html;charset=UTF-8");
-        BufferedInputStream bis = null;
+        InputStream bis = null;
         OutputStream os = null;
         try{
             //根据id 获取策略任务信息
             StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
-            String basePath = "/home/data/label/";
+            String basePath = ConfigUtil.getValue("digitalmarket.local.path", "/home/data/label/");
             String dir =  String.format("%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id());
             String fileName = strategyInstance.getId();
             String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
@@ -568,6 +566,21 @@ public class StrategyGroupController extends BaseController {
                 os = response.getOutputStream();
                 os.write(buff1, 0, buff1.length);
                 os.flush();
+            }else if(storeType.equalsIgnoreCase("minio")){
+                String ak = env.getProperty("digitalmarket.minio.ak");
+                String sk = env.getProperty("digitalmarket.minio.sk");
+                String endpoint = env.getProperty("digitalmarket.minio.endpoint");
+                String region = env.getProperty("digitalmarket.minio.region");
+                String bucket = env.getProperty("digitalmarket.minio.bucket");
+                MinioClient minioClient = MinioUtil.buildMinioClient(ak, sk, endpoint);
+                bis = MinioUtil.getObject(minioClient, bucket, region, url);
+                os = response.getOutputStream();
+                int i = bis.read(buff);
+                while (i != -1) {
+                    os.write(buff, 0, buff.length);
+                    os.flush();
+                    i = bis.read(buff);
+                }
             }
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
