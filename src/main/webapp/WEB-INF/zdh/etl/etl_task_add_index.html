@@ -537,7 +537,9 @@
         <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;groupId:消费者组，默认g1</li>
         <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kafka的topic 在文件名输入框配置</li>
         <li>HTTP:</li>
-        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;空</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method: get, post, put, delete 当前仅支持4中类型</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result_column: 返回结果中解析的字段,多数请求返回的结构都会放到一个包装字段中</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;header.xxx: 指定放到header中的参数,以 header. 开头, 例子:cookie信息使用header.cookie格式</li>
         <li>REDIS:</li>
         <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data_type:写入数据类型，可选，string,hash,list,set,table</li>
         <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key.column:当选择写入数据类型为table 时配置此选项可以生成特定规则key</li>
