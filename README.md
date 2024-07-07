@@ -3402,6 +3402,52 @@
     无改动
     
 ## 5.3.6迁移5.4.0
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1251927048050446336, '1251925635509522432', '模板管理', '3', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-06-16 15:51:08', '2024-06-16 15:51:08', 'push_template_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1251927230410395648, '1251927048050446336', '模板分页查询', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-06-16 15:51:51', '2024-06-16 15:51:51', 'push_template_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1251927279542472704, '1251927048050446336', '模板查询', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2024-06-16 15:52:03', '2024-06-16 15:52:03', 'push_template_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1251927474338533376, '1251927048050446336', '模板新增页面', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2024-06-16 15:52:50', '2024-06-16 15:52:50', 'push_template_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1251927521780305920, '1251927048050446336', '模板新增', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2024-06-16 15:53:01', '2024-06-16 15:53:01', 'push_template_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1251927576704716800, '1251927048050446336', '模板更新', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2024-06-16 15:53:14', '2024-06-16 15:53:14', 'push_template_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1251927641867423744, '1251927048050446336', '模板删除', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2024-06-16 15:53:30', '2024-06-16 15:53:30', 'push_template_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1251929207898902528, '1251927048050446336', '模板明细', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2024-06-16 15:59:43', '2024-06-16 15:59:43', 'push_template_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1254096059366379520, '1251925635509522432', '通道管理', '3', 'zyc', 'fa fa-coffee', '', '2', '1', '2024-06-22 15:30:01', '2024-06-22 15:30:01', 'push_channel_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1254096243294998528, '1254096059366379520', '通道列表查询', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-06-22 15:30:44', '2024-06-22 15:30:44', 'push_channel_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1254096330221948928, '1254096059366379520', '通道新增页面', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2024-06-22 15:31:05', '2024-06-22 15:31:05', 'push_channel_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1254096378498387968, '1254096059366379520', '通道新增', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2024-06-22 15:31:17', '2024-06-22 15:31:17', 'push_channel_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1254096423490686976, '1254096059366379520', '通道更新', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2024-06-22 15:31:27', '2024-06-22 15:31:27', 'push_channel_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1254096473407098880, '1254096059366379520', '通道删除', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2024-06-22 15:31:39', '2024-06-22 15:31:39', 'push_channel_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1254098403315421184, '1254096059366379520', '通道分页列表查询', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2024-06-22 15:39:19', '2024-06-22 15:39:19', 'push_channel_list_by_page', '5', '', '', 'zdh', '');
+
     CREATE TABLE `push_template_info` (
           `id` bigint NOT NULL AUTO_INCREMENT,
           `template_name` varchar(128) DEFAULT '' COMMENT '模板名称',
