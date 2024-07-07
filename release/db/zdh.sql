@@ -41,7 +41,7 @@ CREATE TABLE `permission_user_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_product_code_user` (`product_code`,`user_account`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-账户信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4  COMMENT='权限-账户信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,7 +74,7 @@ CREATE TABLE `crowd_rule_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=985279445663223809 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='智能营销-人群规则信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=985279445663223809 DEFAULT CHARSET=utf8mb4  COMMENT='智能营销-人群规则信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,7 +117,7 @@ CREATE TABLE `etl_task_unstructure_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=947147712233476097 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-非结构化任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=947147712233476097 DEFAULT CHARSET=utf8mb4  COMMENT='etl-非结构化任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,7 +161,7 @@ CREATE TABLE `etl_task_flink_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=904464410402099201 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-flink任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=904464410402099201 DEFAULT CHARSET=utf8mb4  COMMENT='etl-flink任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -194,7 +194,7 @@ CREATE TABLE `permission_dimension_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_product_code_dim` (`product_code`,`dim_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='维度信息';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4  COMMENT='维度信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -256,7 +256,7 @@ CREATE TABLE `etl_task_batch_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=927221878378991617 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='批量etl任务生成配置信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=927221878378991617 DEFAULT CHARSET=utf8mb4  COMMENT='批量etl任务生成配置信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -289,7 +289,7 @@ CREATE TABLE `permission_usergroup_dimension_value_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_product_code_group_dim` (`product_code`,`group_code`,`dim_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户组维度关系信息';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4  COMMENT='用户组维度关系信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -327,7 +327,7 @@ CREATE TABLE `function_info` (
   `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
   PRIMARY KEY (`id`),
   KEY `idx_dim_product_function` (`product_code`,`function_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1177744347907493889 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='函数信息';
+) ENGINE=InnoDB AUTO_INCREMENT=1177744347907493889 DEFAULT CHARSET=utf8mb4  COMMENT='函数信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -358,7 +358,7 @@ CREATE TABLE `help_document_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='帮助文档';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4  COMMENT='帮助文档';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -393,7 +393,7 @@ CREATE TABLE `project_info` (
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`project_code`,`owner`),
   KEY `idx_product_owner` (`product_code`,`project_code`,`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1243321283798634497 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='项目信息';
+) ENGINE=InnoDB AUTO_INCREMENT=1243321283798634497 DEFAULT CHARSET=utf8mb4  COMMENT='项目信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -441,7 +441,7 @@ CREATE TABLE `etl_drools_task_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=749279630074056705 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-drools任务表(废弃-不在更新维护)';
+) ENGINE=InnoDB AUTO_INCREMENT=749279630074056705 DEFAULT CHARSET=utf8mb4  COMMENT='etl-drools任务表(废弃-不在更新维护)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -482,7 +482,7 @@ CREATE TABLE `server_task_instance` (
   `build_privatekey` text COMMENT '构建服务器密钥地址',
   `build_path` varchar(500) DEFAULT NULL COMMENT '构建地址',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=809858569640873985 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='服务器-服务部署日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=809858569640873985 DEFAULT CHARSET=utf8mb4  COMMENT='服务器-服务部署日志表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -513,13 +513,13 @@ CREATE TABLE `strategy_group_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `expr` varchar(100) DEFAULT NULL COMMENT 'cron表达式/自定义表达式',
-  `misfire` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0' COMMENT '恢复策略，0:无操作,1:所有历史重新执行,2:最近一次历史重新执行',
+  `misfire` varchar(8) CHARACTER SET utf8mb4  DEFAULT '0' COMMENT '恢复策略，0:无操作,1:所有历史重新执行,2:最近一次历史重新执行',
   `priority` varchar(4) DEFAULT NULL COMMENT '任务优先级',
   `status` varchar(100) DEFAULT NULL COMMENT '调度任务状态,create,running,pause,finish,remove,error',
   `quartz_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例触发时间',
   `use_quartz_time` varchar(5) DEFAULT NULL COMMENT '是否使用quartz 调度时间',
   `time_diff` varchar(50) DEFAULT NULL COMMENT '后退时间差',
-  `schedule_source` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '1' COMMENT '调度来源,1:例行,2:手动',
+  `schedule_source` varchar(64) CHARACTER SET utf8mb4  DEFAULT '1' COMMENT '调度来源,1:例行,2:手动',
   `cur_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例逻辑调度时间',
   `run_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '实例开始执行时间',
   `group_type` varchar(256) NOT NULL DEFAULT 'offline' COMMENT '实时online,离线:offline',
@@ -530,7 +530,7 @@ CREATE TABLE `strategy_group_info` (
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`),
   KEY `idx_dim_group_owner` (`dim_group`,`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1259113880878059521 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='智能营销-策略组信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1259113880878059521 DEFAULT CHARSET=utf8mb4  COMMENT='智能营销-策略组信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -561,7 +561,7 @@ CREATE TABLE `data_tag_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_tag_code` (`product_code`,`tag_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=939144017667428353 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-数据标识信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=939144017667428353 DEFAULT CHARSET=utf8mb4  COMMENT='权限-数据标识信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -592,7 +592,7 @@ CREATE TABLE `zdh_nginx` (
   `nginx_dir` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='zdh-文件服务器信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4  COMMENT='zdh-文件服务器信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -619,7 +619,7 @@ CREATE TABLE `meta_database_info` (
   `owner` varchar(100) DEFAULT NULL,
   `create_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='数据库元信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4  COMMENT='数据库元信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -648,7 +648,7 @@ CREATE TABLE `user_group_info` (
   `product_code` varchar(128) NOT NULL DEFAULT '' COMMENT '所属产品',
   `group_code` varchar(256) NOT NULL DEFAULT '' COMMENT '组code',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-用户组信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4  COMMENT='权限-用户组信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -678,7 +678,7 @@ CREATE TABLE `approval_config_info` (
   `product_code` varchar(200) NOT NULL DEFAULT '' COMMENT '产品code',
   PRIMARY KEY (`id`),
   KEY `idx_code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='审批节点信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4  COMMENT='审批节点信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -726,7 +726,7 @@ CREATE TABLE `etl_task_log_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1000344899591081985 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-日志采集信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1000344899591081985 DEFAULT CHARSET=utf8mb4  COMMENT='etl-日志采集信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -772,7 +772,7 @@ CREATE TABLE `quality_task_info` (
   `service` varchar(100) DEFAULT NULL COMMENT '表所属服务',
   `update_context` varchar(100) DEFAULT NULL COMMENT '更新说明',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=919326325259374593 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='质量检测任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=919326325259374593 DEFAULT CHARSET=utf8mb4  COMMENT='质量检测任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -807,7 +807,7 @@ CREATE TABLE `push_channel_info` (
   `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='push通道配置';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4  COMMENT='push通道配置';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -835,7 +835,7 @@ CREATE TABLE `risk_event_info` (
   `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1129782839131246593 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='风控事件信息';
+) ENGINE=InnoDB AUTO_INCREMENT=1129782839131246593 DEFAULT CHARSET=utf8mb4  COMMENT='风控事件信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -862,7 +862,7 @@ CREATE TABLE `zdh_logs` (
   `level` varchar(10) DEFAULT NULL,
   `task_logs_id` varchar(100) DEFAULT NULL,
   KEY `idx_task_logs_id` (`task_logs_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='zdh-日志表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='zdh-日志表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -897,7 +897,7 @@ CREATE TABLE `permission_bigdata_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-大数据权限信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4  COMMENT='权限-大数据权限信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -932,7 +932,7 @@ CREATE TABLE `strategy_group_log` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`log_object_id`,`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 ;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -982,12 +982,12 @@ CREATE TABLE `strategy_instance` (
   `is_disenable` varchar(10) DEFAULT NULL COMMENT '是否禁用true:禁用,false:启用',
   `depend_level` varchar(10) NOT NULL DEFAULT '0' COMMENT '判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行',
   `touch_type` varchar(128) NOT NULL DEFAULT 'database' COMMENT '推送类型,database,queue',
-  `strategy_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0' COMMENT '策略id',
+  `strategy_id` varchar(128) CHARACTER SET utf8mb4  NOT NULL DEFAULT '0' COMMENT '策略id',
   `group_type` varchar(256) NOT NULL DEFAULT 'offline' COMMENT '实时online,离线:offline',
   `data_node` varchar(1024) NOT NULL DEFAULT '' COMMENT '数据节点',
   `is_notice` varchar(16) DEFAULT 'false' COMMENT '是否已通知',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1259119697182330891 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='智能营销-策略实例任务表';
+) ENGINE=InnoDB AUTO_INCREMENT=1259119697182330891 DEFAULT CHARSET=utf8mb4  COMMENT='智能营销-策略实例任务表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1029,7 +1029,7 @@ CREATE TABLE `etl_task_unstructure_log_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=947149679416578049 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-非结构化任务日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=947149679416578049 DEFAULT CHARSET=utf8mb4  COMMENT='etl-非结构化任务日志表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1068,7 +1068,7 @@ CREATE TABLE `we_mock_tree_info` (
   `product_code` varchar(100) NOT NULL DEFAULT '' COMMENT '产品code',
   PRIMARY KEY (`id`),
   KEY `idx_product_code_owner` (`product_code`,`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1035700936934166529 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='mock-mock团队树信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1035700936934166529 DEFAULT CHARSET=utf8mb4  COMMENT='mock-mock团队树信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1137,7 +1137,7 @@ CREATE TABLE `etl_task_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1210711919858552833 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-spark任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1210711919858552833 DEFAULT CHARSET=utf8mb4  COMMENT='etl-spark任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1167,7 +1167,7 @@ CREATE TABLE `quality_rule_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=919638908919091201 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='质量检测规则信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=919638908919091201 DEFAULT CHARSET=utf8mb4  COMMENT='质量检测规则信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1204,7 +1204,7 @@ CREATE TABLE `server_task_info` (
   `build_privatekey` text COMMENT '构建服务器密钥地址',
   `build_path` varchar(500) DEFAULT NULL COMMENT '构建地址',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='服务器-服务部署任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4  COMMENT='服务器-服务部署任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1237,7 +1237,7 @@ CREATE TABLE `apply_info` (
   `is_notice` varchar(8) NOT NULL DEFAULT 'false' COMMENT '是否已经通知true/false',
   PRIMARY KEY (`id`),
   KEY `idx_approve_id` (`approve_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1172937091235975169 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='申请信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1172937091235975169 DEFAULT CHARSET=utf8mb4  COMMENT='申请信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1261,7 +1261,7 @@ CREATE TABLE `data_sources_type_info` (
   `id` int NOT NULL AUTO_INCREMENT,
   `sources_type` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='数据源类型表';
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4  COMMENT='数据源类型表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1301,7 +1301,7 @@ CREATE TABLE `we_mock_data_info` (
   `mock_tree_id` varchar(100) NOT NULL DEFAULT '' COMMENT 'mock tree id',
   `is_disenable` varchar(128) NOT NULL DEFAULT 'on' COMMENT '是否禁用on,off',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1210709080084058113 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='mock-mock数据信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1210709080084058113 DEFAULT CHARSET=utf8mb4  COMMENT='mock-mock数据信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1368,7 +1368,7 @@ CREATE TABLE `etl_task_datax_auto_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1046101717210370049 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-datax-web任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1046101717210370049 DEFAULT CHARSET=utf8mb4  COMMENT='etl-datax-web任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1401,7 +1401,7 @@ CREATE TABLE `label_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `label_expression` text COMMENT '运算表达式,仅支持sql',
   `label_engine` varchar(16) DEFAULT '' COMMENT '标签计算引擎,mysql,hive,spark,presto',
-  `data_sources_choose_input` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0' COMMENT '数据源id',
+  `data_sources_choose_input` varchar(128) CHARACTER SET utf8mb4  NOT NULL DEFAULT '0' COMMENT '数据源id',
   `label_use_type` varchar(16) NOT NULL DEFAULT 'batch' COMMENT '使用方式,batch:值查人,single:人查值',
   `label_data_time_effect` varchar(16) NOT NULL DEFAULT 'day' COMMENT '数据时效性, day:天级,hour:小时级,second:准实时',
   `label_data_update_type` varchar(16) NOT NULL DEFAULT 'overwrite' COMMENT '数据更新类型,overwrite:覆盖,append:追加,get_append:值追加',
@@ -1413,7 +1413,7 @@ CREATE TABLE `label_info` (
   `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
   PRIMARY KEY (`id`),
   KEY `idx_label_code` (`label_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=1235959151260078081 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='智能营销-标签信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1235959151260078081 DEFAULT CHARSET=utf8mb4  COMMENT='智能营销-标签信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1512,7 +1512,7 @@ CREATE TABLE `task_log_instance` (
   KEY `idx_status` (`status`),
   KEY `idx_notice` (`is_notice`),
   KEY `idx_job_id_owner` (`group_id`,`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1259199267474509830 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='调度-任务实例表';
+) ENGINE=InnoDB AUTO_INCREMENT=1259199267474509830 DEFAULT CHARSET=utf8mb4  COMMENT='调度-任务实例表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1546,7 +1546,7 @@ CREATE TABLE `blood_source_info` (
   `output_json` text COMMENT '输出源配置',
   `input_json` text COMMENT '输入源配置',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=566 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='数据血缘关系表';
+) ENGINE=InnoDB AUTO_INCREMENT=566 DEFAULT CHARSET=utf8mb4  COMMENT='数据血缘关系表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1577,7 +1577,7 @@ CREATE TABLE `approval_auditor_info` (
   `auditor_context` varchar(128) NOT NULL DEFAULT '' COMMENT '环节说明',
   `auditor_rule` varchar(128) NOT NULL DEFAULT '' COMMENT '审批规则,根据规则自动查询审批人信息,实现动态审批人效果',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=999452526732382209 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='审批人-审批节点信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=999452526732382209 DEFAULT CHARSET=utf8mb4  COMMENT='审批人-审批节点信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1607,7 +1607,7 @@ CREATE TABLE `role_info` (
   `product_code` varchar(100) NOT NULL DEFAULT '' COMMENT '产品code',
   PRIMARY KEY (`id`),
   KEY `idx_product_code` (`product_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=1251926416547647489 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-角色信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1251926416547647489 DEFAULT CHARSET=utf8mb4  COMMENT='权限-角色信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1643,7 +1643,7 @@ CREATE TABLE `zdh_ha_info` (
   `online` varchar(10) DEFAULT NULL COMMENT '是否上线true:上线,false:未上线',
   PRIMARY KEY (`id`),
   KEY `idx_zdh_instance` (`zdh_instance`)
-) ENGINE=InnoDB AUTO_INCREMENT=415 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='zdh-ha表';
+) ENGINE=InnoDB AUTO_INCREMENT=415 DEFAULT CHARSET=utf8mb4  COMMENT='zdh-ha表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1683,7 +1683,7 @@ CREATE TABLE `issue_data_info` (
   `label_params` text COMMENT '数据标签,多个逗号分割',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1089199466314993665 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='发布数据信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1089199466314993665 DEFAULT CHARSET=utf8mb4  COMMENT='发布数据信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1778,7 +1778,7 @@ CREATE TABLE `task_group_log_instance` (
   KEY `idx_date_job_id` (`etl_date`,`job_id`),
   KEY `idx_status` (`status`),
   KEY `idx_job_id_owner` (`job_id`,`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1259199265524158466 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='调度-任务组实例表';
+) ENGINE=InnoDB AUTO_INCREMENT=1259199265524158466 DEFAULT CHARSET=utf8mb4  COMMENT='调度-任务组实例表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1829,7 +1829,7 @@ CREATE TABLE `etl_task_jdbc_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=914511685971087361 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-jdbc任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=914511685971087361 DEFAULT CHARSET=utf8mb4  COMMENT='etl-jdbc任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1863,7 +1863,7 @@ CREATE TABLE `plugin_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_plugin_code` (`plugin_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=1256999469799444481 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='智能营销-插件信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1256999469799444481 DEFAULT CHARSET=utf8mb4  COMMENT='智能营销-插件信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1901,7 +1901,7 @@ CREATE TABLE `etl_task_datax_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1046087534708264961 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-datax任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1046087534708264961 DEFAULT CHARSET=utf8mb4  COMMENT='etl-datax任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1944,7 +1944,7 @@ CREATE TABLE `ssh_task_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=924234428954185729 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-ssh任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=924234428954185729 DEFAULT CHARSET=utf8mb4  COMMENT='etl-ssh任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1979,11 +1979,11 @@ CREATE TABLE `process_flow_info` (
   `is_end` varchar(64) NOT NULL DEFAULT '0' COMMENT '0:非最后一个节点,1:最后一个节点',
   `level` varchar(64) NOT NULL DEFAULT '0' COMMENT '审批节点环节',
   `event_id` varchar(64) NOT NULL DEFAULT '' COMMENT '发起流程的具体事件唯一键',
-  `other_handle` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0' COMMENT '外部系统接入审批流-事件触发标识,0:未处理,1:已处理,2:处理失败',
-  `agent_user` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '代理人id',
+  `other_handle` varchar(128) CHARACTER SET utf8mb4  DEFAULT '0' COMMENT '外部系统接入审批流-事件触发标识,0:未处理,1:已处理,2:处理失败',
+  `agent_user` varchar(256) CHARACTER SET utf8mb4  DEFAULT '' COMMENT '代理人id',
   `product_code` varchar(200) NOT NULL DEFAULT '' COMMENT '产品code',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1172960411394248710 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='流程-审批流信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1172960411394248710 DEFAULT CHARSET=utf8mb4  COMMENT='流程-审批流信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2019,7 +2019,7 @@ CREATE TABLE `data_sources_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_data_source_type` (`data_source_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='数据源信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4  COMMENT='数据源信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2053,7 +2053,7 @@ CREATE TABLE `permission_dimension_value_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_product_code_dim_value` (`product_code`,`dim_code`,`dim_value_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='维度值信息';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4  COMMENT='维度值信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2085,7 +2085,7 @@ CREATE TABLE `approval_event_info` (
   `product_code` varchar(200) NOT NULL DEFAULT '' COMMENT '产品code',
   PRIMARY KEY (`id`),
   KEY `idx_event_code` (`product_code`,`event_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='审批事件信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4  COMMENT='审批事件信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2113,7 +2113,7 @@ CREATE TABLE `quartz_executor_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='调度-执行器信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4  COMMENT='调度-执行器信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2145,7 +2145,7 @@ CREATE TABLE `zdh_download_info` (
   `is_notice` varchar(8) DEFAULT 'false' COMMENT '是否已经通知true/false',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='下载信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4  COMMENT='下载信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2176,7 +2176,7 @@ CREATE TABLE `alarm_sms_info` (
   `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='短信告警信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4  COMMENT='短信告警信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2211,7 +2211,7 @@ CREATE TABLE `filter_info` (
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`),
   KEY `idx_filter_code` (`filter_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=1034238670233669633 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='智能营销-过滤信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1034238670233669633 DEFAULT CHARSET=utf8mb4  COMMENT='智能营销-过滤信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2263,7 +2263,7 @@ CREATE TABLE `sql_task_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=924230036783894529 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-sql任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=924230036783894529 DEFAULT CHARSET=utf8mb4  COMMENT='etl-sql任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2294,7 +2294,7 @@ CREATE TABLE `beacon_fire_alarm_msg_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='烽火台告警信息';
+) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4  COMMENT='烽火台告警信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2325,7 +2325,7 @@ CREATE TABLE `approval_auditor_flow_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=998006612381667329 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='审批流配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=998006612381667329 DEFAULT CHARSET=utf8mb4  COMMENT='审批流配置表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2362,7 +2362,7 @@ CREATE TABLE `touch_config_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_template_code_owner` (`template_code`,`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='智能营销-触达配置信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4  COMMENT='智能营销-触达配置信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2394,7 +2394,7 @@ CREATE TABLE `crowd_file_info` (
   `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='智能营销-人群文件信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4  COMMENT='智能营销-人群文件信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2434,7 +2434,7 @@ CREATE TABLE `beacon_fire_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1171956787910283265 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='烽火台信息';
+) ENGINE=InnoDB AUTO_INCREMENT=1171956787910283265 DEFAULT CHARSET=utf8mb4  COMMENT='烽火台信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2467,7 +2467,7 @@ CREATE TABLE `permission_user_dimension_value_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_product_code_user_dim` (`product_code`,`user_account`,`dim_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户维度关系信息';
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4  COMMENT='用户维度关系信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2502,7 +2502,7 @@ CREATE TABLE `param_info` (
   `version` varchar(64) NOT NULL DEFAULT '' COMMENT '版本,默认为空不区分版本',
   PRIMARY KEY (`id`),
   KEY `idx_param_name` (`param_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='参数配置信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4  COMMENT='参数配置信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2573,7 +2573,7 @@ CREATE TABLE `quartz_job_info` (
   `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`job_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='调度-任务信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='调度-任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2605,7 +2605,7 @@ CREATE TABLE `beacon_fire_alarm_group_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1170811173294051329 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='烽火台告警组信息';
+) ENGINE=InnoDB AUTO_INCREMENT=1170811173294051329 DEFAULT CHARSET=utf8mb4  COMMENT='烽火台告警组信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2642,7 +2642,7 @@ CREATE TABLE `test_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='测试表(废弃)';
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4  COMMENT='测试表(废弃)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2677,7 +2677,7 @@ CREATE TABLE `account_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `idx_username` (`user_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户账号表';
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4  COMMENT='用户账号表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2705,7 +2705,7 @@ CREATE TABLE `jar_file_info` (
   `jar_etl_id` varchar(20) DEFAULT NULL COMMENT '任务id',
   `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
   `status` varchar(10) DEFAULT NULL COMMENT '文件状态是否删除'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='jar文件上传信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='jar文件上传信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2737,7 +2737,7 @@ CREATE TABLE `enum_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_enum_code` (`enum_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=1119044926839984129 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='枚举信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1119044926839984129 DEFAULT CHARSET=utf8mb4  COMMENT='枚举信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2769,7 +2769,7 @@ CREATE TABLE `data_tag_group_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_data_source_type` (`product_code`,`tag_group_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=939114806642741249 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-数据标识组信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=939114806642741249 DEFAULT CHARSET=utf8mb4  COMMENT='权限-数据标识组信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2803,7 +2803,7 @@ CREATE TABLE `permission_apply_info` (
   `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_product_code_owner` (`product_code`,`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-申请信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4  COMMENT='权限-申请信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2846,7 +2846,7 @@ CREATE TABLE `strategy_group_instance` (
   `run_jsmind_data` mediumtext COMMENT '策略实例关系',
   `next_tasks` text COMMENT '下游任务组实例id',
   `pre_tasks` text COMMENT '上游任务组实例id',
-  `strategy_group_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0' COMMENT '策略组id',
+  `strategy_group_id` varchar(128) CHARACTER SET utf8mb4  NOT NULL DEFAULT '0' COMMENT '策略组id',
   `group_type` varchar(256) NOT NULL DEFAULT 'offline' COMMENT '实时online,离线:offline',
   `data_node` varchar(1024) NOT NULL DEFAULT '' COMMENT '数据节点',
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
@@ -2855,7 +2855,7 @@ CREATE TABLE `strategy_group_instance` (
   `is_notice` varchar(16) DEFAULT 'false' COMMENT '是否已通知',
   PRIMARY KEY (`id`),
   KEY `idx_strategy_group_id_owner` (`strategy_group_id`,`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1259119697169747969 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='智能营销-策略组实例任务表';
+) ENGINE=InnoDB AUTO_INCREMENT=1259119697169747969 DEFAULT CHARSET=utf8mb4  COMMENT='智能营销-策略组实例任务表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2895,7 +2895,7 @@ CREATE TABLE `resource_tree_info` (
   `qps` varchar(16) NOT NULL DEFAULT '' COMMENT 'qps限制',
   PRIMARY KEY (`id`),
   KEY `idx_product_code` (`product_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=1254098403315421185 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-资源树信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1254098403315421185 DEFAULT CHARSET=utf8mb4  COMMENT='权限-资源树信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2964,7 +2964,7 @@ CREATE TABLE `etl_apply_task_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=924296352974770177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl申请源任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=924296352974770177 DEFAULT CHARSET=utf8mb4  COMMENT='etl申请源任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2990,7 +2990,7 @@ CREATE TABLE `every_day_notice` (
   `is_delete` varchar(10) DEFAULT NULL COMMENT '是否删除消息',
   `show_type` varchar(16) NOT NULL DEFAULT '' COMMENT '展示类型,1:弹框,2:文字',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1007944272181202945 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统通知信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1007944272181202945 DEFAULT CHARSET=utf8mb4  COMMENT='系统通知信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3037,7 +3037,7 @@ CREATE TABLE `etl_more_task_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1031182092966301697 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl多源任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1031182092966301697 DEFAULT CHARSET=utf8mb4  COMMENT='etl多源任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3081,7 +3081,7 @@ CREATE TABLE `etl_task_kettle_info` (
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1211345059560034305 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-kettle任务信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1211345059560034305 DEFAULT CHARSET=utf8mb4  COMMENT='etl-kettle任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3116,7 +3116,7 @@ CREATE TABLE `product_tag_info` (
   `product_admin` varchar(1024) NOT NULL DEFAULT '' COMMENT '产品管理员',
   PRIMARY KEY (`id`),
   KEY `idx_product_code` (`product_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=1054875065910300673 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-产品信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1054875065910300673 DEFAULT CHARSET=utf8mb4  COMMENT='权限-产品信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3150,7 +3150,7 @@ CREATE TABLE `user_operate_log` (
   `ip` varchar(16) NOT NULL DEFAULT '' COMMENT 'ip地址',
   PRIMARY KEY (`id`),
   KEY `idx_create_time` (`create_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=83793 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=83793 DEFAULT CHARSET=utf8mb4  COMMENT='操作日志表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3179,7 +3179,7 @@ CREATE TABLE `label_complete_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='标签完成信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='标签完成信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3203,7 +3203,7 @@ CREATE TABLE `etl_task_meta` (
   `context` varchar(100) DEFAULT NULL,
   `parent_id` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-任务相关元信息配置(废弃)';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4  COMMENT='etl-任务相关元信息配置(废弃)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3230,7 +3230,7 @@ CREATE TABLE `dispatch_task_info` (
   `etl_context` varchar(100) DEFAULT NULL,
   `owner` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='调度任务表(废弃)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='调度任务表(废弃)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3260,7 +3260,7 @@ CREATE TABLE `quality` (
   `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
   `job_context` varchar(256) DEFAULT NULL COMMENT '调度任务名称',
   `etl_context` varchar(256) DEFAULT NULL COMMENT '质量任务名称'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='质量报告信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='质量报告信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3290,7 +3290,7 @@ CREATE TABLE `role_resource_info` (
   `product_code` varchar(200) NOT NULL DEFAULT '' COMMENT '产品code',
   PRIMARY KEY (`id`),
   KEY `idx_product_code` (`product_code`,`role_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=65269 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-角色资源树关系表';
+) ENGINE=InnoDB AUTO_INCREMENT=65269 DEFAULT CHARSET=utf8mb4  COMMENT='权限-角色资源树关系表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3315,7 +3315,7 @@ CREATE TABLE `etl_task_update_logs` (
   `update_context` varchar(100) DEFAULT NULL,
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `owner` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='etl-任务更新日志表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='etl-任务更新日志表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3346,7 +3346,7 @@ CREATE TABLE `jar_task_info` (
   `spark_submit_params` text,
   `owner` varchar(10) DEFAULT NULL,
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='jar任务信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='jar任务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3377,7 +3377,7 @@ CREATE TABLE `self_history` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=965196441737760769 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='自助服务-个人历史信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=965196441737760769 DEFAULT CHARSET=utf8mb4  COMMENT='自助服务-个人历史信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3409,7 +3409,7 @@ CREATE TABLE `notice_info` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=1801 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='消息盒子表';
+) ENGINE=InnoDB AUTO_INCREMENT=1801 DEFAULT CHARSET=utf8mb4  COMMENT='消息盒子表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3444,7 +3444,7 @@ CREATE TABLE `push_template_info` (
   `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='push模板配置';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4  COMMENT='push模板配置';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3467,7 +3467,7 @@ CREATE TABLE `user_resource_info` (
   `update_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=943 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限-用户资源关系表(废弃)';
+) ENGINE=InnoDB AUTO_INCREMENT=943 DEFAULT CHARSET=utf8mb4  COMMENT='权限-用户资源关系表(废弃)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

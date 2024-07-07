@@ -1754,1566 +1754,1691 @@ api[33].list.push({
     desc: '产品删除',
 });
 api.push({
-    alias: 'SystemController',
+    alias: 'ProjectController',
     order: '35',
-    desc: '系统服务',
-    link: '系统服务',
+    desc: '项目信息服务',
+    link: '项目信息服务',
     list: []
 })
 api[34].list.push({
     order: '1',
-    desc: '获取平台名称',
+    desc: '项目信息列表首页',
 });
 api[34].list.push({
     order: '2',
-    desc: '帮助页',
+    desc: '项目信息列表',
 });
 api[34].list.push({
     order: '3',
-    desc: 'quartz表达式页面',
+    desc: '项目信息列表',
 });
 api[34].list.push({
     order: '4',
-    desc: '文件服务器设置页面',
+    desc: '项目信息新增首页',
 });
 api[34].list.push({
     order: '5',
-    desc: '获取文件服务器',
+    desc: 'xx明细',
 });
 api[34].list.push({
     order: '6',
-    desc: '文件服务器信息更新',
+    desc: '项目信息更新',
 });
 api[34].list.push({
     order: '7',
-    desc: '系统通知信息',
+    desc: '项目信息新增',
 });
 api[34].list.push({
     order: '8',
+    desc: '项目信息删除',
+});
+api.push({
+    alias: 'SystemController',
+    order: '36',
+    desc: '系统服务',
+    link: '系统服务',
+    list: []
+})
+api[35].list.push({
+    order: '1',
+    desc: '获取平台名称',
+});
+api[35].list.push({
+    order: '2',
+    desc: '帮助页',
+});
+api[35].list.push({
+    order: '3',
+    desc: 'quartz表达式页面',
+});
+api[35].list.push({
+    order: '4',
+    desc: '文件服务器设置页面',
+});
+api[35].list.push({
+    order: '5',
+    desc: '获取文件服务器',
+});
+api[35].list.push({
+    order: '6',
+    desc: '文件服务器信息更新',
+});
+api[35].list.push({
+    order: '7',
+    desc: '系统通知信息',
+});
+api[35].list.push({
+    order: '8',
     desc: '删除系统任务',
 });
-api[34].list.push({
+api[35].list.push({
     order: '9',
     desc: '通知信息详情页面',
 });
-api[34].list.push({
+api[35].list.push({
     order: '10',
     desc: '通知信息明细',
 });
-api[34].list.push({
+api[35].list.push({
     order: '11',
     desc: '通知首页',
 });
-api[34].list.push({
+api[35].list.push({
     order: '12',
     desc: '通知信息列表',
 });
-api[34].list.push({
+api[35].list.push({
     order: '13',
     desc: '删除通知信息',
 });
-api[34].list.push({
+api[35].list.push({
     order: '14',
     desc: '通知信息标记已读',
 });
-api[34].list.push({
+api[35].list.push({
     order: '15',
     desc: '使用帮助',
 });
-api[34].list.push({
+api[35].list.push({
     order: '16',
     desc: '解析quartz表达式',
 });
-api[34].list.push({
+api[35].list.push({
     order: '17',
     desc: '系统登录通知页面',
 });
-api[34].list.push({
+api[35].list.push({
     order: '18',
     desc: '系统登录通知',
 });
-api[34].list.push({
+api[35].list.push({
     order: '19',
     desc: '更新系统登录通知',
 });
-api[34].list.push({
+api[35].list.push({
     order: '20',
     desc: '获取当前系统版本',
 });
 api.push({
     alias: 'WeMockController',
-    order: '36',
+    order: '37',
     desc: 'mock数据服务',
     link: 'mock数据服务',
     list: []
 })
-api[35].list.push({
+api[36].list.push({
     order: '1',
     desc: 'mock数据首页',
 });
-api[35].list.push({
+api[36].list.push({
     order: '2',
     desc: 'mock数据新增页面',
 });
-api[35].list.push({
+api[36].list.push({
     order: '3',
     desc: 'wemock获取树形节点',
 });
-api[35].list.push({
+api[36].list.push({
     order: '4',
     desc: 'wemock增加根',
 });
-api[35].list.push({
+api[36].list.push({
     order: '5',
     desc: '根据主键获取mock资源信息',
 });
-api[35].list.push({
+api[36].list.push({
     order: '6',
     desc: 'mock数据更新',
 });
-api[35].list.push({
+api[36].list.push({
     order: '7',
     desc: 'mock数据新增',
 });
-api[35].list.push({
+api[36].list.push({
     order: '8',
     desc: 'mock数据删除',
 });
-api[35].list.push({
+api[36].list.push({
     order: '9',
     desc: '更新资源层级',
 });
-api[35].list.push({
+api[36].list.push({
     order: '10',
     desc: 'wemock获取mock数据明细 todo 待改造',
 });
-api[35].list.push({
+api[36].list.push({
     order: '11',
     desc: 'mock数据-配置信息页面',
 });
-api[35].list.push({
+api[36].list.push({
     order: '12',
     desc: 'mock数据-信息明细',
 });
-api[35].list.push({
+api[36].list.push({
     order: '13',
     desc: 'mock数据-新增配置',
 });
-api[35].list.push({
+api[36].list.push({
     order: '14',
     desc: 'mock数据-更新配置',
 });
-api[35].list.push({
+api[36].list.push({
     order: '15',
     desc: 'mock数据-删除配置',
 });
-api[35].list.push({
+api[36].list.push({
     order: '16',
     desc: 'mock数据-短链生成页面',
 });
-api[35].list.push({
+api[36].list.push({
     order: '17',
     desc: '短链生成',
 });
 api.push({
     alias: 'ZdhApprovalController',
-    order: '37',
+    order: '38',
     desc: '审批流服务',
     link: '审批流服务',
     list: []
 })
-api[36].list.push({
+api[37].list.push({
     order: '1',
     desc: '审批节点首页',
 });
-api[36].list.push({
+api[37].list.push({
     order: '2',
     desc: '审批节点配置',
 });
-api[36].list.push({
+api[37].list.push({
     order: '3',
     desc: '审批节点新增页面',
 });
-api[36].list.push({
+api[37].list.push({
     order: '4',
     desc: '审批节点明细',
 });
-api[36].list.push({
+api[37].list.push({
     order: '5',
     desc: '审批节点新增',
 });
-api[36].list.push({
+api[37].list.push({
     order: '6',
     desc: '审批节点更新',
 });
-api[36].list.push({
+api[37].list.push({
     order: '7',
     desc: '审批人首页',
 });
-api[36].list.push({
+api[37].list.push({
     order: '8',
     desc: '审批人列表',
 });
-api[36].list.push({
+api[37].list.push({
     order: '9',
     desc: '审批人新增首页',
 });
-api[36].list.push({
+api[37].list.push({
     order: '10',
     desc: '审批流首页',
 });
-api[36].list.push({
+api[37].list.push({
     order: '11',
     desc: '审批流新增首页',
 });
-api[36].list.push({
+api[37].list.push({
     order: '12',
     desc: '审批人新增',
 });
-api[36].list.push({
+api[37].list.push({
     order: '13',
     desc: '审批人说明',
 });
-api[36].list.push({
+api[37].list.push({
     order: '14',
     desc: '审批人更新',
 });
-api[36].list.push({
+api[37].list.push({
     order: '15',
     desc: '审批人明细',
 });
-api[36].list.push({
+api[37].list.push({
     order: '16',
     desc: '审批流列表',
 });
-api[36].list.push({
+api[37].list.push({
     order: '17',
     desc: '审批流新增',
 });
-api[36].list.push({
+api[37].list.push({
     order: '18',
     desc: '审批流删除',
 });
-api[36].list.push({
+api[37].list.push({
     order: '19',
     desc: '审批流-更新',
 });
-api[36].list.push({
+api[37].list.push({
     order: '20',
     desc: '审批流明细',
 });
-api[36].list.push({
+api[37].list.push({
     order: '21',
     desc: '审批事件首页(废弃,使用审批流代替)',
 });
-api[36].list.push({
+api[37].list.push({
     order: '22',
     desc: '审批事件新增首页(废弃,使用审批流代替)',
 });
-api[36].list.push({
+api[37].list.push({
     order: '23',
     desc: '审批事件新增',
 });
-api[36].list.push({
+api[37].list.push({
     order: '24',
     desc: '审批事件明细',
 });
-api[36].list.push({
+api[37].list.push({
     order: '25',
     desc: '审批事件列表',
 });
-api[36].list.push({
+api[37].list.push({
     order: '26',
     desc: '审批事件更新',
 });
 api.push({
     alias: 'ZdhBloodSourceController',
-    order: '38',
+    order: '39',
     desc: '血缘服务',
     link: '血缘服务',
     list: []
 })
-api[37].list.push({
+api[38].list.push({
     order: '1',
     desc: '血缘首页',
 });
-api[37].list.push({
+api[38].list.push({
     order: '2',
     desc: '血缘分析首页',
 });
-api[37].list.push({
+api[38].list.push({
     order: '3',
     desc: '生成血缘关系',
 });
-api[37].list.push({
+api[38].list.push({
     order: '4',
     desc: '模糊查询输入源',
 });
-api[37].list.push({
+api[38].list.push({
     order: '5',
     desc: '数据血缘明细',
 });
 api.push({
     alias: 'ZdhDataSourcesController',
-    order: '39',
+    order: '40',
     desc: '数据源服务',
     link: '数据源服务',
     list: []
 })
-api[38].list.push({
+api[39].list.push({
     order: '1',
     desc: '数据源列表首页',
 });
-api[38].list.push({
+api[39].list.push({
     order: '2',
     desc: '数据源列表',
 });
-api[38].list.push({
+api[39].list.push({
     order: '3',
     desc: '数据源列表(带参数)',
 });
-api[38].list.push({
+api[39].list.push({
     order: '4',
     desc: '根据数据源id(主键)获取数据源',
 });
-api[38].list.push({
+api[39].list.push({
     order: '5',
     desc: '批量删除数据源',
 });
-api[38].list.push({
+api[39].list.push({
     order: '6',
     desc: '数据源新增页面',
 });
-api[38].list.push({
+api[39].list.push({
     order: '7',
     desc: '新增数据源',
 });
-api[38].list.push({
+api[39].list.push({
     order: '8',
     desc: '更新数据源',
 });
-api[38].list.push({
+api[39].list.push({
     order: '9',
     desc: '获取所有的数据源类型',
 });
-api[38].list.push({
+api[39].list.push({
     order: '10',
     desc: '测试数据源联通性',
 });
 api.push({
     alias: 'ZdhDataWareController',
-    order: '40',
+    order: '41',
     desc: '新数据仓库服务',
     link: '新数据仓库服务',
     list: []
 })
-api[39].list.push({
+api[40].list.push({
     order: '1',
     desc: '数据资产首页',
 });
-api[39].list.push({
+api[40].list.push({
     order: '2',
     desc: '获取已发布的数据',
 });
-api[39].list.push({
+api[40].list.push({
     order: '3',
     desc: '获取数据仓库标签参数',
 });
-api[39].list.push({
+api[40].list.push({
     order: '4',
     desc: '数据抽样',
 });
-api[39].list.push({
+api[40].list.push({
     order: '5',
     desc: '导出数据',
 });
-api[39].list.push({
+api[40].list.push({
     order: '6',
     desc: '获取当前数据的申请人列表',
 });
-api[39].list.push({
+api[40].list.push({
     order: '7',
     desc: '通知下游页面',
 });
-api[39].list.push({
+api[40].list.push({
     order: '8',
     desc: '通知',
 });
 api.push({
     alias: 'ZdhDataxController',
-    order: '41',
+    order: '42',
     desc: 'ETL-datax服务',
     link: 'etl-datax服务',
     list: []
 })
-api[40].list.push({
+api[41].list.push({
     order: '1',
     desc: 'datax 任务首页',
 });
-api[40].list.push({
+api[41].list.push({
     order: '2',
     desc: 'datax任务新增首页',
 });
-api[40].list.push({
+api[41].list.push({
     order: '3',
     desc: 'datax任务列表',
 });
-api[40].list.push({
+api[41].list.push({
     order: '4',
     desc: '删除datax任务',
 });
-api[40].list.push({
+api[41].list.push({
     order: '5',
     desc: '新增datax任务',
 });
-api[40].list.push({
+api[41].list.push({
     order: '6',
     desc: '更新datax任务',
 });
 api.push({
     alias: 'ZdhDispatchController',
-    order: '42',
+    order: '43',
     desc: '调度服务',
     link: '调度服务',
     list: []
 })
-api[41].list.push({
+api[42].list.push({
     order: '1',
     desc: '调度任务首页',
 });
-api[41].list.push({
+api[42].list.push({
     order: '2',
     desc: '调度任务列表',
 });
-api[41].list.push({
+api[42].list.push({
     order: '3',
     desc: '模糊匹配调度任务明细',
 });
-api[41].list.push({
+api[42].list.push({
     order: '4',
     desc: '新增调度任务首页',
 });
-api[41].list.push({
+api[42].list.push({
     order: '5',
     desc: '调度手动执行页面',
 });
-api[41].list.push({
+api[42].list.push({
     order: '6',
     desc: '调度任务新增页面',
 });
-api[41].list.push({
+api[42].list.push({
     order: '7',
     desc: 'hdfs任务页面',
 });
-api[41].list.push({
+api[42].list.push({
     order: '8',
     desc: 'etl任务页面',
 });
-api[41].list.push({
+api[42].list.push({
     order: '9',
     desc: 'jdbc任务页面',
 });
-api[41].list.push({
+api[42].list.push({
     order: '10',
     desc: '调度任务组页面',
 });
-api[41].list.push({
+api[42].list.push({
     order: '11',
     desc: 'shell任务页面',
 });
-api[41].list.push({
+api[42].list.push({
     order: '12',
     desc: 'http任务页面',
 });
-api[41].list.push({
+api[42].list.push({
     order: '13',
     desc: 'email任务页面',
 });
-api[41].list.push({
+api[42].list.push({
     order: '14',
     desc: 'fluem任务页面',
 });
-api[41].list.push({
+api[42].list.push({
     order: '15',
     desc: '调度执行器首页',
 });
-api[41].list.push({
+api[42].list.push({
     order: '16',
     desc: '新增调度任务',
 });
-api[41].list.push({
+api[42].list.push({
     order: '17',
     desc: '批量删除调度任务',
 });
-api[41].list.push({
+api[42].list.push({
     order: '18',
     desc: '更新调度任务',
 });
-api[41].list.push({
+api[42].list.push({
     order: '19',
     desc: '手动执行调度任务  手动执行都会提前生成实例信息,串行会生成组依赖关系  串行并行都需要提前选择时间,调度本身时间和手动执行时间分开处理,手动执行不能影响调度时间,  手动重试一定会确定好时间',
 });
-api[41].list.push({
+api[42].list.push({
     order: '20',
     desc: '获取执行时间',
 });
-api[41].list.push({
+api[42].list.push({
     order: '21',
     desc: '自动执行调度任务',
 });
-api[41].list.push({
+api[42].list.push({
     order: '22',
     desc: '暂停调度任务',
 });
-api[41].list.push({
+api[42].list.push({
     order: '23',
     desc: '删除调度任务,如果是单源 ETL的流任务需要做单独处理',
 });
-api[41].list.push({
+api[42].list.push({
     order: '24',
     desc: '获取server实例列表',
 });
-api[41].list.push({
+api[42].list.push({
     order: '25',
     desc: '调度器列表',
 });
-api[41].list.push({
+api[42].list.push({
     order: '26',
     desc: '更新调度器状态',
 });
-api[41].list.push({
+api[42].list.push({
     order: '27',
     desc: '新增系统调度任务首页',
 });
-api[41].list.push({
+api[42].list.push({
     order: '28',
     desc: '查询系统调度任务列表',
 });
-api[41].list.push({
+api[42].list.push({
     order: '29',
     desc: '新增系统调度任务',
 });
-api[41].list.push({
+api[42].list.push({
     order: '30',
     desc: '更新系统调度任务',
 });
-api[41].list.push({
+api[42].list.push({
     order: '31',
     desc: '重新创建系统调度任务',
 });
-api[41].list.push({
+api[42].list.push({
     order: '32',
     desc: '删除系统调度任务',
 });
 api.push({
     alias: 'ZdhDownController',
-    order: '43',
+    order: '44',
     desc: '文件下载服务',
     link: '文件下载服务',
     list: []
 })
-api[42].list.push({
+api[43].list.push({
     order: '1',
     desc: '文件下载首页',
 });
-api[42].list.push({
+api[43].list.push({
     order: '2',
     desc: '文件下载列表',
 });
-api[42].list.push({
+api[43].list.push({
     order: '3',
     desc: '删除下载',
 });
-api[42].list.push({
+api[43].list.push({
     order: '4',
     desc: '下载文件',
 });
 api.push({
     alias: 'ZdhDroolsController',
-    order: '44',
+    order: '45',
     desc: 'drools服务-废弃',
     link: 'drools服务-废弃',
     list: []
 })
-api[43].list.push({
+api[44].list.push({
     order: '1',
     desc: 'drools任务首页',
 });
-api[43].list.push({
+api[44].list.push({
     order: '2',
     desc: 'drools任务新增首页',
 });
-api[43].list.push({
+api[44].list.push({
     order: '3',
     desc: '获取drools任务明细',
 });
-api[43].list.push({
+api[44].list.push({
     order: '4',
     desc: '模糊查询drools任务明细',
 });
-api[43].list.push({
+api[44].list.push({
     order: '5',
     desc: '新增drools任务',
 });
-api[43].list.push({
+api[44].list.push({
     order: '6',
     desc: '删除drools任务',
 });
-api[43].list.push({
+api[44].list.push({
     order: '7',
     desc: '更新drools 任务',
 });
 api.push({
     alias: 'ZdhEnumController',
-    order: '45',
+    order: '46',
     desc: '枚举服务',
     link: '枚举服务',
     list: []
 })
-api[44].list.push({
+api[45].list.push({
     order: '1',
     desc: '枚举首页',
 });
-api[44].list.push({
+api[45].list.push({
     order: '2',
     desc: '获取枚举详情',
 });
-api[44].list.push({
+api[45].list.push({
     order: '3',
     desc: '获取枚举列表',
 });
-api[44].list.push({
+api[45].list.push({
     order: '4',
     desc: '批量删除枚举信息',
 });
-api[44].list.push({
+api[45].list.push({
     order: '5',
     desc: '枚举新增首页',
 });
-api[44].list.push({
+api[45].list.push({
     order: '6',
     desc: '新增枚举',
 });
-api[44].list.push({
+api[45].list.push({
     order: '7',
     desc: '枚举更新',
 });
-api[44].list.push({
+api[45].list.push({
     order: '8',
     desc: '查询枚举',
 });
 api.push({
     alias: 'ZdhEtlApplyController',
-    order: '46',
+    order: '47',
     desc: '申请源ETL任务服务',
     link: '申请源etl任务服务',
     list: []
 })
-api[45].list.push({
+api[46].list.push({
     order: '1',
     desc: '申请源首页',
 });
-api[45].list.push({
+api[46].list.push({
     order: '2',
     desc: '申请源明细',
 });
-api[45].list.push({
+api[46].list.push({
     order: '3',
     desc: '根据条件模糊查询申请源ETL任务信息',
 });
-api[45].list.push({
+api[46].list.push({
     order: '4',
     desc: '批量删除申请源ETL任务',
 });
-api[45].list.push({
+api[46].list.push({
     order: '5',
     desc: '新增Apply ETL任务首页',
 });
-api[45].list.push({
+api[46].list.push({
     order: '6',
     desc: '新增申请源ETL任务  如果输入数据源类型是外部上传,会补充文件服务器信息',
 });
-api[45].list.push({
+api[46].list.push({
     order: '7',
     desc: '申请源ETL任务更新',
 });
 api.push({
     alias: 'ZdhEtlBatchController',
-    order: '47',
+    order: '48',
     desc: '批量任务服务',
     link: '批量任务服务',
     list: []
 })
-api[46].list.push({
+api[47].list.push({
     order: '1',
     desc: '批量任务首页',
 });
-api[46].list.push({
+api[47].list.push({
     order: '2',
     desc: '批量任务新增首页',
 });
-api[46].list.push({
+api[47].list.push({
     order: '3',
     desc: '批量任务明细',
 });
-api[46].list.push({
+api[47].list.push({
     order: '4',
     desc: '根据条件模糊查询批量任务信息',
 });
-api[46].list.push({
+api[47].list.push({
     order: '5',
     desc: '批量删除'批量任务信息',
 });
-api[46].list.push({
+api[47].list.push({
     order: '6',
     desc: '新增批量任务',
 });
-api[46].list.push({
+api[47].list.push({
     order: '7',
     desc: '批量任务更新',
 });
-api[46].list.push({
+api[47].list.push({
     order: '8',
     desc: '批量任务新增',
 });
 api.push({
     alias: 'ZdhEtlController',
-    order: '48',
+    order: '49',
     desc: '单源ETL任务服务',
     link: '单源etl任务服务',
     list: []
 })
-api[47].list.push({
+api[48].list.push({
     order: '1',
+    desc: '系统参数',
+});
+api[48].list.push({
+    order: '2',
     desc: '单源ETL首页',
 });
-api[47].list.push({
-    order: '2',
+api[48].list.push({
+    order: '3',
     desc: '获取单源ETL任务明细',
 });
-api[47].list.push({
-    order: '3',
+api[48].list.push({
+    order: '4',
     desc: '根据条件模糊查询单源ETL任务信息',
 });
-api[47].list.push({
-    order: '4',
+api[48].list.push({
+    order: '5',
     desc: '批量删除单源ETL任务',
 });
-api[47].list.push({
-    order: '5',
+api[48].list.push({
+    order: '6',
     desc: '新增单源ETL任务首页',
 });
-api[47].list.push({
-    order: '6',
+api[48].list.push({
+    order: '7',
     desc: '新增单源ETL任务  如果输入数据源类型是外部上传,会补充文件服务器信息',
 });
-api[47].list.push({
-    order: '7',
+api[48].list.push({
+    order: '8',
     desc: '单源ETL任务输入数据源是外部上传时,上传文件服务',
 });
-api[47].list.push({
-    order: '8',
+api[48].list.push({
+    order: '9',
     desc: '单源ETL任务更新  todo 此次是否每次都更新文件服务器信息,待优化',
 });
-api[47].list.push({
-    order: '9',
+api[48].list.push({
+    order: '10',
     desc: '根据数据源id 获取数据源下所有的表名字',
 });
-api[47].list.push({
-    order: '10',
+api[48].list.push({
+    order: '11',
     desc: '根据数据源id,表名获取表的schema',
 });
 api.push({
     alias: 'ZdhEtlDataxAutoController',
-    order: '49',
+    order: '50',
     desc: 'datax ETL任务服务',
     link: 'datax_etl任务服务',
     list: []
 })
-api[48].list.push({
+api[49].list.push({
     order: '1',
     desc: 'DATAX ETL首页',
 });
-api[48].list.push({
+api[49].list.push({
     order: '2',
     desc: '获取DATAX ETL任务明细',
 });
-api[48].list.push({
+api[49].list.push({
     order: '3',
     desc: '根据条件模糊查询DATAX ETL任务信息',
 });
-api[48].list.push({
+api[49].list.push({
     order: '4',
     desc: '根据条件模糊查询DATAX ETL任务信息',
 });
-api[48].list.push({
+api[49].list.push({
     order: '5',
     desc: '批量删除DATAX ETL任务',
 });
-api[48].list.push({
+api[49].list.push({
     order: '6',
     desc: '新增DATAX ETL任务首页',
 });
-api[48].list.push({
+api[49].list.push({
     order: '7',
     desc: '新增DATAX ETL任务  如果输入数据源类型是外部上传,会补充文件服务器信息',
 });
-api[48].list.push({
+api[49].list.push({
     order: '8',
     desc: 'DATAX ETL任务更新  todo 此次是否每次都更新文件服务器信息,待优化',
 });
 api.push({
     alias: 'ZdhEtlLogController',
-    order: '50',
+    order: '51',
     desc: '日志采集服务',
     link: '日志采集服务',
     list: []
 })
-api[49].list.push({
+api[50].list.push({
     order: '1',
     desc: '日志采集首页',
 });
-api[49].list.push({
+api[50].list.push({
     order: '2',
     desc: '获取日志任务明细',
 });
-api[49].list.push({
+api[50].list.push({
     order: '3',
     desc: '根据条件模糊查询任务信息',
 });
-api[49].list.push({
+api[50].list.push({
     order: '4',
     desc: '批量删除日志采集任务',
 });
-api[49].list.push({
+api[50].list.push({
     order: '5',
     desc: '新增日志采集任务首页',
 });
-api[49].list.push({
+api[50].list.push({
     order: '6',
     desc: '新增日志采集任务  如果输入数据源类型是外部上传,会补充文件服务器信息',
 });
-api[49].list.push({
+api[50].list.push({
     order: '7',
     desc: '日志采集任务更新  todo 此次是否每次都更新文件服务器信息,待优化',
 });
 api.push({
     alias: 'ZdhFlinkController',
-    order: '51',
+    order: '52',
     desc: 'FLINK采集服务',
     link: 'flink采集服务',
     list: []
 })
-api[50].list.push({
+api[51].list.push({
     order: '1',
     desc: 'flink任务首页',
 });
-api[50].list.push({
+api[51].list.push({
     order: '2',
     desc: 'flink任务新增首页',
 });
-api[50].list.push({
+api[51].list.push({
     order: '3',
     desc: '模糊查询flink任务',
 });
-api[50].list.push({
+api[51].list.push({
     order: '4',
     desc: '批量删除sql任务',
 });
-api[50].list.push({
+api[51].list.push({
     order: '5',
     desc: '新增flink任务',
 });
-api[50].list.push({
+api[51].list.push({
     order: '6',
     desc: '更新flink任务',
 });
 api.push({
     alias: 'ZdhIssueDataController',
-    order: '52',
+    order: '53',
     desc: '数据仓库服务  发布服务,申请服务',
     link: '数据仓库服务  发布服务,申请服务',
     list: []
 })
-api[51].list.push({
+api[52].list.push({
     order: '1',
     desc: '数据发布首页',
 });
-api[51].list.push({
+api[52].list.push({
     order: '2',
     desc: '数据发布新增首页',
 });
-api[51].list.push({
+api[52].list.push({
     order: '3',
     desc: '数据集市查询首页',
 });
-api[51].list.push({
+api[52].list.push({
     order: '4',
     desc: '数据申请首页',
 });
-api[51].list.push({
+api[52].list.push({
     order: '5',
     desc: '数据明细首页',
 });
-api[51].list.push({
+api[52].list.push({
     order: '6',
     desc: '根据id获取对应的数据明细',
 });
-api[51].list.push({
+api[52].list.push({
     order: '7',
     desc: '根据条件模糊查询发布数据',
 });
-api[51].list.push({
+api[52].list.push({
     order: '8',
     desc: '根据条件模糊查询发布数据源,只查询当前用户',
 });
-api[51].list.push({
+api[52].list.push({
     order: '9',
     desc: '发布数据删除',
 });
-api[51].list.push({
+api[52].list.push({
     order: '10',
     desc: '发布数据表信息  走审批流  1 创建数据表-&gt; 2 根据当前接口从功能资源列表查询绑定的审批事件 -&gt; 3 根据审批事件查询所有审批节点 -&gt; 4 创建审批流 -&gt; 审批人在审批页面审批',
 });
-api[51].list.push({
+api[52].list.push({
     order: '11',
     desc: '发布数据更新',
 });
-api[51].list.push({
+api[52].list.push({
     order: '12',
     desc: '发布数据删除',
 });
-api[51].list.push({
+api[52].list.push({
     order: '13',
     desc: '申请数据表信息',
 });
-api[51].list.push({
+api[52].list.push({
     order: '14',
     desc: '数据申请列表',
 });
-api[51].list.push({
+api[52].list.push({
     order: '15',
     desc: '数据申请',
 });
-api[51].list.push({
+api[52].list.push({
     order: '16',
     desc: '根据主键查询数据申请信息',
 });
-api[51].list.push({
+api[52].list.push({
     order: '17',
     desc: '取消申请',
 });
-api[51].list.push({
+api[52].list.push({
     order: '18',
     desc: '审批列表',
 });
-api[51].list.push({
+api[52].list.push({
     order: '19',
     desc: '数据审批',
 });
 api.push({
     alias: 'ZdhJdbcController',
-    order: '53',
+    order: '54',
     desc: 'MPP jdbc服务',
     link: 'mpp_jdbc服务',
     list: []
 })
-api[52].list.push({
+api[53].list.push({
     order: '1',
     desc: 'jdbc任务首页',
 });
-api[52].list.push({
+api[53].list.push({
     order: '2',
     desc: 'jdbc任务新增首页',
 });
-api[52].list.push({
+api[53].list.push({
     order: '3',
     desc: '模糊查询jdbc任务',
 });
-api[52].list.push({
+api[53].list.push({
     order: '4',
     desc: '批量删除sql任务',
 });
-api[52].list.push({
+api[53].list.push({
     order: '5',
     desc: '新增sql 任务',
 });
-api[52].list.push({
+api[53].list.push({
     order: '6',
     desc: '更新sql 任务',
 });
 api.push({
     alias: 'ZdhMonitorController',
-    order: '54',
+    order: '55',
     desc: '监控服务',
     link: '监控服务',
     list: []
 })
-api[53].list.push({
+api[54].list.push({
     order: '1',
     desc: '监控首页',
 });
-api[53].list.push({
+api[54].list.push({
     order: '2',
     desc: '调度任务监控',
 });
-api[53].list.push({
+api[54].list.push({
     order: '3',
     desc: '',
 });
-api[53].list.push({
+api[54].list.push({
     order: '4',
     desc: '',
 });
-api[53].list.push({
+api[54].list.push({
     order: '5',
     desc: '任务实例删除',
 });
-api[53].list.push({
+api[54].list.push({
     order: '6',
     desc: '组任务删除',
 });
-api[53].list.push({
+api[54].list.push({
     order: '7',
     desc: '杀死单个任务',
 });
-api[53].list.push({
+api[54].list.push({
     order: '8',
     desc: '手动跳过任务',
 });
-api[53].list.push({
+api[54].list.push({
     order: '9',
     desc: '杀死任务组',
 });
-api[53].list.push({
+api[54].list.push({
     order: '10',
     desc: '重试任务实例(废弃)',
 });
-api[53].list.push({
+api[54].list.push({
     order: '11',
     desc: '重试任务组',
 });
-api[53].list.push({
+api[54].list.push({
     order: '12',
     desc: '获取正在执行中调度任务',
 });
-api[53].list.push({
+api[54].list.push({
     order: '13',
     desc: '获取spark历史服务器地址',
 });
-api[53].list.push({
+api[54].list.push({
     order: '14',
     desc: '获取任务总览',
 });
-api[53].list.push({
+api[54].list.push({
     order: '15',
     desc: '获取任务组实例首页',
 });
-api[53].list.push({
+api[54].list.push({
     order: '16',
     desc: '获取任务实例首页',
 });
-api[53].list.push({
+api[54].list.push({
     order: '17',
     desc: '任务组重试页面',
 });
-api[53].list.push({
+api[54].list.push({
     order: '18',
     desc: '任务实例列表',
 });
-api[53].list.push({
+api[54].list.push({
     order: '19',
-    desc: '任务组实例列表',
+    desc: '根据调用任务ID获取任务组实例列表',
 });
-api[53].list.push({
+api[54].list.push({
     order: '20',
     desc: '任务组实例列表-分页',
 });
-api[53].list.push({
+api[54].list.push({
     order: '21',
     desc: '任务组实例列表',
 });
-api[53].list.push({
+api[54].list.push({
     order: '22',
     desc: '获取任务执行日志',
 });
-api[53].list.push({
+api[54].list.push({
     order: '23',
     desc: '调度任务日志首页',
 });
-api[53].list.push({
+api[54].list.push({
     order: '24',
     desc: '下载日志',
 });
-api[53].list.push({
+api[54].list.push({
     order: '25',
     desc: '系统监控',
 });
 api.push({
     alias: 'ZdhMoreEtlController',
-    order: '55',
+    order: '56',
     desc: '多源ETL服务',
     link: '多源etl服务',
     list: []
 })
-api[54].list.push({
+api[55].list.push({
     order: '1',
     desc: '多源ETL任务首页',
 });
-api[54].list.push({
+api[55].list.push({
     order: '2',
     desc: '根据指定任务id,或者查询当前用户下的所有多源任务',
 });
-api[54].list.push({
+api[55].list.push({
     order: '3',
     desc: '模糊查询多源ETL任务信息',
 });
-api[54].list.push({
+api[55].list.push({
     order: '4',
     desc: '新增多源ETL任务首页',
 });
-api[54].list.push({
+api[55].list.push({
     order: '5',
     desc: '新增多源ETL任务',
 });
-api[54].list.push({
+api[55].list.push({
     order: '6',
     desc: '删除多源ETL任务',
 });
-api[54].list.push({
+api[55].list.push({
     order: '7',
     desc: '更新多源ETL任务',
 });
 api.push({
     alias: 'ZdhOperateLogController',
-    order: '56',
+    order: '57',
     desc: '操作日志服务',
     link: '操作日志服务',
     list: []
 })
-api[55].list.push({
+api[56].list.push({
     order: '1',
     desc: '操作日志首页',
 });
-api[55].list.push({
+api[56].list.push({
     order: '2',
     desc: '操作日志列表    bootstrap-table 分页   设置            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）            pageNumber: 1,                       //初始化加载第一页，默认第一页            pageSize: 10,                       //每页的记录行数（*）           queryParams: function (params) {                // 此处使用了LayUi组件 是为加载层                loadIndex = layer.load(1);                let resRepor = {                    //服务端分页所需要的参数                    limit: params.limit,                    offset: params.offset                };                return resRepor;            },            responseHandler: res =&gt; {                // 关闭加载层                layer.close(loadIndex);                return {                            //return bootstrap-table能处理的数据格式                    "total":res.total,                    "rows": res.rows                }            },            data-content-type="application/x-www-form-urlencoded" data-query-params="queryParams"',
 });
 api.push({
     alias: 'ZdhParamController',
-    order: '57',
+    order: '58',
     desc: '参数配置服务',
     link: '参数配置服务',
     list: []
 })
-api[56].list.push({
+api[57].list.push({
     order: '1',
     desc: '系统参数首页',
 });
-api[56].list.push({
+api[57].list.push({
     order: '2',
     desc: '系统参数新增首页',
 });
-api[56].list.push({
+api[57].list.push({
     order: '3',
     desc: '系统参数列表',
 });
-api[56].list.push({
+api[57].list.push({
     order: '4',
     desc: '系统参数明细',
 });
-api[56].list.push({
+api[57].list.push({
     order: '5',
     desc: '系统参数新增',
 });
-api[56].list.push({
+api[57].list.push({
     order: '6',
     desc: '系统参数更新',
 });
-api[56].list.push({
+api[57].list.push({
     order: '7',
     desc: '系统参数删除',
 });
-api[56].list.push({
+api[57].list.push({
     order: '8',
     desc: '系统参数写入缓存',
 });
-api[56].list.push({
+api[57].list.push({
     order: '9',
     desc: '参数合并  用于多版本参数上线后使用 比如 把默认版本参数同步到指定版本',
 });
 api.push({
     alias: 'ZdhProcessFlowController',
-    order: '58',
+    order: '59',
     desc: '审批服务',
     link: '审批服务',
     list: []
 })
-api[57].list.push({
+api[58].list.push({
     order: '1',
     desc: '流程审批页面',
 });
-api[57].list.push({
+api[58].list.push({
     order: '2',
     desc: '我的发起流程',
 });
-api[57].list.push({
+api[58].list.push({
     order: '3',
     desc: '审批列表',
 });
-api[57].list.push({
+api[58].list.push({
     order: '4',
     desc: '我的发起流程列表  根据流程表process_flow_info 按用户+flow_id去重',
 });
-api[57].list.push({
+api[58].list.push({
     order: '5',
     desc: '审批',
 });
-api[57].list.push({
+api[58].list.push({
     order: '6',
     desc: '撤销申请',
 });
-api[57].list.push({
+api[58].list.push({
     order: '7',
     desc: '流程审批进度',
 });
-api[57].list.push({
+api[58].list.push({
     order: '8',
     desc: '审批明细',
 });
-api[57].list.push({
+api[58].list.push({
     order: '9',
     desc: '流程代理首页',
 });
-api[57].list.push({
+api[58].list.push({
     order: '10',
     desc: '更新流程代理人',
 });
 api.push({
+    alias: 'PushChannelController',
+    order: '60',
+    desc: 'push通道配置服务',
+    link: 'push通道配置服务',
+    list: []
+})
+api[59].list.push({
+    order: '1',
+    desc: 'push通道配置列表首页',
+});
+api[59].list.push({
+    order: '2',
+    desc: 'push通道配置列表',
+});
+api[59].list.push({
+    order: '3',
+    desc: 'push通道配置分页列表',
+});
+api[59].list.push({
+    order: '4',
+    desc: 'push通道配置新增首页',
+});
+api[59].list.push({
+    order: '5',
+    desc: 'xx明细',
+});
+api[59].list.push({
+    order: '6',
+    desc: 'push通道配置更新',
+});
+api[59].list.push({
+    order: '7',
+    desc: 'push通道配置新增',
+});
+api[59].list.push({
+    order: '8',
+    desc: 'push通道配置删除',
+});
+api[59].list.push({
+    order: '9',
+    desc: 'push通道配置更新',
+});
+api.push({
+    alias: 'PushTemplateController',
+    order: '61',
+    desc: 'push模板配置服务',
+    link: 'push模板配置服务',
+    list: []
+})
+api[60].list.push({
+    order: '1',
+    desc: 'push模板配置列表首页',
+});
+api[60].list.push({
+    order: '2',
+    desc: 'push模板配置列表',
+});
+api[60].list.push({
+    order: '3',
+    desc: 'push模板配置分页列表',
+});
+api[60].list.push({
+    order: '4',
+    desc: 'push模板配置新增首页',
+});
+api[60].list.push({
+    order: '5',
+    desc: 'xx明细',
+});
+api[60].list.push({
+    order: '6',
+    desc: 'push模板配置更新',
+});
+api[60].list.push({
+    order: '7',
+    desc: 'push模板配置新增',
+});
+api[60].list.push({
+    order: '8',
+    desc: 'push模板配置删除',
+});
+api.push({
     alias: 'ZdhQualityController',
-    order: '59',
+    order: '62',
     desc: '质量检测服务',
     link: '质量检测服务',
     list: []
 })
-api[58].list.push({
+api[61].list.push({
     order: '1',
     desc: '质量检测规则首页',
 });
-api[58].list.push({
+api[61].list.push({
     order: '2',
     desc: '质量检测规则新增首页',
 });
-api[58].list.push({
+api[61].list.push({
     order: '3',
     desc: '质量检测规则列表',
 });
-api[58].list.push({
+api[61].list.push({
     order: '4',
     desc: '质量检测规则新增',
 });
-api[58].list.push({
+api[61].list.push({
     order: '5',
     desc: '质量检测规则更新',
 });
-api[58].list.push({
+api[61].list.push({
     order: '6',
     desc: '数据质量任务',
 });
-api[58].list.push({
+api[61].list.push({
     order: '7',
     desc: '质量检测任务新增首页',
 });
-api[58].list.push({
+api[61].list.push({
     order: '8',
     desc: '质量检测列表',
 });
-api[58].list.push({
+api[61].list.push({
     order: '9',
     desc: '质量检测任务新增',
 });
-api[58].list.push({
+api[61].list.push({
     order: '10',
     desc: '质量检测任务更新',
 });
-api[58].list.push({
+api[61].list.push({
     order: '11',
     desc: '质量检测任务删除',
 });
-api[58].list.push({
+api[61].list.push({
     order: '12',
     desc: '质量报告首页',
 });
-api[58].list.push({
+api[61].list.push({
     order: '13',
     desc: '指标首页',
 });
-api[58].list.push({
+api[61].list.push({
     order: '14',
     desc: '指标明细',
 });
-api[58].list.push({
+api[61].list.push({
     order: '15',
     desc: '质量报告明细',
 });
-api[58].list.push({
+api[61].list.push({
     order: '16',
     desc: '删除质量报告',
 });
 api.push({
     alias: 'QueueController',
-    order: '60',
+    order: '63',
     desc: '优先级队列服务  具体zdh_rqueue服务可参见zdh_rqueue项目',
     link: '优先级队列服务  具体zdh_rqueue服务可参见zdh_rqueue项目',
     list: []
 })
-api[59].list.push({
+api[62].list.push({
     order: '1',
     desc: '队列消息列表首页',
 });
-api[59].list.push({
+api[62].list.push({
     order: '2',
     desc: '队列消息列表',
 });
-api[59].list.push({
+api[62].list.push({
     order: '3',
-    desc: '队列消息明细',
+    desc: '队列消息明细(废弃)',
 });
-api[59].list.push({
+api[62].list.push({
     order: '4',
     desc: '队列新增消息首页',
 });
-api[59].list.push({
+api[62].list.push({
     order: '5',
     desc: '新增队列消息',
 });
-api[59].list.push({
+api[62].list.push({
     order: '6',
     desc: '更新优先级(废弃)',
 });
 api.push({
     alias: 'ZdhRedisApiController',
-    order: '61',
+    order: '64',
     desc: 'redis服务',
     link: 'redis服务',
     list: []
 })
-api[60].list.push({
+api[63].list.push({
     order: '1',
     desc: '获取参数',
 });
-api[60].list.push({
+api[63].list.push({
     order: '2',
     desc: '获取参数',
 });
-api[60].list.push({
+api[63].list.push({
     order: '3',
     desc: '删除参数',
 });
-api[60].list.push({
+api[63].list.push({
     order: '4',
     desc: '获取所有参数名',
 });
-api[60].list.push({
+api[63].list.push({
     order: '5',
     desc: '新增参数',
 });
 api.push({
     alias: 'ZdhSelfServiceController',
-    order: '62',
+    order: '65',
     desc: '自助服务',
     link: '自助服务',
     list: []
 })
-api[61].list.push({
+api[64].list.push({
     order: '1',
     desc: '自助服务首页',
 });
-api[61].list.push({
+api[64].list.push({
     order: '2',
     desc: '自助服务列表',
 });
-api[61].list.push({
+api[64].list.push({
     order: '3',
     desc: '自助服务新增首页',
 });
-api[61].list.push({
+api[64].list.push({
     order: '4',
     desc: '自助服务明细',
 });
-api[61].list.push({
+api[64].list.push({
     order: '5',
     desc: '自助服务更新',
 });
-api[61].list.push({
+api[64].list.push({
     order: '6',
     desc: '自助服务新增',
 });
-api[61].list.push({
+api[64].list.push({
     order: '7',
     desc: '自助服务删除',
 });
-api[61].list.push({
+api[64].list.push({
     order: '8',
     desc: '自助服务执行',
 });
-api[61].list.push({
+api[64].list.push({
     order: '9',
     desc: '自助服务导出',
 });
 api.push({
     alias: 'ZdhSqlController',
-    order: '63',
+    order: '66',
     desc: 'spark sql服务',
     link: 'spark_sql服务',
     list: []
 })
-api[62].list.push({
+api[65].list.push({
     order: '1',
     desc: 'spark sql任务首页',
 });
-api[62].list.push({
+api[65].list.push({
     order: '2',
     desc: 'spark sql任务新增首页',
 });
-api[62].list.push({
+api[65].list.push({
     order: '3',
     desc: '模糊查询Sql任务',
 });
-api[62].list.push({
+api[65].list.push({
     order: '4',
     desc: '批量删除sql任务',
 });
-api[62].list.push({
+api[65].list.push({
     order: '5',
     desc: '新增sql 任务',
 });
-api[62].list.push({
+api[65].list.push({
     order: '6',
     desc: '更新sql 任务',
 });
-api[62].list.push({
+api[65].list.push({
     order: '7',
     desc: '加载元数据信息',
 });
-api[62].list.push({
+api[65].list.push({
     order: '8',
     desc: '查询当前数据仓库的所有数据库',
 });
-api[62].list.push({
+api[65].list.push({
     order: '9',
     desc: '获取表结构说明',
 });
 api.push({
     alias: 'ZdhSshController',
-    order: '64',
+    order: '67',
     desc: 'SSH服务',
     link: 'ssh服务',
     list: []
 })
-api[63].list.push({
+api[66].list.push({
     order: '1',
     desc: 'SSH 任务首页',
 });
-api[63].list.push({
+api[66].list.push({
     order: '2',
     desc: 'SSH任务新增首页',
 });
-api[63].list.push({
+api[66].list.push({
     order: '3',
     desc: 'ssh任务明细',
 });
-api[63].list.push({
+api[66].list.push({
     order: '4',
     desc: '删除ssh任务',
 });
-api[63].list.push({
+api[66].list.push({
     order: '5',
     desc: '新增ssh任务',
 });
-api[63].list.push({
+api[66].list.push({
     order: '6',
     desc: '更新ssh任务',
 });
-api[63].list.push({
+api[66].list.push({
     order: '7',
     desc: 'ssh任务删除文件',
 });
-api[63].list.push({
+api[66].list.push({
     order: '8',
     desc: 'ssh任务已上传文件明细',
 });
 api.push({
     alias: 'ZdhTestController',
-    order: '65',
+    order: '68',
     desc: '测试非结构化上传',
     link: '测试非结构化上传',
     list: []
 })
-api[64].list.push({
+api[67].list.push({
     order: '1',
     desc: '非结构化任务首页',
 });
-api[64].list.push({
+api[67].list.push({
     order: '2',
     desc: '',
 });
 api.push({
     alias: 'ZdhUnstructureController',
-    order: '66',
+    order: '69',
     desc: '非结构化数据服务',
     link: '非结构化数据服务',
     list: []
 })
-api[65].list.push({
+api[68].list.push({
     order: '1',
     desc: '非结构化任务首页',
 });
-api[65].list.push({
+api[68].list.push({
     order: '2',
     desc: '非结构化任务新增首页',
 });
-api[65].list.push({
+api[68].list.push({
     order: '3',
     desc: '非结构化任务上传首页',
 });
-api[65].list.push({
+api[68].list.push({
     order: '4',
     desc: '非结构化任务日志首页',
 });
-api[65].list.push({
+api[68].list.push({
     order: '5',
     desc: '非结构化任务列表',
 });
-api[65].list.push({
+api[68].list.push({
     order: '6',
     desc: '删除 非结构化任务',
 });
-api[65].list.push({
+api[68].list.push({
     order: '7',
     desc: '新增 非结构化任务',
 });
-api[65].list.push({
+api[68].list.push({
     order: '8',
     desc: '更新 非结构化任务',
 });
-api[65].list.push({
+api[68].list.push({
     order: '9',
     desc: '手动上传文件-生成源信息',
 });
-api[65].list.push({
+api[68].list.push({
     order: '10',
     desc: '非结构化任务删除文件',
 });
-api[65].list.push({
+api[68].list.push({
     order: '11',
     desc: '非结构化任务已上传文件明细',
 });
-api[65].list.push({
+api[68].list.push({
     order: '12',
     desc: '非结构化任务日志列表',
 });
-api[65].list.push({
+api[68].list.push({
     order: '13',
     desc: '删除 非结构化任务日志',
 });
