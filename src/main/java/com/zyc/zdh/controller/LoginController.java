@@ -141,6 +141,10 @@ public class LoginController {
                 throw new Exception("存在重复账号");
             }
             pui.setEnable(Const.TRUR);
+            if(!StringUtils.isEmpty(user.getEmail())){
+                pui.setEmail(user.getEmail());
+            }
+
             pui.setCreate_time(new Timestamp(System.currentTimeMillis()));
             pui.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 

@@ -9,10 +9,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DBUtil;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.SFTPUtil;
+import com.zyc.zdh.util.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -119,7 +116,7 @@ public class ZdhUnstructureController extends BaseController{
 
             Example example=new Example(EtlTaskUnstructureInfo.class);
             Example.Criteria criteria=example.createCriteria();
-            criteria.andEqualTo("owner",getOwner());
+            //criteria.andEqualTo("owner",getOwner());
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
             //动态增加数据权限控制
             dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
@@ -160,6 +157,7 @@ public class ZdhUnstructureController extends BaseController{
     public ReturnInfo etl_task_unstructure_delete(String[] ids) {
 
         try{
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureMapper,etlTaskUnstructureMapper.getTable(), ids);
             etlTaskUnstructureMapper.deleteLogicByIds("etl_task_unstructure_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
@@ -291,7 +289,8 @@ public class ZdhUnstructureController extends BaseController{
                 //此处当做校验参数是否正常json格式
                 JSONObject jsonObject = JSON.parseObject(etlTaskUnstructureInfo.getUnstructure_params_output());
             }
-            BeanUtils.copyProperties(etlTaskUnstructureLogInfo, etlTaskUnstructureInfo);
+            etlTaskUnstructureLogInfo = MapStructMapper.INSTANCE.etlTaskUnstructureInfoToEtlTaskUnstructureLogInfo(etlTaskUnstructureInfo);
+            //BeanUtils.copyProperties(etlTaskUnstructureLogInfo, etlTaskUnstructureInfo);
             etlTaskUnstructureLogInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             etlTaskUnstructureLogInfo.setUnstructure_id(etlTaskUnstructureInfo.getId());
             etlTaskUnstructureLogInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));

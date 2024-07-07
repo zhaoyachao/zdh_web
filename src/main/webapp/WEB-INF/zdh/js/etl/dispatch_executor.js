@@ -4,11 +4,13 @@
     // ------------------------------
     (function () {
         var height=400;
+        var height2=400;
         if($(document.body).height()*0.8>height){
-            height=$(document.body).height()*0.8
+            height=$(document.body).height()*0.6;
+            height2=$(document.body).height()*0.8
         }
         $('#exampleTableEvents').attr("data-height",height);
-        $('#exampleTableEvents2').attr("data-height",height);
+        $('#exampleTableEvents2').attr("data-height",height2);
 
         $('#add').click(function () {
             parent.layer.open({

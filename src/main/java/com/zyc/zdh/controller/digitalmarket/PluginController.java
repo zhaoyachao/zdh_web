@@ -123,6 +123,7 @@ public class PluginController extends BaseController {
     public ReturnInfo<PluginInfo> plugin_detail(String id) {
         try {
             PluginInfo pluginInfo = pluginMapper.selectByPrimaryKey(id);
+            checkPermissionByProduct(zdhPermissionService, pluginInfo.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pluginInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -143,6 +144,7 @@ public class PluginController extends BaseController {
             PluginInfo pluginInfo = new PluginInfo();
             pluginInfo.setPlugin_code(plugin_code);
             pluginInfo = pluginMapper.selectOne(pluginInfo);
+            checkPermissionByProduct(zdhPermissionService, pluginInfo.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pluginInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);

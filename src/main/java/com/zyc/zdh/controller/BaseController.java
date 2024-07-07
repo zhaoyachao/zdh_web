@@ -74,6 +74,8 @@ public class BaseController {
     }
 
     /**
+     * 获取当前用户(产品+归属组)维度信息
+     *
      * 通过归属产品+归属组双重控制数据权限
      *
      * 对于查询权限,支持外部归属组控制,需要单独配置dim_group_select维度信息
@@ -261,13 +263,19 @@ public class BaseController {
     }
 
     /**
-     * 通过产品和用户组校验权限
+     * 通过指定产品和用户组校验是否有对应权限
      * @param zdhPermissionService
      * @param product_code
      * @param dim_group
      * @throws Exception
      */
     public void checkPermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, String product_code, String dim_group) throws Exception {
+        if(StringUtils.isEmpty(product_code)){
+            throw new Exception("产品code为空");
+        }
+        if(StringUtils.isEmpty(dim_group)){
+            throw new Exception("维度-归属组为空");
+        }
         Map<String, List<String>> dims = dynamicPermissionByProductAndGroup(zdhPermissionService);
         if(!dims.get("product_codes").contains(product_code)){
             throw new Exception("无产品权限,产品code: "+product_code);
@@ -285,6 +293,9 @@ public class BaseController {
      * @throws Exception
      */
     public void checkPermissionByProduct(ZdhPermissionService zdhPermissionService, String product_code) throws Exception {
+        if(StringUtils.isEmpty(product_code)){
+            throw new Exception("产品code为空");
+        }
         Map<String, List<String>> dims = dynamicPermissionByProductAndGroup(zdhPermissionService);
         if(!dims.get("product_codes").contains(product_code)){
             throw new Exception("无产品权限,产品code: "+product_code);

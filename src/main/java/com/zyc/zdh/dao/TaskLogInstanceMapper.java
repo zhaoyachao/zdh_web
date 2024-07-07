@@ -94,27 +94,57 @@ public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLog
     @Update(value = "update task_log_instance set is_notice=#{is_notice} where id=#{id}")
     public int updateNoticeById(@Param("is_notice") String is_notice,@Param("id") String id);
 
-    @Select(value = "select * from (select etl_date,sum(case status when 'running' then 1 else 0 end) as \"running\",\n" +
-            "sum(case status when 'error' then 1 else 0 end) as \"error\",\n" +
-            "sum(case status when 'finish' then 1 else 0 end) as \"finish\"\n" +
-            "from task_log_instance where owner=#{owner} and etl_date is not null group by etl_date,status order by etl_date desc limit 15) t order by etl_date asc")
-    @Results({@Result(column="etl_date",property="etl_date"),
-            @Result(column="running",property="running"),
-            @Result(column="error",property="error"),
-            @Result(column="finish",property="finish")
-    })
-    public List<EtlEcharts> slectByOwner(@Param("owner") String owner);
+    @Select({
+            "<script>",
+            "select * from (select task.etl_date,sum(case task.status when 'running' then 1 else 0 end) as \"running\",\n" +
+                    "sum(case task.status when 'error' then 1 else 0 end) as \"error\",\n" +
+                    "sum(case task.status when 'finish' then 1 else 0 end) as \"finish\"\n" +
+                    "from task_log_instance task inner join (select id as group_instance_id, product_code, dim_group from task_group_log_instance) g on task.group_id=g.group_instance_id where ",
+            "g.product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and g.dim_group in ",
+            "<foreach collection='dim_groups' item='dim_group' open='(' separator=',' close=')'>",
+            "#{dim_group}",
+            "</foreach>",
 
-    @Select(value = "select etl_date,sum(case status when 'running' then 1 else 0 end) as \"running\",\n" +
-            "sum(case status when 'error' then 1 else 0 end) as \"error\",\n" +
-            "sum(case status when 'finish' then 1 else 0 end) as \"finish\"\n" +
-            "from task_log_instance where owner=#{owner} and etl_date=#{etl_date} group by etl_date,status")
+    "and task.etl_date is not null group by task.etl_date,task.status order by task.etl_date desc limit 15) t order by etl_date asc",
+            "</script>"
+    }
+    )
     @Results({@Result(column="etl_date",property="etl_date"),
             @Result(column="running",property="running"),
             @Result(column="error",property="error"),
             @Result(column="finish",property="finish")
     })
-    public List<EtlEcharts> slectByOwnerEtlDate(@Param("owner") String owner, @Param("etl_date") String etl_date);
+    public List<EtlEcharts> slectByOwner(@Param("owner") String owner, @Param("product_codes") List<String> product_codes,
+                                         @Param("dim_groups") List<String> dim_groups);
+
+    @Select({
+            "<script>",
+            "select etl_date,sum(case status when 'running' then 1 else 0 end) as \"running\",\n" +
+            "sum(case status when 'error' then 1 else 0 end) as \"error\",\n" +
+            "sum(case status when 'finish' then 1 else 0 end) as \"finish\"\n" +
+            "from task_log_instance task inner join (select id as group_instance_id, product_code, dim_group from task_group_log_instance) g on task.group_id = g.group_instance_id where ",
+            "product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and dim_group in ",
+            "<foreach collection='dim_groups' item='dim_group' open='(' separator=',' close=')'>",
+            "#{dim_group}",
+            "</foreach>",
+            "and etl_date=#{etl_date} group by etl_date,status",
+            "</script>"
+    })
+    @Results({@Result(column="etl_date",property="etl_date"),
+            @Result(column="running",property="running"),
+            @Result(column="error",property="error"),
+            @Result(column="finish",property="finish")
+    })
+    public List<EtlEcharts> slectByOwnerEtlDate(@Param("etl_date") String etl_date, @Param("product_codes") List<String> product_codes,
+                                                @Param("dim_groups") List<String> dim_groups);
 
     @Select({"<script>",
             "SELECT * FROM task_log_instance",
@@ -403,6 +433,42 @@ public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLog
             }
     )
     public List<TaskLogInstance> selectByFinishIds(@Param("ids") String[] ids);
+
+    /**
+     * 获取上游成功,跳过,失败状态任务信息
+     * @param ids
+     * @return
+     */
+    @Select(
+            {
+                    "<script>",
+                    "select * from task_log_instance tli where tli.id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "and status in ('finish','skip','error')",
+                    "</script>"
+            }
+    )
+    public List<TaskLogInstance> selectByEndIds(@Param("ids") String[] ids);
+
+    /**
+     * 获取以杀死的任务
+     * @param ids
+     * @return
+     */
+    @Select(
+            {
+                    "<script>",
+                    "select * from task_log_instance tli where tli.id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "and status in ('killed')",
+                    "</script>"
+            }
+    )
+    public List<TaskLogInstance> selectByKilledIds(@Param("ids") String[] ids);
 
     @Delete(
             {

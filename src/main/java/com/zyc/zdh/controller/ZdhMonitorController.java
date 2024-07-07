@@ -90,7 +90,8 @@ public class ZdhMonitorController extends BaseController {
 //        失败任务数
 
         try{
-            List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwner(getOwner());
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwner(getOwner(), dimMap.get("product_codes"), dimMap.get("dim_groups"));
             if (echartsList == null || echartsList.size() == 0) {
                 echartsList = new ArrayList<>();
                 EtlEcharts ee = new EtlEcharts();
@@ -119,10 +120,10 @@ public class ZdhMonitorController extends BaseController {
 //        失败任务数
 
         try{
-            int total_task_num = quartzJobMapper.selectCountByOwner(getOwner());
 
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
             String etl_date = DateUtil.format(new Date()) + " 00:00:00";
-            List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwnerEtlDate(getOwner(), etl_date);
+            List<EtlEcharts> echartsList = taskLogInstanceMapper.slectByOwnerEtlDate(etl_date, dimMap.get("product_codes"), dimMap.get("dim_groups"));
 
             return ReturnInfo.buildSuccess(echartsList);
         }catch (Exception e){
@@ -189,7 +190,7 @@ public class ZdhMonitorController extends BaseController {
     public ReturnInfo task_group_logs_delete(String[] ids) {
 
         try {
-            System.out.println("开始删除任务组日志");
+            checkPermissionByProductAndDimGroup(zdhPermissionService,tglim,tglim.getTable(),ids);
             tglim.deleteByIds(ids);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -213,6 +214,7 @@ public class ZdhMonitorController extends BaseController {
         // check_dep,wait_retry 状态 直接killed
         // dispatch,etl 状态 kill
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService,taskLogInstanceMapper,taskLogInstanceMapper.getTable(),new String[]{id});
             taskLogInstanceMapper.updateStatusById2(id);
             TaskLogInstance tli = taskLogInstanceMapper.selectByPrimaryKey(id);
             JobCommon2.insertLog(tli, "INFO", "接受到杀死请求,开始进行杀死操作...");
@@ -238,6 +240,7 @@ public class ZdhMonitorController extends BaseController {
     @ResponseBody
     public ReturnInfo skipJob(String id) {
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService,taskLogInstanceMapper,taskLogInstanceMapper.getTable(),new String[]{id});
             taskLogInstanceMapper.updateSkipById(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
         } catch (Exception e) {
@@ -261,6 +264,7 @@ public class ZdhMonitorController extends BaseController {
         // check_dep,wait_retry,create,check_dep_finish 状态 直接killed
         // dispatch,etl 状态 kill
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService,tglim,tglim.getTable(),new String[]{id});
             tglim.updateStatusById2(id);
             taskLogInstanceMapper.updateStatusByGroupId(id);
             TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(id);
@@ -288,6 +292,8 @@ public class ZdhMonitorController extends BaseController {
     public ReturnInfo retryJob(String id, String new_version) {
         //taskLogInstanceMapper.updateStatusById2("kill",id);
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService,taskLogInstanceMapper,taskLogInstanceMapper.getTable(),new String[]{id});
+
             TaskLogInstance tli = taskLogInstanceMapper.selectByPrimaryKey(id);
             tli.setIs_retryed("1");
             taskLogInstanceMapper.updateByPrimaryKeySelective(tli);
@@ -349,6 +355,9 @@ public class ZdhMonitorController extends BaseController {
             if (sub_tasks == null || sub_tasks.length < 1) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "重试子任务不可为空", "");
             }
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService,tglim,tglim.getTable(),new String[]{id});
+
             TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(id);
             tgli.setIs_retryed("1");
             tglim.updateByPrimaryKeySelective(tgli);
@@ -405,7 +414,8 @@ public class ZdhMonitorController extends BaseController {
     public ReturnInfo<List<QuartzJobInfo>> getScheduleTask() {
         try {
             String owner = getOwner();
-            List<QuartzJobInfo> quartzJobInfos = quartzManager2.getScheduleTask(owner);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            List<QuartzJobInfo> quartzJobInfos = quartzManager2.getScheduleTask(owner, dimMap.get("product_codes"), dimMap.get("dim_groups"));
 
             return ReturnInfo.buildSuccess(quartzJobInfos);
         } catch (Exception e) {
@@ -509,6 +519,9 @@ public class ZdhMonitorController extends BaseController {
     public ReturnInfo<List<TaskLogInstance>> task_log_instance_list(String status, String group_id) {
 
         try{
+            TaskGroupLogInstance taskGroupLogInstance = tglim.selectByPrimaryKey(group_id);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, taskGroupLogInstance.getProduct_code(), taskGroupLogInstance.getDim_group());
+
             List<TaskLogInstance> list = taskLogInstanceMapper.selectByTaskLogs2(getOwner(), null,
                     null, status, group_id);
 
@@ -522,7 +535,7 @@ public class ZdhMonitorController extends BaseController {
     }
 
     /**
-     * 任务组实例列表
+     * 根据调用任务ID获取任务组实例列表
      * @param start_time
      * @param end_time
      * @param status
@@ -536,9 +549,10 @@ public class ZdhMonitorController extends BaseController {
 
         try{
             //System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
 
-            List<TaskGroupLogInstance> list = tglim.selectByTaskLogs2(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
-                    Timestamp.valueOf(end_time + " 23:59:59"), status, job_id);
+            List<TaskGroupLogInstance> list = tglim.selectByTaskLogs2(Timestamp.valueOf(start_time + " 00:00:00"),
+                    Timestamp.valueOf(end_time + " 23:59:59"), status, job_id, dimMap.get("product_codes"), dimMap.get("dim_groups"));
 
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
@@ -594,11 +608,12 @@ public class ZdhMonitorController extends BaseController {
             if(status == null){
                 status="";
             }
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
             //System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status+",limit:"+limit+",offset:"+offset);
-            List<TaskGroupLogInstance> list = tglim.selectByTaskLogs4(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
-                    Timestamp.valueOf(end_time + " 23:59:59"), status, limit, offset);
-            int total = tglim.selectCountByTaskLogs4(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
-                    Timestamp.valueOf(end_time + " 23:59:59"), status);
+            List<TaskGroupLogInstance> list = tglim.selectByTaskLogs4(Timestamp.valueOf(start_time + " 00:00:00"),
+                    Timestamp.valueOf(end_time + " 23:59:59"), status, limit, offset, dimMap.get("product_codes"), dimMap.get("dim_groups"));
+            int total = tglim.selectCountByTaskLogs4(Timestamp.valueOf(start_time + " 00:00:00"),
+                    Timestamp.valueOf(end_time + " 23:59:59"), status, dimMap.get("product_codes"), dimMap.get("dim_groups"));
             PageResult<List<TaskGroupLogInstance>> pageResult=new PageResult<>();
             pageResult.setTotal(total);
             pageResult.setRows(list);
@@ -621,6 +636,7 @@ public class ZdhMonitorController extends BaseController {
     @ResponseBody
     public ReturnInfo<List<TaskGroupLogInstance>> task_group_log_instance_list3(String[] ids) {
         try{
+            checkPermissionByProductAndDimGroup(zdhPermissionService, tglim, tglim.getTable(), ids);
             List<TaskGroupLogInstance> list = tglim.selectByIds(ids, null);
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){

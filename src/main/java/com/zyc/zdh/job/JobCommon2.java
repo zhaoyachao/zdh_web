@@ -2040,19 +2040,22 @@ public class JobCommon2 {
                 //发往server处任务
                 if (!tli.getMore_task().equalsIgnoreCase("SSH") && !tli.getMore_task().equalsIgnoreCase("FLINK") && is_send_server) {
                     logger.info("[调度平台]:" + url_tmp + " ,参数:" + etl_info);
-                    insertLog(tli, "DEBUG", "[调度平台]:" + url_tmp + " ,参数:" + etl_info);
+
                     //新增参数判断http发送或者是队列发送
                     if(ConfigUtil.isInEnv(Const.ZDH_SPARK_QUEUE_ENABLE) && ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_ENABLE, "false").equalsIgnoreCase("true") ){
                         //本地参数配置-发送队列
                         String queue = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY)+"_"+instance;
+                        insertLog(tli, "DEBUG", "[调度平台]:" + "发送任务到队列:"+queue + " ,:" + etl_info);
                         RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
                         rQueueClient.add(etl_info);
                     }else if(ConfigUtil.isInRedis(Const.ZDH_SPARK_QUEUE_ENABLE) && ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_QUEUE_ENABLE, "false").toString().equalsIgnoreCase("true") ){
                         //公共参数配置-发送队列
                         String queue = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY)+"_"+instance;
+                        insertLog(tli, "DEBUG", "[调度平台]:" + "发送任务到队列:"+queue + " ,:" + etl_info);
                         RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
                         rQueueClient.add(etl_info);
                     }else{
+                        insertLog(tli, "DEBUG", "[调度平台]:" + url_tmp + " ,参数:" + etl_info);
                         HttpUtil.postJSON(url_tmp, etl_info);
                     }
                     logger.info(model_log + " JOB ,更新调度任务状态为etl");
@@ -2881,6 +2884,11 @@ public class JobCommon2 {
                 }
             } else if (tli.getDepend_level().equalsIgnoreCase("2")) {
                 status = "失败";
+                if (run.size() > 0) {
+                    is_pass = false;
+                }
+            }else if (tli.getDepend_level().equalsIgnoreCase("3")) {
+                status = "成功,跳过,失败";
                 if (run.size() > 0) {
                     is_pass = false;
                 }

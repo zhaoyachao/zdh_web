@@ -59,6 +59,24 @@ public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<Strat
     )
     public List<StrategyInstance> selectByIds(@Param("ids") String[] ids);
 
+
+    /**
+     * 获取上游任务
+     * @param ids
+     * @return
+     */
+    @Select(
+            {
+                    "<script>",
+                    "select * from strategy_instance si where si.id in",
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "</script>"
+            }
+    )
+    public List<StrategyInstance> selectAllByIds(@Param("ids") String[] ids);
+
     /**
      * 获取上游成功或者跳过状态任务信息
      * @param ids

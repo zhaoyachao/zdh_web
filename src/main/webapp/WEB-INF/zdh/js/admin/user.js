@@ -78,7 +78,7 @@
               $(rows).each(function() {// 通过获得别选中的来进行遍历
                   ids.push(this.id);// cid为获得到的整条数据中的一列
               });
-              console.log(ids)
+              console.log(ids);
               enableUsers(ids, "false");
               layer.close(layer.index);
           }, function(){
@@ -120,9 +120,9 @@
       function operateFormatter(value, row, index) {
           return [
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
-              ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+              ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="编辑"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="edit_dim" name="edit_dim" type="button" class="btn btn-outline btn-sm" title="更新维度"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+              ' <button id="edit_dim" name="edit_dim" type="button" class="btn btn-outline btn-sm" title="绑定维度"><i class="glyphicon glyphicon-book" aria-hidden="true"></i>\n' +
               '                                    </button>'
               // ' <button id="copy" name="copy" type="button" class="btn btn-outline btn-sm" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
               // '                                    </button>',

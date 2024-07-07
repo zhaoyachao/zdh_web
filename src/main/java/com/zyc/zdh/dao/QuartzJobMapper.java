@@ -77,7 +77,7 @@ public interface QuartzJobMapper extends BaseQuartzJobMapper<QuartzJobInfo> {
             "select",
             "*",
             "from quartz_job_info",
-            "where owner=#{owner} and is_delete=0",
+            "where is_delete=0",
             " AND status='running'",
             "<when test='job_ids!=null and job_ids.size > 0'>",
             " and job_id in ",
@@ -85,9 +85,18 @@ public interface QuartzJobMapper extends BaseQuartzJobMapper<QuartzJobInfo> {
             "#{job_id}",
             "</foreach>",
             "</when>",
+            "and product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and dim_group in ",
+            "<foreach collection='dim_groups' item='dim_group' open='(' separator=',' close=')'>",
+            "#{dim_group}",
+            "</foreach>",
             "</script>"
     })
-    public List<QuartzJobInfo> selectRunJobByOwner(@Param("owner") String owner,@Param("job_ids") List<String> job_ids );
+    public List<QuartzJobInfo> selectRunJobByOwner(@Param("job_ids") List<String> job_ids, @Param("product_codes") List<String> product_codes,
+                                                   @Param("dim_groups") List<String> dim_groups);
 
 
     @Select({"<script>",

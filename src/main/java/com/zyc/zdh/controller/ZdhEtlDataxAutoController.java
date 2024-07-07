@@ -85,7 +85,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
             Example example = new Example(etlTaskDataxAutoInfo.getClass());
             List<EtlTaskDataxAutoInfo> etlTaskDataxAutoInfos = new ArrayList<>();
             Example.Criteria criteria = example.createCriteria();
-            criteria.andEqualTo("owner", getOwner());
+            //criteria.andEqualTo("owner", getOwner());
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
             //动态增加数据权限控制
             dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
@@ -134,8 +134,10 @@ public class ZdhEtlDataxAutoController extends BaseController{
             Example example = new Example(etlTaskDataxAutoInfo.getClass());
             List<EtlTaskDataxAutoInfo> etlTaskDataxAutoInfos = new ArrayList<>();
             Example.Criteria cri = example.createCriteria();
-            cri.andEqualTo("owner", getOwner());
+            //cri.andEqualTo("owner", getOwner());
             cri.andEqualTo("is_delete", Const.NOT_DELETE);
+
+            dynamicPermissionByProductAndGroup(zdhPermissionService, cri);
 
             example.setOrderByClause("update_time desc");
 

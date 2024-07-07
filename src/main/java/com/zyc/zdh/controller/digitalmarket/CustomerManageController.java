@@ -7,6 +7,7 @@ import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.LabelMapper;
 import com.zyc.zdh.entity.LabelInfo;
 import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +40,9 @@ public class CustomerManageController extends BaseController {
     @Autowired
     private LabelMapper labelMapper;
 
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
+
     /**
      * 客户画像首页
      * @return
@@ -60,6 +64,8 @@ public class CustomerManageController extends BaseController {
     @ResponseBody
     public ReturnInfo<Collection<Object>> variable_detail(String product_code, String uid) {
         try{
+            checkPermissionByProduct(zdhPermissionService, product_code);
+
             LabelInfo labelInfo = new LabelInfo();
             labelInfo.setIs_delete(Const.NOT_DELETE);
             labelInfo.setLabel_use_type("single");

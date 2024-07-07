@@ -159,6 +159,7 @@ public class StrategyGroupController extends BaseController {
     public ReturnInfo strategy_group_detail(String id) {
         try {
             StrategyGroupInfo strategyGroupInfo = strategyGroupMapper.selectByPrimaryKey(id);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", strategyGroupInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);

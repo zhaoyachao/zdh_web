@@ -120,6 +120,7 @@ public class LabelController extends BaseController {
     public ReturnInfo label_detail(String id) {
         try {
             LabelInfo labelInfo = labelMapper.selectByPrimaryKey(id);
+            checkPermissionByProduct(zdhPermissionService, labelInfo.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", labelInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -146,6 +147,7 @@ public class LabelController extends BaseController {
             if(labelInfos != null ){
                 labelInfo = labelInfos.get(0);
             }
+            checkPermissionByProduct(zdhPermissionService, labelInfo.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", labelInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);

@@ -26,4 +26,6 @@ public interface MapStructMapper {
 
     ServerTaskInstance serverTaskInfoToServerTaskInstance(ServerTaskInfo serverTaskInfo);
 
+    EtlTaskUnstructureLogInfo etlTaskUnstructureInfoToEtlTaskUnstructureLogInfo(EtlTaskUnstructureInfo etlTaskUnstructureInfo);
+
 }

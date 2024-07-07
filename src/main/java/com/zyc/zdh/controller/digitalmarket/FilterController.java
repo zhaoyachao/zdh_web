@@ -118,6 +118,7 @@ public class FilterController extends BaseController {
     public ReturnInfo<FilterInfo> filter_detail(String id) {
         try {
             FilterInfo filterInfo = filterMapper.selectByPrimaryKey(id);
+            checkPermissionByProduct(zdhPermissionService, filterInfo.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", filterInfo);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";

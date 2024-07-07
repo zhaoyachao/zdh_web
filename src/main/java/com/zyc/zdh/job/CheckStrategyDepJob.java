@@ -3,6 +3,7 @@ package com.zyc.zdh.job;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.zyc.rqueue.RQueueClient;
 import com.zyc.rqueue.RQueueManager;
 import com.zyc.rqueue.RQueueMode;
@@ -133,39 +134,43 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                         continue;
                     }
                     //如果上游任务kill,killed 设置本实例为kill(设置kill状态后,由后端处理模块监听并修改为killed状态)
-                    String pre_tasks=tl.getPre_tasks();
-                    if(!StringUtils.isEmpty(pre_tasks)){
-                        String[] task_ids=pre_tasks.split(",");
-                        //获取上游 杀死,失败,杀死中的任务
-                        List<StrategyInstance> tlis=sim.selectByIds(task_ids);
-
-                        int level= Integer.valueOf(tl.getDepend_level());
-                        if(tlis!=null && tlis.size()>0 && level==0){
-                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功), 默认成功时运行
-                            // 上游存在失败,更新当前实例状态为kill
-                            tl.setStatus(JobStatus.KILL.getValue());
-                            JobDigitalMarket.updateTaskLog(tl,sim);
-                            JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游全部成功时触发,检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为kill");
-                            continue;
-                        }
-                        if(level >= 1 && level <3){
-                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
-                            //杀死触发,如果所有上游任务都以完成finish/skip
-                            List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
-                            if(tlis_finish.size()==task_ids.length){
-                                tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
-                                String run_jsmind_data = tl.getRun_jsmind_data();
-                                JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
-                                jsonObject.put("is_disenable","true");
-                                tl.setRun_jsmind_data(jsonObject.toJSONString());
-                                tl.setIs_disenable("true");
-                                JobDigitalMarket.updateTaskLog(tl, sim);
-                                //JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
-                                JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游存在失败或者杀死时触发,检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为check_dep_finish");
-                                continue;
-                            }
-                        }
+                    String action = "";
+                    action = checkLevel(tl);
+                    if(StringUtils.isEmpty(action)){
+                        continue;
                     }
+//                    String pre_tasks=tl.getPre_tasks();
+//                    if(!StringUtils.isEmpty(pre_tasks)){
+//                        String[] task_ids=pre_tasks.split(",");
+//                        //获取上游 杀死,失败,杀死中的任务
+//                        List<StrategyInstance> tlis=sim.selectByIds(task_ids);
+//
+//                        int level= Integer.valueOf(tl.getDepend_level());
+//                        if(tlis!=null && tlis.size()>0 && level==0){
+//                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功), 默认成功时运行
+//                            // 上游存在失败,更新当前实例状态为kill
+//                            tl.setStatus(JobStatus.KILL.getValue());
+//                            JobDigitalMarket.updateTaskLog(tl,sim);
+//                            JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游全部成功时触发,检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为kill");
+//                            continue;
+//                        }
+//                        if(level >= 1 && level <3){
+//                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
+//                            //杀死触发,如果所有上游任务都以完成finish/skip
+//                            List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
+//                            if(tlis_finish.size()==task_ids.length){
+//                                tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
+//                                String run_jsmind_data = tl.getRun_jsmind_data();
+//                                JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
+//                                jsonObject.put("is_disenable","true");
+//                                tl.setRun_jsmind_data(jsonObject.toJSONString());
+//                                tl.setIs_disenable("true");
+//                                JobDigitalMarket.updateTaskLog(tl, sim);
+//                                JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游存在失败或者杀死时触发,检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为check_dep_finish");
+//                                continue;
+//                            }
+//                        }
+//                    }
 
                     //根据dag判断是否对当前任务进行
                     DAG dag=new DAG();
@@ -234,9 +239,9 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                                 is_run=false;
                             }
                         }else if(level == 3){
-                            msg = "当前任务依赖级别: 上游全部执行后(成功/失败/杀死)可触发";
+                            msg = "当前任务依赖级别: 上游全部执行后(成功/失败/跳过)可触发";
                             //上游执行完,即可完成触发
-                            if(run_num == 0 && (killed_num+success_num+error_num)==parents.size()){
+                            if(run_num == 0 && killed_num == 0 && (success_num+error_num)==parents.size()){
 
                             }else{
                                 is_run = false;
@@ -405,6 +410,178 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
         }
         rQueueClient.offer(JSON.toJSONString(strategyInstance), Integer.valueOf(priority));
 
+    }
+
+
+    private static String checkLevel(StrategyInstance si){
+        String action = "";
+        StrategyInstanceMapper sim=(StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
+        String pre_tasks=si.getPre_tasks();
+
+        if(StringUtils.isEmpty(pre_tasks)){
+            action = "do";
+            return action;
+        }
+
+        if(!StringUtils.isEmpty(pre_tasks)){
+            String[] task_ids=pre_tasks.split(",");
+            //获取上游 杀死,失败,杀死中的任务
+            List<StrategyInstance> sis=sim.selectAllByIds(task_ids);
+
+            int level= Integer.valueOf(si.getDepend_level());
+
+            if(level == 0){
+                // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功), 默认成功时运行
+                if(checkByInStatus(sis, Lists.newArrayList("kill", "killed", "error"))){
+                    //包含失败,杀死,杀死中, 设置状态为以杀死
+                    si.setStatus(JobStatus.KILL.getValue());
+                    JobDigitalMarket.updateTaskLog(si,sim);
+                    JobDigitalMarket.insertLog(si,"INFO","当前任务依赖级别: 上游全部成功时触发,检测到上游任务:"+pre_tasks+",失败或者已被杀死,更新本任务状态为kill");
+                    return action;
+                }else if(checkByNotInStatus(sis, Lists.newArrayList("finish", "skip"))){
+                    //不包含失败,杀死,杀死中任务,但是存在成功,跳过之外状态的任务也跳过
+                    return action;
+                }else{
+                    action = "do";
+                }
+            }
+
+//            if(tlis!=null && tlis.size()>0 && level==0){
+//                // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功), 默认成功时运行
+//                // 上游存在失败,更新当前实例状态为kill
+//                si.setStatus(JobStatus.KILL.getValue());
+//                JobDigitalMarket.updateTaskLog(tl,sim);
+//                JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游全部成功时触发,检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为kill");
+//                continue;
+//            }
+
+            if(level == 1){
+                // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
+                if(!checkByNotInStatus(sis, Lists.newArrayList("finish", "skip"))){
+                    //上游状态都是finish,skip, 则当前任务设为跳过
+                    si.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
+                    String run_jsmind_data = si.getRun_jsmind_data();
+                    JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
+                    jsonObject.put("is_disenable","true");
+                    si.setRun_jsmind_data(jsonObject.toJSONString());
+                    si.setIs_disenable("true");
+                    JobDigitalMarket.updateTaskLog(si,sim);
+                    JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为CHECK_DEP_FINISH, 且任务改为禁用");
+                    return action;
+                }
+
+                if(checkByInStatus(sis, Lists.newArrayList("killed"))){
+                    //触发
+                    action = "do";
+                }else if(checkByInStatus(sis, Lists.newArrayList("error"))){
+                    si.setStatus(JobStatus.KILL.getValue());
+                    JobDigitalMarket.updateTaskLog(si,sim);
+                    //JobCommon2.updateTaskLog(tli,taskLogInstanceMapper);
+                    JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",存在失败,更新本任务状态为KILL");
+                    return action;
+                }else {
+                    return action;
+                }
+            }
+
+            if(level == 2){
+                // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
+                //任务只包含finish,skip
+                if(!checkByNotInStatus(sis, Lists.newArrayList("finish", "skip"))){
+                    //上游状态都是finish,skip, 则当前任务设为跳过
+                    si.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
+                    String run_jsmind_data = si.getRun_jsmind_data();
+                    JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
+                    jsonObject.put("is_disenable","true");
+                    si.setRun_jsmind_data(jsonObject.toJSONString());
+                    si.setIs_disenable("true");
+                    JobDigitalMarket.updateTaskLog(si,sim);
+                    JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为CHECK_DEP_FINISH,且任务改为禁用");
+                    return action;
+                }
+
+                if(checkByInStatus(sis, Lists.newArrayList("killed"))){
+                    si.setStatus(JobStatus.KILL.getValue());
+                    JobDigitalMarket.updateTaskLog(si,sim);
+                    JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",存在失败,更新本任务状态为KILL");
+                    return action;
+                }
+
+                //包含error, 且不包含finish,skip,error之前的状态任务表示上游都以完成,可进行判断是否触发
+                if(checkByInStatus(sis, Lists.newArrayList("error")) &&
+                        !checkByNotInStatus(sis, Lists.newArrayList("finish", "skip", "error"))){
+                    action = "do";
+                }else {
+                    return action;
+                }
+
+            }
+
+            if(level == 3){
+                // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3:执行结束后运行(成功/失败/跳过),默认成功时运行
+                //上游都执行结束后触发,上游任务状态只包含(完成,失败,跳过),则触发当前任务
+                if(!checkByNotInStatus(sis, Lists.newArrayList("finish","skip","error"))){
+                    action = "do";
+                }else if(checkByInStatus(sis, Lists.newArrayList("killed"))){
+                    si.setStatus(JobStatus.KILL.getValue());
+                    JobDigitalMarket.updateTaskLog(si,sim);
+                    JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",存在失败,更新本任务状态为KILL");
+                    return action;
+                }else {
+                    return action;
+                }
+            }
+//            if(level >= 1 && level <3){
+//                // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
+//                //杀死触发,如果所有上游任务都以完成finish/skip
+//                List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
+//                if(tlis_finish.size()==task_ids.length){
+//                    tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
+//                    String run_jsmind_data = tl.getRun_jsmind_data();
+//                    JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
+//                    jsonObject.put("is_disenable","true");
+//                    tl.setRun_jsmind_data(jsonObject.toJSONString());
+//                    tl.setIs_disenable("true");
+//                    JobDigitalMarket.updateTaskLog(tl, sim);
+//                    JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游存在失败或者杀死时触发,检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为check_dep_finish");
+//                    continue;
+//                }
+//            }
+        }
+
+        return action;
+    }
+
+    /**
+     * 检查任务中是否存在指定状态的任务
+     * 存在指定的状态返回true, 其他返回false
+     * @param sis
+     * @param status
+     */
+    private static boolean checkByInStatus(List<StrategyInstance> sis, List<String> status){
+        for (StrategyInstance si: sis){
+            if(status.contains(si.getStatus())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 检查任务中是否存在指定状态之外的任务
+     *
+     * 存在指定状态之外的状态,返回true,其他返回false
+     *
+     * @param sis
+     * @param status
+     */
+    private static boolean checkByNotInStatus(List<StrategyInstance> sis, List<String> status){
+        for (StrategyInstance si: sis){
+            if(!status.contains(si.getStatus())){
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void debugInfo(Object obj) {

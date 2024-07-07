@@ -142,6 +142,7 @@ public class CrowdFileController extends BaseController {
     public ReturnInfo<CrowdFileInfo> crowd_file_detail(String id) {
         try {
             CrowdFileInfo crowdFileInfo = crowdFileMapper.selectByPrimaryKey(id);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFileInfo.getProduct_code(), crowdFileInfo.getDim_group());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", crowdFileInfo);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";

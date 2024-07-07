@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.GroovyFactory;
 import com.zyc.zdh.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
@@ -45,6 +46,7 @@ public class HttpJob extends JobCommon2 {
             params = jj.render(params, jinJavaParam);
             String header = JSON.parseObject(run_jsmind).getString("header");
             String cookie = JSON.parseObject(run_jsmind).getString("cookie");
+            String res_expr = JSON.parseObject(run_jsmind).getString("res_expr");
 
             if(StringUtils.isEmpty(url_type)){
                 throw new Exception("http任务请求类型为空");
@@ -82,12 +84,13 @@ public class HttpJob extends JobCommon2 {
                     throw new Exception("cookie参数必须是kv格式");
                 }
             }
+            String result = null;
             //post请求
             if(url_type.equalsIgnoreCase(Const.HTTP_POST)){
                 logger.info("[" + jobType + "] JOB ,开始执行[post]请求");
                 insertLog(tli, "info", "[" + jobType + "] JOB ,开始执行[post]请求,请求地址: "+url+" ,参数: "+params);
                 //校验是否有参数
-                String result = HttpUtil.postJSON(url, params, header_map, cookie_map);
+                result = HttpUtil.postJSON(url, params, header_map, cookie_map);
                 insertLog(tli, "info", "[" + jobType + "] JOB ,请求结果: "+result);
             }
             if(url_type.equalsIgnoreCase(Const.HTTP_GET)){
@@ -105,8 +108,25 @@ public class HttpJob extends JobCommon2 {
                         npl.add(new BasicNameValuePair(key,value.toString()));
                     }
                 }
-                String result = HttpUtil.getRequest(url, npl, header_map, cookie_map);
+                result = HttpUtil.getRequest(url, npl, header_map, cookie_map);
                 insertLog(tli, "info", "[" + jobType + "] JOB ,请求结果: "+result);
+            }
+
+            if(!StringUtils.isEmpty(res_expr)){
+                insertLog(tli, "info", "[" + jobType + "] JOB ,校验结果表达式: "+res_expr);
+                Map<String, Object> res_params = new HashMap<>();
+                res_params.put("res", result);
+                if(res_expr.contains("res.")){
+                    res_params.put("res", JSONObject.parseObject(result));
+                }
+                Object ret = GroovyFactory.execExpress(res_expr, res_params);
+                if(ret == null || StringUtils.isEmpty(ret.toString())){
+                    throw new Exception("解析结果为空,请检查解析表达式是否正确,或者检查返回结果是否正常");
+                }
+
+                if(!ret.toString().equalsIgnoreCase("true")){
+                    throw new Exception("解析结果不符合预期");
+                }
             }
         } catch (Exception e) {
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);

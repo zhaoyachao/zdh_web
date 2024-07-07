@@ -13,6 +13,7 @@ import com.zyc.zdh.push.MessagePush;
 /**
  * 阿里云短信推送-基础实现
  * 当前推送性能较低
+ * 5.4.0及之后接入zdh_push服务,建议直接接入,当前推送工具后续会下线
  */
 public class AliMessagePush implements MessagePush {
     @Override

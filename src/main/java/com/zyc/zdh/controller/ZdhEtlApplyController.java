@@ -67,6 +67,7 @@ public class ZdhEtlApplyController extends BaseController{
 
         try{
             EtlApplyTaskInfo etlApplyTaskInfo=etlApplyTaskMapper.selectByPrimaryKey(id);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskInfo.getProduct_code(), etlApplyTaskInfo.getDim_group());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlApplyTaskInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -115,6 +116,7 @@ public class ZdhEtlApplyController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_apply_task_delete(String[] ids) {
         try{
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskMapper, etlApplyTaskMapper.getTable(), ids);
             etlApplyTaskMapper.deleteLogicByIds("etl_apply_task_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){

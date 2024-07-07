@@ -25,7 +25,7 @@ public interface TaskGroupLogInstanceMapper extends BaseTaskGroupLogInstanceMapp
 
     @Select({"<script>",
             "SELECT * FROM task_group_log_instance",
-            "WHERE owner=#{owner} and job_id=#{job_id}",
+            "WHERE job_id=#{job_id}",
             "<when test='start_time!=null'>",
             "<![CDATA[ AND update_time >= #{start_time} ]]>",
             "</when>",
@@ -35,10 +35,20 @@ public interface TaskGroupLogInstanceMapper extends BaseTaskGroupLogInstanceMapp
             "<when test='status!=null and status !=\"\"'>",
             "AND status = #{status}",
             "</when>",
+            "and product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and dim_group in ",
+            "<foreach collection='dim_groups' item='dim_group' open='(' separator=',' close=')'>",
+            "#{dim_group}",
+            "</foreach>",
             "order by run_time desc",
             "</script>"})
-    public List<TaskGroupLogInstance> selectByTaskLogs2(@Param("owner") String owner, @Param("start_time") Timestamp start_time,
-                                                   @Param("end_time") Timestamp end_time, @Param("status") String status, @Param("job_id") String job_id);
+    public List<TaskGroupLogInstance> selectByTaskLogs2(@Param("start_time") Timestamp start_time,
+                                                   @Param("end_time") Timestamp end_time, @Param("status") String status,
+                                                        @Param("job_id") String job_id, @Param("product_codes") List<String> product_codes,
+                                                        @Param("dim_groups") List<String> dim_groups);
 
     @Select({"<script>",
             "SELECT * FROM task_group_log_instance",
@@ -59,7 +69,15 @@ public interface TaskGroupLogInstanceMapper extends BaseTaskGroupLogInstanceMapp
 
     @Select({"<script>",
             "SELECT * FROM task_group_log_instance",
-            "WHERE owner=#{owner} ",
+            "WHERE ",
+            "product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and dim_group in ",
+            "<foreach collection='dim_groups' item='dim_group' open='(' separator=',' close=')'>",
+            "#{dim_group}",
+            "</foreach>",
             "<when test='start_time!=null'>",
             "<![CDATA[ AND update_time >= #{start_time} ]]>",
             "</when>",
@@ -72,13 +90,23 @@ public interface TaskGroupLogInstanceMapper extends BaseTaskGroupLogInstanceMapp
             "order by run_time desc",
             "limit ${offset}, ${limit}",
             "</script>"})
-    public List<TaskGroupLogInstance> selectByTaskLogs4(@Param("owner") String owner, @Param("start_time") Timestamp start_time,
+    public List<TaskGroupLogInstance> selectByTaskLogs4(@Param("start_time") Timestamp start_time,
                                                         @Param("end_time") Timestamp end_time, @Param("status") String status,
-                                                        @Param("limit") int limit,  @Param("offset")int offset);
+                                                        @Param("limit") int limit,  @Param("offset")int offset,
+                                                        @Param("product_codes") List<String> product_codes,
+                                                        @Param("dim_groups") List<String> dim_groups);
 
     @Select({"<script>",
             "SELECT count(1) as num FROM task_group_log_instance",
-            "WHERE owner=#{owner} ",
+            "WHERE ",
+            "product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and dim_group in ",
+            "<foreach collection='dim_groups' item='dim_group' open='(' separator=',' close=')'>",
+            "#{dim_group}",
+            "</foreach>",
             "<when test='start_time!=null'>",
             "<![CDATA[ AND update_time >= #{start_time} ]]>",
             "</when>",
@@ -90,8 +118,10 @@ public interface TaskGroupLogInstanceMapper extends BaseTaskGroupLogInstanceMapp
             "</when>",
             "order by run_time desc",
             "</script>"})
-    public int selectCountByTaskLogs4(@Param("owner") String owner, @Param("start_time") Timestamp start_time,
-                                                        @Param("end_time") Timestamp end_time, @Param("status") String status);
+    public int selectCountByTaskLogs4(@Param("start_time") Timestamp start_time,
+                                                        @Param("end_time") Timestamp end_time, @Param("status") String status,
+                                      @Param("product_codes") List<String> product_codes,
+                                      @Param("dim_groups") List<String> dim_groups);
 
 
     @Select("select * from task_group_log_instance where etl_date=#{etl_date} and job_id=#{job_id} and status in ('finish','skip')")

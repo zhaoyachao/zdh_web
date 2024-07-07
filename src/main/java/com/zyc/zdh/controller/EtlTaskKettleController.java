@@ -165,6 +165,7 @@ public class EtlTaskKettleController extends BaseController {
     public ReturnInfo<EtlTaskKettleInfo> etl_task_kettle_detail(String id) {
         try {
             EtlTaskKettleInfo etlTaskKettleInfo = etlTaskKettleMapper.selectByPrimaryKey(id);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskKettleInfo.getProduct_code(), etlTaskKettleInfo.getDim_group());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlTaskKettleInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -185,6 +186,8 @@ public class EtlTaskKettleController extends BaseController {
 
             EtlTaskKettleInfo oldEtlTaskKettleInfo = etlTaskKettleMapper.selectByPrimaryKey(etlTaskKettleInfo.getId());
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskKettleInfo.getProduct_code(), etlTaskKettleInfo.getDim_group());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskKettleInfo.getProduct_code(), oldEtlTaskKettleInfo.getDim_group());
 
             etlTaskKettleInfo.setCreate_time(oldEtlTaskKettleInfo.getCreate_time());
             etlTaskKettleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -211,6 +214,8 @@ public class EtlTaskKettleController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<EtlTaskKettleInfo> etl_task_kettle_add(EtlTaskKettleInfo etlTaskKettleInfo) {
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskKettleInfo.getProduct_code(), etlTaskKettleInfo.getDim_group());
+
             etlTaskKettleInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             etlTaskKettleInfo.setOwner(getOwner());
             etlTaskKettleInfo.setIs_delete(Const.NOT_DELETE);
@@ -235,6 +240,7 @@ public class EtlTaskKettleController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_kettle_delete(String[] ids) {
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskKettleMapper, etlTaskKettleMapper.getTable(), ids);
             etlTaskKettleMapper.deleteLogicByIds("etl_task_kettle_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

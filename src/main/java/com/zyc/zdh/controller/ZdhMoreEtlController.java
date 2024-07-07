@@ -61,6 +61,7 @@ public class ZdhMoreEtlController extends BaseController {
     public ReturnInfo etl_task_more_detail(String id) {
         try {
             EtlMoreTaskInfo etlMoreTaskInfo = etlMoreTaskMapper.selectByPrimaryKey(id);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlMoreTaskInfo.getProduct_code(),etlMoreTaskInfo.getDim_group());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlMoreTaskInfo);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

@@ -9,6 +9,7 @@ import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.MapStructMapper;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -345,12 +346,10 @@ public class ZdhDispatchController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo dispatch_task_execute(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time,String[] sub_tasks) {
         debugInfo(quartzJobInfo);
-        System.out.println(concurrency);
-        System.out.println(Arrays.toString(sub_tasks));
-        JSONObject json = new JSONObject();
 
         try {
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
+            checkPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group());
             List<Date> dates = JobCommon2.resolveQuartzExpr(quartzJobInfo.getUse_quartz_time(),dti.getStep_size(),dti.getExpr(),start_time,end_time);
             List<String> tgli_ids=new ArrayList<>();
             for(Date dt:dates){
@@ -363,7 +362,8 @@ public class ZdhDispatchController extends BaseController {
             quartzJobMapper.updateByPrimaryKeySelective(dti);
             for(int i=0;i<dates.size();i++){
                 TaskGroupLogInstance tgli=new TaskGroupLogInstance();
-                BeanUtils.copyProperties(tgli, dti);
+                tgli = MapStructMapper.INSTANCE.quartzJobInfoToTaskGroupLogInstance(dti);
+                //BeanUtils.copyProperties(tgli, dti);
                 tgli.setId(tgli_ids.get(i));
                 tgli.setStart_time(null);
                 tgli.setEnd_time(null);
@@ -493,7 +493,7 @@ public class ZdhDispatchController extends BaseController {
         dti.setCount(0);
 
         ReturnInfo result= null;
-        //ZdhInfo zdhInfo = create_zhdInfo(quartzJobInfo);
+
         //重置次数,清除上次运行日志id
         if(reset.equalsIgnoreCase("1")){
             dti.setTask_log_id(null);
@@ -507,6 +507,7 @@ public class ZdhDispatchController extends BaseController {
             }
         }
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group());
             //添加调度器并更新quartzjobinfo
             quartzManager2.addTaskToQuartz(dti);
             result = ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"调度开启成功",null);
@@ -537,7 +538,7 @@ public class ZdhDispatchController extends BaseController {
         try{
             debugInfo(quartzJobInfo);
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
-
+            checkPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group());
             if (quartzJobInfo.getStatus().equals("running")) {
                 //需要恢复暂停任务
                 quartzManager2.resumeTask(dti);
@@ -570,6 +571,7 @@ public class ZdhDispatchController extends BaseController {
 
         try{
             QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, qji.getProduct_code(), qji.getDim_group());
             quartzManager2.deleteTask(qji, "remove");
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){

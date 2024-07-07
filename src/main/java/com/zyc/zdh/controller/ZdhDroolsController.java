@@ -68,6 +68,7 @@ public class ZdhDroolsController extends BaseController{
     public ReturnInfo etl_task_drools_detail(String id) {
         try{
             EtlDroolsTaskInfo etlDroolsTaskInfo=etlDroolsTaskMapper.selectByPrimaryKey(id);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskInfo.getProduct_code(), etlDroolsTaskInfo.getDim_group());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlDroolsTaskInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -142,6 +143,7 @@ public class ZdhDroolsController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_drools_delete(String[] ids) {
         try{
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskMapper, etlDroolsTaskMapper.getTable(), ids);
             if (ids != null) {
                 for (String id : ids) {
                     etlDroolsTaskMapper.deleteBatchById(id);

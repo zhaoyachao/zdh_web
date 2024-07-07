@@ -3,9 +3,9 @@ package com.zyc.zdh.controller.digitalmarket;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
-import com.zyc.zdh.dao.LabelMapper;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class VariableController extends BaseController {
     @Autowired
     private RedisUtil redisUtil;
     @Autowired
-    private LabelMapper labelMapper;
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 变量首页
@@ -52,6 +52,9 @@ public class VariableController extends BaseController {
     @ResponseBody
     public ReturnInfo<Map> variable_detail(String product_code, String uid, String variable_code) {
         try{
+
+            checkPermissionByProduct(zdhPermissionService, product_code);
+
             String variable_uid=product_code+"_tag_"+uid;
             String params = redisUtil.getRedisTemplate().opsForHash().get(variable_uid, variable_code).toString();
 
@@ -88,6 +91,7 @@ public class VariableController extends BaseController {
     @ResponseBody
     public ReturnInfo variable_update(String product_code, String uid, String variable_code, String param) {
         try {
+            checkPermissionByProduct(zdhPermissionService, product_code);
             String variable_uid=product_code+"_tag_"+uid;
             redisUtil.getRedisTemplate().opsForHash().put(variable_uid, variable_code, param);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", "");
@@ -108,6 +112,7 @@ public class VariableController extends BaseController {
     @ResponseBody
     public ReturnInfo label_delete(String product_code, String uid, String variable_code) {
         try {
+            checkPermissionByProduct(zdhPermissionService, product_code);
             String variable_uid=product_code+"_tag_"+uid;
             redisUtil.getRedisTemplate().opsForHash().delete(variable_uid, variable_code);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
@@ -128,6 +133,7 @@ public class VariableController extends BaseController {
     @ResponseBody
     public ReturnInfo<Map> variable_all(String product_code, String uid) {
         try{
+            checkPermissionByProduct(zdhPermissionService, product_code);
             String variable_uid=product_code+"_tag_"+uid;
 
             //根据product_code获取所有变量

@@ -573,7 +573,7 @@ public class QuartzManager2 {
 		}
 	}
 
-	public List<QuartzJobInfo> getScheduleTask(String owner) throws SchedulerException {
+	public List<QuartzJobInfo> getScheduleTask(String owner, List<String> product_codes, List<String> dim_groups) throws SchedulerException {
 		try {
 			Set<JobKey> jobKeySet=schedulerFactoryBean.getScheduler().getJobKeys(GroupMatcher.anyGroup());
 			List<String> job_ids=new ArrayList<String>();
@@ -581,7 +581,7 @@ public class QuartzManager2 {
 			for(JobKey jobKey:jobKeySet){
 				job_ids.add(jobKey.getName());
 			}
-			return quartzJobMapper.selectRunJobByOwner(owner,job_ids);
+			return quartzJobMapper.selectRunJobByOwner(job_ids, product_codes, dim_groups);
 
 		} catch (SchedulerException e) {
 			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

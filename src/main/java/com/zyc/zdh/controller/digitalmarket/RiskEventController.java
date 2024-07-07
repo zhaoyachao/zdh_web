@@ -169,6 +169,7 @@ public class RiskEventController extends BaseController {
     public ReturnInfo<RiskEventInfo> risk_event_detail(String id) {
         try {
             RiskEventInfo riskEventInfo = riskEventMapper.selectByPrimaryKey(id);
+            checkPermissionByProduct(zdhPermissionService, riskEventInfo.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", riskEventInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);

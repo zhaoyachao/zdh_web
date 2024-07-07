@@ -84,8 +84,11 @@ public class ZdhDataxController extends BaseController{
             if(!StringUtils.isEmpty(id)){
                 cri.andEqualTo("id", id);
             }
-            cri.andEqualTo("owner", getOwner());
+            //cri.andEqualTo("owner", getOwner());
             cri.andEqualTo("is_delete", Const.NOT_DELETE);
+
+            dynamicPermissionByProductAndGroup(zdhPermissionService, cri);
+
             etlTaskDataxInfos = etlTaskDataxMapper.selectByExample(etlTaskDataxInfoExample);
 
             return ReturnInfo.buildSuccess(etlTaskDataxInfos);
@@ -109,6 +112,7 @@ public class ZdhDataxController extends BaseController{
     public ReturnInfo<Object> etl_task_datax_delete(String[] ids) {
 
         try{
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxMapper, etlTaskDataxMapper.getTable(), ids);
             etlTaskDataxMapper.deleteLogicByIds("etl_task_datax_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){

@@ -138,7 +138,7 @@ public class TouchController extends BaseController {
     public ReturnInfo<TouchConfigInfo> touch_detail(String id) {
         try {
             TouchConfigInfo touchConfigInfo = touchConfigMapper.selectByPrimaryKey(id);
-
+            checkPermissionByProductAndDimGroup(zdhPermissionService, touchConfigInfo.getProduct_code(), touchConfigInfo.getDim_group());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", touchConfigInfo);
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";

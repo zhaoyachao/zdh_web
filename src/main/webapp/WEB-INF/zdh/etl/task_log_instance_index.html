@@ -163,7 +163,7 @@
 <!-- layer javascript -->
 <script src="js/plugins/layer/layer.min.js"></script>
 <script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
-<!--<script type="text/javascript" src="js/jsplumb/index2.js"></script>-->
+
 <script type="text/javascript">
 
     function openTabPage(url, title) {
@@ -735,7 +735,7 @@
 
         $('#exampleTableEvents').bootstrapTable({
             method: 'POST',
-            url: server_context+"/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group="+s.group_id,
+            url: server_context+"/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group_id="+s.group_id,
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             search: true,

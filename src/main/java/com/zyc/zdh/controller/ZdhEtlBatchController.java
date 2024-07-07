@@ -82,6 +82,7 @@ public class ZdhEtlBatchController extends BaseController {
     public ReturnInfo<EtlTaskBatchInfo> etl_task_batch_detail(String id) {
         try {
             EtlTaskBatchInfo eti = etlTaskBatchMapper.selectByPrimaryKey(id);
+            checkPermissionByProductAndDimGroup(zdhPermissionService, eti.getProduct_code(), eti.getDim_group());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -107,7 +108,7 @@ public class ZdhEtlBatchController extends BaseController {
 
 
             Example.Criteria criteria = example.createCriteria();
-            criteria.andEqualTo("owner", getOwner());
+            //criteria.andEqualTo("owner", getOwner());
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
             //动态增加数据权限控制
             dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
@@ -266,6 +267,7 @@ public class ZdhEtlBatchController extends BaseController {
             debugInfo(etlTaskBatchInfo);
             EtlTaskBatchInfo etbi = etlTaskBatchMapper.selectByPrimaryKey(etlTaskBatchInfo);
 
+            checkPermissionByProductAndDimGroup(zdhPermissionService, etbi.getProduct_code(), etbi.getDim_group());
             //校验状态
             if (!etbi.getStatus().equalsIgnoreCase(Const.BATCH_INIT) && !etbi.getStatus().equalsIgnoreCase(Const.BATCH_FAIL)) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "批量任务状态必须是未执行或失败", null);

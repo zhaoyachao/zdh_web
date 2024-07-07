@@ -58,6 +58,7 @@
                     <input type="hidden" id="http_params" name="http_params" value="">
                     <input type="hidden" id="http_header" name="http_header" value="">
                     <input type="hidden" id="http_cookie" name="http_cookie" value="">
+                    <input type="hidden" id="http_res_expr" name="http_res_expr" value="">
                     <input type="hidden" id="http_url_text" name="http_url_text" value="">
                     <input type="hidden" id="to_emails" name="to_emails" value="">
                     <input type="hidden" id="email_context" name="email_context" value="">
@@ -379,7 +380,7 @@
 <script src="js/admin/dim_group_common.js"></script>
 
 <script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
-<script type="text/javascript" src="js/jsplumb/index.js"></script>
+<script type="text/javascript" src="js/jsplumb/dispatch_task_group_index.js"></script>
 
 
 <script type="text/javascript">
@@ -497,6 +498,7 @@
                 $("#" + divId).attr("params",rs.params);
                 $("#" + divId).attr("header",rs.header);
                 $("#" + divId).attr("cookie",rs.cookie);
+                $("#" + divId).attr("res_expr",rs.res_expr);
             }
             if(tp == "email"){
                 $("#" + divId).attr("etl_task_id",rs.etl_task_id);
@@ -572,6 +574,7 @@
                 params: $elem.attr('params'),
                 header: $elem.attr('header'),
                 cookie: $elem.attr('cookie'),
+                res_expr: $elem.attr('res_expr'),
                 to_emails: $elem.attr('to_emails'),
                 email_type: $elem.attr('email_type'),
                 email_context: $elem.attr('email_context'),

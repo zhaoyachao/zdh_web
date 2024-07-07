@@ -181,6 +181,7 @@ public class FunctionController extends BaseController {
     public ReturnInfo<FunctionInfo> function_detail(String id) {
         try {
             FunctionInfo functionInfo = functionMapper.selectByPrimaryKey(id);
+            checkPermissionByProduct(zdhPermissionService, functionInfo.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", functionInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -272,6 +273,7 @@ public class FunctionController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo function_delete(String[] ids) {
         try {
+            checkPermissionByProductAndDimGroup(zdhPermissionService, functionMapper, functionMapper.getTable(), ids);
             functionMapper.deleteLogicByIds(functionMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -297,6 +299,7 @@ public class FunctionController extends BaseController {
             functionInfo.setFunction_name(function_name);
             functionInfo.setIs_delete(Const.NOT_DELETE);
             functionInfo = functionMapper.selectOne(functionInfo);
+            checkPermissionByProduct(zdhPermissionService, functionInfo.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", functionInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);

@@ -177,6 +177,7 @@ public class ZdhDataSourcesController extends BaseController{
             if(dataSourcesInfo != null){
                 dataSourcesInfo.setPassword("");
             }
+            checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group());
             return ReturnInfo.buildSuccess(dataSourcesInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

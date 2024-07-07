@@ -847,6 +847,12 @@
   + v5.3.6 [zdh_magic_mirror]营销模块支持minio
   + v5.3.6 [zdh_web]优化sftp路径,营销模块-人群文件优化上传方式
   
+  + v5.4.0 [zdh_web]新增统一推送模块
+  + v5.4.0 [zdh_web]优化权限列表
+  + v5.4.0 [zdh_web]etl http模块新增结果值对比功能
+  + v5.4.0 [zdh_web]补全增删改查-权限控制
+  + v5.4.0 [zdh_web]etl调度新增结束执行级别
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
@@ -3393,6 +3399,42 @@
 
 ## 5.3.5迁移5.3.6
     无改动
+    
+## 5.3.6迁移5.4.0
+    CREATE TABLE `push_template_info` (
+          `id` bigint NOT NULL AUTO_INCREMENT,
+          `template_name` varchar(128) DEFAULT '' COMMENT '模板名称',
+          `template_id` varchar(128) DEFAULT '' COMMENT '模板Id',
+          `push_type` varchar(16) DEFAULT '' COMMENT '消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他',
+          `push_server` varchar(256) DEFAULT '' COMMENT '推送服务,sms,email',
+          `config` text  COMMENT '推送配置,json结构',
+          `status` varchar(8) not null DEFAULT '0' COMMENT '状态,0:编辑,1:启用,2:审批中,3:审批失败,4:禁用',
+          `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+          `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+          `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+          `update_context` varchar(100) DEFAULT '' COMMENT '更新说明',
+          `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+          `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+          `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
+          PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment 'push模板配置';
+        
+    CREATE TABLE `push_channel_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `channel_name` varchar(128) DEFAULT '' COMMENT '通道名称',
+      `channel_code` varchar(128) DEFAULT '' COMMENT '通道码',
+      `channel_type` varchar(128) DEFAULT '' COMMENT '通道类型',
+      `channel_server` varchar(128) DEFAULT '' COMMENT '通道服务商',
+      `config` text  COMMENT '通道配置,json结构',
+      `status` varchar(8) not null DEFAULT '0' COMMENT '状态,0:编辑,1:启用,2:禁用',
+      `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+      `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT 'push通道配置';    
     
 # 未完成的功能
   + v4.7.x 增加数据源共享功能(组内共享,单成员共享,为血缘分析做基础) 开发中

@@ -371,25 +371,25 @@
             $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background: '+color+'" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
             $("#" + divId).css("left", positionX).css("top", positionY);
             $("#" + divId).attr("type",tp);
-            $("#" + divId).attr("rule_id",rs.rule_id);
-            $("#" + divId).attr("rule_context",rs.rule_context);
-            $("#" + divId).attr("is_disenable",rs.is_disenable);
-            $("#" + divId).attr("depend_level",rs.depend_level);
-            $("#" + divId).attr("time_out",rs.time_out);
-            $("#" + divId).attr("is_base",rs.is_base);
-            $("#" + divId).attr("data_status",rs.data_status);
-            $("#" + divId).attr("project_code",rs.project_code);
-            $("#" + divId).attr("project_scene",rs.project_scene);
+            $("#" + divId).attr("rule_id",is_empty(rs.rule_id)?"":rs.rule_id);
+            $("#" + divId).attr("rule_context",is_empty(rs.rule_context)?"":rs.rule_context);
+            $("#" + divId).attr("is_disenable",is_empty(rs.is_disenable)?"false":rs.is_disenable);
+            $("#" + divId).attr("depend_level",is_empty(rs.depend_level)?"0":rs.depend_level);
+            $("#" + divId).attr("time_out",is_empty(rs.time_out)?"86400":rs.time_out);
+            $("#" + divId).attr("is_base",is_empty(rs.is_base)?"false":rs.is_base);
+            $("#" + divId).attr("data_status",is_empty(rs.data_status)?"1":rs.data_status);
+            $("#" + divId).attr("project_code",is_empty(rs.project_code)?"":rs.project_code);
+            $("#" + divId).attr("project_scene",is_empty(rs.project_scene)?"":rs.project_scene);
 
-            $("#" + divId).attr("more_task",rs.more_task);
-            $("#" + divId).attr("zdh_instance",rs.zdh_instance);
+            $("#" + divId).attr("more_task",is_empty(rs.more_task)?"":rs.more_task);
+            $("#" + divId).attr("zdh_instance",is_empty(rs.zdh_instance)?"":rs.zdh_instance);
 
-            $("#" + divId).attr("touch_type",rs.touch_type);
+            $("#" + divId).attr("touch_type",is_empty(rs.touch_type)?"":rs.touch_type);
 
-            $("#" + divId).attr("rule_param",rs.rule_param);
-            $("#" + divId).attr("operate",rs.operate);
-            $("#" + divId).attr("rule_expression_cn", rs.rule_expression_cn);
-            $("#" + divId).attr("title", rs.rule_expression_cn);
+            $("#" + divId).attr("rule_param",is_empty(rs.rule_param)?"":rs.rule_param);
+            $("#" + divId).attr("operate",is_empty(rs.operate)?"and":rs.operate);
+            $("#" + divId).attr("rule_expression_cn", is_empty(rs.rule_expression_cn)?"":rs.rule_expression_cn);
+            $("#" + divId).attr("title", is_empty(rs.rule_expression_cn)?"":rs.rule_expression_cn);
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto");
             $("#" + divId).css("display","inline-block");
@@ -397,7 +397,7 @@
             $("#" + divId).css("*zoom","1");
 
             if(tp == "label"){
-                $("#" + divId).attr("label_use_type",rs.label_use_type);
+                $("#" + divId).attr("label_use_type",is_empty(rs.label_use_type)?"batch":rs.label_use_type);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "crowd_file"){
@@ -411,35 +411,35 @@
             }
 
             if(tp == "filter"){
-                $("#" + divId).attr("title",rs.filter_title);
+                $("#" + divId).attr("title",is_empty(rs.filter_title)?"":rs.filter_title);
                 //$("#" + divId).attr("filter_context",rs.filter_context);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             if(tp == "shunt"){
-                $("#" + divId).attr("shunt_param",rs.shunt_param);
+                $("#" + divId).attr("shunt_param",is_empty(rs.shunt_param)?"":rs.shunt_param);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             if(tp == "rights"){
-                $("#" + divId).attr("rights_param",rs.rights_param);
+                $("#" + divId).attr("rights_param",is_empty(rs.rights_param)?"":rs.rights_param);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             if(tp == "touch"){
-                $("#" + divId).attr("touch_context",rs.touch_context);
-                $("#" + divId).attr("touch_task",rs.touch_task);
+                $("#" + divId).attr("touch_context",is_empty(rs.touch_context)?"":rs.touch_context);
+                $("#" + divId).attr("touch_task",is_empty(rs.touch_task)?"":rs.touch_task);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "plugin"){
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "data_node"){
-                $("#" + divId).attr("data_node",rs.data_node);
+                $("#" + divId).attr("data_node",is_empty(rs.data_node)?"":rs.data_node);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "id_mapping"){
-                $("#" + divId).attr("data_engine",rs.data_engine);
+                $("#" + divId).attr("data_engine",is_empty(rs.data_engine)?"file":rs.data_engine);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "risk"){
@@ -447,33 +447,33 @@
             }
             if(tp == "tn"){
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
-                $("#" + divId).attr("tn_unit",rs.tn_unit);
-                $("#" + divId).attr("tn_type",rs.tn_type);
-                $("#" + divId).attr("tn_value",rs.tn_value);
+                $("#" + divId).attr("tn_unit",is_empty(rs.tn_unit)?"":rs.tn_unit);
+                $("#" + divId).attr("tn_type",is_empty(rs.tn_type)?"":rs.tn_type);
+                $("#" + divId).attr("tn_value",is_empty(rs.tn_value)?"":rs.tn_value);
             }
             if(tp == "manual_confirm"){
-                $("#" + divId).attr("title",rs.rule_context);
-                $("#" + divId).attr("confirm_notice_type",rs.confirm_notice_type);
+                $("#" + divId).attr("title",is_empty(rs.rule_context)?"":rs.rule_context);
+                $("#" + divId).attr("confirm_notice_type",is_empty(rs.confirm_notice_type)?"":rs.confirm_notice_type);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
             if(tp == "code_block"){
-                $("#" + divId).attr("title",rs.rule_context);
-                $("#" + divId).attr("code_type",rs.code_type);
-                $("#" + divId).attr("command",rs.command);
+                $("#" + divId).attr("title",is_empty(rs.rule_context)?"":rs.rule_context);
+                $("#" + divId).attr("code_type",is_empty(rs.code_type)?"":rs.code_type);
+                $("#" + divId).attr("command",is_empty(rs.command)?"":rs.command);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "custom_list"){
-                $("#" + divId).attr("title",rs.rule_context);
-                $("#" + divId).attr("name_list",rs.name_list);
+                $("#" + divId).attr("title",is_empty(rs.rule_context)?"":rs.rule_context);
+                $("#" + divId).attr("name_list",is_empty(rs.name_list)?"":rs.name_list);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "function"){
-                $("#" + divId).attr("return_diff_enable",rs.return_diff_enable);
-                $("#" + divId).attr("return_value_type",rs.return_value_type);
-                $("#" + divId).attr("return_value_express",rs.return_value_express);
-                $("#" + divId).attr("return_operate",rs.return_operate);
-                $("#" + divId).attr("return_operate_value",rs.return_operate_value);
+                $("#" + divId).attr("return_diff_enable",is_empty(rs.return_diff_enable)?"false":rs.return_diff_enable);
+                $("#" + divId).attr("return_value_type",is_empty(rs.return_value_type)?"":rs.return_value_type);
+                $("#" + divId).attr("return_value_express",is_empty(rs.return_value_express)?"":rs.return_value_express);
+                $("#" + divId).attr("return_operate",is_empty(rs.return_operate)?"":rs.return_operate);
+                $("#" + divId).attr("return_operate_value",is_empty(rs.return_operate_value)?"":rs.return_operate_value);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
@@ -838,6 +838,9 @@
                         //获取调度任务说明
                         var group_context=data.result.group_context;
                         $("#group_context").val(group_context);
+                        if(s.is_copy == "true"){
+                            $("#group_context").val(group_context+"_复制");
+                        }
 
                         var product_code=data.result.product_code;
                         $("#product_code").val(product_code);
