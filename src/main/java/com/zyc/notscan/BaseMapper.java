@@ -63,19 +63,19 @@ public interface BaseMapper<T> extends Mapper<T> {
     @Select({
             "<script>",
             "select * from ${table_name} where 1=1 ",
-            "<foreach collection='map' index='key' item='value' open='' close='' separator=''>",
-            "and #{key}= ${value}",
+            "<foreach collection='map' index='key' item='value'>",
+            " and ${key}= '${value}'",
             "</foreach>",
             "</script>"
     }
     )
-    public List<T> selectObjectByMap(@Param("table_name") String table_name, @Param("map") Map<String,Object> map);
+    public List<T> selectListByMap(@Param("table_name") String table_name, @Param("map") Map<String,Object> map);
 
     @Select({
             "<script>",
             "select * from ${table_name} where 1=1 ",
-            "<foreach collection='map' index='key' item='value' open='' close='' separator=''>",
-            "and #{key}= ${value}",
+            "<foreach collection='map' index='key' item='value' >",
+            " and ${key}= '${value}'",
             "</foreach>",
             "</script>"
     }
@@ -91,8 +91,8 @@ public interface BaseMapper<T> extends Mapper<T> {
     @Select({
             "<script>",
             "select * from ${table_name} where 1=1 ",
-            "<foreach collection='map' index='key' item='value' open='' close='' separator=''>",
-            "and #{key}= ${value}",
+            "<foreach collection='map' index='key' item='value'>",
+            " and ${key}= '${value}'",
             "</foreach>",
             "limit 1",
             "</script>"

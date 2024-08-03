@@ -3451,6 +3451,23 @@ CREATE TABLE `push_template_info` (
 -- Dumping data for table `push_template_info`
 --
 
+DROP TABLE IF EXISTS `push_app_info`;
+CREATE TABLE `push_app_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `app` varchar(128) DEFAULT '' COMMENT 'app',
+  `app_name` varchar(128) DEFAULT '' COMMENT 'app名称',
+  `company` varchar(256) DEFAULT '' COMMENT '厂商,多个逗号分割',
+  `config` text  COMMENT 'app配置,json结构',
+  `status` varchar(8) not null DEFAULT '0' COMMENT '状态,0:编辑,1:启用,2:禁用',
+  `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+  `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT 'push app 配置';
+
 
 --
 -- Table structure for table `user_resource_info`

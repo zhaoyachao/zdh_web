@@ -176,8 +176,17 @@ public class DBUtil{
             }
 
             DatabaseMetaData dbm=connection.getMetaData();
+            String catalog = connection.getCatalog();
+            String schemaPattern = connection.getSchema();
 
-            ResultSet rs=dbm.getTables(connection.getCatalog(), username.toUpperCase(), "%", new String[] { "TABLE"});
+            if(url.startsWith("jdbc:oracle")){
+                schemaPattern = username.toUpperCase();
+            }else if(url.startsWith("jdbc:hive2")){
+                catalog = null;
+                schemaPattern = connection.getSchema();
+            }
+
+            ResultSet rs=dbm.getTables(catalog, schemaPattern, "%", new String[] { "TABLE"});
             while (rs.next()) {
                 if(url.startsWith("jdbc:mysql")){
                     result.add(rs.getString("TABLE_NAME"));
@@ -190,7 +199,6 @@ public class DBUtil{
                 }else{
                     result.add(rs.getString("TABLE_NAME"));
                 }
-
             }
             return result;
 

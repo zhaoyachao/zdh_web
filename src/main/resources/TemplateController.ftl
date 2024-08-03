@@ -163,7 +163,7 @@ public class ${ControllerName} extends BaseController {
     }
 
     /**
-     * xx明细
+     * ${tableDesc}明细
      * @param id 主键ID
      * @return
      */

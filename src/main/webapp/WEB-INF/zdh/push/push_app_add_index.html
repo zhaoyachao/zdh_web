@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH app新增首页</title>
+    <meta name="keywords" content="ZDH app新增首页">
+    <meta name="description" content="ZDH app新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
+
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="js/plugins/magicsuggest/magicsuggest.css" rel="stylesheet">
+    <style>
+        .hidden_li {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>APP配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+
+                    <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
+                          action="">
+                        <input type="hidden" id="config" name="config" value="">
+                        <input type="hidden" id="company" name="company" value="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="归属产品...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属组</label>
+                            <div class="col-sm-10">
+                                <select id="dim_group" name="dim_group"
+                                        data-placeholder="归属组...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">APP名称</label>
+                            <div class="col-sm-10">
+                                <input id="app_name" name="app_name" type="text"
+                                       placeholder="APP名称,不可为空" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">app</label>
+                            <div class="col-sm-10">
+                                <input id="app" name="app" type="text"
+                                       placeholder="app,不可为空" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">支持厂商</label>
+                            <div class="col-sm-10 checkbox i-checks">
+                                <label class="no-padding">
+                                    <input id="check_huawei" name="check_huawei"  type="checkbox" ><i></i> 华为</label>
+                                <label class="no-padding">
+                                    <input id="check_honor" name="check_honor"  type="checkbox"><i></i> 荣耀</label>
+                                <label class="no-padding">
+                                    <input id="check_xiaomi" name="check_xiaomi"  type="checkbox"><i></i> 小米</label>
+                                <label class="no-padding">
+                                    <input id="check_vivo" name="check_vivo"  type="checkbox"><i></i> VIVO</label>
+                                <label class="no-padding">
+                                    <input id="check_oppo" name="check_oppo"  type="checkbox"><i></i> OPPO</label>
+                                <label class="no-padding">
+                                    <input id="check_meizu" name="check_meizu"  type="checkbox"><i></i> 魅族</label>
+                                <label class="no-padding">
+                                    <input id="check_apple" name="check_apple"  type="checkbox"><i></i> APPLE</label>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">厂商配置</label>
+                            <div class="col-sm-10">
+                                <div class="tabs-container">
+                                    <ul class="nav nav-tabs" id="tab_ul">
+                                        <li class="tab_li active" id="check_huawei_li"><a data-toggle="tab" href="#check_huawei_tab" aria-expanded="true">华为</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_honor_li"><a data-toggle="tab" href="#check_honor_tab" aria-expanded="false">荣耀</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_xiaomi_li"><a data-toggle="tab" href="#check_xiaomi_tab" aria-expanded="false">小米</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_vivo_li"><a data-toggle="tab" href="#check_vivo_tab" aria-expanded="false">VIVO</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_oppo_li"><a data-toggle="tab" href="#check_oppo_tab" aria-expanded="false">OPPO</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_meizu_li"><a data-toggle="tab" href="#check_meizu_tab" aria-expanded="false">魅族</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_apple_li"><a data-toggle="tab" href="#check_apple_tab" aria-expanded="false">APPLE</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div id="check_huawei_tab" class="tab-pane active">
+                                            <div class="panel-body">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="huawei_appid" name="huawei_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">AK</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="huawei_ak" name="huawei_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">SK</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="huawei_sk" name="huawei_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">包名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="huawei_package" name="huawei_package" class="form-control" type="text" value="" placeholder="包名">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_honor_tab" class="tab-pane active">
+                                            <div class="panel-body">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="honor_appid" name="honor_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">AK</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="honor_ak" name="honor_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">SK</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="honor_sk" name="honor_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">包名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="honor_package" name="honor_package" class="form-control" type="text" value="" placeholder="包名">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_xiaomi_tab" class="tab-pane active">
+                                            <div class="panel-body">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="xiaomi_appid" name="xiaomi_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">AK</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="xiaomi_ak" name="xiaomi_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">SK</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="xiaomi_sk" name="xiaomi_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">包名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="xiaomi_package" name="xiaomi_package" class="form-control" type="text" value="" placeholder="包名">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_vivo_tab" class="tab-pane active">
+                                            <div class="panel-body">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="vivo_appid" name="vivo_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">AK</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="vivo_ak" name="vivo_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">SK</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="vivo_sk" name="vivo_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">包名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="vivo_package" name="vivo_package" class="form-control" type="text" value="" placeholder="包名">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_oppo_tab" class="tab-pane active">
+                                            <div class="panel-body">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="oppo_appid" name="oppo_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">AK</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="oppo_ak" name="oppo_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">SK</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="oppo_sk" name="oppo_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">包名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="oppo_package" name="oppo_package" class="form-control" type="text" value="" placeholder="包名">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div id="check_meizu_tab" class="tab-pane active">
+                                            <div class="panel-body">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="meizu_appid" name="meizu_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">AK</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="meizu_ak" name="meizu_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">SK</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="meizu_sk" name="meizu_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">包名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="meizu_package" name="meizu_package" class="form-control" type="text" value="" placeholder="包名">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_apple_tab" class="tab-pane active">
+                                            <div class="panel-body">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="apple_appid" name="apple_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">AK</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="apple_ak" name="apple_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">SK</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="apple_sk" name="apple_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">包名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="apple_package" name="apple_package" class="form-control" type="text" value="" placeholder="包名">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!--<script type="text/javascript" src="js/plugins/suggest/bootstrap-suggest.min.js"></script>-->
+<script type="text/javascript" src="js/plugins/magicsuggest/magicsuggest.js"></script>
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script src="js/admin/dim_product_common.js"></script>
+<script src="js/admin/dim_group_common.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+        $('input[type=checkbox]').on('ifChanged', function(){
+            var id_str = $(this).attr('id');
+            if($(this).is(":checked")){
+                // $('.tab-pane').removeClass("active");
+                // $('.tab_li').removeClass("active");
+                // $('#'+id_str+"_tab").addClass("active");
+                // $('#'+id_str+"_li").addClass("active");
+                $('#'+id_str+"_li").click();
+            }else{
+                // $('#'+id_str+"_tab").removeClass("active");
+                // $('#'+id_str+"_li").removeClass("active");
+                //
+                // //遍历所有check
+                // var checkboxes = $('input[type="checkbox"]');
+                //
+                // checkboxes.each(function(index, checkbox) {
+                //     // 在这里执行对每个checkbox的操作
+                //     var check_id = $(checkbox).attr("id");
+                //     if($(checkbox).is(":checked")){
+                //         $('.tab-pane').removeClass("active");
+                //         $('#'+check_id+"_tab").addClass("active");
+                //         $('#'+check_id+"_li").addClass("active");
+                //         return false;
+                //     }
+                // });
+
+            }
+
+        })
+    });
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            //$('.tab-pane').removeClass("active");
+            //init_job_sources();
+            //s.id=-1 表示新增,否则表示更新
+            if(s.id==-1){
+                $('#update_dispatch_task').hide();
+                $('#save_dispatch_task').show();
+            }else{
+                if(s.is_copy == "true"){
+                    console.info("拷贝按钮触发");
+                    $('#update_dispatch_task').hide();
+                    $('#save_dispatch_task').show();
+                }else{
+                    console.info("更新按钮触发");
+                    $('#save_dispatch_task').hide();
+                    $('#update_dispatch_task').show();
+                }
+
+            }
+            // ------------------------------------------------------------------
+
+
+            //$('#channel').chosen();
+            //初始化通道code
+            function init_push_channel(id, channel_type){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/push_channel_list",
+                    async:false,
+                    dataType: 'json',
+                    data: {"channel_type": channel_type},
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        var str = '<option value=\"'  + '\" hassubinfo=\"true\">' + '选择通道' + '</option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].channel_code + '\" hassubinfo=\"true\">' + data.result[i].channel_name + '</option>';
+                        }
+                        $('#'+id).html(str);
+                        $('#'+id).trigger("chosen:updated");
+                        $('#'+id).chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
+                    }
+                });
+            }
+
+            //init_push_channel('channel', "sms");
+            //此处增加样式为了解决chosen插件宽度为0问题
+            $('#check_honor_tab').addClass("active");
+            //init_push_channel('email_channel', "email");
+            $('#check_honor_tab').removeClass("active");
+
+            $('#check_xiaomi_tab').addClass("active");
+            $('#check_xiaomi_tab').removeClass("active");
+
+            $('#check_vivo_tab').addClass("active");
+            $('#check_vivo_tab').removeClass("active");
+
+            $('#check_oppo_tab').addClass("active");
+            $('#check_oppo_tab').removeClass("active");
+
+            $('#check_meizu_tab').addClass("active");
+            $('#check_meizu_tab').removeClass("active");
+
+            $('#check_apple_tab').addClass("active");
+            $('#check_apple_tab').removeClass("active");
+
+            if(s.id !='-1'){
+                console.info("更新-拷贝按钮触发");
+                //开始赋值
+                $.ajax({
+                    url : server_context+"/push_app_detail",
+                    data : "id=" + s.id,
+                    type : "post",
+                    dataType : "json",
+                    success : function(data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        console.info("success");
+                       // layer.alert(JSON.stringify(data[0]))
+                        //获取调度任务说明
+                        var app_name=data.result.app_name;
+                        $("#app_name").val(app_name);
+
+                        var product_code=data.result.product_code;
+                        $("#product_code").val(product_code);
+                        $("#product_code").trigger("chosen:updated");
+
+                        var dim_group=data.result.dim_group;
+                        $("#dim_group").val(dim_group);
+                        $("#dim_group").trigger("chosen:updated");
+
+                        var app=data.result.app;
+                        $("#app").val(app);
+
+
+                        var companys=data.result.company.split(",");
+                        for (var i = 0; i < companys.length; i++) {
+                            if(!is_empty(companys[i])){
+                                $('#check_'+companys[i]).iCheck('check');
+                            }
+                        }
+
+                        //sms配置
+                        if(!is_empty(data.result.configMap.huawei)){
+                            $("#huawei_appid").val(data.result.configMap.huawei.appid);
+                            $("#huawei_ak").val(data.result.configMap.huawei.ak);
+                            $("#huawei_sk").val(data.result.configMap.huawei.sk);
+                            $("#huawei_package").val(data.result.configMap.huawei.package);
+                        }
+
+                        if(!is_empty(data.result.configMap.honor)){
+                            $("#honor_appid").val(data.result.configMap.honor.appid);
+                            $("#honor_ak").val(data.result.configMap.honor.ak);
+                            $("#honor_sk").val(data.result.configMap.honor.sk);
+                            $("#honor_package").val(data.result.configMap.honor.package);
+                        }
+
+                        if(!is_empty(data.result.configMap.xiaomi)){
+                            $("#xiaomi_appid").val(data.result.configMap.xiaomi.appid);
+                            $("#xiaomi_ak").val(data.result.configMap.xiaomi.ak);
+                            $("#xiaomi_sk").val(data.result.configMap.xiaomi.sk);
+                            $("#xiaomi_package").val(data.result.configMap.xiaomi.package);
+                        }
+
+                        if(!is_empty(data.result.configMap.vivo)){
+                            $("#vivo_appid").val(data.result.configMap.vivo.appid);
+                            $("#vivo_ak").val(data.result.configMap.vivo.ak);
+                            $("#vivo_sk").val(data.result.configMap.vivo.sk);
+                            $("#vivo_package").val(data.result.configMap.vivo.package);
+                        }
+
+                        if(!is_empty(data.result.configMap.oppo)){
+                            $("#oppo_appid").val(data.result.configMap.oppo.appid);
+                            $("#oppo_ak").val(data.result.configMap.oppo.ak);
+                            $("#oppo_sk").val(data.result.configMap.oppo.sk);
+                            $("#oppo_package").val(data.result.configMap.oppo.package);
+                        }
+
+                        if(!is_empty(data.result.configMap.meizu)){
+                            $("#meizu_appid").val(data.result.configMap.meizu.appid);
+                            $("#meizu_ak").val(data.result.configMap.meizu.ak);
+                            $("#meizu_sk").val(data.result.configMap.meizu.sk);
+                            $("#meizu_package").val(data.result.configMap.meizu.package);
+                        }
+
+                        if(!is_empty(data.result.configMap.apple)){
+                            $("#apple_appid").val(data.result.configMap.apple.appid);
+                            $("#apple_ak").val(data.result.configMap.apple.ak);
+                            $("#apple_sk").val(data.result.configMap.apple.sk);
+                            $("#apple_package").val(data.result.configMap.apple.package);
+                        }
+
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+            }
+
+
+        })();
+
+
+
+    })(document, window, jQuery);
+
+
+
+    function buildConfig(){
+        var huawei_config = {
+            "appid": $("#huawei_appid").val(),
+            "ak": $("#huawei_ak").val(),
+            "sk": $("#huawei_sk").val(),
+            "package": $("#huawei_package").val()
+        };
+
+        var honor_config = {
+            "appid": $("#honor_appid").val(),
+            "ak": $("#honor_ak").val(),
+            "sk": $("#honor_sk").val(),
+            "package": $("#honor_package").val()
+        };
+
+        var vivo_config = {
+            "appid": $("#vivo_appid").val(),
+            "ak": $("#vivo_ak").val(),
+            "sk": $("#vivo_sk").val(),
+            "package": $("#vivo_package").val()
+        };
+
+        var oppo_config = {
+            "appid": $("#oppo_appid").val(),
+            "ak": $("#oppo_ak").val(),
+            "sk": $("#oppo_sk").val(),
+            "package": $("#oppo_package").val()
+        };
+
+        var xiaomi_config = {
+            "appid": $("#xiaomi_appid").val(),
+            "ak": $("#xiaomi_ak").val(),
+            "sk": $("#xiaomi_sk").val(),
+            "package": $("#xiaomi_package").val()
+        };
+
+        var meizu_config = {
+            "appid": $("#meizu_appid").val(),
+            "ak": $("#meizu_ak").val(),
+            "sk": $("#meizu_sk").val(),
+            "package": $("#meizu_package").val()
+        };
+
+        var apple_config = {
+            "appid": $("#apple_appid").val(),
+            "ak": $("#apple_ak").val(),
+            "sk": $("#apple_sk").val(),
+            "package": $("#apple_package").val()
+        };
+
+        var config = {
+            "huawei": huawei_config,
+            "honor": honor_config,
+            "xiaomi": xiaomi_config,
+            "oppo": oppo_config,
+            "vivo": vivo_config,
+            "meizu": meizu_config,
+            "apple": apple_config,
+        };
+
+        return config;
+    }
+
+    function buildCompany(){
+        var company = "";
+        if($('#check_huawei').is(":checked")){
+            company = "huawei";
+        }
+        if($('#check_honor').is(":checked")){
+            if(is_empty(company)){
+                company = "honor"
+            }else{
+                company = company +",honor"
+            }
+        }
+        if($('#check_xiaomi').is(":checked")){
+            if(is_empty(company)){
+                company = "xiaomi"
+            }else{
+                company = company +",xiaomi"
+            }
+        }
+        if($('#check_vivo').is(":checked")){
+            if(is_empty(company)){
+                company = "vivo"
+            }else{
+                company = company +",vivo"
+            }
+        }
+        if($('#check_oppo').is(":checked")){
+            if(is_empty(company)){
+                company = "oppo"
+            }else{
+                company = company +",oppo"
+            }
+        }
+        if($('#check_meizu').is(":checked")){
+            if(is_empty(company)){
+                company = "meizu"
+            }else{
+                company = company +",meizu"
+            }
+        }
+        if($('#check_apple').is(":checked")){
+            if(is_empty(company)){
+                company = "apple"
+            }else{
+                company = company +",apple"
+            }
+        }
+
+        return company;
+    }
+
+    $('#save_dispatch_task').click(function () {
+
+
+
+
+        var config = buildConfig();
+        var company = buildCompany();
+        $('#config').val(JSON.stringify(config));
+        $('#company').val(company);
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/push_app_add",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize(),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#save_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+                //closeTab();
+            },
+            //处理完成
+            complete: function () {
+                $("#save_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    });
+
+    $('#update_dispatch_task').click(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+
+        var config = buildConfig();
+        var company = buildCompany();
+        $('#config').val(JSON.stringify(config));
+        $('#company').val(company);
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/push_app_update",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+'&id='+s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != '200'){
+                    parent.layer.msg("更新失败"+data.msg);
+                    return ;
+                }
+                $("#update_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+               // closeTab()
+            },
+            //处理完成
+            complete: function () {
+                $("#update_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+</script>
+
+
+</body>
+
+</html>

@@ -5,7 +5,7 @@
 
     <groupId>com.zyc</groupId>
     <artifactId>zdh</artifactId>
-    <version>5.4.0-RELEASE</version>
+    <version>5.4.1-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>zdh_web</name>
@@ -980,47 +980,47 @@
             </plugin>
 
             <!-- screws 生成数据库文档  -->
-            <plugin>
-                <groupId>cn.smallbun.screw</groupId>
-                <artifactId>screw-maven-plugin</artifactId>
-                <version>1.0.5</version>
-                <dependencies>
-                    <!-- 数据库连接 -->
+<!--            <plugin>-->
+<!--                <groupId>cn.smallbun.screw</groupId>-->
+<!--                <artifactId>screw-maven-plugin</artifactId>-->
+<!--                <version>1.0.5</version>-->
+<!--                <dependencies>-->
+<!--                    &lt;!&ndash; 数据库连接 &ndash;&gt;-->
+<!--&lt;!&ndash;                    <dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <groupId>com.zaxxer</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <artifactId>HikariCP</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <version>3.4.5</version>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </dependency>&ndash;&gt;-->
 <!--                    <dependency>-->
-<!--                        <groupId>com.zaxxer</groupId>-->
-<!--                        <artifactId>HikariCP</artifactId>-->
-<!--                        <version>3.4.5</version>-->
+<!--                        <groupId>mysql</groupId>-->
+<!--                        <artifactId>mysql-connector-java</artifactId>-->
+<!--                        <version>8.0.22</version>-->
 <!--                    </dependency>-->
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>8.0.22</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <!-- 数据库相关配置 -->
-                    <driverClassName>com.mysql.cj.jdbc.Driver</driverClassName>
-                    <jdbcUrl>jdbc:mysql://127.0.0.1:3306/zdh?serverTimezone=GMT%2B8&amp;useSSL=false</jdbcUrl>
-                    <username>zyc</username>
-                    <password>123456</password>
-                    <!-- screw 配置 -->
-                    <fileType>HTML</fileType><!--可选值HTML,WORD,MARKDOWN-->
-                    <title>ZDH数据库文档</title> <!--标题-->
-                    <fileName>ZDH数据库表说明</fileName> <!--文档名称 为空时:将采用[数据库名称-描述-版本号]作为文档名称-->
-                    <description>ZDH数据库文档生成</description> <!--描述-->
-                    <version>${project.version}</version> <!--版本-->
-                    <openOutputDir>false</openOutputDir> <!--打开文件输出目录-->
-                    <produceType>freemarker</produceType> <!--生成模板-->
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--                </dependencies>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash; 数据库相关配置 &ndash;&gt;-->
+<!--                    <driverClassName>com.mysql.cj.jdbc.Driver</driverClassName>-->
+<!--                    <jdbcUrl>jdbc:mysql://127.0.0.1:3306/zdh?serverTimezone=GMT%2B8&amp;useSSL=false</jdbcUrl>-->
+<!--                    <username>zyc</username>-->
+<!--                    <password>123456</password>-->
+<!--                    &lt;!&ndash; screw 配置 &ndash;&gt;-->
+<!--                    <fileType>HTML</fileType>&lt;!&ndash;可选值HTML,WORD,MARKDOWN&ndash;&gt;-->
+<!--                    <title>ZDH数据库文档</title> &lt;!&ndash;标题&ndash;&gt;-->
+<!--                    <fileName>ZDH数据库表说明</fileName> &lt;!&ndash;文档名称 为空时:将采用[数据库名称-描述-版本号]作为文档名称&ndash;&gt;-->
+<!--                    <description>ZDH数据库文档生成</description> &lt;!&ndash;描述&ndash;&gt;-->
+<!--                    <version>${project.version}</version> &lt;!&ndash;版本&ndash;&gt;-->
+<!--                    <openOutputDir>false</openOutputDir> &lt;!&ndash;打开文件输出目录&ndash;&gt;-->
+<!--                    <produceType>freemarker</produceType> &lt;!&ndash;生成模板&ndash;&gt;-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>compile</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>run</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
             <plugin>
                 <groupId>com.github.shalousun</groupId>

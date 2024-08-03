@@ -129,6 +129,8 @@
                                     <input id="check_sms" name="check_sms"  type="checkbox" ><i></i> 短信</label>
                                 <label class="no-padding">
                                     <input id="check_email" name="check_email"  type="checkbox"><i></i> 邮件</label>
+                                <label class="no-padding">
+                                    <input id="check_push" name="check_push"  type="checkbox"><i></i> APPPUSH</label>
                             </div>
                         </div>
 
@@ -142,6 +144,8 @@
                                         <li class="tab_li active" id="check_sms_li"><a data-toggle="tab" href="#check_sms_tab" aria-expanded="true">短信配置</a>
                                         </li>
                                         <li class="tab_li"  id="check_email_li"><a data-toggle="tab" href="#check_email_tab" aria-expanded="false">邮件配置</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_push_li"><a data-toggle="tab" href="#check_push_tab" aria-expanded="false">APPPUSH配置</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content">
@@ -226,6 +230,88 @@
                                             </div>
                                         </div>
 
+                                        <div id="check_push_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APP</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="app" name="app"
+                                                                data-placeholder="选择APP...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">消息应用场景</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="scene" name="scene"
+                                                                data-placeholder="选择消息应用场景...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="0">空</option>
+                                                            <option value="1">资讯营销</option>
+                                                            <option value="2">内容推广</option>
+                                                            <option value="3">服务通知</option>
+                                                            <option value="4">提醒告警</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">消息点击类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="click_type" name="click_type"
+                                                                data-placeholder="选择消息类型...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="0">空</option>
+                                                            <option value="1">跳转app内部页面</option>
+                                                            <option value="2">跳转app</option>
+                                                            <option value="3">跳转外部链接</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APP页面</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="click_app" name="click_app"
+                                                                data-placeholder="选择APP页面...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="0">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转外部资源链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="click_url" name="click_url" class="form-control" type="text" value="" placeholder="跳转外部资源链接">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">标题</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="push_title" name="title" class="form-control" rows="1" placeholder="标题"></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="push_content" name="content" class="form-control" rows="5" placeholder="内容"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">PUSH参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="push_params" name="params" class="form-control" placeholder="PUSH参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="push_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -472,11 +558,47 @@
                 });
             }
 
+            function init_push_app(id){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/push_app_list",
+                    async:false,
+                    dataType: 'json',
+                    data: {},
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        var str = '<option value=\"'  + '\" hassubinfo=\"true\">' + '选择App' + '</option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].app + '\" hassubinfo=\"true\">' + data.result[i].app_name + '</option>';
+                        }
+                        $('#'+id).html(str);
+                        $('#'+id).trigger("chosen:updated");
+                        $('#'+id).chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
+                    }
+                });
+            }
+
             init_push_channel('channel', "sms");
+
+
             //此处增加样式为了解决chosen插件宽度为0问题
             $('#check_email_tab').addClass("active");
             init_push_channel('email_channel', "email");
             $('#check_email_tab').removeClass("active");
+
+            $('#check_push_tab').addClass("active");
+            init_push_app('app');
+            $('#check_push_tab').removeClass("active");
 
             if(s.id !='-1'){
                 console.info("更新-拷贝按钮触发");
@@ -540,6 +662,28 @@
 
                         }
 
+                        if(!is_empty(data.result.configMap.push)){
+                            $("#app").val(data.result.configMap.push.app);
+                            $("#app").trigger("chosen:updated");
+
+                            $("#scene").val(data.result.configMap.push.scene);
+                            $("#scene").trigger("chosen:updated");
+
+                            $("#click_type").val(data.result.configMap.push.click_type);
+                            $("#click_type").trigger("chosen:updated");
+
+                            $("#click_app").val(data.result.configMap.push.click_app);
+                            $("#click_app").trigger("chosen:updated");
+
+                            $("#click_url").val(data.result.configMap.push.click_url);
+
+
+                            $("#push_title").val(data.result.configMap.push.title);
+                            $("#push_content").val(data.result.configMap.push.content);
+                            $("#push_params").val(data.result.configMap.push.params);
+
+                        }
+
                         //开始时间
                         var start_time=data.result.start_time;
                         if(start_time!='' && typeof(start_time) !="undefined"){
@@ -586,10 +730,22 @@
             "params": $("#email_params").val()
         };
 
+        var push_config = {
+            "app": $("#app").val(),
+            "scene": $("#scene").val(),
+            "click_type": $("#click_type").val(),
+            "click_app": $("#click_app").val(),
+            "click_url": $("#click_url").val(),
+            "title": $("#push_title").val(),
+            "content": $("#push_content").val(),
+            "params": $("#push_params").val()
+        };
+
 
         var config = {
             "sms": sms_config,
-            "email": email_config
+            "email": email_config,
+            "push": push_config
         };
 
         return config;
@@ -605,6 +761,13 @@
                 push_server = "email"
             }else{
                 push_server = push_server +",email"
+            }
+        }
+        if($('#check_push').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "push"
+            }else{
+                push_server = push_server +",push"
             }
         }
         return push_server;
