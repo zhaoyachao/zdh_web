@@ -2,6 +2,7 @@ package com.zyc.zdh.config;
 
 import com.zyc.zdh.quartz.MyJobFactory;
 import org.quartz.Scheduler;
+import org.quartz.utils.PropertiesParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,7 @@ public class QuartzConfig {
 	public SchedulerFactoryBean schedulerFactoryBean(MyJobFactory myJobFactory) {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
 
+		schedulerFactoryBean.setQuartzProperties(quartzProperties(cev));
 		schedulerFactoryBean.setDataSource(dataSource2);
 		// 使job实例(本文中job实例是MyJobBean)支持spring 容器管理
 		schedulerFactoryBean.setOverwriteExistingJobs(true);
@@ -69,7 +71,7 @@ public class QuartzConfig {
 		// org.springframework.core.io.Resource res=new
 		// ClassPathResource("quartz.properties");
 		// schedulerFactoryBean.setConfigLocation(res);
-		schedulerFactoryBean.setQuartzProperties(quartzProperties(cev));
+		//schedulerFactoryBean.setQuartzProperties(quartzProperties(cev));
 		boolean autoStartup = ev.getProperty("zdh.schedule.quartz.auto.startup", Boolean.TYPE,false);
 		schedulerFactoryBean.setAutoStartup(autoStartup);
 		// 延迟25s启动quartz
@@ -101,13 +103,15 @@ public class QuartzConfig {
 				for (String key: config.keySet()){
 					if(key.contains("zdh.schedule.")){
 						String k = key.split("zdh.schedule.")[1];
-						prop.put(k, config.get(key));
+						prop.put(k, config.get(key).toString());
 						logger.info("zdh schedule config "+k+"====>"+config.get(key).toString());
 					}
 				}
 			}
 		}
 
+		PropertiesParser cfg = new PropertiesParser(prop);
+		Properties p = cfg.getPropertyGroup("org.quartz.threadPool.", true);
 
 //		prop.put("quartz.scheduler.instanceName", quartzInstance);
 //		prop.put("org.quartz.scheduler.instanceId", "AUTO");

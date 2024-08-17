@@ -5,6 +5,7 @@ import com.zyc.zdh.cache.MyCacheTemplate;
 import com.zyc.zdh.cache.MyRedisCache;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.ParamUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
@@ -27,14 +28,16 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * ClassName: RedisConfig
@@ -142,22 +145,21 @@ public class RedisConfig extends CachingConfigurerSupport {
 	@Autowired
 	public Environment ev;
 
-	@Bean("jedisPoolConfig")
-	public JedisPoolConfig jedisPoolConfig() {
-		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-		jedisPoolConfig.setMaxIdle(maxIdle);
-		jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
-		jedisPoolConfig.setTestOnBorrow(true);
-		jedisPoolConfig.setTestWhileIdle(false);
-		return jedisPoolConfig;
-	}
+//	@Bean("jedisPoolConfig")
+//	public JedisPoolConfig jedisPoolConfig() {
+//		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+//		jedisPoolConfig.setMaxIdle(maxIdle);
+//		jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
+//		jedisPoolConfig.setTestOnBorrow(true);
+//		jedisPoolConfig.setTestWhileIdle(false);
+//		return jedisPoolConfig;
+//	}
 
 	@Bean
-	public JedisConnectionFactory redisConnectionFactory(
-			JedisPoolConfig jedisPoolConfig) {
+	public JedisConnectionFactory redisConnectionFactory() {
 		// 如果集群使用new JedisConnectionFactory(new
 		// RedisClusterConfiguration()),集群配置在RedisClusterConfiguration,这里省略具体配置
-		JedisConnectionFactory redisConnectionFactory = new JedisConnectionFactory();
+		JedisConnectionFactory redisConnectionFactory =null;
 		if(hostName.contains(",")){
 			//redis 集群模式
 			RedisClusterConfiguration rc=new RedisClusterConfiguration();
@@ -165,16 +167,23 @@ public class RedisConfig extends CachingConfigurerSupport {
 				RedisNode rn=new RedisNode(hp.split(":")[0],Integer.parseInt(hp.split(":")[1]));
 				rc.addClusterNode(rn);
 			}
-			redisConnectionFactory=new JedisConnectionFactory(rc,jedisPoolConfig);
+			if(!StringUtils.isEmpty(password)){
+				rc.setPassword(password);
+			}
+
+			redisConnectionFactory=new JedisConnectionFactory(rc);
 		}else{
-			redisConnectionFactory.setHostName(hostName);
-			redisConnectionFactory.setPort(port);
+			RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(hostName,port);
+			if(!StringUtils.isEmpty(password)){
+				redisStandaloneConfiguration.setPassword(password);
+			}
+			redisConnectionFactory = new JedisConnectionFactory(redisStandaloneConfiguration);
 		}
 
-		redisConnectionFactory.setPoolConfig(jedisPoolConfig);
+		//redisConnectionFactory.setPoolConfig(jedisPoolConfig);
 
-		redisConnectionFactory.setTimeout(timeOut);
-		redisConnectionFactory.setPassword(password);
+		//redisConnectionFactory.setTimeout(timeOut);
+		//redisConnectionFactory.setPassword(password);
 		return redisConnectionFactory;
 	}
 
@@ -214,18 +223,20 @@ public class RedisConfig extends CachingConfigurerSupport {
 	}
 	/**
 	 * redis缓存管理器
-	 * @param redisTemplate
+	 * @param redisConnectionFactory
 	 * @return
 	 */
 	@Bean("redisCacheManager")
-	public RedisCacheManager redisCacheManager(RedisTemplate<String, Object> redisTemplate) {
-		RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
-		// Number of seconds before expiration. Defaults to unlimited (0)
-		cacheManager.setDefaultExpiration(120); //设置key-value超时时间
-		List<String> cacheNames = new ArrayList<>();
+	public RedisCacheManager redisCacheManager(JedisConnectionFactory redisConnectionFactory) {
+
+		Set<String> cacheNames = new HashSet<>();
 		cacheNames.add("myRedis");
 		cacheNames.add("j2CacheRedis");
-		cacheManager.setCacheNames(cacheNames);
+		RedisCacheManager cacheManager = RedisCacheManager.builder(redisConnectionFactory).initialCacheNames(cacheNames).build();
+		//RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
+		// Number of seconds before expiration. Defaults to unlimited (0)
+		//cacheManager.setDefaultExpiration(120); //设置key-value超时时间
+		//cacheManager.setCacheNames(cacheNames);
 		return cacheManager;
 	}
 
@@ -271,8 +282,8 @@ public class RedisConfig extends CachingConfigurerSupport {
 	@Override
 	public CacheManager cacheManager(){
 		MyCacheManager cacheManager=new MyCacheManager();
-		cacheManager.setMyCacheTemplate(myCacheTemplate(redisCacheManager(redisTemplate(redisConnectionFactory(jedisPoolConfig())))));
-		cacheManager.setMyRedisCache(myRedisCache(redisCacheManager(redisTemplate(redisConnectionFactory(jedisPoolConfig()))),redisTemplate(redisConnectionFactory(jedisPoolConfig()))));
+		cacheManager.setMyCacheTemplate(myCacheTemplate(redisCacheManager(redisConnectionFactory())));
+		cacheManager.setMyRedisCache(myRedisCache(redisCacheManager(redisConnectionFactory()),redisTemplate(redisConnectionFactory())));
 		List<String> cacheNames=new ArrayList<>();
 		cacheNames.add("j2CacheRedis");
 		cacheNames.add("myRedis");

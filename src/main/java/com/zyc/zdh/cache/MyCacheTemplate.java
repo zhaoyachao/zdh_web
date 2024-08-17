@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.SimpleValueWrapper;
-import org.springframework.data.redis.cache.RedisCacheElement;
-import org.springframework.data.redis.cache.RedisCacheKey;
 import org.springframework.data.redis.cache.RedisCacheManager;
 
 import java.util.concurrent.Callable;
@@ -74,8 +72,9 @@ public class MyCacheTemplate implements Cache {
 		if (myRedis != null) {
 			logger.info("取数据reids库===key:{}", key);
 			if (myRedis.get(key) != null) {
-				RedisCacheElement vr = new RedisCacheElement(new RedisCacheKey(key), myRedis.get(key).get());
-				return vr;
+
+				//RedisCacheElement vr = new RedisCacheElement(new RedisCacheKey(key), myRedis.get(key).get());
+				return myRedis.get(key);
 			}
 		}
 		return null;

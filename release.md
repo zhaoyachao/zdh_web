@@ -600,6 +600,14 @@
   
   + v5.4.1 [zdh_web]修复jdbc获取hive表名bug
   
+  + v5.5.0 [zdh_web]版本升级springboot使用2.3.4版本
+  + v5.5.0 [zdh_web]版本升级-kafka版本2.3.14.RELEASE
+  + v5.5.0 [zdh_web]版本升级-freemarker版本2.3.30
+  + v5.5.0 [zdh_web]版本升级-新增jedis包
+  + v5.5.0 [zdh_web]版本升级-commons-beanutils版本1.9.4
+  + v5.5.0 [zdh_web]版本升级-新增c3p0包
+  + v5.5.0 [zdh_web]版本升级-新增mongo-java-driver包
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
@@ -3247,3 +3255,8 @@
  
  
  
+ 
+## 5.4.0迁移5.4.1
+    无改动
+## 5.4.1迁移5.5.0
+    无改动
