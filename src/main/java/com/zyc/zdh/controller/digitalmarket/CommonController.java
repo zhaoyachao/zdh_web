@@ -166,6 +166,16 @@ public class CommonController extends BaseController {
         return "digitalmarket/code_block_demo_index";
     }
 
+    /**
+     * 变量池页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/varpool_detail", method = RequestMethod.GET)
+    public String varpool_detail() {
+        return "digitalmarket/varpool_detail";
+    }
+
 
     /**
      * 人群文件列表

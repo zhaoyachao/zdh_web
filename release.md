@@ -3259,4 +3259,6 @@
 ## 5.4.0迁移5.4.1
     无改动
 ## 5.4.1迁移5.5.0
-    无改动
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1274480729182441472, '963932648793706496', '变量池页面', '4', 'zyc', 'fa fa-coffee', '', '16', '1', '2024-08-17 21:31:25', '2024-08-17 21:31:25', 'varpool_detail', '3', '', '', 'zdh', '');

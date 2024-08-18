@@ -176,6 +176,7 @@
                                             <div class="node nodecode_blockcss" data-type="code_block">代码块</div>
                                             <div class="node nodecustom_listcss" data-type="custom_list">用户名单</div>
                                             <div class="node nodefunctioncss" data-type="function">函数</div>
+                                            <div class="node nodevarpoolcss" data-type="varpool">变量池</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight2">
@@ -477,6 +478,11 @@
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
+            if(tp == "varpool"){
+                $("#" + divId).attr("varpool_param",is_empty(rs.varpool_param)?"":rs.varpool_param);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
             //新增数据流转状态
             var new_title = "表达式: "+$("#" + divId).html();
             var more_task = "任务类型: "+tp;
@@ -609,6 +615,8 @@
                 return_value_express: $elem.attr('return_value_express'),
                 return_operate: $elem.attr('return_operate'),
                 return_operate_value: $elem.attr('return_operate_value'),
+
+                varpool_param: $elem.attr('varpool_param'),
 
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,

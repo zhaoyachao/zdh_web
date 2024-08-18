@@ -212,6 +212,9 @@ function doubleclick(id,tp) {
         case "function":
             doubleclick_function(id);
             break;
+        case "varpool":
+            doubleclick_varpool(id);
+            break;
         default:
             $(id).dblclick(function () {layer.msg("不支持的组件");});
 
@@ -1013,6 +1016,52 @@ function doubleclick_function(id) {
                 div.css("*zoom","1");
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
                 div.attr("title", etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
+                div.css('background', get_color_by_status(etl_task_info.is_disenable));
+            }
+        });
+    });
+}
+
+function doubleclick_varpool(id) {
+    $(id).dblclick(function () {
+        $("#etl_task_text").val("");
+        var div = $(this);
+        var rule_context=div.attr("rule_context");
+        var rule_id=div.attr("rule_id");
+        var varpool_param=div.attr("varpool_param");
+
+        var url=server_context+'/varpool_detail.html';
+        if( rule_id == "" || rule_id == undefined ){
+            url=url+"?rule_id=-1";
+        }else{
+            $('#shunt_param').val(varpool_param);
+            var base_url = get_common_url(url, div);
+            url=base_url;
+        }
+        layer.open({
+            type: 2,
+            area: ['700px', '450px'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: encodeURI(url),
+            end: function () {
+                console.info("index:doubleclick:"+$("#etl_task_text").val());
+                if($("#etl_task_text").val()==""){
+                    console.info("无修改-不更新");
+                    return ;
+                }
+
+                var etl_task_info=JSON.parse($("#etl_task_text").val());
+                set_common(div, div.attr("type"), etl_task_info);
+
+                div.attr("varpool_param",etl_task_info.varpool_param);
+
+                div.css("width","auto");
+                div.css("display","inline-block");
+                div.css("*display","inline");
+                div.css("*zoom","1");
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
                 set_new_title(div, div.attr("type"), etl_task_info);
                 div.css('background', get_color_by_status(etl_task_info.is_disenable));
             }

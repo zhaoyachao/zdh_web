@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 变量池首页</title>
+    <meta name="keywords" content="ZDH 变量池首页">
+    <meta name="description" content="ZDH 变量池首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>变量池配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">运算符</label>
+                            <div class="col-sm-10">
+                                <select id="operate" name="operate" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="and" mytype="">AND</option>
+                                    <option value="or" mytype="">OR</option>
+                                    <option value="not" mytype="">NOT</option>
+                                    <option value="not_use" mytype="">NOT_USE</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否BASE数据</label>
+                            <div class="col-sm-10">
+                                <select id="is_base" name="is_base" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="true" mytype="">是</option>
+                                    <option value="false" mytype="" selected>否</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">变量池说明</label>
+                            <div class="col-sm-10">
+                                <input id="rule_context" name="rule_context" type="text"
+                                       placeholder="变量池说明" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">变量配置</label>
+                            <div class="col-sm-10" style="text-align: left">
+                                <button id="btn_add" name="btn_add" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">新增
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group" id="label_div">
+
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否禁用</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="is_disenable" name='is_disenable'  type="checkbox"><i></i> 禁用</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">推送类型</label>
+                            <div class="col-sm-10">
+                                <select id="touch_type" name="touch_type" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="database" mytype="" selected>数据库</option>
+                                    <option value="queue" mytype="">消息队列</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">依赖级别</label>
+                            <div class="col-sm-10">
+                                <select id="depend_level" name="depend_level" data-placeholder="依赖级别"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="0" mytype="">成功触发</option>
+                                    <option value="1" mytype="">杀死触发</option>
+                                    <option value="2" mytype="">失败触发</option>
+                                    <option value="3" mytype="">上游完成触发</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数据流转状态</label>
+                            <div class="col-sm-10">
+                                <select id="data_status" name="data_status" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="1" mytype="">成功数据</option>
+                                    <option value="2" mytype="">失败数据</option>
+                                    <option value="3" mytype="">所有数据</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">超时时间</label>
+                            <div class="col-sm-10">
+                                <input id="time_out" name="time_out" type="text" value="86400"
+                                   placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">关联项目</label>
+                            <div class="col-sm-10">
+                                <select id="project_code" name="project_code" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">关联场景</label>
+                            <div class="col-sm-10">
+                                <select id="project_scene" name="project_scene" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">空</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/project_common.js"></script>
+
+<script>
+
+    var template = '<div class="from-group col-sm-12"  id="template">\n' +
+        '<label class="col-sm-2 control-label">变量</label>\n' +
+        '        <div class="col-sm-2" >\n' +
+        '            <input name="varpool_domain" type="text"\n' +
+        '                   placeholder="变量域" class="form-control varpool_domain" aria-required="true" value="zdh_varpool_domain" >\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-2">\n' +
+        '            <input name="varpool_code" type="text"\n' +
+        '                   placeholder="变量code" class="form-control varpool_code" aria-required="true" value="zdh_varpool_code">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-2">\n' +
+        '            <input name="varpool_value" type="text"\n' +
+        '                   placeholder="参数值,多个分号分割" class="form-control varpool_value" aria-required="true" value="zdh_varpool_value">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-2">\n' +
+        '            <button id="delete" name="delete" class="btn btn-danger"\n' +
+        '                    οnsubmit=\'return false\'\n' +
+        '                    type="button">删除\n' +
+        '            </button>\n' +
+        '        </div>\n' +
+        '\n' +
+        '</div>';
+
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+
+
+            $("#btn_add").click(function () {
+                var tmp = template;
+                tmp = tmp.replace("zdh_varpool_domain", "");
+                tmp = tmp.replace("zdh_varpool_code", "");
+                tmp = tmp.replace("zdh_varpool_value", "");
+                $('#label_div').append(tmp);
+                $('#label_div #delete').click(function () {
+                    $(this).parent().parent().remove();
+                });
+            });
+
+            var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            //初始化数据源
+
+            function init_zdh_instance(){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/zdh_instance_list",
+                    dataType: 'json',
+                    async: false,
+                    data: '',
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i]+ "\" mytype=\"" + data.result[i] + "\" hassubinfo=\"true\">" + data.result[i] + "</option>"
+                        }
+                        //ETL单任务下拉框
+                        $('#zdh_instance').html(str);
+                        $('#zdh_instance').chosen().on("change", function (evt, params) {
+                            $("#zdh_instance").trigger("chosen:updated");
+                        });
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+
+            //init_zdh_instance();
+            $('#operate').chosen();
+            $('#data_status').chosen();
+            $('#depend_level').chosen();
+            if(s["rule_id"] != '-1'){
+                console.info("更新触发");
+                var more_task=s["more_task"];
+                console.info("more_task:"+more_task);
+
+                $("#operate").val(s.operate);
+                $("#operate").trigger("chosen:updated");
+
+                $("#data_status").val(s["data_status"]);
+                $("#data_status").trigger("chosen:updated");
+
+                // $("#zdh_instance").val(s["zdh_instance"]);
+                // $("#zdh_instance").trigger("chosen:updated");
+                if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
+                    $("#time_out").val(s["time_out"]);
+                }
+                var is_disenable=s['is_disenable'];
+                if(is_disenable=="true"){
+                    $('#is_disenable').iCheck('check');
+                }
+
+                $("#depend_level").val(s["depend_level"]);
+                $("#depend_level").trigger("chosen:updated");
+
+                $("#touch_type").val(s.touch_type);
+                $("#touch_type").trigger("chosen:updated");
+
+                $("#is_base").val(s.is_base);
+                $("#is_base").trigger("chosen:updated");
+
+                $("#rule_context").val(s["rule_context"]);
+                //解析参数
+                var varpool_param = $("#varpool_param",window.parent.document).val();
+                var varpool_param_object = JSON.parse(varpool_param);
+                if(varpool_param_object.length>0){
+                    for(var i=0;i<varpool_param_object.length;i++){
+                        buildConfig(i,varpool_param_object[i].varpool_domain, varpool_param_object[i].varpool_code, varpool_param_object[i].varpool_value);
+                    }
+                }
+
+                $("#project_code").val(s["project_code"]);
+                $("#project_code").trigger("chosen:updated");
+                var project_id = $('#project_code').find("option:selected").attr("mytype");
+                project_scene(project_id);
+
+                $("#project_scene").val(s["project_scene"]);
+                $("#project_scene").trigger("chosen:updated");
+            }
+        })();
+
+
+
+    })(document, window, jQuery);
+
+    function buildConfig(i,varpool_domain, varpool_code, varpool_value) {
+        var tmp=template;
+        tmp = tmp.replace("zdh_varpool_domain", varpool_domain);
+        tmp = tmp.replace("zdh_varpool_code", varpool_code);
+        tmp = tmp.replace("zdh_varpool_value", varpool_value);
+        //tmp = tmp.replace("zdh_shunt_type", "zdh_shunt_type"+i);
+        $('#label_div').append(tmp);
+        $('#label_div #delete').click(function () {
+            $(this).parent().parent().remove();
+        });
+    }
+
+    $('#save_etl_info').click(function () {
+
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+        var rule_id = s['rule_id'];
+        if(s['rule_id'] == -1){
+            rule_id = guid3();
+        }
+        //自定义实现
+        var more_task="varpool";
+        var operate=$('#operate').find("option:selected").val();
+        //var zdh_instance=$('#zdh_instance').find("option:selected").val();
+        var depend_level=$('#depend_level').find("option:selected").val();
+        var touch_type=$('#touch_type').find("option:selected").val();
+        var time_out=$('#time_out').val();
+        var is_base=$('#is_base').find("option:selected").val();
+        var data_status=$('#data_status').find("option:selected").val();
+        var project_code=$('#project_code').find("option:selected").val();
+        var project_scene=$('#project_scene').find("option:selected").val();
+
+        var is_disenable = "false";
+        if($('#is_disenable').is(':checked')){
+            is_disenable="true"
+        }
+
+        var rule_context=$('#rule_context').val();
+        var ary = new Array();
+        var ary2 = new Array();
+        var ary3 = new Array();
+        var ary4 = new Array();
+
+        $(".varpool_domain").each(function(index){
+            ary[index] = $(this).val();
+        });
+        $(".varpool_code").each(function(index){
+            ary2[index] =$(this).val();
+        });
+
+        $(".varpool_domain_value").each(function(index){
+            ary4[index] =  $(this).val();
+        });
+
+        var result = [];
+        for (var i=0;i<ary.length;i++){
+            var param={
+                "varpool_domain":ary[i],
+                "varpool_code":ary2[i],
+                "varpool_domain_value":ary4[i],
+            };
+            result.push(param);
+        }
+
+        let data={
+            "more_task": more_task,
+            "operate": operate,
+            "touch_type": touch_type,
+            "is_disenable":is_disenable,
+            "depend_level":depend_level,
+            "time_out": time_out,
+            "is_base": is_base,
+            "data_status": data_status,
+            "project_code": project_code,
+            "project_scene": project_scene,
+
+            "rule_id": rule_id,
+            "rule_context":rule_context,
+            "varpool_param": JSON.stringify(result)
+        };
+        console.info("rule_detail:"+JSON.stringify(data));
+        $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+    })
+</script>
+
+
+</body>
+
+</html>
