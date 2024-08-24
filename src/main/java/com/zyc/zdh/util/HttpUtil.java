@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.entity.EtlTaskInfo;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -31,15 +32,27 @@ public class HttpUtil {
 
   // 发送GET请求
   public static String getRequest(String path, List<NameValuePair> parametersBody) throws Exception, URISyntaxException {
+    return getRequest(path, parametersBody, null);
+  }
+  public static String getRequest(String path, List<NameValuePair> parametersBody, Map<String,String> header, Map<String,String> cookie) throws Exception, URISyntaxException {
+    return getRequest(path, parametersBody, header, cookie, null);
+  }
+
+  public static String getRequest(String path, List<NameValuePair> parametersBody, HttpHost proxy) throws Exception, URISyntaxException {
     URIBuilder uriBuilder = new URIBuilder(path);
     uriBuilder.setParameters(parametersBody);
     HttpGet get = new HttpGet(uriBuilder.build());
-    HttpClient client = HttpClientBuilder.create().build();
+    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+    if(proxy != null){
+      httpClientBuilder = httpClientBuilder.setProxy(proxy);
+    }
+    HttpClient client = httpClientBuilder.build();
+
     try {
       HttpResponse response = client.execute(get);
       int code = response.getStatusLine().getStatusCode();
       if (code >= 400) {
-          throw new RuntimeException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
+        throw new RuntimeException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
       }
       return EntityUtils.toString(response.getEntity());
     }
@@ -53,7 +66,7 @@ public class HttpUtil {
       get.releaseConnection();
     }
   }
-  public static String getRequest(String path, List<NameValuePair> parametersBody, Map<String,String> header, Map<String,String> cookie) throws Exception, URISyntaxException {
+  public static String getRequest(String path, List<NameValuePair> parametersBody, Map<String,String> header, Map<String,String> cookie, HttpHost proxy) throws Exception, URISyntaxException {
     URIBuilder uriBuilder = new URIBuilder(path);
     uriBuilder.setParameters(parametersBody);
     HttpGet get = new HttpGet(uriBuilder.build());
@@ -76,12 +89,16 @@ public class HttpUtil {
     RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5000).setConnectionRequestTimeout(1000)
             .setSocketTimeout(5000).build();
 
-    HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).setDefaultCookieStore(cookieStore).build();
+    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+    if(proxy != null){
+      httpClientBuilder = httpClientBuilder.setProxy(proxy);
+    }
+    HttpClient client =httpClientBuilder.setDefaultRequestConfig(requestConfig).setDefaultCookieStore(cookieStore).build();
     try {
       HttpResponse response = client.execute(get);
       int code = response.getStatusLine().getStatusCode();
       if (code >= 400) {
-          throw new RuntimeException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
+        throw new RuntimeException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
       }
       return EntityUtils.toString(response.getEntity());
     }
@@ -96,32 +113,48 @@ public class HttpUtil {
     }
   }
 
+
   // 发送POST请求（普通表单形式）
   public static String postForm(String path, List<NameValuePair> parametersBody) throws Exception {
     HttpEntity entity = new UrlEncodedFormEntity(parametersBody, Charsets.UTF_8);
-    return postRequest(path, "application/x-www-form-urlencoded", entity);
+    return postRequest(path, "application/x-www-form-urlencoded", entity, null);
   }
 
   // 发送POST请求（JSON形式）
   public static String postJSON(String path, String json) throws Exception {
     StringEntity entity = new StringEntity(json, Charsets.UTF_8);
-    return postRequest(path, "application/json", entity);
+    return postRequest(path, "application/json", entity, null);
   }
 
   public static String postJSON(String path, String json, Map<String,String> header, Map<String,String> cookie) throws Exception {
     StringEntity entity = new StringEntity(json, Charsets.UTF_8);
-    return postRequest(path, entity, header, cookie);
+    return postRequest(path, entity, header, cookie, null);
+  }
+
+  // 发送POST请求（JSON形式）
+  public static String postJSON(String path, String json, HttpHost proxy) throws Exception {
+    StringEntity entity = new StringEntity(json, Charsets.UTF_8);
+    return postRequest(path, "application/json", entity, proxy);
+  }
+
+  public static String postJSON(String path, String json, Map<String,String> header, Map<String,String> cookie, HttpHost proxy) throws Exception {
+    StringEntity entity = new StringEntity(json, Charsets.UTF_8);
+    return postRequest(path, entity, header, cookie, proxy);
   }
 
   // 发送POST请求
-  public static String postRequest(String path, String mediaType, HttpEntity entity) throws Exception {
+  public static String postRequest(String path, String mediaType, HttpEntity entity, HttpHost proxy) throws Exception {
     //logger.debug("[postRequest] resourceUrl: {}", path);
     HttpPost post = new HttpPost(path);
     post.addHeader("Content-Type", mediaType);
     post.addHeader("Accept", "application/json");
     post.setEntity(entity);
     try {
-      HttpClient client = HttpClientBuilder.create().build();
+      HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+      if(proxy != null){
+        httpClientBuilder = httpClientBuilder.setProxy(proxy);
+      }
+      HttpClient client = httpClientBuilder.build();
       HttpResponse response = client.execute(post);
       int code = response.getStatusLine().getStatusCode();
       if (code >= 400) {
@@ -140,7 +173,7 @@ public class HttpUtil {
     }
   }
 
-  public static String postRequest(String path, HttpEntity entity, Map<String,String> header, Map<String,String> cookie) throws Exception {
+  public static String postRequest(String path, HttpEntity entity, Map<String,String> header, Map<String,String> cookie, HttpHost proxy) throws Exception {
     //logger.debug("[postRequest] resourceUrl: {}", path);
     HttpPost post = new HttpPost(path);
 
@@ -168,7 +201,12 @@ public class HttpUtil {
 
     post.setEntity(entity);
     try {
-      HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).setDefaultCookieStore(cookieStore).build();
+      HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+      if(proxy != null){
+        httpClientBuilder = httpClientBuilder.setProxy(proxy);
+      }
+
+      HttpClient client = httpClientBuilder.setDefaultRequestConfig(requestConfig).setDefaultCookieStore(cookieStore).build();
       HttpResponse response = client.execute(post);
       int code = response.getStatusLine().getStatusCode();
       if (code >= 400) {

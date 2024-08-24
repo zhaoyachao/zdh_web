@@ -465,6 +465,7 @@ function doubleclick_http(id) {
         }else{
             var is_disenable = div.attr("is_disenable");
             var http_url=div.attr("url");
+            var http_proxy_url=div.attr("proxy_url");
             var url_type=div.attr("url_type");
             var depend_level = div.attr("depend_level");
             var schedule_id = div.attr("schedule_id");
@@ -478,6 +479,7 @@ function doubleclick_http(id) {
             $("#http_cookie").val(cookie);
             $("#http_res_expr").val(res_expr);
             $("#http_url_text").val(http_url);
+            $("#http_proxy_url_text").val(http_proxy_url);
             url=url+"?etl_context="+etl_context+"&url_type="+url_type+"&depend_level="+depend_level
                 +"&is_disenable="+is_disenable+"&time_out="+time_out+"&schedule_id="+schedule_id
         }
@@ -496,6 +498,7 @@ function doubleclick_http(id) {
 
                 var etl_task_info=JSON.parse($("#etl_task_text").val());
                 div.attr("url",etl_task_info.url);
+                div.attr("proxy_url",etl_task_info.proxy_url);
                 div.attr("url_type",etl_task_info.url_type);
                 div.attr("params",etl_task_info.params);
                 div.attr("header",etl_task_info.header);

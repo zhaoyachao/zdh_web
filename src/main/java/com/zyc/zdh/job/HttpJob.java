@@ -7,7 +7,9 @@ import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.GroovyFactory;
 import com.zyc.zdh.util.HttpUtil;
+import org.apache.commons.httpclient.URI;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -46,6 +48,7 @@ public class HttpJob extends JobCommon2 {
             params = jj.render(params, jinJavaParam);
             String header = JSON.parseObject(run_jsmind).getString("header");
             String cookie = JSON.parseObject(run_jsmind).getString("cookie");
+            String proxy_url = JSON.parseObject(run_jsmind).getString("proxy_url");
             String res_expr = JSON.parseObject(run_jsmind).getString("res_expr");
 
             if(StringUtils.isEmpty(url_type)){
@@ -84,13 +87,19 @@ public class HttpJob extends JobCommon2 {
                     throw new Exception("cookie参数必须是kv格式");
                 }
             }
+
+            HttpHost httpHost = null;
+            if(!StringUtils.isEmpty(proxy_url)){
+                httpHost = HttpHost.create(proxy_url);
+            }
+
             String result = null;
             //post请求
             if(url_type.equalsIgnoreCase(Const.HTTP_POST)){
                 logger.info("[" + jobType + "] JOB ,开始执行[post]请求");
                 insertLog(tli, "info", "[" + jobType + "] JOB ,开始执行[post]请求,请求地址: "+url+" ,参数: "+params);
                 //校验是否有参数
-                result = HttpUtil.postJSON(url, params, header_map, cookie_map);
+                result = HttpUtil.postJSON(url, params, header_map, cookie_map, httpHost);
                 insertLog(tli, "info", "[" + jobType + "] JOB ,请求结果: "+result);
             }
             if(url_type.equalsIgnoreCase(Const.HTTP_GET)){
@@ -108,7 +117,7 @@ public class HttpJob extends JobCommon2 {
                         npl.add(new BasicNameValuePair(key,value.toString()));
                     }
                 }
-                result = HttpUtil.getRequest(url, npl, header_map, cookie_map);
+                result = HttpUtil.getRequest(url, npl, header_map, cookie_map, httpHost);
                 insertLog(tli, "info", "[" + jobType + "] JOB ,请求结果: "+result);
             }
 

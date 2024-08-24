@@ -46,6 +46,14 @@
                 <form role="form" class="form-inline" id="risk_form">
 
                     <div class="form-group">
+                        <select id="use_cache" name="use_cache" data-placeholder="缓存模式"
+                                class="chosen-select form-control m-b" tabindex="2" style="margin-bottom:0px">
+                            <option value="false" mytype="" selected="selected">非缓存模式</option>
+                            <option value="true" mytype="">缓存模式</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="生成短链"/>
                     </div>
                     <div class="form-group col-sm-12"></div>

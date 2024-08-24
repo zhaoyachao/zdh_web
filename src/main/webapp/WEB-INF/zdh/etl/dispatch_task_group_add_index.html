@@ -60,6 +60,7 @@
                     <input type="hidden" id="http_cookie" name="http_cookie" value="">
                     <input type="hidden" id="http_res_expr" name="http_res_expr" value="">
                     <input type="hidden" id="http_url_text" name="http_url_text" value="">
+                    <input type="hidden" id="http_proxy_url_text" name="http_proxy_url_text" value="">
                     <input type="hidden" id="to_emails" name="to_emails" value="">
                     <input type="hidden" id="email_context" name="email_context" value="">
 
@@ -494,6 +495,7 @@
             if(tp == "http"){
                 $("#" + divId).attr("etl_task_id",rs.etl_task_id);
                 $("#" + divId).attr("url",rs.url);
+                $("#" + divId).attr("proxy_url",is_empty(rs.proxy_url)?"":rs.proxy_url);
                 $("#" + divId).attr("url_type",rs.url_type);
                 $("#" + divId).attr("params",rs.params);
                 $("#" + divId).attr("header",rs.header);
@@ -562,6 +564,7 @@
                 is_disenable: $elem.attr('is_disenable'),
                 command:$elem.attr('command'),
                 url: $elem.attr('url'),
+                proxy_url: $elem.attr('proxy_url'),
                 driver: $elem.attr('driver'),
                 username: $elem.attr('username'),
                 password: $elem.attr('password'),

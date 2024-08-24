@@ -511,10 +511,11 @@ public class WeMockController extends BaseController{
     @SentinelResource(value = "short_url_generator", blockHandler = "handleReturn")
     @RequestMapping(value = "/short_url_generator", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<JSONObject> short_url_generator(String param) {
+    public ReturnInfo<JSONObject> short_url_generator(String param, String use_cache) {
         try{
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("url", param);
+            jsonObject.put("use_cache", use_cache);
             String host = ConfigUtil.getValue("zdh.wemock.short.host", "http://127.0.0.1:9001");
             String path = ConfigUtil.getValue("zdh.wemock.short.generator", "/api/short/generator");
             String ret = HttpUtil.postJSON(host+path, jsonObject.toJSONString());

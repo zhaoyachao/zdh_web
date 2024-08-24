@@ -609,6 +609,8 @@
   + v5.5.0 [zdh_web]版本升级-新增mongo-java-driver包
   + v5.5.0 [zdh_web]营销模块-新增变量池插件
   
+  + v5.5.1 [zdh_web]http模块支持代理
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
