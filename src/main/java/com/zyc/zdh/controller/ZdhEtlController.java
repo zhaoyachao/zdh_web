@@ -383,6 +383,9 @@ public class ZdhEtlController extends BaseController{
         String url = dataSourcesInfo.getUrl();
 
         try {
+            if(!DBUtil.validTableName(table_name)){
+                throw new Exception("表名不合法");
+            }
             return new DBUtil().R4(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
                     "select * from " + table_name + " where 1=2 limit 1", table_name);
         } catch (Exception e) {

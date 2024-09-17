@@ -1,6 +1,7 @@
 package com.zyc.zdh.controller;
 
 
+import cn.hutool.db.sql.SqlUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
@@ -197,14 +198,22 @@ public class ZdhDataWareController extends BaseController {
         DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(sources_id);
 
         String sql = "select ";
-        List<String> columnList = new ArrayList<>();
+        List<String> params = new ArrayList<>();
+        List<String> placeholds = new ArrayList<>();
+        //生成预编译参数
         for(column_data column:columns){
-            columnList.add(column.getColumn_name());
+            placeholds.add("?");
+            params.add(column.getColumn_name());
         }
-        sql=sql+StringUtils.join(columnList,",")+" from "+table +" limit 1000";
+
+        if(!DBUtil.validTableName(table)){
+            throw new Exception("表名不合法");
+        }
+
+        sql=sql+StringUtils.join(placeholds,",")+" from "+table+" limit 1000";
         try {
             List<Map<String,Object>> result = new DBUtil().R5(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
-                    sql);
+                    sql, params.toArray(new String[]{}));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"查询成功",result);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -261,18 +270,23 @@ public class ZdhDataWareController extends BaseController {
         DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(sources_id);
 
         String sql = "select ";
-        List<String> columnList = new ArrayList<>();
+        List<String> params = new ArrayList<>();
+        List<String> placeholds = new ArrayList<>();
         for(column_data column:columns){
-            columnList.add(column.getColumn_name());
+            params.add(column.getColumn_name());
+            placeholds.add("?");
         }
-        sql=sql+StringUtils.join(columnList,",")+" from "+table +" limit 1000000";
+        if(!DBUtil.validTableName(table)){
+            throw new Exception("表名不合法");
+        }
+        sql=sql+StringUtils.join(placeholds,",")+" from "+table +" limit 1000000";
         BufferedWriter csvWtriter = null;
         try {
             List<Map<String,Object>> result = new DBUtil().R5(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
-                    sql);
+                    sql, params.toArray(new String[]{}));
 
             ExportUtil.responseSetProperties(idi.getIssue_context(),response);
-            ExportUtil.doExport(result, StringUtils.join(columnList,","), StringUtils.join(columnList,","),response.getOutputStream());
+            ExportUtil.doExport(result, StringUtils.join(params,","), StringUtils.join(params,","),response.getOutputStream());
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);

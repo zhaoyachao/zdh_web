@@ -140,8 +140,9 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         SnowflakeIdWorker.init(Integer.parseInt(myid), 0);
         JobCommon2.web_application_id=instance+"_"+myid+":"+SnowflakeIdWorker.getInstance().nextId();
         //检查基础参数是否重复
-        if(redisUtil.get(instance+"_"+myid)!=null){
-            logger.error("请检查基础参数myid 是否已被其他机器占用,如果没有请等待30s 后重新启动....");
+        String myidKey = instance+"_"+myid;
+        if(redisUtil.get(myidKey)!=null){
+            logger.error("请检查基础参数myid 是否已被其他机器占用,如果没有请等待30s 后重新启动,或尝试手动删除key:"+myidKey);
             System.exit(-1);
         }
         ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
@@ -152,7 +153,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                 while(true){
                     try {
                         //此处设置10s 超时 ,quartz 故障检测时间为30s
-                        redisUtil.set(instance+"_"+myid,JobCommon2.web_application_id,10L, TimeUnit.SECONDS);
+                        redisUtil.set(myidKey,JobCommon2.web_application_id,10L, TimeUnit.SECONDS);
                         //此处设置2s 每2秒向redis 设置一个当前服务,作为一个心跳检测使用
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {

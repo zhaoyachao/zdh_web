@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 服务控制首页</title>
+
+    <meta name="keywords" content="ZDH 服务控制首页">
+    <meta name="description" content="ZDH 服务控制首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content  animated fadeInRight">
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>服务列表</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="form-group">
+                            <input id="search1" onclick="init_jstree()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="更新服务树"/>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div> <input id="search_input" name="search_input" class="form-control" type="text" value="" placeholder="服务信息"></div><br />
+                        <div>  <input id="add_root" οnsubmit='return false' onclick="add_root()" type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="新增根" disabled="true"/></div><br />
+                        <div id="using_json"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-9">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>服务实例</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="using_json6" style="width: 100%; height: 800px">
+                            <iframe id="ifm" src="" style="width: 100%; height: 100%" frameBorder="0"></iframe>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <!-- jsTree plugin javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+    <script src="js/plugins/jsTree/jstree.min.js"></script>
+
+    <style>
+        .jstree-open > .jstree-anchor > .fa-folder:before {
+            content: "\f07c";
+        }
+
+        .jstree-default .jstree-icon.none {
+            width: 0;
+        }
+    </style>
+
+    <script>
+
+
+        function init_jstree(){
+            $('#using_json').jstree("destroy");
+            $('#using_json').jstree({
+                "plugins" : [ "types","search"],
+                //'plugins' : ["checkbox"], //出现选择框
+                //'checkbox': { cascade: "", three_state: true }, //不级联
+                'core' : {
+                    "check_callback": true,
+                    'data' :  function (obj, callback){
+                        $.ajax({
+                            type : "post",
+                            url : server_context+"/service_manager_list",//getAreaBuild=getTreeArea
+                            dataType : "json",
+                            async:'false',
+                            success : function(data) {
+                                if(data.code == "200") {
+                                    callback.call(this, data.result);
+                                    if(data.result == null || data.result.length<=0){
+                                        //开启新增根
+                                        $('#add_root').removeAttr("disabled")
+                                    }
+                                }else{
+                                    callback.call(this, []);
+                                    layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    }
+
+
+                } })
+                .bind('dblclick.jstree',function(e){
+                    console.info(e.target.id);
+                    var id=e.target.id.split("_anchor")[0];
+                    console.info("event:"+e.target.id.split("_anchor")[0]);
+                    if(!id){
+                        layer.msg("请双击资源名称！");
+                        return ;
+                    }
+                    $('#using_json').jstree("open_node", id);
+                    var node = $('#using_json').jstree("get_node", id);
+                    console.info("id:"+node.id+",parent:"+node.parent+",text:"+node.text);
+                    //$('#jstree').jstree('create_node', $(parent_node), { "text":new_node_text, "id":new_node_id }, position, false, false);
+                    var parent_ary = $('#using_json').jstree("get_path", id);
+                    console.info("level:"+parent_ary.length);
+                    var level=parent_ary.length;
+
+
+                    var is_open = $('#using_json').jstree("is_open", id);
+                    console.info("is_open:"+is_open);
+                    $("#ifm").attr("src", encodeURI(server_context+"/service_manager_detail_index?id="+node.id+"&service_name="+node.id+"&level="+level));
+
+                });
+        }
+
+        $(document).ready(function () {
+
+            $('#search_input').keyup(function () {
+                $('#using_json').jstree(true).search($('#search_input').val());
+
+            });
+
+        });
+
+        function refash(id){
+            $('#using_json').jstree(true).refresh();
+            $('#using_json').jstree("open_node", id);
+        }
+
+        function add_root() {
+            var product_code = $("#product_code").val();
+            //请求新增根
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/wemock_add_root_node",
+                dataType: 'json',
+                async:'false',
+                data: "product_code="+product_code+"&parent=#&text="+product_code+"&level=1",
+                //发送数据前
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#add_root").attr({disabled: "disabled"});
+                },
+                //成功返回
+                success: function (data) {
+                    if(data.code != '200'){
+                        console.error(data.msg);
+                        layer.msg(data.msg);
+                        $("#add_root").removeAttr('disabled');
+                        return ;
+                    }
+                    layer.msg("执行成功");
+                    init_jstree(product_code);
+                },
+                //处理完成
+                complete: function () {
+                    //layer.close(index1);
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    $("#add_root").removeAttr('disabled');
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+        }
+
+        init_jstree();
+    </script>
+
+</body>
+
+</html>

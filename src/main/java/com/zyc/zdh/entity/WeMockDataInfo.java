@@ -2,6 +2,7 @@ package com.zyc.zdh.entity;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
 
 @Table(name = "we_mock_data_info")
@@ -90,6 +91,9 @@ public class WeMockDataInfo {
      * 内容
      */
     private String resp_context;
+
+    @Transient
+    private String http_url;
 
     /**
      * @return id
@@ -405,5 +409,13 @@ public class WeMockDataInfo {
      */
     public void setResp_context(String resp_context) {
         this.resp_context = resp_context;
+    }
+
+    public String getHttp_url() {
+        return http_url;
+    }
+
+    public void setHttp_url(String http_url) {
+        this.http_url = http_url;
     }
 }

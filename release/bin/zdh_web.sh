@@ -5,7 +5,7 @@ cd "$bin_path/.."
 pt=`pwd`
 APP_NAME=${pt}"/zdh_web.jar"
 RUN_MODE=prod
-
+echo "当前环境:$RUN_MODE"
 export ZDH_RUN_MODE=$RUN_MODE
 
 #APP_DIR=./

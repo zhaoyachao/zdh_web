@@ -405,6 +405,11 @@ public class WeMockController extends BaseController{
                 throw new Exception("主键必填");
             }
             WeMockDataInfo weMockDataInfo=weMockDataMapper.selectByPrimaryKey(id);
+            String http = ConfigUtil.getValue("zdh.wemock.short.host", "http://127.0.0.1:9001");
+            if(http.endsWith("/")){
+                http = http.substring(0, http.length()-1);
+            }
+            weMockDataInfo.setHttp_url(http+weMockDataInfo.getUrl());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", weMockDataInfo);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);

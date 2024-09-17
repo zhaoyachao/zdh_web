@@ -3265,3 +3265,42 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1274480729182441472, '963932648793706496', '变量池页面', '4', 'zyc', 'fa fa-coffee', '', '16', '1', '2024-08-17 21:31:25', '2024-08-17 21:31:25', 'varpool_detail', '3', '', '', 'zdh', '');
+## 5.5.0迁移5.5.1
+    无改动
+## 5.5.1迁移5.5.2
+    无改动
+## 5.5.2迁移5.5.3
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1281972395984293888, '927514031458095104', '血缘上报首页', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-09-07 13:40:37', '2024-09-07 13:40:37', 'blood_source_report_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1281972597222805504, '1281972395984293888', '血缘上报', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-09-07 13:41:25', '2024-09-07 13:41:25', 'blood_source_report', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1284291050919170048, '963925904835219456', '服务控制', '3', 'zyc', 'fa fa-coffee', '', '30', '1', '2024-09-13 23:14:08', '2024-09-13 23:14:21', 'service_manager_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1284291433347420160, '1284291050919170048', '服务注册明细', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2024-09-13 23:15:39', '2024-09-13 23:15:39', 'service_manager_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1285576557141692416, '1284291050919170048', '服务明细页面', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-09-17 12:22:16', '2024-09-17 12:22:16', 'service_manager_detail_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1285576637307424768, '1284291050919170048', '服务槽位页面', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2024-09-17 12:22:35', '2024-09-17 12:22:35', 'service_manager_slot_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1285576718135857152, '1284291050919170048', '服务列表', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2024-09-17 12:22:54', '2024-09-17 12:22:54', 'service_manager_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1285576806329487360, '1284291050919170048', '服务暂停', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2024-09-17 12:23:15', '2024-09-17 12:23:15', 'service_manager_suspend', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1285576861232926720, '1284291050919170048', '服务停止', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2024-09-17 12:23:29', '2024-09-17 12:23:29', 'service_manager_stop', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1285576929478447104, '1284291050919170048', '服务重启', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2024-09-17 12:23:45', '2024-09-17 12:23:45', 'service_manager_run', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1285577011909103616, '1284291050919170048', '服务分槽', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2024-09-17 12:24:05', '2024-09-17 12:24:05', 'service_manager_slot_update', '5', '', '', 'zdh', '');
+

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 服务控制明细页面</title>
+    <meta name="keywords" content="ZDH 服务控制明细页面">
+    <meta name="description" content="ZDH 服务控制明细页面">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5 id="node_text"></h5><h5>服务实例</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="tabs-container">
+                                <ul class="nav nav-tabs">
+                                    <li class=""><a data-toggle="tab" href="#tab-1" aria-expanded="true">服务列表</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div id="tab-1" class="tab-pane active">
+                                        <div class="panel-body">
+                                            <div id="data_div">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+
+<script src="js/plugins/jsTree/jstree.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+        $('.chosen-select').chosen();
+        $(".chosen-container").css("width","100%");
+    });
+
+    var template =
+        "<div class='row'>\n"+
+        "<div class='col-sm-11'>\n"+
+        "                            <div class=\"search-result\" style='margin-top: 20px'>\n" +
+        "                                <h3><a href=\"javascript:void(0)\" data_id='instance_id' data_id_context='data_context'>instance_id</a></h3>\n" +
+        "                                <p>\n" +
+        "                                    data_context" +
+        "                                </p>" +
+        "                            </div>\n" +
+        "</div>\n"+
+        "<div class='col-sm-1' style='margin-top: 25px;text-align: right'><button class=\"btn-mini btn-warning btn_suspend\" type=\"button\" data_id='instance_id'>暂停</button>"+
+            "<button class=\"btn-mini btn-danger btn_stop\" type=\"button\" data_id='instance_id'>停止</button>\n"+
+        "<button class=\"btn-mini btn-info btn_run\" type=\"button\" data_id='instance_id'>恢复</button>\n"+
+        "<button class=\"btn-mini btn-info btn_slot\" type=\"button\" data_id='instance_id' data_slot='slot_str'>槽位</button>\n"+
+        "</div>\n"+
+        "</div>"
+    ;
+
+
+    (function(document, window, $) {
+
+        (function () {
+
+            var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+
+            var tree_id=s.id;
+            $('#node_text').html("【"+tree_id+"】");
+            $('#node_text').css("color","red");
+
+
+            function init_service_manager_detail(){
+                $.ajax({
+                    type: 'post',
+                    url: server_context+"/service_manager_detail",
+                    dataType: 'json',
+                    async:'false',
+                    data: "service_name="+tree_id,
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        if( data.result.length == 0){
+                            layer.msg("无服务实例,请检查服务实例是否启动");
+                            return ;
+                        }
+
+                        $('#data_div').html("");
+                        for(var i=0;i < data.result.length;i++){
+                            console.info(data.result[i].instance_id);
+                            var tmp = template.replaceAll("instance_id",  data.result[i].instance_id);
+                            //tmp = tmp.replaceAll("instance_id",data.result[i].instance_id);
+                            tmp = tmp.replaceAll("data_context",  data.result[i].data_context);
+                            tmp = tmp.replaceAll("slot_str",  data.result[i].slot_str);
+                            $('#data_div').append(tmp);
+                        }
+
+                        $(".btn_suspend").click(function () {
+                            var instance_id= $(this).attr('data_id');
+                            //alert();
+                            layer.confirm('暂停服务', {
+                                btn: ['确定','取消'] //按钮
+                            }, function(index){
+                                $.ajax({
+                                    url: server_context+"/service_manager_suspend",
+                                    data: {"instance_id": instance_id, "service_name": tree_id},
+                                    type: "post",
+                                    async:false,
+                                    dataType: "json",
+                                    success: function (data) {
+                                        console.info(data.msg);
+                                        layer.msg(data.msg);
+                                        init_service_manager_detail();
+                                    },
+                                    error: function (data) {
+                                        console.info("error: " + data.msg);
+                                    }
+
+                                });
+                            }, function(){
+
+                            });
+                        });
+
+                        $(".btn_stop").click(function () {
+                            var instance_id= $(this).attr('data_id');
+                            //alert();
+                            layer.confirm('停止服务', {
+                                btn: ['确定','取消'] //按钮
+                            }, function(index){
+                                $.ajax({
+                                    url: server_context+"/service_manager_stop",
+                                    data: {"instance_id": instance_id, "service_name": tree_id},
+                                    type: "post",
+                                    async:false,
+                                    dataType: "json",
+                                    success: function (data) {
+                                        console.info(data.msg);
+                                        layer.msg(data.msg);
+                                        init_service_manager_detail();
+                                    },
+                                    error: function (data) {
+                                        console.info("error: " + data.msg);
+                                    }
+
+                                });
+                            }, function(){
+
+                            });
+                        });
+
+                        $(".btn_run").click(function () {
+                            var instance_id= $(this).attr('data_id');
+                            //alert();
+                            layer.confirm('恢复服务', {
+                                btn: ['确定','取消'] //按钮
+                            }, function(index){
+                                $.ajax({
+                                    url: server_context+"/service_manager_run",
+                                    data: {"instance_id": instance_id, "service_name": tree_id},
+                                    type: "post",
+                                    async:false,
+                                    dataType: "json",
+                                    success: function (data) {
+                                        console.info(data.msg);
+                                        layer.msg(data.msg);
+                                        init_service_manager_detail();
+                                    },
+                                    error: function (data) {
+                                        console.info("error: " + data.msg);
+                                    }
+
+                                });
+                            }, function(){
+
+                            });
+                        });
+
+                        $(".btn_slot").click(function () {
+                            var instance_id= $(this).attr('data_id');
+                            var data_slot= $(this).attr('data_slot');
+
+                            parent.layer.open({
+                                type: 2,
+                                title: '设置槽位',
+                                shadeClose: false,
+                                resize: true,
+                                fixed: false,
+                                maxmin: true,
+                                shade: 0.1,
+                                area : ['60%', '80%'],
+                                //area: ['450px', '500px'],
+                                content: server_context+"/service_manager_slot_index?instance_id="+instance_id+"&slot="+data_slot, //iframe的url
+                                end : function () {
+                                    console.info("弹框结束");
+                                    init_service_manager_detail();
+                                }
+                            });
+
+                        });
+                    },
+                    //处理完成
+                    complete: function () {
+                        $("#execute").removeAttr('disabled');
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        $("#execute").removeAttr('disabled');
+                        console.info("error: " + data.responseText);
+                    }
+                });
+            }
+
+
+            init_service_manager_detail();
+
+        })();
+
+
+
+    })(document, window, jQuery);
+
+
+</script>
+
+</body>
+
+</html>

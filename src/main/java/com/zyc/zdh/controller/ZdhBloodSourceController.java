@@ -4,6 +4,8 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.BloodSourceMapper;
 import com.zyc.zdh.entity.BloodSourceInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -59,6 +61,36 @@ public class ZdhBloodSourceController extends BaseController{
     }
 
     /**
+     * 血缘上报首页
+     * @return
+     */
+    @RequestMapping("/blood_source_report_index")
+    public String blood_source_report_index() {
+
+        return "etl/blood_source_report_index";
+    }
+
+    /**
+     * 血缘上报
+     * @return
+     */
+    @SentinelResource(value = "blood_source_report", blockHandler = "handleReturn")
+    @RequestMapping(value = "/blood_source_report", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<String> blood_source_report(String context, String data_sources_choose_input, String data_sources_file_name_input, String data_sources_choose_output,String data_sources_file_name_output) {
+        //获取数据权限
+        try{
+            BloodSourceInfo bloodSourceInfo = CheckBloodSourceJob.report(context, data_sources_choose_input, data_sources_file_name_input, data_sources_choose_output, data_sources_file_name_output, getOwner(), "-1");
+        }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("上报失败",e);
+        }
+
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"上报完成", null);
+    }
+
+    /**
      * 生成血缘关系
      * @return
      */
@@ -92,7 +124,8 @@ public class ZdhBloodSourceController extends BaseController{
         criteria.orLike("input",getLikeCondition(input));
         criteria.orLike("output",getLikeCondition(input));
         Example.Criteria criteria2 = example.createCriteria();
-        criteria2.andEqualTo("version", version);
+        criteria2.andIn("version", Lists.newArrayList(version, "-1"));
+        example.and(criteria2);
 
         JSONArray jsonArray=new JSONArray();
         List<String> inputs = new ArrayList<>();
@@ -142,7 +175,7 @@ public class ZdhBloodSourceController extends BaseController{
         List<BloodSourceInfo> bloodSourceInfos = bloodSourceMapper.selectAll();
         for (BloodSourceInfo bsi: bloodSourceInfos){
             if(!StringUtils.isEmpty(bsi.getInput()) && !StringUtils.isEmpty(bsi.getOutput()) && !bsi.getInput().equalsIgnoreCase(bsi.getOutput())){
-                System.out.println(bsi.getInput()+"====="+bsi.getOutput());
+                //System.out.println(bsi.getInput()+"====="+bsi.getOutput());
 
                 boolean result = dag.addEdge(bsi.getInput()+"__-__"+bsi.getInput_md5(),bsi.getOutput()+"__-__"+bsi.getOutput_md5());
                 source_json.put(bsi.getInput()+"__-__"+bsi.getInput_md5(), bsi.getInput_json());

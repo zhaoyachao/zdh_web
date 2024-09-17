@@ -9,10 +9,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 
 public class DBUtil{
     public Logger logger= LoggerFactory.getLogger(this.getClass());
+
+    /**
+     * 验证表名是否合法
+     * @param text
+     * @return
+     */
+    public static boolean validTableName(String text) {
+        return match(text, "^[A-Za-z0-9_\\-\\$]+$");
+    }
+
+    private static boolean match(String text, String reg) {
+        return Pattern.compile(reg).matcher(text).matches();
+    }
+
+
     /**
      * 得到数据库连接
      * @return
@@ -245,6 +261,10 @@ public class DBUtil{
         try {
             connection = getConnection(driver,url,username,password);
             preparedStatement = connection.prepareStatement(sql);
+
+            for (int i = 0; i < args.length; i++) {
+                preparedStatement.setObject(i+1, args[i]);
+            }
 
             resultSet = preparedStatement.executeQuery();
 

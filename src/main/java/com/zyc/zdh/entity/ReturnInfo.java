@@ -81,6 +81,14 @@ public class ReturnInfo<T> {
         return ri;
     }
 
+    public static <T> ReturnInfo<T> buildSuccess(){
+        ReturnInfo ri=new ReturnInfo<>();
+        ri.code=RETURN_CODE.SUCCESS.getCode();
+        ri.msg=RETURN_CODE.SUCCESS.getDesc();
+        ri.result=null;
+        return ri;
+    }
+
     public static <T> ReturnInfo<T> buildSuccess(T result){
         ReturnInfo ri=new ReturnInfo<>();
         ri.code=RETURN_CODE.SUCCESS.getCode();

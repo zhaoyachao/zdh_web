@@ -285,6 +285,62 @@ public class CheckBloodSourceJob {
 
     }
 
+
+    /**
+     *
+     * @param context
+     * @param input
+     * @param inputTable
+     * @param output
+     * @param outputTable
+     * @param owner
+     * @param version
+     * @return
+     */
+    public static BloodSourceInfo report(String context, String input, String inputTable, String output,String outputTable, String owner, String version) {
+        BloodSourceInfo bsi = new BloodSourceInfo();
+        try {
+            BloodSourceMapper bloodSourceMapper = (BloodSourceMapper) SpringContext.getBean("bloodSourceMapper");
+            DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
+            bsi.setContext(context);
+            bsi.setOwner(owner);
+            bsi.setCreate_time(new Date());
+
+            DataSourcesInfo dsi_input = dataSourcesMapper.selectByPrimaryKey(input);
+            bsi.setInput_type(dsi_input.getData_source_type());
+
+            String md5 = DigestUtils.md5DigestAsHex((dsi_input.getData_source_type() + dsi_input.getUrl()).getBytes());
+            dsi_input.setPassword("");
+            bsi.setInput_json(JSON.toJSONString(dsi_input));
+            bsi.setInput_md5(md5);
+            bsi.setInput(inputTable);
+
+            DataSourcesInfo dsi_output = dataSourcesMapper.selectByPrimaryKey(output);
+            if(dsi_output==null){
+                return bsi;
+            }
+
+            bsi.setOutput_type(dsi_output.getData_source_type());
+            String md5_output = DigestUtils.md5DigestAsHex((dsi_output.getData_source_type() + dsi_output.getUrl()).getBytes());
+            bsi.setOutput_md5(md5_output);
+            dsi_output.setPassword("");
+            bsi.setOutput_json(JSON.toJSONString(dsi_output));
+            bsi.setOutput(outputTable);
+
+            bsi.setVersion(version);
+
+            bloodSourceMapper.insertSelective(bsi);
+
+        } catch (Exception e) {
+            logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            throw e;
+        }
+
+
+        return bsi;
+
+    }
+
     public static Map<String, Object> getJinJavaParam(Timestamp timestamp){
         Timestamp cur_time=timestamp;
         String date_nodash = DateUtil.formatNodash(cur_time);
