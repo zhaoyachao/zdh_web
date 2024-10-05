@@ -64,7 +64,7 @@
                                         <div class="panel-body">
                                             <form id="jstree_add_node_from" name="jstree_add_node_from" method="post" class="form-horizontal"
                                                   action="">
-
+                                                <input type="hidden" name="id" value="" id="id">
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">产品代码</label>
                                                     <div class="col-sm-10">
@@ -176,6 +176,7 @@
                                         <div class="panel-body">
                                             <form id="jstree_up_parent_from" name="jstree_up_parent_from" method="post" class="form-horizontal"
                                                   action="">
+                                                <input type="hidden" name="id" value="" id="id4">
                                             <div id="using_json2"></div>
                                             <div class="hr-line-dashed"></div>
 
@@ -286,6 +287,7 @@
                     $('#id').val(data.result.id);
                     $('#id2').val(data.result.id);
                     $('#id3').val(data.result.id);
+                    $('#id4').val(data.result.id);
                     $('#parent_dim_value_code').val(data.result.dim_value_code);
 
                     //$('#dim_value_name').val(data.result.dim_value_name);
@@ -572,7 +574,7 @@
             return ;
         }
 
-        var id = $('#id').val();
+        var id = $('#id4').val();
         //增加子节点,返回子节点id
         $.ajax({
             type: 'POST',

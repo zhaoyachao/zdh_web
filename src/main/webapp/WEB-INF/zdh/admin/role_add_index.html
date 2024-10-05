@@ -177,7 +177,9 @@
                     }
 
 
-                } });
+                } }).bind('loaded.jstree', function (e, data) {
+                get_auth();
+            });
             $('#search_input').keyup(function () {
                 $('#using_json3').jstree(true).search($('#search_input').val());
 

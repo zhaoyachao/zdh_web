@@ -197,7 +197,7 @@ public class ZdhDataSourcesController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<Object> deleteIds(String[] ids) {
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesMapper, dataSourcesMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesMapper, dataSourcesMapper.getTable(), ids, getAttrDel());
             dataSourcesMapper.deleteLogicByIds(dataSourcesMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
@@ -235,7 +235,7 @@ public class ZdhDataSourcesController extends BaseController{
                 dataSourcesInfo.setPassword(null);
             }
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group(), getAttrAdd());
             dataSourcesMapper.insertSelective(dataSourcesInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
@@ -257,8 +257,8 @@ public class ZdhDataSourcesController extends BaseController{
         try{
             DataSourcesInfo oldDataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(dataSourcesInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldDataSourcesInfo.getProduct_code(), oldDataSourcesInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldDataSourcesInfo.getProduct_code(), oldDataSourcesInfo.getDim_group(), getAttrEdit());
 
             if(StringUtils.isEmpty(check_password) || check_password.equalsIgnoreCase("off")){
                 dataSourcesInfo.setPassword(null);

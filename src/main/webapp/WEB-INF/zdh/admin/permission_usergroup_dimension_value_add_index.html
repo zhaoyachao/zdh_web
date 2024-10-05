@@ -16,6 +16,7 @@
     <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
     <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
@@ -76,6 +77,58 @@
                 </div>
             </div>
 
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>扩展属性配置</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form role="form" class="form-horizontal" id="data_sources_form2">
+                            <input type="hidden" name="dim_value_code" id="dim_value_code">
+                            <input type="hidden" name="product_code" id="product_code">
+                            <input type="hidden" name="group_code" id="group_code">
+                            <input type="hidden" name="dim_code" id="dim_code2">
+
+                            <div id="using_json6" style="width: 100%;">
+                                <input id="dim_value_name" name="dim_value_name" type="text"
+                                       placeholder="当前维度值" class="form-control" aria-required="true" readonly>
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="add" name="add" type="checkbox"><i></i> 新增</label>
+                                    <label class="no-padding">
+                                        <input id="edit" name="edit" type="checkbox"><i></i> 更新</label>
+                                    <label class="no-padding">
+                                        <input id="del" name="del" type="checkbox"><i></i> 删除</label>
+                                    <label class="no-padding">
+                                        <input id="approve" name="approve" type="checkbox"><i></i> 审批</label>
+                                    <input id="auto_attr" name="auto_attr" type="text"
+                                           placeholder="自定义属性多个逗号分割,edit:true;del:true" class="form-control" aria-required="true">
+                                </div>
+
+                                <div class="hr-line-dashed"></div>
+                                <div class="form-group">
+                                    <div class="text-center">
+                                        <button id="attr_update" name="attr_update" class="btn btn-primary" οnsubmit='return false'
+                                                type="button">更新属性
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -94,6 +147,8 @@
     <!-- Chosen -->
     <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
+    <script src="js/plugins/iCheck/icheck.min.js"></script>
+
     <!-- jsTree plugin javascript -->
     <script src="js/plugins/layer/layer.min.js"></script>
     <script src="js/plugins/jsTree/jstree.min.js"></script>
@@ -110,7 +165,15 @@
 
     <script>
 
-        function init_jstree(product_code, dim_code){
+
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+
+        function init_jstree(product_code, dim_code, group_code){
             $('#using_json3').jstree("destroy");
             $('#using_json3').jstree({
                 "plugins" : [ "types","checkbox", "search"],
@@ -137,7 +200,74 @@
                     }
 
 
-                } });
+                } }).bind('dblclick.jstree',function(e){
+                console.info(e.target.id);
+                var id=e.target.id.split("_anchor")[0];//资源id
+                console.info("event:"+e.target.id.split("_anchor")[0]);
+                if(!id){
+                    layer.msg("请双击资源名称！");
+                    return ;
+                }
+
+                var nodeText = $('#using_json3').jstree(true).get_node(id).text;
+                console.info("id:"+id);
+                console.info("nodeText:"+nodeText);
+                console.info("user_account:"+group_code);
+
+                $('#product_code').val(product_code);
+                $('#dim_code2').val(dim_code);
+                $('#group_code').val(group_code);
+                $('#dim_value_code').val(id);
+
+                $('#dim_value_name').val(nodeText);
+
+                $('#add').iCheck('uncheck');
+                $('#edit').iCheck('uncheck');
+                $('#del').iCheck('uncheck');
+                $('#approve').iCheck('uncheck');
+                $('#auto_attr').val("");
+
+                //根据product_code, dim_code, dim_value_code, user_account 获取绑定关系
+                $.ajax({
+                    type : "post",
+                    url : server_context+"/permission_usergroup_dimension_value_attr",//getAreaBuild=getTreeArea
+                    data: {"product_code": product_code, "dim_code": dim_code, "dim_value_code": id, "group_code": group_code},
+                    dataType : "json",
+                    async:'false',
+                    success : function(data) {
+                        console.info(data);
+                        layer.msg(data.msg);
+                        if(is_empty( data.result.extMap)){
+                            return ;
+                        }
+                        for (let key in data.result.extMap) {
+                            if(key=="add" && data.result.extMap[key]== "true"){
+                                $('#add').iCheck('check');
+                            }else if(key=="edit" && data.result.extMap[key]== "true"){
+                                $('#edit').iCheck('check');
+                            }else if(key=="del" && data.result.extMap[key]== "true"){
+                                $('#del').iCheck('check');
+                            }else if(key=="approve" && data.result.extMap[key]== "true"){
+                                $('#approve').iCheck('check');
+                            }else{
+                                var old = $('#auto_attr').val();
+                                if(old == ""){
+                                    $('#auto_attr').val(key+":"+data.result.extMap[key]);
+                                }else{
+                                    $('#auto_attr').val(old+";"+key+":"+data.result.extMap[key])
+                                }
+                            }
+                        }
+
+                    }
+                });
+
+
+
+                //$("#ifm").attr("src", encodeURI(server_context+"/jstree_add_index?id="+node.id+"&text="+node.text+"&level="+level+"&product_code="+product_code));
+            }).bind('loaded.jstree', function (e, data) {
+                get_auth();
+            });
             $('#search_input').keyup(function () {
                 $('#using_json3').jstree(true).search($('#search_input').val());
 
@@ -176,7 +306,7 @@
                 $('#dim_code').html(str);
                 $("#dim_code").trigger("chosen:updated");
                 $('#dim_code').chosen().on("change", function (evt, params) {
-                    init_jstree(product_code, $('#dim_code').val());
+                    init_jstree(product_code, $('#dim_code').val(), group_code);
                 });
             },
             //处理完成
@@ -192,7 +322,7 @@
             $("#dim_code").val(dim_code);
             $("#dim_code").attr("disenabled", "disenabled");
             $("#dim_code").trigger("chosen:updated");
-            init_jstree(product_code, dim_code);
+            init_jstree(product_code, dim_code, group_code);
         }
 
         function get_auth(){
@@ -277,6 +407,62 @@
 
         }
 
+        $('#attr_update').click(function () {
+
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+
+            //增加子节点,返回子节点id
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/permission_usergroup_dimension_value_attr_update",
+                dataType: 'json',
+                async:'false',
+                data: $("#data_sources_form2").serialize(),
+                //发送数据前
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#attr_update").attr({disabled: "disabled"});
+                },
+                //成功返回
+                success: function (data) {
+                    $("#attr_update").removeAttr('disabled');
+                    if(data.code != '200'){
+                        console.error(data.msg);
+                        parent.layer.msg("执行失败");
+                        return ;
+                    }
+                    parent.layer.msg("执行成功");
+                    get_auth();
+                    //window.parent.create_node(s.id,node);
+                    // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    // parent.layer.close(index); //再执行关闭
+
+                },
+                //处理完成
+                complete: function () {
+                    $("#attr_update").removeAttr('disabled');
+                    //layer.close(index1);
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    $("#attr_update").removeAttr('disabled');
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+
+
+        });
+        //$("#search1").click();
     </script>
 
 </body>

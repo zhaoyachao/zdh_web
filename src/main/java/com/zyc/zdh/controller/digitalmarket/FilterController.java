@@ -141,8 +141,8 @@ public class FilterController extends BaseController {
 
             FilterInfo oldFilterInfo = filterMapper.selectByPrimaryKey(filterInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, filterInfo.getProduct_code(), filterInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldFilterInfo.getProduct_code(), oldFilterInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, filterInfo.getProduct_code(), filterInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldFilterInfo.getProduct_code(), oldFilterInfo.getDim_group(), getAttrEdit());
 
             //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
             filterInfo.setOwner(oldFilterInfo.getOwner());
@@ -178,7 +178,7 @@ public class FilterController extends BaseController {
             filterInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             filterInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, filterInfo.getProduct_code(), filterInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, filterInfo.getProduct_code(), filterInfo.getDim_group(), getAttrAdd());
 
             filterMapper.insertSelective(filterInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
@@ -199,7 +199,7 @@ public class FilterController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo filter_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, filterMapper, filterMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, filterMapper, filterMapper.getTable(), ids, getAttrDel());
             filterMapper.deleteLogicByIds(filterMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -233,7 +233,7 @@ public class FilterController extends BaseController {
             if(StringUtils.isEmpty(filter_value)){
                 throw new Exception("过滤值不可为空");
             }
-            checkPermissionByProductAndDimGroup(zdhPermissionService, filterMapper, filterMapper.getTable(), new String[]{id});
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, filterMapper, filterMapper.getTable(), new String[]{id}, getAttrAdd());
             FilterInfo filterInfo = filterMapper.selectByPrimaryKey(id);
             if(!filterInfo.getEngine_type().equalsIgnoreCase("redis")){
                 throw new Exception("过滤值新增当前仅支持redis引擎的过滤规则");

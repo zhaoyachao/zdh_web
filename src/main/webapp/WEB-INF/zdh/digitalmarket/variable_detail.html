@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 变量池首页</title>
-    <meta name="keywords" content="ZDH 变量池首页">
-    <meta name="description" content="ZDH 变量池首页">
+    <title>ZDH 变量计算首页</title>
+    <meta name="keywords" content="ZDH 变量计算首页">
+    <meta name="description" content="ZDH 变量计算首页">
 
     <link rel="shortcut icon" href="img/favicon.ico">
 
@@ -28,7 +28,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>变量池配置</h5>
+                    <h5>变量配置</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -81,17 +81,41 @@
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">变量配置</label>
-                            <div class="col-sm-10" style="text-align: left">
-                                <button id="btn_add" name="btn_add" class="btn btn-primary"
-                                        οnsubmit='return false'
-                                        type="button">新增
-                                </button>
+
+                            <div class="col-sm-2" >
+                                <input name="varpool_domain" id="varpool_domain" type="text"
+                                       placeholder="变量域" class="form-control varpool_domain" aria-required="true" >
                             </div>
-                        </div>
-
-
-                        <div class="form-group" id="label_div">
-
+                            <div class="col-sm-2">
+                                <input name="varpool_code" id="varpool_code" type="text"
+                                       placeholder="变量code" class="form-control varpool_code" aria-required="true">
+                            </div>
+                            <div class="col-sm-2">
+                                <select class=" form-control m-b varpool_domain_operate" data-live-search="true"  id="varpool_type" name="varpool_type">
+                                    <option value="string">字符串</option>
+                                    <option value="int">数值</option>
+                                    <option value="list">集合</option>
+                                    <option value="map">字典</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2">
+                                <select class=" form-control m-b varpool_domain_operate" data-live-search="true"  id="varpool_operate" name="varpool_operate">
+                                    <option value="eq">等于</option>
+                                    <option value="neq">不等于</option>
+                                    <option value="gte">大于等于</option>
+                                    <option value="lte">小于等于</option>
+                                    <option value="gt">大于</option>
+                                    <option value="lt">小于</option>
+                                    <option value="in">IN</option>
+                                    <option value="contain">包含</option>
+                                    <option value="like">模糊匹配</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2">
+                                <input name="varpool_value" id="varpool_value" type="text"
+                                       placeholder="参数值,多个分号分割" class="form-control" aria-required="true">
+                            </div>
+                            <div class="col-sm-2"></div>
                         </div>
 
 
@@ -214,37 +238,6 @@
 
 <script>
 
-    var template = '<div class="from-group col-sm-12"  id="template">\n' +
-        '<label class="col-sm-2 control-label">变量</label>\n' +
-        '        <div class="col-sm-2" >\n' +
-        '            <input name="varpool_domain" type="text"\n' +
-        '                   placeholder="变量域" class="form-control varpool_domain" aria-required="true" value="zdh_varpool_domain" >\n' +
-        '        </div>\n' +
-        '        <div class="col-sm-2">\n' +
-        '            <input name="varpool_code" type="text"\n' +
-        '                   placeholder="变量code" class="form-control varpool_code" aria-required="true" value="zdh_varpool_code">\n' +
-        '        </div>\n' +
-        '        <div class="col-sm-2">\n' +
-        '            <select class=" form-control m-b varpool_domain_operate" data-live-search="true"  id="zdh_varpool_operate">\n' +
-        '<option value="eq">覆盖</option>\n'+
-        '<option value="add">追加</option>\n'+
-        '<option value="concat">拼接</option>\n'+
-        '<option value="kvadd">KV追加</option>\n'+
-        '            </select>\n' +
-        '        </div>\n' +
-        '        <div class="col-sm-2">\n' +
-        '            <input name="varpool_value" type="text"\n' +
-        '                   placeholder="参数值,多个分号分割" class="form-control varpool_domain_value" aria-required="true" value="zdh_varpool_value">\n' +
-        '        </div>\n' +
-        '        <div class="col-sm-2">\n' +
-        '            <button id="delete" name="delete" class="btn btn-danger"\n' +
-        '                    οnsubmit=\'return false\'\n' +
-        '                    type="button">删除\n' +
-        '            </button>\n' +
-        '        </div>\n' +
-        '\n' +
-        '</div>';
-
     $(document).ready(function () {
         $('.i-checks').iCheck({
             checkboxClass: 'icheckbox_square-green',
@@ -258,20 +251,6 @@
 
         (function () {
 
-
-
-            $("#btn_add").click(function () {
-                var tmp = template;
-                tmp = tmp.replace("zdh_varpool_domain", "");
-                tmp = tmp.replace("zdh_varpool_code", "");
-                tmp = tmp.replace("zdh_varpool_operate", "eq");
-                tmp = tmp.replace("zdh_varpool_value", "");
-                $('#label_div').append(tmp);
-                $('#label_div #delete').click(function () {
-                    $(this).parent().parent().remove();
-                });
-            });
-
             var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
             var params = url.substr(1);//去掉问号
             var pa = params.split("&");
@@ -281,43 +260,6 @@
             }
 
             //初始化数据源
-
-            function init_zdh_instance(){
-                $.ajax({
-                    type: 'POST',
-                    url: server_context+"/zdh_instance_list",
-                    dataType: 'json',
-                    async: false,
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        if(data.code != "200"){
-                            layer.msg(data.msg);
-                            return ;
-                        }
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.result.length; i++) {
-                            str += '<option value=\"' + data.result[i]+ "\" mytype=\"" + data.result[i] + "\" hassubinfo=\"true\">" + data.result[i] + "</option>"
-                        }
-                        //ETL单任务下拉框
-                        $('#zdh_instance').html(str);
-                        $('#zdh_instance').chosen().on("change", function (evt, params) {
-                            $("#zdh_instance").trigger("chosen:updated");
-                        });
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-                });
-            }
-
-            //init_zdh_instance();
             $('#operate').chosen();
             $('#data_status').chosen();
             $('#depend_level').chosen();
@@ -355,11 +297,15 @@
                 //解析参数
                 var varpool_param = $("#varpool_param",window.parent.document).val();
                 var varpool_param_object = JSON.parse(varpool_param);
-                if(varpool_param_object.length>0){
-                    for(var i=0;i<varpool_param_object.length;i++){
-                        buildConfig(i,varpool_param_object[i].varpool_domain, varpool_param_object[i].varpool_code,  varpool_param_object[i].varpool_domain_operate, varpool_param_object[i].varpool_domain_value);
-                    }
-                }
+
+                $("#varpool_domain").val(varpool_param_object.varpool_domain);
+                $("#varpool_type").val(varpool_param_object.varpool_type);
+                $("#varpool_type").trigger("chosen:updated");
+                $("#varpool_operate").val(varpool_param_object.varpool_operate);
+                $("#varpool_operate").trigger("chosen:updated");
+                $("#varpool_code").val(varpool_param_object.varpool_code);
+                $("#varpool_value").val(varpool_param_object.varpool_value);
+
 
                 $("#project_code").val(s["project_code"]);
                 $("#project_code").trigger("chosen:updated");
@@ -375,19 +321,7 @@
 
     })(document, window, jQuery);
 
-    function buildConfig(i,varpool_domain, varpool_code, varpool_operate, varpool_value) {
-        var tmp=template;
-        tmp = tmp.replace("zdh_varpool_domain", varpool_domain);
-        tmp = tmp.replace("zdh_varpool_code", varpool_code);
-        tmp = tmp.replace("zdh_varpool_operate", "zdh_varpool_operate_"+i);
-        tmp = tmp.replace("zdh_varpool_value", varpool_value);
-        //tmp = tmp.replace("zdh_shunt_type", "zdh_shunt_type"+i);
-        $('#label_div').append(tmp);
-        $('#label_div #zdh_varpool_operate_'+i).val(varpool_operate);
-        $('#label_div #delete').click(function () {
-            $(this).parent().parent().remove();
-        });
-    }
+
 
     $('#save_etl_info').click(function () {
 
@@ -404,7 +338,7 @@
             rule_id = guid3();
         }
         //自定义实现
-        var more_task="varpool";
+        var more_task="variable";
         var operate=$('#operate').find("option:selected").val();
         //var zdh_instance=$('#zdh_instance').find("option:selected").val();
         var depend_level=$('#depend_level').find("option:selected").val();
@@ -421,35 +355,12 @@
         }
 
         var rule_context=$('#rule_context').val();
-        var ary = new Array();
-        var ary2 = new Array();
-        var ary3 = new Array();
-        var ary4 = new Array();
 
-        $(".varpool_domain").each(function(index){
-            ary[index] = $(this).val();
-        });
-        $(".varpool_code").each(function(index){
-            ary2[index] =$(this).val();
-        });
-        $(".varpool_domain_operate").each(function(index){
-            ary3[index] =$(this).val();
-        });
-
-        $(".varpool_domain_value").each(function(index){
-            ary4[index] =  $(this).val();
-        });
-
-        var result = [];
-        for (var i=0;i<ary.length;i++){
-            var param={
-                "varpool_domain":ary[i],
-                "varpool_code":ary2[i],
-                "varpool_domain_operate": ary3[i],
-                "varpool_domain_value":ary4[i],
-            };
-            result.push(param);
-        }
+        var varpool_domain = $("#varpool_domain").val();
+        var varpool_operate = $("#varpool_operate").find("option:selected").val();
+        var varpool_type = $("#varpool_type").find("option:selected").val();
+        var varpool_code = $("#varpool_code").val();
+        var varpool_value = $("#varpool_value").val();
 
         let data={
             "more_task": more_task,
@@ -465,7 +376,11 @@
 
             "rule_id": rule_id,
             "rule_context":rule_context,
-            "varpool_param": JSON.stringify(result)
+            "varpool_domain": varpool_domain,
+            "varpool_operate": varpool_operate,
+            "varpool_code": varpool_code,
+            "varpool_value": varpool_value,
+            "varpool_type": varpool_type
         };
         console.info("rule_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));

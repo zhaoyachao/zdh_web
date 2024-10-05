@@ -120,7 +120,7 @@ public class ZdhEtlLogController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_log_delete(String[] ids) {
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskLogMapper, etlTaskLogMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskLogMapper, etlTaskLogMapper.getTable(), ids, getAttrDel());
             etlTaskLogMapper.deleteLogicByIds(etlTaskLogMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
@@ -158,7 +158,7 @@ public class ZdhEtlLogController extends BaseController{
             etlTasklogInfo.setOwner(owner);
             debugInfo(etlTasklogInfo);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTasklogInfo.getProduct_code(), etlTasklogInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTasklogInfo.getProduct_code(), etlTasklogInfo.getDim_group(), getAttrAdd());
 
             etlTasklogInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTasklogInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
@@ -195,8 +195,8 @@ public class ZdhEtlLogController extends BaseController{
 
             EtlTaskLogInfo oldEtlTaskLogInfo = etlTaskLogMapper.selectByPrimaryKey(etlTaskLogInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskLogInfo.getProduct_code(), etlTaskLogInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskLogInfo.getProduct_code(), oldEtlTaskLogInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskLogInfo.getProduct_code(), etlTaskLogInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskLogInfo.getProduct_code(), oldEtlTaskLogInfo.getDim_group(), getAttrEdit());
 
             etlTaskLogMapper.updateByPrimaryKeySelective(etlTaskLogInfo);
 

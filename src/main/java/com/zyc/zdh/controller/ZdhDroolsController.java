@@ -122,7 +122,7 @@ public class ZdhDroolsController extends BaseController{
             etlDroolsTaskInfo.setOwner(getOwner());
             etlDroolsTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             debugInfo(etlDroolsTaskInfo);
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskInfo.getProduct_code(), etlDroolsTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskInfo.getProduct_code(), etlDroolsTaskInfo.getDim_group(), getAttrAdd());
             etlDroolsTaskMapper.insertSelective(etlDroolsTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
@@ -143,7 +143,7 @@ public class ZdhDroolsController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_drools_delete(String[] ids) {
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskMapper, etlDroolsTaskMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskMapper, etlDroolsTaskMapper.getTable(), ids, getAttrDel());
             if (ids != null) {
                 for (String id : ids) {
                     etlDroolsTaskMapper.deleteBatchById(id);
@@ -173,8 +173,8 @@ public class ZdhDroolsController extends BaseController{
             debugInfo(etlDroolsTaskInfo);
             EtlDroolsTaskInfo oldEtlDroolsTaskInfo = etlDroolsTaskMapper.selectByPrimaryKey(etlDroolsTaskInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskInfo.getProduct_code(), etlDroolsTaskInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlDroolsTaskInfo.getProduct_code(), oldEtlDroolsTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskInfo.getProduct_code(), etlDroolsTaskInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlDroolsTaskInfo.getProduct_code(), oldEtlDroolsTaskInfo.getDim_group(), getAttrEdit());
 
             etlDroolsTaskMapper.updateByPrimaryKeySelective(etlDroolsTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);

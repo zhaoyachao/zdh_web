@@ -157,7 +157,7 @@ public class ZdhUnstructureController extends BaseController{
     public ReturnInfo etl_task_unstructure_delete(String[] ids) {
 
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureMapper,etlTaskUnstructureMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureMapper,etlTaskUnstructureMapper.getTable(), ids, getAttrDel());
             etlTaskUnstructureMapper.deleteLogicByIds("etl_task_unstructure_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
@@ -190,7 +190,7 @@ public class ZdhUnstructureController extends BaseController{
             etlTaskUnstructureInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(etlTaskUnstructureInfo);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureInfo.getProduct_code(), etlTaskUnstructureInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureInfo.getProduct_code(), etlTaskUnstructureInfo.getDim_group(), getAttrAdd());
 
             etlTaskUnstructureMapper.insertSelective(etlTaskUnstructureInfo);
 
@@ -236,8 +236,8 @@ public class ZdhUnstructureController extends BaseController{
 
             EtlTaskUnstructureInfo oldEtlTaskUnstructureInfo = etlTaskUnstructureMapper.selectByPrimaryKey(etlTaskUnstructureInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureInfo.getProduct_code(), etlTaskUnstructureInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskUnstructureInfo.getProduct_code(), oldEtlTaskUnstructureInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureInfo.getProduct_code(), etlTaskUnstructureInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskUnstructureInfo.getProduct_code(), oldEtlTaskUnstructureInfo.getDim_group(), getAttrEdit());
 
             etlTaskUnstructureMapper.updateByPrimaryKeySelective(etlTaskUnstructureInfo);
 
@@ -520,7 +520,7 @@ public class ZdhUnstructureController extends BaseController{
     public ReturnInfo etl_task_unstructure_log_delete(String[] ids) {
 
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureLogMapper, etlTaskUnstructureLogMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureLogMapper, etlTaskUnstructureLogMapper.getTable(), ids, getAttrDel());
             etlTaskUnstructureLogMapper.deleteLogicByIds("etl_task_unstructure_log_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){

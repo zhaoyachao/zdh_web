@@ -104,7 +104,7 @@ public class BeaconFireAlarmMsgController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo beacon_fire_alarm_msg_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmMsgMapper, beaconFireAlarmMsgMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmMsgMapper, beaconFireAlarmMsgMapper.getTable(), ids, getAttrDel());
             beaconFireAlarmMsgMapper.deleteLogicByIds(beaconFireAlarmMsgMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

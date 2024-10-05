@@ -165,8 +165,8 @@ public class CrowdFileController extends BaseController {
 
             CrowdFileInfo oldCrowdFileInfo = crowdFileMapper.selectByPrimaryKey(crowdFileInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFileInfo.getProduct_code(), crowdFileInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldCrowdFileInfo.getProduct_code(), oldCrowdFileInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, crowdFileInfo.getProduct_code(), crowdFileInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldCrowdFileInfo.getProduct_code(), oldCrowdFileInfo.getDim_group(), getAttrEdit());
 
             //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
             crowdFileInfo.setOwner(oldCrowdFileInfo.getOwner());
@@ -201,7 +201,7 @@ public class CrowdFileController extends BaseController {
             crowdFile.setCreate_time(new Timestamp(System.currentTimeMillis()));
             crowdFile.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFile.getProduct_code(), crowdFile.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, crowdFile.getProduct_code(), crowdFile.getDim_group(), getAttrAdd());
 
             //校验文件名称是否已经存在
 
@@ -291,7 +291,7 @@ public class CrowdFileController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo crowd_file_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFileMapper, crowdFileMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, crowdFileMapper, crowdFileMapper.getTable(), ids, getAttrDel());
             crowdFileMapper.deleteLogicByIds(crowdFileMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -308,7 +308,7 @@ public class CrowdFileController extends BaseController {
     public ReturnInfo crowd_file_refash2redis(String id) {
         try {
             CrowdFileInfo oldCrowdFileInfo = crowdFileMapper.selectByPrimaryKey(id);
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldCrowdFileInfo.getProduct_code(), oldCrowdFileInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldCrowdFileInfo.getProduct_code(), oldCrowdFileInfo.getDim_group(), getAttrEdit());
 
             //读取数据
             String store = env.getProperty("digitalmarket.store.type","local");

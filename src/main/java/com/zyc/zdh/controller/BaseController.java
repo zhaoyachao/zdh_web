@@ -62,6 +62,21 @@ public class BaseController {
         return environment.getProperty("zdp.product","");
     }
 
+    public String[] getAttrEdit(){
+        return new String[]{"edit"};
+    }
+
+    public String[] getAttrAdd(){
+        return new String[]{"add"};
+    }
+
+    public String[] getAttrDel(){
+        return new String[]{"del"};
+    }
+
+    public String[] getAttrApprove(){
+        return new String[]{"approve"};
+    }
 
     public void setCache(String key, String data){
         RedisUtil redisUtil= (RedisUtil) SpringContext.getBean("redisUtil");
@@ -238,6 +253,98 @@ public class BaseController {
      * @param baseMapper
      * @param table
      * @param ids
+     * @param actions 权限行为,select, edit, add, del, approve
+     * @throws Exception
+     */
+    public void checkAttrPermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, BaseMapper baseMapper, String table, String[] ids, String[] actions) throws Exception {
+        Map<String, List<String>> dims = dynamicPermissionByProductAndGroup(zdhPermissionService);
+        List<Map<String,Object>> list = baseMapper.selectListMapByIds(table, ids);
+        if(list == null || list.size() == 0){
+            throw new Exception("权限验证,未找到相关数据信息");
+        }
+        for(Map<String, Object> objectMap : list){
+            if(objectMap.containsKey("product_code")){
+                String product_code = objectMap.getOrDefault("product_code", "").toString();
+                if(!dims.get("product_codes").contains(product_code)){
+                    throw new Exception("无产品权限,产品code: "+product_code);
+                }
+            }
+            if(objectMap.containsKey("dim_group")){
+                String dim_group = objectMap.getOrDefault("dim_group", "").toString();
+                if(!dims.get("dim_groups").contains(dim_group)){
+                    throw new Exception("无归属组权限,归属组code: "+dim_group);
+                }
+
+                //检查是否有维度对应自定义权限(增,删,改,审批等)
+                Map<String, Map<String, String>> dim_group_attrs = zdhPermissionService.get_dim_value_attr_by_user_account(getOwner(), "dim_group");
+                for (String action: actions){
+                    if(!dim_group_attrs.containsKey(dim_group)){
+                        throw new Exception("无归属组权限,归属组code: "+dim_group);
+                    }
+                    if(!dim_group_attrs.get(dim_group).containsKey(action) || !dim_group_attrs.get(dim_group).get(action).equalsIgnoreCase("true")){
+                        throw new Exception("归属组code: "+dim_group+", 无"+action+"权限");
+                    }
+                }
+
+            }
+        }
+    }
+
+
+    /**
+     * 通过主键查询信息,并验证是否有产品和用户组编辑权限
+     * @param zdhPermissionService
+     * @param baseMapper
+     * @param table
+     * @param ids
+     * @throws Exception
+     */
+    public void checkEditPermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, BaseMapper baseMapper, String table, String[] ids) throws Exception {
+        checkAttrPermissionByProductAndDimGroup(zdhPermissionService, baseMapper, table, ids, new String[]{"eidt"});
+    }
+
+    /**
+     * 通过主键查询信息,并验证是否有产品和用户组新增权限
+     * @param zdhPermissionService
+     * @param baseMapper
+     * @param table
+     * @param ids
+     * @throws Exception
+     */
+    public void checkAddPermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, BaseMapper baseMapper, String table, String[] ids) throws Exception {
+        checkAttrPermissionByProductAndDimGroup(zdhPermissionService, baseMapper, table, ids, new String[]{"add"});
+    }
+
+    /**
+     * 通过主键查询信息,并验证是否有产品和用户组删除权限
+     * @param zdhPermissionService
+     * @param baseMapper
+     * @param table
+     * @param ids
+     * @throws Exception
+     */
+    public void checkDelPermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, BaseMapper baseMapper, String table, String[] ids) throws Exception {
+        checkAttrPermissionByProductAndDimGroup(zdhPermissionService, baseMapper, table, ids, new String[]{"del"});
+    }
+
+    /**
+     * 通过主键查询信息,并验证是否有产品和用户组审批权限
+     * @param zdhPermissionService
+     * @param baseMapper
+     * @param table
+     * @param ids
+     * @throws Exception
+     */
+    public void checkApprovePermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, BaseMapper baseMapper, String table, String[] ids) throws Exception {
+        checkAttrPermissionByProductAndDimGroup(zdhPermissionService, baseMapper, table, ids, new String[]{"approve"});
+    }
+
+    /**
+     * 通过主键查询信息,并验证是否有产品和用户组权限
+     * @param zdhPermissionService
+     * @param baseMapper
+     * @param table
+     * @param ids
      * @throws Exception
      */
     public void checkPermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, BaseMapper baseMapper, String table, String[] ids) throws Exception {
@@ -283,6 +390,42 @@ public class BaseController {
         if(!dims.get("dim_groups").contains(dim_group)){
             throw new Exception("无归属组权限,归属组code: "+dim_group);
         }
+    }
+
+    /**
+     * 通过指定产品和用户组校验是否有对应权限
+     * @param zdhPermissionService
+     * @param product_code
+     * @param dim_group
+     * @param actions
+     * @throws Exception
+     */
+    public void checkAttrPermissionByProductAndDimGroup(ZdhPermissionService zdhPermissionService, String product_code, String dim_group, String[] actions) throws Exception {
+        if(StringUtils.isEmpty(product_code)){
+            throw new Exception("产品code为空");
+        }
+        if(StringUtils.isEmpty(dim_group)){
+            throw new Exception("维度-归属组为空");
+        }
+        Map<String, List<String>> dims = dynamicPermissionByProductAndGroup(zdhPermissionService);
+        if(!dims.get("product_codes").contains(product_code)){
+            throw new Exception("无产品权限,产品code: "+product_code);
+        }
+        if(!dims.get("dim_groups").contains(dim_group)){
+            throw new Exception("无归属组权限,归属组code: "+dim_group);
+        }
+
+        //检查是否有维度对应自定义权限(增,删,改,审批等)
+        Map<String, Map<String, String>> dim_group_attrs = zdhPermissionService.get_dim_value_attr_by_user_account(getOwner(), "dim_group");
+        for (String action: actions){
+            if(!dim_group_attrs.containsKey(dim_group)){
+                throw new Exception("无归属组权限,归属组code: "+dim_group);
+            }
+            if(!dim_group_attrs.get(dim_group).containsKey(action) || !dim_group_attrs.get(dim_group).get(action).equalsIgnoreCase("true")){
+                throw new Exception("归属组code: "+dim_group+", 无"+action+"权限");
+            }
+        }
+
     }
 
 

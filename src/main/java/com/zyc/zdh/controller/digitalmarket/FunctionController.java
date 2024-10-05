@@ -273,7 +273,7 @@ public class FunctionController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo function_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, functionMapper, functionMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, functionMapper, functionMapper.getTable(), ids, getAttrDel());
             functionMapper.deleteLogicByIds(functionMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

@@ -4,10 +4,13 @@ import com.zyc.zdh.entity.PermissionDimensionValueInfo;
 import com.zyc.zdh.entity.PermissionUserDimensionValueInfo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ZdhPermissionService {
 
     public List<PermissionUserDimensionValueInfo> get_dim_value_by_user_account(String user_account, String dim_code) throws Exception;
+
+    public Map<String, Map<String,String>> get_dim_value_attr_by_user_account(String user_account, String dim_code) throws Exception;
 
     public List<PermissionDimensionValueInfo> get_dim_value_list(String dim_code) throws Exception;
 

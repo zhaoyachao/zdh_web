@@ -156,7 +156,7 @@ public class CrowdRuleController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo crowd_rule_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, crowdRuleMapper, crowdRuleMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, crowdRuleMapper, crowdRuleMapper.getTable(), ids, getAttrDel());
             crowdRuleMapper.deleteLogicByIds(crowdRuleMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

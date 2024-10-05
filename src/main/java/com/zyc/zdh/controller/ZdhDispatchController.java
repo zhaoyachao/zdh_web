@@ -263,7 +263,7 @@ public class ZdhDispatchController extends BaseController {
                 }
             }
             debugInfo(quartzJobInfo);
-            checkPermissionByProductAndDimGroup(zdhPermissionService, quartzJobInfo.getProduct_code(), quartzJobInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, quartzJobInfo.getProduct_code(), quartzJobInfo.getDim_group(), getAttrAdd());
             quartzJobMapper.insertSelective(quartzJobInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
@@ -290,7 +290,7 @@ public class ZdhDispatchController extends BaseController {
 //                quartzJobInfo.setJob_id(id);
 //                quartzJobMapper.deleteByPrimaryKey(quartzJobInfo);
 //            }
-            checkPermissionByProductAndDimGroup(zdhPermissionService, quartzJobMapper, quartzJobMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, quartzJobMapper, quartzJobMapper.getTable(), ids, getAttrDel());
             quartzJobMapper.deleteLogicByIds( quartzJobMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
@@ -316,8 +316,8 @@ public class ZdhDispatchController extends BaseController {
             quartzJobInfo.setOwner(getOwner());
             QuartzJobInfo oldQuartzJobInfo = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, quartzJobInfo.getProduct_code(), quartzJobInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldQuartzJobInfo.getProduct_code(), oldQuartzJobInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, quartzJobInfo.getProduct_code(), quartzJobInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldQuartzJobInfo.getProduct_code(), oldQuartzJobInfo.getDim_group(), getAttrEdit());
             //每次更新都重新设置任务实例id
             oldQuartzJobInfo.setTask_log_id(null);
             quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
@@ -349,7 +349,7 @@ public class ZdhDispatchController extends BaseController {
 
         try {
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group(), getAttrEdit());
             List<Date> dates = JobCommon2.resolveQuartzExpr(quartzJobInfo.getUse_quartz_time(),dti.getStep_size(),dti.getExpr(),start_time,end_time);
             List<String> tgli_ids=new ArrayList<>();
             for(Date dt:dates){
@@ -507,7 +507,7 @@ public class ZdhDispatchController extends BaseController {
             }
         }
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group(), getAttrEdit());
             //添加调度器并更新quartzjobinfo
             quartzManager2.addTaskToQuartz(dti);
             result = ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"调度开启成功",null);
@@ -538,7 +538,7 @@ public class ZdhDispatchController extends BaseController {
         try{
             debugInfo(quartzJobInfo);
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group(), getAttrEdit());
             if (quartzJobInfo.getStatus().equals("running")) {
                 //需要恢复暂停任务
                 quartzManager2.resumeTask(dti);
@@ -571,7 +571,7 @@ public class ZdhDispatchController extends BaseController {
 
         try{
             QuartzJobInfo qji = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);
-            checkPermissionByProductAndDimGroup(zdhPermissionService, qji.getProduct_code(), qji.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, qji.getProduct_code(), qji.getDim_group(), getAttrEdit());
             quartzManager2.deleteTask(qji, "remove");
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){

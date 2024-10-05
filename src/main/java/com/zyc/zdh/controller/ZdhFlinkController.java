@@ -103,7 +103,7 @@ public class ZdhFlinkController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_flink_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskFlinkMapper, etlTaskFlinkMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskFlinkMapper, etlTaskFlinkMapper.getTable(), ids, getAttrDel());
             etlTaskFlinkMapper.deleteLogicByIds(etlTaskFlinkMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -136,7 +136,7 @@ public class ZdhFlinkController extends BaseController {
 
             debugInfo(etlTaskFlinkInfo);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskFlinkInfo.getProduct_code(), etlTaskFlinkInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskFlinkInfo.getProduct_code(), etlTaskFlinkInfo.getDim_group(), getAttrAdd());
 
             etlTaskFlinkMapper.insertSelective(etlTaskFlinkInfo);
 
@@ -180,8 +180,8 @@ public class ZdhFlinkController extends BaseController {
 
             EtlTaskFlinkInfo oldEtlTaskFlinkInfo = etlTaskFlinkMapper.selectByPrimaryKey(etlTaskFlinkInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskFlinkInfo.getProduct_code(), etlTaskFlinkInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskFlinkInfo.getProduct_code(), oldEtlTaskFlinkInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskFlinkInfo.getProduct_code(), etlTaskFlinkInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskFlinkInfo.getProduct_code(), oldEtlTaskFlinkInfo.getDim_group(), getAttrEdit());
 
             etlTaskFlinkMapper.updateByPrimaryKeySelective(etlTaskFlinkInfo);
 

@@ -403,7 +403,7 @@ public class ZdhApprovalController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<Object> approval_auditor_flow_delete(String[] ids) {
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, approvalAuditorFlowMapper, approvalAuditorFlowMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, approvalAuditorFlowMapper, approvalAuditorFlowMapper.getTable(), ids, getAttrDel());
             approvalAuditorFlowMapper.deleteLogicByIds("approval_auditor_flow_info", ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         }catch (Exception e){

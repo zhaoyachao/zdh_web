@@ -273,7 +273,7 @@ public class RiskEventController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo risk_event_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, riskEventMapper, riskEventMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, riskEventMapper, riskEventMapper.getTable(), ids, getAttrDel());
             riskEventMapper.deleteLogicByIds(riskEventMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

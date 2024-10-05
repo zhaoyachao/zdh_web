@@ -182,7 +182,7 @@ public class DataTagGroupController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<Object> data_tag_group_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, dataTagGroupMapper, dataTagGroupMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dataTagGroupMapper, dataTagGroupMapper.getTable(), ids, getAttrDel());
             dataTagGroupMapper.deleteLogicByIds(dataTagGroupMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

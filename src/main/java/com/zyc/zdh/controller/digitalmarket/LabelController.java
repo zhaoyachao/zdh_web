@@ -297,7 +297,7 @@ public class LabelController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo label_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, labelMapper, labelMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, labelMapper, labelMapper.getTable(), ids, getAttrDel());
             labelMapper.deleteLogicByIds(labelMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

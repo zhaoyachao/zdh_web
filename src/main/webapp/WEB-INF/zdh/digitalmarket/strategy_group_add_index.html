@@ -64,6 +64,7 @@
                     <input type="hidden" id="rights_param" name="rights_param" value="">
                     <input type="hidden" id="code_text" name="code_text" value="">
                     <input type="hidden" id="function_text" name="function_text" value="">
+                    <input type="hidden" id="varpool_param" name="varpool_param" value="">
 
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
@@ -177,6 +178,7 @@
                                             <div class="node nodecustom_listcss" data-type="custom_list">用户名单</div>
                                             <div class="node nodefunctioncss" data-type="function">函数</div>
                                             <div class="node nodevarpoolcss" data-type="varpool">变量池</div>
+                                            <div class="node nodevariablecss" data-type="variable">变量计算</div>
                                         </div>
                                     </div>
                                     <div id="deviceRight2">
@@ -483,6 +485,15 @@
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
 
+            if(tp == "variable"){
+                $("#" + divId).attr("varpool_domain",is_empty(rs.varpool_domain)?"":rs.varpool_domain);
+                $("#" + divId).attr("varpool_operate",is_empty(rs.varpool_operate)?"":rs.varpool_operate);
+                $("#" + divId).attr("varpool_type",is_empty(rs.varpool_type)?"":rs.varpool_type);
+                $("#" + divId).attr("varpool_code",is_empty(rs.varpool_code)?"":rs.varpool_code);
+                $("#" + divId).attr("varpool_value",is_empty(rs.varpool_value)?"":rs.varpool_value);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
             //新增数据流转状态
             var new_title = "表达式: "+$("#" + divId).html();
             var more_task = "任务类型: "+tp;
@@ -617,6 +628,12 @@
                 return_operate_value: $elem.attr('return_operate_value'),
 
                 varpool_param: $elem.attr('varpool_param'),
+
+                varpool_domain: $elem.attr('varpool_domain'),
+                varpool_operate: $elem.attr('varpool_operate'),
+                varpool_type: $elem.attr('varpool_type'),
+                varpool_code: $elem.attr('varpool_code'),
+                varpool_value: $elem.attr('varpool_value'),
 
                 divId:$elem.attr('id'),
                 name: $elem[0].innerText,

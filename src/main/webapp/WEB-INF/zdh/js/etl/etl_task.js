@@ -70,7 +70,7 @@
               success : function(data) {
                   if(data.code != '200'){
                       console.error(data.msg);
-                      parent.layer.msg("执行失败");
+                      parent.layer.msg("执行失败:"+data.msg);
                       return ;
                   }
                   parent.layer.msg("执行成功");

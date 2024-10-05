@@ -65,9 +65,11 @@
       });
 
       function deleteMs(ids) {
+          var product_code = $('#product_code').val();
+          var user_account = $('#user_account').val();
           $.ajax({
-              url : server_context+"/permission_dimension_delete",
-              data : "ids=" + ids,
+              url : server_context+"/permission_user_dimension_value_delete",
+              data : "ids="+ids+"&user_account="+user_account,
               type : "post",
               async:false,
               dataType : "json",
@@ -79,20 +81,11 @@
                   }
                   parent.layer.msg("执行成功");
 
+                  $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/permission_dimension_list?"+$("#permission_dimension_form").serialize(),
+                      url: server_context+"/permission_user_dimension_list?"+$("#permission_dimension_form").serialize()+"&tm="+new Date(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json",
-                      queryParams: function (params) {
-                          // 此处使用了LayUi组件 是为加载层
-                          loadIndex = layer.load(1);
-                          let resRepor = {
-                              //服务端分页所需要的参数
-                              limit: params.limit,
-                              offset: params.offset
-                          };
-                          return resRepor;
-                      }
                   });
               },
               error: function (data) {
@@ -146,7 +139,12 @@
           checkbox: true,
           field:'state',
           sortable:false
-      }, {
+      },  {
+          field: 'id',
+          title: 'ID',
+          visible: false,
+          sortable:false
+      },{
           field: 'dim_code',
           title: '维度code',
           sortable:false

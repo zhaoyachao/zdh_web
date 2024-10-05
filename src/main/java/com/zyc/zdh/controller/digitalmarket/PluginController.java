@@ -187,8 +187,8 @@ public class PluginController extends BaseController {
 
             PluginInfo oldPluginInfo = pluginMapper.selectByPrimaryKey(pluginInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, pluginInfo.getProduct_code(), pluginInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldPluginInfo.getProduct_code(), oldPluginInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pluginInfo.getProduct_code(), pluginInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldPluginInfo.getProduct_code(), oldPluginInfo.getDim_group(), getAttrEdit());
 
             pluginInfo.setPlugin_json(jsonArray.toJSONString());
             pluginInfo.setOwner(oldPluginInfo.getOwner());
@@ -246,7 +246,7 @@ public class PluginController extends BaseController {
             pluginInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             pluginInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, pluginInfo.getProduct_code(), pluginInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pluginInfo.getProduct_code(), pluginInfo.getDim_group(), getAttrAdd());
 
             pluginMapper.insertSelective(pluginInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", pluginInfo);
@@ -267,7 +267,7 @@ public class PluginController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo plugin_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, pluginMapper, pluginMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pluginMapper, pluginMapper.getTable(), ids, getAttrDel());
             pluginMapper.deleteLogicByIds(pluginMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

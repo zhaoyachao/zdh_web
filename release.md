@@ -611,6 +611,12 @@
   
   + v5.5.1 [zdh_web]http模块支持代理
   
+  + v5.5.4 [zdh_web]新增变量计算插件
+  + v5.5.4 [zdh_web]修复变量池插件bug
+  + v5.5.4 [zdh_web]修复数据权限模块bug
+  + v5.5.4 [zdh_web]数据权限-增加细粒度控制
+  + v5.5.4 [zdh_web]优化页面展示
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
@@ -3304,3 +3310,30 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1285577011909103616, '1284291050919170048', '服务分槽', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2024-09-17 12:24:05', '2024-09-17 12:24:05', 'service_manager_slot_update', '5', '', '', 'zdh', '');
 
+## 5.5.3迁移5.5.4
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1290600080570585088, '893817125867622400', '用户配置-维度解除绑定', '4', 'zyc', 'fa fa-coffee', '', '16', '1', '2024-10-01 09:03:57', '2024-10-01 09:03:57', 'permission_user_dimension_value_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1290600309638303744, '893817125867622400', '用户配置-维度值绑定属性查询', '4', 'zyc', 'fa fa-coffee', '', '17', '1', '2024-10-01 09:04:52', '2024-10-01 09:04:52', 'permission_user_dimension_value_attr', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1290600404450545664, '893817125867622400', '用户配置-维度值绑定属性更新', '4', 'zyc', 'fa fa-coffee', '', '18', '1', '2024-10-01 09:05:15', '2024-10-01 09:05:15', 'permission_user_dimension_value_attr_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1290600772047736832, '1050183823079247872', '用户组-维度解除绑定', '4', 'zyc', 'fa fa-coffee', '', '9', '1', '2024-10-01 09:06:42', '2024-10-01 09:06:42', 'permission_usergroup_dimension_value_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1290600865647824896, '1050183823079247872', '用户组-维度值绑定查询', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2024-10-01 09:07:05', '2024-10-01 09:07:45', 'permission_usergroup_dimension_value_attr', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1290600989954412544, '1050183823079247872', '用户组-维度值绑定属性', '4', 'zyc', 'fa fa-coffee', '', '11', '1', '2024-10-01 09:07:34', '2024-10-01 09:07:34', 'permission_usergroup_dimension_value_attr_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1290604117240057856, '963932648793706496', '变量计算页面', '4', 'zyc', 'fa fa-coffee', '', '17', '1', '2024-10-01 09:20:00', '2024-10-01 09:20:24', 'variable_detail', '3', '', '', 'zdh', '');
+
+    alter table permission_user_dimension_value_info add column ext text comment '权限扩展信息';
+    alter table permission_usergroup_dimension_value_info add column ext text comment '权限扩展信息';
+    update permission_user_dimension_value_info set ext='{"add":"true","edit":"true","approve":"true","del":"true"}';
+    update permission_usergroup_dimension_value_info set ext='{"add":"true","edit":"true","approve":"true","del":"true"}';

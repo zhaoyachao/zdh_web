@@ -149,8 +149,8 @@ public class BeaconFireController extends BaseController {
         try {
 
             BeaconFireInfo oldBeaconFireInfo = beaconFireMapper.selectByPrimaryKey(beaconFireInfo.getId());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireInfo.getProduct_code(), beaconFireInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldBeaconFireInfo.getProduct_code(), oldBeaconFireInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, beaconFireInfo.getProduct_code(), beaconFireInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldBeaconFireInfo.getProduct_code(), oldBeaconFireInfo.getDim_group(), getAttrEdit());
 
             beaconFireInfo.setCreate_time(oldBeaconFireInfo.getCreate_time());
             beaconFireInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -183,7 +183,7 @@ public class BeaconFireController extends BaseController {
             beaconFireInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             beaconFireInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireInfo.getProduct_code(), beaconFireInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, beaconFireInfo.getProduct_code(), beaconFireInfo.getDim_group(), getAttrAdd());
 
             beaconFireMapper.insertSelective(beaconFireInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", beaconFireInfo);
@@ -204,7 +204,7 @@ public class BeaconFireController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo beacon_fire_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireMapper, beaconFireMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, beaconFireMapper, beaconFireMapper.getTable(), ids, getAttrDel());
             beaconFireMapper.deleteLogicByIds(beaconFireMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

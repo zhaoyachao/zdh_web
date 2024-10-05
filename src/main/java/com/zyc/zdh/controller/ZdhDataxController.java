@@ -112,7 +112,7 @@ public class ZdhDataxController extends BaseController{
     public ReturnInfo<Object> etl_task_datax_delete(String[] ids) {
 
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxMapper, etlTaskDataxMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxMapper, etlTaskDataxMapper.getTable(), ids, getAttrDel());
             etlTaskDataxMapper.deleteLogicByIds("etl_task_datax_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
@@ -144,7 +144,7 @@ public class ZdhDataxController extends BaseController{
             etlTaskDataxInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskDataxInfo.setIs_delete(Const.NOT_DELETE);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxInfo.getProduct_code(), etlTaskDataxInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxInfo.getProduct_code(), etlTaskDataxInfo.getDim_group(), getAttrAdd());
 
             etlTaskDataxMapper.insertSelective(etlTaskDataxInfo);
 
@@ -189,8 +189,8 @@ public class ZdhDataxController extends BaseController{
 
             EtlTaskDataxInfo oldEtlTaskDataxInfo = etlTaskDataxMapper.selectByPrimaryKey(etlTaskDataxInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxInfo.getProduct_code(), etlTaskDataxInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskDataxInfo.getProduct_code(), oldEtlTaskDataxInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxInfo.getProduct_code(), etlTaskDataxInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskDataxInfo.getProduct_code(), oldEtlTaskDataxInfo.getDim_group(), getAttrEdit());
 
             if (etlTaskDataxInfo.getUpdate_context() != null && !etlTaskDataxInfo.getUpdate_context().equals("")
                     && !etlTaskDataxInfo.getUpdate_context().equals(oldEtlTaskDataxInfo.getUpdate_context())) {

@@ -303,7 +303,7 @@ public class ZdhQualityController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo quality_task_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, qualityTaskMapper, qualityTaskMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, qualityTaskMapper, qualityTaskMapper.getTable(), ids, getAttrDel());
             Example example = new Example(QualityTaskInfo.class);
             Example.Criteria criteria = example.createCriteria();
             criteria.andIn("id", Arrays.asList(ids));

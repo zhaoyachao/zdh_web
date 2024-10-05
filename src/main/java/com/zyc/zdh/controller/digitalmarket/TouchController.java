@@ -167,8 +167,8 @@ public class TouchController extends BaseController {
 
             TouchConfigInfo oldTouchConfigInfo = touchConfigMapper.selectByPrimaryKey(touchConfigInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, touchConfigInfo.getProduct_code(), touchConfigInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldTouchConfigInfo.getProduct_code(), oldTouchConfigInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, touchConfigInfo.getProduct_code(), touchConfigInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldTouchConfigInfo.getProduct_code(), oldTouchConfigInfo.getDim_group(), getAttrEdit());
 
             touchConfigInfo.setOwner(oldTouchConfigInfo.getOwner());
             touchConfigInfo.setCreate_time(oldTouchConfigInfo.getCreate_time());
@@ -208,7 +208,7 @@ public class TouchController extends BaseController {
             touchConfigInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             touchConfigInfo.setIs_delete(Const.NOT_DELETE);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, touchConfigInfo.getProduct_code(), touchConfigInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, touchConfigInfo.getProduct_code(), touchConfigInfo.getDim_group(), getAttrAdd());
 
             touchConfigMapper.insertSelective(touchConfigInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
@@ -229,7 +229,7 @@ public class TouchController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo touch_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, touchConfigMapper, touchConfigMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, touchConfigMapper, touchConfigMapper.getTable(), ids, getAttrDel());
             touchConfigMapper.deleteLogicByIds(touchConfigMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

@@ -180,8 +180,8 @@ public class StrategyGroupController extends BaseController {
 
             StrategyGroupInfo oldStrategyGroupInfo = strategyGroupMapper.selectByPrimaryKey(strategyGroupInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldStrategyGroupInfo.getProduct_code(), oldStrategyGroupInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldStrategyGroupInfo.getProduct_code(), oldStrategyGroupInfo.getDim_group(), getAttrEdit());
 
             //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
             strategyGroupInfo.setOwner(oldStrategyGroupInfo.getOwner());
@@ -224,7 +224,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             strategyGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group(), getAttrAdd());
 
             strategyGroupMapper.insertSelective(strategyGroupInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
@@ -245,7 +245,7 @@ public class StrategyGroupController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo strategy_group_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupMapper, strategyGroupMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupMapper, strategyGroupMapper.getTable(), ids, getAttrDel());
             strategyGroupMapper.deleteLogicByIds(strategyGroupMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -916,8 +916,8 @@ public class StrategyGroupController extends BaseController {
 
             StrategyGroupInfo oldStrategyGroupInfo = strategyGroupMapper.selectByPrimaryKey(strategyGroupInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldStrategyGroupInfo.getProduct_code(), oldStrategyGroupInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInfo.getProduct_code(), strategyGroupInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldStrategyGroupInfo.getProduct_code(), oldStrategyGroupInfo.getDim_group(), getAttrEdit());
 
             //strategyGroupInfo.setRule_json(jsonArray.toJSONString());
             strategyGroupInfo.setOwner(oldStrategyGroupInfo.getOwner());

@@ -116,7 +116,7 @@ public class ZdhEtlApplyController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_apply_task_delete(String[] ids) {
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskMapper, etlApplyTaskMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskMapper, etlApplyTaskMapper.getTable(), ids, getAttrDel());
             etlApplyTaskMapper.deleteLogicByIds("etl_apply_task_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
@@ -165,7 +165,7 @@ public class ZdhEtlApplyController extends BaseController{
             etlApplyTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlApplyTaskInfo.setIs_delete(Const.NOT_DELETE);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskInfo.getProduct_code(), etlApplyTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskInfo.getProduct_code(), etlApplyTaskInfo.getDim_group(), getAttrAdd());
 
             etlApplyTaskMapper.insertSelective(etlApplyTaskInfo);
             if (etlApplyTaskInfo.getUpdate_context() != null && !etlApplyTaskInfo.getUpdate_context().equals("")) {
@@ -210,8 +210,8 @@ public class ZdhEtlApplyController extends BaseController{
             //获取旧数据是否更新说明
             EtlApplyTaskInfo oldEtlApplyTaskInfo = etlApplyTaskMapper.selectByPrimaryKey(etlApplyTaskInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskInfo.getProduct_code(), etlApplyTaskInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlApplyTaskInfo.getProduct_code(), oldEtlApplyTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskInfo.getProduct_code(), etlApplyTaskInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlApplyTaskInfo.getProduct_code(), oldEtlApplyTaskInfo.getDim_group(), getAttrEdit());
 
             if (etlApplyTaskInfo.getData_source_type_input().equals("外部上传")) {
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);

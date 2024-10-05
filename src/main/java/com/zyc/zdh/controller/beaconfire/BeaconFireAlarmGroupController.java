@@ -136,8 +136,8 @@ public class BeaconFireAlarmGroupController extends BaseController {
         try {
 
             BeaconFireAlarmGroupInfo oldBeaconFireAlarmGroupInfo = beaconFireAlarmGroupMapper.selectByPrimaryKey(beaconFireAlarmGroupInfo.getId());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupInfo.getProduct_code(), beaconFireAlarmGroupInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldBeaconFireAlarmGroupInfo.getProduct_code(), oldBeaconFireAlarmGroupInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupInfo.getProduct_code(), beaconFireAlarmGroupInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldBeaconFireAlarmGroupInfo.getProduct_code(), oldBeaconFireAlarmGroupInfo.getDim_group(), getAttrEdit());
 
             Map<String, String> tmp = new HashMap<>();
             tmp.put("phone", StringUtils.join(phone, ","));
@@ -182,7 +182,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
             beaconFireAlarmGroupInfo.setIs_delete(Const.NOT_DELETE);
             beaconFireAlarmGroupInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             beaconFireAlarmGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
-            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupInfo.getProduct_code(), beaconFireAlarmGroupInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupInfo.getProduct_code(), beaconFireAlarmGroupInfo.getDim_group(), getAttrAdd());
             beaconFireAlarmGroupMapper.insertSelective(beaconFireAlarmGroupInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", beaconFireAlarmGroupInfo);
         } catch (Exception e) {
@@ -201,7 +201,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo beacon_fire_alarm_group_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupMapper, beaconFireAlarmGroupMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, beaconFireAlarmGroupMapper, beaconFireAlarmGroupMapper.getTable(), ids, getAttrDel());
             beaconFireAlarmGroupMapper.deleteLogicByIds(beaconFireAlarmGroupMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

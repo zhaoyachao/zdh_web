@@ -202,8 +202,8 @@ public class PushChannelController extends BaseController {
 
             PushChannelInfo oldPushChannelInfo = pushChannelMapper.selectByPrimaryKey(pushChannelInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, pushChannelInfo.getProduct_code(), pushChannelInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldPushChannelInfo.getProduct_code(), oldPushChannelInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushChannelInfo.getProduct_code(), pushChannelInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldPushChannelInfo.getProduct_code(), oldPushChannelInfo.getDim_group(), getAttrEdit());
 
 
             pushChannelInfo.setCreate_time(oldPushChannelInfo.getCreate_time());
@@ -237,7 +237,7 @@ public class PushChannelController extends BaseController {
             pushChannelInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             pushChannelInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, pushChannelInfo.getProduct_code(), pushChannelInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushChannelInfo.getProduct_code(), pushChannelInfo.getDim_group(), getAttrAdd());
 
             pushChannelMapper.insertSelective(pushChannelInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", pushChannelInfo);
@@ -285,7 +285,7 @@ public class PushChannelController extends BaseController {
         try {
 
             PushChannelInfo oldPushChannelInfo = pushChannelMapper.selectByPrimaryKey(id);
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldPushChannelInfo.getProduct_code(), oldPushChannelInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldPushChannelInfo.getProduct_code(), oldPushChannelInfo.getDim_group(), getAttrEdit());
 
             oldPushChannelInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             oldPushChannelInfo.setIs_delete(Const.NOT_DELETE);

@@ -685,7 +685,7 @@ public class PermissionController extends BaseController {
     public ReturnInfo<Object> jstree_del_node(String id) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, dataTagGroupMapper, dataTagGroupMapper.getTable(), new String[]{id});
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dataTagGroupMapper, dataTagGroupMapper.getTable(), new String[]{id}, getAttrDel());
             //校验是否根节点
             ResourceTreeInfo rti = resourceTreeMapper.selectByPrimaryKey(id);
             if(rti.getLevel().equalsIgnoreCase("1")){

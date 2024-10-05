@@ -137,7 +137,7 @@ public class ZdhEtlController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_delete(String[] ids) {
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskMapper, etlTaskMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskMapper, etlTaskMapper.getTable(), ids, getAttrDel());
             etlTaskMapper.deleteLogicByIds(etlTaskMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
@@ -177,7 +177,7 @@ public class ZdhEtlController extends BaseController{
             etlTaskInfo.setOwner(owner);
             debugInfo(etlTaskInfo);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskInfo.getProduct_code(), etlTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskInfo.getProduct_code(), etlTaskInfo.getDim_group(), getAttrAdd());
             etlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -278,8 +278,8 @@ public class ZdhEtlController extends BaseController{
             //获取旧数据是否更新说明
             EtlTaskInfo oldEtlTaskInfo = etlTaskService.selectById(etlTaskInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskInfo.getProduct_code(), etlTaskInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskInfo.getProduct_code(), oldEtlTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskInfo.getProduct_code(), etlTaskInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskInfo.getProduct_code(), oldEtlTaskInfo.getDim_group(), getAttrEdit());
 
             if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);

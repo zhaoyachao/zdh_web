@@ -332,7 +332,7 @@ public class ZdhIssueDataController extends BaseController {
         //String json_str=JSON.toJSONString(request.getParameterMap());
 
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, issueDataMapper, issueDataMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, issueDataMapper, issueDataMapper.getTable(), ids, getAttrDel());
             issueDataMapper.deleteBatchByIds(ids);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

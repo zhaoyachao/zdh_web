@@ -105,7 +105,7 @@ public class ZdhJdbcController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_jdbc_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskJdbcMapper, etlTaskJdbcMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskJdbcMapper, etlTaskJdbcMapper.getTable(), ids, getAttrDel());
             etlTaskJdbcMapper.deleteLogicByIds(etlTaskJdbcMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -137,7 +137,7 @@ public class ZdhJdbcController extends BaseController {
             etlTaskJdbcInfo.setIs_delete(Const.NOT_DELETE);
 
             debugInfo(etlTaskJdbcInfo);
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskJdbcInfo.getProduct_code(), etlTaskJdbcInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskJdbcInfo.getProduct_code(), etlTaskJdbcInfo.getDim_group(), getAttrAdd());
             etlTaskJdbcMapper.insertSelective(etlTaskJdbcInfo);
 
 
@@ -179,8 +179,8 @@ public class ZdhJdbcController extends BaseController {
 
             EtlTaskJdbcInfo oldEtlTaskJdbcInfo = etlTaskJdbcMapper.selectByPrimaryKey(etlTaskJdbcInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskJdbcInfo.getProduct_code(), etlTaskJdbcInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskJdbcInfo.getProduct_code(), oldEtlTaskJdbcInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskJdbcInfo.getProduct_code(), etlTaskJdbcInfo.getDim_group(),getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskJdbcInfo.getProduct_code(), oldEtlTaskJdbcInfo.getDim_group(), getAttrEdit());
 
 
             etlTaskJdbcMapper.updateByPrimaryKeySelective(etlTaskJdbcInfo);

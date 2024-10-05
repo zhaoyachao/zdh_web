@@ -54,6 +54,7 @@ html,body{height:100%;}
 .device .nodecustom_listcss{border: #FF5722 2px solid;}
 .device .nodefunctioncss{border: #6699ff 2px solid;}
 .device .nodevarpoolcss{border: #7700aa 2px solid;}
+.device .nodevariablecss{border: #ff5500 2px solid;}
 
 .device .nodeflowcss{border:lightskyblue 1px solid;}
 

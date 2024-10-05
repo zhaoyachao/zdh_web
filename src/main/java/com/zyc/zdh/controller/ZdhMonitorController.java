@@ -166,7 +166,7 @@ public class ZdhMonitorController extends BaseController {
     public ReturnInfo task_logs_delete(String[] ids) {
 
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, taskLogInstanceMapper, taskLogInstanceMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, taskLogInstanceMapper, taskLogInstanceMapper.getTable(), ids, getAttrDel());
             taskLogInstanceMapper.deleteByIds(ids);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -190,7 +190,7 @@ public class ZdhMonitorController extends BaseController {
     public ReturnInfo task_group_logs_delete(String[] ids) {
 
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService,tglim,tglim.getTable(),ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService,tglim,tglim.getTable(),ids, getAttrDel());
             tglim.deleteByIds(ids);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -214,7 +214,7 @@ public class ZdhMonitorController extends BaseController {
         // check_dep,wait_retry 状态 直接killed
         // dispatch,etl 状态 kill
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService,taskLogInstanceMapper,taskLogInstanceMapper.getTable(),new String[]{id});
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService,taskLogInstanceMapper,taskLogInstanceMapper.getTable(),new String[]{id}, getAttrEdit());
             taskLogInstanceMapper.updateStatusById2(id);
             TaskLogInstance tli = taskLogInstanceMapper.selectByPrimaryKey(id);
             JobCommon2.insertLog(tli, "INFO", "接受到杀死请求,开始进行杀死操作...");
@@ -240,7 +240,7 @@ public class ZdhMonitorController extends BaseController {
     @ResponseBody
     public ReturnInfo skipJob(String id) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService,taskLogInstanceMapper,taskLogInstanceMapper.getTable(),new String[]{id});
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService,taskLogInstanceMapper,taskLogInstanceMapper.getTable(),new String[]{id}, getAttrEdit());
             taskLogInstanceMapper.updateSkipById(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
         } catch (Exception e) {
@@ -264,7 +264,7 @@ public class ZdhMonitorController extends BaseController {
         // check_dep,wait_retry,create,check_dep_finish 状态 直接killed
         // dispatch,etl 状态 kill
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService,tglim,tglim.getTable(),new String[]{id});
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService,tglim,tglim.getTable(),new String[]{id}, getAttrEdit());
             tglim.updateStatusById2(id);
             taskLogInstanceMapper.updateStatusByGroupId(id);
             TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(id);
@@ -292,7 +292,7 @@ public class ZdhMonitorController extends BaseController {
     public ReturnInfo retryJob(String id, String new_version) {
         //taskLogInstanceMapper.updateStatusById2("kill",id);
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService,taskLogInstanceMapper,taskLogInstanceMapper.getTable(),new String[]{id});
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService,taskLogInstanceMapper,taskLogInstanceMapper.getTable(),new String[]{id}, getAttrEdit());
 
             TaskLogInstance tli = taskLogInstanceMapper.selectByPrimaryKey(id);
             tli.setIs_retryed("1");
@@ -356,7 +356,7 @@ public class ZdhMonitorController extends BaseController {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "重试子任务不可为空", "");
             }
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService,tglim,tglim.getTable(),new String[]{id});
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService,tglim,tglim.getTable(),new String[]{id}, getAttrEdit());
 
             TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(id);
             tgli.setIs_retryed("1");

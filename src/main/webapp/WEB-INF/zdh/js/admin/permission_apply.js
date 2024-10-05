@@ -4,7 +4,7 @@
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
@@ -228,13 +228,41 @@
               },{
               field: 'status_name',
               title: '状态',
-              sortable:false
+              sortable:false,
+              formatter: function (value, row, index){
+                  var context = value;
+                  var class_str = "btn-danger btn-xs";
+
+                  if (row.status == "0") {
+                      class_str = "btn-warning  btn-xs"
+                  }
+                  if (row.status == "1") {
+                      class_str = "btn-default  btn-xs"
+                  }
+                  if (row.status == "2") {
+                      class_str = "btn-danger  btn-xs"
+                  }
+                  if (row.status == "3") {
+                      class_str = "btn-primary  btn-xs"
+                  }
+                  if (row.status == "4") {
+                      class_str = "btn-danger  btn-xs"
+                  }
+                  return [
+                      '<div style="text-align:center" >'+
+                      '<div class="btn-group">'+
+                      '<button type="button" class="btn '+class_str+'">'+context+'</button>'+
+                      '</div>'+
+                      '</div>'
+                  ].join('');
+              }
               },{
                   field: 'operate',
                   title: '操作',
                   events: operateEvents,//给按钮注册事件
                   width:150,
                   formatter: operateFormatter //表格中增加按钮
+
         }]
     });
 

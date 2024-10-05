@@ -165,7 +165,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_datax_auto_delete(String[] ids) {
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoMapper, etlTaskDataxAutoMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoMapper, etlTaskDataxAutoMapper.getTable(), ids, getAttrDel());
             etlTaskDataxAutoMapper.deleteLogicByIds(etlTaskDataxAutoMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
@@ -200,7 +200,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
     public ReturnInfo etl_task_datax_auto_add(EtlTaskDataxAutoInfo etlTaskDataxAutoInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoInfo.getProduct_code(), etlTaskDataxAutoInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoInfo.getProduct_code(), etlTaskDataxAutoInfo.getDim_group(), getAttrAdd());
             etlTaskDataxAutoInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             etlTaskDataxAutoInfo.setOwner(getOwner());
             etlTaskDataxAutoInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
@@ -233,8 +233,8 @@ public class ZdhEtlDataxAutoController extends BaseController{
 
             EtlTaskDataxAutoInfo oldEtlTaskDataxAutoInfo= etlTaskDataxAutoMapper.selectByPrimaryKey(etlTaskDataxAutoInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoInfo.getProduct_code(), etlTaskDataxAutoInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskDataxAutoInfo.getProduct_code(), oldEtlTaskDataxAutoInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoInfo.getProduct_code(), etlTaskDataxAutoInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskDataxAutoInfo.getProduct_code(), oldEtlTaskDataxAutoInfo.getDim_group(), getAttrEdit());
 
             etlTaskDataxAutoInfo.setOwner(oldEtlTaskDataxAutoInfo.getOwner());
             etlTaskDataxAutoInfo.setCreate_time(oldEtlTaskDataxAutoInfo.getCreate_time());

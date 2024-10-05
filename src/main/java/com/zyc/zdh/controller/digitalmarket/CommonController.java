@@ -1,6 +1,7 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.CrowdFileMapper;
 import com.zyc.zdh.dao.CrowdRuleMapper;
@@ -174,6 +175,17 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/varpool_detail", method = RequestMethod.GET)
     public String varpool_detail() {
         return "digitalmarket/varpool_detail";
+    }
+
+    /**
+     * 变量计算页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/variable_detail", method = RequestMethod.GET)
+    @White
+    public String variable_detail() {
+        return "digitalmarket/variable_detail";
     }
 
 

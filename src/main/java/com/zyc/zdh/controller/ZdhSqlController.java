@@ -114,7 +114,7 @@ public class ZdhSqlController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo sql_task_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskMapper, sqlTaskMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskMapper, sqlTaskMapper.getTable(), ids, getAttrDel());
             sqlTaskMapper.deleteLogicByIds(sqlTaskMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -147,7 +147,7 @@ public class ZdhSqlController extends BaseController {
             sqlTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             sqlTaskInfo.setIs_delete(Const.NOT_DELETE);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskInfo.getProduct_code(), sqlTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskInfo.getProduct_code(), sqlTaskInfo.getDim_group(), getAttrAdd());
 
             sqlTaskMapper.insertSelective(sqlTaskInfo);
 
@@ -190,8 +190,8 @@ public class ZdhSqlController extends BaseController {
 
             SqlTaskInfo oldSqlTaskInfo = sqlTaskMapper.selectByPrimaryKey(sqlTaskInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskInfo.getProduct_code(), sqlTaskInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldSqlTaskInfo.getProduct_code(), oldSqlTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, sqlTaskInfo.getProduct_code(), sqlTaskInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldSqlTaskInfo.getProduct_code(), oldSqlTaskInfo.getDim_group(), getAttrEdit());
 
             sqlTaskMapper.updateByPrimaryKeySelective(sqlTaskInfo);
 

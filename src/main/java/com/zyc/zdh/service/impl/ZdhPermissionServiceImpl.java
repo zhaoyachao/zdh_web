@@ -33,6 +33,46 @@ public class ZdhPermissionServiceImpl implements ZdhPermissionService {
     }
 
     /**
+     * 根据账号和维度 获取维度值包含的属性
+     * @param user_account
+     * @param dim_code
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Map<String, Map<String,String>> get_dim_value_attr_by_user_account(String user_account, String dim_code) throws Exception {
+
+        List<PermissionUserDimensionValueInfo> dim_value_by_user_account = get_dim_value_by_user_account(user_account, dim_code);
+
+        Map<String, Map<String,String>> dim_value_attrs = new HashMap<>();
+        for (PermissionUserDimensionValueInfo permissionUserDimensionValueInfo: dim_value_by_user_account){
+            if(permissionUserDimensionValueInfo.getId().startsWith("group_")){
+                //组维度绑定信息
+                dim_value_attrs.put(permissionUserDimensionValueInfo.getDim_value_code(), permissionUserDimensionValueInfo.getExtMap()==null?new HashMap<>():permissionUserDimensionValueInfo.getExtMap());
+            }
+        }
+        for (PermissionUserDimensionValueInfo permissionUserDimensionValueInfo: dim_value_by_user_account){
+            if(!permissionUserDimensionValueInfo.getId().startsWith("group_")){
+                //用户维度绑定信息
+                if(dim_value_attrs.containsKey(permissionUserDimensionValueInfo.getDim_value_code())){
+                    Map<String,String> atrts = dim_value_attrs.get(permissionUserDimensionValueInfo.getDim_value_code());
+                    if(permissionUserDimensionValueInfo.getExtMap()!=null){
+                        for(Map.Entry<String, String> entry: permissionUserDimensionValueInfo.getExtMap().entrySet()){
+                            atrts.put(entry.getKey(), entry.getValue());
+                        }
+                    }
+                }else{
+                    if(permissionUserDimensionValueInfo.getExtMap()!=null){
+                        dim_value_attrs.put(permissionUserDimensionValueInfo.getDim_value_code(), permissionUserDimensionValueInfo.getExtMap()==null?new HashMap<>():permissionUserDimensionValueInfo.getExtMap());
+                    }
+                }
+            }
+        }
+
+        return dim_value_attrs;
+    }
+
+    /**
      * 根据用户账号,获取账号及账号用户组绑定的维度信息
      * @param user_account
      * @param dim_code
@@ -71,6 +111,7 @@ public class ZdhPermissionServiceImpl implements ZdhPermissionService {
                         //BeanUtils.copyProperties(permissionUserDimensionValueInfo, permissionUserGroupDimensionValueInfo);
                         permissionUserDimensionValueInfo = MapStructMapper.INSTANCE.permissionUserGroupDimensionValueInfoToPermissionUserDimensionValueInfo(permissionUserGroupDimensionValueInfo);
                         permissionUserDimensionValueInfo.setUser_account(user_account);
+                        permissionUserDimensionValueInfo.setId("group_"+permissionUserDimensionValueInfo.getId());
                         permissionUserDimensionValueInfos.add(permissionUserDimensionValueInfo);
                     }
 

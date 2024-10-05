@@ -1,8 +1,14 @@
 package com.zyc.zdh.entity;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
+import java.util.Map;
 
 @Table(name = "permission_user_dimension_value_info")
 public class PermissionUserDimensionValueInfo {
@@ -53,6 +59,14 @@ public class PermissionUserDimensionValueInfo {
      * 更新时间
      */
     private Timestamp update_time;
+
+    /**
+     * 扩展信息
+     */
+    private String ext;
+
+    @Transient
+    private Map<String, String> extMap;
 
     /**
      * @return id
@@ -228,5 +242,24 @@ public class PermissionUserDimensionValueInfo {
      */
     public void setUpdate_time(Timestamp update_time) {
         this.update_time = update_time;
+    }
+
+    public String getExt() {
+        return ext;
+    }
+
+    public void setExt(String ext) {
+        this.ext = ext;
+    }
+
+    public Map<String, String> getExtMap() {
+        if(!StringUtils.isEmpty(ext)){
+            return JSON.parseObject(ext, Map.class);
+        }
+        return extMap;
+    }
+
+    public void setExtMap(Map<String, String> extMap) {
+        this.extMap = extMap;
     }
 }

@@ -195,8 +195,8 @@ public class PushAppController extends BaseController {
 
             PushAppInfo oldPushAppInfo = pushAppMapper.selectByPrimaryKey(pushAppInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, pushAppInfo.getProduct_code(), pushAppInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldPushAppInfo.getProduct_code(), oldPushAppInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushAppInfo.getProduct_code(), pushAppInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldPushAppInfo.getProduct_code(), oldPushAppInfo.getDim_group(), getAttrEdit());
 
             pushAppInfo.setCreate_time(oldPushAppInfo.getCreate_time());
             pushAppInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -232,7 +232,7 @@ public class PushAppController extends BaseController {
             pushAppInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             pushAppInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, pushAppInfo.getProduct_code(), pushAppInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushAppInfo.getProduct_code(), pushAppInfo.getDim_group(), getAttrAdd());
             pushAppMapper.insertSelective(pushAppInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", pushAppInfo);
         } catch (Exception e) {

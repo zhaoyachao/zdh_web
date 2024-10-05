@@ -332,7 +332,7 @@ public class ZdhSshController extends BaseController{
     public ReturnInfo etl_task_ssh_delete(String[] ids) {
 
         try{
-            checkPermissionByProductAndDimGroup(zdhPermissionService, sshTaskMapper, sshTaskMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, sshTaskMapper, sshTaskMapper.getTable(), ids, getAttrDel());
             sshTaskMapper.deleteLogicByIds(sshTaskMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
@@ -365,7 +365,7 @@ public class ZdhSshController extends BaseController{
             sshTaskInfo.setIs_delete(Const.NOT_DELETE);
             debugInfo(sshTaskInfo);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, sshTaskInfo.getProduct_code(), sshTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, sshTaskInfo.getProduct_code(), sshTaskInfo.getDim_group(), getAttrAdd());
 
             sshTaskMapper.insertSelective(sshTaskInfo);
 
@@ -455,8 +455,8 @@ public class ZdhSshController extends BaseController{
 
             SshTaskInfo oldSshTaskInfo = sshTaskMapper.selectByPrimaryKey(sshTaskInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, sshTaskInfo.getProduct_code(), sshTaskInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldSshTaskInfo.getProduct_code(), oldSshTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, sshTaskInfo.getProduct_code(), sshTaskInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldSshTaskInfo.getProduct_code(), oldSshTaskInfo.getDim_group(), getAttrEdit());
 
             sshTaskMapper.updateByPrimaryKeySelective(sshTaskInfo);
 

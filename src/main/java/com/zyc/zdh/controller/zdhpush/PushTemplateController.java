@@ -197,8 +197,8 @@ public class PushTemplateController extends BaseController {
 
             PushTemplateInfo oldPushTemplateInfo = pushTemplateMapper.selectByPrimaryKey(pushTemplateInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, pushTemplateInfo.getProduct_code(), pushTemplateInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldPushTemplateInfo.getProduct_code(), oldPushTemplateInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushTemplateInfo.getProduct_code(), pushTemplateInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldPushTemplateInfo.getProduct_code(), oldPushTemplateInfo.getDim_group(), getAttrEdit());
 
             pushTemplateInfo.setCreate_time(oldPushTemplateInfo.getCreate_time());
             pushTemplateInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -231,7 +231,7 @@ public class PushTemplateController extends BaseController {
             pushTemplateInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             pushTemplateInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, pushTemplateInfo.getProduct_code(), pushTemplateInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushTemplateInfo.getProduct_code(), pushTemplateInfo.getDim_group(), getAttrAdd());
             pushTemplateMapper.insertSelective(pushTemplateInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", pushTemplateInfo);
         } catch (Exception e) {

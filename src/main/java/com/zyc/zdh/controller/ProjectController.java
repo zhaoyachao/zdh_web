@@ -189,8 +189,8 @@ public class ProjectController extends BaseController {
 
             ProjectInfo oldProjectInfo = projectMapper.selectByPrimaryKey(projectInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, projectInfo.getProduct_code(), projectInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldProjectInfo.getProduct_code(), oldProjectInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, projectInfo.getProduct_code(), projectInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldProjectInfo.getProduct_code(), oldProjectInfo.getDim_group(), getAttrEdit());
 
 
             JSONArray jsonArray=new JSONArray();
@@ -231,7 +231,7 @@ public class ProjectController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<ProjectInfo> project_add(ProjectInfo projectInfo,String[] enum_value, String[] enum_value_context) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, projectInfo.getProduct_code(), projectInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, projectInfo.getProduct_code(), projectInfo.getDim_group(), getAttrAdd());
 
             JSONArray jsonArray=new JSONArray();
 
@@ -268,7 +268,7 @@ public class ProjectController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo project_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, projectMapper, projectMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, projectMapper, projectMapper.getTable(), ids, getAttrDel());
             projectMapper.deleteLogicByIds("project_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

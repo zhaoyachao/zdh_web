@@ -148,7 +148,7 @@ public class ZdhEtlBatchController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_batch_delete(String[] ids) {
         try {
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchMapper, etlTaskBatchMapper.getTable(), ids);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchMapper, etlTaskBatchMapper.getTable(), ids, getAttrDel());
             etlTaskBatchMapper.deleteLogicByIds(etlTaskBatchMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), null);
         } catch (Exception e) {
@@ -177,7 +177,7 @@ public class ZdhEtlBatchController extends BaseController {
             etlTaskBatchInfo.setOwner(owner);
             debugInfo(etlTaskBatchInfo);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchInfo.getProduct_code(), etlTaskBatchInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchInfo.getProduct_code(), etlTaskBatchInfo.getDim_group(), getAttrAdd());
             etlTaskBatchInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTaskBatchInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskBatchInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -227,8 +227,8 @@ public class ZdhEtlBatchController extends BaseController {
             //获取旧数据是否更新说明
             EtlTaskBatchInfo oldEtlTaskBatchInfo = etlTaskBatchMapper.selectByPrimaryKey(etlTaskBatchInfo.getId());
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchInfo.getProduct_code(), etlTaskBatchInfo.getDim_group());
-            checkPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskBatchInfo.getProduct_code(), oldEtlTaskBatchInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchInfo.getProduct_code(), etlTaskBatchInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskBatchInfo.getProduct_code(), oldEtlTaskBatchInfo.getDim_group(), getAttrEdit());
 
             etlTaskBatchMapper.updateByPrimaryKeySelective(etlTaskBatchInfo);
 
@@ -267,7 +267,7 @@ public class ZdhEtlBatchController extends BaseController {
             debugInfo(etlTaskBatchInfo);
             EtlTaskBatchInfo etbi = etlTaskBatchMapper.selectByPrimaryKey(etlTaskBatchInfo);
 
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etbi.getProduct_code(), etbi.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etbi.getProduct_code(), etbi.getDim_group(), getAttrAdd());
             //校验状态
             if (!etbi.getStatus().equalsIgnoreCase(Const.BATCH_INIT) && !etbi.getStatus().equalsIgnoreCase(Const.BATCH_FAIL)) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "批量任务状态必须是未执行或失败", null);

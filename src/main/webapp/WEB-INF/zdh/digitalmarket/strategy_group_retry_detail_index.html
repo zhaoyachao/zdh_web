@@ -352,6 +352,35 @@
             if(tp == "function"){
 
             }
+
+            //新增数据流转状态
+            var new_title = "表达式: "+$("#" + divId).html();
+            var more_task = "任务类型: "+tp;
+            var chudashiji = "触发时机: 上游成功";
+            var shujuzhuangtai = "依赖数据状态: 上游成功数据";
+            if(!is_empty(rs.depend_level)){
+                if(rs.depend_level == "1"){
+                    chudashiji = "触发时机: 上游杀死";
+                }else if(rs.depend_level == "2"){
+                    chudashiji = "触发时机: 上游失败";
+                }else if(rs.depend_level == "3"){
+                    chudashiji = "触发时机: 上游执行后";
+                }
+            }
+            if(!is_empty(rs.data_status)){
+                if(rs.data_status == "1"){
+                    shujuzhuangtai = "依赖数据状态: 上游成功数据";
+                }else if(rs.data_status == "2"){
+                    shujuzhuangtai = "依赖数据状态: 上游失败数据";
+                }else if(rs.data_status == "3"){
+                    shujuzhuangtai = "依赖数据状态: 上游所有数据";
+                }
+            }
+
+            new_title = more_task + "\n" + chudashiji + "\n" + shujuzhuangtai+ "\n" + new_title;
+
+            $("#" + divId).attr("title", new_title);
+
             //div.width(etl_task_info.etl_context.length*16)
             $("#" + divId).css("width","auto");
             $("#" + divId).css("display","inline-block");
