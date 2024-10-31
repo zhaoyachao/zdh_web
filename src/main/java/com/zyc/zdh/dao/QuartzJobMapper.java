@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 
 public interface QuartzJobMapper extends BaseQuartzJobMapper<QuartzJobInfo> {
@@ -25,6 +26,31 @@ public interface QuartzJobMapper extends BaseQuartzJobMapper<QuartzJobInfo> {
     )
     @Override
     public int deleteLogicByIds(@Param("table_name") String table_name, @Param("ids") String[] ids, @Param("update_time") Timestamp update_time);
+
+
+    @Select({
+            "<script>",
+            "select * from ${table_name} where job_id in ",
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"
+    }
+    )
+    @Override
+    public List<QuartzJobInfo> selectObjectByIds(@Param("table_name") String table_name, @Param("ids") String[] ids);
+
+    @Select({
+            "<script>",
+            "select * from ${table_name} where job_id in ",
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"
+    }
+    )
+    @Override
+    public List<Map<String,Object>> selectListMapByIds(@Param("table_name") String table_name, @Param("ids") String[] ids);
 
     @Update({ "update quartz_job_info set status = #{status} where job_id = #{job_id}" })
     public int updateStatus(@Param("job_id") String job_id,@Param("status") String status);

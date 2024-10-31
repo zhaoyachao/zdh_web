@@ -99,7 +99,9 @@
                   content: server_context+"/sql_task_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/sql_task_list'
+                          url: server_context+"/sql_task_list?"+$("#sql_task_form").serialize()+"&tm="+new Date(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -200,7 +202,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
       method: "POST",
-      url: server_context+"/sql_task_list",
+      url: server_context+"/sql_task_list?"+$("#sql_task_form").serialize(),
       search: true,
       pagination: true,
       showRefresh: true,

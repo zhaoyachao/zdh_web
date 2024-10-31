@@ -25,7 +25,7 @@
                   console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/etl_task_kettle_list?"+$("#etl_task_kettle_form").serialize()+"&tm="+new Date(),
+                      url: server_context+"/etl_task_kettle_list_by_page?"+$("#etl_task_kettle_form").serialize(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -76,7 +76,7 @@
                   parent.layer.msg("执行成功");
 
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/etl_task_kettle_list?"+$("#etl_task_kettle_form").serialize(),
+                      url: server_context+"/etl_task_kettle_list_by_page?"+$("#etl_task_kettle_form").serialize(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -104,7 +104,9 @@
                   content: server_context+"/etl_task_kettle_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/etl_task_kettle_list'
+                          url: server_context+"/etl_task_kettle_list_by_page?"+$("#etl_task_kettle_form").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -125,7 +127,7 @@
                   content: server_context+"/etl_task_kettle_add_index?id="+row.id+"&is_copy=true", //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: server_context+"/etl_task_kettle_list?"+$("#etl_task_kettle_form").serialize(),
+                          url: server_context+"/etl_task_kettle_list_by_page?"+$("#etl_task_kettle_form").serialize(),
                           contentType: "application/json;charset=utf-8",
                           dataType: "json"
                       });

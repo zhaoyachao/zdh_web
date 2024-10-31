@@ -10,7 +10,6 @@ import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.MapStructMapper;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -284,16 +283,13 @@ public class ZdhDispatchController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo dispatch_task_group_delete(String[] ids) {
-        QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
         try{
-//            for (String id : ids) {
-//                quartzJobInfo.setJob_id(id);
-//                quartzJobMapper.deleteByPrimaryKey(quartzJobInfo);
-//            }
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, quartzJobMapper, quartzJobMapper.getTable(), ids, getAttrDel());
             quartzJobMapper.deleteLogicByIds( quartzJobMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
+            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
+            logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }

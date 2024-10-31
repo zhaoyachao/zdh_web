@@ -25,7 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
@@ -66,11 +68,15 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     @Autowired
     public Environment ev;
 
+    @Autowired
+    ConfigurableEnvironment cev;
+
     @Override
     public void run(String... strings) throws Exception {
         String line = "----------------------------------------------------------";
         logger.info(line);
         logger.info("系统初始化...");
+        initRedisParams();
         initRQueue();
         clearQueue();
         runSnowflakeIdWorker();
@@ -91,6 +97,35 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         logger.info("系统初始化完成...");
         logger.info(line);
         Thread.sleep(1000*2);
+    }
+
+    public void initRedisParams(){
+        logger.info("初始Redis默认参数");
+        Iterator<PropertySource<?>> i = cev.getPropertySources().iterator();
+        while (i.hasNext()){
+            PropertySource n = i.next();
+            if(n.getName().contains("applicationConfig")){
+                Map<String,Object> config = (Map<String,Object>)n.getSource();
+                for (String key: config.keySet()){
+                    if(key.contains("zdh.init.redis.")){
+                        String k = key.split("zdh.init.redis.")[1];
+                        if(!redisUtil.exists(k)){
+                            redisUtil.set(k, config.get(key).toString());
+                        }
+                        logger.info("zdh init redis config "+k+"====>"+config.get(key).toString());
+                    }
+                }
+            }
+        }
+
+        String redisHost = ConfigUtil.getValue("spring.redis.hostName");
+        String redisPort = ConfigUtil.getValue("spring.redis.port");
+        String redisPassword = ConfigUtil.getValue("spring.redis.password");
+        if(redisHost.contains(",")){
+            RQueueManager.buildDefault(redisHost, redisPassword);
+        }else{
+            RQueueManager.buildDefault(redisHost+":"+redisPort, redisPassword);
+        }
     }
 
     public void initRQueue(){
@@ -572,7 +607,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         if (quartzJobInfos.size() > 0) {
             logger.info("已经存在[EMAIL]历史监控任务...");
         }else{
-            String expr = ConfigUtil.getValue("email.schedule.interval");
+            String expr = ConfigUtil.getValue("email.schedule.interval", "30s");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查告警任务", expr, "-1", "", "email");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
@@ -589,7 +624,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         if (quartzJobInfos2.size() > 0) {
             logger.info("已经存在[RETRY]历史监控任务...");
         }else{
-            String expr = ConfigUtil.getValue("retry.schedule.interval");
+            String expr = ConfigUtil.getValue("retry.schedule.interval", "30s");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查失败重试任务", expr, "-1", "", "retry");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
@@ -604,7 +639,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         if (quartzJobInfos3.size() > 0) {
             logger.info("已经存在[CHECK]历史监控任务...");
         }else{
-            String expr = "30s" ;//ev.getProperty("retry.schedule.interval");
+            String expr = ConfigUtil.getValue("check.schedule.interval", "30s");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查依赖任务", expr, "-1", "", "retry");
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);

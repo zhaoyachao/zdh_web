@@ -79,7 +79,9 @@
                   content: html, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/etl_task_unstructure_log_list'+"?unstructure_id="+row.unstructure_id
+                          url: server_context+"/etl_task_unstructure_log_list?"+$("#etl_task_unstructure_from").serialize()+"&unstructure_id="+row.unstructure_id,
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -155,7 +157,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
       method: "POST",
-      url: server_context+"/etl_task_unstructure_log_list",
+      url: server_context+"/etl_task_unstructure_log_list?"+$("#etl_task_unstructure_from").serialize(),
       search: true,
       pagination: true,
       showRefresh: true,

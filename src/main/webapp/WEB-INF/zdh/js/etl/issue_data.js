@@ -102,7 +102,9 @@
                   content: server_context+"/data_issue_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/data_ware_house_list3'
+                          url: server_context+"/data_ware_house_list3?"+$("#etl_task_form").serialize()+"&tm="+new Date(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -201,7 +203,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
       method: "POST",
-      url: server_context+"/data_ware_house_list3",
+      url: server_context+"/data_ware_house_list3?"+$("#etl_task_form").serialize(),
       search: true,
       pagination: true,
       showRefresh: true,

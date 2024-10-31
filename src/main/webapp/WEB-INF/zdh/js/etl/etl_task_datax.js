@@ -99,7 +99,9 @@
                   content: server_context+"/etl_task_datax_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/etl_task_datax_list'
+                          url: server_context+"/etl_task_datax_list?"+$("#etl_task_datax_from").serialize()+"&tm="+new Date(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -133,9 +135,9 @@
                   btn: ['确定','取消'] //按钮
               }, function(index){
                   var ids = new Array();// 声明一个数组
-                  ids.push(row.id)
-                  deleteMs(ids)
-                  layer.close(layer.index)
+                  ids.push(row.id);
+                  deleteMs(ids);
+                  layer.close(layer.index);
               }, function(){
 
               });
@@ -200,7 +202,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
       method: "POST",
-      url: server_context+"/etl_task_datax_list",
+      url: server_context+"/etl_task_datax_list?"+$("#etl_task_datax_from").serialize(),
       search: true,
       pagination: true,
       showRefresh: true,

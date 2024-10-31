@@ -99,7 +99,9 @@
                   content: server_context+"/etl_task_unstructure_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/etl_task_unstructure_list'
+                          url: server_context+"/etl_task_unstructure_list?"+$("#etl_task_unstructure_from").serialize()+"&tm="+new Date(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -120,7 +122,9 @@
                   content: server_context+"/etl_task_unstructure_upload_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/etl_task_unstructure_list'
+                          url: server_context+"/etl_task_unstructure_list?"+$("#etl_task_unstructure_from").serialize()+"&tm="+new Date(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -229,7 +233,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
       method: "POST",
-      url: server_context+"/etl_task_unstructure_list",
+      url: server_context+"/etl_task_unstructure_list?"+$("#etl_task_unstructure_from").serialize(),
       search: true,
       pagination: true,
       showRefresh: true,

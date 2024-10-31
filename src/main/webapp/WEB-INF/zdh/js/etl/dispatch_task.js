@@ -60,9 +60,14 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
+                    if(data.code != '200'){
+                        top.layer.msg(data.msg);
+                        return ;
+                    }
                     $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: server_context+'/dispatch_task_list2'
+                        url: server_context+"/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json"
                     });
                 },
                 error: function (data) {
@@ -127,7 +132,9 @@
             top.layer.msg(msg);
             $("#execute_quartz").removeAttr('disabled');
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: server_context+'/dispatch_task_list2'
+                url: server_context+"/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json"
             });
         }
 
@@ -162,7 +169,9 @@
 
                     $("#pause").removeAttr('disabled');
                     $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: server_context+'/dispatch_task_list2'
+                        url: server_context+"/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json"
                     });
                 },
                 complete: function () {
@@ -201,7 +210,9 @@
                     layer.msg(data.msg);
                     $("#minus_sign").removeAttr('disabled');
                     $('#exampleTableEvents').bootstrapTable('refresh', {
-                        url: server_context+'/dispatch_task_list2'
+                        url: server_context+"/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json"
                     });
                 },
                 complete: function () {
@@ -408,7 +419,7 @@
 
         $('#exampleTableEvents').bootstrapTable({
             method: "POST",
-            url: server_context+"/dispatch_task_list2",
+            url: server_context+"/dispatch_task_list2?"+$("#dispatch_task_form").serialize(),
             search: true,
             pagination: true,
             showRefresh: true,

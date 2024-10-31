@@ -4,7 +4,7 @@
   // Example Bootstrap Table Events
   // ------------------------------
   (function() {
-      var height=400
+      var height=400;
       if($(document.body).height()*0.8>height){
           height=$(document.body).height()*0.8
       }
@@ -23,7 +23,9 @@
                       return
                   }
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+'/data_ware_house_list2'
+                      url: server_context+"/data_ware_house_list2?"+$("#etl_task_form").serialize(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
                   });
               },
               error: function (data) {
@@ -131,7 +133,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
       method: "POST",
-      url: server_context+"/data_ware_house_list2",
+      url: server_context+"/data_ware_house_list2?"+$("#etl_task_form").serialize(),
       search: false,
       pagination: false,
       showRefresh: false,

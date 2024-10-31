@@ -105,7 +105,9 @@ function buildTable($el, cells, rows) {
               content: server_context+'/data_sources_add_index?id=-1', //iframe的url
               end:function () {
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : server_context+'/data_sources_list2'
+                      url: server_context+"/data_sources_list2?"+$("#data_sources_form").serialize(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
                   });
               }
           });
@@ -148,7 +150,9 @@ function buildTable($el, cells, rows) {
                       return
                   }
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : server_context+'/data_sources_list2'
+                      url: server_context+"/data_sources_list2?"+$("#data_sources_form").serialize(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
                   });
               },
               error: function (data) {
@@ -170,7 +174,9 @@ function buildTable($el, cells, rows) {
                   content: server_context+"/data_sources_add_index?id="+row.id,
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/data_sources_list2'
+                          url: server_context+"/data_sources_list2?"+$("#data_sources_form").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -208,7 +214,7 @@ function buildTable($el, cells, rows) {
 
     $('#exampleTableEvents').bootstrapTable({
       method: 'POST',
-      url: server_context+"/data_sources_list2",
+      url: server_context+"/data_sources_list2?"+$("#data_sources_form").serialize(),
       search: true,
       pagination: true,
       showRefresh: true,

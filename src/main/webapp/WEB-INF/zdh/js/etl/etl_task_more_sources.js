@@ -23,7 +23,9 @@
               content: server_context+"/etl_task_more_sources_add_index?id=-1", //iframe的url
               end:function () {
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : server_context+'/etl_task_more_list2'
+                      url: server_context+"/etl_task_more_list2?"+$("#etl_task_more_form").serialize(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
                   });
               }
           });
@@ -66,7 +68,9 @@
                       return
                   }
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url : server_context+'/etl_task_more_list2'
+                      url: server_context+"/etl_task_more_list2?"+$("#etl_task_more_form").serialize(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
                   });
               },
               error: function (data) {
@@ -92,7 +96,9 @@
                   content: server_context+"/etl_task_more_sources_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/etl_task_more_list2'
+                          url: server_context+"/etl_task_more_list2?"+$("#etl_task_more_form").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -113,7 +119,9 @@
                   content: server_context+"/etl_task_more_sources_add_index?id="+row.id+"&is_copy=true", //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/etl_task_more_list2'
+                          url: server_context+"/etl_task_more_list2?"+$("#etl_task_more_form").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -191,7 +199,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
       method: "POST",
-      url: server_context+"/etl_task_more_list2",
+      url: server_context+"/etl_task_more_list2?"+$("#etl_task_more_form").serialize(),
       search: true,
       pagination: true,
       pageSize : 10,
