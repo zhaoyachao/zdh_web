@@ -1235,6 +1235,7 @@ function set_common(div, tp, rs){
     div.attr("data_status",rs.data_status);
     div.attr("project_code",rs.project_code);
     div.attr("project_scene",rs.project_scene);
+    div.attr("version_tag",rs.version_tag);
 
 }
 
@@ -1280,9 +1281,10 @@ function get_common_url(url, div){
     var data_status = div.attr("data_status");
     var project_code = div.attr("project_code");
     var project_scene = div.attr("project_scene");
+    var version_tag = div.attr("version_tag");
 
     var base_url = url+"?rule_id="+rule_id+"&rule_context="+rule_context+"&more_task="+more_task+"&depend_level="+depend_level +"&time_out="+time_out+"&operate="+operate+"&touch_type="+
-        touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status+ "&project_code="+project_code+ "&project_scene="+project_scene;
+        touch_type+"&is_base="+is_base+"&is_disenable="+is_disenable+"&data_status="+data_status+ "&project_code="+project_code+ "&project_scene="+project_scene+ "&version_tag="+version_tag;
     return base_url
 }
 

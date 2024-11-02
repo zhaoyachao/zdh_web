@@ -131,6 +131,7 @@
             "<button class=\"btn-mini btn-danger btn_stop\" type=\"button\" data_id='instance_id'>停止</button>\n"+
         "<button class=\"btn-mini btn-info btn_run\" type=\"button\" data_id='instance_id'>恢复</button>\n"+
         "<button class=\"btn-mini btn-info btn_slot\" type=\"button\" data_id='instance_id' data_slot='slot_str'>槽位</button>\n"+
+        "<button class=\"btn-mini btn-info btn_version\" type=\"button\" data_id='instance_id' data_version='version_str'>版本</button>\n"+
         "</div>\n"+
         "</div>"
     ;
@@ -179,6 +180,7 @@
                             //tmp = tmp.replaceAll("instance_id",data.result[i].instance_id);
                             tmp = tmp.replaceAll("data_context",  data.result[i].data_context);
                             tmp = tmp.replaceAll("slot_str",  data.result[i].slot_str);
+                            tmp = tmp.replaceAll("version_str",  data.result[i].version_str);
                             $('#data_div').append(tmp);
                         }
 
@@ -278,6 +280,29 @@
                                 area : ['60%', '80%'],
                                 //area: ['450px', '500px'],
                                 content: server_context+"/service_manager_slot_index?instance_id="+instance_id+"&slot="+data_slot, //iframe的url
+                                end : function () {
+                                    console.info("弹框结束");
+                                    init_service_manager_detail();
+                                }
+                            });
+
+                        });
+
+                        $(".btn_version").click(function () {
+                            var instance_id= $(this).attr('data_id');
+                            var data_version= $(this).attr('data_version');
+
+                            parent.layer.open({
+                                type: 2,
+                                title: '设置版本',
+                                shadeClose: false,
+                                resize: true,
+                                fixed: false,
+                                maxmin: true,
+                                shade: 0.1,
+                                area : ['60%', '80%'],
+                                //area: ['450px', '500px'],
+                                content: server_context+"/service_manager_version_index?instance_id="+instance_id+"&version_tag="+data_version, //iframe的url
                                 end : function () {
                                     console.info("弹框结束");
                                     init_service_manager_detail();

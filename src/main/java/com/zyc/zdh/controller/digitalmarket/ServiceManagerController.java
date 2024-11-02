@@ -65,6 +65,12 @@ public class ServiceManagerController extends BaseController {
         return "digitalmarket/service_manager_slot_index";
     }
 
+    @RequestMapping(value = "/service_manager_version_index", method = RequestMethod.GET)
+    public String service_manager_version_index() {
+
+        return "digitalmarket/service_manager_version_index";
+    }
+
     /**
      * 查询服务
      * @return
@@ -148,9 +154,16 @@ public class ServiceManagerController extends BaseController {
                 if(slot==null){
                     slot = "未知";
                 }
-
                 jsonObject.put("slot_str", slot.toString());
                 content = content+" ,服务槽位: "+slot.toString();
+
+                Object version_tag= redisUtil.getRedisTemplate().opsForHash().get(instanceId, "version_tag");
+
+                if(version_tag==null){
+                    version_tag = "未知";
+                }
+                jsonObject.put("version_str", version_tag.toString());
+                content = content+" ,版本标识: "+version_tag.toString();
 
                 jsonObject.put("data_context", content);
 
@@ -267,6 +280,31 @@ public class ServiceManagerController extends BaseController {
             }
 
             redisUtil.getRedisTemplate().opsForHash().put(instance_id, "slot", slot.replaceAll(";", ","));
+            return ReturnInfo.buildSuccess();
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.buildError("更新槽位失败", e);
+        }
+    }
+
+    /**
+     * 更新version
+     * @return
+     */
+    @SentinelResource(value = "service_manager_version_update", blockHandler = "handleReturn")
+    @RequestMapping(value = "/service_manager_version_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<JSONObject>> service_manager_version_update(String version_tag, String instance_id) {
+        try{
+
+
+            Object serviceStr = redisUtil.getRedisTemplate().opsForHash().get(instance_id, "service");
+            if(serviceStr == null){
+                throw new Exception("无法获取实例对应服务信息");
+            }
+
+            redisUtil.getRedisTemplate().opsForHash().put(instance_id, "version_tag", version_tag);
             return ReturnInfo.buildSuccess();
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";

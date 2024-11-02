@@ -616,6 +616,8 @@
   + v5.5.4 [zdh_web]修复数据权限模块bug
   + v5.5.4 [zdh_web]数据权限-增加细粒度控制
   + v5.5.4 [zdh_web]优化页面展示
+  + v5.5.4 [zdh_web]营销模块-新增版本控制
+  + v5.5.4 [zdh_web]启动项目-增加默认参数同步redis
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
@@ -3332,6 +3334,12 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1290604117240057856, '963932648793706496', '变量计算页面', '4', 'zyc', 'fa fa-coffee', '', '17', '1', '2024-10-01 09:20:00', '2024-10-01 09:20:24', 'variable_detail', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1302298055239798784, '1284291050919170048', '服务版本页面', '4', 'zyc', 'fa fa-coffee', '', '11', '1', '2024-11-02 15:47:32', '2024-11-02 15:47:56', 'service_manager_version_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1302298318746947584, '1284291050919170048', '服务版本', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2024-11-02 15:48:35', '2024-11-02 15:48:35', 'service_manager_version_update', '5', '', '', 'zdh', '');
 
     alter table permission_user_dimension_value_info add column ext text comment '权限扩展信息';
     alter table permission_usergroup_dimension_value_info add column ext text comment '权限扩展信息';

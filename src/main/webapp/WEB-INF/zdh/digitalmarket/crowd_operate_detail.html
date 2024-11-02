@@ -153,6 +153,14 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">版本标识</label>
+                            <div class="col-sm-10">
+                                <input id="version_tag" name="version_tag" type="text" value=""
+                                       placeholder="版本标识,默认为空,在多版本上线期间验证使用" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
@@ -265,6 +273,8 @@
 
                 $("#project_scene").val(s["project_scene"]);
                 $("#project_scene").trigger("chosen:updated");
+
+                $('#version_tag').val(s.version_tag);
             }
         })();
 
@@ -296,6 +306,7 @@
         var time_out=$('#time_out').val();
         var project_code=$('#project_code').find("option:selected").val();
         var project_scene=$('#project_scene').find("option:selected").val();
+        var version_tag=$('#version_tag').val();
 
         var is_disenable = "false";
         if($('#is_disenable').is(':checked')){
@@ -313,6 +324,7 @@
             "data_status": data_status,
             "project_code": project_code,
             "project_scene": project_scene,
+            "version_tag": version_tag,
 
             "rule_id": rule_id,
             "rule_context": rule_context,
