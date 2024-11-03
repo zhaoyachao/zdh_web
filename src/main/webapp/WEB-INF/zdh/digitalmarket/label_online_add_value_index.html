@@ -477,7 +477,6 @@
             success: function (data) {
                 $("#update_etl_task").removeAttr('disabled');
                 if(data.code != '200'){
-                    console.error(data.msg);
                     parent.layer.msg("执行失败");
                     return ;
                 }

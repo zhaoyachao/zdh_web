@@ -99,7 +99,9 @@
                   content: server_context+"/label_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/label_list'
+                          url: server_context+"/label_list?"+$("#label_form").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -164,7 +166,9 @@
                   content: server_context+"/label_online_add_value_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/label_list'
+                          url: server_context+"/label_list?"+$("#label_form").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
                       });
                   }
               });
@@ -225,7 +229,7 @@
               ' <button id="tasks" name="tasks" type="button" class="btn btn-outline btn-sm" title="标签加工任务">\n' +
               '                                        <i class="glyphicon glyphicon-tasks" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="edit_value" name="edit_value" type="button" class="btn btn-outline btn-sm" title="标签试算">\n' +
+              ' <button id="edit_value" name="edit_value" type="button" class="btn btn-outline btn-sm" title="标签值更新">\n' +
               '                                        <i class="glyphicon glyphicon-camera" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +
@@ -276,7 +280,7 @@
 
       $('#exampleTableEvents').bootstrapTable('destroy').bootstrapTable({
       method: "POST",
-      url: server_context+"/label_list",
+      url: server_context+"/label_list?"+$("#label_form").serialize(),
       search: true,
       pagination: true,
       showRefresh: true,

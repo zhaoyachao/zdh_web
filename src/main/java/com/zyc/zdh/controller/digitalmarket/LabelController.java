@@ -365,6 +365,13 @@ public class LabelController extends BaseController {
             if(StringUtils.isEmpty(uid)){
                 throw new Exception("账号参数不可为空");
             }
+
+            //验证是否在线标签
+            LabelInfo labelInfo1 = labelMapper.selectByPrimaryKey(labelInfo.getId());
+            if(!labelInfo1.getLabel_use_type().equalsIgnoreCase("single")){
+                throw new Exception("仅支持人查值类标签");
+            }
+
             JSONObject jsonObject=new JSONObject();
             for (int i=0;i<param_code.length;i++){
                 if(i>=param_value.length){
