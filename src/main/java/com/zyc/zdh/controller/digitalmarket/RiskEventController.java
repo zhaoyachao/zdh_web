@@ -5,9 +5,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.RiskEventMapper;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.RiskEventInfo;
+import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
+import com.zyc.zdh.dao.ZdhLogsMapper;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.ConfigUtil;
@@ -27,7 +27,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 风控事件信息服务
@@ -42,6 +44,12 @@ public class RiskEventController extends BaseController {
 
     @Autowired
     private ZdhPermissionService zdhPermissionService;
+
+    @Autowired
+    private ZdhLogsMapper zdhLogsMapper;
+
+    @Autowired
+    private StrategyGroupInstanceMapper strategyGroupInstanceMapper;
 
     /**
      * 风控事件测试首页
@@ -302,5 +310,60 @@ public class RiskEventController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
+
+    /**
+     * 根据请求id获取命中的策略组实例id
+     * @param request_id
+     * @return
+     */
+    @SentinelResource(value = "risk_strategygroupinstance_by_request_id", blockHandler = "handleReturn")
+    @RequestMapping(value = "/risk_strategygroupinstance_by_request_id", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<StrategyGroupInstance>> risk_strategygroupinstance_by_request_id(String request_id) {
+        try {
+
+            Example example = new Example(ZdhLogs.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("task_logs_id", request_id);
+            List<ZdhLogs> zdhLogs = zdhLogsMapper.selectByExample(example);
+            List<String> res = new ArrayList<>();
+            if(zdhLogs != null && zdhLogs.size() > 0){
+                res = zdhLogs.stream().map(s -> s.getJob_id()).collect(Collectors.toList());
+            }
+            List<StrategyGroupInstance> strategyGroupInstances = strategyGroupInstanceMapper.selectObjectByIds(strategyGroupInstanceMapper.getTable(), res.toArray(new String[]{}));
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", strategyGroupInstances);
+        } catch (Exception e) {
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+    /**
+     * 根据请求id获取命中的策略组实例id
+     * @param request_id
+     * @return
+     */
+    @SentinelResource(value = "risk_result_by_request_id_and_strategygroupinstance_id", blockHandler = "handleReturn")
+    @RequestMapping(value = "/risk_result_by_request_id_and_strategygroupinstance_id", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<JSONObject> risk_result_by_request_id_and_strategygroupinstance_id(String request_id, String strategy_group_instance_id) {
+        try {
+
+            Example example = new Example(ZdhLogs.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("task_logs_id", request_id);
+            criteria.andEqualTo("job_id", strategy_group_instance_id);
+            List<ZdhLogs> zdhLogs = zdhLogsMapper.selectByExample(example);
+            List<String> res = new ArrayList<>();
+            JSONObject jsonObject = new JSONObject();
+            if(zdhLogs != null && zdhLogs.size() > 0){
+                jsonObject = JSONObject.parseObject(zdhLogs.get(0).getMsg());
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonObject);
+        } catch (Exception e) {
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
 
 }

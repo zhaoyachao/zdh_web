@@ -619,6 +619,10 @@
   + v5.5.4 [zdh_web]营销模块-新增版本控制
   + v5.5.4 [zdh_web]启动项目-增加默认参数同步redis
   
+  + v5.5.5 [zdh_web]营销模块-新增风控节点管理
+  + v5.5.5 [zdh_web]营销模块- 变量池变量计算优化
+  + v5.5.5 [zdh_web]优化代码
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
@@ -3345,3 +3349,57 @@
     alter table permission_usergroup_dimension_value_info add column ext text comment '权限扩展信息';
     update permission_user_dimension_value_info set ext='{"add":"true","edit":"true","approve":"true","del":"true"}';
     update permission_usergroup_dimension_value_info set ext='{"add":"true","edit":"true","approve":"true","del":"true"}';
+    
+## 5.5.4迁移5.5.5
+
+    CREATE TABLE `data_code_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `code` varchar(128) DEFAULT '' COMMENT 'code',
+      `code_name` varchar(128) DEFAULT '' COMMENT 'code名称',
+      `code_desc` text  COMMENT '节点说明',
+      `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+      `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT 'data节点配置';
+    
+    INSERT INTO data_code_info
+    (id, code, code_name, code_desc, owner, create_time, update_time, is_delete, product_code, dim_group)
+    VALUES(1305147770033672192, 'data_a', '测试节点A', '测试节点A', 'zyc', '2024-11-10 12:31:17', '2024-11-10 12:31:17', '0', 'zdh', 'group3');
+    INSERT INTO data_code_info
+    (id, code, code_name, code_desc, owner, create_time, update_time, is_delete, product_code, dim_group)
+    VALUES(1305148006860853248, 'data_b', '测试节点B', '测试节点B', 'zyc', '2024-11-10 12:32:13', '2024-11-10 12:32:13', '0', 'zdh', 'group3');
+
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1305132001602310144, '963925904835219456', '风控节点', '3', 'zyc', 'fa fa-coffee', '', '17', '1', '2024-11-10 11:28:37', '2024-11-10 11:28:37', 'data_code_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1307750248646447104, '1129876614897733632', '获取风控命中策略树实例列表', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2024-11-17 16:52:36', '2024-11-17 16:52:36', 'risk_strategygroupinstance_by_request_id', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1307750453190070272, '1129876614897733632', '获取风控命中策略树实例执行日志', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2024-11-17 16:53:25', '2024-11-17 16:53:25', 'risk_result_by_request_id_and_strategygroupinstance_id', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1307751555524464640, '1305132001602310144', '风控数据节点列表', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-11-17 16:57:48', '2024-11-17 16:57:48', 'data_code_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1307751685908598784, '1305132001602310144', '风控数据节点列表分页', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2024-11-17 16:58:19', '2024-11-17 16:58:19', 'data_code_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1307751803797901312, '1305132001602310144', '风控数据节点新增页面', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2024-11-17 16:58:47', '2024-11-17 16:58:47', 'data_code_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1307751877500211200, '1305132001602310144', '风控数据节点明细', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2024-11-17 16:59:04', '2024-11-17 16:59:04', 'data_code_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1307751974988419072, '1305132001602310144', '风控数据节点更新', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2024-11-17 16:59:28', '2024-11-17 16:59:28', 'data_code_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1307752059893714944, '1305132001602310144', '风控数据节点新增', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2024-11-17 16:59:48', '2024-11-17 16:59:48', 'data_code_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1307752171248291840, '1305132001602310144', '风控数据节点删除', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2024-11-17 17:00:14', '2024-11-17 17:00:14', 'data_code_delete', '5', '', '', 'zdh', '');

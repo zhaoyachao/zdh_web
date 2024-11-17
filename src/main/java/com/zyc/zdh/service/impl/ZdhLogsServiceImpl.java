@@ -13,7 +13,7 @@ import java.util.List;
 public class ZdhLogsServiceImpl implements ZdhLogsService {
 
     @Autowired
-    ZdhLogsMapper zdhLogsMapper;
+    private ZdhLogsMapper zdhLogsMapper;
 
 
     @Override

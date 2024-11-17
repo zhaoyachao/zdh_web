@@ -21,7 +21,7 @@ public class JemailServiceImpl implements JemailService{
     private String fromEmail;
 
     @Autowired
-    JavaMailSender javaMailSender;
+    private JavaMailSender javaMailSender;
 
     @Override
     public void sendEmail(String[] to,String subject, String context) {

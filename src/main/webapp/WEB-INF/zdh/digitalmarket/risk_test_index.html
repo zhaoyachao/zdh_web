@@ -18,7 +18,7 @@
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
-    
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
 
 </head>
 
@@ -27,7 +27,7 @@
         <!-- Panel Other -->
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>策略组列表</h5>
+                <h5>风控测试列表</h5>
                 <div class="ibox-tools">
                     <a class="collapse-link">
                         <i class="fa fa-chevron-up"></i>
@@ -116,6 +116,76 @@
                     </div>
 
                 </div>
+
+                <form role="form" class="form-inline" id="risk_form2">
+
+                    <div class="form-group">
+                        <div class="input-group" >
+                            <input id="request_id" name="request_id" class="form-control" type="text" value="" placeholder="请求ID">
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input id="search2" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询命中策略树实例"/>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select id="strategy_group_instance_id" name="strategy_group_instance_id"
+                                    data-placeholder="策略树实例"
+                                    class="chosen-select form-control m-b" tabindex="2">
+                                <option value="uid" mytype="">策略树实例</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                </form>
+
+                <div class="form-group col-sm-12"></div>
+                <div class="row row-lg">
+                    <div class="form-group col-sm-12">
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                         type="button" style="background-color: #C2DFFF">初始化
+                                </button>
+                                <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                         type="button" style="background-color: #00bb00">运行中
+                                </button>
+                                <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                         type="button" style="background-color: #2B65EC">完成
+                                </button>
+                                <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                         type="button" style="background-color: #ec4758">失败
+                                </button>
+                                <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                         type="button" style="background-color: LightGrey">跳过
+                                </button>
+                                <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                         type="button" style="background-color: #f7a54a">未知
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-12">
+                                <div class="container device col-sm-12">
+                                    <div class="deviceLeft2">
+
+<!--                                        <input id="refash" οnsubmit='return false' type="button" class="btn btn-primary form-control"-->
+<!--                                               style="margin-bottom:0px" value="刷新"/>-->
+                                    </div>
+                                    <div id="deviceRight2">
+                                        <div id="m1"></div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
         </div>
         <!-- End Panel Other -->
@@ -124,7 +194,12 @@
     <script src="js/zdh_common.js"></script>
     <!-- 全局js -->
     <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+    <script src="js/jquery-ui-1.10.4.min.js"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
     <!-- layer javascript -->
     <script src="js/plugins/layer/layer.min.js"></script>
@@ -138,7 +213,71 @@
 
 <!--    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>-->
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
 
+    <script type="text/javascript">
+
+        //基本连接线样式
+        var connectorPaintStyle = {
+            lineWidth: 2,
+            strokeStyle: "#61b8d0"
+        };
+
+        // 鼠标悬浮在连接线上的样式
+        var connectorHoverStyle = {
+            lineWidth: 2,
+            strokeStyle: "green"
+        };
+
+        //端点的颜色样式
+        var paintStyle = {
+            fillStyle: "#ccc",
+            radius: 10,
+            lineWidth:6
+        };
+
+        // 鼠标悬浮在端点上的样式
+        var hoverPaintStyle = {
+            fillStyle: "#aaa"
+        };
+
+
+        var hollowCircle = {
+            endpoint: ["Dot", { radius: 3 }],  //端点的形状
+            connectorStyle: connectorPaintStyle,
+            connectorHoverStyle: connectorHoverStyle,
+            paintStyle: paintStyle,
+            hoverPaintStyle: hoverPaintStyle ,
+            isSource: true,    //是否可以拖动（作为连线起点）
+            connector: ["StateMachine", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],  //连接线的样式种类有[Bezier],[Flowchart],[StateMachine ],[Straight ]
+            isTarget: true,    //是否可以放置（连线终点）
+            maxConnections: -1,    // 设置连接点最多可以连接几条线
+            connectorOverlays:[
+                [ "Arrow", { width:10, length:20, location:1, id:"arrow" } ],
+                ["Custom", {
+                    create:function(component) {
+                        return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
+                    },
+                    location:0.5,
+                    id:"customOverlay"
+                }]
+            ]
+        };
+
+
+        //双击节点内容区域时的事件
+        function doubleclick(divId,strategy_instance_id,run_time) {
+            $(divId).dblclick(function () {
+                var text = $(this).text();
+                var div = $(this);
+                var etl_task_id=div.attr("etl_task_id");
+
+                //window.open(server_context+"/log_txt.html?task_log_id="+strategy_instance_id+"&start_time="+run_time)
+                //openTabPage("log_txt.html?task_log_id="+task_log_instance_id, etl_context + "日志")
+            });
+        }
+
+    </script>
 
 <script>
 
@@ -160,8 +299,293 @@
                 }
 
             });
-        })
+        });
 
+        $('#search2').click(function () {
+
+            $.ajax({
+                url : server_context +"/risk_strategygroupinstance_by_request_id",
+                data : $('#risk_form2').serialize(),
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+                    console.info("success");
+                    var request_id =  $('#request_id').val();
+                    var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">选择策略树实例</option>';
+                    for (var i = 0; i < data.result.length; i++) {
+                        str += '<option value=\"' + data.result[i].id + "\" mytype=\"" + data.result[i].id + "\" hassubinfo=\"true\">" + data.result[i].group_context + "</option>"
+                    }
+                    $('#strategy_group_instance_id').html(str);
+                    $("#strategy_group_instance_id").trigger("chosen:updated");
+                    $('#strategy_group_instance_id').chosen().on("change", function (evt, params) {
+                        var strategy_group_instance_id=$('#strategy_group_instance_id').find("option:selected").val();
+                        buildLog(request_id, strategy_group_instance_id);
+                    });
+
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        });
+
+
+        function buildLog(request_id, strategy_group_instance_id) {
+
+            var runPath = new Map();
+            var shipResultMap = new Map();
+            $.ajax({
+                url : server_context+"/strategy_group_instance_list2",
+                data : "id=" + strategy_group_instance_id,
+                type : "post",
+                async:false,
+                dataType : "json",
+                success : function(data) {
+                    console.info("success");
+
+                    $.ajax({
+                        url : server_context +"/risk_result_by_request_id_and_strategygroupinstance_id",
+                        data : {'request_id': request_id,'strategy_group_instance_id': strategy_group_instance_id},
+                        type : "post",
+                        async:false,
+                        dataType : "json",
+                        success : function(data) {
+                            runPath = data.result.runPath;
+                            shipResultMap = data.result.shipResultMap;
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+                    });
+
+                    //初始化输入数据源select 组件
+                    var run_jsmind_data=data.result.run_jsmind_data;
+
+                    open_json(run_jsmind_data,strategy_group_instance_id, runPath, shipResultMap)
+
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+
+
+
+        }
+
+
+        function get_color_by_status(status, is_disenable){
+            //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+            if(is_disenable == "true"){
+                return "LightGrey";
+            }
+            if(status=='create'  ){
+                return "#C2DFFF";
+            }
+            // value == "etl"  || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch"
+            if(status=="running"||status=="etl"|| status=="kill" || status=="sub_task_dispatch" || status == "dispatch" || status=="check_dep" || status=="wait_retry" || status=="check_dep_finish"){
+                return "#00bb00";
+            }
+            if(status=="success"){
+                return "#2B65EC";
+            }
+
+            if(status=="error" || status=="killed"){
+                return "#ec4758";
+            }
+            if(status == "skip"){
+                return "LightGrey"
+            }
+
+            return "#f7a54a";
+
+
+        }
+
+        function open_json(json,strategy_group_instance_id, runPath, shipResultMap) {
+            var jsplumb_json=JSON.parse(json);
+            var ids = new Array();// 声明一个数组
+            var map = new Map();
+            var map2 = new Map();
+            var map3 = new Map();
+            var map4 = new Map();
+            //获取任务运行状态
+            var run_data=jsplumb_json.run_data;
+            if (run_data.length >= 1 ){
+                console.info("run_data is not null");
+                for(var i=0;i<run_data.length;i++){
+                    var id=run_data[i].strategy_instance_id;
+                    var divId=run_data[i].divId;
+                    map.set(divId,id);
+                    map2.set(id,divId);
+                }
+                //请求状态
+                $.ajax({
+                    url : server_context+"/strategy_instance_list",
+                    data : "strategy_group_instance_id=" +strategy_group_instance_id,
+                    type : "post",
+                    dataType : "json",
+                    async: false,
+                    success : function(data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        console.info("task_log_instance_list success");
+                        for(var j=0;j<data.result.length;j++){
+                            //divId->status
+                            console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
+                            map3.set(map2.get(data.result[j].id),runPath[data.result[j].id]);
+                            //map4.set(data.result[j].id, data.result[j].run_time);
+                        }
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+            }
+
+
+            //添加div 数据
+            jsPlumb.deleteEveryEndpoint();
+            $("#m1").empty();
+            $("#m1").html('');
+            for(var i=0;i< jsplumb_json.tasks.length;i++){
+                var rs=jsplumb_json.tasks[i];
+                var divId=rs.divId;
+                var etl_context='';
+                var positionX=rs.positionX;
+                var positionY=rs.positionY;
+                var tp=rs.type;
+                var strategy_instance_id=map.get(divId);
+                //var run_time = map4.get(strategy_instance_id);
+                cls_str="node node"+tp+"css tasks";
+                var color=get_color_by_status(map3.get(divId), rs.is_disenable);
+                console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color);
+
+                $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="'+tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+                $("#" + divId).css("left", positionX).css("top", positionY);
+                $("#" + divId).attr("type",tp);
+                $("#" + divId).attr("etl_context",rs.etl_context);
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+
+                if(tp == "label"){
+
+                }
+                if(tp == "crowd_file"){
+
+                }
+                if(tp == "crowd_rule"){
+
+                }
+                if(tp == "crowd_operate"){
+
+                }
+
+                if(tp == "filter"){
+
+                }
+
+                if(tp == "shunt"){
+                    $("#" + divId).attr("shunt_param",rs.shunt_param);
+                    $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+                }
+
+                if(tp == "rights"){
+                    $("#" + divId).attr("rights_param",rs.rights_param);
+                }
+
+                if(tp == "touch"){
+                    $("#" + divId).attr("touch_task",rs.touch_task);
+                }
+                if(tp == "plugin"){
+
+                }
+                if(tp == "data_node"){
+                    $("#" + divId).attr("data_node",rs.data_node);
+                    $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+                }
+                if(tp == "id_mapping"){
+
+                }
+                if(tp == "risk"){
+
+                }
+                if(tp == "tn"){
+
+                }
+                if(tp == "manual_confirm"){
+
+                }
+
+                if(tp == "code_block"){
+
+                }
+                if(tp == "custom_list"){
+
+                }
+                if(tp == "function"){
+
+                }
+
+                //新增数据流转状态
+                var new_title = "表达式: "+$("#" + divId).html();
+                var more_task = "任务类型: "+tp;
+                var chudashiji = "触发时机: 上游成功";
+                var shujuzhuangtai = "依赖数据状态: 上游成功数据";
+                if(!is_empty(rs.depend_level)){
+                    if(rs.depend_level == "1"){
+                        chudashiji = "触发时机: 上游杀死";
+                    }else if(rs.depend_level == "2"){
+                        chudashiji = "触发时机: 上游失败";
+                    }else if(rs.depend_level == "3"){
+                        chudashiji = "触发时机: 上游执行后";
+                    }
+                }
+                if(!is_empty(rs.data_status)){
+                    if(rs.data_status == "1"){
+                        shujuzhuangtai = "依赖数据状态: 上游成功数据";
+                    }else if(rs.data_status == "2"){
+                        shujuzhuangtai = "依赖数据状态: 上游失败数据";
+                    }else if(rs.data_status == "3"){
+                        shujuzhuangtai = "依赖数据状态: 上游所有数据";
+                    }
+                }
+
+                new_title = more_task + "\n" + chudashiji + "\n" + shujuzhuangtai+ "\n" + new_title;
+
+                if(!is_empty(shipResultMap[strategy_instance_id].message)){
+                    new_title = new_title + "\n" + "失败原因: "+shipResultMap[strategy_instance_id].message;
+                }
+
+                $("#" + divId).attr("title", new_title);
+
+                $("#" + divId).css("width","auto");
+                $("#" + divId).css("display","inline-block");
+                $("#" + divId).css("*display","inline");
+                $("#" + divId).css("*zoom","1");
+                $("#" + divId).html(rs.etl_context);
+                jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+                jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+                jsPlumb.draggable(divId);
+                jsPlumb.makeTarget(divId, {
+                    anchor: "Continuous"
+                });
+                $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+                doubleclick("#" + divId,strategy_instance_id,'');
+            }
+
+            for(var i=0;i< jsplumb_json.line.length;i++){
+                jsPlumb.connect({
+                    uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
+                })
+            }
+
+        }
     })
 
 

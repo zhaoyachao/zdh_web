@@ -1083,6 +1083,7 @@ function doubleclick_variable(id) {
         map["varpool_operate"] = div.attr("varpool_operate");
         map["varpool_type"] =  div.attr("varpool_type");
         map["varpool_code"] = div.attr("varpool_code");
+        map["varpool_expre"] =  div.attr("varpool_expre");
         map["varpool_value"] =  div.attr("varpool_value");
 
         var url=server_context+'/variable_detail.html';
@@ -1112,6 +1113,7 @@ function doubleclick_variable(id) {
                 div.attr("varpool_domain",etl_task_info.varpool_domain);
                 div.attr("varpool_operate",etl_task_info.varpool_operate);
                 div.attr("varpool_code",etl_task_info.varpool_code);
+                div.attr("varpool_expre",etl_task_info.varpool_expre);
                 div.attr("varpool_value",etl_task_info.varpool_value);
                 div.attr("varpool_type",etl_task_info.varpool_type);
 

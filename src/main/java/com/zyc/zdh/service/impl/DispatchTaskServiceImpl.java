@@ -12,7 +12,7 @@ import java.util.List;
 public class DispatchTaskServiceImpl implements DispatchTaskService {
 
     @Autowired
-    DispatchTaskMapper dispatchTaskMapper;
+    private DispatchTaskMapper dispatchTaskMapper;
 
 
     @Override

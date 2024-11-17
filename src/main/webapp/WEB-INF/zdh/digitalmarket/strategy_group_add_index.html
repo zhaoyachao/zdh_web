@@ -491,6 +491,7 @@
                 $("#" + divId).attr("varpool_operate",is_empty(rs.varpool_operate)?"":rs.varpool_operate);
                 $("#" + divId).attr("varpool_type",is_empty(rs.varpool_type)?"":rs.varpool_type);
                 $("#" + divId).attr("varpool_code",is_empty(rs.varpool_code)?"":rs.varpool_code);
+                $("#" + divId).attr("varpool_expre",is_empty(rs.varpool_expre)?"":rs.varpool_expre);
                 $("#" + divId).attr("varpool_value",is_empty(rs.varpool_value)?"":rs.varpool_value);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
@@ -635,6 +636,7 @@
                 varpool_operate: $elem.attr('varpool_operate'),
                 varpool_type: $elem.attr('varpool_type'),
                 varpool_code: $elem.attr('varpool_code'),
+                varpool_expre: $elem.attr('varpool_expre'),
                 varpool_value: $elem.attr('varpool_value'),
 
                 divId:$elem.attr('id'),

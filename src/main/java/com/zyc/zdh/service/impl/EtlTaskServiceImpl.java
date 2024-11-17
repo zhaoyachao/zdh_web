@@ -15,7 +15,7 @@ import java.util.List;
 public class EtlTaskServiceImpl implements EtlTaskService {
 
     @Autowired
-    EtlTaskMapper etlTaskMapper;
+    private EtlTaskMapper etlTaskMapper;
 
 
     @Override

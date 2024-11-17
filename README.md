@@ -4,10 +4,6 @@
 
 - [READ MORE](#read-more)
 - [数据采集,处理,监控,调度,管理一体化平台](#%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86%E5%A4%84%E7%90%86%E7%9B%91%E6%8E%A7%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86%E4%B8%80%E4%BD%93%E5%8C%96%E5%B9%B3%E5%8F%B0)
-- [整体系统层次图](#%E6%95%B4%E4%BD%93%E7%B3%BB%E7%BB%9F%E5%B1%82%E6%AC%A1%E5%9B%BE)
-- [项目模块划分](#%E9%A1%B9%E7%9B%AE%E6%A8%A1%E5%9D%97%E5%88%92%E5%88%86)
-- [开源/闭源版本](#%E5%BC%80%E6%BA%90%E9%97%AD%E6%BA%90%E7%89%88%E6%9C%AC)
-- [下载编译包](#%E4%B8%8B%E8%BD%BD%E7%BC%96%E8%AF%91%E5%8C%85)
 - [在线预览](#%E5%9C%A8%E7%BA%BF%E9%A2%84%E8%A7%88)
 - [快速开始](#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
   - [基础环境](#%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83)
@@ -15,6 +11,10 @@
   - [源码编译](#%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91)
   - [运行](#%E8%BF%90%E8%A1%8C)
 - [FAQ](#faq)
+- [整体系统层次图](#%E6%95%B4%E4%BD%93%E7%B3%BB%E7%BB%9F%E5%B1%82%E6%AC%A1%E5%9B%BE)
+- [项目模块划分](#%E9%A1%B9%E7%9B%AE%E6%A8%A1%E5%9D%97%E5%88%92%E5%88%86)
+- [开源/闭源版本](#%E5%BC%80%E6%BA%90%E9%97%AD%E6%BA%90%E7%89%88%E6%9C%AC)
+- [下载编译包](#%E4%B8%8B%E8%BD%BD%E7%BC%96%E8%AF%91%E5%8C%85)
 - [提示](#%E6%8F%90%E7%A4%BA)
 - [特色](#%E7%89%B9%E8%89%B2)
 - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
@@ -23,6 +23,7 @@
 - [个人联系方式](#%E4%B8%AA%E4%BA%BA%E8%81%94%E7%B3%BB%E6%96%B9%E5%BC%8F)
 - [权益](#%E6%9D%83%E7%9B%8A)
 - [界面预览](#%E7%95%8C%E9%9D%A2%E9%A2%84%E8%A7%88)
+- [交流群](#%E4%BA%A4%E6%B5%81%E7%BE%A4)
 - [支持&赞赏](#%E6%94%AF%E6%8C%81%E8%B5%9E%E8%B5%8F)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -44,43 +45,6 @@
    + 本平台的初衷及目的尽量减少开发者的工作量及降低数据开发者的使用门槛
    + 基于当前大数据平台开发智能营销风控系统
    + 学习技术并结合场景迭代产品
-   
-# 整体系统层次图
-![功能图](img/zdh_web.png)
-   
-# 项目模块划分
-      项目涉及方向较多,技术杂乱
-      包含以下几个项目,以下几个项目都是单独的git仓库
-      zdh_web: zdh系列项目web管理端,提供可视化配置,比如ETL,调度,mock服务,权限管理,数仓模块等
-      zdh_spark: 基于spark的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_server
-      zdh_flinkx: 基于flink sql的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_flinkx
-      zdh_mock: 基于netty的http-mock服务,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_mock
-      zdh_rqueue: 计划开发一个非高性能的优先级可控队列(用于etl任务优先级控制),github: https://github.com/zhaoyachao/zdh_rqueue
-      zdh_auth: 大数据统一权限管理(hadoop,hive,hbase,presto),开发中
-      zdh_magic_mirror: 是一个客户管理模块,客户画像,智能营销等服务,主要包括common,label, plugin, ship, variable, 5个模块 github: https://github.com/zhaoyachao/zdh_magic_mirror
-         common: 公共模块
-         label: 客户管理-标签服务,必须依赖zdh_web,主要提供离线批量圈人功能
-         plugin: 客户管理-通用插件服务,提供id_mapping,过滤,触达用户(发送短信,邮件等)
-         ship: 客户管理-实时经营服务,实时接入用户流量,对用户做经营
-         variable: 客户管理-变量服务,和label服务能力一样,区别在于一个离线处理,一个实时处理
-     
-   ![zdh模块](img/zdh_family.png)
-    
-   
-# 开源/闭源版本
-   + 全部开放源代码
-   
-# 下载编译包   
-   + 编译包下载地址(只提供最新编译包下载,历史版本需要手动从源码构建)：
-   + 执行编译好的包需要提前安装mysql8,redis
-   
-   + 历史版本不进行维护,可下载历史版本, 建议使用最新版本(功能更多)
-     
-   + 4.7.18版本全部采用maven管理,并重构quartz源码,4.7.18不可和之前任何历史版本重用
-   + 4.7.18为4.x最后一个版本,5.x版本会重构所有代码,自2022-02-06~2022-06-01不进行新功能开发,此段时间会完善使用文档
-     
-   + 5.1.0之后版本不提供编译包下载,需要用户在github上自行编译
-     
 
 #  在线预览
    [http://zycblog.cn:8081/login](http://zycblog.cn:8081/login)
@@ -89,7 +53,7 @@
     密码：123456
     
     服务器资源有限,界面只供预览,不包含数据处理部分,谢码友们手下留情
-
+    
 # 快速开始
 
 ## 基础环境
@@ -144,7 +108,44 @@
      
    + 数据表结构以release/db/zdh_xxx.sql 为准
    
-   + 暂不支持读取kerberos 认证的hadoop,hive,hbase 服务,预计在5.x 版本实现kerberos 认证      
+   + 暂不支持读取kerberos 认证的hadoop,hive,hbase 服务,预计在5.x 版本实现kerberos 认证    
+       
+# 整体系统层次图
+![功能图](img/zdh_web.png)
+   
+# 项目模块划分
+      项目涉及方向较多,技术杂乱
+      包含以下几个项目,以下几个项目都是单独的git仓库
+      zdh_web: zdh系列项目web管理端,提供可视化配置,比如ETL,调度,mock服务,权限管理,数仓模块等
+      zdh_spark: 基于spark的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_server
+      zdh_flinkx: 基于flink sql的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_flinkx
+      zdh_mock: 基于netty的http-mock服务,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_mock
+      zdh_rqueue: 计划开发一个非高性能的优先级可控队列(用于etl任务优先级控制),github: https://github.com/zhaoyachao/zdh_rqueue
+      zdh_auth: 大数据统一权限管理(hadoop,hive,hbase,presto),开发中
+      zdh_magic_mirror: 是一个客户管理模块,客户画像,智能营销等服务,主要包括common,label, plugin, ship, variable, 5个模块 github: https://github.com/zhaoyachao/zdh_magic_mirror
+         common: 公共模块
+         label: 客户管理-标签服务,必须依赖zdh_web,主要提供离线批量圈人功能
+         plugin: 客户管理-通用插件服务,提供id_mapping,过滤,触达用户(发送短信,邮件等)
+         ship: 客户管理-实时经营服务,实时接入用户流量,对用户做经营
+         variable: 客户管理-变量服务,和label服务能力一样,区别在于一个离线处理,一个实时处理
+     
+   ![zdh模块](img/zdh_family.png)
+    
+   
+# 开源/闭源版本
+   + 全部开放源代码
+   
+# 下载编译包   
+   + 编译包下载地址(只提供最新编译包下载,历史版本需要手动从源码构建)：
+   + 执行编译好的包需要提前安装mysql8,redis
+   
+   + 历史版本不进行维护,可下载历史版本, 建议使用最新版本(功能更多)
+     
+   + 4.7.18版本全部采用maven管理,并重构quartz源码,4.7.18不可和之前任何历史版本重用
+   + 4.7.18为4.x最后一个版本,5.x版本会重构所有代码,自2022-02-06~2022-06-01不进行新功能开发,此段时间会完善使用文档
+     
+   + 5.1.0之后版本不提供编译包下载,需要用户在github上自行编译
+    
     
 # 提示
    

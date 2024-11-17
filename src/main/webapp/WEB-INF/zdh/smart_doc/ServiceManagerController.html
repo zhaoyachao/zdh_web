@@ -365,8 +365,8 @@ tips: 每次角色增加资源以全量方式增加,会提前删除当前角色�
                     </li>
                 </ul>
             </li>
-            <li class="open"><a class="dd" href="CommonController.html#header">10.&nbsp;智能营销-配置策略时使用的配置页面</a>
-                <ul class="sectlevel2" style="display: block">
+            <li class=""><a class="dd" href="CommonController.html#header">10.&nbsp;智能营销-配置策略时使用的配置页面</a>
+                <ul class="sectlevel2" style="display: none">
                     <li><a
                             href="CommonController.html#_10_1_人群规则明细">10.1.&nbsp;人群规则明细</a>
                     </li>
@@ -798,8 +798,8 @@ custom_list_detail页面">10.12.&nbsp;自定义名单<br>custom_list_detail页�
                     </li>
                 </ul>
             </li>
-            <li class=""><a class="dd" href="ServiceManagerController.html#header">21.&nbsp;智能营销-服务控制</a>
-                <ul class="sectlevel2" style="display: none">
+            <li class="open"><a class="dd" href="ServiceManagerController.html#header">21.&nbsp;智能营销-服务控制</a>
+                <ul class="sectlevel2" style="display: block">
                     <li><a
                             href="ServiceManagerController.html#_21_1_服务控制首页">21.1.&nbsp;服务控制首页</a>
                     </li>
@@ -3412,18 +3412,454 @@ bootstrap-table 分页
     </div>
 </div>
 <div id="content">
-    <div class="sect1"><h2 id="_智能营销-配置策略时使用的配置页面"><a class="anchor" href="#_智能营销-配置策略时使用的配置页面"></a><a class="link" href="#_智能营销-配置策略时使用的配置页面">10.&nbsp;智能营销-配置策略时使用的配置页面</a>
+    <div class="sect1"><h2 id="_智能营销-服务控制"><a class="anchor" href="#_智能营销-服务控制"></a><a class="link" href="#_智能营销-服务控制">21.&nbsp;智能营销-服务控制</a>
     </h2>
         <div class="sectionbody">
-            <div class="sect2"><h3 id="_10_1_人群规则明细">
-                <a class="anchor" href="#_10_1_人群规则明细"></a>
-                <a class="link" href="#_10_1_人群规则明细">10.1.&nbsp;人群规则明细</a>
+            <div class="sect2"><h3 id="_21_1_服务控制首页">
+                <a class="anchor" href="#_21_1_服务控制首页"></a>
+                <a class="link" href="#_21_1_服务控制首页">21.1.&nbsp;服务控制首页</a>
             </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/crowd_rule_detail2" class="bare">&nbsp;/crowd_rule_detail2</a>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_index" class="bare">&nbsp;/service_manager_index</a>
+                </p></div>
+                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
+                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;服务控制首页</p></div>
+                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="bash">curl -X GET -i /service_manager_index</code></pre>
+                    </div>
+                </div>
+                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="json">string</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sect2"><h3 id="_21_2_服务控制首页">
+                <a class="anchor" href="#_21_2_服务控制首页"></a>
+                <a class="link" href="#_21_2_服务控制首页">21.2.&nbsp;服务控制首页</a>
+            </h3>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_detail_index" class="bare">&nbsp;/service_manager_detail_index</a>
+                </p></div>
+                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
+                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;服务控制首页</p></div>
+                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="bash">curl -X GET -i /service_manager_detail_index</code></pre>
+                    </div>
+                </div>
+                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="json">string</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sect2"><h3 id="_21_3_">
+                <a class="anchor" href="#_21_3_"></a>
+                <a class="link" href="#_21_3_">21.3.&nbsp;</a>
+            </h3>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_slot_index" class="bare">&nbsp;/service_manager_slot_index</a>
+                </p></div>
+                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
+                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;</p></div>
+                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="bash">curl -X GET -i /service_manager_slot_index</code></pre>
+                    </div>
+                </div>
+                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="json">string</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sect2"><h3 id="_21_4_">
+                <a class="anchor" href="#_21_4_"></a>
+                <a class="link" href="#_21_4_">21.4.&nbsp;</a>
+            </h3>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_version_index" class="bare">&nbsp;/service_manager_version_index</a>
+                </p></div>
+                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
+                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;</p></div>
+                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="bash">curl -X GET -i /service_manager_version_index</code></pre>
+                    </div>
+                </div>
+                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="json">string</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sect2"><h3 id="_21_5_查询服务">
+                <a class="anchor" href="#_21_5_查询服务"></a>
+                <a class="link" href="#_21_5_查询服务">21.5.&nbsp;查询服务</a>
+            </h3>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_list" class="bare">&nbsp;/service_manager_list</a>
                 </p></div>
                 <div class="paragraph"><p><strong>Type:</strong>&nbsp;POST</p></div>
                 <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;人群规则明细</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;查询服务</p></div>
+                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="bash">curl -X POST -i /service_manager_list</code></pre>
+                    </div>
+                </div>
+                <div class="paragraph"><p><strong>Response-fields:</strong></p></div>
+                <table class="tableblock frame-all grid-all spread">
+                    <colgroup>
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="tableblock halign-left valign-top">Field</th>
+                        <th class="tableblock halign-left valign-top">Type</th>
+                        <th class="tableblock halign-left valign-top">Description</th>
+                        <th class="tableblock halign-left valign-top">Since</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">code</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">200:成功,201:失败</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">msg</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">返回说明</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">result</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">返回结果</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─id</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─parent</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─text</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─level</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">层级</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─owner</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">拥有者</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─icon</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─resource_desc</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">资源说明</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─order</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─is_delete</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">是否删除,0:未删除,1:删除</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─create_time</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">创建时间</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─update_time</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">更新时间</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─resource_type</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">1:目录,2:菜单</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─notice_title</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">提示语</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─event_code</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">绑定事件</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─product_code</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">产品code</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─url</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">url链接</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">e</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─detailMessage</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─cause</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─detailMessage</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─stackTrace</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─declaringClass</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─methodName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─fileName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─lineNumber</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">int32</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─suppressedExceptions</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─stackTrace</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─declaringClass</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─methodName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─fileName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─lineNumber</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">int32</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─suppressedExceptions</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="json">{
+  "code": "4286",
+  "msg": "3e6ako",
+  "result": [
+    {
+      "id": "69",
+      "parent": "z3mid8",
+      "text": "re6nt4",
+      "level": "lxcp1u",
+      "owner": "cj2ssg",
+      "icon": "p4nm6v",
+      "resource_desc": "kuof1i",
+      "order": "czgdyh",
+      "is_delete": "fuobqw",
+      "create_time": "2024-11-17 17:30:44",
+      "update_time": "2024-11-17 17:30:44",
+      "resource_type": "t5z8bs",
+      "notice_title": "i1ed3i",
+      "event_code": "4286",
+      "product_code": "4286",
+      "url": "www.roxane-huel.com"
+    }
+  ],
+  "e": {
+    "detailMessage": "success",
+    "cause": {
+      "detailMessage": "success",
+      "cause": {
+        "$ref": "..."
+      },
+      "stackTrace": [
+        {
+          "declaringClass": "miib3e",
+          "methodName": "britta.boehm",
+          "fileName": "britta.boehm",
+          "lineNumber": 987
+        }
+      ],
+      "suppressedExceptions": [
+        {
+          "object": "any object"
+        }
+      ]
+    },
+    "stackTrace": [
+      {
+        "declaringClass": "2k19dh",
+        "methodName": "britta.boehm",
+        "fileName": "britta.boehm",
+        "lineNumber": 596
+      }
+    ],
+    "suppressedExceptions": [
+      {
+        "object": "any object"
+      }
+    ]
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sect2"><h3 id="_21_6_查询服务">
+                <a class="anchor" href="#_21_6_查询服务"></a>
+                <a class="link" href="#_21_6_查询服务">21.6.&nbsp;查询服务</a>
+            </h3>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_detail" class="bare">&nbsp;/service_manager_detail</a>
+                </p></div>
+                <div class="paragraph"><p><strong>Type:</strong>&nbsp;POST</p></div>
+                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;查询服务</p></div>
                 <div class="paragraph"><p><strong>Query-parameters:</strong></p></div>
                 <table class="tableblock frame-all grid-all spread">
                     <colgroup>
@@ -3444,9 +3880,9 @@ bootstrap-table 分页
                     </thead>
                     <tbody>
                     <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">service_name</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">主键ID</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
                     </tr>
@@ -3455,7 +3891,7 @@ bootstrap-table 分页
                 <div class="paragraph"><p><strong>Request-example:</strong></p></div>
                 <div class="listingblock">
                     <div class="content">
-                        <pre><code class="bash">curl -X POST -i /crowd_rule_detail2 --data 'id=69'</code></pre>
+                        <pre><code class="bash">curl -X POST -i /service_manager_detail --data 'service_name=britta.boehm'</code></pre>
                     </div>
                 </div>
                 <div class="paragraph"><p><strong>Response-fields:</strong></p></div>
@@ -3491,8 +3927,22 @@ bootstrap-table 分页
 
                     <tr>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">result</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">返回结果</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─map</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">map</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─any object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">any object.</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
                     </tr>
 
@@ -3614,8 +4064,14 @@ bootstrap-table 分页
                     <div class="content">
                         <pre><code class="json">{
   "code": "4286",
-  "msg": "tpvzd8",
-  "result": {},
+  "msg": "qzm8wd",
+  "result": [
+    {
+      "map": {
+        "mapKey": {}
+      }
+    }
+  ],
   "e": {
     "detailMessage": "success",
     "cause": {
@@ -3625,10 +4081,10 @@ bootstrap-table 分页
       },
       "stackTrace": [
         {
-          "declaringClass": "dlli12",
+          "declaringClass": "0cyq6y",
           "methodName": "britta.boehm",
           "fileName": "britta.boehm",
-          "lineNumber": 885
+          "lineNumber": 875
         }
       ],
       "suppressedExceptions": [
@@ -3639,10 +4095,10 @@ bootstrap-table 分页
     },
     "stackTrace": [
       {
-        "declaringClass": "cd7dra",
+        "declaringClass": "0f8bx2",
         "methodName": "britta.boehm",
         "fileName": "britta.boehm",
-        "lineNumber": 941
+        "lineNumber": 12
       }
     ],
     "suppressedExceptions": [
@@ -3656,349 +4112,15 @@ bootstrap-table 分页
                 </div>
             </div>
 
-            <div class="sect2"><h3 id="_10_2_规则模板页面">
-                <a class="anchor" href="#_10_2_规则模板页面"></a>
-                <a class="link" href="#_10_2_规则模板页面">10.2.&nbsp;规则模板页面</a>
+            <div class="sect2"><h3 id="_21_7_暂停服务">
+                <a class="anchor" href="#_21_7_暂停服务"></a>
+                <a class="link" href="#_21_7_暂停服务">21.7.&nbsp;暂停服务</a>
             </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/rule_detail" class="bare">&nbsp;/rule_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;规则模板页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /rule_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_3_人群文件模板页面">
-                <a class="anchor" href="#_10_3_人群文件模板页面"></a>
-                <a class="link" href="#_10_3_人群文件模板页面">10.3.&nbsp;人群文件模板页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/crowd_file_detail" class="bare">&nbsp;/crowd_file_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;人群文件模板页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /crowd_file_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_4_人群运算模板页面">
-                <a class="anchor" href="#_10_4_人群运算模板页面"></a>
-                <a class="link" href="#_10_4_人群运算模板页面">10.4.&nbsp;人群运算模板页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/crowd_operate_detail" class="bare">&nbsp;/crowd_operate_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;人群运算模板页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /crowd_operate_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_5_人群规则模板页面">
-                <a class="anchor" href="#_10_5_人群规则模板页面"></a>
-                <a class="link" href="#_10_5_人群规则模板页面">10.5.&nbsp;人群规则模板页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/crowd_rule_detail" class="bare">&nbsp;/crowd_rule_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;人群规则模板页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /crowd_rule_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_6_过滤模板页面">
-                <a class="anchor" href="#_10_6_过滤模板页面"></a>
-                <a class="link" href="#_10_6_过滤模板页面">10.6.&nbsp;过滤模板页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/filter_detail" class="bare">&nbsp;/filter_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;过滤模板页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /filter_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_7_分流模板页面">
-                <a class="anchor" href="#_10_7_分流模板页面"></a>
-                <a class="link" href="#_10_7_分流模板页面">10.7.&nbsp;分流模板页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/shunt_detail" class="bare">&nbsp;/shunt_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;分流模板页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /shunt_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_8_权益模板页面">
-                <a class="anchor" href="#_10_8_权益模板页面"></a>
-                <a class="link" href="#_10_8_权益模板页面">10.8.&nbsp;权益模板页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/rights_detail" class="bare">&nbsp;/rights_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;权益模板页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /rights_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_9_T+N页面">
-                <a class="anchor" href="#_10_9_T+N页面"></a>
-                <a class="link" href="#_10_9_T+N页面">10.9.&nbsp;T+N页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/tn_detail" class="bare">&nbsp;/tn_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;T+N页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /tn_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_10_人工确认
-manual_confirm_detail页面">
-                <a class="anchor" href="#_10_10_人工确认
-manual_confirm_detail页面"></a>
-                <a class="link" href="#_10_10_人工确认
-manual_confirm_detail页面">10.10.&nbsp;人工确认<br>manual_confirm_detail页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/manual_confirm_detail" class="bare">&nbsp;/manual_confirm_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;人工确认
-manual_confirm_detail页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /manual_confirm_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_11_代码块
-code_block_detail页面">
-                <a class="anchor" href="#_10_11_代码块
-code_block_detail页面"></a>
-                <a class="link" href="#_10_11_代码块
-code_block_detail页面">10.11.&nbsp;代码块<br>code_block_detail页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/code_block_detail" class="bare">&nbsp;/code_block_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;代码块
-code_block_detail页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /code_block_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_12_自定义名单
-custom_list_detail页面">
-                <a class="anchor" href="#_10_12_自定义名单
-custom_list_detail页面"></a>
-                <a class="link" href="#_10_12_自定义名单
-custom_list_detail页面">10.12.&nbsp;自定义名单<br>custom_list_detail页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/custom_list_detail" class="bare">&nbsp;/custom_list_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;自定义名单
-custom_list_detail页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /custom_list_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_13_代码块-代码例子页面">
-                <a class="anchor" href="#_10_13_代码块-代码例子页面"></a>
-                <a class="link" href="#_10_13_代码块-代码例子页面">10.13.&nbsp;代码块-代码例子页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/code_block_demo_index" class="bare">&nbsp;/code_block_demo_index</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;代码块-代码例子页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /code_block_demo_index</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_14_变量池页面">
-                <a class="anchor" href="#_10_14_变量池页面"></a>
-                <a class="link" href="#_10_14_变量池页面">10.14.&nbsp;变量池页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/varpool_detail" class="bare">&nbsp;/varpool_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;变量池页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /varpool_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_15_变量计算页面">
-                <a class="anchor" href="#_10_15_变量计算页面"></a>
-                <a class="link" href="#_10_15_变量计算页面">10.15.&nbsp;变量计算页面</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/variable_detail" class="bare">&nbsp;/variable_detail</a>
-                </p></div>
-                <div class="paragraph"><p><strong>Type:</strong>&nbsp;GET</p></div>
-                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;变量计算页面</p></div>
-                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="bash">curl -X GET -i /variable_detail</code></pre>
-                    </div>
-                </div>
-                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
-                <div class="listingblock">
-                    <div class="content">
-                        <pre><code class="json">string</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sect2"><h3 id="_10_16_人群文件列表">
-                <a class="anchor" href="#_10_16_人群文件列表"></a>
-                <a class="link" href="#_10_16_人群文件列表">10.16.&nbsp;人群文件列表</a>
-            </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/crowd_file_list_by_owner" class="bare">&nbsp;/crowd_file_list_by_owner</a>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_suspend" class="bare">&nbsp;/service_manager_suspend</a>
                 </p></div>
                 <div class="paragraph"><p><strong>Type:</strong>&nbsp;POST</p></div>
                 <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;人群文件列表</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;暂停服务</p></div>
                 <div class="paragraph"><p><strong>Query-parameters:</strong></p></div>
                 <table class="tableblock frame-all grid-all spread">
                     <colgroup>
@@ -4019,9 +4141,17 @@ custom_list_detail页面</p></div>
                     </thead>
                     <tbody>
                     <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">rule_context</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">service_name</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">关键字</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">instance_id</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
                     </tr>
@@ -4030,7 +4160,7 @@ custom_list_detail页面</p></div>
                 <div class="paragraph"><p><strong>Request-example:</strong></p></div>
                 <div class="listingblock">
                     <div class="content">
-                        <pre><code class="bash">curl -X POST -i /crowd_file_list_by_owner --data 'rule_context=88a65i'</code></pre>
+                        <pre><code class="bash">curl -X POST -i /service_manager_suspend --data 'service_name=britta.boehm&instance_id=69'</code></pre>
                     </div>
                 </div>
                 <div class="paragraph"><p><strong>Response-fields:</strong></p></div>
@@ -4066,78 +4196,8 @@ custom_list_detail页面</p></div>
 
                     <tr>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">result</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">返回结果</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─id</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─file_name</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">文件名</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─file_url</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">文件地址</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─owner</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">账号</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─is_delete</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">是否删除,0:未删除,1:删除</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─create_time</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">创建时间</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─update_time</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">更新时间</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─data_type</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">数据类型,phone,email,id_card,可扩展</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─dim_group</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">归属组</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─product_code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">归属产品</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
                     </tr>
 
@@ -4259,21 +4319,8 @@ custom_list_detail页面</p></div>
                     <div class="content">
                         <pre><code class="json">{
   "code": "4286",
-  "msg": "o9no86",
-  "result": [
-    {
-      "id": "69",
-      "file_name": "britta.boehm",
-      "file_url": "www.roxane-huel.com",
-      "owner": "q3dimc",
-      "is_delete": "6riqku",
-      "create_time": "2024-11-17 17:30:43",
-      "update_time": "2024-11-17 17:30:43",
-      "data_type": "x1k4ww",
-      "dim_group": "7jzlvu",
-      "product_code": "4286"
-    }
-  ],
+  "msg": "9g6728",
+  "result": "si92jy",
   "e": {
     "detailMessage": "success",
     "cause": {
@@ -4283,10 +4330,10 @@ custom_list_detail页面</p></div>
       },
       "stackTrace": [
         {
-          "declaringClass": "u7jr9m",
+          "declaringClass": "gfy4s6",
           "methodName": "britta.boehm",
           "fileName": "britta.boehm",
-          "lineNumber": 334
+          "lineNumber": 667
         }
       ],
       "suppressedExceptions": [
@@ -4297,10 +4344,10 @@ custom_list_detail页面</p></div>
     },
     "stackTrace": [
       {
-        "declaringClass": "ugjdff",
+        "declaringClass": "fj1c0f",
         "methodName": "britta.boehm",
         "fileName": "britta.boehm",
-        "lineNumber": 105
+        "lineNumber": 807
       }
     ],
     "suppressedExceptions": [
@@ -4314,19 +4361,55 @@ custom_list_detail页面</p></div>
                 </div>
             </div>
 
-            <div class="sect2"><h3 id="_10_17_获取当前登录用户的归属组">
-                <a class="anchor" href="#_10_17_获取当前登录用户的归属组"></a>
-                <a class="link" href="#_10_17_获取当前登录用户的归属组">10.17.&nbsp;获取当前登录用户的归属组</a>
+            <div class="sect2"><h3 id="_21_8_停止服务">
+                <a class="anchor" href="#_21_8_停止服务"></a>
+                <a class="link" href="#_21_8_停止服务">21.8.&nbsp;停止服务</a>
             </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/get_dim_group" class="bare">&nbsp;/get_dim_group</a>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_stop" class="bare">&nbsp;/service_manager_stop</a>
                 </p></div>
                 <div class="paragraph"><p><strong>Type:</strong>&nbsp;POST</p></div>
                 <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;获取当前登录用户的归属组</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;停止服务</p></div>
+                <div class="paragraph"><p><strong>Query-parameters:</strong></p></div>
+                <table class="tableblock frame-all grid-all spread">
+                    <colgroup>
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="tableblock halign-left valign-top">Parameter</th>
+                        <th class="tableblock halign-left valign-top">Type</th>
+                        <th class="tableblock halign-left valign-top">Description</th>
+                        <th class="tableblock halign-left valign-top">Required</th>
+                        <th class="tableblock halign-left valign-top">Since</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">service_name</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">instance_id</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+                    </tbody>
+                </table>
                 <div class="paragraph"><p><strong>Request-example:</strong></p></div>
                 <div class="listingblock">
                     <div class="content">
-                        <pre><code class="bash">curl -X POST -i /get_dim_group</code></pre>
+                        <pre><code class="bash">curl -X POST -i /service_manager_stop --data 'service_name=britta.boehm&instance_id=69'</code></pre>
                     </div>
                 </div>
                 <div class="paragraph"><p><strong>Response-fields:</strong></p></div>
@@ -4368,79 +4451,16 @@ custom_list_detail页面</p></div>
                     </tr>
 
                     <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─id</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─map</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">map</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
                     </tr>
 
                     <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─dim_value_code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">维度值code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─dim_value_name</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">维度值名称</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─parent_dim_value_code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">父级维度值code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─dim_code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">维度code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─product_code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">产品code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─owner</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">账号</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─enable</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">启用状态,1:启用,2:未启用</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─is_delete</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">是否删除,0:未删除,1:删除</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─create_time</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─any object</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">创建时间</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─update_time</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">更新时间</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">any object.</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
                     </tr>
 
@@ -4562,20 +4582,12 @@ custom_list_detail页面</p></div>
                     <div class="content">
                         <pre><code class="json">{
   "code": "4286",
-  "msg": "rwinq2",
+  "msg": "81fxgc",
   "result": [
     {
-      "id": "69",
-      "dim_value_code": "4286",
-      "dim_value_name": "britta.boehm",
-      "parent_dim_value_code": "4286",
-      "dim_code": "4286",
-      "product_code": "4286",
-      "owner": "vfcedg",
-      "enable": "676xds",
-      "is_delete": "vwr4rd",
-      "create_time": "2024-11-17 17:30:43",
-      "update_time": "2024-11-17 17:30:43"
+      "map": {
+        "mapKey": {}
+      }
     }
   ],
   "e": {
@@ -4587,10 +4599,10 @@ custom_list_detail页面</p></div>
       },
       "stackTrace": [
         {
-          "declaringClass": "lxj5i4",
+          "declaringClass": "hrmtdb",
           "methodName": "britta.boehm",
           "fileName": "britta.boehm",
-          "lineNumber": 199
+          "lineNumber": 526
         }
       ],
       "suppressedExceptions": [
@@ -4601,10 +4613,10 @@ custom_list_detail页面</p></div>
     },
     "stackTrace": [
       {
-        "declaringClass": "qsl7n1",
+        "declaringClass": "7aaz2g",
         "methodName": "britta.boehm",
         "fileName": "britta.boehm",
-        "lineNumber": 918
+        "lineNumber": 300
       }
     ],
     "suppressedExceptions": [
@@ -4618,19 +4630,55 @@ custom_list_detail页面</p></div>
                 </div>
             </div>
 
-            <div class="sect2"><h3 id="_10_18_获取当前登录用户的归属产品">
-                <a class="anchor" href="#_10_18_获取当前登录用户的归属产品"></a>
-                <a class="link" href="#_10_18_获取当前登录用户的归属产品">10.18.&nbsp;获取当前登录用户的归属产品</a>
+            <div class="sect2"><h3 id="_21_9_重启服务">
+                <a class="anchor" href="#_21_9_重启服务"></a>
+                <a class="link" href="#_21_9_重启服务">21.9.&nbsp;重启服务</a>
             </h3>
-                <div class="paragraph"><p><strong>URL:</strong><a href="/get_dim_product" class="bare">&nbsp;/get_dim_product</a>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_run" class="bare">&nbsp;/service_manager_run</a>
                 </p></div>
                 <div class="paragraph"><p><strong>Type:</strong>&nbsp;POST</p></div>
                 <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
-                <div class="paragraph"><p><strong>Description:</strong>&nbsp;获取当前登录用户的归属产品</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;重启服务</p></div>
+                <div class="paragraph"><p><strong>Query-parameters:</strong></p></div>
+                <table class="tableblock frame-all grid-all spread">
+                    <colgroup>
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="tableblock halign-left valign-top">Parameter</th>
+                        <th class="tableblock halign-left valign-top">Type</th>
+                        <th class="tableblock halign-left valign-top">Description</th>
+                        <th class="tableblock halign-left valign-top">Required</th>
+                        <th class="tableblock halign-left valign-top">Since</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">service_name</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">instance_id</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+                    </tbody>
+                </table>
                 <div class="paragraph"><p><strong>Request-example:</strong></p></div>
                 <div class="listingblock">
                     <div class="content">
-                        <pre><code class="bash">curl -X POST -i /get_dim_product</code></pre>
+                        <pre><code class="bash">curl -X POST -i /service_manager_run --data 'service_name=britta.boehm&instance_id=69'</code></pre>
                     </div>
                 </div>
                 <div class="paragraph"><p><strong>Response-fields:</strong></p></div>
@@ -4672,79 +4720,16 @@ custom_list_detail页面</p></div>
                     </tr>
 
                     <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─id</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─map</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">map</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
                     </tr>
 
                     <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─dim_value_code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">维度值code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─dim_value_name</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">维度值名称</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─parent_dim_value_code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">父级维度值code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─dim_code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">维度code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─product_code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">产品code</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─owner</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">账号</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─enable</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">启用状态,1:启用,2:未启用</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─is_delete</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">是否删除,0:未删除,1:删除</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─create_time</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─any object</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">创建时间</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-                    </tr>
-
-                    <tr>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─update_time</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-                        <td class="tableblock halign-left valign-top"><p class="tableblock">更新时间</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">any object.</p></td>
                         <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
                     </tr>
 
@@ -4866,20 +4851,12 @@ custom_list_detail页面</p></div>
                     <div class="content">
                         <pre><code class="json">{
   "code": "4286",
-  "msg": "oxiswn",
+  "msg": "ku7h0e",
   "result": [
     {
-      "id": "69",
-      "dim_value_code": "4286",
-      "dim_value_name": "britta.boehm",
-      "parent_dim_value_code": "4286",
-      "dim_code": "4286",
-      "product_code": "4286",
-      "owner": "1kms2e",
-      "enable": "x2k1ci",
-      "is_delete": "5dh114",
-      "create_time": "2024-11-17 17:30:43",
-      "update_time": "2024-11-17 17:30:43"
+      "map": {
+        "mapKey": {}
+      }
     }
   ],
   "e": {
@@ -4891,10 +4868,10 @@ custom_list_detail页面</p></div>
       },
       "stackTrace": [
         {
-          "declaringClass": "9xsxhj",
+          "declaringClass": "i9r9ly",
           "methodName": "britta.boehm",
           "fileName": "britta.boehm",
-          "lineNumber": 181
+          "lineNumber": 624
         }
       ],
       "suppressedExceptions": [
@@ -4905,10 +4882,548 @@ custom_list_detail页面</p></div>
     },
     "stackTrace": [
       {
-        "declaringClass": "g7tdwb",
+        "declaringClass": "bcnn0x",
         "methodName": "britta.boehm",
         "fileName": "britta.boehm",
-        "lineNumber": 577
+        "lineNumber": 460
+      }
+    ],
+    "suppressedExceptions": [
+      {
+        "object": "any object"
+      }
+    ]
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sect2"><h3 id="_21_10_更新slot">
+                <a class="anchor" href="#_21_10_更新slot"></a>
+                <a class="link" href="#_21_10_更新slot">21.10.&nbsp;更新slot</a>
+            </h3>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_slot_update" class="bare">&nbsp;/service_manager_slot_update</a>
+                </p></div>
+                <div class="paragraph"><p><strong>Type:</strong>&nbsp;POST</p></div>
+                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;更新slot</p></div>
+                <div class="paragraph"><p><strong>Query-parameters:</strong></p></div>
+                <table class="tableblock frame-all grid-all spread">
+                    <colgroup>
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="tableblock halign-left valign-top">Parameter</th>
+                        <th class="tableblock halign-left valign-top">Type</th>
+                        <th class="tableblock halign-left valign-top">Description</th>
+                        <th class="tableblock halign-left valign-top">Required</th>
+                        <th class="tableblock halign-left valign-top">Since</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">slot</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">instance_id</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="bash">curl -X POST -i /service_manager_slot_update --data 'slot=mmu6ir&instance_id=69'</code></pre>
+                    </div>
+                </div>
+                <div class="paragraph"><p><strong>Response-fields:</strong></p></div>
+                <table class="tableblock frame-all grid-all spread">
+                    <colgroup>
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="tableblock halign-left valign-top">Field</th>
+                        <th class="tableblock halign-left valign-top">Type</th>
+                        <th class="tableblock halign-left valign-top">Description</th>
+                        <th class="tableblock halign-left valign-top">Since</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">code</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">200:成功,201:失败</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">msg</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">返回说明</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">result</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">返回结果</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─map</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">map</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─any object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">any object.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">e</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─detailMessage</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─cause</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─detailMessage</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─stackTrace</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─declaringClass</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─methodName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─fileName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─lineNumber</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">int32</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─suppressedExceptions</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─stackTrace</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─declaringClass</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─methodName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─fileName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─lineNumber</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">int32</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─suppressedExceptions</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="json">{
+  "code": "4286",
+  "msg": "j1979d",
+  "result": [
+    {
+      "map": {
+        "mapKey": {}
+      }
+    }
+  ],
+  "e": {
+    "detailMessage": "success",
+    "cause": {
+      "detailMessage": "success",
+      "cause": {
+        "$ref": "..."
+      },
+      "stackTrace": [
+        {
+          "declaringClass": "9y9y33",
+          "methodName": "britta.boehm",
+          "fileName": "britta.boehm",
+          "lineNumber": 60
+        }
+      ],
+      "suppressedExceptions": [
+        {
+          "object": "any object"
+        }
+      ]
+    },
+    "stackTrace": [
+      {
+        "declaringClass": "eh2yez",
+        "methodName": "britta.boehm",
+        "fileName": "britta.boehm",
+        "lineNumber": 737
+      }
+    ],
+    "suppressedExceptions": [
+      {
+        "object": "any object"
+      }
+    ]
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sect2"><h3 id="_21_11_更新version">
+                <a class="anchor" href="#_21_11_更新version"></a>
+                <a class="link" href="#_21_11_更新version">21.11.&nbsp;更新version</a>
+            </h3>
+                <div class="paragraph"><p><strong>URL:</strong><a href="/service_manager_version_update" class="bare">&nbsp;/service_manager_version_update</a>
+                </p></div>
+                <div class="paragraph"><p><strong>Type:</strong>&nbsp;POST</p></div>
+                <div class="paragraph"><p><strong>Content-Type:</strong>&nbsp;application/x-www-form-urlencoded;charset=UTF-8</p></div>
+                <div class="paragraph"><p><strong>Description:</strong>&nbsp;更新version</p></div>
+                <div class="paragraph"><p><strong>Query-parameters:</strong></p></div>
+                <table class="tableblock frame-all grid-all spread">
+                    <colgroup>
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="tableblock halign-left valign-top">Parameter</th>
+                        <th class="tableblock halign-left valign-top">Type</th>
+                        <th class="tableblock halign-left valign-top">Description</th>
+                        <th class="tableblock halign-left valign-top">Required</th>
+                        <th class="tableblock halign-left valign-top">Since</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">version_tag</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">instance_id</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="paragraph"><p><strong>Request-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="bash">curl -X POST -i /service_manager_version_update --data 'version_tag=7ex49f&instance_id=69'</code></pre>
+                    </div>
+                </div>
+                <div class="paragraph"><p><strong>Response-fields:</strong></p></div>
+                <table class="tableblock frame-all grid-all spread">
+                    <colgroup>
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="tableblock halign-left valign-top">Field</th>
+                        <th class="tableblock halign-left valign-top">Type</th>
+                        <th class="tableblock halign-left valign-top">Description</th>
+                        <th class="tableblock halign-left valign-top">Since</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">code</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">200:成功,201:失败</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">msg</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">返回说明</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">result</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">返回结果</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─map</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">map</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─any object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">any object.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">e</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─detailMessage</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─cause</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─detailMessage</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─stackTrace</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─declaringClass</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─methodName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─fileName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─lineNumber</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">int32</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─suppressedExceptions</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─stackTrace</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─declaringClass</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─methodName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─fileName</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─lineNumber</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">int32</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+
+                    <tr>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">└─suppressedExceptions</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">No comments found.</p></td>
+                        <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="paragraph"><p><strong>Response-example:</strong></p></div>
+                <div class="listingblock">
+                    <div class="content">
+                        <pre><code class="json">{
+  "code": "4286",
+  "msg": "q7rgbz",
+  "result": [
+    {
+      "map": {
+        "mapKey": {}
+      }
+    }
+  ],
+  "e": {
+    "detailMessage": "success",
+    "cause": {
+      "detailMessage": "success",
+      "cause": {
+        "$ref": "..."
+      },
+      "stackTrace": [
+        {
+          "declaringClass": "mz4jk7",
+          "methodName": "britta.boehm",
+          "fileName": "britta.boehm",
+          "lineNumber": 836
+        }
+      ],
+      "suppressedExceptions": [
+        {
+          "object": "any object"
+        }
+      ]
+    },
+    "stackTrace": [
+      {
+        "declaringClass": "rxf514",
+        "methodName": "britta.boehm",
+        "fileName": "britta.boehm",
+        "lineNumber": 134
       }
     ],
     "suppressedExceptions": [

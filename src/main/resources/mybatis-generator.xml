@@ -421,5 +421,12 @@
 <!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--            </table>-->
 
+<!--                    <table tableName="data_code_info" domainObjectName="DataCodeInfo" mapperName="BaseDataCodeMapper">-->
+<!--                        <property name="useActualColumnNames" value="true" />-->
+<!--                        <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                        <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                        <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--                    </table>-->
+
     </context>
 </generatorConfiguration>

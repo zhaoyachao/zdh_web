@@ -232,7 +232,16 @@
         '            <input name="varpool_code" type="text"\n' +
         '                   placeholder="变量code" class="form-control varpool_code" aria-required="true" value="zdh_varpool_code">\n' +
         '        </div>\n' +
-        '        <div class="col-sm-2">\n' +
+        '        <div class="col-sm-1">\n' +
+        '            <select class=" form-control m-b varpool_domain_type" data-live-search="true"  id="zdh_varpool_type">\n' +
+        '<option value="string">字符串</option>\n'+
+        '<option value="int">数值</option>\n'+
+        '<option value="decimal">浮点数</option>\n'+
+        '<option value="list">集合</option>\n'+
+        '<option value="map">字典</option>\n'+
+        '            </select>\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-1">\n' +
         '            <select class=" form-control m-b varpool_domain_operate" data-live-search="true"  id="zdh_varpool_operate">\n' +
         '<option value="eq">覆盖</option>\n'+
         '<option value="add">追加</option>\n'+
@@ -244,7 +253,11 @@
         '            <input name="varpool_value" type="text"\n' +
         '                   placeholder="参数值,多个分号分割" class="form-control varpool_domain_value" aria-required="true" value="zdh_varpool_value">\n' +
         '        </div>\n' +
-        '        <div class="col-sm-2">\n' +
+        '        <div class="col-sm-1">\n' +
+        '            <input name="varpool_sep" type="text"\n' +
+        '                   placeholder="默认分号分割,可自定义分割符,避免【.\】这种转义符" class="form-control varpool_domain_sep" aria-required="true" value="zdh_varpool_sep">\n' +
+        '        </div>\n' +
+        '        <div class="col-sm-1">\n' +
         '            <button id="delete" name="delete" class="btn btn-danger"\n' +
         '                    οnsubmit=\'return false\'\n' +
         '                    type="button">删除\n' +
@@ -273,7 +286,9 @@
                 tmp = tmp.replace("zdh_varpool_domain", "");
                 tmp = tmp.replace("zdh_varpool_code", "");
                 tmp = tmp.replace("zdh_varpool_operate", "eq");
+                tmp = tmp.replace("zdh_varpool_type", "string");
                 tmp = tmp.replace("zdh_varpool_value", "");
+                tmp = tmp.replace("zdh_varpool_sep", ";");
                 $('#label_div').append(tmp);
                 $('#label_div #delete').click(function () {
                     $(this).parent().parent().remove();
@@ -365,7 +380,7 @@
                 var varpool_param_object = JSON.parse(varpool_param);
                 if(varpool_param_object.length>0){
                     for(var i=0;i<varpool_param_object.length;i++){
-                        buildConfig(i,varpool_param_object[i].varpool_domain, varpool_param_object[i].varpool_code,  varpool_param_object[i].varpool_domain_operate, varpool_param_object[i].varpool_domain_value);
+                        buildConfig(i,varpool_param_object[i].varpool_domain, varpool_param_object[i].varpool_code,  varpool_param_object[i].varpool_domain_operate, varpool_param_object[i].varpool_domain_value, varpool_param_object[i].varpool_domain_type, varpool_param_object[i].varpool_domain_sep);
                     }
                 }
 
@@ -385,15 +400,18 @@
 
     })(document, window, jQuery);
 
-    function buildConfig(i,varpool_domain, varpool_code, varpool_operate, varpool_value) {
+    function buildConfig(i,varpool_domain, varpool_code, varpool_operate, varpool_value, varpool_type, varpool_sep) {
         var tmp=template;
         tmp = tmp.replace("zdh_varpool_domain", varpool_domain);
         tmp = tmp.replace("zdh_varpool_code", varpool_code);
         tmp = tmp.replace("zdh_varpool_operate", "zdh_varpool_operate_"+i);
+        tmp = tmp.replace("zdh_varpool_type", "zdh_varpool_type_"+i);
         tmp = tmp.replace("zdh_varpool_value", varpool_value);
+        tmp = tmp.replace("zdh_varpool_sep", varpool_sep);
         //tmp = tmp.replace("zdh_shunt_type", "zdh_shunt_type"+i);
         $('#label_div').append(tmp);
         $('#label_div #zdh_varpool_operate_'+i).val(varpool_operate);
+        $('#label_div #zdh_varpool_type_'+i).val(varpool_type);
         $('#label_div #delete').click(function () {
             $(this).parent().parent().remove();
         });
@@ -436,6 +454,8 @@
         var ary2 = new Array();
         var ary3 = new Array();
         var ary4 = new Array();
+        var ary5 = new Array();
+        var ary6 = new Array();
 
         $(".varpool_domain").each(function(index){
             ary[index] = $(this).val();
@@ -451,6 +471,14 @@
             ary4[index] =  $(this).val();
         });
 
+        $(".varpool_domain_type").each(function(index){
+            ary5[index] =$(this).val();
+        });
+
+        $(".varpool_domain_sep").each(function(index){
+            ary6[index] =$(this).val();
+        });
+
         var result = [];
         for (var i=0;i<ary.length;i++){
             var param={
@@ -458,6 +486,8 @@
                 "varpool_code":ary2[i],
                 "varpool_domain_operate": ary3[i],
                 "varpool_domain_value":ary4[i],
+                "varpool_domain_type": ary5[i],
+                "varpool_domain_sep": ary6[i],
             };
             result.push(param);
         }

@@ -12,7 +12,7 @@
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
-              title: '枚举配置',
+              title: '数据节点配置',
               shadeClose: false,
               resize: true,
               fixed: false,
@@ -20,14 +20,25 @@
               shade: 0.1,
               area : ['45%', '60%'],
               //area: ['450px', '500px'],
-              content: server_context+"/enum_add_index?id=-1", //iframe的url
+              content: server_context+"/data_code_add_index?id=-1", //iframe的url
               end : function () {
                   console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
+
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/enum_list?"+$("#enum_form").serialize()+"&tm="+new Date(),
+                      url: server_context+"/data_code_list_by_page?"+$("#data_code_form").serialize(),
                       contentType: "application/json;charset=utf-8",
-                      dataType: "json"
+                      dataType: "json",
+                      queryParams: function (params) {
+                          // 此处使用了LayUi组件 是为加载层
+                          loadIndex = layer.load(1);
+                          let resRepor = {
+                              //服务端分页所需要的参数
+                              limit: params.limit,
+                              offset: params.offset
+                          };
+                          return resRepor;
+                      },
                   });
               }
           });
@@ -41,7 +52,7 @@
             return;
         } else {
 
-            layer.confirm('是否删除枚举', {
+            layer.confirm('是否删除节点', {
                 btn: ['确定','取消'] //按钮
             }, function(index){
                 var ids = new Array();// 声明一个数组
@@ -62,7 +73,7 @@
 
       function deleteMs(ids) {
           $.ajax({
-              url : server_context+"/enum_delete",
+              url : server_context+"/data_code_delete",
               data : "ids=" + ids,
               type : "post",
               async:false,
@@ -76,9 +87,19 @@
                   parent.layer.msg("执行成功");
 
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/enum_list?"+$("#enum_form").serialize(),
+                      url: server_context+"/data_code_list_by_page?"+$("#data_code_form").serialize(),
                       contentType: "application/json;charset=utf-8",
-                      dataType: "json"
+                      dataType: "json",
+                      queryParams: function (params) {
+                          // 此处使用了LayUi组件 是为加载层
+                          loadIndex = layer.load(1);
+                          let resRepor = {
+                              //服务端分页所需要的参数
+                              limit: params.limit,
+                              offset: params.offset
+                          };
+                          return resRepor;
+                      },
                   });
               },
               error: function (data) {
@@ -93,7 +114,7 @@
               $("#id").val(row.id);
               top.layer.open({
                   type: 2,
-                  title: '枚举配置',
+                  title: '数据节点配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
@@ -101,10 +122,22 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: server_context+"/enum_add_index?id="+row.id, //iframe的url
+                  content: server_context+"/data_code_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url : server_context+'/enum_list'
+                          url: server_context+"/data_code_list_by_page?"+$("#data_code_form").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json",
+                          queryParams: function (params) {
+                              // 此处使用了LayUi组件 是为加载层
+                              loadIndex = layer.load(1);
+                              let resRepor = {
+                                  //服务端分页所需要的参数
+                                  limit: params.limit,
+                                  offset: params.offset
+                              };
+                              return resRepor;
+                          },
                       });
                   }
               });
@@ -114,7 +147,7 @@
               $("#id").val(row.id);
               top.layer.open({
                   type: 2,
-                  title: '枚举配置',
+                  title: '数据节点配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
@@ -122,12 +155,22 @@
                   shade: 0.1,
                   area : ['45%', '60%'],
                   //area: ['450px', '500px'],
-                  content: server_context+"/enum_add_index?id="+row.id+"&is_copy=true", //iframe的url
+                  content: server_context+"/data_code_add_index?id="+row.id+"&is_copy=true", //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: server_context+"/enum_list?"+$("#enum_form").serialize(),
+                          url: server_context+"/data_code_list_by_page?"+$("#data_code_form").serialize(),
                           contentType: "application/json;charset=utf-8",
-                          dataType: "json"
+                          dataType: "json",
+                          queryParams: function (params) {
+                              // 此处使用了LayUi组件 是为加载层
+                              loadIndex = layer.load(1);
+                              let resRepor = {
+                                  //服务端分页所需要的参数
+                                  limit: params.limit,
+                                  offset: params.offset
+                              };
+                              return resRepor;
+                          },
                       });
                   }
               });
@@ -203,68 +246,45 @@
       }
 
 
-      $('#exampleTableEvents').bootstrapTable({
-          method: 'POST',
-      url: server_context+"/enum_list",
-      search: true,
-      pagination: true,
-      showRefresh: true,
-      showToggle: true,
-      showColumns: true,
-      iconSize: 'outline',
-      toolbar: '#exampleTableEventsToolbar',
-      icons: {
-        refresh: 'glyphicon-repeat',
-        toggle: 'glyphicon-list-alt',
-        columns: 'glyphicon-list'
-      },
-          responseHandler:function (res) {
-              if(res.code != "200"){
-                  layer.msg(res.msg);
-                  return ;
-              }
-              return res.result;
-          },
-        columns: [{
-            checkbox: true,
-            field:'state',
-            sortable:false
-        }, {
-            field: 'id',
-            title: 'ID',
-            sortable:false
-        }, {
-            field: 'enum_context',
-            title: '枚举说明',
-            sortable:false
-        },{
-            field: 'enum_code',
-            title: '枚举标识',
-            sortable:false
-        }, {
-            field: 'enum_type',
-            title: '枚举类型',
-            sortable:false
-        },{
-            field: 'owner',
-            title: '创建人',
-            sortable:false
-        },{
-            field: 'create_time',
-            title: '任 务 创 建 时 间',
-            sortable:true,
-            formatter: function (value, row, index) {
-                return getMyDate(value);
-            }
-        },{
-            field: 'operate',
-            title: '常用操作按钮事件',
-            events: operateEvents,//给按钮注册事件
-            width:150,
-            formatter: operateFormatter //表格中增加按钮
-        }]
-    });
 
-    var $result = $('#examplebtTableEventsResult');
+      var columns= [{
+          checkbox: true,
+          field:'state',
+          sortable:false
+      }, {
+          field: 'id',
+          title: 'ID',
+          sortable:false
+      }, {
+          field: 'code_name',
+          title: '数据节点名称',
+          sortable:false
+      },{
+          field: 'code',
+          title: '数据节点',
+          sortable:false
+      },{
+          field: 'owner',
+          title: '创建人',
+          sortable:false
+      },{
+          field: 'create_time',
+          title: '任 务 创 建 时 间',
+          sortable:true,
+          formatter: function (value, row, index) {
+              return getMyDate(value);
+          }
+      },{
+          field: 'operate',
+          title: '常用操作按钮事件',
+          events: operateEvents,//给按钮注册事件
+          width:150,
+          formatter: operateFormatter //表格中增加按钮
+      }];
+
+      var bootstrapTableConf = getTablePageCommon(server_context+"/data_code_list_by_page?"+$("#data_code_form").serialize()+"&tm="+new Date());
+      bootstrapTableConf['columns'] = columns;
+      $('#exampleTableEvents').bootstrapTable(bootstrapTableConf);
+
   })();
 })(document, window, jQuery);

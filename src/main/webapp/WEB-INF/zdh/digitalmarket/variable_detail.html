@@ -72,10 +72,10 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">变量池说明</label>
+                            <label class="col-sm-2 control-label">变量说明</label>
                             <div class="col-sm-10">
                                 <input id="rule_context" name="rule_context" type="text"
-                                       placeholder="变量池说明" class="form-control" aria-required="true"> </span>
+                                       placeholder="变量说明" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
 
@@ -90,13 +90,19 @@
                                 <input name="varpool_code" id="varpool_code" type="text"
                                        placeholder="变量code" class="form-control varpool_code" aria-required="true">
                             </div>
+
                             <div class="col-sm-2">
-                                <select class=" form-control m-b varpool_domain_operate" data-live-search="true"  id="varpool_type" name="varpool_type">
+                                <select class=" form-control m-b varpool_type" data-live-search="true"  id="varpool_type" name="varpool_type">
                                     <option value="string">字符串</option>
                                     <option value="int">数值</option>
+                                    <option value="decimal">浮点数</option>
                                     <option value="list">集合</option>
                                     <option value="map">字典</option>
                                 </select>
+                            </div>
+                            <div class="col-sm-2">
+                                <input name="varpool_expre" id="varpool_expre" type="text"
+                                                          placeholder="变量表达式,用于复杂或者嵌套变量 表达式基础语法varpool_ret.xxx:获取对象类型中xxx属性, " class="form-control varpool_expre" aria-required="true">
                             </div>
                             <div class="col-sm-2">
                                 <select class=" form-control m-b varpool_domain_operate" data-live-search="true"  id="varpool_operate" name="varpool_operate">
@@ -115,7 +121,6 @@
                                 <input name="varpool_value" id="varpool_value" type="text"
                                        placeholder="参数值,多个分号分割" class="form-control" aria-required="true">
                             </div>
-                            <div class="col-sm-2"></div>
                         </div>
 
 
@@ -313,6 +318,7 @@
                 $("#varpool_operate").trigger("chosen:updated");
                 $("#varpool_code").val(varpool_param_object.varpool_code);
                 $("#varpool_value").val(varpool_param_object.varpool_value);
+                $("#varpool_expre").val(varpool_param_object.varpool_expre);
 
 
                 $("#project_code").val(s["project_code"]);
@@ -371,6 +377,7 @@
         var varpool_operate = $("#varpool_operate").find("option:selected").val();
         var varpool_type = $("#varpool_type").find("option:selected").val();
         var varpool_code = $("#varpool_code").val();
+        var varpool_expre = $("#varpool_expre").val();
         var varpool_value = $("#varpool_value").val();
 
         let data={
@@ -391,6 +398,7 @@
             "varpool_domain": varpool_domain,
             "varpool_operate": varpool_operate,
             "varpool_code": varpool_code,
+            "varpool_expre": varpool_expre,
             "varpool_value": varpool_value,
             "varpool_type": varpool_type
         };
