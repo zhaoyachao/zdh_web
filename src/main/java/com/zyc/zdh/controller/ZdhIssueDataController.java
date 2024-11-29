@@ -375,7 +375,7 @@ public class ZdhIssueDataController extends BaseController {
             criteria1.andIn("status", Arrays.asList(new String[]{Const.APPLY_STATUS_INIT,Const.APPLY_STATUS_SUCCESS}));
             List<ApplyInfo> applyInfos = applyMapper.selectByExample(example1);
             if (applyInfos != null && applyInfos.size() > 0) {
-                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前数据以申请完成/正在申请中,不可重复申请", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前数据已申请完成/正在申请中,不可重复申请", null);
             }
 
             String id = SnowflakeIdWorker.getInstance().nextId() + "";
@@ -426,7 +426,7 @@ public class ZdhIssueDataController extends BaseController {
             zdhProcessFlowController.createProcess(event_code, "申请数据-" + applyInfo.getApply_context(), applyInfo.getId());
 
             //EmailJob会自动加载通知信息
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "申请以发起", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "申请已发起", null);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

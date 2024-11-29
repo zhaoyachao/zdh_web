@@ -156,7 +156,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 //                        }
 //                        if(level >= 1 && level <3){
 //                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
-//                            //杀死触发,如果所有上游任务都以完成finish/skip
+//                            //杀死触发,如果所有上游任务都已完成finish/skip
 //                            List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
 //                            if(tlis_finish.size()==task_ids.length){
 //                                tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
@@ -166,7 +166,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 //                                tl.setRun_jsmind_data(jsonObject.toJSONString());
 //                                tl.setIs_disenable("true");
 //                                JobDigitalMarket.updateTaskLog(tl, sim);
-//                                JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游存在失败或者杀死时触发,检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为check_dep_finish");
+//                                JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游存在失败或者杀死时触发,检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为check_dep_finish");
 //                                continue;
 //                            }
 //                        }
@@ -199,8 +199,23 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                         if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                             continue;
                         }
+                        if(tl.getInstance_type().equalsIgnoreCase("tn")) {
+                            boolean is_run = JobDigitalMarket.checkTnDepends(tl, dagStrategyInstance);
+                            if (is_run || tl.getIs_disenable().equalsIgnoreCase(Const.TRUR)) {
+                                //可执行,或者跳过任务(策略的跳过-通过is_disenable实现),更新任务状态为完成
+                                tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
+                                JobDigitalMarket.updateTaskLog(tl, sim);
+                                JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
+                                JobDigitalMarket.insertLog(tl, "INFO", "当前策略任务:" + tl.getId() + ",检查完成:" + tl.getStatus());
+                                continue;
+                            }else{
+                                continue;
+                            }
+                        }
+
                         JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
-                        if(tl.getTouch_type()==null || !tl.getTouch_type().equalsIgnoreCase("queue")){
+
+                        if(tl.getTouch_type()==null || tl.getTouch_type().equalsIgnoreCase("queue")){
                             resovleStrategyInstance(tl);
                         }
                         System.out.println("根节点模拟发放任务--结束");
@@ -275,7 +290,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                         }
 
                         if(is_run){
-                            //上游都以完成,可执行,任务发完执行集群 此处建议使用优先级队列 todo
+                            //上游都已完成,可执行,任务发完执行集群 此处建议使用优先级队列 todo
                             System.out.println("模拟发放任务--开始");
                             JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
                             if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
@@ -381,11 +396,11 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             }else if(finish_num+error_num == tlidList.size()){
                 //存在失败
                 sgim.updateStatusById3(JobStatus.ERROR.getValue() ,DateUtil.getCurrentTime(),sgi.getId());
-                JobDigitalMarket.insertLog(sgi,"INFO","任务组以失败,具体信息请点击子任务查看");
+                JobDigitalMarket.insertLog(sgi,"INFO","任务组已失败,具体信息请点击子任务查看");
             }else if(finish_num+error_num+kill_num == tlidList.size()){
                 //存在杀死任务
                 sgim.updateStatusById3(JobStatus.KILLED.getValue() ,DateUtil.getCurrentTime(),sgi.getId());
-                JobDigitalMarket.insertLog(sgi,"INFO","任务组以完成,存在杀死任务,具体信息请点击子任务查看");
+                JobDigitalMarket.insertLog(sgi,"INFO","任务组已完成,存在杀死任务,具体信息请点击子任务查看");
             }
         }
 
@@ -466,7 +481,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     si.setRun_jsmind_data(jsonObject.toJSONString());
                     si.setIs_disenable("true");
                     JobDigitalMarket.updateTaskLog(si,sim);
-                    JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为CHECK_DEP_FINISH, 且任务改为禁用");
+                    JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为CHECK_DEP_FINISH, 且任务改为禁用");
                     return action;
                 }
 
@@ -496,7 +511,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     si.setRun_jsmind_data(jsonObject.toJSONString());
                     si.setIs_disenable("true");
                     JobDigitalMarket.updateTaskLog(si,sim);
-                    JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为CHECK_DEP_FINISH,且任务改为禁用");
+                    JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为CHECK_DEP_FINISH,且任务改为禁用");
                     return action;
                 }
 
@@ -507,7 +522,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     return action;
                 }
 
-                //包含error, 且不包含finish,skip,error之前的状态任务表示上游都以完成,可进行判断是否触发
+                //包含error, 且不包含finish,skip,error之前的状态任务表示上游都已完成,可进行判断是否触发
                 if(checkByInStatus(sis, Lists.newArrayList("error")) &&
                         !checkByNotInStatus(sis, Lists.newArrayList("finish", "skip", "error"))){
                     action = "do";
@@ -533,7 +548,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             }
 //            if(level >= 1 && level <3){
 //                // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
-//                //杀死触发,如果所有上游任务都以完成finish/skip
+//                //杀死触发,如果所有上游任务都已完成finish/skip
 //                List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
 //                if(tlis_finish.size()==task_ids.length){
 //                    tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
@@ -543,7 +558,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 //                    tl.setRun_jsmind_data(jsonObject.toJSONString());
 //                    tl.setIs_disenable("true");
 //                    JobDigitalMarket.updateTaskLog(tl, sim);
-//                    JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游存在失败或者杀死时触发,检测到上游任务:"+pre_tasks+",都以完成或者跳过,更新本任务状态为check_dep_finish");
+//                    JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游存在失败或者杀死时触发,检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为check_dep_finish");
 //                    continue;
 //                }
 //            }

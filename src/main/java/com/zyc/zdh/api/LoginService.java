@@ -91,7 +91,7 @@ public class LoginService {
 
                 if(user !=null) {
                     resultInfo.setStatus("200");
-                    resultInfo.setMessage("以完成认证");
+                    resultInfo.setMessage("已完成认证");
                     resultInfo.setResult(token);
                 }
             }catch (Exception e){

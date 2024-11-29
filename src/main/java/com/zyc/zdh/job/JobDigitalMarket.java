@@ -4,6 +4,8 @@ import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.hubspot.jinjava.Jinjava;
+import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
 import com.zyc.zdh.dao.StrategyGroupMapper;
 import com.zyc.zdh.dao.StrategyInstanceMapper;
@@ -151,6 +153,11 @@ public class JobDigitalMarket {
         if(StringUtils.isEmpty(tn_value)){
             throw new Exception("tn模块时间参数不可为空");
         }
+        //替换时间参数
+        Map<String, Object> jinJavaParam = getJinJavaParam(si);
+        Jinjava jinjava = DynamicParams();
+        tn_value = jinjava.render(tn_value, jinJavaParam);
+
         Date currentDate = new Date();
         if(tn_type.equalsIgnoreCase(Const.TN_TYPE_RELATIVE)){
             //相对时间
@@ -195,12 +202,12 @@ public class JobDigitalMarket {
                 //起始结束一样
                 start = DateUtil.pase(values[0], DateUtil.df_time.getPattern()).getTime();
                 end = start;
-            }
-            if(values.length != 2){
+            }else if(values.length != 2){
                 throw new Exception("tn模块设置绝对时间必须设置开始和结束2个时间");
+            }else{
+                start = DateUtil.pase(values[0], DateUtil.df_time.getPattern()).getTime();
+                end = DateUtil.pase(values[1], DateUtil.df_time.getPattern()).getTime();
             }
-            start = DateUtil.pase(values[0], DateUtil.df_time.getPattern()).getTime();
-            end = DateUtil.pase(values[1], DateUtil.df_time.getPattern()).getTime();
 
             //只做包含校验
             if(currentDate.getTime()>=start && currentDate.getTime()<=end){
@@ -214,16 +221,16 @@ public class JobDigitalMarket {
     /**
      * 根据时间(timestamp) 生成jinjava 模板中的时间参数
      *
-     * @param tli
+     * @param si
      * @return
      */
-    public static Map<String, Object> getJinJavaParam(StrategyGroupInstance tli) {
+    public static Map<String, Object> getJinJavaParam(StrategyInstance si) {
         String msg = "目前支持日期参数以下模式: {{zdh_date}} => yyyy-MM-dd ,{{zdh_date_nodash}}=> yyyyMMdd " +
                 ",{{zdh_date_time}}=> yyyy-MM-dd HH:mm:ss,{{zdh_year}}=> 年,{{zdh_month}}=> 月,{{zdh_day}}=> 日," +
                 "{{zdh_hour}}=>24小时制,{{zdh_minute}}=>分钟,{{zdh_second}}=>秒,{{zdh_time}}=>时间戳";
         logger.info(msg);
-        insertLog(tli, "info", msg);
-        Timestamp cur_time = tli.getCur_time();
+        insertLog(si, "info", msg);
+        Timestamp cur_time = si.getCur_time();
         String date_nodash = DateUtil.formatNodash(cur_time);
         String date_time = DateUtil.formatTime(cur_time);
         String date_dt = DateUtil.format(cur_time);
@@ -237,13 +244,37 @@ public class JobDigitalMarket {
         jinJavaParam.put("zdh_hour", DateUtil.hour(cur_time));
         jinJavaParam.put("zdh_minute", DateUtil.minute(cur_time));
         jinJavaParam.put("zdh_second", DateUtil.second(cur_time));
+        jinJavaParam.put("zdh_monthx", DateUtil.monthx(cur_time));
+        jinJavaParam.put("zdh_dayx", DateUtil.dayx(cur_time));
+        jinJavaParam.put("zdh_hourx", DateUtil.hourx(cur_time));
+        jinJavaParam.put("zdh_minutex", DateUtil.minutex(cur_time));
+        jinJavaParam.put("zdh_secondx", DateUtil.secondx(cur_time));
+
         jinJavaParam.put("zdh_time", cur_time.getTime());
-        jinJavaParam.put("zdh_task_log_id", tli.getId());
+        jinJavaParam.put("zdh_task_log_id", si.getId());
+
+        jinJavaParam.put("zdh_dt", new DateUtil());
 
         return jinJavaParam;
 
     }
 
+    public static Jinjava DynamicParams(){
+        Jinjava jj = new Jinjava();
+
+        jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "add_day",
+                DateUtil.class, "addDay", String.class, Integer.class));
+        jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "add_hour",
+                DateUtil.class, "addHour", String.class, Integer.class));
+        jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "add_minute",
+                DateUtil.class, "addMinute", String.class, Integer.class));
+        jj.getGlobalContext().registerFunction(new ELFunctionDefinition("", "pase",
+                DateUtil.class, "pase", String.class, String.class));
+
+        String msg = "目前支持日期操作: {{add_day('2021-12-01 00:00:00', 1)}} => 2021-12-02 00:00:00 ,{{add_hour('2021-12-01 00:00:00', 1)}} => 2021-12-01 01:00:00,{{add_minute('2021-12-01 00:00:00', 1)}} => 2021-12-01 00:01:00, 更多高级函数, 可参考【系统内置参数】点击链接查看具体使用例子";
+        logger.info(msg);
+        return jj;
+    }
     /**
      * 选择具体的job执行引擎,只有调度和手动重试触发(手动执行部分请参见其他方法)
      * 解析任务组时间->解析创建任务组实例->创建子任务实例

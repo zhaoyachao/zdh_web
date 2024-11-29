@@ -96,6 +96,18 @@ public class DateUtil {
         return new Timestamp(beginDate.getTimeInMillis());
     }
 
+    /**
+     * 秒级处理
+     * @param start
+     * @param num
+     * @return
+     */
+    public static Timestamp addSecond(String start,Integer num){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(Timestamp.valueOf(start).getTime());
+        beginDate.add(Calendar.SECOND, num);
+        return new Timestamp(beginDate.getTimeInMillis());
+    }
 
     /**
      * 天级处理
@@ -139,6 +151,19 @@ public class DateUtil {
         return new Timestamp(beginDate.getTimeInMillis());
     }
 
+    /**
+     * 秒级级处理
+     * @param start
+     * @param format
+     * @param num
+     * @return
+     */
+    public static Timestamp addSecond(String start, String format,Integer num){
+        Calendar beginDate = Calendar.getInstance();
+        beginDate.setTimeInMillis(pase(start, format).getTime());
+        beginDate.add(Calendar.SECOND, num);
+        return new Timestamp(beginDate.getTimeInMillis());
+    }
 
     public static Date pase(String date) throws Exception{
         return df.parse(date);

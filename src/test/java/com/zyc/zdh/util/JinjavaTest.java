@@ -51,11 +51,14 @@ public class JinjavaTest {
     public void jinJavaClass(){
         Jinjava jinjava=new Jinjava();
         Map<String,Object> jinJavaParam=new HashMap<>();
+        jinJavaParam.put("zdh_date_time", "2024-11-29 23:00:00");
         jinJavaParam.put("zdh_dt", new DateUtil());
 
         String result = jinjava.render("{{zdh_dt.addDay('2024-06-04 01:00:00', 1)}}", jinJavaParam);
         System.out.println(result);
         result = jinjava.render("{{zdh_dt.addDay('2024-06-04','yyyy-MM-dd', 1)}}", jinJavaParam);
+        System.out.println(result);
+        result = jinjava.render("{{zdh_dt.addMinute(zdh_date_time, 'yyyy-MM-dd HH:mm:ss',1)}}", jinJavaParam);
         System.out.println(result);
     }
 }
