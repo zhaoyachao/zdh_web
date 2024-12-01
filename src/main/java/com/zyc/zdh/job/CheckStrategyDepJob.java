@@ -193,9 +193,6 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     Set<String> parents = dag.getParent(tl.getId());
                     if(parents==null || parents.size()==0){
                         //无父节点直接运行即可
-                        System.out.println("根节点模拟发放任务--开始");
-                        System.out.println("=======================");
-                        System.out.println(JSON.toJSONString(tl));
                         if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                             continue;
                         }
@@ -218,7 +215,6 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                         if(tl.getTouch_type()==null || tl.getTouch_type().equalsIgnoreCase("queue")){
                             resovleStrategyInstance(tl);
                         }
-                        System.out.println("根节点模拟发放任务--结束");
                         //更新任务状态为检查完成
                         tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                         JobDigitalMarket.updateTaskLog(tl,sim);
