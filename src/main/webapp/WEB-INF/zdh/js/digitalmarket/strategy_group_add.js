@@ -319,6 +319,8 @@ function doubleclick_crowd_file(id) {
 }
 
 function doubleclick_crowd_rule(id) {
+    $(id).dblclick(function () {layer.msg("不支持的组件");});
+    return;
     $(id).dblclick(function () {
         $("#etl_task_text").val("");
         var div = $(this);

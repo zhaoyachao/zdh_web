@@ -34,7 +34,7 @@ html,body{height:100%;}
 .device .node:hover{box-shadow:2px 2px 19px #444;opacity:.8;filter:alpha(opacity=80);}
 .device .nodedata_nodecss{border:lightgreen 2px solid;}
 .device .nodelabelcss{border:lightgreen 2px solid;}
-.device .nodecrowd_rulecss{border:green 2px solid;}
+.device .nodecrowd_rulecss{border:green 2px solid;background-color: LightGrey;}
 .device .nodecrowd_filecss{border:lightcoral 2px solid;}
 .device .nodecrowd_operatecss{border:black 2px solid;}
 
