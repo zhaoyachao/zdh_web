@@ -528,7 +528,7 @@ public class EmailJob {
     public static void sendTxtEmail(String[] to,String subject, String context){
 
         Environment environment= (Environment) SpringContext.getBean("environment");
-        JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean("javaMailSender");
+        JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean(JavaMailSender.class);
 
         SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
         simpleMailMessage.setFrom(environment.getProperty("spring.mail.username"));
@@ -542,7 +542,7 @@ public class EmailJob {
     public static void sendHtmlEmail(String[] to,String subject, String context) throws MessagingException {
 
         Environment environment= (Environment) SpringContext.getBean("environment");
-        JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean("javaMailSender");
+        JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean(JavaMailSender.class);
 
         MimeMessage mailMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage);
@@ -556,7 +556,8 @@ public class EmailJob {
     public static void sendAdminAlarmEmail(String subject, String context){
         RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
         Environment environment= (Environment) SpringContext.getBean("environment");
-        JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean("javaMailSender");
+        //JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean("javaMailSender");
+        JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean(JavaMailSender.class);
         String key = "alarm.admin.email_"+subject;
         if(redisUtil.get(key) == null){
             redisUtil.set(key, "1", 1L, TimeUnit.HOURS);
