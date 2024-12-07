@@ -106,8 +106,10 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">调度器</label>
                             <div class="col-sm-10">
-                                <input id="schedule_id" name="schedule_id" type="text" value=""
-                                       placeholder="调度器标识" class="form-control" aria-required="true"> </span>
+                                <select id="schedule_id" name="schedule_id" data-placeholder="调度器"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">不指定</option>
+                                </select>
                             </div>
                         </div>
 
@@ -184,6 +186,8 @@
 <script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script src="js/etl/schedule_common.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -826,7 +830,8 @@
                 $("#etl_task_id").val(s["etl_task_id"]);
                 $("#etl_task_id").trigger("chosen:updated");
                 $("#depend_level").val(s["depend_level"]);
-                $("#schedule_id").val(is_empty(s["schedule_id"])?"":s["schedule_id"]);
+                $("#schedule_id").val(s["schedule_id"]);
+                $("#schedule_id").trigger("chosen:updated");
                 $("#depend_level").trigger("chosen:updated");
                 $("#zdh_instance").val(s["zdh_instance"]);
                 $("#zdh_instance").trigger("chosen:updated");
@@ -851,7 +856,7 @@
         var etl_task_id=$('#etl_task_id').find("option:selected").val();
         var more_task=$('#more_task').find("option:selected").val();
         var depend_level=$('#depend_level').find("option:selected").val();
-        var schedule_id=$('#schedule_id').val();
+        var schedule_id=$('#schedule_id').find("option:selected").val();
         var zdh_instance=$('#zdh_instance').find("option:selected").val();
         var time_out=$('#time_out').val();
         var is_disenable = "false";

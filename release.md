@@ -626,6 +626,8 @@
   + v5.5.5 [zdh_web]营销模块-tn支持时间参数
   + v5.5.5 [zdh_web]系统时间参数-新增秒级加减
   
+  + v5.5.6 [zdh_web]优化调度-增加调度器选择列表
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
@@ -3406,3 +3408,6 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1307752171248291840, '1305132001602310144', '风控数据节点删除', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2024-11-17 17:00:14', '2024-11-17 17:00:14', 'data_code_delete', '5', '', '', 'zdh', '');
+
+## 5.5.5迁移5.5.6
+    无改动

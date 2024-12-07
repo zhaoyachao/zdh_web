@@ -145,8 +145,10 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">调度器</label>
                             <div class="col-sm-10">
-                                <input id="schedule_id" name="schedule_id" type="text" value=""
-                                       placeholder="调度器标识" class="form-control" aria-required="true"> </span>
+                                <select id="schedule_id" name="schedule_id" data-placeholder="调度器"
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">不指定</option>
+                                </select>
                             </div>
                         </div>
 
@@ -222,6 +224,8 @@
 <script src="js/plugins/vs/editor/editor.main.nls.js"></script>
 <script src="js/plugins/vs/editor/editor.main.js"></script>
 
+<script src="js/etl/schedule_common.js"></script>
+
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({
@@ -279,6 +283,7 @@
                 $("#url_type").trigger("chosen:updated");
                 $('#etl_context').val(s.etl_context);
                 $("#schedule_id").val(s["schedule_id"]);
+                $("#schedule_id").trigger("chosen:updated");
                 $("#depend_level").val(s["depend_level"]);
                 $("#depend_level").trigger("chosen:updated");
                 window.editor_params.setValue($("#http_params",window.parent.document).val());
@@ -312,7 +317,7 @@
         var cookie=window.editor_cookie.getValue();
         var res_expr=window.editor_res_expr.getValue();
         var depend_level=$('#depend_level').find("option:selected").val();
-        var schedule_id=$('#schedule_id').val();
+        var schedule_id=$('#schedule_id').find("option:selected").val();
         var time_out=$('#time_out').val();
 
         var is_disenable = "false";
