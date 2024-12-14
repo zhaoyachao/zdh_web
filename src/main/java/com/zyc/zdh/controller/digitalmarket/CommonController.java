@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.CrowdFileMapper;
 import com.zyc.zdh.dao.CrowdRuleMapper;
@@ -34,6 +33,16 @@ public class CommonController extends BaseController {
     @Autowired
     private ZdhPermissionService zdhPermissionService;
 
+
+    /**
+     * 策略参数页面
+     * @return
+     */
+    @RequestMapping(value = "/strategy_params_index", method = RequestMethod.GET)
+    public String strategy_params_index() {
+
+        return "digitalmarket/strategy_params_index";
+    }
 
     /**
      * 人群规则明细
@@ -183,7 +192,6 @@ public class CommonController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/variable_detail", method = RequestMethod.GET)
-    @White
     public String variable_detail() {
         return "digitalmarket/variable_detail";
     }

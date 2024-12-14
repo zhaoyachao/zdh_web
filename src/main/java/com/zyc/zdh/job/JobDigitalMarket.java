@@ -164,6 +164,8 @@ public class JobDigitalMarket {
             //获取上游执行完成时间
             if(StringUtils.isEmpty(si.getPre_tasks())){
                 throw new Exception("tn模块设置相对时间,必须有上游任务");
+            }else{
+
             }
             String parentId = si.getPre_tasks().split(",")[0];
             StrategyInstance parentStrategyInstance = dagStrategyInstance.get(parentId);

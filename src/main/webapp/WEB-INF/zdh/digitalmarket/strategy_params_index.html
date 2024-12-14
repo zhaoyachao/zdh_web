@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 策略独有参数</title>
+    <meta name="keywords" content="ZDH 策略独有参数">
+    <meta name="description" content="ZDH 策略独有参数">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>策略参数说明</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="etl_task_add_form" name="etl_task_add_form" method="post" class="form-horizontal"
+                          action="">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" style="color: red;">提示</label>
+                            <div class="col-sm-10">
+                                <span class="help-block m-b-none" style="font-weight: bold; color: red">参数在使用时必须使用双层大括号{{}}括起来</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">当前流转数据(用户ID)</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly
+                                       value="表达式: {{uid}}, 例子: 手机号返回152xxxxxxxx" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">当前策略实例字典</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly
+                                       value="表达式: {{stragegy_instance}}, 例子字典结构: {id: 1, stragegy_content: xxx, xxxx}" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">当前策略实例ID</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly
+                                       value="表达式: {{strategy_instance_id}}, 例子: 1177757911275802624" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">当前策略上游结果集</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly
+                                       value="表达式: {{rs}}, 例子: 字符串组成的集合" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+
+<script src="js/zdh_common.js"></script>
+<script>
+    var require = {
+        paths: {
+            'vs': 'js/plugins/vs'
+        }
+    };
+
+</script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<script src="js/plugins/vs/loader.js"></script>
+<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
+<script src="js/plugins/vs/editor/editor.main.js"></script>
+<script type="text/javascript" src="js/plugins/vs/basic-languages/sql/sql.js"></script>
+
+<script src="js/admin/dim_product_common.js"></script>
+<script src="js/admin/dim_group_common.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+
+    (function (document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();//定义一个全局变量-存储任务ID
+            for (var i = 0; i < pa.length; i++) {
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+
+        })();
+
+    })(document, window, jQuery);
+
+
+
+</script>
+
+</body>
+
+</html>
