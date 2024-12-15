@@ -151,6 +151,7 @@ public class JobDigitalMarket {
         String tn_unit = JSONObject.parseObject(si.getRun_jsmind_data()).getString("tn_unit");
         String tn_value = JSONObject.parseObject(si.getRun_jsmind_data()).getString("tn_value");
         if(StringUtils.isEmpty(tn_value)){
+            JobDigitalMarket.insertLog(si,"ERROR","tn模块时间参数不可为空");
             throw new Exception("tn模块时间参数不可为空");
         }
         //替换时间参数
@@ -161,15 +162,19 @@ public class JobDigitalMarket {
         Date currentDate = new Date();
         if(tn_type.equalsIgnoreCase(Const.TN_TYPE_RELATIVE)){
             //相对时间
-            //获取上游执行完成时间
-            if(StringUtils.isEmpty(si.getPre_tasks())){
-                throw new Exception("tn模块设置相对时间,必须有上游任务");
-            }else{
 
+            Timestamp updateTime = null;
+            if(StringUtils.isEmpty(si.getPre_tasks())){
+                //throw new Exception("tn模块设置相对时间,必须有上游任务");
+                //无上游任务获取当前任务开始执行时间
+                updateTime = new Timestamp(si.getRun_time().getTime());
+            }else{
+                String parentId = si.getPre_tasks().split(",")[0];
+                StrategyInstance parentStrategyInstance = dagStrategyInstance.get(parentId);
+                //获取上游执行完成时间
+                updateTime = parentStrategyInstance.getUpdate_time();
             }
-            String parentId = si.getPre_tasks().split(",")[0];
-            StrategyInstance parentStrategyInstance = dagStrategyInstance.get(parentId);
-            Timestamp updateTime = parentStrategyInstance.getUpdate_time();
+
 
             if(StringUtils.isEmpty(tn_unit)){
                 throw new Exception("tn模块设置相对时间单位为空");
