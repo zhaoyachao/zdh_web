@@ -10,6 +10,7 @@ import com.zyc.zdh.dao.QualityTaskMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +92,15 @@ public class ZdhQualityController extends BaseController {
                 criteria.andLike("rule_name", getLikeCondition(qualityRuleInfo.getRule_name()));
             }
 
+            dynamicPermissionByProduct(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(qualityRuleInfo.getProduct_code())){
+                criteria.andEqualTo("product_code", qualityRuleInfo.getProduct_code());
+            }
+            if(!StringUtils.isEmpty(qualityRuleInfo.getDim_group())){
+                criteria.andEqualTo("dim_group", qualityRuleInfo.getDim_group());
+            }
+
             qualityRuleInfos = qualityRuleMapper.selectByExample(example);
             return ReturnInfo.buildSuccess(qualityRuleInfos);
         }catch (Exception e){
@@ -112,6 +122,9 @@ public class ZdhQualityController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo quality_rule_add(QualityRuleInfo qualityRuleInfo) {
         try {
+
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, qualityRuleInfo.getProduct_code(), qualityRuleInfo.getDim_group(), getAttrAdd());
+
             if (StringUtils.isEmpty(qualityRuleInfo.getRule_code())) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", "规则code不可为空");
             }
@@ -126,6 +139,7 @@ public class ZdhQualityController extends BaseController {
             qualityRuleInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             qualityRuleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             qualityRuleInfo.setOwner(getOwner());
+            qualityRuleInfo.setIs_delete(Const.NOT_DELETE);
             //checkPermissionByProductAndDimGroup(zdhPermissionService, qualityRuleInfo.getProduct_code(), qualityRuleInfo.getDim_group());
 
             qualityRuleMapper.insertSelective(qualityRuleInfo);
@@ -149,8 +163,13 @@ public class ZdhQualityController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo quality_rule_update(QualityRuleInfo qualityRuleInfo) {
         try {
+            QualityRuleInfo oldQualityRuleInfo = qualityRuleMapper.selectByPrimaryKey(qualityRuleInfo.getId());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, qualityRuleInfo.getProduct_code(), qualityRuleInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldQualityRuleInfo.getProduct_code(), oldQualityRuleInfo.getDim_group(), getAttrEdit());
+
             qualityRuleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             qualityRuleInfo.setOwner(getOwner());
+            qualityRuleInfo.setIs_delete(Const.NOT_DELETE);
             qualityRuleMapper.updateByPrimaryKeySelective(qualityRuleInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
@@ -200,6 +219,16 @@ public class ZdhQualityController extends BaseController {
             if (!StringUtils.isEmpty(qualityTaskInfo.getId())) {
                 criteria.andEqualTo("id", qualityTaskInfo.getId());
             }
+
+            dynamicPermissionByProduct(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(qualityTaskInfo.getProduct_code())){
+                criteria.andEqualTo("product_code", qualityTaskInfo.getProduct_code());
+            }
+            if(!StringUtils.isEmpty(qualityTaskInfo.getDim_group())){
+                criteria.andEqualTo("dim_group", qualityTaskInfo.getDim_group());
+            }
+
             if (!StringUtils.isEmpty(qualityTaskInfo.getQuality_context())) {
                 Example.Criteria criteria1 = example.createCriteria();
                 criteria1.orLike("quality_context", getLikeCondition(qualityTaskInfo.getQuality_context()));
@@ -236,10 +265,14 @@ public class ZdhQualityController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo quality_task_add(QualityTaskInfo qualityTaskInfo, String[] quality_rule, String[] quality_columns) {
         try {
+
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, qualityTaskInfo.getProduct_code(), qualityTaskInfo.getDim_group(), getAttrAdd());
+
             qualityTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             qualityTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             qualityTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             qualityTaskInfo.setOwner(getOwner());
+            qualityTaskInfo.setIs_delete(Const.NOT_DELETE);
 
             JSONArray jsonArray = new JSONArray();
             for (int i = 0; i < quality_rule.length; i++) {
@@ -272,8 +305,14 @@ public class ZdhQualityController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo quality_task_update(QualityTaskInfo qualityTaskInfo, String[] quality_rule, String[] quality_columns) {
         try {
+
+            QualityTaskInfo oldQualityTaskInfo = qualityTaskMapper.selectByPrimaryKey(qualityTaskInfo.getId());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, qualityTaskInfo.getProduct_code(), qualityTaskInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldQualityTaskInfo.getProduct_code(), oldQualityTaskInfo.getDim_group(), getAttrEdit());
+
             qualityTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             qualityTaskInfo.setOwner(getOwner());
+            qualityTaskInfo.setIs_delete(Const.NOT_DELETE);
             JSONArray jsonArray = new JSONArray();
             for (int i = 0; i < quality_rule.length; i++) {
                 JSONObject jsonObject = new JSONObject();
@@ -304,10 +343,7 @@ public class ZdhQualityController extends BaseController {
     public ReturnInfo quality_task_delete(String[] ids) {
         try {
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, qualityTaskMapper, qualityTaskMapper.getTable(), ids, getAttrDel());
-            Example example = new Example(QualityTaskInfo.class);
-            Example.Criteria criteria = example.createCriteria();
-            criteria.andIn("id", Arrays.asList(ids));
-            qualityTaskMapper.deleteByExample(example);
+            qualityTaskMapper.deleteLogicByIds(qualityTaskMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

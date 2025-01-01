@@ -447,50 +447,6 @@
             //设置删除节点
             $('#text3').val(node_text);
 
-            //更新模块设置
-            $.ajax({
-                type: 'get',
-                url: server_context+"/jstree_get_node",
-                dataType: 'json',
-                async:'false',
-                data: "id="+s.id,
-                //成功返回
-                success: function (data) {
-                    if(data.code != "200"){
-                        layer.msg(data.msg);
-                        return ;
-                    }
-                    $('#text').attr('node_id',s.id);
-                    $('#text').val(data.result.text);
-
-                    $('#event_code2').val(data.result.event_code);
-                    $('#event_code2').trigger("chosen:updated");
-
-                    $('#parent2').val(data.result.parent);
-                    $('#product_code2').val(data.result.product_code);
-                    $('#icon2').val(data.result.icon);
-                    $('#url2').val(data.result.url);
-                    $('#order2').val(data.result.order);
-                    $('#notice_title2').val(data.result.notice_title);
-                    $('#resource_desc2').val(data.result.resource_desc);
-                    $('#resource_type2').val(data.result.resource_type);
-                    $("#resource_type2").trigger("chosen:updated");
-                    $('#qps').val(data.result.qps);
-                    $('#qps2').val(data.result.qps);
-
-                },
-                //处理完成
-                complete: function () {
-                    $("#execute").removeAttr('disabled');
-                    console.info("complete")
-                },
-                //报错
-                error: function (data) {
-                    $("#execute").removeAttr('disabled');
-                    console.info("error: " + data.responseText);
-                }
-            });
-
             $('#using_json2').jstree({
                 "plugins" : [ "types",'checkbox' ],
                 'checkbox': { cascade: "", three_state: false }, //不级联
@@ -520,9 +476,58 @@
 
         })();
 
-
-
     })(document, window, jQuery);
+
+    var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+    var params = url.substr(1);//去掉问号
+    var pa = params.split("&");
+    var s = new Object();
+    for(var i = 0; i < pa.length; i ++){
+        s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+    }
+    //此查询必须放在初始化事件之前
+    $.ajax({
+        type: 'get',
+        url: server_context+"/jstree_get_node",
+        dataType: 'json',
+        async:'false',
+        data: "id="+s.id,
+        //成功返回
+        success: function (data) {
+            if(data.code != "200"){
+                layer.msg(data.msg);
+                return ;
+            }
+            $('#text').attr('node_id',s.id);
+            $('#text').val(data.result.text);
+
+            $('#event_code2').val(data.result.event_code);
+            $('#event_code2').trigger("chosen:updated");
+
+            $('#parent2').val(data.result.parent);
+            $('#product_code2').val(data.result.product_code);
+            $('#icon2').val(data.result.icon);
+            $('#url2').val(data.result.url);
+            $('#order2').val(data.result.order);
+            $('#notice_title2').val(data.result.notice_title);
+            $('#resource_desc2').val(data.result.resource_desc);
+            $('#resource_type2').val(data.result.resource_type);
+            $("#resource_type2").trigger("chosen:updated");
+            $('#qps').val(data.result.qps);
+            $('#qps2').val(data.result.qps);
+
+        },
+        //处理完成
+        complete: function () {
+            $("#execute").removeAttr('disabled');
+            console.info("complete")
+        },
+        //报错
+        error: function (data) {
+            $("#execute").removeAttr('disabled');
+            console.info("error: " + data.responseText);
+        }
+    });
 
     $('#execute').click(function () {
 

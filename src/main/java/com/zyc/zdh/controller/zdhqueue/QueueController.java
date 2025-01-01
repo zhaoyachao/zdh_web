@@ -1,12 +1,10 @@
 package com.zyc.zdh.controller.zdhqueue;
 
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.zyc.rqueue.RQueueClient;
 import com.zyc.rqueue.RQueueManager;
 import com.zyc.rqueue.RQueueMode;
-import com.zyc.rqueue.RQueuePriorityInfo;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.entity.RETURN_CODE;

@@ -4,6 +4,7 @@ package com.zyc.zdh;
 import com.zyc.zdh.annotation.MyMark;
 import com.zyc.zdh.controller.LoginController;
 import com.zyc.zdh.job.JobCommon2;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.mybatis.spring.annotation.MapperScan;
@@ -50,7 +51,7 @@ public class ZdhApplication {
         LoginController.context = context;
 
         Environment env = context.getEnvironment();
-        String version = env.getProperty("version");
+        String version = env.getProperty(ConfigUtil.VERSION);
         String envPort = env.getProperty("server.port");
         String envContext = env.getProperty("server.context-path", "");
         String port = envPort == null ? "8080" : envPort;

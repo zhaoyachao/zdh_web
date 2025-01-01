@@ -10,6 +10,7 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.MinioUtil;
 import com.zyc.zdh.util.SFTPUtil;
@@ -99,8 +100,8 @@ public class CrowdFileController extends BaseController {
             if(!StringUtils.isEmpty(file_name)){
                 criteria2.orLike("file_name", getLikeCondition(file_name));
                 criteria2.orLike("file_url", getLikeCondition(file_name));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             RowBounds rowBounds=new RowBounds(offset,limit);
             int total = crowdFileMapper.selectCountByExample(example);
@@ -212,7 +213,7 @@ public class CrowdFileController extends BaseController {
                         continue;
                     }
                     System.out.println("上传文件不为空:"+fileName);
-                    String tmpPath = env.getProperty("digitalmarket.tmp.path","/home/tmp/file");
+                    String tmpPath = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_TMP_PATH, "/home/tmp/file");//env.getProperty("digitalmarket.tmp.path","/home/tmp/file");
 
                     File tempFile = new File( tmpPath + fileName);
 
@@ -224,12 +225,12 @@ public class CrowdFileController extends BaseController {
                     String crowdFileName = crowdFile.getFile_name();
                     try {
 
-                        String store = env.getProperty("digitalmarket.store.type","local");
-                        String host = env.getProperty("digitalmarket.sftp.host","");
-                        String port = env.getProperty("digitalmarket.sftp.port","22");
-                        String username = env.getProperty("digitalmarket.sftp.username","");
-                        String password = env.getProperty("digitalmarket.sftp.password","");
-                        String localPath = env.getProperty("digitalmarket.local.path","/home/data/file");
+                        String store = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_STORE_TYPE, "local");//env.getProperty("digitalmarket.store.type","local");
+                        String host = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_HOST, "");//env.getProperty("digitalmarket.sftp.host","");
+                        String port = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PORT, "22");//env.getProperty("digitalmarket.sftp.port","22");
+                        String username = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_USERNAME, "");//env.getProperty("digitalmarket.sftp.username","");
+                        String password = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PASSWORD, "");//env.getProperty("digitalmarket.sftp.password","");
+                        String localPath = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_LOCAL_PATH, "/home/data/file");//env.getProperty("digitalmarket.local.path","/home/data/file");
                         String path = localPath+"/crowd_file";
 
                         if(store.equalsIgnoreCase("local")){
@@ -255,11 +256,11 @@ public class CrowdFileController extends BaseController {
                         }else if(store.equalsIgnoreCase("minio")){
                             logger.info("crowd file upload store type: {}, path: {}", store, path+"/"+crowdFile.getFile_name());
                             String object_name = path+"/"+crowdFile.getFile_name();
-                            String ak = env.getProperty("digitalmarket.minio.ak");
-                            String sk = env.getProperty("digitalmarket.minio.sk");
-                            String endpoint = env.getProperty("digitalmarket.minio.endpoint");
-                            String region = env.getProperty("digitalmarket.minio.region");
-                            String bucket = env.getProperty("digitalmarket.minio.bucket");
+                            String ak = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_AK);//env.getProperty("digitalmarket.minio.ak");
+                            String sk = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_SK);//env.getProperty("digitalmarket.minio.sk");
+                            String endpoint = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_ENDPOINT);//env.getProperty("digitalmarket.minio.endpoint");
+                            String region = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_REGION);//env.getProperty("digitalmarket.minio.region");
+                            String bucket = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_BUCKET);//env.getProperty("digitalmarket.minio.bucket");
                             MinioClient minioClient = MinioUtil.buildMinioClient(ak, sk, endpoint);
                             MinioUtil.putObject(minioClient, bucket, region, "application/octet-stream", object_name, jar_file.getInputStream(), null);
                         }
@@ -311,16 +312,22 @@ public class CrowdFileController extends BaseController {
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldCrowdFileInfo.getProduct_code(), oldCrowdFileInfo.getDim_group(), getAttrEdit());
 
             //读取数据
-            String store = env.getProperty("digitalmarket.store.type","local");
-            String host = env.getProperty("digitalmarket.sftp.host","");
-            String port = env.getProperty("digitalmarket.sftp.port","22");
-            String username = env.getProperty("digitalmarket.sftp.username","");
-            String password = env.getProperty("digitalmarket.sftp.password","");
-            String path = env.getProperty("digitalmarket.sftp.path","");
+            String store =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_STORE_TYPE, "local");
+            //env.getProperty("digitalmarket.store.type","local");
+//            String host = env.getProperty("digitalmarket.sftp.host","");
+//            String port = env.getProperty("digitalmarket.sftp.port","22");
+//            String username = env.getProperty("digitalmarket.sftp.username","");
+//            String password = env.getProperty("digitalmarket.sftp.password","");
+            String host =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_HOST, ""); //env.getProperty("digitalmarket.sftp.host");
+            String port =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PORT, "22");//env.getProperty("digitalmarket.sftp.port");
+            String username =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_USERNAME, "");//env.getProperty("digitalmarket.sftp.username");
+            String password =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PASSWORD, "");//env.getProperty("digitalmarket.sftp.password");
+
+            String path = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PATH, "");//env.getProperty("digitalmarket.sftp.path","");
             List<String> lines = new ArrayList<>();
             if(store.equalsIgnoreCase("local")){
                 //本地目录
-                String localPath = env.getProperty("digitalmarket.local.path","/home/data/file");
+                String localPath =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_LOCAL_PATH, "/home/data/file");//env.getProperty("digitalmarket.local.path","/home/data/file");
                 File fileDir = new File(localPath);
                 if (!fileDir.exists()) {
                     fileDir.mkdirs();

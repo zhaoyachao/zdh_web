@@ -42,14 +42,14 @@ public class RetryJob {
             ZdhHaInfoMapper zdhHaInfoMapper=(ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
             RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
             //获取重试的任务
-            List<TaskLogInstance> taskLogInstanceList=tlim.selectThreadByStatus2("wait_retry");
+            List<TaskLogInstance> taskLogInstanceList=tlim.selectThreadByStatus2(JobStatus.WAIT_RETRY.getValue());
             for(TaskLogInstance tl :taskLogInstanceList){
                 QuartzJobInfo qj= quartzJobMapper.selectByPrimaryKey(tl.getJob_id());
                 logger.info("检测到需要重试的任务,添加到重试队列,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 JobCommon2.insertLog(tl, "INFO", "检测到需要重试的任务,添加到重试队列,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 if (!tl.getPlan_count().equals("-1") && tl.getCount()>=Long.parseLong(tl.getPlan_count())) {
                     JobCommon2.insertLog(tl, "INFO", "检测到需要重试的任务,重试次数超过限制,实际重试:" + tl.getCount() + "次,job_id:" + tl.getJob_id() + ",job_context:" + tl.getJob_context());
-                    tlim.updateStatusById("error", DateUtil.getCurrentTime(),tl.getId());
+                    tlim.updateStatusById(JobStatus.ERROR.getValue(), DateUtil.getCurrentTime(),tl.getId());
                     //quartzJobMapper.updateLastStatus(qj.getJob_id(), "error");
                     continue;
                 }

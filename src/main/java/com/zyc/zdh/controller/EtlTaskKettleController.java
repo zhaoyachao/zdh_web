@@ -78,8 +78,8 @@ public class EtlTaskKettleController extends BaseController {
             if(!StringUtils.isEmpty(context)){
                 criteria2.orLike("etl_context", getLikeCondition(context));
                 criteria2.orLike("kettle_repository_path", getLikeCondition(context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<EtlTaskKettleInfo> etlTaskKettleInfos = etlTaskKettleMapper.selectByExample(example);
 
@@ -123,8 +123,8 @@ public class EtlTaskKettleController extends BaseController {
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
                 criteria2.orLike("context", getLikeCondition(context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             RowBounds rowBounds=new RowBounds(offset,limit);
             int total = etlTaskKettleMapper.selectCountByExample(example);
@@ -165,7 +165,7 @@ public class EtlTaskKettleController extends BaseController {
     public ReturnInfo<EtlTaskKettleInfo> etl_task_kettle_detail(String id) {
         try {
             EtlTaskKettleInfo etlTaskKettleInfo = etlTaskKettleMapper.selectByPrimaryKey(id);
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlTaskKettleInfo.getProduct_code(), etlTaskKettleInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskKettleInfo.getProduct_code(), etlTaskKettleInfo.getDim_group(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlTaskKettleInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);

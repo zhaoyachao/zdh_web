@@ -13,6 +13,7 @@
 
     <link rel="shortcut icon" href="img/favicon.ico"> <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
@@ -45,6 +46,14 @@
                 <div class="row row-lg">
                     <div class="col-sm-12" id="div_data_sources_file_columns">
                         <form role="form" class="form-inline" id="etl_task_form">
+
+                        <div class="input-group  col-sm-2">
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code...."
+                                    class="chosen-select form-control m-b" >
+                            </select>
+                        </div>
+
                         <div class="input-group col-sm-8">
                             <input id="issue_context" name="issue_context" type="text"
                                    placeholder="关键词(表名/表描述)"
@@ -83,16 +92,18 @@
     <!-- layer javascript -->
     <script src="js/plugins/layer/layer.min.js"></script>
 
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
-
 
     <!-- Bootstrap table -->
     <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
-    <!-- Peity -->
+    <script src="js/admin/dim_product_common.js"></script>
+
     <script src="js/etl/data_ware_house.js"></script>
 
 <script>

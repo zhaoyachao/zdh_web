@@ -66,8 +66,8 @@ public class CrowdRuleController extends BaseController {
         if(!StringUtils.isEmpty(rule_context)){
             criteria2.orLike("rule_context", getLikeCondition(rule_context));
             criteria2.orLike("rule_json", getLikeCondition(rule_context));
+            example.and(criteria2);
         }
-        example.and(criteria2);
 
         List<CrowdRuleInfo> crowdRuleInfos = crowdRuleMapper.selectByExample(example);
 

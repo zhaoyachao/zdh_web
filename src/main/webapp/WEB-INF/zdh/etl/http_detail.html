@@ -219,7 +219,6 @@
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
 
-
 <script src="js/plugins/vs/loader.js"></script>
 <script src="js/plugins/vs/editor/editor.main.nls.js"></script>
 <script src="js/plugins/vs/editor/editor.main.js"></script>
@@ -272,6 +271,10 @@
             for(var i = 0; i < pa.length; i ++){
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
+
+            const product_code = $("#product_code",window.parent.document).val();
+            const dim_group = $("#dim_group",window.parent.document).val();
+
             $('#url_type').chosen();
             $('#depend_level').chosen();
             if(s["etl_context"] != '-1'){

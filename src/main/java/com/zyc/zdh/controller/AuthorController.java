@@ -54,7 +54,7 @@ public class AuthorController extends BaseController{
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    String to= ConfigUtil.getValue("spring.mail.username");
+                    String to= ConfigUtil.getValue(ConfigUtil.SPRING_MAIL_USERNAME);
                     jemailService.sendHtmlEmail(new String[]{to},subject+":"+receiver,context);
                     if(!StringUtils.isEmpty(receiver)) {
                         jemailService.sendEmail(new String[]{receiver},"ZDH","系统已将信息通知作者,作者会尽快查看并回复");

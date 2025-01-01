@@ -198,15 +198,31 @@ public class PermissionController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<Object> user_enable(String[] ids, String enable) {
-        String unable_key = Const.ZDH_USER_UNENABLE+"_"+getUser().getUserName();
+
+        List<PermissionUserInfo> permissionUserInfos = null;
         try {
+
+            //检查权限
+            permissionUserInfos = permissionMapper.selectObjectByIds(permissionMapper.getTable(), ids);
+            if(permissionUserInfos!=null){
+                for (PermissionUserInfo permissionUserInfo: permissionUserInfos){
+                    checkPermissionByOwner(permissionUserInfo.getProduct_code());
+                }
+            }
+
             int result = permissionMapper.updateEnable(ids, enable);
-            if(enable.equalsIgnoreCase(Const.FALSE)){
-                //禁用用户,redis中写禁用标志
-                redisUtil.set(unable_key, "");
-            }else{
-                if(redisUtil.exists(unable_key)){
-                    redisUtil.remove(unable_key);
+
+            for (PermissionUserInfo permissionUserInfo: permissionUserInfos){
+                checkPermissionByOwner(permissionUserInfo.getProduct_code());
+                String unable_key = Const.ZDH_USER_UNENABLE+"_"+permissionUserInfo.getUser_account();
+
+                if(enable.equalsIgnoreCase(Const.FALSE)){
+                    //禁用用户,redis中写禁用标志
+                    redisUtil.set(unable_key, "");
+                }else{
+                    if(redisUtil.exists(unable_key)){
+                        redisUtil.remove(unable_key);
+                    }
                 }
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", getBaseException());
@@ -214,10 +230,22 @@ public class PermissionController extends BaseController {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            if(enable.equalsIgnoreCase(Const.TRUR)){
-                //启用失败,重新添加用户禁用到redis
-                redisUtil.set(unable_key, "");
+
+            if(permissionUserInfos!=null){
+                for (PermissionUserInfo permissionUserInfo: permissionUserInfos){
+                    String unable_key = Const.ZDH_USER_UNENABLE+"_"+permissionUserInfo.getUser_account();
+                    if(enable.equalsIgnoreCase(Const.TRUR)){
+                        //启用失败,重新添加用户禁用到redis
+                        redisUtil.set(unable_key, "");
+                    }else{
+                        //禁用失败
+                        if(redisUtil.exists(unable_key)){
+                            redisUtil.remove(unable_key);
+                        }
+                    }
+                }
             }
+
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", getBaseException(e));
         }
 
@@ -403,11 +431,17 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "/role_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<RoleInfo>> role_list(String role_context, String enable, String product_code) {
-        if(!StringUtils.isEmpty(role_context)){
-            role_context = getLikeCondition(role_context);
+        try{
+            if(!StringUtils.isEmpty(role_context)){
+                role_context = getLikeCondition(role_context);
+            }
+
+            checkPermissionByOwner(product_code);
+            List<RoleInfo> users = roleDao.selectByContext(role_context, enable, product_code);
+            return ReturnInfo.buildSuccess(users);
+        }catch (Exception e){
+            return ReturnInfo.buildError(e);
         }
-        List<RoleInfo> users = roleDao.selectByContext(role_context, enable, product_code);
-        return ReturnInfo.buildSuccess(users);
     }
 
     /**
@@ -877,7 +911,7 @@ public class PermissionController extends BaseController {
         try{
             List<UserResourceInfo2> uris = new ArrayList<>();
             String user_account = getUser().getUserName();
-            String product_code = ConfigUtil.getValue("zdp.product", "zdh");
+            String product_code = ConfigUtil.getValue(ConfigUtil.ZDP_PRODUCT, "zdh");
             uris = resourceTreeMapper.selectResourceByUserAccount(user_account, product_code);
             uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
             return ReturnInfo.buildSuccess(uris);
@@ -915,7 +949,7 @@ public class PermissionController extends BaseController {
             Example example2=new Example(PermissionUserInfo.class);
             Example.Criteria criteria2 = example2.createCriteria();
             criteria2.andEqualTo("user_account",getUser().getUserName());
-            criteria2.andEqualTo("product_code", ConfigUtil.getValue("zdp.product", "zdh"));
+            criteria2.andEqualTo("product_code", ConfigUtil.getValue(ConfigUtil.ZDP_PRODUCT, "zdh"));
             criteria2.andEqualTo("enable",Const.TRUR);
             List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example2);
 
@@ -1217,6 +1251,8 @@ public class PermissionController extends BaseController {
     @ResponseBody
     public ReturnInfo<PageResult<List<UserGroupInfo>>> user_group_list2(String product_code,String group_context, int limit, int offset){
         try{
+            checkPermissionByOwner(product_code);
+
             Example example=new Example(UserGroupInfo.class);
             Example.Criteria criteria = example.createCriteria();
             criteria.andEqualTo("product_code", product_code);
@@ -1225,8 +1261,9 @@ public class PermissionController extends BaseController {
                 criteria2.andLike("product_code", getLikeCondition(group_context));
                 criteria2.orLike("name", getLikeCondition(group_context));
                 criteria2.orLike("code", getLikeCondition(group_context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
+
             example.setOrderByClause("create_time desc");
             RowBounds rowBounds=new RowBounds(offset,limit);
             List<UserGroupInfo> userGroupInfos = userGroupMapper.selectByExampleAndRowBounds(example, rowBounds);
@@ -1256,6 +1293,8 @@ public class PermissionController extends BaseController {
 
         try {
             UserGroupInfo userGroupInfo = userGroupMapper.selectByPrimaryKey(id);
+            checkPermissionByOwner(userGroupInfo.getProduct_code());
+
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", userGroupInfo);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

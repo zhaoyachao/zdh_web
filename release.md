@@ -632,6 +632,15 @@
   + v5.5.6 [zdh_web]营销模块-分流按量级优化逻辑
   + v5.5.6 [zdh_web]营销模块-增加统一渲染引擎参数
   
+  + v5.6.0 [zdh_web]扩展为saas平台
+  + v5.6.0 [zdh_web]调度告警账号按权限获取
+  + v5.6.0 [zdh_web]修复权限模块-账号禁用bug
+  + v5.6.0 [zdh_web]修复权限模块-菜单事件控制bug
+  + v5.6.0 [zdh_web]重构权限-支持saas模式权限控制
+  + v5.6.0 [zdh_web]质量检测模块-bug修复
+  
+  
+  
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
   + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
@@ -3417,3 +3426,44 @@
     INSERT INTO resource_tree_info
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1317605718085341184, '963932648793706496', '策略参数页面', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2024-12-14 21:34:43', '2024-12-14 21:34:43', 'strategy_params_index', '3', '', '', 'zdh', '');
+
+## 5.5.6迁移5.6.0
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1322930795119120384, '810816897514737664', '数据集市-申请页面', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2024-12-29 14:14:40', '2024-12-29 14:14:40', 'data_apply_add_index', '3', '', '', 'zdh', '');
+
+    alter table account_info drop column `user_group`;
+    alter table account_info drop column   `roles`;
+    alter table account_info drop column   `signature`;
+    alter table account_info drop column   `tag_group_code`;
+    
+    alter table issue_data_info add column product_code varchar(64) NOT NULL DEFAULT '' COMMENT '产品code';
+    update issue_data_info set product_code='zdh'; 
+    alter table issue_data_info add column dim_group varchar(64) NOT NULL DEFAULT '' COMMENT '用户组';
+    update issue_data_info set dim_group='group3'; 
+    
+    alter table apply_info add column product_code varchar(64) NOT NULL DEFAULT '' COMMENT '产品code';
+    update apply_info set product_code='zdh'; 
+    alter table apply_info add column dim_group varchar(64) NOT NULL DEFAULT '' COMMENT '用户组';
+    update apply_info set dim_group='group3'; 
+    
+    alter table blood_source_info add column product_code varchar(64) NOT NULL DEFAULT '' COMMENT '产品code';
+    update blood_source_info set product_code='zdh';
+    
+    alter table every_day_notice add column product_code varchar(64) NOT NULL DEFAULT '' COMMENT '产品code';
+    update every_day_notice set product_code='zdh'; 
+    alter table enum_info add column product_code varchar(64) NOT NULL DEFAULT '' COMMENT '产品code';
+    update enum_info set product_code='zdh'; 
+    
+    alter table quality_task_info add column product_code varchar(64) NOT NULL DEFAULT '' COMMENT '产品code';
+    update quality_task_info set product_code='zdh'; 
+    alter table quality_task_info add column dim_group varchar(64) NOT NULL DEFAULT '' COMMENT '用户组';
+    update quality_task_info set dim_group='group3'; 
+    alter table quality_task_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    
+    alter table quality_rule_info add column product_code varchar(64) NOT NULL DEFAULT '' COMMENT '产品code';
+    update quality_rule_info set product_code='zdh'; 
+    alter table quality_rule_info add column dim_group varchar(64) NOT NULL DEFAULT '' COMMENT '用户组';
+    update quality_rule_info set dim_group='group3'; 
+    alter table quality_rule_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
+    

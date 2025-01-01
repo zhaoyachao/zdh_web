@@ -72,7 +72,7 @@
 
       function deleteMs(ids) {
           $.ajax({
-              url : server_context+"/enum_delete",
+              url : server_context+"/project_delete",
               data : "ids=" + ids,
               type : "post",
               async:false,

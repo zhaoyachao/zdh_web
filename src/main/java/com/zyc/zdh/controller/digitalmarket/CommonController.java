@@ -234,7 +234,7 @@ public class CommonController extends BaseController {
     public ReturnInfo<List<PermissionDimensionValueInfo>> get_dim_group() {
         try {
             String owner = getOwner();
-            List<PermissionDimensionValueInfo> result = zdhPermissionService.get_dim_group(owner);
+            List<PermissionDimensionValueInfo> result = zdhPermissionService.get_dim_group(getProductCode(), getOwner(), getUserGroup());
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", result);
         } catch (Exception e) {
@@ -254,7 +254,7 @@ public class CommonController extends BaseController {
     public ReturnInfo<List<PermissionDimensionValueInfo>> get_dim_product() {
         try {
             String owner = getOwner();
-            List<PermissionDimensionValueInfo> result = zdhPermissionService.get_dim_product(owner);
+            List<PermissionDimensionValueInfo> result = zdhPermissionService.get_dim_product(getProductCode(), getOwner(), getUserGroup());
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", result);
         } catch (Exception e) {

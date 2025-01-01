@@ -84,6 +84,10 @@ public class MyRealm extends AuthorizingRealm {
 
 		String userName = ((MyAuthenticationToken) arg0).getUsername();
 		char[] password = ((MyAuthenticationToken) arg0).getPassword();
+		String product_code =((MyAuthenticationToken) arg0).getProduct_code();
+		if(StringUtils.isEmpty(product_code)){
+			throw new AuthenticationException("企业标识不可为空");
+		}
 		User user = new User();// 根据用户名密码获取user
 		//Object obj = new SimpleHash("md5", new String(password), null, 2);
 		try {
@@ -101,8 +105,8 @@ public class MyRealm extends AuthorizingRealm {
 
 		//同步权限信息
 		PermissionMapper permissionMapper = ((PermissionMapper) SpringContext.getBean("permissionMapper"));
-		Environment environment= (Environment) SpringContext.getBean("environment");
-		String product_code = environment.getProperty("zdh.product", "zdh");
+		//Environment environment= (Environment) SpringContext.getBean("environment");
+
 		PermissionUserInfo permissionUserInfo=new PermissionUserInfo();
 		permissionUserInfo.setUser_account(userName);
 		permissionUserInfo.setProduct_code(product_code);
@@ -113,11 +117,11 @@ public class MyRealm extends AuthorizingRealm {
 		}
 
 		user.setEnable(permissionUserInfos.get(0).getEnable());
-		user.setRoles(permissionUserInfos.get(0).getRoles());
+//		user.setRoles(permissionUserInfos.get(0).getRoles());
 		user.setUser_group(permissionUserInfos.get(0).getUser_group());
-		user.setTag_group_code(permissionUserInfos.get(0).getTag_group_code());
+//		user.setTag_group_code(permissionUserInfos.get(0).getTag_group_code());
 		user.setSignature(permissionUserInfos.get(0).getSignature());
-		user.setProduct_code(product_code);
+		user.setProduct_code(permissionUserInfos.get(0).getProduct_code());
 
 		if(user.getEnable()==null || user.getEnable().equalsIgnoreCase(Const.FALSE)){
 			throw new AuthenticationException("当前用户未启用,请联系管理员");

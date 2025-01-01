@@ -135,6 +135,7 @@ public class PermissionUserDimensionValueController extends BaseController {
     public ReturnInfo<PermissionUserDimensionValueInfo> permission_user_dimension_value_detail(String id) {
         try {
             PermissionUserDimensionValueInfo permissionUserDimensionValueInfo = permissionUserDimensionValueMapper.selectByPrimaryKey(id);
+            checkPermissionByOwner(permissionUserDimensionValueInfo.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserDimensionValueInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -307,6 +308,8 @@ public class PermissionUserDimensionValueController extends BaseController {
     public ReturnInfo<PermissionUserDimensionValueInfo> permission_user_dimension_value_attr_update(String product_code, String dim_code, String user_account, String dim_value_code,
                                                                                                     String add,String edit,String del,String approve, String auto_attr) {
         try {
+
+            checkPermissionByOwner(product_code);
 
             JSONObject ext = new JSONObject();
 

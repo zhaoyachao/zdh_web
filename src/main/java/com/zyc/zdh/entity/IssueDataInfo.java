@@ -103,6 +103,18 @@ public class IssueDataInfo implements Serializable {
      */
     private String label_params="";
 
+    /**
+     * 归属组
+     */
+    private String dim_group;
+
+    /**
+     * 产品code
+     */
+    private String product_code;
+
+
+
     public String getIssue_context() {
         return issue_context;
     }
@@ -262,6 +274,23 @@ public class IssueDataInfo implements Serializable {
 
     public void setLabel_params(String label_params) {
         this.label_params = label_params;
+    }
+
+
+    public String getDim_group() {
+        return dim_group;
+    }
+
+    public void setDim_group(String dim_group) {
+        this.dim_group = dim_group;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }
 

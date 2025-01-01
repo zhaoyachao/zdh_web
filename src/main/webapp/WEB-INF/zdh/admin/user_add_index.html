@@ -162,16 +162,16 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">数据标识组</label>
-                                <div class="col-sm-8">
-                                    <select id="tag_group_code" name="tag_group_code"
-                                            data-placeholder=""
-                                            class="chosen-select form-control m-b" tabindex="2">
-                                        <option value="" mytype="">空</option>
-                                    </select>
-                                </div>
-                            </div>
+<!--                            <div class="form-group">-->
+<!--                                <label class="col-sm-3 control-label">数据标识组</label>-->
+<!--                                <div class="col-sm-8">-->
+<!--                                    <select id="tag_group_code" name="tag_group_code"-->
+<!--                                            data-placeholder=""-->
+<!--                                            class="chosen-select form-control m-b" tabindex="2">-->
+<!--                                        <option value="" mytype="">空</option>-->
+<!--                                    </select>-->
+<!--                                </div>-->
+<!--                            </div>-->
 
                             <div class="form-group">
                                 <div class="col-sm-8 col-sm-offset-3">
@@ -223,7 +223,7 @@
 
             $('#user_group').chosen();
             $('#roles').chosen();
-            $('#tag_group_code').chosen();
+            //$('#tag_group_code').chosen();
             $('#user_team').chosen();
 
             $.ajax({
@@ -248,13 +248,13 @@
                         //更新用户组和角色
                         init_role($("#product_code").val());
                         init_user_group($("#product_code").val());
-                        init_data_tag($("#product_code").val());
+                        //init_data_tag($("#product_code").val());
                         init_user_leader($("#product_code").val());
                         //init_jstree($("#product_code").val());
                     });
                     init_role($("#product_code").val());
                     init_user_group($("#product_code").val());
-                    init_data_tag($("#product_code").val());
+                    //init_data_tag($("#product_code").val());
                     init_user_leader($("#product_code").val());
                 },
                 //处理完成
@@ -440,8 +440,8 @@
                             }
 
                             if(data.result.tag_group_code != ""){
-                                $("#tag_group_code").val(data.result.tag_group_code.split(","));
-                                $("#tag_group_code").trigger("chosen:updated");
+                               // $("#tag_group_code").val(data.result.tag_group_code.split(","));
+                               // $("#tag_group_code").trigger("chosen:updated");
                             }
 
                         }

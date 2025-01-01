@@ -83,9 +83,9 @@ public class ${ControllerName} extends BaseController {
             }
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-            criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("context", getLikeCondition(context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<${EntityName}> ${entityName}s = ${mapperName}.selectByExample(example);
 
@@ -130,8 +130,8 @@ public class ${ControllerName} extends BaseController {
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
                 criteria2.orLike("context", getLikeCondition(context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             RowBounds rowBounds=new RowBounds(offset,limit);
             int total = ${mapperName}.selectCountByExample(example);
@@ -174,7 +174,7 @@ public class ${ControllerName} extends BaseController {
     public ReturnInfo<${EntityName}> ${controller}_detail(String id) {
         try {
             ${EntityName} ${entityName} = ${mapperName}.selectByPrimaryKey(id);
-            //checkPermissionByProductAndDimGroup(zdhPermissionService, ${entityName}.getProduct_code(), ${entityName}.getDim_group());
+            //checkAttrPermissionByProductAndDimGroup(zdhPermissionService,  ${entityName}.getProduct_code(),  ${entityName}.getDim_group(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", ${entityName});
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -196,8 +196,9 @@ public class ${ControllerName} extends BaseController {
 
             ${EntityName} old${EntityName} = ${mapperName}.selectByPrimaryKey(${entityName}.getId());
 
-            //checkPermissionByProductAndDimGroup(zdhPermissionService, ${entityName}.getProduct_code(), ${entityName}.getDim_group());
-            //checkPermissionByProductAndDimGroup(zdhPermissionService, old${EntityName}.getProduct_code(), old${EntityName}.getDim_group());
+            //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, ${entityName}.getProduct_code(), ${entityName}.getDim_group(), getAttrEdit());
+            //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, old${EntityName}.getProduct_code(), old${EntityName}.getDim_group(), getAttrEdit());
+
 
             ${entityName}.setCreate_time(old${EntityName}.getCreate_time());
             ${entityName}.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -231,7 +232,7 @@ public class ${ControllerName} extends BaseController {
             ${entityName}.setCreate_time(new Timestamp(System.currentTimeMillis()));
             ${entityName}.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            //checkPermissionByProductAndDimGroup(zdhPermissionService, ${entityName}.getProduct_code(), ${entityName}.getDim_group());
+            //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, ${entityName}.getProduct_code(), ${entityName}.getDim_group(), getAttrAdd());
             ${mapperName}.insertSelective(${entityName});
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", ${entityName});
         } catch (Exception e) {
@@ -252,7 +253,7 @@ public class ${ControllerName} extends BaseController {
     @White
     public ReturnInfo ${controller}_delete(String[] ids) {
         try {
-            //checkPermissionByProductAndDimGroup(zdhPermissionService, ${mapperName}, ${mapperName}.getTable(), ids);
+            //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, ${mapperName}, ${mapperName}.getTable(), ids, getAttrDel());
             ${mapperName}.deleteLogicByIds(${mapperName}.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

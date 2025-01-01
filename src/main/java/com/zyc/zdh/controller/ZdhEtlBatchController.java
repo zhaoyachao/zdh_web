@@ -82,7 +82,7 @@ public class ZdhEtlBatchController extends BaseController {
     public ReturnInfo<EtlTaskBatchInfo> etl_task_batch_detail(String id) {
         try {
             EtlTaskBatchInfo eti = etlTaskBatchMapper.selectByPrimaryKey(id);
-            checkPermissionByProductAndDimGroup(zdhPermissionService, eti.getProduct_code(), eti.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, eti.getProduct_code(), eti.getDim_group(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -124,8 +124,9 @@ public class ZdhEtlBatchController extends BaseController {
             if (!StringUtils.isEmpty(etl_context)) {
                 criteria2.andLike("etl_pre_context", getLikeCondition(etl_context));
                 criteria2.orLike("etl_suffix_context", getLikeCondition(etl_context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
+
             list = etlTaskBatchMapper.selectByExample(example);
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
@@ -178,6 +179,7 @@ public class ZdhEtlBatchController extends BaseController {
             debugInfo(etlTaskBatchInfo);
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchInfo.getProduct_code(), etlTaskBatchInfo.getDim_group(), getAttrAdd());
+
             etlTaskBatchInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlTaskBatchInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskBatchInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));

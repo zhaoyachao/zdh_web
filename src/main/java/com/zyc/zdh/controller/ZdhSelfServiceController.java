@@ -71,8 +71,8 @@ public class ZdhSelfServiceController extends BaseController {
         Example.Criteria criteria2=example.createCriteria();
         if(!org.apache.commons.lang3.StringUtils.isEmpty(history_context)){
             criteria2.orLike("history_context", getLikeCondition(history_context));
+            example.and(criteria2);
         }
-        example.and(criteria2);
 
         List<SelfHistory> selfHistories = selfHistoryMapper.selectByExample(example);
 

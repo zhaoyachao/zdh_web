@@ -45,6 +45,21 @@ public class QualityRuleInfo {
     private String rule_expr;
 
     /**
+     * 产品code
+     */
+    private String product_code;
+
+    /**
+     * 归属组
+     */
+    private String dim_group;
+
+    /**
+     * 逻辑删除
+     */
+    private String is_delete;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -182,5 +197,29 @@ public class QualityRuleInfo {
      */
     public void setRule_expr(String rule_expr) {
         this.rule_expr = rule_expr;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
+    }
+
+    public String getDim_group() {
+        return dim_group;
+    }
+
+    public void setDim_group(String dim_group) {
+        this.dim_group = dim_group;
+    }
+
+    public String getIs_delete() {
+        return is_delete;
+    }
+
+    public void setIs_delete(String is_delete) {
+        this.is_delete = is_delete;
     }
 }

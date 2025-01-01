@@ -6,6 +6,7 @@ import com.zyc.zdh.dao.WeMockDataMapper;
 import com.zyc.zdh.dao.WeMockTreeMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
@@ -39,7 +40,7 @@ public class WeMockController extends BaseController{
     @Autowired
     private WeMockDataMapper weMockDataMapper;
     @Autowired
-    private Environment ev;
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * mock数据首页
@@ -76,6 +77,8 @@ public class WeMockController extends BaseController{
             if(StringUtils.isEmpty(product_code)){
                 throw new Exception("参数产品代码必填");
             }
+            checkPermissionByProduct(zdhPermissionService, product_code);
+
             Example example=new Example(WeMockTreeInfo.class);
 
             Example.Criteria criteria=example.createCriteria();
@@ -106,6 +109,8 @@ public class WeMockController extends BaseController{
             if (org.apache.commons.lang3.StringUtils.isEmpty(wmti.getProduct_code())) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", null);
             }
+
+            checkPermissionByProduct(zdhPermissionService, wmti.getProduct_code());
 
             //校验是否当前产品下已经存在根
             WeMockTreeInfo resourceTreeInfo=new WeMockTreeInfo();
@@ -156,6 +161,8 @@ public class WeMockController extends BaseController{
         try{
             //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
             WeMockTreeInfo weMockTreeInfo=weMockTreeMapper.selectByPrimaryKey(id);
+            checkPermissionByProduct(zdhPermissionService, weMockTreeInfo.getProduct_code());
+
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", weMockTreeInfo);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
@@ -187,6 +194,8 @@ public class WeMockController extends BaseController{
             if (org.apache.commons.lang3.StringUtils.isEmpty(wmti.getId())) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "主键不可为空", null);
             }
+
+            checkPermissionByProduct(zdhPermissionService, wmti.getProduct_code());
 
             wmti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             wmti.setIs_delete(Const.NOT_DELETE);
@@ -233,6 +242,8 @@ public class WeMockController extends BaseController{
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "父节点不可为空", null);
             }
 
+            checkPermissionByProduct(zdhPermissionService, wmti.getProduct_code());
+
             String id = SnowflakeIdWorker.getInstance().nextId() + "";
             wmti.setId(id);
             wmti.setCreate_time(new Timestamp(System.currentTimeMillis()));
@@ -277,6 +288,7 @@ public class WeMockController extends BaseController{
             if(wmti.getLevel().equalsIgnoreCase("1")){
                 throw new Exception("根节点不可删除");
             }
+            checkPermissionByProduct(zdhPermissionService, wmti.getProduct_code());
             weMockTreeMapper.deleteLogicByIds("we_mock_tree_info", new String[]{id}, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", "");
         } catch (Exception e) {
@@ -300,6 +312,8 @@ public class WeMockController extends BaseController{
     public ReturnInfo<Object> wemock_update_parent(String id, String parent_id, String level) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
+            WeMockTreeInfo wmti = weMockTreeMapper.selectByPrimaryKey(id);
+            checkPermissionByProduct(zdhPermissionService, wmti.getProduct_code());
             weMockTreeMapper.updateParentById(id, parent_id, level);
             //递归修改层级
             update_level(id, Integer.parseInt(level));
@@ -355,6 +369,9 @@ public class WeMockController extends BaseController{
             //判断是否根节点
             WeMockTreeInfo weMockTreeInfo=weMockTreeMapper.selectByPrimaryKey(mock_tree_id);
             String product_code = weMockTreeInfo.getProduct_code();
+
+            checkPermissionByProduct(zdhPermissionService, product_code);
+
             //获取这个产品下所有的信息
             if(weMockTreeInfo.getLevel().equalsIgnoreCase("1")){
                 criteria.andEqualTo("product_code", product_code);
@@ -405,7 +422,9 @@ public class WeMockController extends BaseController{
                 throw new Exception("主键必填");
             }
             WeMockDataInfo weMockDataInfo=weMockDataMapper.selectByPrimaryKey(id);
-            String http = ConfigUtil.getValue("zdh.wemock.short.host", "http://127.0.0.1:9001");
+            checkPermissionByProduct(zdhPermissionService, weMockDataInfo.getProduct_code());
+
+            String http = ConfigUtil.getValue(ConfigUtil.ZDH_WEMOCK_SHORT_HOST, "http://127.0.0.1:9001");
             if(http.endsWith("/")){
                 http = http.substring(0, http.length()-1);
             }
@@ -433,6 +452,8 @@ public class WeMockController extends BaseController{
             if(StringUtils.isEmpty(weMockDataInfo.getMock_tree_id())){
                 throw new Exception("mock树节点必填");
             }
+            checkPermissionByProduct(zdhPermissionService, weMockDataInfo.getProduct_code());
+
             weMockDataInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             weMockDataInfo.setOwner(getOwner());
             weMockDataInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
@@ -466,6 +487,8 @@ public class WeMockController extends BaseController{
             if(StringUtils.isEmpty(weMockDataInfo.getMock_tree_id())){
                 throw new Exception("mock树节点必填");
             }
+            checkPermissionByProduct(zdhPermissionService, weMockDataInfo.getProduct_code());
+
             weMockDataInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             weMockDataInfo.setOwner(getOwner());
             weMockDataInfo.setIs_delete(Const.NOT_DELETE);
@@ -491,6 +514,8 @@ public class WeMockController extends BaseController{
             if(ids==null || ids.length==0){
                 throw new Exception("请选择删除的数据");
             }
+            checkPermissionByProductAndDimGroup(zdhPermissionService, weMockDataMapper, weMockDataMapper.getTable(), ids);
+
             weMockDataMapper.deleteLogicByIds("we_mock_data_info", ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", "");
         }catch (Exception e){
@@ -521,8 +546,8 @@ public class WeMockController extends BaseController{
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("url", param);
             jsonObject.put("use_cache", use_cache);
-            String host = ConfigUtil.getValue("zdh.wemock.short.host", "http://127.0.0.1:9001");
-            String path = ConfigUtil.getValue("zdh.wemock.short.generator", "/api/short/generator");
+            String host = ConfigUtil.getValue(ConfigUtil.ZDH_WEMOCK_SHORT_HOST, "http://127.0.0.1:9001");
+            String path = ConfigUtil.getValue(ConfigUtil.ZDH_WEMOCK_SHORT_GENERATOR, "/api/short/generator");
             String ret = HttpUtil.postJSON(host+path, jsonObject.toJSONString());
             return ReturnInfo.buildSuccess(JSONObject.parseObject(ret));
         }catch (Exception e){

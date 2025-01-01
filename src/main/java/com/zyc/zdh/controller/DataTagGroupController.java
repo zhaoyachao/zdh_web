@@ -26,7 +26,9 @@ import java.util.List;
 
 /**
  * 数据标识组服务
+ * 2024-12-31 v5.6.0+版本废弃
  */
+@Deprecated
 @Controller
 public class DataTagGroupController extends BaseController {
 
@@ -70,8 +72,8 @@ public class DataTagGroupController extends BaseController {
                 criteria2.orLike("tag_group_name", getLikeCondition(tag_context));
                 criteria2.orLike("tag_group_code", getLikeCondition(tag_context));
                 criteria2.orLike("product_code", getLikeCondition(tag_context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<DataTagGroupInfo> dataTagGroupInfos = dataTagGroupMapper.selectByExample(example);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", dataTagGroupInfos);

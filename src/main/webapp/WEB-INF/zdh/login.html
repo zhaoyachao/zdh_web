@@ -41,6 +41,10 @@
                     <h1 id="platform_name">ZDH数据平台</h1>
                 </div>
                 <div class="layui-form-item">
+                    <label class="layui-icon layui-icon-release" for="product_code"></label>
+                    <input id="product_code" type="text" name="product_code" lay-verify="required|account" placeholder="企业标识,当前默认ZDH" autocomplete="off" class="layui-input" value="zdh">
+                </div>
+                <div class="layui-form-item">
                     <label class="layui-icon layui-icon-username" for="username"></label>
                     <input id="username" type="text" name="username" lay-verify="required|account" placeholder="用户名: zyc" autocomplete="off" class="layui-input" >
                 </div>
@@ -75,11 +79,13 @@
         </div>
     </div>
 </div>
+
+<script src="js/zdh_common.js"></script>
 <script src="js/layui/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
 <script src="js/layui/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="js/plugins/layer/layer.min.js"></script>
 <!--<script src="js/layui/lib/jq-module/jquery.particleground.min.js" charset="utf-8"></script>-->
-<script src="js/zdh_common.js"></script>
+
 <script>
 
     $(document).ready(function () {
@@ -155,6 +161,10 @@
         form.on('submit(login)', function (data) {
             return false;
             data = data.field;
+            if (data.product_code == '') {
+                layer.msg('企业标识不能为空');
+                return false;
+            }
             if (data.username == '') {
                 layer.msg('用户名不能为空');
                 return false;
@@ -175,6 +185,11 @@
     });
 
     function  login2() {
+
+        if (is_empty($('#product_code').val())) {
+            layer.msg('企业标识不能为空');
+            return false;
+        }
 
         if (is_empty($('#username').val())) {
             layer.msg('用户名不能为空');

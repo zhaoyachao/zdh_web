@@ -48,6 +48,24 @@
                 <form role="form" class="form-inline" id="quality_rule_form">
 
                     <div class="form-group">
+                        <div class="input-group">
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code...."
+                                    class="chosen-select form-control m-b" >
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select id="dim_group" name="dim_group"
+                                    data-placeholder="归属组code...."
+                                    class="chosen-select form-control m-b" >
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <div class="input-group" >
                             <input id="rule_code" name="rule_code" class="form-control" type="text" value="" placeholder="规则code">
                             <span class="add-on"><i class="icon-remove"></i></span>
@@ -122,10 +140,15 @@
     <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
-    <!-- Peity -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <script src="js/admin/dim_product_common.js"></script>
+    <script src="js/admin/dim_group_common.js"></script>
+
+
     <script src="js/etl/quality_rule_index.js"></script>
 
-    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
 
 <script>
     $(document).ready(function () {

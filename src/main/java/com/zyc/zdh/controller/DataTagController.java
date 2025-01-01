@@ -28,7 +28,9 @@ import java.util.List;
 
 /**
  * 数据标识服务
+ * 2024-12-31 v5.6.0+版本废弃
  */
+@Deprecated
 @Controller
 public class DataTagController extends BaseController {
 
@@ -62,6 +64,8 @@ public class DataTagController extends BaseController {
     @ResponseBody
     public ReturnInfo<PageResult<List<DataTagInfo>>> data_tag_list(String tag_context, String product_code,int limit, int offset) {
         try{
+
+            checkParam(product_code, "产品代码");
             Example example=new Example(DataTagInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
@@ -71,8 +75,8 @@ public class DataTagController extends BaseController {
                 criteria2.orLike("tag_code", getLikeCondition(tag_context));
                 criteria2.orLike("tag_name", getLikeCondition(tag_context));
                 criteria2.orLike("product_code", getLikeCondition(tag_context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             example.setOrderByClause("id desc");
             RowBounds rowBounds=new RowBounds(offset,limit);

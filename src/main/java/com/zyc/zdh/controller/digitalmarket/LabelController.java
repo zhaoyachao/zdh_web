@@ -84,8 +84,9 @@ public class LabelController extends BaseController {
                 criteria2.orLike("label_code", getLikeCondition(label_context));
                 criteria2.orLike("label_context", getLikeCondition(label_context));
                 criteria2.orLike("param_json", getLikeCondition(label_context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
+
 
             List<LabelInfo> labelInfos = labelMapper.selectByExample(example);
 

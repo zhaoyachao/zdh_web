@@ -2,6 +2,7 @@ package com.zyc.zdh.controller;
 
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.ApplyMapper;
 import com.zyc.zdh.dao.ApprovalEventMapper;
 import com.zyc.zdh.dao.IssueDataMapper;
@@ -30,6 +31,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据仓库服务
@@ -87,7 +89,7 @@ public class ZdhIssueDataController extends BaseController {
     }
 
     /**
-     * 数据申请首页
+     * 数据已申请首页
      *
      * @return
      */
@@ -95,6 +97,18 @@ public class ZdhIssueDataController extends BaseController {
     public String data_apply_index() {
 
         return "etl/data_apply_index";
+    }
+
+    /**
+     * 数据申请首页
+     *
+     * @return
+     */
+    @White
+    @RequestMapping("/data_apply_add_index")
+    public String data_apply_add_index() {
+
+        return "etl/data_apply_add_index";
     }
 
     /**
@@ -121,6 +135,7 @@ public class ZdhIssueDataController extends BaseController {
     public ReturnInfo<IssueDataInfo> data_ware_house_list(String id) {
         try{
             IssueDataInfo idi = issueDataMapper.selectById(id);
+            checkAttrPermissionByProduct(zdhPermissionService, idi.getProduct_code(), getAttrSelect());
             return ReturnInfo.buildSuccess(idi);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -130,6 +145,9 @@ public class ZdhIssueDataController extends BaseController {
     }
 
     /**
+     * 数据集市-查询列表
+     * 获取有权限的产品线数据
+     *
      * 根据条件模糊查询发布数据
      *
      * @param issue_context 关键字
@@ -138,43 +156,50 @@ public class ZdhIssueDataController extends BaseController {
     @SentinelResource(value = "data_ware_house_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_list2",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<IssueDataInfo>> data_ware_house_list2(String issue_context) {
+    public ReturnInfo<List<IssueDataInfo>> data_ware_house_list2(String issue_context, String product_code) {
         try{
             List<IssueDataInfo> list = new ArrayList<>();
             if(!StringUtils.isEmpty(issue_context)){
                 issue_context = getLikeCondition(issue_context);
             }
-            list = issueDataMapper.selectByParams(issue_context,new String[]{});
+            checkParam(product_code, "产品code");
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+
+            list = issueDataMapper.selectByParams(issue_context,new String[]{}, product_code, dimMap.get("product_codes"));
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.buildError("数据集市任务列表2查询失败", e);
+            return ReturnInfo.buildError("数据集市任务列表2查询失败"+e.getMessage(), e);
         }
     }
 
     /**
-     * 根据条件模糊查询发布数据源,只查询当前用户
+     * 数据发布-查询列表
+     * 根据条件模糊查询发布数据源,查询有权限的产品
      *
      * @param issue_context
+     * @param product_code 产品code
      * @return
      */
     @SentinelResource(value = "data_ware_house_list3", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_list3", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<IssueDataInfo>> data_ware_house_list3(String issue_context) throws Exception {
+    public ReturnInfo<List<IssueDataInfo>> data_ware_house_list3(String issue_context, String product_code) throws Exception {
         try{
+            checkProductCode(product_code);
             List<IssueDataInfo> list = new ArrayList<>();
             String owner = getOwner();
             if(!StringUtils.isEmpty(issue_context)){
                 issue_context = getLikeCondition(issue_context);
             }
-            list = issueDataMapper.selectByOwner(issue_context, owner);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            list = issueDataMapper.selectByOwner(issue_context, null, product_code, dimMap.get("product_codes"), dimMap.get("dim_groups"));
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
-            return ReturnInfo.buildError("数据集市任务列表3查询失败", e);
+            return ReturnInfo.buildError("数据集市任务列表3查询失败"+e.getMessage(), e);
         }
     }
 
@@ -189,7 +214,11 @@ public class ZdhIssueDataController extends BaseController {
     @ResponseBody
     public ReturnInfo data_ware_house_del(String id) {
         try {
+
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, issueDataMapper, issueDataMapper.getTable(), new String[]{id}, getAttrDel());
+
             int result = issueDataMapper.deleteByPrimaryKey(id);
+
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -213,6 +242,9 @@ public class ZdhIssueDataController extends BaseController {
     public ReturnInfo issue_data_add(IssueDataInfo issueDataInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
+
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, issueDataInfo.getProduct_code(),issueDataInfo.getDim_group(), getAttrAdd());
+
             String owner = getOwner();
             String issue_id = SnowflakeIdWorker.getInstance().nextId() + "";
             issueDataInfo.setId(issue_id);
@@ -255,7 +287,7 @@ public class ZdhIssueDataController extends BaseController {
                     return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功,且跳过审批", null);
                 }
             }
-            zdhProcessFlowController.createProcess(event_code, "发布数据-" + issueDataInfo.getIssue_context(), issue_id);
+            zdhProcessFlowController.createProcess(issueDataInfo.getProduct_code(), event_code, "发布数据-" + issueDataInfo.getIssue_context(), issue_id);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功,等待审批", null);
         } catch (Exception e) {
@@ -278,7 +310,11 @@ public class ZdhIssueDataController extends BaseController {
     public ReturnInfo issue_data_update(IssueDataInfo issueDataInfo) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try {
+
             IssueDataInfo idi = issueDataMapper.selectByPrimaryKey(issueDataInfo);
+
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, issueDataInfo.getProduct_code(),issueDataInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, idi.getProduct_code(), idi.getDim_group(), getAttrEdit());
 
             String owner = getOwner();
             issueDataInfo.setOwner(owner);
@@ -347,6 +383,7 @@ public class ZdhIssueDataController extends BaseController {
     /**
      * 申请数据表信息
      *
+     * @param dim_group 申请组
      * @param issue_id 数据仓库发布数据id
      * @return
      */
@@ -354,23 +391,33 @@ public class ZdhIssueDataController extends BaseController {
     @RequestMapping(value = "/data_apply_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo data_apply_add(String issue_id) {
+    public ReturnInfo data_apply_add(String product_code,String dim_group,String issue_id) {
         //String json_str=JSON.toJSONString(request.getParameterMap());
         //根据发布id,获取数据信息,找到对应的管理者
         try {
             IssueDataInfo issueDataInfo = issueDataMapper.selectById(issue_id);
             String owner = issueDataInfo.getOwner();
 
+            checkProductCode(product_code);
+            checkParam(dim_group, "归属组");
+
             String current_owner = getOwner();
 
-            if (owner.equalsIgnoreCase(current_owner)) {
+            if (product_code.equalsIgnoreCase(issueDataInfo.getProduct_code()) && dim_group.equalsIgnoreCase(issueDataInfo.getDim_group())) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前数据不用申请,即可使用", null);
             }
+
+            if(!issueDataInfo.getProduct_code().equalsIgnoreCase(product_code)){
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "申请数据产品code必须和发布数据一致", null);
+            }
+
+            checkPermissionByProductAndDimGroup(zdhPermissionService, product_code, dim_group);
 
             //判断是否已经申请过
             Example example1=new Example(ApplyInfo.class);
             Example.Criteria criteria1=example1.createCriteria();
-            criteria1.andEqualTo("owner", owner);
+            criteria1.andEqualTo("product_code", product_code);
+            criteria1.andEqualTo("dim_group", dim_group);
             criteria1.andEqualTo("issue_id", issue_id);
             criteria1.andIn("status", Arrays.asList(new String[]{Const.APPLY_STATUS_INIT,Const.APPLY_STATUS_SUCCESS}));
             List<ApplyInfo> applyInfos = applyMapper.selectByExample(example1);
@@ -381,6 +428,8 @@ public class ZdhIssueDataController extends BaseController {
             String id = SnowflakeIdWorker.getInstance().nextId() + "";
             //数据审批信息创建
             ApplyInfo applyInfo = new ApplyInfo();
+            applyInfo.setProduct_code(issueDataInfo.getProduct_code());
+            applyInfo.setDim_group(dim_group);
             applyInfo.setId(id);
             applyInfo.setIssue_id(issue_id);
             applyInfo.setApprove_id(owner);
@@ -423,7 +472,7 @@ public class ZdhIssueDataController extends BaseController {
                 }
             }
 
-            zdhProcessFlowController.createProcess(event_code, "申请数据-" + applyInfo.getApply_context(), applyInfo.getId());
+            zdhProcessFlowController.createProcess(product_code, event_code, "申请数据-" + applyInfo.getApply_context(), applyInfo.getId());
 
             //EmailJob会自动加载通知信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "申请已发起", null);
@@ -438,6 +487,7 @@ public class ZdhIssueDataController extends BaseController {
 
     /**
      * 数据申请列表
+     * @param product_code 产品code
      * @param apply_context 关键字
      * @return
      * @throws Exception
@@ -445,15 +495,24 @@ public class ZdhIssueDataController extends BaseController {
     @SentinelResource(value = "data_apply_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_apply_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<ApplyInfo>> data_apply_list(String apply_context) throws Exception {
+    public ReturnInfo<List<ApplyInfo>> data_apply_list(String product_code, String apply_context) throws Exception {
 
-        ApplyInfo applyInfo = new ApplyInfo();
-        applyInfo.setOwner(getOwner());
-        if(!StringUtils.isEmpty(apply_context)){
-            apply_context = getLikeCondition(apply_context);
+        try{
+            checkProductCode(product_code);
+            ApplyInfo applyInfo = new ApplyInfo();
+            applyInfo.setOwner(getOwner());
+            if(!StringUtils.isEmpty(apply_context)){
+                apply_context = getLikeCondition(apply_context);
+            }
+
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+
+            List<ApplyInfo> applyInfos = applyMapper.selectByParams(apply_context, null, null, null, product_code, dimMap.get("product_codes"));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取申请列表成功", applyInfos);
+        }catch (Exception e){
+            return ReturnInfo.buildError("数据申请列表查询失败"+e.getMessage(), e);
         }
-        List<ApplyInfo> applyInfos = applyMapper.selectByParams(apply_context, null, null, getOwner());
-        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取申请明细", applyInfos);
+
     }
 
     /**
@@ -465,14 +524,16 @@ public class ZdhIssueDataController extends BaseController {
     @SentinelResource(value = "data_apply_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_apply_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<ApplyIssueInfo>> data_apply_list2(String apply_context) throws Exception {
+    public ReturnInfo<List<ApplyIssueInfo>> data_apply_list2(String apply_context, String product_code, String dim_group) throws Exception {
 
         ApplyInfo applyInfo = new ApplyInfo();
         applyInfo.setOwner(getOwner());
         if(!StringUtils.isEmpty(apply_context)){
             apply_context = getLikeCondition(apply_context);
         }
-        List<ApplyIssueInfo> applyInfos = applyMapper.selectByParams3(apply_context, "1", null, getOwner());
+
+        Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+        List<ApplyIssueInfo> applyInfos = applyMapper.selectByParams3(apply_context, "1", null, null,product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取申请明细", applyInfos);
     }
 

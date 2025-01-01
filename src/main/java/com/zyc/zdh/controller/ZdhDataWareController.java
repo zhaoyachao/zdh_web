@@ -1,12 +1,12 @@
 package com.zyc.zdh.controller;
 
 
-import cn.hutool.db.sql.SqlUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.EmailJob;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
 import com.zyc.zdh.util.ExportUtil;
@@ -24,8 +24,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 新数据仓库服务
@@ -43,6 +45,10 @@ public class ZdhDataWareController extends BaseController {
     private ApplyMapper applyMapper;
     @Autowired
     private PermissionMapper permissionMapper;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
+    @Autowired
+    private PermissionDimensionValueMapper permissionDimensionValueMapper;
 
     /**
      * 数据资产首页
@@ -56,6 +62,7 @@ public class ZdhDataWareController extends BaseController {
 
 
     /**
+     * 数据资产-查询列表
      * 获取已发布的数据
      * @param issue_context 关键字
      * @param current_page 当前页
@@ -66,67 +73,76 @@ public class ZdhDataWareController extends BaseController {
     @SentinelResource(value = "data_ware_house_list6", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_list6", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<JSONObject> data_ware_house_list6(String issue_context,String current_page,String label_params,Integer  page_size) {
-        if(page_size==null || page_size==0){
-            page_size = 10;
-        }
-        List<IssueDataInfo> list = new ArrayList<>();
-        String[] labels = new String[]{};
-        if(!StringUtils.isEmpty(label_params)){
-            labels = label_params.split(",");
-        }
+    public ReturnInfo<JSONObject> data_ware_house_list6(String product_code, String issue_context,String current_page,String label_params,Integer  page_size) {
+        try{
+            checkAttrPermissionByProduct(zdhPermissionService, product_code, getAttrSelect());
 
-        if(!StringUtils.isEmpty(issue_context)){
-            issue_context = getLikeCondition(issue_context);
-        }
-        list = issueDataMapper.selectByParams(issue_context, labels);
-
-        int end_index = Integer.parseInt(current_page)*page_size;
-        if(list.size()< end_index){
-            end_index = list.size();
-        }
-
-        int total_page = list.size()/page_size;
-        if(list.size()%page_size != 0) {
-            total_page=total_page+1;
-        }
-
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("total_page",total_page);
-        jsonObject.put("total_size", list.size());
-        jsonObject.put("current_page", current_page);
-
-        List<String> left_page = new ArrayList<>();
-        List<String> right_page = new ArrayList<>();
-        for(int i=Integer.parseInt(current_page)-3; i<Integer.parseInt(current_page);i++ ){
-            if(i>=1){
-                left_page.add(String.valueOf(i));
+            if(page_size==null || page_size==0){
+                page_size = 10;
             }
-        }
-        //当前页后的2页展示
-        for(int j=Integer.parseInt(current_page); j<Integer.parseInt(current_page)+3;j++ ){
-            if(j<= total_page){
-                right_page.add(String.valueOf(j));
+            List<IssueDataInfo> list = new ArrayList<>();
+            String[] labels = new String[]{};
+            if(!StringUtils.isEmpty(label_params)){
+                labels = label_params.split(",");
             }
-        }
-        if(Integer.parseInt(current_page)+4<total_page){
-            right_page.add("...");
-            right_page.add(String.valueOf(total_page-1));
-            right_page.add(String.valueOf(total_page));
-        }else if(Integer.parseInt(current_page)+3==total_page){
-            //right_page.add(String.valueOf(total_page-1));
-            right_page.add(String.valueOf(total_page));
-        }else if(Integer.parseInt(current_page)+3<total_page){
-            right_page.add(String.valueOf(total_page-1));
-            right_page.add(String.valueOf(total_page));
-        }
 
-        list =list.subList((Integer.parseInt(current_page)-1)*page_size, end_index);
-        jsonObject.put("left_page", left_page);
-        jsonObject.put("right_page", right_page);
-        jsonObject.put("list", list);
+            if(!StringUtils.isEmpty(issue_context)){
+                issue_context = getLikeCondition(issue_context);
+            }
 
-        return ReturnInfo.buildSuccess(jsonObject);
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+
+            list = issueDataMapper.selectByParams(issue_context, labels, product_code, dimMap.get("product_codes"));
+
+            int end_index = Integer.parseInt(current_page)*page_size;
+            if(list.size()< end_index){
+                end_index = list.size();
+            }
+
+            int total_page = list.size()/page_size;
+            if(list.size()%page_size != 0) {
+                total_page=total_page+1;
+            }
+
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("total_page",total_page);
+            jsonObject.put("total_size", list.size());
+            jsonObject.put("current_page", current_page);
+
+            List<String> left_page = new ArrayList<>();
+            List<String> right_page = new ArrayList<>();
+            for(int i=Integer.parseInt(current_page)-3; i<Integer.parseInt(current_page);i++ ){
+                if(i>=1){
+                    left_page.add(String.valueOf(i));
+                }
+            }
+            //当前页后的2页展示
+            for(int j=Integer.parseInt(current_page); j<Integer.parseInt(current_page)+3;j++ ){
+                if(j<= total_page){
+                    right_page.add(String.valueOf(j));
+                }
+            }
+            if(Integer.parseInt(current_page)+4<total_page){
+                right_page.add("...");
+                right_page.add(String.valueOf(total_page-1));
+                right_page.add(String.valueOf(total_page));
+            }else if(Integer.parseInt(current_page)+3==total_page){
+                //right_page.add(String.valueOf(total_page-1));
+                right_page.add(String.valueOf(total_page));
+            }else if(Integer.parseInt(current_page)+3<total_page){
+                right_page.add(String.valueOf(total_page-1));
+                right_page.add(String.valueOf(total_page));
+            }
+
+            list =list.subList((Integer.parseInt(current_page)-1)*page_size, end_index);
+            jsonObject.put("left_page", left_page);
+            jsonObject.put("right_page", right_page);
+            jsonObject.put("list", list);
+
+            return ReturnInfo.buildSuccess(jsonObject);
+        }catch (Exception e){
+            return ReturnInfo.buildError("数据资产查询失败"+e.getMessage(), e);
+        }
     }
 
     /**
@@ -179,11 +195,14 @@ public class ZdhDataWareController extends BaseController {
             owners.add(permissionUserInfo.getUser_account());
         }
 
+        Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
         Example example2=new Example(ApplyInfo.class);
         Example.Criteria criteria2=example2.createCriteria();
         criteria2.andEqualTo("issue_id", idi.getId());
         criteria2.andEqualTo("status", Const.APPLY_STATUS_SUCCESS);
-        criteria2.andIn("owner", owners);
+        criteria2.andEqualTo("product_code", product_code);
+        criteria2.andIn("dim_group", dimMap.get("dim_groups"));
+        //criteria2.andIn("owner", owners);
         int count = applyMapper.selectCountByExample(example2);
         if(count<=0 && !idi.getOwner().equalsIgnoreCase(getOwner())){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", "当前表无操作权限");
@@ -198,12 +217,10 @@ public class ZdhDataWareController extends BaseController {
         DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(sources_id);
 
         String sql = "select ";
-        List<String> params = new ArrayList<>();
         List<String> placeholds = new ArrayList<>();
         //生成预编译参数
         for(column_data column:columns){
-            placeholds.add("?");
-            params.add(column.getColumn_name());
+            placeholds.add(column.getColumn_name());
         }
 
         if(!DBUtil.validTableName(table)){
@@ -213,7 +230,7 @@ public class ZdhDataWareController extends BaseController {
         sql=sql+StringUtils.join(placeholds,",")+" from "+table+" limit 1000";
         try {
             List<Map<String,Object>> result = new DBUtil().R5(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
-                    sql, params.toArray(new String[]{}));
+                    sql);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"查询成功",result);
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -251,11 +268,14 @@ public class ZdhDataWareController extends BaseController {
             owners.add(permissionUserInfo.getUser_account());
         }
 
+        Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+
         Example example2=new Example(ApplyInfo.class);
         Example.Criteria criteria2=example2.createCriteria();
         criteria2.andEqualTo("issue_id", idi.getId());
         criteria2.andEqualTo("status", Const.APPLY_STATUS_SUCCESS);
-        criteria2.andIn("owner", owners);
+        criteria2.andEqualTo("product_code", product_code);
+        criteria2.andIn("dim_group", dimMap.get("dim_groups"));
         int count = applyMapper.selectCountByExample(example2);
         if(count<=0 && !idi.getOwner().equalsIgnoreCase(getOwner())){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"导出失败", "当前表无操作权限");
@@ -270,11 +290,9 @@ public class ZdhDataWareController extends BaseController {
         DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(sources_id);
 
         String sql = "select ";
-        List<String> params = new ArrayList<>();
         List<String> placeholds = new ArrayList<>();
         for(column_data column:columns){
-            params.add(column.getColumn_name());
-            placeholds.add("?");
+            placeholds.add(column.getColumn_name());
         }
         if(!DBUtil.validTableName(table)){
             throw new Exception("表名不合法");
@@ -283,10 +301,10 @@ public class ZdhDataWareController extends BaseController {
         BufferedWriter csvWtriter = null;
         try {
             List<Map<String,Object>> result = new DBUtil().R5(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
-                    sql, params.toArray(new String[]{}));
+                    sql);
 
             ExportUtil.responseSetProperties(idi.getIssue_context(),response);
-            ExportUtil.doExport(result, StringUtils.join(params,","), StringUtils.join(params,","),response.getOutputStream());
+            ExportUtil.doExport(result, StringUtils.join(placeholds,","), StringUtils.join(placeholds,","),response.getOutputStream());
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
@@ -305,9 +323,34 @@ public class ZdhDataWareController extends BaseController {
     @ResponseBody
     public ReturnInfo<List<ApplyAlarmInfo>> data_ware_house_apply(String issue_id){
 
-        List<ApplyAlarmInfo> applyAlarmInfos = applyMapper.selectByIssueId(issue_id);
+        try{
+            List<ApplyAlarmInfo> applyAlarmInfos = applyMapper.selectDimGroupByIssueId(issue_id);
 
-        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", applyAlarmInfos);
+            List<String> product_codes = applyAlarmInfos.stream().map(f -> f.getProduct_code()).collect(Collectors.toList());
+            Example example=new Example(PermissionDimensionValueInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andIn("product_code", product_codes);
+            criteria.andEqualTo("dim_code", "dim_group");
+
+            Map<String, String> dimGroupMap = new HashMap<>();
+            List<PermissionDimensionValueInfo> permissionDimensionValueInfos = permissionDimensionValueMapper.selectByExample(example);
+            List<PermissionDimensionValueNodeInfo> permissionDimensionValueNodeInfos=new ArrayList<>();
+            for (PermissionDimensionValueInfo permissionDimensionValueInfo: permissionDimensionValueInfos){
+                permissionDimensionValueNodeInfos.add(PermissionDimensionValueNodeInfo.build(permissionDimensionValueInfo));
+                dimGroupMap.put(permissionDimensionValueInfo.getProduct_code()+"_"+permissionDimensionValueInfo.getDim_value_code(), permissionDimensionValueInfo.getDim_value_name());
+            }
+
+            for(ApplyAlarmInfo applyAlarmInfo: applyAlarmInfos){
+                String dim_group_value_name = dimGroupMap.getOrDefault(applyAlarmInfo.getProduct_code()+"_"+applyAlarmInfo.getDim_group(), applyAlarmInfo.getDim_group());
+                applyAlarmInfo.setDim_group(dim_group_value_name);
+            }
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", applyAlarmInfos);
+
+        }catch (Exception e){
+            return ReturnInfo.buildError("查询申请组失败", e);
+        }
 
     }
 

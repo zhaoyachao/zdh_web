@@ -117,8 +117,8 @@ public class StrategyGroupController extends BaseController {
             if(!StringUtils.isEmpty(group_context)){
                 criteria2.orLike("group_context", getLikeCondition(group_context));
                 criteria2.orLike("id", getLikeCondition(group_context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             RowBounds rowBounds=new RowBounds(offset,limit);
             int total = strategyGroupMapper.selectCountByExample(example);
@@ -510,7 +510,7 @@ public class StrategyGroupController extends BaseController {
 
         //根据id 获取策略任务信息
         StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
-        String basePath = ConfigUtil.getValue("digitalmarket.local.path", "/home/data/label/");
+        String basePath = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_LOCAL_PATH, "/home/data/label/");
 
         String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
 
@@ -533,7 +533,7 @@ public class StrategyGroupController extends BaseController {
         try{
             //根据id 获取策略任务信息
             StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
-            String basePath = ConfigUtil.getValue("digitalmarket.local.path", "/home/data/label/");
+            String basePath = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_LOCAL_PATH, "/home/data/label/");
             String dir =  String.format("%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id());
             String fileName = strategyInstance.getId();
             String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
@@ -541,7 +541,8 @@ public class StrategyGroupController extends BaseController {
 
             response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("日志_" + strategyInstance.getStrategy_context() + ".log", "UTF-8"));
 
-            String storeType = env.getProperty("digitalmarket.store.type");
+
+            String storeType = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_STORE_TYPE);
 
             //判断是本地存储
             if(storeType.equalsIgnoreCase("local")){
@@ -555,10 +556,10 @@ public class StrategyGroupController extends BaseController {
                     i = bis.read(buff);
                 }
             }else if(storeType.equalsIgnoreCase("sftp")){
-                String host = env.getProperty("digitalmarket.sftp.host");
-                String port = env.getProperty("digitalmarket.sftp.port");
-                String username = env.getProperty("digitalmarket.sftp.username");
-                String password = env.getProperty("digitalmarket.sftp.password");
+                String host =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_HOST); //env.getProperty("digitalmarket.sftp.host");
+                String port =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PORT, "22");//env.getProperty("digitalmarket.sftp.port");
+                String username =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_USERNAME);//env.getProperty("digitalmarket.sftp.username");
+                String password =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PASSWORD);//env.getProperty("digitalmarket.sftp.password");
 
                 SFTPUtil sftp = new SFTPUtil(username, password,
                         host, new Integer(port));
@@ -568,11 +569,11 @@ public class StrategyGroupController extends BaseController {
                 os.write(buff1, 0, buff1.length);
                 os.flush();
             }else if(storeType.equalsIgnoreCase("minio")){
-                String ak = env.getProperty("digitalmarket.minio.ak");
-                String sk = env.getProperty("digitalmarket.minio.sk");
-                String endpoint = env.getProperty("digitalmarket.minio.endpoint");
-                String region = env.getProperty("digitalmarket.minio.region");
-                String bucket = env.getProperty("digitalmarket.minio.bucket");
+                String ak = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_AK);//env.getProperty("digitalmarket.minio.ak");
+                String sk = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_SK);//env.getProperty("digitalmarket.minio.sk");
+                String endpoint = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_ENDPOINT);//env.getProperty("digitalmarket.minio.endpoint");
+                String region = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_REGION);//env.getProperty("digitalmarket.minio.region");
+                String bucket = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_BUCKET);//env.getProperty("digitalmarket.minio.bucket");
                 MinioClient minioClient = MinioUtil.buildMinioClient(ak, sk, endpoint);
                 bis = MinioUtil.getObject(minioClient, bucket, region, url);
                 os = response.getOutputStream();

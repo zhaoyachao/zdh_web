@@ -8,6 +8,7 @@ import com.zyc.zdh.entity.EnumInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 枚举服务
@@ -36,6 +38,8 @@ public class ZdhEnumController extends BaseController{
     public Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private EnumMapper enumMapper;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
 
     /**
@@ -59,6 +63,7 @@ public class ZdhEnumController extends BaseController{
     public ReturnInfo<EnumInfo> enum_detail(String id) {
         try{
             EnumInfo enumInfo=enumMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProduct(zdhPermissionService, enumInfo.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", enumInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -78,13 +83,21 @@ public class ZdhEnumController extends BaseController{
     @ResponseBody
     public ReturnInfo<List<EnumInfo>> enum_list(String enum_context) {
         try{
+
+
             List<EnumInfo> list = new ArrayList<>();
             Example example=new Example(EnumInfo.class);
             Example.Criteria criteria= example.createCriteria();
+
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            dynamicPermissionByProduct(zdhPermissionService, criteria);
+
+            Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(enum_context)){
-                criteria.orLike("enum_context", getLikeCondition(enum_context));
-                criteria.orLike("enum_json", getLikeCondition(enum_context));
-                criteria.orLike("enum_code", getLikeCondition(enum_context));
+                criteria2.orLike("enum_context", getLikeCondition(enum_context));
+                criteria2.orLike("enum_json", getLikeCondition(enum_context));
+                criteria2.orLike("enum_code", getLikeCondition(enum_context));
+                example.and(criteria2);
             }
 
             list = enumMapper.selectByExample(example);
@@ -107,6 +120,7 @@ public class ZdhEnumController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo enum_delete(String[] ids) {
         try{
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, enumMapper, enumMapper.getTable(), ids, getAttrDel());
             enumMapper.deleteBatchByIds(ids);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
         }catch (Exception e){
@@ -142,13 +156,17 @@ public class ZdhEnumController extends BaseController{
     public ReturnInfo enum_add(EnumInfo enumInfo,String[] enum_value, String[] enum_value_context) {
 
         try{
+            checkAttrPermissionByProduct(zdhPermissionService, enumInfo.getProduct_code(), getAttrAdd());
+
             String owner = getOwner();
             enumInfo.setOwner(owner);
-            debugInfo(enumInfo);
 
             //校验枚举code是否唯一
             EnumInfo ei = new EnumInfo();
             ei.setEnum_code(enumInfo.getEnum_code());
+            ei.setProduct_code(enumInfo.getProduct_code());
+            ei.setIs_delete(Const.NOT_DELETE);
+
             EnumInfo enumInfo1 = enumMapper.selectOne(ei);
             if(enumInfo1!=null){
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"枚举code不唯一", enumInfo);
@@ -194,6 +212,8 @@ public class ZdhEnumController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo enum_update(EnumInfo enumInfo,String[] enum_value, String[] enum_value_context) {
         try{
+            checkAttrPermissionByProduct(zdhPermissionService, enumInfo.getProduct_code(), getAttrEdit());
+
             String owner = getOwner();
             enumInfo.setOwner(owner);
             enumInfo.setIs_delete(Const.NOT_DELETE);
@@ -229,6 +249,8 @@ public class ZdhEnumController extends BaseController{
     @ResponseBody
     public ReturnInfo<EnumInfo> enum_by_code(String enum_code) {
         try{
+            String product_code = getProductCode();
+
             if(StringUtils.isEmpty(enum_code)){
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"枚举code不可为空", null);
             }
@@ -238,6 +260,8 @@ public class ZdhEnumController extends BaseController{
             Example.Criteria criteria= example.createCriteria();
             criteria.andEqualTo("enum_code", enum_code);
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("product_code",product_code);
+
             list = enumMapper.selectByExample(example);
 
             if(list!=null && list.size()==1){

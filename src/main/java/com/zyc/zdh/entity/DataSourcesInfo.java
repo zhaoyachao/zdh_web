@@ -55,6 +55,7 @@ public class DataSourcesInfo{
     private Date update_time;
 
     /**
+     * 废弃
      * 数据组标识,多个逗号分割
      */
     private String tag_group_code;

@@ -403,13 +403,13 @@
             $('#model_output').chosen();
 
             //初始化数据源--把所有数据源都加载到下拉框
-            function init_data_sources(){
+            function init_data_sources(product_code, dim_group){
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/etl_task_list2",
                     dataType: 'json',
                     async: false,
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -422,6 +422,7 @@
                         }
                         //ETL单任务下拉框
                         $('#etl_ids').html(str);
+                        $('#etl_ids').trigger("chosen:updated");
                         $('#etl_ids').chosen().on("change", function (evt, params) {
                             $("#etl_ids").trigger("chosen:updated");
                         });
@@ -442,7 +443,7 @@
                     url: server_context+"/data_sources_list",
                     dataType: 'json',
                     async: false,
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -455,7 +456,7 @@
                         }
                         //输出数据源类型下拉框
                         $('#data_sources_choose_output').html(str);
-
+                        $("#data_sources_choose_output").trigger("chosen:updated");
                         $('#data_sources_choose_output').chosen().on("change", function (evt, params) {
                             $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
                             $("#data_sources_choose_output").trigger("chosen:updated");
@@ -525,8 +526,11 @@
             }
 
             // ------------------------------------------------------------------
+            $('#dim_group').chosen().on("change", function (evt, params) {
+                init_data_sources($('#product_code').val(), $('#dim_group').val());
+            });
             //启动数据源select 初始化函数
-            init_data_sources();
+            init_data_sources($('#product_code').val(), $('#dim_group').val());
             //s.id=-1 表示新增,否则表示更新
             if(s.id==-1){
                 console.info("新增按钮触发");
@@ -589,6 +593,8 @@
                             var dim_group=data.result.dim_group;
                             $("#dim_group").val(dim_group);
                             $("#dim_group").trigger("chosen:updated");
+
+                            init_data_sources($('#product_code').val(), $('#dim_group').val());
 
                             //获取输入数据源id
                             var id=data.result.id;

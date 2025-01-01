@@ -448,11 +448,16 @@ public class SystemController extends BaseController{
     @SentinelResource(value = "every_day_notice", blockHandler = "handleReturn")
     @RequestMapping(value = "/every_day_notice", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<EveryDayNotice> every_day_notice() {
+    public ReturnInfo<EveryDayNotice> every_day_notice(String product_code) {
 
         try{
+            if(StringUtils.isEmpty(product_code)){
+                product_code = getProductCode();
+            }
+
             EveryDayNotice everyDayNotice=new EveryDayNotice();
             everyDayNotice.setIs_delete(Const.NOT_DELETE);
+            everyDayNotice.setProduct_code(product_code);
             List<EveryDayNotice> list=everyDayNoticeMapper.select(everyDayNotice);
             if(list != null && list.size()>0){
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "", list.get(0));
@@ -468,6 +473,7 @@ public class SystemController extends BaseController{
 
     /**
      * 更新系统登录通知
+     * @param product_code 产品code
      * @param msg 通知内容
      * @param show_type 1弹框,2文字,3不展示
      * @return
@@ -475,18 +481,21 @@ public class SystemController extends BaseController{
     @SentinelResource(value = "notice_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/notice_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<String> notice_update(String msg, String show_type) {
+    public ReturnInfo<String> notice_update(String product_code, String msg, String show_type) {
         try{
+            checkPermissionByOwner(product_code);
             EveryDayNotice everyDayNotice=new EveryDayNotice();
             everyDayNotice.setIs_delete(Const.DELETE);
             Example example=new Example(everyDayNotice.getClass());
             Example.Criteria criteria = example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("product_code", product_code);
             everyDayNoticeMapper.updateByExampleSelective(everyDayNotice, example);
             everyDayNotice.setMsg(msg);
             everyDayNotice.setIs_delete(Const.NOT_DELETE);
             everyDayNotice.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             everyDayNotice.setShow_type(show_type);
+            everyDayNotice.setProduct_code(product_code);
             everyDayNoticeMapper.insertSelective(everyDayNotice);
             return ReturnInfo.buildSuccess("");
         }catch (Exception e){
@@ -505,7 +514,7 @@ public class SystemController extends BaseController{
     @RequestMapping(value = "/version", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<String> version() {
-        String version= ConfigUtil.getValue("version","");
+        String version= ConfigUtil.getValue(ConfigUtil.VERSION,"");
         return  ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", "当前版本:"+version);
     }
 

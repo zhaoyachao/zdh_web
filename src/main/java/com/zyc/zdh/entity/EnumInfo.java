@@ -58,6 +58,11 @@ public class EnumInfo {
     private JSONArray enum_json_object;
 
     /**
+     * 产品code
+     */
+    private String product_code;
+
+    /**
      * @return id
      */
     public String getId() {
@@ -224,5 +229,13 @@ public class EnumInfo {
 
     public void setEnum_json_object(JSONArray enum_json_object) {
         this.enum_json_object = enum_json_object;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }

@@ -208,7 +208,6 @@
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
-
 <script src="js/plugins/layer/laydate/laydate.js"></script>
 
 <script src="js/plugins/vs/loader.js"></script>
@@ -247,6 +246,8 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
+            const product_code = $("#product_code",window.parent.document).val();
+            const dim_group = $("#dim_group",window.parent.document).val();
 
             function init_data_sources() {
                 $.ajax({
@@ -254,7 +255,7 @@
                     url: server_context+"/data_sources_list2",
                     dataType: 'json',
                     async: false,
-                    data: {'data_source_type': "JDBC"},
+                    data: {'data_source_type': "JDBC", "product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){

@@ -177,6 +177,8 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
+            const product_code = $("#product_code",window.parent.document).val();
+            const dim_group = $("#dim_group",window.parent.document).val();
 
             //初始化依赖调度任务数据
             function init_job_sources(){
@@ -185,7 +187,7 @@
                     url: server_context+"/dispatch_task_list2",
                     dataType: 'json',
                     async: false,
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){

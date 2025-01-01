@@ -103,9 +103,9 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
             criteria.andEqualTo("dim_code", dim_code);
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-            criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("context", getLikeCondition(context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<PermissionUserGroupDimensionValueInfo> permissionUserGroupDimensionValueInfos = permissionUserGroupDimensionValueMapper.selectByExample(example);
 
@@ -142,6 +142,8 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<PermissionUserGroupDimensionValueInfo> permission_usergroup_dimension_value_update(String product_code, String dim_code, String group_code, String[] dim_value_codes) {
         try {
+            checkPermissionByOwner(product_code);
+
             Example example=new Example(PermissionUserGroupDimensionValueInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
@@ -296,6 +298,8 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
     public ReturnInfo<PermissionUserGroupDimensionValueInfo> permission_usergroup_dimension_value_attr_update(String product_code, String dim_code, String group_code, String dim_value_code,
                                                                                                     String add,String edit,String del,String approve, String auto_attr) {
         try {
+
+            checkPermissionByOwner(product_code);
 
             JSONObject ext = new JSONObject();
 

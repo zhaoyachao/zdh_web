@@ -59,7 +59,7 @@ public class ZdhEtlLogController extends BaseController{
     public ReturnInfo<EtlTaskLogInfo> etl_task_log_detail(String id) {
         try{
             EtlTaskLogInfo eti=etlTaskLogMapper.selectByPrimaryKey(id);
-            checkPermissionByProductAndDimGroup(zdhPermissionService, eti.getProduct_code(), eti.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, eti.getProduct_code(), eti.getDim_group(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -96,8 +96,8 @@ public class ZdhEtlLogController extends BaseController{
             if (!StringUtils.isEmpty(log_context)) {
                 criteria2.andLike("log_context", getLikeCondition(log_context));
                 criteria2.orLike("data_sources_output", getLikeCondition(log_context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             list = etlTaskLogMapper.selectByExample(example);
             return ReturnInfo.buildSuccess(list);

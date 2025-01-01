@@ -67,6 +67,11 @@ public class BloodSourceInfo {
     private String input_json;
 
     /**
+     * 产品code
+     */
+    private String product_code;
+
+    /**
      * @return id
      */
     public Long getId() {
@@ -290,5 +295,13 @@ public class BloodSourceInfo {
      */
     public void setInput_json(String input_json) {
         this.input_json = input_json;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }

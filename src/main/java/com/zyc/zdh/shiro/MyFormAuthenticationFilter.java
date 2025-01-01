@@ -68,6 +68,10 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 		return WebUtils.getCleanParam(request, "captcha");
 	}
 
+	protected String getProductCode(ServletRequest request) {
+		return WebUtils.getCleanParam(request, "product_code");
+	}
+
 	@Override
 	protected AuthenticationToken createToken(ServletRequest request,
 			ServletResponse response) {
@@ -75,17 +79,15 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 		String session_captcha = (String)((HttpServletRequest) request).getSession().getAttribute(MyAuthenticationToken.captcha_key);
 
 
-		//System.out.println("create Token");
 		String username = getUsername(request);
 		String password = getPassword(request);
 		boolean remberMe = isRememberMe(request);
 		String host = "";
 		String captcha = getCaptcha(request);
 		String ipAddr = "";
-		//System.out.println("captcha: "+captcha);
-		//System.out.println("session_captcha: "+session_captcha);
+		String product_code = getProductCode(request);
 		return new MyAuthenticationToken(username, password, remberMe, host,
-				captcha, ipAddr, session_captcha);
+				captcha, ipAddr, session_captcha, product_code);
 	}
 
 	@Override

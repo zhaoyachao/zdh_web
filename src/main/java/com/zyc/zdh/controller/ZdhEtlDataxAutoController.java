@@ -63,6 +63,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
     public ReturnInfo<EtlTaskDataxAutoInfo> etl_task_datax_auto_detail(String id) {
         try{
             EtlTaskDataxAutoInfo eti=etlTaskDataxAutoMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, eti.getProduct_code(), eti.getDim_group(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -201,6 +202,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
         //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoInfo.getProduct_code(), etlTaskDataxAutoInfo.getDim_group(), getAttrAdd());
+
             etlTaskDataxAutoInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             etlTaskDataxAutoInfo.setOwner(getOwner());
             etlTaskDataxAutoInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));

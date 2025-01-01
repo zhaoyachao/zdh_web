@@ -9,7 +9,6 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -111,7 +110,7 @@ public class ZdhApprovalController extends BaseController{
     public ReturnInfo<ApprovalConfigInfo> approval_config_detail(String id) {
         try{
             ApprovalConfigInfo approvalConfigInfo=approvalConfigMapper.selectByPrimaryKey(id);
-            checkPermissionByProduct(zdhPermissionService, approvalConfigInfo.getProduct_code());
+            checkAttrPermissionByProduct(zdhPermissionService, approvalConfigInfo.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalConfigInfo);
         }catch (Exception e){
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
@@ -137,7 +136,7 @@ public class ZdhApprovalController extends BaseController{
             approvalConfigInfo.setEmployee_id(getOwner());
             approvalConfigInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkPermissionByProduct(zdhPermissionService, approvalConfigInfo.getProduct_code());
+            checkAttrPermissionByProduct(zdhPermissionService, approvalConfigInfo.getProduct_code(), getAttrAdd());
 
             approvalConfigMapper.insertSelective(approvalConfigInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
@@ -159,8 +158,8 @@ public class ZdhApprovalController extends BaseController{
         try{
             ApprovalConfigInfo oldApprovalConfigInfo=approvalConfigMapper.selectByPrimaryKey(approvalConfigInfo.getId());
 
-            checkPermissionByProduct(zdhPermissionService, approvalConfigInfo.getProduct_code());
-            checkPermissionByProduct(zdhPermissionService, oldApprovalConfigInfo.getProduct_code());
+            checkAttrPermissionByProduct(zdhPermissionService, approvalConfigInfo.getProduct_code(), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService, oldApprovalConfigInfo.getProduct_code(), getAttrEdit());
 
             approvalConfigInfo.setEmployee_id(getOwner());
             approvalConfigInfo.setCreate_time(oldApprovalConfigInfo.getCreate_time());
@@ -246,6 +245,9 @@ public class ZdhApprovalController extends BaseController{
     @ResponseBody
     public ReturnInfo<ApprovalAuditorInfo> approval_auditor_add(ApprovalAuditorInfo approvalAuditorInfo) {
         try{
+
+            checkAttrPermissionByProduct(zdhPermissionService, approvalAuditorInfo.getProduct_code(), getAttrAdd());
+
             List<ApprovalAuditorInfo> approvalAuditorInfos=approvalAuditorMapper.select(approvalAuditorInfo);
             if(approvalAuditorInfos!=null && approvalAuditorInfos.size()>0){
                 throw new Exception("审批节点以存在");
@@ -271,6 +273,7 @@ public class ZdhApprovalController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<Object> approval_auditor_delete(String[] ids) {
         try{
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, approvalAuditorMapper,approvalAuditorMapper.getTable(), ids, getAttrDel());
             approvalAuditorMapper.deleteByPrimaryKeys(ids);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         }catch (Exception e){
@@ -292,8 +295,8 @@ public class ZdhApprovalController extends BaseController{
         try{
             ApprovalAuditorInfo old=approvalAuditorMapper.selectByPrimaryKey(approvalAuditorInfo.getId());
 
-            checkPermissionByProduct(zdhPermissionService, approvalAuditorInfo.getProduct_code());
-            checkPermissionByProduct(zdhPermissionService, old.getProduct_code());
+            checkAttrPermissionByProduct(zdhPermissionService, approvalAuditorInfo.getProduct_code(), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService, old.getProduct_code(), getAttrEdit());
 
             approvalAuditorInfo.setCreate_time(old.getCreate_time());
             approvalAuditorMapper.updateByPrimaryKeySelective(approvalAuditorInfo);
@@ -315,7 +318,7 @@ public class ZdhApprovalController extends BaseController{
     public ReturnInfo<ApprovalAuditorInfo> approval_auditor_detail(String id) {
         try{
             ApprovalAuditorInfo approvalAuditorInfo=approvalAuditorMapper.selectById(id);
-            checkPermissionByProduct(zdhPermissionService, approvalAuditorInfo.getProduct_code());
+            checkAttrPermissionByProduct(zdhPermissionService, approvalAuditorInfo.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalAuditorInfo);
         }catch (Exception e){
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
@@ -425,8 +428,8 @@ public class ZdhApprovalController extends BaseController{
         try{
             ApprovalAuditorFlowInfo old = approvalAuditorFlowMapper.selectByPrimaryKey(approvalAuditorFlowInfo.getId());
 
-            checkPermissionByProduct(zdhPermissionService, approvalAuditorFlowInfo.getProduct_code());
-            checkPermissionByProduct(zdhPermissionService, old.getProduct_code());
+            checkAttrPermissionByProduct(zdhPermissionService, approvalAuditorFlowInfo.getProduct_code(), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService, old.getProduct_code(), getAttrEdit());
 
             approvalAuditorFlowInfo.setCreate_time(old.getCreate_time());
             approvalAuditorFlowInfo.setOwner(old.getOwner());
@@ -452,7 +455,7 @@ public class ZdhApprovalController extends BaseController{
     public ReturnInfo<ApprovalAuditorFlowInfo> approval_auditor_flow_detail(String id) {
         try{
             ApprovalAuditorFlowInfo approvalAuditorFlowInfo=approvalAuditorFlowMapper.selectByPrimaryKey(id);
-            checkPermissionByProduct(zdhPermissionService, approvalAuditorFlowInfo.getProduct_code());
+            checkAttrPermissionByProduct(zdhPermissionService, approvalAuditorFlowInfo.getProduct_code(), getAttrSelect());
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalAuditorFlowInfo);
         }catch (Exception e){
@@ -493,7 +496,7 @@ public class ZdhApprovalController extends BaseController{
     @ResponseBody
     public ReturnInfo<Object> approval_event_add(ApprovalEventInfo approvalEventInfo) {
         try{
-            checkPermissionByProduct(zdhPermissionService, approvalEventInfo.getProduct_code());
+            checkAttrPermissionByProduct(zdhPermissionService, approvalEventInfo.getProduct_code(), getAttrAdd());
 
             List<ApprovalEventInfo> approvalEventInfos=approvalEventMapper.select(approvalEventInfo);
             if(approvalEventInfos!=null && approvalEventInfos.size()>0){
@@ -520,7 +523,7 @@ public class ZdhApprovalController extends BaseController{
     public ReturnInfo<ApprovalEventInfo> approval_event_detail(String id) {
         try{
             ApprovalEventInfo approvalEventInfo=approvalEventMapper.selectById(id);
-            checkPermissionByProduct(zdhPermissionService, approvalEventInfo.getProduct_code());
+            checkAttrPermissionByProduct(zdhPermissionService, approvalEventInfo.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", approvalEventInfo);
         }catch (Exception e){
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
@@ -563,8 +566,8 @@ public class ZdhApprovalController extends BaseController{
         try{
             ApprovalEventInfo old = approvalEventMapper.selectByPrimaryKey(approvalEventInfo.getId());
 
-            checkPermissionByProduct(zdhPermissionService, approvalEventInfo.getProduct_code());
-            checkPermissionByProduct(zdhPermissionService, old.getProduct_code());
+            checkAttrPermissionByProduct(zdhPermissionService, approvalEventInfo.getProduct_code(), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService, old.getProduct_code(), getAttrEdit());
 
             approvalEventInfo.setCreate_time(old.getCreate_time());
             approvalEventInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));

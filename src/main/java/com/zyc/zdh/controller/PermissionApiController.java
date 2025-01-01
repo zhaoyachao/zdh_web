@@ -264,7 +264,7 @@ public class PermissionApiController {
 
     private ReturnInfo password(String product_code,String ak, String sk, String user_account,String password){
         //password解密
-        String user_password = aes(password, ConfigUtil.getValue("zdh.auth.password.key").toString(), ConfigUtil.getValue("zdh.auth.password.iv").toString());
+        String user_password = aes(password, ConfigUtil.getValue(ConfigUtil.ZDH_AUTH_PASSWORD_KEY).toString(), ConfigUtil.getValue(ConfigUtil.ZDH_AUTH_PASSWORD_IV).toString());
 
         //更新用户
         Example example=new Example(PermissionUserInfo.class);
@@ -309,7 +309,7 @@ public class PermissionApiController {
             check_aksk(product_code, ak, sk);
 
             //password解密
-            String user_password = aes(password, ConfigUtil.getValue("zdh.auth.password.key").toString(), ConfigUtil.getValue("zdh.auth.password.iv").toString());
+            String user_password = aes(password, ConfigUtil.getValue(ConfigUtil.ZDH_AUTH_PASSWORD_KEY).toString(), ConfigUtil.getValue(ConfigUtil.ZDH_AUTH_PASSWORD_IV).toString());
 
             //更新用户
             Example example=new Example(PermissionUserInfo.class);

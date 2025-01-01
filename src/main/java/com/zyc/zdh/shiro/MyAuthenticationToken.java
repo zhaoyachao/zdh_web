@@ -18,12 +18,14 @@ public class MyAuthenticationToken extends  UsernamePasswordToken {
 	private String captcha;
 	private String ipAddr;
 	private String session_captcha;
+	private String product_code;
 	
-	public MyAuthenticationToken(String username,String password,boolean rememberMe,String host,String captcha,String ipAddr,String session_captcha) {
+	public MyAuthenticationToken(String username,String password,boolean rememberMe,String host,String captcha,String ipAddr,String session_captcha, String product_code) {
 		super(username, password, rememberMe, host);
 	    this.captcha = captcha;
 	    this.ipAddr=ipAddr;
 	    this.session_captcha=session_captcha;
+	    this.product_code=product_code;
 	}
 	
 	public String getCaptcha() {
@@ -48,5 +50,13 @@ public class MyAuthenticationToken extends  UsernamePasswordToken {
 
 	public void setSession_captcha(String session_captcha) {
 		this.session_captcha = session_captcha;
+	}
+
+	public String getProduct_code() {
+		return product_code;
+	}
+
+	public void setProduct_code(String product_code) {
+		this.product_code = product_code;
 	}
 }

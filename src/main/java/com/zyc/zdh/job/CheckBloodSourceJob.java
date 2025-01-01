@@ -23,14 +23,14 @@ public class CheckBloodSourceJob {
     private static Logger logger = LoggerFactory.getLogger(CheckBloodSourceJob.class);
 
 
-    public static void Check() {
+    public static void Check(String product_code) {
         try {
             BloodSourceMapper bloodSourceMapper = (BloodSourceMapper) SpringContext.getBean("bloodSourceMapper");
             String version = DateUtil.getCurrentTime();
-            List<BloodSourceInfo> bsis = check_etl_blood_source(version);
-            List<BloodSourceInfo> bsis2 = check_more_etl_blood_source(version);
-            List<BloodSourceInfo> bsis3 = check_sql_blood_source(version);
-            List<BloodSourceInfo> bsis4 = check_spark_sql_blood_source(version);
+            List<BloodSourceInfo> bsis = check_etl_blood_source(version, product_code);
+            List<BloodSourceInfo> bsis2 = check_more_etl_blood_source(version, product_code);
+            List<BloodSourceInfo> bsis3 = check_sql_blood_source(version, product_code);
+            List<BloodSourceInfo> bsis4 = check_spark_sql_blood_source(version, product_code);
 
             bsis.addAll(bsis2);
             bsis.addAll(bsis3);
@@ -55,6 +55,7 @@ public class CheckBloodSourceJob {
         try {
             EtlTaskMapper etlTaskMapper = (EtlTaskMapper) SpringContext.getBean("etlTaskMapper");
             DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
+            bsi.setProduct_code(eti.getProduct_code());
             bsi.setContext(eti.getEtl_context());
             bsi.setOwner(eti.getOwner());
             bsi.setCreate_time(new Date());
@@ -91,7 +92,7 @@ public class CheckBloodSourceJob {
     /**
      * 检查单源ETL的血源
      */
-    public static List<BloodSourceInfo> check_etl_blood_source(String version) {
+    public static List<BloodSourceInfo> check_etl_blood_source(String version, String product_code) {
 
         EtlTaskMapper etlTaskMapper = (EtlTaskMapper) SpringContext.getBean("etlTaskMapper");
 
@@ -99,6 +100,9 @@ public class CheckBloodSourceJob {
 
         List<BloodSourceInfo> bsis = new ArrayList<>();
         for (EtlTaskInfo eti : etlTaskInfoList) {
+            if(!eti.getProduct_code().equalsIgnoreCase(product_code)){
+                continue;
+            }
             bsis.add(resove(eti, version));
         }
 
@@ -109,7 +113,7 @@ public class CheckBloodSourceJob {
     /**
      * 多源ETL
      */
-    public static List<BloodSourceInfo> check_more_etl_blood_source(String version) {
+    public static List<BloodSourceInfo> check_more_etl_blood_source(String version, String product_code) {
 
         EtlMoreTaskMapper etlMoreTaskMapper = (EtlMoreTaskMapper) SpringContext.getBean("etlMoreTaskMapper");
         EtlTaskMapper etlTaskMapper = (EtlTaskMapper) SpringContext.getBean("etlTaskMapper");
@@ -119,10 +123,14 @@ public class CheckBloodSourceJob {
 
         List<BloodSourceInfo> bsis = new ArrayList<>();
         for (EtlMoreTaskInfo emti : etlMoreTaskInfoList) {
+            if(!emti.getProduct_code().equalsIgnoreCase(product_code)){
+                continue;
+            }
             List<EtlTaskInfo> etlTaskInfoList = etlTaskMapper.selectByIds(emti.getEtl_ids().split(","));
 
             for (EtlTaskInfo eti : etlTaskInfoList) {
                 BloodSourceInfo bsi = new BloodSourceInfo();
+                bsi.setProduct_code(eti.getProduct_code());
                 bsi.setContext(eti.getEtl_context());
                 bsi.setOwner(eti.getOwner());
                 bsi.setCreate_time(new Date());
@@ -150,13 +158,16 @@ public class CheckBloodSourceJob {
         return bsis;
     }
 
-    public static List<BloodSourceInfo> check_sql_blood_source(String version) {
+    public static List<BloodSourceInfo> check_sql_blood_source(String version, String product_code) {
         BloodSourceMapper bloodSourceMappeer = (BloodSourceMapper) SpringContext.getBean("bloodSourceMapper");
         EtlTaskJdbcMapper etlTaskJdbcMapper = (EtlTaskJdbcMapper) SpringContext.getBean("etlTaskJdbcMapper");
         DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
         List<EtlTaskJdbcInfo> etlTaskJdbcInfos = etlTaskJdbcMapper.selectAll();
         List<BloodSourceInfo> bsis = new ArrayList<>();
         for (EtlTaskJdbcInfo etlTaskJdbcInfo : etlTaskJdbcInfos) {
+            if(!etlTaskJdbcInfo.getProduct_code().equalsIgnoreCase(product_code)){
+                continue;
+            }
             ArrayList input_tables = new ArrayList<String>();
             ArrayList output_tables = new ArrayList<String>();
             DataSourcesInfo ds = dataSourcesMapper.selectByPrimaryKey(etlTaskJdbcInfo.getData_sources_choose_input());
@@ -186,6 +197,7 @@ public class CheckBloodSourceJob {
                     }
 
                     BloodSourceInfo bsi = new BloodSourceInfo();
+                    bsi.setProduct_code(etlTaskJdbcInfo.getProduct_code());
                     bsi.setContext(etlTaskJdbcInfo.getEtl_context());
                     bsi.setOwner(etlTaskJdbcInfo.getOwner());
                     bsi.setCreate_time(new Date());
@@ -214,13 +226,16 @@ public class CheckBloodSourceJob {
         return bsis;
     }
 
-    public static List<BloodSourceInfo> check_spark_sql_blood_source(String version) {
+    public static List<BloodSourceInfo> check_spark_sql_blood_source(String version, String product_code) {
         BloodSourceMapper bloodSourceMappeer = (BloodSourceMapper) SpringContext.getBean("bloodSourceMapper");
         SqlTaskMapper sqlTaskMapper = (SqlTaskMapper) SpringContext.getBean("sqlTaskMapper");
         DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
         List<SqlTaskInfo> sqlTaskInfos = sqlTaskMapper.selectAll();
         List<BloodSourceInfo> bsis = new ArrayList<>();
         for (SqlTaskInfo sqlTaskInfo : sqlTaskInfos) {
+            if(!sqlTaskInfo.getProduct_code().equalsIgnoreCase(product_code)){
+                continue;
+            }
             ArrayList input_tables = new ArrayList<String>();
             ArrayList output_tables = new ArrayList<String>();
             DataSourcesInfo ds = new DataSourcesInfo();//dataSourcesMapper.selectByPrimaryKey(sqlTaskInfo.getData_sources_choose_input());
@@ -248,6 +263,7 @@ public class CheckBloodSourceJob {
                 }
 
                 BloodSourceInfo bsi = new BloodSourceInfo();
+                bsi.setProduct_code(sqlTaskInfo.getProduct_code());
                 bsi.setContext(sqlTaskInfo.getSql_context());
                 bsi.setOwner(sqlTaskInfo.getOwner());
                 bsi.setCreate_time(new Date());
@@ -297,11 +313,12 @@ public class CheckBloodSourceJob {
      * @param version
      * @return
      */
-    public static BloodSourceInfo report(String context, String input, String inputTable, String output,String outputTable, String owner, String version) {
+    public static BloodSourceInfo report(String product_code, String context, String input, String inputTable, String output,String outputTable, String owner, String version) {
         BloodSourceInfo bsi = new BloodSourceInfo();
         try {
             BloodSourceMapper bloodSourceMapper = (BloodSourceMapper) SpringContext.getBean("bloodSourceMapper");
             DataSourcesMapper dataSourcesMapper = (DataSourcesMapper) SpringContext.getBean("dataSourcesMapper");
+            bsi.setProduct_code(product_code);
             bsi.setContext(context);
             bsi.setOwner(owner);
             bsi.setCreate_time(new Date());

@@ -14,6 +14,7 @@
     <link rel="shortcut icon" href="img/favicon.ico">
     <link rel="stylesheet" type="text/css" href="js/layui/lib/layui-v2.5.5/css/layui.css"/>
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
@@ -40,6 +41,12 @@
 <!--                        </h2>-->
                         <div class="search-form">
                             <form method="get" id="etl_task_form">
+                                <div class="input-group  col-sm-2">
+                                    <select id="product_code" name="product_code"
+                                            data-placeholder="产品code...."
+                                            class="chosen-select form-control m-b" >
+                                    </select>
+                                </div>
                                 <div class="input-group">
                                     <input type="text" placeholder="数据资产" name="issue_context" class="form-control input-lg">
                                     <div class="input-group-btn">
@@ -81,6 +88,7 @@
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
 
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
@@ -88,6 +96,8 @@
     <script type="text/javascript" src="js/layui/lib/layui-v2.5.5/layui.js"></script>
     <!-- layer javascript -->
     <script src="js/plugins/layer/layer.min.js"></script>
+
+    <script src="js/admin/dim_product_common.js"></script>
 
     <script>
 
@@ -214,6 +224,24 @@
     </script>
 
     <script type="text/javascript">
+
+        function apply_add_index(id){
+            parent.layer.open({
+                type: 2,
+                title: '申请数据',
+                shadeClose: false,
+                resize: true,
+                fixed: false,
+                maxmin: true,
+                shade: 0.1,
+                area : ['45%', '60%'],
+                //area: ['450px', '500px'],
+                content: server_context+"/data_apply_add_index?id="+id, //iframe的url
+                end : function () {
+                    console.info("弹框结束");
+                }
+            });
+        }
         // 加载laypage模块
         function load_data2(currentPage, page_size){
 
@@ -263,28 +291,30 @@
 
                         $(".btn_apply").click(function () {
                             var id= $(this).attr('data_id');
-                            //alert();
-                            layer.confirm('申请数据', {
-                                btn: ['确定','取消'] //按钮
-                            }, function(index){
-                                $.ajax({
-                                    url: server_context+"/data_apply_add",
-                                    data: "issue_id=" + id,
-                                    type: "post",
-                                    async:false,
-                                    dataType: "json",
-                                    success: function (data) {
-                                        console.info(data.msg);
-                                        layer.msg(data.msg)
-                                    },
-                                    error: function (data) {
-                                        console.info("error: " + data.msg);
-                                    }
 
-                                });
-                            }, function(){
+                            apply_add_index(id);
 
-                            });
+                            // layer.confirm('申请数据', {
+                            //     btn: ['确定','取消'] //按钮
+                            // }, function(index){
+                            //     $.ajax({
+                            //         url: server_context+"/data_apply_add",
+                            //         data: "issue_id=" + id,
+                            //         type: "post",
+                            //         async:false,
+                            //         dataType: "json",
+                            //         success: function (data) {
+                            //             console.info(data.msg);
+                            //             layer.msg(data.msg)
+                            //         },
+                            //         error: function (data) {
+                            //             console.info("error: " + data.msg);
+                            //         }
+                            //
+                            //     });
+                            // }, function(){
+                            //
+                            // });
                         });
                     }
 
@@ -329,28 +359,32 @@
 
                         $(".btn_apply").click(function () {
                             var id= $(this).attr('data_id');
+
+                            apply_add_index(id);
+
                             //alert();
-                            layer.confirm('申请数据', {
-                                btn: ['确定','取消'] //按钮
-                            }, function(index){
-                                $.ajax({
-                                    url: server_context+"/data_apply_add",
-                                    data: "issue_id=" + id,
-                                    type: "post",
-                                    async:false,
-                                    dataType: "json",
-                                    success: function (data) {
-                                        console.info(data.msg);
-                                        layer.msg(data.msg)
-                                    },
-                                    error: function (data) {
-                                        console.info("error: " + data.msg);
-                                    }
+                            // layer.confirm('申请数据', {
+                            //     btn: ['确定','取消'] //按钮
+                            // }, function(index){
+                            //     $.ajax({
+                            //         url: server_context+"/data_apply_add",
+                            //         data: "issue_id=" + id,
+                            //         type: "post",
+                            //         async:false,
+                            //         dataType: "json",
+                            //         success: function (data) {
+                            //             console.info(data.msg);
+                            //             layer.msg(data.msg)
+                            //         },
+                            //         error: function (data) {
+                            //             console.info("error: " + data.msg);
+                            //         }
+                            //
+                            //     });
+                            // }, function(){
+                            //
+                            // });
 
-                                });
-                            }, function(){
-
-                            });
                         });
                     }
 

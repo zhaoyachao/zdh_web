@@ -56,6 +56,8 @@ public class PermissionDimensionController extends BaseController {
     public ReturnInfo<List<PermissionDimensionInfo>> permission_dimension_list_by_product_code(String product_code) {
         try{
 
+            checkPermissionByOwner(product_code);
+
             Example example=new Example(PermissionDimensionInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
@@ -92,9 +94,10 @@ public class PermissionDimensionController extends BaseController {
             criteria.andEqualTo("product_code", product_code);
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-            criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("context", getLikeCondition(context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
+
             example.setOrderByClause("update_time desc");
             RowBounds rowBounds=new RowBounds(offset,limit);
             int total = permissionDimensionMapper.selectCountByExample(example);
@@ -144,6 +147,8 @@ public class PermissionDimensionController extends BaseController {
     public ReturnInfo<PermissionDimensionInfo> permission_dimension_detail(String id) {
         try {
             PermissionDimensionInfo permissionDimensionInfo = permissionDimensionMapper.selectByPrimaryKey(id);
+            checkPermissionByOwner(permissionDimensionInfo.getProduct_code());
+
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionDimensionInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -162,7 +167,9 @@ public class PermissionDimensionController extends BaseController {
     public ReturnInfo<PermissionDimensionInfo> permission_dimension_update(PermissionDimensionInfo permissionDimensionInfo) {
         try {
 
+            checkPermissionByOwner(permissionDimensionInfo.getProduct_code());
             PermissionDimensionInfo oldPermissionDimensionInfo = permissionDimensionMapper.selectByPrimaryKey(permissionDimensionInfo.getId());
+            checkPermissionByOwner(oldPermissionDimensionInfo.getProduct_code());
 
             permissionDimensionInfo.setCreate_time(oldPermissionDimensionInfo.getCreate_time());
             permissionDimensionInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -189,6 +196,7 @@ public class PermissionDimensionController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<PermissionDimensionInfo> permission_dimension_add(PermissionDimensionInfo permissionDimensionInfo) {
         try {
+            checkPermissionByOwner(permissionDimensionInfo.getProduct_code());
             permissionDimensionInfo.setOwner(getOwner());
             permissionDimensionInfo.setIs_delete(Const.NOT_DELETE);
             permissionDimensionInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
@@ -212,6 +220,12 @@ public class PermissionDimensionController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo permission_dimension_delete(String[] ids) {
         try {
+            List<PermissionDimensionInfo> permissionDimensionInfos = permissionDimensionMapper.selectObjectByIds(permissionDimensionMapper.getTable(), ids);
+            if(permissionDimensionInfos != null){
+                for (PermissionDimensionInfo permissionDimensionInfo: permissionDimensionInfos){
+                    checkPermissionByOwner(permissionDimensionInfo.getProduct_code());
+                }
+            }
             permissionDimensionMapper.deleteLogicByIds(permissionDimensionMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

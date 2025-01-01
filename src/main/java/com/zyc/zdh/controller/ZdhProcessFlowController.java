@@ -342,14 +342,15 @@ public class ZdhProcessFlowController extends BaseController {
     /**
      * ZDH创建审批流统一入口
      * 在调用处处理异常
+     * @param product_code
      * @param event_code
      * @param context
      * @param event_id
      */
-    public void createProcess(String event_code, String context, String event_id) throws Exception{
+    public void createProcess(String product_code, String event_code, String context, String event_id) throws Exception{
         try{
             String group = getUser().getUser_group();
-            String product_code = ConfigUtil.getValue("zdp.product", "zdh");
+
             //获取事件对应的审批流code
             List<ApprovalAuditorInfo> approvalAuditorInfos = approvalAuditorMapper.selectByEvent(event_code, group, product_code);
 
@@ -407,6 +408,7 @@ public class ZdhProcessFlowController extends BaseController {
                 pfi.setEvent_id(event_id);
                 pfi.setOther_handle(Const.PROCESS_OTHER_STATUS_INIT);
                 pfi.setAgent_user("");
+                pfi.setProduct_code(product_code);
                 processFlowMapper.insertSelective(pfi);
                 pre_id = id;
             }

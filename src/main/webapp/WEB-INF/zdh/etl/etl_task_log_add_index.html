@@ -294,7 +294,6 @@
 <!-- layer javascript -->
 <script src="js/plugins/layer/layer.min.js"></script>
 
-
 <!-- jsTree plugin javascript -->
 <script src="js/plugins/jsTree/jstree.min.js"></script>
 <!-- iCheck -->
@@ -369,13 +368,13 @@
                 ].join('');
             }
 
-            function init_data_sources() {
+            function init_data_sources(product_code, dim_group) {
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/data_sources_list",
                     dataType: 'json',
                     async: false,
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -388,7 +387,7 @@
                         }
                         //输出数据源类型下拉框
                         $('#data_sources_choose_output').html(str);
-
+                        $("#data_sources_choose_output").trigger("chosen:updated");
                         $('#data_sources_choose_output').chosen().on("change", function (evt, params) {
                             $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
                             $("#data_sources_choose_output").trigger("chosen:updated");
@@ -407,7 +406,11 @@
                 });
             }
 
-            init_data_sources();
+            $('#dim_group').chosen().on("change", function (evt, params) {
+                init_data_sources($('#product_code').val(), $('#dim_group').val());
+            });
+
+            init_data_sources($('#product_code').val(), $('#dim_group').val());
 
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
@@ -482,6 +485,8 @@
                             var dim_group=data.result.dim_group;
                             $("#dim_group").val(dim_group);
                             $("#dim_group").trigger("chosen:updated");
+
+                            init_data_sources($('#product_code').val(), $('#dim_group').val());
 
                             //获取ETL 说明
                             var log_context = data.result.log_context;

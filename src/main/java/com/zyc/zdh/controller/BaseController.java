@@ -6,10 +6,7 @@ import com.google.common.collect.Lists;
 import com.zyc.notscan.BaseMapper;
 import com.zyc.zdh.config.DateConverter;
 import com.zyc.zdh.dao.ProductTagMapper;
-import com.zyc.zdh.entity.PermissionDimensionValueInfo;
-import com.zyc.zdh.entity.PermissionUserDimensionValueInfo;
-import com.zyc.zdh.entity.ProductTagInfo;
-import com.zyc.zdh.entity.User;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
@@ -32,6 +29,9 @@ import java.util.concurrent.TimeUnit;
 
 public class BaseController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private String ZDH_PERMISSION_PRODUCT_DIM_GROUP_SELECT="zdh_permission_product_dim_group_select";
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Timestamp.class, new PropertyEditorSupport() {
@@ -57,9 +57,24 @@ public class BaseController {
         return user.getUserName();
     }
 
-    public String getProductCode(){
-        Environment environment= (Environment) SpringContext.getBean("environment");
-        return environment.getProperty("zdp.product","");
+    public String getProductCode() throws Exception {
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        if(user == null){
+            throw new Exception("获取产品失败,请尝试重新登录");
+        }
+        return user.getProduct_code();
+    }
+
+    public String getUserGroup() throws Exception {
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        if(user == null){
+            throw new Exception("获取用户组失败,请尝试重新登录");
+        }
+        return user.getUser_group();
+    }
+
+    public String[] getAttrSelect(){
+        return new String[]{"select"};
     }
 
     public String[] getAttrEdit(){
@@ -88,13 +103,16 @@ public class BaseController {
         return redisUtil.get(key,"").toString();
     }
 
+    public String dynamicPermissionByProductAndGroupKey(String owner){
+        return  ZDH_PERMISSION_PRODUCT_DIM_GROUP_SELECT+"-"+owner;
+    }
+
     /**
-     * 获取当前用户(产品+归属组)维度信息
      *
-     * 通过归属产品+归属组双重控制数据权限
-     *
-     * 对于查询权限,支持外部归属组控制,需要单独配置dim_group_select维度信息
-     *
+     * 获取当前用户绑定的产品信息
+     * 获取当前用户绑定的【归属组】信息
+     * 获取当前用户所属组绑定的【归属组】信息
+     * todo 用户所在组和归属组是2个概念, 所在组一般和组织架构对应, 归属组则属于权限控制
      * 支持缓存查询
      * @param zdhPermissionService
      * @throws Exception
@@ -102,39 +120,30 @@ public class BaseController {
     public Map<String,List<String>> dynamicPermissionByProductAndGroup(ZdhPermissionService zdhPermissionService) throws Exception {
         Map<String,List<String>> dimMap = new HashMap<>();
 
-        String cacheKey = "zdh_permission_product_dim_group_select_"+getOwner();
+        String cacheKey = dynamicPermissionByProductAndGroupKey(getOwner());
         //检查缓存
         String cache = getCache(cacheKey);
         if(!StringUtils.isEmpty(cache)){
             return JSON.parseObject(cache, new TypeReference<Map<String,List<String>>>(){});
         }
 
-        //根据账号,查询归属组
-        List<PermissionDimensionValueInfo> dim_group_pdvi = zdhPermissionService.get_dim_group(getOwner());
-        List<String> dim_groups = zdhPermissionService.dim_value2code(dim_group_pdvi);
+        //查询用户是否有所在组
+        UserAndGroupPermissionDimensionValueInfo dim_permission = zdhPermissionService.get_dim_permission(getProductCode(), getOwner(), getUserGroup());
+
+        List<String> dim_groups = dim_permission.getDim_groups();
 
         if(dim_groups != null && dim_groups.size() == 0){
             dim_groups.add("-1");
         }
 
-        //根据账号-查询组外查询权限
-        List<PermissionUserDimensionValueInfo> permissionUserDimensionValueInfos = zdhPermissionService.get_dim_value_by_user_account(getOwner(), "dim_group_select");
-        if(permissionUserDimensionValueInfos !=  null && permissionUserDimensionValueInfos.size() >= 1){
-            for (PermissionUserDimensionValueInfo permissionUserDimensionValueInfo: permissionUserDimensionValueInfos){
-                dim_groups.add(permissionUserDimensionValueInfo.getDim_value_code());
-            }
-        }
-
-        //根据账号,查询归属产品
-        List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
-        List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
+        List<String> dim_products = dim_permission.getDim_products();
 
         if(dim_products != null && dim_products.size() == 0){
             dim_products.add("-1");
         }
 
         dimMap.put("dim_groups", dim_groups);
-        dimMap.put("product_codes", dim_products);
+        dimMap.put("product_codes",dim_products);
 
         setCache(cacheKey, JSON.toJSONString(dimMap));
         return dimMap;
@@ -151,7 +160,7 @@ public class BaseController {
      */
     public void dynamicPermissionByProductAndGroup(ZdhPermissionService zdhPermissionService,  Example.Criteria criteria) throws Exception {
         Map<String,List<String>> dimMap = new HashMap<>();
-        String cacheKey = "zdh_permission_product_dim_group_select_"+getOwner();
+        String cacheKey = dynamicPermissionByProductAndGroupKey(getOwner());
         //检查缓存
         String cache = getCache(cacheKey);
         if(!StringUtils.isEmpty(cache)){
@@ -161,28 +170,22 @@ public class BaseController {
             return;
         }
 
-        //根据账号,查询归属组
-        List<PermissionDimensionValueInfo> dim_group_pdvi = zdhPermissionService.get_dim_group(getOwner());
-        List<String> dim_groups = zdhPermissionService.dim_value2code(dim_group_pdvi);
+        //查询用户是否有所在组
+        UserAndGroupPermissionDimensionValueInfo dim_permission = zdhPermissionService.get_dim_permission(getProductCode(), getOwner(), getUserGroup());
+
+        List<String> dim_groups = dim_permission.getDim_groups();
+
         if(dim_groups != null && dim_groups.size() == 0){
             dim_groups.add("-1");
         }
 
-        //根据账号-查询组外查询权限
-        List<PermissionUserDimensionValueInfo> permissionUserDimensionValueInfos = zdhPermissionService.get_dim_value_by_user_account(getOwner(), "dim_group_select");
-        if(permissionUserDimensionValueInfos !=  null && permissionUserDimensionValueInfos.size() >= 1){
-            for (PermissionUserDimensionValueInfo permissionUserDimensionValueInfo: permissionUserDimensionValueInfos){
-                dim_groups.add(permissionUserDimensionValueInfo.getDim_value_code());
-            }
-        }
-
-        //根据账号,查询归属产品
-        List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
-        List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
+        List<String> dim_products = dim_permission.getDim_products();
 
         if(dim_products != null && dim_products.size() == 0){
             dim_products.add("-1");
         }
+
+
         dimMap.put("dim_groups", dim_groups);
         dimMap.put("product_codes", dim_products);
 
@@ -200,9 +203,10 @@ public class BaseController {
     public void dynamicPermissionByProduct(ZdhPermissionService zdhPermissionService,  Example.Criteria criteria) throws Exception {
 
         //根据账号,查询归属产品
-        List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
-        List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
-        if(dim_products != null && dim_products.size()==0){
+        UserAndGroupPermissionDimensionValueInfo dim_permission = zdhPermissionService.get_dim_permission(getProductCode(), getOwner(), getUserGroup());
+
+        List<String> dim_products = dim_permission.getDim_products();
+        if(dim_products != null && dim_products.size() == 0){
             dim_products.add("-1");
         }
         criteria.andIn("product_code", dim_products);
@@ -217,9 +221,10 @@ public class BaseController {
     public List<String> getPermissionByProduct(ZdhPermissionService zdhPermissionService) throws Exception {
 
         //根据账号,查询归属产品
-        List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
-        List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
-        if(dim_products != null && dim_products.size()==0){
+        UserAndGroupPermissionDimensionValueInfo dim_permission = zdhPermissionService.get_dim_permission(getProductCode(), getOwner(), getUserGroup());
+
+        List<String> dim_products = dim_permission.getDim_products();
+        if(dim_products != null && dim_products.size() == 0){
             dim_products.add("-1");
         }
         return dim_products;
@@ -234,12 +239,13 @@ public class BaseController {
     public void dynamicPermissionByProductAndFilterProduct(ZdhPermissionService zdhPermissionService,  Example.Criteria criteria, String product_code) throws Exception {
 
         //根据账号,查询归属产品
-        List<PermissionDimensionValueInfo> dim_product_pdvi = zdhPermissionService.get_dim_product(getOwner());
-        List<String> dim_products = zdhPermissionService.dim_value2code(dim_product_pdvi);
+        UserAndGroupPermissionDimensionValueInfo dim_permission = zdhPermissionService.get_dim_permission(getProductCode(), getOwner(), getUserGroup());
 
-        if(dim_products != null && dim_products.size()==0){
+        List<String> dim_products = dim_permission.getDim_products();
+        if(dim_products != null && dim_products.size() == 0){
             dim_products.add("-1");
         }
+
         criteria.andIn("product_code", dim_products);
 
         if(!StringUtils.isEmpty(product_code)){
@@ -249,6 +255,7 @@ public class BaseController {
 
     /**
      * 通过主键查询信息,并验证是否有产品和用户组权限
+     * 当前数据中不包含产品,用户组字段时,不校验权限
      * @param zdhPermissionService
      * @param baseMapper
      * @param table
@@ -276,8 +283,11 @@ public class BaseController {
                 }
 
                 //检查是否有维度对应自定义权限(增,删,改,审批等)
-                Map<String, Map<String, String>> dim_group_attrs = zdhPermissionService.get_dim_value_attr_by_user_account(getOwner(), "dim_group");
+                Map<String, Map<String, String>> dim_group_attrs = zdhPermissionService.get_dim_value_attr_by_user_account(getProductCode(),getOwner(),getUserGroup(), "dim_group");
                 for (String action: actions){
+                    if(action.equalsIgnoreCase("select")){
+                        continue;
+                    }
                     if(!dim_group_attrs.containsKey(dim_group)){
                         throw new Exception("无归属组权限,归属组code: "+dim_group);
                     }
@@ -393,7 +403,7 @@ public class BaseController {
     }
 
     /**
-     * 通过指定产品和用户组校验是否有对应权限
+     * 通过指定产品和用户组校验是否有对应(增,删,改,查)权限
      * @param zdhPermissionService
      * @param product_code
      * @param dim_group
@@ -416,8 +426,11 @@ public class BaseController {
         }
 
         //检查是否有维度对应自定义权限(增,删,改,审批等)
-        Map<String, Map<String, String>> dim_group_attrs = zdhPermissionService.get_dim_value_attr_by_user_account(getOwner(), "dim_group");
+        Map<String, Map<String, String>> dim_group_attrs = zdhPermissionService.get_dim_value_attr_by_user_account(getProductCode(),getOwner(),getUserGroup(), "dim_group");
         for (String action: actions){
+            if(action.equalsIgnoreCase("select")){
+                continue;
+            }
             if(!dim_group_attrs.containsKey(dim_group)){
                 throw new Exception("无归属组权限,归属组code: "+dim_group);
             }
@@ -428,6 +441,39 @@ public class BaseController {
 
     }
 
+
+    /**
+     * 通过指定产品校验是否有对应(增,删,改,查)权限
+     * @param zdhPermissionService
+     * @param product_code
+     * @param actions
+     * @throws Exception
+     */
+    public void checkAttrPermissionByProduct(ZdhPermissionService zdhPermissionService, String product_code, String[] actions) throws Exception {
+        if(StringUtils.isEmpty(product_code)){
+            throw new Exception("产品code为空");
+        }
+        Map<String, List<String>> dims = dynamicPermissionByProductAndGroup(zdhPermissionService);
+        if(!dims.get("product_codes").contains(product_code)){
+            throw new Exception("无产品权限,产品code: "+product_code);
+        }
+
+
+        //检查是否有维度对应自定义权限(增,删,改,审批等)
+        Map<String, Map<String, String>> dim_product_attrs = zdhPermissionService.get_dim_value_attr_by_user_account(getProductCode(),getOwner(),getUserGroup(), "dim_product");
+        for (String action: actions){
+            if(action.equalsIgnoreCase("select")){
+                continue;
+            }
+            if(!dim_product_attrs.containsKey(product_code)){
+                throw new Exception("无归属产品权限,归属产品code: "+product_code);
+            }
+            if(!dim_product_attrs.get(product_code).containsKey(action) || !dim_product_attrs.get(product_code).get(action).equalsIgnoreCase("true")){
+                throw new Exception("归属产品code: "+product_code+", 无"+action+"权限");
+            }
+        }
+
+    }
 
     /**
      * 通过产品校验权限
@@ -454,6 +500,18 @@ public class BaseController {
         return "%"+condition+"%";
     }
 
+    /**
+     * 检查产品code是否为空,为空直接抛出异常
+     * @param product_code
+     * @return
+     * @throws Exception
+     */
+    public boolean checkProductCode(String product_code) throws Exception {
+        if(StringUtils.isEmpty(product_code)){
+            throw  new Exception("产品code参数不可为空");
+        }
+        return true;
+    }
 
     /**
      * 检查参数是否为空,为空直接抛出异常
@@ -469,6 +527,12 @@ public class BaseController {
         return true;
     }
 
+    /**
+     * 当前登录用户操作产品权限(仅产品管理员)
+     * 权限模块-都是用此控制
+     * @param product_code
+     * @return
+     */
     public boolean checkPermissionByOwner(String product_code) throws Exception {
         boolean isPermission = checkPermission(product_code, getOwner());
         if(!isPermission){
@@ -477,7 +541,8 @@ public class BaseController {
         return isPermission;
     }
     /**
-     * 检查用户是否拥有操作产品的权限
+     * 用户操作产品权限(仅产品管理员)
+     * 权限模块-都是用此控制
      * @param product_code
      * @param owner
      * @return

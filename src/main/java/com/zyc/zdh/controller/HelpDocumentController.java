@@ -61,9 +61,9 @@ public class HelpDocumentController extends BaseController {
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-            criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("context", getLikeCondition(context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<HelpDocumentInfo> helpDocumentInfos = helpDocumentMapper.selectByExample(example);
 

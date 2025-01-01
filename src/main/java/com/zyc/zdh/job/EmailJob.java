@@ -380,7 +380,7 @@ public class EmailJob {
                 NoticeInfo ni=new NoticeInfo();
                 ni.setMsg_type("文件下载");
                 ni.setMsg_title("文件下载:"+zdhDownloadInfo.getJob_context());
-                ni.setMsg("文件以生成,请尽快下载, 文件由任务【"+zdhDownloadInfo.getJob_context()+"】于"+zdhDownloadInfo.getCreate_time()
+                ni.setMsg("文件已生成,请尽快下载, 文件由任务【"+zdhDownloadInfo.getJob_context()+"】于"+zdhDownloadInfo.getCreate_time()
                         +"产生, 文件唯一码: "+zdhDownloadInfo.getId()+", 请前往系统=>下载管理页面进行下载,时间:"+DateUtil.getCurrentTime());
                 ni.setIs_see(Const.FALSE);
                 ni.setOwner(zdhDownloadInfo.getOwner());

@@ -85,8 +85,8 @@ public class PushTemplateController extends BaseController {
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
                 criteria2.orLike("context", getLikeCondition(context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<PushTemplateInfo> pushTemplateInfos = pushTemplateMapper.selectByExample(example);
 
@@ -131,8 +131,8 @@ public class PushTemplateController extends BaseController {
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
                 criteria2.orLike("context", getLikeCondition(context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             RowBounds rowBounds=new RowBounds(offset,limit);
             int total = pushTemplateMapper.selectCountByExample(example);

@@ -41,6 +41,7 @@ public class PermissionUserDimensionValueInfo {
     private String owner;
 
     /**
+     * 废弃不在使用
      * 启用状态,1:启用,2:未启用
      */
     private String enable;

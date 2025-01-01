@@ -262,7 +262,6 @@
 <!-- layer javascript -->
 <script src="js/plugins/layer/layer.min.js"></script>
 
-
 <!-- jsTree plugin javascript -->
 <script src="js/plugins/jsTree/jstree.min.js"></script>
 <!-- iCheck -->
@@ -322,13 +321,13 @@
 
 
             //初始化数据源--datax数据源
-            function init_data_sources() {
+            function init_data_sources(product_code, dim_group) {
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/data_sources_list2",
                     dataType: 'json',
                     async: false,
-                    data: {data_source_type: "DATAX"},
+                    data: {data_source_type: "DATAX", "product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -341,6 +340,7 @@
                         }
                         //输入数据源类型下拉框
                         $('#data_sources_choose_input').html(str);
+                        $('#data_sources_choose_input').trigger("chosen:updated");
                         $('#data_sources_choose_input').chosen().on("change", function (evt, params) {
                             // alert($('#data_sources_choose_input').val())
                             $('#data_source_type_input').val($('#data_sources_choose_input').find("option:selected").attr("mytype"));
@@ -356,7 +356,12 @@
                     }
                 });
             }
-            init_data_sources();
+
+            $('#dim_group').chosen().on("change", function (evt, params) {
+                init_data_sources($('#product_code').val(), $('#dim_group').val());
+            });
+
+            init_data_sources($('#product_code').val(), $('#dim_group').val());
 
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
@@ -433,6 +438,8 @@
                             var dim_group=data.result[0].dim_group;
                             $("#dim_group").val(dim_group);
                             $("#dim_group").trigger("chosen:updated");
+
+                            init_data_sources($('#product_code').val(), $('#dim_group').val());
 
                             //获取输入数据源id
                             var data_sources_choose_input = data.result[0].data_sources_choose_input;

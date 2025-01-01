@@ -3359,7 +3359,7 @@ public class JobCommon2 {
             return;
         } else if (quartzJobInfo.getJob_type().equals("BLOOD")) {
             logger.debug("调度任务[BLOOD],开始调度");
-            CheckBloodSourceJob.Check();
+            CheckBloodSourceJob.Check(ConfigUtil.getValue(ConfigUtil.ZDP_PRODUCT));
             return;
         } else if(quartzJobInfo.getJob_type().equals("ETL")){
             //线程池执行具体调度任务

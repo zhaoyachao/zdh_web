@@ -86,7 +86,7 @@ public class RiskEventController extends BaseController {
             jsonObject.put("param", param);
             jsonObject.put("product_code", source);
 
-            String url = ConfigUtil.getValue("zdh.ship.url", "http://127.0.0.1:9002/api/v1/ship/accept");
+            String url = ConfigUtil.getValue(ConfigUtil.ZDH_SHIP_URL, "http://127.0.0.1:9002/api/v1/ship/accept");
             String ret = HttpUtil.postJSON(url, jsonObject.toJSONString());
             System.out.println(ret);
             return ReturnInfo.buildSuccess(JSONObject.parseObject(ret));
@@ -134,8 +134,8 @@ public class RiskEventController extends BaseController {
             if(!StringUtils.isEmpty(context)){
                 criteria2.orLike("event_name", getLikeCondition(context));
                 criteria2.orLike("event_code", getLikeCondition(context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<RiskEventInfo> riskEventInfos = riskEventMapper.selectByExample(example);
 

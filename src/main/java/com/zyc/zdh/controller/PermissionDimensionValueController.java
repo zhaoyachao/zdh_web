@@ -55,6 +55,8 @@ public class PermissionDimensionValueController extends BaseController {
     @ResponseBody
     public ReturnInfo<List<PermissionDimensionValueNodeInfo>> permission_dimension_value_node(String product_code, String dim_code) {
         try{
+            checkPermissionByOwner(product_code);
+
             Example example=new Example(PermissionDimensionValueInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
@@ -86,6 +88,8 @@ public class PermissionDimensionValueController extends BaseController {
     @ResponseBody
     public ReturnInfo<List<PermissionDimensionValueInfo>> permission_dimension_value_list(String product_code, String dim_code) {
         try{
+            checkPermissionByOwner(product_code);
+
             Example example=new Example(PermissionDimensionValueInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
@@ -124,6 +128,8 @@ public class PermissionDimensionValueController extends BaseController {
     @ResponseBody
     public ReturnInfo<PermissionDimensionValueInfo> permission_dimension_value_detail_by_code(String product_code, String dim_code,String dim_value_code) {
         try {
+            checkPermissionByOwner(product_code);
+
             PermissionDimensionValueInfo permissionDimensionValueInfo=new PermissionDimensionValueInfo();
             permissionDimensionValueInfo.setProduct_code(product_code);
             permissionDimensionValueInfo.setDim_code(dim_code);
@@ -148,6 +154,7 @@ public class PermissionDimensionValueController extends BaseController {
     public ReturnInfo<PermissionDimensionValueInfo> permission_dimension_value_detail(String id) {
         try {
             PermissionDimensionValueInfo permissionDimensionValueInfo = permissionDimensionValueMapper.selectByPrimaryKey(id);
+            checkPermissionByOwner(permissionDimensionValueInfo.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionDimensionValueInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -166,7 +173,9 @@ public class PermissionDimensionValueController extends BaseController {
     public ReturnInfo<PermissionDimensionValueInfo> permission_dimension_value_update(PermissionDimensionValueInfo permissionDimensionValueInfo) {
         try {
 
+            checkPermissionByOwner(permissionDimensionValueInfo.getProduct_code());
             PermissionDimensionValueInfo oldPermissionDimensionValueInfo = permissionDimensionValueMapper.selectByPrimaryKey(permissionDimensionValueInfo.getId());
+            checkPermissionByOwner(oldPermissionDimensionValueInfo.getProduct_code());
 
             oldPermissionDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             oldPermissionDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
@@ -192,7 +201,9 @@ public class PermissionDimensionValueController extends BaseController {
     public ReturnInfo<PermissionDimensionValueInfo> permission_dimension_value_parent(PermissionDimensionValueInfo permissionDimensionValueInfo) {
         try {
 
+
             PermissionDimensionValueInfo oldPermissionDimensionValueInfo = permissionDimensionValueMapper.selectByPrimaryKey(permissionDimensionValueInfo.getId());
+            checkPermissionByOwner(oldPermissionDimensionValueInfo.getProduct_code());
 
             oldPermissionDimensionValueInfo.setDim_value_name(permissionDimensionValueInfo.getDim_value_name());
             oldPermissionDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -219,6 +230,8 @@ public class PermissionDimensionValueController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<PermissionDimensionValueInfo> permission_dimension_value_add(PermissionDimensionValueInfo permissionDimensionValueInfo) {
         try {
+            checkPermissionByOwner(permissionDimensionValueInfo.getProduct_code());
+
             permissionDimensionValueInfo.setOwner(getOwner());
             permissionDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
             permissionDimensionValueInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
@@ -242,6 +255,12 @@ public class PermissionDimensionValueController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo permission_dimension_value_delete(String id) {
         try {
+            List<PermissionDimensionValueInfo> permissionDimensionValueInfos = permissionDimensionValueMapper.selectObjectByIds(permissionDimensionValueMapper.getTable(), new String[]{id});
+            if(permissionDimensionValueInfos != null){
+                for (PermissionDimensionValueInfo permissionDimensionValueInfo: permissionDimensionValueInfos){
+                    checkPermissionByOwner(permissionDimensionValueInfo.getProduct_code());
+                }
+            }
             permissionDimensionValueMapper.deleteLogicByIds(permissionDimensionValueMapper.getTable(),new String[]{id}, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {

@@ -164,16 +164,16 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">数据标识组</label>
-                            <div class="col-sm-8">
-                                <select id="tag_group_code" name="tag_group_code"
-                                        data-placeholder=""
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">空</option>
-                                </select>
-                            </div>
-                        </div>
+<!--                        <div class="form-group">-->
+<!--                            <label class="col-sm-3 control-label">数据标识组</label>-->
+<!--                            <div class="col-sm-8">-->
+<!--                                <select id="tag_group_code" name="tag_group_code"-->
+<!--                                        data-placeholder=""-->
+<!--                                        class="chosen-select form-control m-b" tabindex="2">-->
+<!--                                    <option value="" mytype="">空</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+<!--                        </div>-->
                         <div class="hr-line-dashed"></div>
 
                         <div class="form-group">
@@ -218,48 +218,49 @@
 <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
 <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
 <script src="js/admin/dim_product_common.js"></script>
 <script src="js/admin/dim_group_common.js"></script>
 
-<!-- iCheck -->
-<script src="js/plugins/iCheck/icheck.min.js"></script>
 <script>
     $(document).ready(function () {
 
-        $('#tag_group_code').chosen();
+        //$('#tag_group_code').chosen();
         $('#data_source_type').chosen();
         $('#data_sources_params').hide();
 
-        $.ajax({
-            type: 'post',
-            url: server_context+"/user_tag_group_code",
-            async:false,
-            dataType: 'json',
-            data: '',
-            //成功返回
-            success: function (data) {
-                if(data.code != "200"){
-                    parent.layer.msg(data.msg);
-                    return ;
-                }
-
-                var str = '<option value=\"\" hassubinfo=\"true\"></option>';
-                for (var i = 0; i < data.result.length; i++) {
-                    str += '<option value=\"' + data.result[i].tag_group_code + '\" hassubinfo=\"true\">' + data.result[i].tag_group_name + '</option>'
-                }
-                $('#tag_group_code').html(str);
-                $("#tag_group_code").trigger("chosen:updated");
-                $('#tag_group_code').chosen();
-            },
-            //处理完成
-            complete: function () {
-                console.info("complete data_tag_group_list")
-            },
-            //报错
-            error: function (data) {
-                console.info("error: " + data.responseText);
-            }
-        });
+        // $.ajax({
+        //     type: 'post',
+        //     url: server_context+"/user_tag_group_code",
+        //     async:false,
+        //     dataType: 'json',
+        //     data: '',
+        //     //成功返回
+        //     success: function (data) {
+        //         if(data.code != "200"){
+        //             parent.layer.msg(data.msg);
+        //             return ;
+        //         }
+        //
+        //         var str = '<option value=\"\" hassubinfo=\"true\"></option>';
+        //         for (var i = 0; i < data.result.length; i++) {
+        //             str += '<option value=\"' + data.result[i].tag_group_code + '\" hassubinfo=\"true\">' + data.result[i].tag_group_name + '</option>'
+        //         }
+        //         $('#tag_group_code').html(str);
+        //         $("#tag_group_code").trigger("chosen:updated");
+        //         $('#tag_group_code').chosen();
+        //     },
+        //     //处理完成
+        //     complete: function () {
+        //         console.info("complete data_tag_group_list")
+        //     },
+        //     //报错
+        //     error: function (data) {
+        //         console.info("error: " + data.responseText);
+        //     }
+        // });
 
         var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
         var params = url.substr(1);//去掉问号
@@ -325,8 +326,8 @@
                         $("#url").val(data.result.url);
                         $("#username").val(data.result.username);
                         $("#password").val(data.result.password);
-                        $("#tag_group_code").val(data.result.tag_group_code.split(','));
-                        $("#tag_group_code").trigger("chosen:updated");
+                        // $("#tag_group_code").val(data.result.tag_group_code.split(','));
+                        // $("#tag_group_code").trigger("chosen:updated");
                     },
                     //处理完成
                     complete: function () {

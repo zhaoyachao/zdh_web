@@ -79,8 +79,8 @@ public class PluginController extends BaseController {
                 criteria2.orLike("plugin_code", getLikeCondition(plugin_name));
                 criteria2.orLike("plugin_name", getLikeCondition(plugin_name));
                 criteria2.orLike("plugin_json", getLikeCondition(plugin_name));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<PluginInfo> pluginInfos = pluginMapper.selectByExample(example);
 

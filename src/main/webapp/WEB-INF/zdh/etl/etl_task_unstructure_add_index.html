@@ -261,7 +261,6 @@
 <!-- layer javascript -->
 <script src="js/plugins/layer/layer.min.js"></script>
 
-
 <!-- jsTree plugin javascript -->
 <script src="js/plugins/jsTree/jstree.min.js"></script>
 <!-- iCheck -->
@@ -311,13 +310,13 @@
             //$('#data_sources_choose_file_output').chosen();
             //$('#data_sources_choose_jdbc_output').chosen();
             //初始化数据源--把所有数据源都加载到下拉框
-            function init_data_sources() {
+            function init_data_sources(product_code, dim_group) {
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/data_sources_list",
                     dataType: 'json',
                     async: false,
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -358,7 +357,11 @@
                 });
             }
 
-            init_data_sources();
+            $('#dim_group').chosen().on("change", function (evt, params) {
+                init_data_sources($('#product_code').val(), $('#dim_group').val());
+            });
+
+            init_data_sources($('#product_code').val(), $('#dim_group').val());
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
                 console.info("新增按钮触发");
@@ -432,6 +435,8 @@
                             var dim_group=data.result[0].dim_group;
                             $("#dim_group").val(dim_group);
                             $("#dim_group").trigger("chosen:updated");
+
+                            init_data_sources($('#product_code').val(), $('#dim_group').val());
 
                             //获取ETL 说明
                             var unstructure_context = data.result[0].unstructure_context;

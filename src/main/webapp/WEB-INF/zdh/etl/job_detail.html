@@ -182,7 +182,6 @@
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
 <script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
-
 <script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script src="js/plugins/layer/laydate/laydate.js"></script>
@@ -211,6 +210,8 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
+            const product_code = $("#product_code",window.parent.document).val();
+            const dim_group = $("#dim_group",window.parent.document).val();
             //初始化数据源
             function init_etl_task_sources(){
                 $.ajax({
@@ -218,7 +219,7 @@
                     async: false,
                     url: server_context+"/etl_task_list2",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -252,7 +253,7 @@
                     async: false,
                     url: server_context+"/etl_task_more_list2",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -286,7 +287,7 @@
                     async: false,
                     url: server_context+"/sql_task_list",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -320,7 +321,7 @@
                     async: false,
                     url: server_context+"/etl_task_drools_list2",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -353,7 +354,7 @@
                     async: false,
                     url: server_context+"/etl_task_ssh_list",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -386,7 +387,7 @@
                     async: false,
                     url: server_context+"/etl_task_apply_list2",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -420,7 +421,7 @@
                     async: false,
                     url: server_context+"/etl_task_flink_list",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -454,7 +455,7 @@
                     async: false,
                     url: server_context+"/etl_task_jdbc_list",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -488,7 +489,7 @@
                     async: false,
                     url: server_context+"/etl_task_datax_list",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -522,7 +523,7 @@
                     async: false,
                     url: server_context+"/quality_task_list",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -556,7 +557,7 @@
                     async: false,
                     url: server_context+"/etl_task_unstructure_list",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -590,7 +591,7 @@
                     async: false,
                     url: server_context+"/etl_task_datax_auto_all_list",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
@@ -620,7 +621,7 @@
                     async: false,
                     url: server_context+"/etl_task_kettle_list",
                     dataType: 'json',
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
@@ -650,7 +651,7 @@
                     url: server_context+"/dispatch_task_list2",
                     dataType: 'json',
                     async: false,
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){

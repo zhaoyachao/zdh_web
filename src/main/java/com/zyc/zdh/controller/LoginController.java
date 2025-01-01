@@ -3,12 +3,11 @@ package com.zyc.zdh.controller;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.PermissionMapper;
-import com.zyc.zdh.entity.PermissionUserInfo;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.User;
+import com.zyc.zdh.dao.ProductTagMapper;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.MyRealm;
 import com.zyc.zdh.util.ConfigUtil;
@@ -58,7 +57,7 @@ import java.util.regex.Pattern;
  * 登录服务
  */
 @Controller
-public class LoginController {
+public class LoginController extends BaseController{
 
     private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 
@@ -72,6 +71,10 @@ public class LoginController {
     private JemailService jemailService;
     @Autowired
     private PermissionMapper permissionMapper;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
+    @Autowired
+    private ProductTagMapper productTagMapper;
 
     /**
      * 系统根页面
@@ -104,6 +107,18 @@ public class LoginController {
     public ReturnInfo<Object> register2(User user) {
         JSONObject json = new JSONObject();
         try {
+
+            checkProductCode(user.getProduct_code());
+            //检查产品是否存在
+            ProductTagInfo productTagInfo = new ProductTagInfo();
+            productTagInfo.setProduct_code(user.getProduct_code());
+            productTagInfo.setIs_delete(Const.NOT_DELETE);
+
+            ProductTagInfo productTagInfo1 = productTagMapper.selectOne(productTagInfo);
+
+            if(productTagInfo1 == null){
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "无法识别的企业标识,如果是新企业注册,请联系开发者增加企业标识", null);
+            }
             //自定义加密 算法和shiro 的算法保持一致
             //user.setPassword(new SimpleHash("md5", new String(user.getPassword()), null, 2).toString());
             user.setPassword(Encrypt.AESencrypt(user.getPassword()));
@@ -119,7 +134,7 @@ public class LoginController {
 
             if (users.size() > 0) {
                 json.put("error", "账户已存在");
-                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "账户以存在", null);
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "账户已存在", null);
             }
 
             //增加特别信息校验
@@ -130,17 +145,22 @@ public class LoginController {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "账户包含不合法字符,请修改后提交", null);
             }
             user.setEnable(Const.TRUR);
-            int result = accountService.insert(user);
+
             PermissionUserInfo pui = new PermissionUserInfo();
             pui.setUser_account(user.getUserName());
             pui.setUser_name(user.getUserName());
-            String product_code = ConfigUtil.getValue("zdh.product", "zdh");
+            String product_code = user.getProduct_code();
             pui.setProduct_code(product_code);
             List<PermissionUserInfo> puis = permissionMapper.select(pui);
             if(puis != null && puis.size() > 0){
-                throw new Exception("存在重复账号");
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "存在重复账号", null);
             }
-            pui.setEnable(Const.TRUR);
+            pui.setEnable(Const.FALSE);
+
+            if(ConfigUtil.getValue(ConfigUtil.ZDP_AUTO_ENABLE_PRODUCT,"").equalsIgnoreCase(product_code)){
+                pui.setEnable(Const.TRUR);
+            }
+
             if(!StringUtils.isEmpty(user.getEmail())){
                 pui.setEmail(user.getEmail());
             }
@@ -148,10 +168,11 @@ public class LoginController {
             pui.setCreate_time(new Timestamp(System.currentTimeMillis()));
             pui.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            String roles = ConfigUtil.getValue("zdp.init.roles","role_base");
+            String roles = ConfigUtil.getValue(ConfigUtil.ZDP_INIT_ROLES,"role_base");
             pui.setRoles(roles);
 
             pui.setTag_group_code("");
+            int result = accountService.insert(user);
             permissionMapper.insertSelective(pui);
             if (result > 0) {
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "注册成功", null);
@@ -202,9 +223,10 @@ public class LoginController {
             String captcha = WebUtils.getCleanParam(request, "captcha");
             String username = WebUtils.getCleanParam(request, "username");
             String password = WebUtils.getCleanParam(request, "password");
+            String product_code = WebUtils.getCleanParam(request, "product_code");
             boolean rememberMe = WebUtils.isTrue(request, "rememberMe");
             String session_captcha = (String) ((HttpServletRequest) request).getSession().getAttribute(MyAuthenticationToken.captcha_key);
-            MyAuthenticationToken token = new MyAuthenticationToken(username, password, rememberMe, "", captcha, "", session_captcha);
+            MyAuthenticationToken token = new MyAuthenticationToken(username, password, rememberMe, "", captcha, "", session_captcha, product_code);
             subject.login(token);
             return "index";
             //return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"登陆成功","index.html");
@@ -335,10 +357,10 @@ public class LoginController {
                     return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "已经存在相同用户名", null);
                 }
             }
-            User user_old2 = accountService.selectByPrimaryKey(user.getId());
-            if (StringUtils.isEmpty(user.getSignature())) {
-                user.setSignature(user_old2.getSignature());
-            }
+//            User user_old2 = accountService.selectByPrimaryKey(user.getId());
+//            if (StringUtils.isEmpty(user.getSignature())) {
+//                user.setSignature(user_old2.getSignature());
+//            }
 
             accountService.updateUser(user);
 
@@ -429,12 +451,16 @@ public class LoginController {
     public  ReturnInfo<List<JSONObject>> user_names(String username) {
 
         try{
+
+
             PermissionUserInfo accountInfo = new PermissionUserInfo();
             Example example = new Example(accountInfo.getClass());
             Example.Criteria criteria = example.createCriteria();
             if (!StringUtils.isEmpty(username)) {
                 criteria.andLike("user_account", "%" + username + "%");
             }
+
+            dynamicPermissionByProduct(zdhPermissionService, criteria);
 
             List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
             List<JSONObject> user_names = new ArrayList<>();

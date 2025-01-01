@@ -65,8 +65,8 @@ public class ProductTagController extends BaseController {
             if(!org.apache.commons.lang3.StringUtils.isEmpty(tag_context)){
                 criteria2.orLike("product_code", getLikeCondition(tag_context));
                 criteria2.orLike("product_name", getLikeCondition(tag_context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<ProductTagInfo> productTagInfos = productTagMapper.selectByExample(example);
 
@@ -101,8 +101,8 @@ public class ProductTagController extends BaseController {
             if(!org.apache.commons.lang3.StringUtils.isEmpty(tag_context)){
                 criteria2.orLike("product_code", getLikeCondition(tag_context));
                 criteria2.orLike("product_name", getLikeCondition(tag_context));
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<ProductTagInfo> productTagInfos = productTagMapper.selectByExample(example);
 

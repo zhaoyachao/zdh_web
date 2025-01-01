@@ -90,6 +90,7 @@ public class ZdhEtlController extends BaseController{
     public ReturnInfo<EtlTaskInfo> etl_task_detail(String id) {
         try{
             EtlTaskInfo eti=etlTaskService.selectById(id);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, eti.getProduct_code(), eti.getDim_group(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);

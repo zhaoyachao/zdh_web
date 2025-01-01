@@ -41,9 +41,9 @@ public interface ApplyMapper extends BaseApplyMapper<ApplyInfo> {
     @Select({"<script>",
             "SELECT * FROM apply_info",
             "WHERE 1=1",
-            "<when test='owner!=null and owner !=\"\"'>",
-            "AND owner=#{owner}",
-            "</when>",
+//            "<when test='owner!=null and owner !=\"\"'>",
+//            "AND owner=#{owner}",
+//            "</when>",
             "<when test='apply_context!=null and apply_context !=\"\"'>",
             "AND apply_context like #{apply_context}",
             "</when>",
@@ -53,9 +53,14 @@ public interface ApplyMapper extends BaseApplyMapper<ApplyInfo> {
             "<when test='status!=null and status !=\"\"'>",
             "AND status = #{status}",
             "</when>",
+            "and product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and product_code=#{product_code}",
             "</script>"})
     public List<ApplyInfo> selectByParams(@Param("apply_context") String apply_context, @Param("status") String status,
-                                          @Param("approve_id") String approve_id, @Param("owner") String owner);
+                                          @Param("approve_id") String approve_id, @Param("owner") String owner ,@Param("product_code") String product_code, @Param("product_codes") List<String> product_codes);
 
 
     /**
@@ -82,9 +87,25 @@ public interface ApplyMapper extends BaseApplyMapper<ApplyInfo> {
             "<when test='status!=null and status !=\"\"'>",
             "AND a.status = #{status}",
             "</when>",
+            "and a.product_code in ",
+            "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
+            "#{product_code}",
+            "</foreach>",
+            "and a.dim_group in ",
+            "<foreach collection='dim_groups' item='dim_group' open='(' separator=',' close=')'>",
+            "#{dim_group}",
+            "</foreach>",
+            "<when test='product_code!=null and product_code !=\"\"'>",
+            "and a.product_code=#{product_code}",
+            "</when>",
+            "<when test='dim_group!=null and dim_group !=\"\"'>",
+            "and a.dim_group=#{dim_group}",
+            "</when>",
             "</script>"})
     public List<ApplyIssueInfo> selectByParams3(@Param("apply_context") String apply_context, @Param("status") String status,
-                                                @Param("approve_id") String approve_id, @Param("owner") String owner);
+                                                @Param("approve_id") String approve_id, @Param("owner") String owner,
+                                                @Param("product_code") String product_code, @Param("dim_group") String dim_group,
+                                                @Param("product_codes") List<String> product_codes,  @Param("dim_groups") List<String> dim_groups);
 
     @Select({"<script>",
             "SELECT a.*,b.issue_context,b.data_sources_choose_input,b.data_source_type_input,b.data_sources_table_name_input,b.data_sources_table_columns," +
@@ -141,6 +162,18 @@ public interface ApplyMapper extends BaseApplyMapper<ApplyInfo> {
             "</script>"})
     public List<ApplyAlarmInfo> selectByIssueId(@Param("issue_id") String issue_id);
 
+    /**
+     * 以申请的数据源查询归属组(状态为以通过)
+     * @param issue_id
+     * @return
+     */
+    @Select({"<script>",
+            "SELECT distinct apply.product_code,apply.dim_group FROM apply_info apply,account_info acc",
+            "WHERE issue_id=${issue_id}",
+            "AND apply.owner=acc.user_name",
+            "AND status = 1",
+            "</script>"})
+    public List<ApplyAlarmInfo> selectDimGroupByIssueId(@Param("issue_id") String issue_id);
 
 
 }

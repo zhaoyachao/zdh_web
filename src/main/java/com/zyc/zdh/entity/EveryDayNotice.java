@@ -17,6 +17,8 @@ public class EveryDayNotice {
 
     private String show_type;//1:弹框,2:文字
 
+    private String product_code;
+
     public String getId() {
         return id;
     }
@@ -47,5 +49,13 @@ public class EveryDayNotice {
 
     public void setShow_type(String show_type) {
         this.show_type = show_type;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }

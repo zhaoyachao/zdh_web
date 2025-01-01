@@ -52,6 +52,26 @@
                           action="">
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">归属产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="归属产品...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属组</label>
+                            <div class="col-sm-10">
+                                <select id="dim_group" name="dim_group"
+                                        data-placeholder="归属组...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">数据说明</label>
                             <div class="col-sm-10">
                                 <input id="issue_context" name="issue_context" type="text"
@@ -265,6 +285,10 @@
 
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/admin/dim_product_common.js"></script>
+<script src="js/admin/dim_group_common.js"></script>
+
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({
@@ -664,6 +688,12 @@
                             }
                             console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
+
+                            $("#product_code").val(data.result.product_code);
+                            $("#product_code").trigger("chosen:updated");
+
+                            $("#dim_group").val(data.result.dim_group);
+                            $("#dim_group").trigger("chosen:updated");
 
                             // 基础信息加载
                             $('#issue_context').val(data.result.issue_context);

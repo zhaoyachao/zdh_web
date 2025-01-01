@@ -11,6 +11,7 @@ import com.zyc.zdh.entity.BloodSourceInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.CheckBloodSourceJob;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.DAG;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +40,8 @@ public class ZdhBloodSourceController extends BaseController{
     private BloodSourceMapper bloodSourceMapper;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 血缘首页
@@ -77,10 +80,12 @@ public class ZdhBloodSourceController extends BaseController{
     @SentinelResource(value = "blood_source_report", blockHandler = "handleReturn")
     @RequestMapping(value = "/blood_source_report", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<String> blood_source_report(String context, String data_sources_choose_input, String data_sources_file_name_input, String data_sources_choose_output,String data_sources_file_name_output) {
+    public ReturnInfo<String> blood_source_report(String product_code,String context, String data_sources_choose_input, String data_sources_file_name_input, String data_sources_choose_output,String data_sources_file_name_output) {
         //获取数据权限
         try{
-            BloodSourceInfo bloodSourceInfo = CheckBloodSourceJob.report(context, data_sources_choose_input, data_sources_file_name_input, data_sources_choose_output, data_sources_file_name_output, getOwner(), "-1");
+            checkPermissionByProduct(zdhPermissionService,product_code);
+            BloodSourceInfo bloodSourceInfo = CheckBloodSourceJob.report(product_code, context, data_sources_choose_input, data_sources_file_name_input, data_sources_choose_output, data_sources_file_name_output, getOwner(), "-1");
+
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
@@ -98,8 +103,14 @@ public class ZdhBloodSourceController extends BaseController{
     @RequestMapping(value = "/blood_source_create", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<Object> blood_source_create() {
-        CheckBloodSourceJob.Check();
-        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"生成血源关系", null);
+        try{
+            String product_code = getProductCode();
+            checkAttrPermissionByProduct(zdhPermissionService, product_code, getAttrEdit());
+            CheckBloodSourceJob.Check(product_code);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"生成血源关系", null);
+        }catch (Exception e){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"生成血源关系失败", e);
+        }
     }
 
     /**
@@ -112,50 +123,56 @@ public class ZdhBloodSourceController extends BaseController{
     @ResponseBody
     public ReturnInfo<Object> blood_source_list(String input) {
 
-        List<Map<String,Object>>  rs = jdbcTemplate.queryForList("select max(version) as version from blood_source_info");
-        if(rs==null || rs.size()<1){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "未找到任何血源分析数据", "未找到任何血源分析数据");
-        }
-
-        String version = rs.get(0).getOrDefault("version", "0").toString();
-        Example example=new Example(BloodSourceInfo.class);
-
-        Example.Criteria criteria = example.createCriteria();
-        criteria.orLike("input",getLikeCondition(input));
-        criteria.orLike("output",getLikeCondition(input));
-        Example.Criteria criteria2 = example.createCriteria();
-        criteria2.andIn("version", Lists.newArrayList(version, "-1"));
-        example.and(criteria2);
-
-        JSONArray jsonArray=new JSONArray();
-        List<String> inputs = new ArrayList<>();
-        List<BloodSourceInfo> bloodSourceInfos = bloodSourceMapper.selectByExample(example);
-        for (BloodSourceInfo bsi: bloodSourceInfos){
-
-            if(!StringUtils.isEmpty(bsi.getInput()) && bsi.getInput().contains(input) && !StringUtils.isEmpty(bsi.getInput_type())){
-                if(!inputs.contains(bsi.getInput_type()+bsi.getInput())){
-                    JSONObject jsonObject= new JSONObject();
-                    inputs.add(bsi.getInput_type()+bsi.getInput());
-                    jsonObject.put("input_type", bsi.getInput_type());
-                    jsonObject.put("input", bsi.getInput());
-                    jsonObject.put("input_md5", bsi.getInput_md5());
-                    jsonArray.add(jsonObject);
-                }
-            }
-            if(!StringUtils.isEmpty(bsi.getOutput()) && bsi.getOutput().contains(input) && !StringUtils.isEmpty(bsi.getOutput_type())){
-                if(!inputs.contains(bsi.getOutput_type()+bsi.getOutput())){
-                    inputs.add(bsi.getOutput_type()+bsi.getOutput());
-                    JSONObject jsonObject1= new JSONObject();
-                    inputs.add(bsi.getOutput_type()+bsi.getOutput());
-                    jsonObject1.put("input_type", bsi.getOutput_type());
-                    jsonObject1.put("input", bsi.getOutput());
-                    jsonObject1.put("input_md5", bsi.getOutput_md5());
-                    jsonArray.add(jsonObject1);
-                }
+        try{
+            String product_code = getProductCode();
+            List<Map<String,Object>>  rs = jdbcTemplate.queryForList("select max(version) as version from blood_source_info where product_code=\""+product_code+"\"");
+            if(rs==null || rs.size()<1){
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "未找到任何血源分析数据", "未找到任何血源分析数据");
             }
 
+            String version = rs.get(0).getOrDefault("version", "0").toString();
+            Example example=new Example(BloodSourceInfo.class);
+
+            Example.Criteria criteria = example.createCriteria();
+            criteria.orLike("input",getLikeCondition(input));
+            criteria.orLike("output",getLikeCondition(input));
+            Example.Criteria criteria2 = example.createCriteria();
+            criteria2.andIn("version", Lists.newArrayList(version, "-1"));
+            example.and(criteria2);
+
+            JSONArray jsonArray=new JSONArray();
+            List<String> inputs = new ArrayList<>();
+            List<BloodSourceInfo> bloodSourceInfos = bloodSourceMapper.selectByExample(example);
+            for (BloodSourceInfo bsi: bloodSourceInfos){
+
+                if(!StringUtils.isEmpty(bsi.getInput()) && bsi.getInput().contains(input) && !StringUtils.isEmpty(bsi.getInput_type())){
+                    if(!inputs.contains(bsi.getInput_type()+bsi.getInput())){
+                        JSONObject jsonObject= new JSONObject();
+                        inputs.add(bsi.getInput_type()+bsi.getInput());
+                        jsonObject.put("input_type", bsi.getInput_type());
+                        jsonObject.put("input", bsi.getInput());
+                        jsonObject.put("input_md5", bsi.getInput_md5());
+                        jsonArray.add(jsonObject);
+                    }
+                }
+                if(!StringUtils.isEmpty(bsi.getOutput()) && bsi.getOutput().contains(input) && !StringUtils.isEmpty(bsi.getOutput_type())){
+                    if(!inputs.contains(bsi.getOutput_type()+bsi.getOutput())){
+                        inputs.add(bsi.getOutput_type()+bsi.getOutput());
+                        JSONObject jsonObject1= new JSONObject();
+                        inputs.add(bsi.getOutput_type()+bsi.getOutput());
+                        jsonObject1.put("input_type", bsi.getOutput_type());
+                        jsonObject1.put("input", bsi.getOutput());
+                        jsonObject1.put("input_md5", bsi.getOutput_md5());
+                        jsonArray.add(jsonObject1);
+                    }
+                }
+
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonArray);
+        }catch (Exception e){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
-        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonArray);
+
     }
 
     /**
@@ -169,99 +186,107 @@ public class ZdhBloodSourceController extends BaseController{
     @RequestMapping(value = "/blood_source_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<JSONArray> blood_source_detail(String input, String input_md5, String level, String stream_type) {
-        DAG dag=new DAG();
-        Map<String, String> source_json = new HashMap<>();
-        JSONObject jsonObject=new JSONObject();
-        List<BloodSourceInfo> bloodSourceInfos = bloodSourceMapper.selectAll();
-        for (BloodSourceInfo bsi: bloodSourceInfos){
-            if(!StringUtils.isEmpty(bsi.getInput()) && !StringUtils.isEmpty(bsi.getOutput()) && !bsi.getInput().equalsIgnoreCase(bsi.getOutput())){
-                //System.out.println(bsi.getInput()+"====="+bsi.getOutput());
+        try{
+            String product_code = getProductCode();
+            DAG dag=new DAG();
+            Map<String, String> source_json = new HashMap<>();
+            JSONObject jsonObject=new JSONObject();
+            List<BloodSourceInfo> bloodSourceInfos = bloodSourceMapper.selectAll();
+            for (BloodSourceInfo bsi: bloodSourceInfos){
+                if(!bsi.getProduct_code().equalsIgnoreCase(product_code)){
+                    continue;
+                }
+                if(!StringUtils.isEmpty(bsi.getInput()) && !StringUtils.isEmpty(bsi.getOutput()) && !bsi.getInput().equalsIgnoreCase(bsi.getOutput())){
+                    //System.out.println(bsi.getInput()+"====="+bsi.getOutput());
 
-                boolean result = dag.addEdge(bsi.getInput()+"__-__"+bsi.getInput_md5(),bsi.getOutput()+"__-__"+bsi.getOutput_md5());
-                source_json.put(bsi.getInput()+"__-__"+bsi.getInput_md5(), bsi.getInput_json());
-                source_json.put(bsi.getOutput()+"__-__"+bsi.getOutput_md5(), bsi.getOutput_json());
-                if(!result){
-                    jsonObject.put("result","失败");
-                    return ReturnInfo.buildError(new Exception("解析失败"));
+                    boolean result = dag.addEdge(bsi.getInput()+"__-__"+bsi.getInput_md5(),bsi.getOutput()+"__-__"+bsi.getOutput_md5());
+                    source_json.put(bsi.getInput()+"__-__"+bsi.getInput_md5(), bsi.getInput_json());
+                    source_json.put(bsi.getOutput()+"__-__"+bsi.getOutput_md5(), bsi.getOutput_json());
+                    if(!result){
+                        jsonObject.put("result","失败");
+                        return ReturnInfo.buildError(new Exception("解析失败"));
+                    }
                 }
             }
-        }
-        Set<String> upstreams = (Set<String>)dag.getParent(input+"__-__"+input_md5);
-        Set<String> downstreams = (Set<String>)dag.getChildren(input+"__-__"+input_md5);
-        Map<String,Set<String>> downstream_map = new HashMap<>();
-        Map<String,Set<String>> upstream_map = new HashMap<>();
-        downstream_map.put(input+"__-__"+input_md5, downstreams);
-        Queue queue=new LinkedList<String>();
-        queue.addAll(downstreams);
-        while (!queue.isEmpty()){
-            String v = queue.poll().toString();
-            Set<String> downstreams1 = (Set<String>)dag.getChildren(v);
-            downstream_map.put(v, downstreams1);
-            queue.addAll(downstreams1);
-        }
-
-
-        upstream_map.put(input+"__-__"+input_md5, upstreams);
-        Queue queue2=new LinkedList<String>();
-        queue2.add(input+"__-__"+input_md5);
-        while (!queue.isEmpty()){
-            String v = queue.poll().toString();
-            Set<String> upstreams1 = (Set<String>)dag.getParent(v);
-            upstream_map.put(v, upstreams1);
-            queue2.addAll(upstreams1);
-        }
-
-        //生成血源数据
-        JSONArray jsonArray=new JSONArray();
-
-        //生成根节点
-        JSONObject j2=new JSONObject();
-        j2.put("id", DigestUtils.md5DigestAsHex((input+"__-__"+input_md5).getBytes()));
-        j2.put("topic", input);
-        j2.put("source_json", JSON.parseObject(source_json.get(input+"__-__"+input_md5)));
-        j2.put("background-color", "#C2DFFF");
-        j2.put("isroot", true);
-        jsonArray.add(j2);
-        Map<String,String> flag=new HashMap<>();
-        for (String key:downstream_map.keySet()){
-            String color_key = "#C2DFFF";
-            String color_value = "#FF9900";
-            String isroot = "true";
-            if(!key.equalsIgnoreCase(input)){
-                color_key = "#2B65EC";
-                isroot = "false";
+            Set<String> upstreams = (Set<String>)dag.getParent(input+"__-__"+input_md5);
+            Set<String> downstreams = (Set<String>)dag.getChildren(input+"__-__"+input_md5);
+            Map<String,Set<String>> downstream_map = new HashMap<>();
+            Map<String,Set<String>> upstream_map = new HashMap<>();
+            downstream_map.put(input+"__-__"+input_md5, downstreams);
+            Queue queue=new LinkedList<String>();
+            queue.addAll(downstreams);
+            while (!queue.isEmpty()){
+                String v = queue.poll().toString();
+                Set<String> downstreams1 = (Set<String>)dag.getChildren(v);
+                downstream_map.put(v, downstreams1);
+                queue.addAll(downstreams1);
             }
 
-            for(String chilren:downstream_map.get(key)){
-                JSONObject j3=new JSONObject();
-                j3.put("id", DigestUtils.md5DigestAsHex(chilren.getBytes()));
-                j3.put("topic", chilren.split("__-__")[0]);
-                j3.put("source_json", JSON.parseObject(source_json.get(chilren)));
-                j3.put("background-color", color_value);
-                j3.put("parentid", DigestUtils.md5DigestAsHex(key.getBytes()));
-                j3.put("direction","right");
-                if(!flag.containsKey(chilren)){
-                    jsonArray.add(j3);
-                    flag.put(chilren,"");
+
+            upstream_map.put(input+"__-__"+input_md5, upstreams);
+            Queue queue2=new LinkedList<String>();
+            queue2.add(input+"__-__"+input_md5);
+            while (!queue.isEmpty()){
+                String v = queue.poll().toString();
+                Set<String> upstreams1 = (Set<String>)dag.getParent(v);
+                upstream_map.put(v, upstreams1);
+                queue2.addAll(upstreams1);
+            }
+
+            //生成血源数据
+            JSONArray jsonArray=new JSONArray();
+
+            //生成根节点
+            JSONObject j2=new JSONObject();
+            j2.put("id", DigestUtils.md5DigestAsHex((input+"__-__"+input_md5).getBytes()));
+            j2.put("topic", input);
+            j2.put("source_json", JSON.parseObject(source_json.get(input+"__-__"+input_md5)));
+            j2.put("background-color", "#C2DFFF");
+            j2.put("isroot", true);
+            jsonArray.add(j2);
+            Map<String,String> flag=new HashMap<>();
+            for (String key:downstream_map.keySet()){
+                String color_key = "#C2DFFF";
+                String color_value = "#FF9900";
+                String isroot = "true";
+                if(!key.equalsIgnoreCase(input)){
+                    color_key = "#2B65EC";
+                    isroot = "false";
+                }
+
+                for(String chilren:downstream_map.get(key)){
+                    JSONObject j3=new JSONObject();
+                    j3.put("id", DigestUtils.md5DigestAsHex(chilren.getBytes()));
+                    j3.put("topic", chilren.split("__-__")[0]);
+                    j3.put("source_json", JSON.parseObject(source_json.get(chilren)));
+                    j3.put("background-color", color_value);
+                    j3.put("parentid", DigestUtils.md5DigestAsHex(key.getBytes()));
+                    j3.put("direction","right");
+                    if(!flag.containsKey(chilren)){
+                        jsonArray.add(j3);
+                        flag.put(chilren,"");
+                    }
                 }
             }
-        }
 
 
-        for (String key:upstream_map.keySet()){
-            for(String upstream: upstream_map.get(key)){
-                JSONObject j1=new JSONObject();
-                j1.put("id", DigestUtils.md5DigestAsHex(upstream.getBytes()) );
-                j1.put("topic", upstream.split("__-__")[0]);
-                j1.put("source_json", JSON.parseObject(source_json.get(upstream)));
-                j1.put("background-color", "#00bb00");
-                j1.put("parentid", DigestUtils.md5DigestAsHex(key.getBytes()));
-                j1.put("direction","left");
-                jsonArray.add(j1);
+            for (String key:upstream_map.keySet()){
+                for(String upstream: upstream_map.get(key)){
+                    JSONObject j1=new JSONObject();
+                    j1.put("id", DigestUtils.md5DigestAsHex(upstream.getBytes()) );
+                    j1.put("topic", upstream.split("__-__")[0]);
+                    j1.put("source_json", JSON.parseObject(source_json.get(upstream)));
+                    j1.put("background-color", "#00bb00");
+                    j1.put("parentid", DigestUtils.md5DigestAsHex(key.getBytes()));
+                    j1.put("direction","left");
+                    jsonArray.add(j1);
+                }
             }
-        }
 
-        return ReturnInfo.buildSuccess(jsonArray);
+            return ReturnInfo.buildSuccess(jsonArray);
+        }catch (Exception e){
+            return ReturnInfo.buildError(e.getMessage(), e);
+        }
     }
 
     /**

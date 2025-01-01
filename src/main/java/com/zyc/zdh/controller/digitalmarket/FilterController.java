@@ -82,8 +82,9 @@ public class FilterController extends BaseController {
             if(!StringUtils.isEmpty(filter_name)){
                 criteria2.orLike("filter_name", getLikeCondition(filter_name));
                 criteria2.orLike("filter_code", getLikeCondition(filter_name));
+                example.and(criteria2);
             }
-            example.and(criteria2);
+
 
             List<FilterInfo> filterInfos = filterMapper.selectByExample(example);
 

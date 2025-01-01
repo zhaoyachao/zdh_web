@@ -568,11 +568,12 @@
 <script src="js/plugins/vs/editor/editor.main.js"></script>
 <script type="text/javascript" src="js/plugins/vs/basic-languages/sql/sql.js"></script>
 
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
 <script src="js/admin/dim_product_common.js"></script>
 <script src="js/admin/dim_group_common.js"></script>
 
-<!-- iCheck -->
-<script src="js/plugins/iCheck/icheck.min.js"></script>
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({
@@ -626,14 +627,19 @@
                 $('#div_data_sources_file_name_output')[0].style.display = 'block';
             }
 
+            $('#dim_group').chosen().on("change", function (evt, params) {
+                init_apply_sources($('#product_code').val(), $('#dim_group').val());
+                init_data_sources($('#product_code').val(), $('#dim_group').val());
+            });
+
             //初始化发布源--把所有以申请的数据加载到下拉框
-            function init_apply_sources() {
+            function init_apply_sources(product_code, dim_group) {
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/data_apply_list2",
                     dataType: 'json',
                     async: false,
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         rd=data.result;
@@ -643,6 +649,7 @@
                         }
                         //输入数据源类型下拉框
                         $('#data_sources_choose_input').html(str);
+                        $('#data_sources_choose_input').trigger("chosen:updated");
                         $('#data_sources_choose_input').chosen().on("change", function (evt, params) {
                             // alert($('#data_sources_choose_input').val())
                             //获取所选的发布源类型
@@ -698,13 +705,13 @@
             }
 
             //初始化数据源--把所有数据源都加载到下拉框
-            function init_data_sources() {
+            function init_data_sources(product_code, dim_group) {
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/data_sources_list",
                     dataType: 'json',
                     async: false,
-                    data: '',
+                    data: {"product_code": product_code, "dim_group": dim_group},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -718,7 +725,7 @@
 
                         //输出数据源类型下拉框
                         $('#data_sources_choose_output').html(str);
-
+                        $('#data_sources_choose_output').trigger("chosen:updated");
                         $('#data_sources_choose_output').chosen().on("change", function (evt, params) {
                             // alert($('#data_sources_choose_input').val())
                             $('#data_source_type_output').val($('#data_sources_choose_output').find("option:selected").attr("mytype"));
@@ -1014,8 +1021,8 @@
 
             fileShow();
             //启动数据源select 初始化函数
-            init_apply_sources();
-            init_data_sources();
+            //init_apply_sources("", "");
+            //init_data_sources();
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
                 console.info("新增按钮触发");
@@ -1092,6 +1099,8 @@
                             $("#dim_group").val(dim_group);
                             $("#dim_group").trigger("chosen:updated");
 
+                            init_apply_sources(product_code, dim_group);
+                            init_data_sources(product_code, dim_group);
                             //获取输入数据源id
                             var data_sources_choose_input = data.result.data_sources_choose_input;
                             console.info("参数赋值:输入数据源id:" + data_sources_choose_input);
@@ -1453,7 +1462,7 @@
             }
         });
 
-    })
+    });
 
 
     $('#update_etl_task').click(function () {

@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 策略独有参数</title>
-    <meta name="keywords" content="ZDH 策略独有参数">
-    <meta name="description" content="ZDH 策略独有参数">
+    <title>ZDH 数据申请页</title>
+    <meta name="keywords" content="ZDH 数据申请页">
+    <meta name="description" content="ZDH 数据申请页">
 
     <link rel="shortcut icon" href="img/favicon.ico">
 
@@ -20,8 +20,8 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
-    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
-    <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
+    <!--    <link rel="stylesheet" type="text/css" href="css/plugins/webuploader/webuploader.css">
+        <link rel="stylesheet" type="text/css" href="css/demo/webuploader-demo.css">-->
 
 </head>
 
@@ -32,7 +32,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>策略参数说明</h5>
+                    <h5>数据申请</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -48,43 +48,39 @@
                 </div>
                 <div class="ibox-content">
 
-                    <form id="etl_task_add_form" name="etl_task_add_form" method="post" class="form-horizontal"
+                    <form id="issue_data_add_form" name="issue_data_add_form" method="post" class="form-horizontal"
                           action="">
+
                         <div class="form-group">
-                            <label class="col-sm-2 control-label" style="color: red;">提示</label>
+                            <label class="col-sm-2 control-label">归属产品</label>
                             <div class="col-sm-10">
-                                <span class="help-block m-b-none" style="font-weight: bold; color: red">参数在使用时必须使用双层大括号{{}}括起来</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">当前流转数据(用户ID)</label>
-                            <div class="col-sm-10">
-                                <input type="text" readonly
-                                       value="表达式: {{uid}}, 例子: 手机号返回152xxxxxxxx" class="form-control" aria-required="true"> </span>
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="归属产品...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">当前策略实例字典</label>
+                            <label class="col-sm-2 control-label">归属组</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly
-                                       value="表达式: {{stragegy_instance}}, 例子字典结构: {id: 1, stragegy_content: xxx, xxxx}" class="form-control" aria-required="true"> </span>
+                                <select id="dim_group" name="dim_group"
+                                        data-placeholder="归属组...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">当前策略实例ID</label>
-                            <div class="col-sm-10">
-                                <input type="text" readonly
-                                       value="表达式: {{strategy_instance_id}}, 例子: 1177757911275802624" class="form-control" aria-required="true"> </span>
-                            </div>
-                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <!-- 输出数据源结束-->
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">当前策略上游结果集</label>
-                            <div class="col-sm-10">
-                                <input type="text" readonly
-                                       value="表达式: {{rs}}, 例子: 字符串组成的集合" class="form-control" aria-required="true"> </span>
+                            <div class="text-center">
+                                <button id="save_issue_data" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">申请
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
                             </div>
                         </div>
 
@@ -100,17 +96,7 @@
     </div>
 </div>
 
-
-
 <script src="js/zdh_common.js"></script>
-<script>
-    var require = {
-        paths: {
-            'vs': 'js/plugins/vs'
-        }
-    };
-
-</script>
 <!-- 全局js -->
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
@@ -120,6 +106,9 @@
 <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
 <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 <!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
 <script src="js/content.js?v=1.0.0"></script>
 
 <!-- Chosen -->
@@ -127,11 +116,6 @@
 
 <!-- layer javascript -->
 <script src="js/plugins/layer/layer.min.js"></script>
-
-<script src="js/plugins/vs/loader.js"></script>
-<script src="js/plugins/vs/editor/editor.main.nls.js"></script>
-<script src="js/plugins/vs/editor/editor.main.js"></script>
-<script type="text/javascript" src="js/plugins/vs/basic-languages/sql/sql.js"></script>
 
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
@@ -147,6 +131,7 @@
         });
     });
 
+
     (function (document, window, $) {
 
 
@@ -160,12 +145,55 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
+            function save() {
 
+                if ($('#dim_group').val() == '') {
+                    layer.msg("申请组不能为空！");
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/data_apply_add",
+                    async: false,
+                    dataType: 'json',
+                    data: $("#issue_data_add_form").serialize()+"&issue_id="+s.id,
+                    //发送数据前
+                    beforeSend: function () {
+                        // 禁用按钮防止重复提交
+                        $("#save_issue_data").attr({disabled: "disabled"});
+                    },
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            parent.layer.msg(data.msg);
+                            return
+                        }
+                        parent.layer.msg(data.msg);
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    },
+                    //处理完成
+                    complete: function () {
+                        $("#save_issue_data").removeAttr('disabled');
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        $("#save_issue_data").removeAttr('disabled');
+                        layer.error(data.responseText);
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+            }
+
+            $('#save_issue_data').click(function (){
+                save()
+            });
         })();
 
     })(document, window, jQuery);
-
-
 
 </script>
 

@@ -48,6 +48,7 @@ public class ZdhDataSourcesController extends BaseController{
 
     /**
      * 数据源列表
+     * v5.6.0+版本废弃组标识权限
      * @return
      */
     @SentinelResource(value = "data_sources_list", blockHandler = "handleReturn")
@@ -177,7 +178,7 @@ public class ZdhDataSourcesController extends BaseController{
             if(dataSourcesInfo != null){
                 dataSourcesInfo.setPassword("");
             }
-            checkPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group(), getAttrSelect());
             return ReturnInfo.buildSuccess(dataSourcesInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -305,6 +306,7 @@ public class ZdhDataSourcesController extends BaseController{
     @ResponseBody
     public ReturnInfo<Object> test_connect(DataSourcesInfo dataSourcesInfo) {
         try{
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group(), getAttrSelect());
             if(!dataSourcesInfo.getData_source_type().equalsIgnoreCase("jdbc")){
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"测试连接失败", "只支持JDBC类型连接测试");
             }

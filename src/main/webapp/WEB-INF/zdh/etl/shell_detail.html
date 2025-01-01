@@ -210,6 +210,10 @@
             for(var i = 0; i < pa.length; i ++){
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
+
+            const product_code = $("#product_code",window.parent.document).val();
+            const dim_group = $("#dim_group",window.parent.document).val();
+
             $('#depend_level').chosen();
             if(s.command != '-1'){
                 console.info("更新触发");

@@ -51,7 +51,12 @@
                     <form id="data_apply_form" name="data_apply_form" method="post" class="form-horizontal"
                           action="">
 
-
+                        <div class="input-group  col-sm-2">
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code...."
+                                    class="chosen-select form-control m-b" >
+                            </select>
+                        </div>
                         <div class="input-group col-sm-6">
                             <input id="apply_context" name="apply_context" type="text"
                                    placeholder="申请表名"
@@ -111,6 +116,9 @@
 
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/admin/dim_product_common.js"></script>
+
 <script>
     $(document).ready(function () {
         $('.i-checks').iCheck({

@@ -13,6 +13,7 @@
 
     <link rel="shortcut icon" href="img/favicon.ico">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
@@ -42,7 +43,23 @@
             </div>
             <div class="ibox-content">
 
-                <form role="form" class="form-inline" id="enum_form">
+                <form role="form" class="form-inline" id="project_form">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code...."
+                                    class="chosen-select form-control m-b" >
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select id="dim_group" name="dim_group"
+                                    data-placeholder="归属组code...."
+                                    class="chosen-select form-control m-b" >
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <div class="input-group" >
@@ -95,13 +112,16 @@
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
 
-
     <!-- Bootstrap table -->
     <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
-    <!-- Peity -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <script src="js/admin/dim_product_common.js"></script>
+    <script src="js/admin/dim_group_common.js"></script>
+
     <script src="js/service/project.js"></script>
 
 <script>

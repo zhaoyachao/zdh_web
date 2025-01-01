@@ -2,8 +2,7 @@
   // ------------------------------
   (function() {
 
-      //初始化产品code
-
+      //初始化维度code
       function init_dim_group(){
           //$('#dim_group').chosen();
           $.ajax({

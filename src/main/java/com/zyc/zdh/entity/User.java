@@ -38,19 +38,15 @@ public class User extends PageBase implements Serializable {
 	private String is_use_phone;
 
 	/**
-	 * 用户组
-	 */
-	private String user_group;
-
-	/**
 	 * 是否启用true/false
 	 */
 	private String enable;
 
+	// 下方字段,来自permission_user_info表,通过权限控制
 	/**
-	 * 角色ID,多个逗号分割
+	 * 用户组
 	 */
-	private String roles;
+	private String user_group;
 
 	/**
 	 * 签名
@@ -58,10 +54,8 @@ public class User extends PageBase implements Serializable {
 	private String signature;
 
 	/**
-	 * 数据标识组code,多个逗号分割
+	 * 产品
 	 */
-	private String tag_group_code;
-
 	private String product_code;
 
 	public String getId() {
@@ -133,28 +127,12 @@ public class User extends PageBase implements Serializable {
 		this.enable = enable;
 	}
 
-	public String getRoles() {
-		return roles;
-	}
-
-	public void setRoles(String roles) {
-		this.roles = roles;
-	}
-
 	public String getSignature() {
 		return signature;
 	}
 
 	public void setSignature(String signature) {
 		this.signature = signature;
-	}
-
-	public String getTag_group_code() {
-		return tag_group_code;
-	}
-
-	public void setTag_group_code(String tag_group_code) {
-		this.tag_group_code = tag_group_code;
 	}
 
 	public String getProduct_code() {

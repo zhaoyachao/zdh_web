@@ -613,9 +613,9 @@ public class ZdhDispatchController extends BaseController {
             }
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(qrtzSchedulerState.getStatus())){
-                criteria.andEqualTo("status", qrtzSchedulerState.getStatus());
+                criteria2.andEqualTo("status", qrtzSchedulerState.getStatus());
+                example.and(criteria2);
             }
-            example.and(criteria2);
 
             List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(example);
             return ReturnInfo.buildSuccess(qrtzSchedulerStates);

@@ -303,8 +303,8 @@ api[6].list.push({
 api.push({
     alias: 'DataTagController',
     order: '8',
-    desc: '数据标识服务',
-    link: '数据标识服务',
+    desc: '数据标识服务  2024-12-31 v5.6.0+版本废弃',
+    link: '数据标识服务  2024-12-31_v5.6.0+版本废弃',
     list: []
 })
 api[7].list.push({
@@ -342,8 +342,8 @@ api[7].list.push({
 api.push({
     alias: 'DataTagGroupController',
     order: '9',
-    desc: '数据标识组服务',
-    link: '数据标识组服务',
+    desc: '数据标识组服务  2024-12-31 v5.6.0+版本废弃',
+    link: '数据标识组服务  2024-12-31_v5.6.0+版本废弃',
     list: []
 })
 api[8].list.push({
@@ -383,74 +383,78 @@ api.push({
 })
 api[9].list.push({
     order: '1',
-    desc: '人群规则明细',
+    desc: '策略参数页面',
 });
 api[9].list.push({
     order: '2',
-    desc: '规则模板页面',
+    desc: '人群规则明细',
 });
 api[9].list.push({
     order: '3',
-    desc: '人群文件模板页面',
+    desc: '规则模板页面',
 });
 api[9].list.push({
     order: '4',
-    desc: '人群运算模板页面',
+    desc: '人群文件模板页面',
 });
 api[9].list.push({
     order: '5',
-    desc: '人群规则模板页面',
+    desc: '人群运算模板页面',
 });
 api[9].list.push({
     order: '6',
-    desc: '过滤模板页面',
+    desc: '人群规则模板页面',
 });
 api[9].list.push({
     order: '7',
-    desc: '分流模板页面',
+    desc: '过滤模板页面',
 });
 api[9].list.push({
     order: '8',
-    desc: '权益模板页面',
+    desc: '分流模板页面',
 });
 api[9].list.push({
     order: '9',
-    desc: 'T+N页面',
+    desc: '权益模板页面',
 });
 api[9].list.push({
     order: '10',
-    desc: '人工确认  manual_confirm_detail页面',
+    desc: 'T+N页面',
 });
 api[9].list.push({
     order: '11',
-    desc: '代码块  code_block_detail页面',
+    desc: '人工确认  manual_confirm_detail页面',
 });
 api[9].list.push({
     order: '12',
-    desc: '自定义名单  custom_list_detail页面',
+    desc: '代码块  code_block_detail页面',
 });
 api[9].list.push({
     order: '13',
-    desc: '代码块-代码例子页面',
+    desc: '自定义名单  custom_list_detail页面',
 });
 api[9].list.push({
     order: '14',
-    desc: '变量池页面',
+    desc: '代码块-代码例子页面',
 });
 api[9].list.push({
     order: '15',
-    desc: '变量计算页面',
+    desc: '变量池页面',
 });
 api[9].list.push({
     order: '16',
-    desc: '人群文件列表',
+    desc: '变量计算页面',
 });
 api[9].list.push({
     order: '17',
-    desc: '获取当前登录用户的归属组',
+    desc: '人群文件列表',
 });
 api[9].list.push({
     order: '18',
+    desc: '获取当前登录用户的归属组',
+});
+api[9].list.push({
+    order: '19',
     desc: '获取当前登录用户的归属产品',
 });
 api.push({
@@ -2243,7 +2247,7 @@ api[41].list.push({
 });
 api[41].list.push({
     order: '2',
-    desc: '数据源列表',
+    desc: '数据源列表  v5.6.0+版本废弃组标识权限',
 });
 api[41].list.push({
     order: '3',
@@ -2290,7 +2294,7 @@ api[42].list.push({
 });
 api[42].list.push({
     order: '2',
-    desc: '获取已发布的数据',
+    desc: '数据资产-查询列表  获取已发布的数据',
 });
 api[42].list.push({
     order: '3',
@@ -2830,66 +2834,70 @@ api[54].list.push({
 });
 api[54].list.push({
     order: '4',
-    desc: '数据申请首页',
+    desc: '数据已申请首页',
 });
 api[54].list.push({
     order: '5',
-    desc: '数据明细首页',
+    desc: '数据申请首页',
 });
 api[54].list.push({
     order: '6',
-    desc: '根据id获取对应的数据明细',
+    desc: '数据明细首页',
 });
 api[54].list.push({
     order: '7',
-    desc: '根据条件模糊查询发布数据',
+    desc: '根据id获取对应的数据明细',
 });
 api[54].list.push({
     order: '8',
-    desc: '根据条件模糊查询发布数据源,只查询当前用户',
+    desc: '数据集市-查询列表  获取有权限的产品线数据    根据条件模糊查询发布数据',
 });
 api[54].list.push({
     order: '9',
-    desc: '发布数据删除',
+    desc: '数据发布-查询列表  根据条件模糊查询发布数据源,查询有权限的产品',
 });
 api[54].list.push({
     order: '10',
-    desc: '发布数据表信息  走审批流  1 创建数据表-&gt; 2 根据当前接口从功能资源列表查询绑定的审批事件 -&gt; 3 根据审批事件查询所有审批节点 -&gt; 4 创建审批流 -&gt; 审批人在审批页面审批',
-});
-api[54].list.push({
-    order: '11',
-    desc: '发布数据更新',
-});
-api[54].list.push({
-    order: '12',
     desc: '发布数据删除',
 });
 api[54].list.push({
+    order: '11',
+    desc: '发布数据表信息  走审批流  1 创建数据表-&gt; 2 根据当前接口从功能资源列表查询绑定的审批事件 -&gt; 3 根据审批事件查询所有审批节点 -&gt; 4 创建审批流 -&gt; 审批人在审批页面审批',
+});
+api[54].list.push({
+    order: '12',
+    desc: '发布数据更新',
+});
+api[54].list.push({
     order: '13',
-    desc: '申请数据表信息',
+    desc: '发布数据删除',
 });
 api[54].list.push({
     order: '14',
-    desc: '数据申请列表',
+    desc: '申请数据表信息',
 });
 api[54].list.push({
     order: '15',
-    desc: '数据申请',
+    desc: '数据申请列表',
 });
 api[54].list.push({
     order: '16',
-    desc: '根据主键查询数据申请信息',
+    desc: '数据申请',
 });
 api[54].list.push({
     order: '17',
-    desc: '取消申请',
+    desc: '根据主键查询数据申请信息',
 });
 api[54].list.push({
     order: '18',
-    desc: '审批列表',
+    desc: '取消申请',
 });
 api[54].list.push({
     order: '19',
+    desc: '审批列表',
+});
+api[54].list.push({
+    order: '20',
     desc: '数据审批',
 });
 api.push({

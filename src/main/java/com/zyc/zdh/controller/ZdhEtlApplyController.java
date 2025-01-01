@@ -67,7 +67,7 @@ public class ZdhEtlApplyController extends BaseController{
 
         try{
             EtlApplyTaskInfo etlApplyTaskInfo=etlApplyTaskMapper.selectByPrimaryKey(id);
-            checkPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskInfo.getProduct_code(), etlApplyTaskInfo.getDim_group());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlApplyTaskInfo.getProduct_code(), etlApplyTaskInfo.getDim_group(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", etlApplyTaskInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
