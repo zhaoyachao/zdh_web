@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.EtlTaskBatchMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
@@ -11,6 +10,7 @@ import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.MapStructMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -324,7 +324,7 @@ public class ZdhEtlBatchController extends BaseController {
 
                 eti.setData_sources_table_columns(StringUtils.join(cols, ","));
                 eti.setData_sources_file_columns(StringUtils.join(cols, ","));
-                eti.setColumn_datas(JSON.toJSONString(cds));
+                eti.setColumn_datas(JsonUtil.formatJsonString(cds));
 
                 eti.setData_sources_table_name_output(table);
                 eti.setData_sources_file_name_output(table);

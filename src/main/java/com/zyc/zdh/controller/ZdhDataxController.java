@@ -133,7 +133,7 @@ public class ZdhDataxController extends BaseController{
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_datax_add(EtlTaskDataxInfo etlTaskDataxInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try{
             String owner = getOwner();
             etlTaskDataxInfo.setOwner(owner);
@@ -177,7 +177,7 @@ public class ZdhDataxController extends BaseController{
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_datax_update(EtlTaskDataxInfo etlTaskDataxInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try{
             String owner = getOwner();
             etlTaskDataxInfo.setOwner(owner);

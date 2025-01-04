@@ -1,16 +1,16 @@
 package com.zyc.zdh.controller;
 
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.zyc.zdh.dao.ProjectMapper;
 import com.zyc.zdh.entity.PageResult;
 import com.zyc.zdh.entity.ProjectInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.util.Const;
 import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -24,11 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
-import com.zyc.zdh.dao.ProjectMapper;
-
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 项目信息服务
@@ -193,16 +192,16 @@ public class ProjectController extends BaseController {
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldProjectInfo.getProduct_code(), oldProjectInfo.getDim_group(), getAttrEdit());
 
 
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
 
             for(int i=0;i<enum_value.length;i++){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
                 jsonObject.put("enum_value", enum_value[i]);
                 jsonObject.put("enum_value_context", enum_value_context[i]);
                 jsonArray.add(jsonObject);
             }
 
-            projectInfo.setProject_json(jsonArray.toJSONString());
+            projectInfo.setProject_json(JsonUtil.formatJsonString(jsonArray));
 
             projectInfo.setCreate_time(oldProjectInfo.getCreate_time());
             projectInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -233,16 +232,16 @@ public class ProjectController extends BaseController {
         try {
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, projectInfo.getProduct_code(), projectInfo.getDim_group(), getAttrAdd());
 
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
 
             for(int i=0;i<enum_value.length;i++){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
                 jsonObject.put("enum_value", enum_value[i]);
                 jsonObject.put("enum_value_context", enum_value_context[i]);
                 jsonArray.add(jsonObject);
             }
 
-            projectInfo.setProject_json(jsonArray.toJSONString());
+            projectInfo.setProject_json(JsonUtil.formatJsonString(jsonArray));
 
             projectInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             projectInfo.setOwner(getOwner());

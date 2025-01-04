@@ -92,10 +92,10 @@ public class DBUtilTest {
         try {
             List<Map<String,Object>> re=new DBUtil().R5(driver,url,username,password,"select * from  public.t1 ");
 
-            System.out.println(JSON.toJSONString(re));
+            System.out.println(JsonUtil.formatJsonString(re));
             List<Map<String,Object>> re2=new DBUtil().R5(driver,url,username,password,"select * from information_schema.tables ");
 
-            System.out.println(JSON.toJSONString(re2));
+            System.out.println(JsonUtil.formatJsonString(re2));
 
             List<String> list=new DBUtil().R3(driver,url,username,password,"");
 

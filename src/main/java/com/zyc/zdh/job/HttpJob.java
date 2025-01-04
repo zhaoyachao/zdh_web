@@ -7,7 +7,6 @@ import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.GroovyFactory;
 import com.zyc.zdh.util.HttpUtil;
-import org.apache.commons.httpclient.URI;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;

@@ -10,6 +10,9 @@ public enum JobType {
     FLUME("FLUME","FLUME","FLUME任务","false"),
     SHELL("SHELL","SHELL","SHELL任务","false"),
     HTTP("HTTP","HTTP","HTTP任务","false"),
+    GROUP("GROUP","GROUP","GROUP任务","false"),
+    HDFS("HDFS","HDFS","HDFS任务","false"),
+    JDBC("JDBC","JDBC","JDBC任务","false"),
     DIGITALMARKET("DIGITALMARKET","DIGITALMARKET","智能营销任务","true");
 
 

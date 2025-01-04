@@ -1,12 +1,12 @@
 package com.zyc.zdh.api;
 
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.entity.EtlEcharts;
 import com.zyc.zdh.entity.ResultInfo;
 import com.zyc.zdh.entity.User;
 import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.MyRealm;
 import com.zyc.zdh.shiro.SessionDao;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.cache.Cache;
@@ -153,7 +153,7 @@ public class LoginService {
 
        List<EtlEcharts> a= null;//taskLogsMapper.slectByOwner("1");
 
-       return JSON.toJSONString(a);
+       return JsonUtil.formatJsonString(a);
     }
 
     /**

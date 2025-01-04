@@ -518,7 +518,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                 rule.setCount(Integer.valueOf(rti.getQps()));
                                 rules.add(rule);
                             }
-                            logger.debug("限流重置规则: "+ JSON.toJSONString(rules));
+                            logger.debug("限流重置规则: "+ JsonUtil.formatJsonString(rules));
                             FlowRuleManager.loadRules(rules);
 
                             Thread.sleep(1000*60);
@@ -557,7 +557,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         Set<String> sets = redisUtil.scan("shiro:cache:shiro-activeSessionCache1*");
                         for(String key:sets){
                             if( !((SimpleSession) shirRedisTemplate.opsForValue().get(key)).isValid()){
-                                logger.info("检测到过期session: "+ JSON.toJSONString(redisUtil.get(key)));
+                                logger.info("检测到过期session: "+ JsonUtil.formatJsonString(redisUtil.get(key)));
                                 redisUtil.remove(key);
                             }
                         }

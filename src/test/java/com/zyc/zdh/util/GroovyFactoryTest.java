@@ -31,6 +31,6 @@ public class GroovyFactoryTest {
                 "return out";
         JobBeaconFire.Out out = (JobBeaconFire.Out)GroovyFactory.execExpress(groovy, params);
 
-        System.out.println(JSON.toJSONString(out));
+        System.out.println(JsonUtil.formatJsonString(out));
     }
 }

@@ -1,6 +1,5 @@
 package com.zyc.zdh.controller.beaconfire;
 
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.BeaconFireAlarmGroupMapper;
 import com.zyc.zdh.entity.BeaconFireAlarmGroupInfo;
@@ -10,6 +9,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -144,7 +144,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
             tmp.put("sms", StringUtils.join(sms, ","));
             tmp.put("email", StringUtils.join(email, ","));
 
-            beaconFireAlarmGroupInfo.setAlarm_config(JSON.toJSONString(tmp));
+            beaconFireAlarmGroupInfo.setAlarm_config(JsonUtil.formatJsonString(tmp));
 
             beaconFireAlarmGroupInfo.setCreate_time(oldBeaconFireAlarmGroupInfo.getCreate_time());
             beaconFireAlarmGroupInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -176,7 +176,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
             tmp.put("sms", StringUtils.join(sms, ","));
             tmp.put("email", StringUtils.join(email, ","));
 
-            beaconFireAlarmGroupInfo.setAlarm_config(JSON.toJSONString(tmp));
+            beaconFireAlarmGroupInfo.setAlarm_config(JsonUtil.formatJsonString(tmp));
             beaconFireAlarmGroupInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             beaconFireAlarmGroupInfo.setOwner(getOwner());
             beaconFireAlarmGroupInfo.setIs_delete(Const.NOT_DELETE);

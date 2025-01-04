@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
 		getObj.put("totalNum", prod.getTotalResult());
 		getObj.put("iTotalRecords", prod.getTotalResult()); // 实际的行数
 		getObj.put("iTotalDisplayRecords", prod.getTotalResult()); // 显示的行数,这个要和上面写的一样
-		System.out.println(JSONArray.toJSONString(findList));
+		//System.out.println(JsonUtil.formatJsonString(findList));
 		getObj.put("aaData", findList);// 要以JSON格式返回，否则前台没法显示
 		return getObj.toString();
 	}

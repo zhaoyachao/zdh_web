@@ -41,8 +41,6 @@ public class ShellJob extends JobCommon2 {
             }
 
             if (!tli.getCommand().trim().equals("")) {
-                logger.info("========+++++" + tli.getCur_time());
-
                 logger.info("[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
                 insertLog(tli, "info", "[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
                 Map result = new HashMap<String,String>();

@@ -1,6 +1,5 @@
 package com.zyc.zdh.aop;
 
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.config.SystemConfig;
 import com.zyc.zdh.dao.NoticeMapper;
@@ -8,10 +7,7 @@ import com.zyc.zdh.dao.UserOperateLogMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.exception.ZdhException;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.IpUtil;
-import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
@@ -303,9 +299,9 @@ public class AspectConfig implements Ordered {
                             userOperateLogInfo.setOperate_output((String) o);
                         }
                     } else if (o instanceof List) {
-                        userOperateLogInfo.setOperate_output(JSON.toJSONString(((List) o)));
+                        userOperateLogInfo.setOperate_output(JsonUtil.formatJsonString(((List) o)));
                         if (((List) o).size() > 10) {
-                            userOperateLogInfo.setOperate_output(JSON.toJSONString(((List) o).subList(0, 10)));
+                            userOperateLogInfo.setOperate_output(JsonUtil.formatJsonString(((List) o).subList(0, 10)));
                         }
                     } else if (o instanceof ReturnInfo) {
                         ReturnInfo returnInfo = new ReturnInfo();
@@ -323,14 +319,14 @@ public class AspectConfig implements Ordered {
                         } else {
                             returnInfo.setResult(obj);
                         }
-                        String retStr = JSON.toJSONString(returnInfo);
+                        String retStr = JsonUtil.formatJsonString(returnInfo);
                         if (retStr.length() > 6400) {
                             retStr = retStr.substring(0,256);
                         }
                         userOperateLogInfo.setOperate_output(retStr);
                     } else {
                         //未知的object类型
-                        userOperateLogInfo.setOperate_output(JSON.toJSONString("未知的返回值类型,请管理员确认"));
+                        userOperateLogInfo.setOperate_output(JsonUtil.formatJsonString("未知的返回值类型,请管理员确认"));
                     }
                     userOperateLogMapper.insertSelective(userOperateLogInfo);
                 }
@@ -394,16 +390,16 @@ public class AspectConfig implements Ordered {
                 if (requestMethods != null && requestMethods.length > 0) {
                     //校验请求类型和注解是否一致
                     if (requestMethods.length > 1) {
-                        logger.error(getUrl(request) + "请求类型: " + request.getMethod() + ", 注解类型: " + JSON.toJSONString(requestMethods));
+                        logger.error(getUrl(request) + "请求类型: " + request.getMethod() + ", 注解类型: " + JsonUtil.formatJsonString(requestMethods));
                     } else {
                         if (!request.getMethod().equalsIgnoreCase(requestMethods[0].toString())) {
-                            logger.error(getUrl(request) + "请求类型: " + request.getMethod() + ", 注解类型: " + JSON.toJSONString(requestMethods));
+                            logger.error(getUrl(request) + "请求类型: " + request.getMethod() + ", 注解类型: " + JsonUtil.formatJsonString(requestMethods));
                         }
                     }
                 } else {
-                    //logger.error(getUrl(request)+"请求类型: "+request.getMethod()+", 注解类型: "+JSON.toJSONString(requestMethods));
+                    //logger.error(getUrl(request)+"请求类型: "+request.getMethod()+", 注解类型: "+JsonUtil.formatJsonString(requestMethods));
                 }
-                reqParam = JSON.toJSONString(request.getParameterMap());
+                reqParam = JsonUtil.formatJsonString(request.getParameterMap());
                 //验证权限
                 String url = getUrl(request);
                 String method = request.getMethod();

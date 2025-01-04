@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.LabelMapper;
@@ -87,11 +86,11 @@ public class CustomerManageController extends BaseController {
                     String label_value = "";
                     if(labelInfoMap.containsKey(key.toString())){
                         jsonObject.put("label_name", labelInfoMap.get(key.toString()).getLabel_context());
-                        JSONArray jsonArray = labelInfoMap.get(key.toString()).getParam_json_object();
+                        List<Map<String, Object>> jsonArray = labelInfoMap.get(key.toString()).getParam_json_object();
                         if(jsonArray.size()>0){
-                            for (Object jobject: jsonArray){
-                                String param_code = ((JSONObject)jobject).getString("param_code");
-                                String param_name = ((JSONObject)jobject).getString("param_context");
+                            for (Map<String, Object> jobject: jsonArray){
+                                String param_code = jobject.getOrDefault("param_code", "").toString();//((JSONObject)jobject).getString("param_code");
+                                String param_name = jobject.getOrDefault("param_context", "").toString();//((JSONObject)jobject).getString("param_context");
                                 if(StringUtils.isEmpty(label_value)){
                                     label_value = param_name+" : "+ jsonObject.getString(param_code);
                                 }else{

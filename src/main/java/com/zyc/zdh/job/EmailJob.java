@@ -11,10 +11,10 @@ import com.zyc.zdh.push.impl.AliMessageParam;
 import com.zyc.zdh.push.impl.AliMessagePush;
 import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
-import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -224,7 +224,7 @@ public class EmailJob {
             NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
 
             if(StringUtils.isEmpty(tli.getAlarm_account())){
-                logger.warn("当前告警为找到告警账号:"+JSON.toJSONString(tli));
+                logger.warn("当前告警为找到告警账号:"+JsonUtil.formatJsonString(tli));
                 return ;
             }
 
@@ -297,7 +297,7 @@ public class EmailJob {
             AccountService accountService=(AccountService) SpringContext.getBean("accountService");
             NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
             if(StringUtils.isEmpty(qji.getAlarm_account())){
-                logger.warn("当前告警为找到告警账号:"+JSON.toJSONString(qji));
+                logger.warn("当前告警为找到告警账号:"+ JsonUtil.formatJsonString(qji));
                 return ;
             }
             List<User> users=accountService.findByUserName2(qji.getAlarm_account().split(","));
@@ -399,7 +399,7 @@ public class EmailJob {
 
 //        for(Map.Entry<String,List<ZdhDownloadInfo>> a: map.entrySet()){
 //            String key=a.getKey();
-//            redisUtil.set("zdhdownloadinfos_"+key,JSON.toJSONString(a.getValue()));
+//            redisUtil.set("zdhdownloadinfos_"+key,JsonUtil.formatJsonString(a.getValue()));
 //        }
             apply_notice();
             logger.debug("完成加载通知信息");
@@ -447,7 +447,7 @@ public class EmailJob {
 
 //            for(Map.Entry<String,List<ApplyInfo>> a: map2.entrySet()){
 //                String key=a.getKey();
-//                redisUtil.set("zdhapplyinfos_"+key,JSON.toJSONString(a.getValue()));
+//                redisUtil.set("zdhapplyinfos_"+key,JsonUtil.formatJsonString(a.getValue()));
 //            }
             }
             logger.debug("完成加载申请通知信息");
@@ -616,7 +616,7 @@ public class EmailJob {
                     }
                     if(jsonObject.containsKey("email")){
                         try{
-                            sendHtmlEmail(jsonObject.getString("email").split(","), out.getMessage(), JSONObject.toJSONString(out.o));
+                            sendHtmlEmail(jsonObject.getString("email").split(","), out.getMessage(), JsonUtil.formatJsonString(out.o));
                         }catch (Exception e){
                             e.printStackTrace();
                         }

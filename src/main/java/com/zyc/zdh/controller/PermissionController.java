@@ -27,10 +27,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * 权限服务
@@ -1470,7 +1467,7 @@ public class PermissionController extends BaseController {
     @SentinelResource(value = "permission_rule_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/permission_rule_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<JSONObject>> permission_rule_list(String product_code){
+    public ReturnInfo<List<Map<String, Object>>> permission_rule_list(String product_code){
         try{
             //获取产品类型
             ProductTagInfo productTagInfo=new ProductTagInfo();
@@ -1482,17 +1479,17 @@ public class PermissionController extends BaseController {
             if(productTagInfo == null || StringUtils.isEmpty(productTagInfo.getProduct_type())){
                 throw new Exception("获取产品异常,或者产品类型为空");
             }
-            List<JSONObject> permissionRuleList=new ArrayList<>();
+            List<Map<String, Object>> permissionRuleList=new ArrayList<>();
             String product_type = productTagInfo.getProduct_type();
 
             //根据type获取枚举信息
             EnumInfo enumInfo=new EnumInfo();
             enumInfo.setEnum_code("bigdata_"+product_type.toLowerCase());
             enumInfo = enumMapper.selectOne(enumInfo);
-            JSONArray enumJson =  enumInfo.getEnum_json_object();
+            List<Map<String, Object>> enumJson =  enumInfo.getEnum_json_object();
             if(enumJson != null){
-                for (Object jsonObject: enumJson){
-                    permissionRuleList.add((JSONObject) jsonObject);
+                for (Map<String, Object> jsonObject: enumJson){
+                    permissionRuleList.add(jsonObject);
                 }
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionRuleList);

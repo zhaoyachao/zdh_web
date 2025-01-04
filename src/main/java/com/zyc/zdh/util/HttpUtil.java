@@ -1,6 +1,5 @@
 package com.zyc.zdh.util;
 
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.entity.EtlTaskInfo;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
@@ -258,7 +257,7 @@ public class HttpUtil {
     String url="http://127.0.0.1:8081/api/call_back_test";
     EtlTaskInfo etlTaskInfo=new EtlTaskInfo();
     etlTaskInfo.setId("1111111111");
-    String json=JSON.toJSONString(etlTaskInfo);
+    String json=JsonUtil.formatJsonString(etlTaskInfo);
     System.out.println(postJSON(url,json));
 
   }

@@ -1,6 +1,5 @@
 package com.zyc.zdh.api;
 
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.controller.ZdhProcessFlowController;
 import com.zyc.zdh.dao.ApprovalEventMapper;
 import com.zyc.zdh.dao.PermissionMapper;
@@ -10,6 +9,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.Encrypt;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.session.Session;
 import org.slf4j.Logger;
@@ -64,7 +64,7 @@ public class ProcessFlowApi {
     @ResponseBody
     public ReturnInfo call_back_test(@RequestBody ProcessFlowInfo processFlowInfo, HttpServletRequest request) {
         try{
-            System.out.println(JSON.toJSONString(request.getParameterMap()));
+            System.out.println(JsonUtil.formatJsonString(request.getParameterMap()));
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "审批流回调成功", processFlowInfo);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "审批流回调失败", e.getMessage());

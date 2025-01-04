@@ -1,11 +1,15 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
-import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Table(name = "project_info")
 public class ProjectInfo {
@@ -63,7 +67,7 @@ public class ProjectInfo {
     private String project_json;
 
     @Transient
-    private JSONArray project_json_object;
+    private List<Map<String, Object>> project_json_object;
 
     /**
      * @return id
@@ -259,10 +263,10 @@ public class ProjectInfo {
         this.project_json = project_json;
     }
 
-    public JSONArray getProject_json_object() {
+    public List<Map<String, Object>> getProject_json_object() {
         if(!StringUtils.isEmpty(project_json)){
-            return JSON.parseArray(project_json);
+            return JsonUtil.toJavaListMap(project_json);
         }
-        return new JSONArray();
+        return new ArrayList<>();
     }
 }

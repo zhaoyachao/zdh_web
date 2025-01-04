@@ -1,13 +1,14 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
 @Table(name = "risk_event_info")
 public class RiskEventInfo {
@@ -66,11 +67,11 @@ public class RiskEventInfo {
 
 
     @Transient
-    private JSONArray param_json_object;
+    private List<Map<String, Object>> param_json_object;
 
-    public JSONArray getParam_json_object() {
+    public List<Map<String, Object>> getParam_json_object() {
         if(!StringUtils.isEmpty(event_json)){
-            return JSON.parseArray(event_json);
+            return JsonUtil.toJavaListMap(event_json);
         }
         return param_json_object;
     }

@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.dao.EtlTaskMapper;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
@@ -12,6 +11,7 @@ import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -172,7 +172,7 @@ public class ZdhEtlController extends BaseController{
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_add(EtlTaskInfo etlTaskInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try{
             String owner = getOwner();
             etlTaskInfo.setOwner(owner);
@@ -224,7 +224,7 @@ public class ZdhEtlController extends BaseController{
     @ResponseBody
     public ReturnInfo etl_task_add_file(MultipartFile up_file, HttpServletRequest request) {
         try{
-            String json_str = JSON.toJSONString(request.getParameterMap());
+            String json_str = JsonUtil.formatJsonString(request.getParameterMap());
             String owner = getOwner();
             System.out.println(json_str);
             System.out.println(up_file);

@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.LabelMapper;
@@ -12,6 +11,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +27,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 智能营销-标签服务
@@ -182,9 +183,9 @@ public class LabelController extends BaseController {
                 throw new Exception("标签code 必须以tag_开头");
             }
 
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
             for (int i=0;i<param_code.length;i++){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
@@ -204,7 +205,7 @@ public class LabelController extends BaseController {
             checkPermissionByProduct(zdhPermissionService, labelInfo.getProduct_code());
             checkPermissionByProduct(zdhPermissionService, oldLabelInfo.getProduct_code());
 
-            labelInfo.setParam_json(jsonArray.toJSONString());
+            labelInfo.setParam_json(JsonUtil.formatJsonString(jsonArray));
             labelInfo.setOwner(oldLabelInfo.getOwner());
             labelInfo.setCreate_time(oldLabelInfo.getCreate_time());
             labelInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -252,9 +253,9 @@ public class LabelController extends BaseController {
                 throw new Exception("标签code 必须以tag_开头");
             }
 
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
             for (int i=0;i<param_code.length;i++){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
@@ -266,10 +267,10 @@ public class LabelController extends BaseController {
                 }else{
                     jsonObject.put("param_value", param_value[i]);
                 }
-
                 jsonArray.add(jsonObject);
             }
-            labelInfo.setParam_json(jsonArray.toJSONString());
+
+            labelInfo.setParam_json(JsonUtil.formatJsonString(jsonArray));
             labelInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             labelInfo.setOwner(getOwner());
             labelInfo.setIs_delete(Const.NOT_DELETE);

@@ -20,7 +20,6 @@ import org.slf4j.MDC;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -124,7 +123,7 @@ public class CheckDepJob implements CheckDepJobInterface{
         tgli.setProcess_time(pti);
 
         JobCommon2.updateTaskLog(tgli,tglim);
-        debugInfo(tgli);
+        //debugInfo(tgli);
 
     }
 

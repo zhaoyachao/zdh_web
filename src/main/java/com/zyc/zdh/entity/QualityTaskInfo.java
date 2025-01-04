@@ -1,13 +1,15 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Table(name = "quality_task_info")
 public class QualityTaskInfo {
@@ -130,7 +132,7 @@ public class QualityTaskInfo {
     private String quality_rule_config;
 
     @Transient
-    private JSONArray  quality_rule_list;
+    private List<Map<String, Object>>  quality_rule_list;
 
     /**
      * 产品code
@@ -575,12 +577,12 @@ public class QualityTaskInfo {
         this.quality_rule_config = quality_rule_config;
     }
 
-    public JSONArray getQuality_rule_list() {
+    public List<Map<String, Object>> getQuality_rule_list() {
         if(StringUtils.isEmpty(getQuality_rule_config())){
-            return new JSONArray();
+            return new ArrayList<>();
         }
 
-        return JSON.parseArray(getQuality_rule_config());
+        return JsonUtil.toJavaListMap(getQuality_rule_config());
     }
 
     public String getProduct_code() {

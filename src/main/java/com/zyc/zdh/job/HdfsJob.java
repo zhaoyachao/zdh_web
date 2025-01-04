@@ -53,9 +53,9 @@ public class HdfsJob extends JobCommon2 {
             }
 
             if (!tli.getCommand().trim().equals("")) {
-                String date_nodash = DateUtil.formatNodash(tli.getLast_time());
-                String date_time = DateUtil.formatTime(tli.getLast_time());
-                String date = DateUtil.format(tli.getLast_time());
+                String date_nodash = DateUtil.formatNodash(tli.getCur_time());
+                String date_time = DateUtil.formatTime(tli.getCur_time());
+                String date = DateUtil.format(tli.getCur_time());
 
                 logger.info("[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
                 insertLog(tli, "info", "[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());

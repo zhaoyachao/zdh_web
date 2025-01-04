@@ -1,6 +1,6 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSON;
+import com.zyc.zdh.util.JsonUtil;
 
 
 public class ReturnInfo<T> {
@@ -62,7 +62,7 @@ public class ReturnInfo<T> {
         ri.code=code;
         ri.msg=msg;
         ri.result=result;
-        return JSON.toJSONString(ri);
+        return JsonUtil.formatJsonString(ri);
     }
 
     /**

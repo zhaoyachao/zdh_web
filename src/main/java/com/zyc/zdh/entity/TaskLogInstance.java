@@ -3,6 +3,7 @@ package com.zyc.zdh.entity;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -111,7 +112,7 @@ public class TaskLogInstance implements Serializable {
 
     private String time_out="86400";//超时时间 以秒为单位,默认一天
 
-    private String process_time=JSON.toJSONString(new process_time_info());//json格式,只会记录每个流程的结束时间
+    private String process_time= JsonUtil.formatJsonString(new process_time_info());//json格式,只会记录每个流程的结束时间
 
     private String priority="5";//优先级
     private Timestamp quartz_time;//调度时间
@@ -686,7 +687,7 @@ public class TaskLogInstance implements Serializable {
     }
 
     public void setProcess_time(process_time_info process_time_info) {
-        this.process_time = JSON.toJSONString(process_time_info);
+        this.process_time = JsonUtil.formatJsonString(process_time_info);
     }
 
     public String getGroup_id() {

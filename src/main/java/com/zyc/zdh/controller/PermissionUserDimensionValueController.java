@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Sets;
 import com.zyc.zdh.dao.PermissionDimensionMapper;
 import com.zyc.zdh.dao.PermissionUserDimensionValueMapper;
@@ -10,6 +9,7 @@ import com.zyc.zdh.entity.PermissionUserDimensionValueInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +26,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -311,7 +312,7 @@ public class PermissionUserDimensionValueController extends BaseController {
 
             checkPermissionByOwner(product_code);
 
-            JSONObject ext = new JSONObject();
+            Map<String, Object> ext = JsonUtil.createEmptyLinkMap();
 
             if(!StringUtils.isEmpty(add)){
                 add=add.equalsIgnoreCase("on")?"true":"";
@@ -359,12 +360,12 @@ public class PermissionUserDimensionValueController extends BaseController {
                 permissionUserDimensionValueInfo.setOwner(getOwner());
                 permissionUserDimensionValueInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
                 permissionUserDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
-                permissionUserDimensionValueInfo.setExt(ext.toJSONString());
+                permissionUserDimensionValueInfo.setExt(JsonUtil.formatJsonString(ext));
                 permissionUserDimensionValueMapper.insertSelective(permissionUserDimensionValueInfo);
 
             }else{
                 //更新
-                oldPermissionUserDimensionValueInfo.setExt(ext.toJSONString());
+                oldPermissionUserDimensionValueInfo.setExt(JsonUtil.formatJsonString(ext));
                 oldPermissionUserDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 permissionUserDimensionValueMapper.updateByPrimaryKeySelective(oldPermissionUserDimensionValueInfo);
             }

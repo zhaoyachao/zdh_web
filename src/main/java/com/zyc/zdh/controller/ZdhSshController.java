@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSON;
 import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.JarFileMapper;
@@ -12,6 +11,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -541,7 +541,7 @@ public class ZdhSshController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_ssh_del_file(String[] ids, HttpServletRequest request) {
         try{
-            String json_str = JSON.toJSONString(request.getParameterMap());
+            String json_str = JsonUtil.formatJsonString(request.getParameterMap());
             String owner = getOwner();
 
             List<JarFileInfo> jarFileInfos= jarFileMapper.selectByParams(owner,ids);
@@ -589,7 +589,7 @@ public class ZdhSshController extends BaseController{
     @ResponseBody
     public ReturnInfo<List<JarFileInfo>> etl_task_ssh_file_list(String id, HttpServletRequest request) throws Exception {
         try{
-            String json_str = JSON.toJSONString(request.getParameterMap());
+            String json_str = JsonUtil.formatJsonString(request.getParameterMap());
             String owner = getOwner();
             JarFileInfo jarFileInfo = new JarFileInfo();
             jarFileInfo.setOwner(owner);

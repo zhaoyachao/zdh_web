@@ -61,7 +61,7 @@ public class RoleServiceImpl implements RoleService {
 		getObj.put("totalNum", page.getTotalResult());
 		getObj.put("iTotalRecords", page.getTotalResult()); // 实际的行数
 		getObj.put("iTotalDisplayRecords", page.getTotalResult()); // 显示的行数,这个要和上面写的一样
-		System.out.println(JSONArray.toJSONString(findList));
+		//System.out.println(JsonUtil.formatJsonString(findList));
 		getObj.put("aaData", findList);// 要以JSON格式返回，否则前台没法显示
 		return getObj.toString();
 	}

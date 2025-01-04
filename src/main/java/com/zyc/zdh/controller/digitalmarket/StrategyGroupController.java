@@ -2,7 +2,6 @@ package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
@@ -472,9 +471,9 @@ public class StrategyGroupController extends BaseController {
                     if(strategyInstance.getInstance_type().equalsIgnoreCase(InstanceType.MANUAL_CONFIRM.getCode())){
                         strategyInstance.setIs_disenable("false");
                         strategyInstance.setStatus( JobStatus.CREATE.getValue());
-                        JSONObject jsonObject = JSON.parseObject(strategyInstance.getRun_jsmind_data());
+                        Map<String, Object> jsonObject = JsonUtil.toJavaMap(strategyInstance.getRun_jsmind_data());
                         jsonObject.put("is_disenable","false");
-                        strategyInstance.setRun_jsmind_data(jsonObject.toJSONString());
+                        strategyInstance.setRun_jsmind_data(JsonUtil.formatJsonString(jsonObject));
                         manualConfirmStrategys.add(strategyInstance);
                     }
                 }
@@ -676,7 +675,7 @@ public class StrategyGroupController extends BaseController {
                 strategyGroupId = strategyGroupInstance.getStrategy_group_id();
                 tmp.put(strategyGroupInstance.getId(), strategyGroupInstance.getSmall_flow_rate());
             }
-            redisUtil.set("small_flow_rate_"+strategyGroupId, JSON.toJSONString(tmp));
+            redisUtil.set("small_flow_rate_"+strategyGroupId, JsonUtil.formatJsonString(tmp));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
@@ -747,9 +746,9 @@ public class StrategyGroupController extends BaseController {
             //此处需要修改策略实例状态新建,策略组状态新建
             strategyInstance.setStatus(JobStatus.CREATE.getValue());
             String run_jsmind_data = strategyInstance.getRun_jsmind_data();
-            JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
+            Map<String, Object> jsonObject = JsonUtil.toJavaMap(run_jsmind_data);
             jsonObject.put("is_disenable","true");
-            strategyInstance.setRun_jsmind_data(jsonObject.toJSONString());
+            strategyInstance.setRun_jsmind_data(JsonUtil.formatJsonString(jsonObject));
             strategyInstance.setIs_disenable("true");
             strategyInstanceMapper.updateByPrimaryKeySelective(strategyInstance);
             if(strategyGroupInstance.getGroup_type().equalsIgnoreCase("offline")){
@@ -941,7 +940,7 @@ public class StrategyGroupController extends BaseController {
                 }else{
                     log_version = log_version + 1;
                 }
-                strategyGroupLog.setLog_json(JSON.toJSONString(strategyGroupInfo));
+                strategyGroupLog.setLog_json(JsonUtil.formatJsonString(strategyGroupInfo));
                 strategyGroupLog.setOwner(getOwner());
                 strategyGroupLog.setProduct_code(strategyGroupInfo.getProduct_code());
                 strategyGroupLog.setDim_group(strategyGroupInfo.getDim_group());

@@ -10,7 +10,6 @@ import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.*;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -410,7 +409,7 @@ public class ZdhUnstructureController extends BaseController{
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_unstructure_del_file(String[] ids, HttpServletRequest request) {
         try{
-            String json_str = JSON.toJSONString(request.getParameterMap());
+            String json_str = JsonUtil.formatJsonString(request.getParameterMap());
             String owner = getOwner();
 
             List<JarFileInfo> jarFileInfos= jarFileMapper.selectByParams(owner,ids);
@@ -458,7 +457,7 @@ public class ZdhUnstructureController extends BaseController{
     @ResponseBody
     public ReturnInfo<List<JarFileInfo>> etl_task_unstructure_file_list(String id, HttpServletRequest request) throws Exception {
         try{
-            String json_str = JSON.toJSONString(request.getParameterMap());
+            String json_str = JsonUtil.formatJsonString(request.getParameterMap());
             String owner = getOwner();
             JarFileInfo jarFileInfo = new JarFileInfo();
             jarFileInfo.setOwner(owner);

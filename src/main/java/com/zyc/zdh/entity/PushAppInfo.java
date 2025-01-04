@@ -3,10 +3,12 @@ package com.zyc.zdh.entity;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.*;
 
 @Table(name = "push_app_info")
 public class PushAppInfo {

@@ -1,8 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.EnumMapper;
 import com.zyc.zdh.entity.EnumInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -10,6 +8,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -172,16 +172,16 @@ public class ZdhEnumController extends BaseController{
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"枚举code不唯一", enumInfo);
             }
 
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray=new ArrayList<>();
 
             for(int i=0;i<enum_value.length;i++){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject=new LinkedHashMap<>();
                 jsonObject.put("enum_value", enum_value[i]);
                 jsonObject.put("enum_value_context", enum_value_context[i]);
                 jsonArray.add(jsonObject);
             }
 
-            enumInfo.setEnum_json(jsonArray.toJSONString());
+            enumInfo.setEnum_json(JsonUtil.formatJsonString(jsonArray));
             enumInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             enumInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             enumInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -218,16 +218,16 @@ public class ZdhEnumController extends BaseController{
             enumInfo.setOwner(owner);
             enumInfo.setIs_delete(Const.NOT_DELETE);
             enumInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray=new ArrayList<>();
 
             for(int i=0;i<enum_value.length;i++){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject= new LinkedHashMap<>();
                 jsonObject.put("enum_value", enum_value[i]);
                 jsonObject.put("enum_value_context", enum_value_context[i]);
                 jsonArray.add(jsonObject);
             }
 
-            enumInfo.setEnum_json(jsonArray.toJSONString());
+            enumInfo.setEnum_json(JsonUtil.formatJsonString(jsonArray));
             debugInfo(enumInfo);
             enumMapper.updateByPrimaryKeySelective(enumInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);

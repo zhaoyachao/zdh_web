@@ -1,13 +1,14 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
 @Table(name = "label_info")
 public class LabelInfo {
@@ -119,11 +120,11 @@ public class LabelInfo {
     private String product_code;
 
     @Transient
-    private JSONArray param_json_object;
+    private List<Map<String, Object>> param_json_object;
 
-    public JSONArray getParam_json_object() {
+    public List<Map<String, Object>> getParam_json_object() {
         if(!StringUtils.isEmpty(param_json)){
-            return JSON.parseArray(param_json);
+            return JsonUtil.toJavaListMap(param_json);
         }
         return param_json_object;
     }

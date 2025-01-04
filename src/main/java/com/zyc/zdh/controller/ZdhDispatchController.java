@@ -495,6 +495,8 @@ public class ZdhDispatchController extends BaseController {
             dti.setTask_log_id(null);
             dti.setLast_time(null);
             dti.setNext_time(null);
+            dti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+            quartzJobMapper.updateByPrimaryKey(dti);
         }else{
             //判断调度时间是否超过限制
             if(dti.getLast_time()!=null && dti.getLast_time().getTime() >= dti.getEnd_time().getTime()){

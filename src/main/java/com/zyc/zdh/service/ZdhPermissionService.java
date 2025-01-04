@@ -1,9 +1,7 @@
 package com.zyc.zdh.service;
 
 import com.zyc.zdh.entity.PermissionDimensionValueInfo;
-import com.zyc.zdh.entity.PermissionUserDimensionValueInfo;
 import com.zyc.zdh.entity.UserAndGroupPermissionDimensionValueInfo;
-import com.zyc.zdh.service.impl.ZdhPermissionServiceImpl;
 
 import java.util.List;
 import java.util.Map;

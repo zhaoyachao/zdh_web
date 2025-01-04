@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.CrowdRuleMapper;
 import com.zyc.zdh.entity.CrowdRuleInfo;
@@ -10,6 +9,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +71,7 @@ public class CrowdRuleController extends BaseController {
 
         List<CrowdRuleInfo> crowdRuleInfos = crowdRuleMapper.selectByExample(example);
 
-        return JSONObject.toJSONString(crowdRuleInfos);
+        return JsonUtil.formatJsonString(crowdRuleInfos);
     }
 
     /**

@@ -125,7 +125,7 @@ public class ZdhFlinkController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_flink_add(EtlTaskFlinkInfo etlTaskFlinkInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try {
             String owner = getOwner();
             etlTaskFlinkInfo.setOwner(owner);
@@ -170,7 +170,7 @@ public class ZdhFlinkController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_flink_update(EtlTaskFlinkInfo etlTaskFlinkInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try {
             String owner = getOwner();
             etlTaskFlinkInfo.setOwner(owner);

@@ -30,6 +30,6 @@ public class HttpUtilTest {
         Map<String,Object> nvp=new HashMap<>();
         nvp.put("name", "张三");
 
-        System.out.println(HttpUtil.postJSON("http://127.0.0.1:9001/api/v1/test2", JSON.toJSONString(nvp)));
+        System.out.println(HttpUtil.postJSON("http://127.0.0.1:9001/api/v1/test2", JsonUtil.formatJsonString(nvp)));
     }
 }

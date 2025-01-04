@@ -13,10 +13,7 @@ import com.zyc.zdh.entity.StrategyGroupInstance;
 import com.zyc.zdh.entity.StrategyInstance;
 import com.zyc.zdh.entity.ZdhDownloadInfo;
 import com.zyc.zdh.entity.task_num_info;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DAG;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -296,7 +293,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                                 resovleStrategyInstance(tl);
                             }
                             System.out.println("=======================");
-                            System.out.println(JSON.toJSONString(tl));
+                            System.out.println(JsonUtil.formatJsonString(tl));
                             System.out.println("模拟发放任务--结束");
 
                             //更新任务状态为检查完成
@@ -419,7 +416,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
         if(StringUtils.isEmpty(priority)){
             priority="10";
         }
-        rQueueClient.offer(JSON.toJSONString(strategyInstance), Integer.valueOf(priority));
+        rQueueClient.offer(JsonUtil.formatJsonString(strategyInstance), Integer.valueOf(priority));
 
     }
 
@@ -472,9 +469,9 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     //上游状态都是finish,skip, 则当前任务设为跳过
                     si.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                     String run_jsmind_data = si.getRun_jsmind_data();
-                    JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
+                    Map<String, Object> jsonObject = JsonUtil.toJavaMap(run_jsmind_data);
                     jsonObject.put("is_disenable","true");
-                    si.setRun_jsmind_data(jsonObject.toJSONString());
+                    si.setRun_jsmind_data(JsonUtil.formatJsonString(jsonObject));
                     si.setIs_disenable("true");
                     JobDigitalMarket.updateTaskLog(si,sim);
                     JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为CHECK_DEP_FINISH, 且任务改为禁用");
@@ -502,9 +499,10 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     //上游状态都是finish,skip, 则当前任务设为跳过
                     si.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                     String run_jsmind_data = si.getRun_jsmind_data();
-                    JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
+                    Map<String, Object> jsonObject = JsonUtil.toJavaMap(run_jsmind_data);
                     jsonObject.put("is_disenable","true");
-                    si.setRun_jsmind_data(jsonObject.toJSONString());
+                    si.setRun_jsmind_data(JsonUtil.formatJsonString(jsonObject));
+
                     si.setIs_disenable("true");
                     JobDigitalMarket.updateTaskLog(si,sim);
                     JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为CHECK_DEP_FINISH,且任务改为禁用");

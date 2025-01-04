@@ -199,7 +199,7 @@ public class ZdhEtlDataxAutoController extends BaseController{
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_datax_auto_add(EtlTaskDataxAutoInfo etlTaskDataxAutoInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try{
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskDataxAutoInfo.getProduct_code(), etlTaskDataxAutoInfo.getDim_group(), getAttrAdd());
 

@@ -1,8 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.ServerTaskInstanceMappeer;
 import com.zyc.zdh.dao.ServerTaskMappeer;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
@@ -10,6 +8,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SetUpJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.MapStructMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -67,7 +65,7 @@ public class NodeController extends BaseController{
         }
         List<ServerTaskInfo> serverTaskInfos = serverTaskMappeer.selectServer(id,context);
 
-        return JSONObject.toJSONString(serverTaskInfos);
+        return JsonUtil.formatJsonString(serverTaskInfos);
 
     }
 
@@ -85,7 +83,7 @@ public class NodeController extends BaseController{
         }
         List<ZdhHaInfo> zdhHaInfos = zdhHaInfoMapper.selectServer(online,context);
 
-        return JSONObject.toJSONString(zdhHaInfos);
+        return JsonUtil.formatJsonString(zdhHaInfos);
 
     }
 
@@ -249,7 +247,7 @@ public class NodeController extends BaseController{
 
         List<ServerTaskInstance> serverTaskInstances = serverTaskInstanceMappeer.selectByTempleteId(templete_id);
 
-        return JSON.toJSONString(serverTaskInstances);
+        return JsonUtil.formatJsonString(serverTaskInstances);
     }
 
 

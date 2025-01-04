@@ -1,13 +1,15 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Table(name = "enum_info")
 public class EnumInfo {
@@ -55,7 +57,7 @@ public class EnumInfo {
     private String enum_json;
 
     @Transient
-    private JSONArray enum_json_object;
+    private List<Map<String, Object>> enum_json_object;
 
     /**
      * 产品code
@@ -220,14 +222,14 @@ public class EnumInfo {
         this.enum_json = enum_json;
     }
 
-    public JSONArray getEnum_json_object() {
+    public List<Map<String, Object>> getEnum_json_object() {
         if(!StringUtils.isEmpty(enum_json)){
-            return JSON.parseArray(enum_json);
+            return JsonUtil.toJavaListMap(enum_json);
         }
-        return new JSONArray();
+        return new ArrayList<>();
     }
 
-    public void setEnum_json_object(JSONArray enum_json_object) {
+    public void setEnum_json_object(List<Map<String, Object>> enum_json_object) {
         this.enum_json_object = enum_json_object;
     }
 

@@ -360,7 +360,7 @@ public class JobDigitalMarket {
                                 tmp = JSON.parseObject(small_flow_value.toString(), Map.class);
                             }
                             tmp.put(sgi.getId(), sgi.getSmall_flow_rate());
-                            redisUtil.set(small_flow_key, JSON.toJSONString(tmp));
+                            redisUtil.set(small_flow_key, JsonUtil.formatJsonString(tmp));
                         }
                         debugInfo(sgi);
 
@@ -461,7 +461,7 @@ public class JobDigitalMarket {
 
 
                 si.setJsmind_data("");
-                si.setJsmind_data(JSON.toJSONString(job));
+                si.setJsmind_data(JsonUtil.formatJsonString(job));
                 //si.setJsmind_data(((JSONObject) job).toJSONString());
                 si.setRun_jsmind_data(((JSONObject) job).toJSONString());
 

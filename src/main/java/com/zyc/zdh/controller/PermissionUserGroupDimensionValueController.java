@@ -1,13 +1,12 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Sets;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.PermissionDimensionMapper;
 import com.zyc.zdh.dao.PermissionUserGroupDimensionValueMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -301,7 +301,7 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
 
             checkPermissionByOwner(product_code);
 
-            JSONObject ext = new JSONObject();
+            Map<String, Object> ext = JsonUtil.createEmptyLinkMap();
 
             if(!StringUtils.isEmpty(add)){
                 add=add.equalsIgnoreCase("on")?"true":"";
@@ -349,12 +349,12 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
                 permissionUserGroupDimensionValueInfo.setOwner(getOwner());
                 permissionUserGroupDimensionValueInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
                 permissionUserGroupDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
-                permissionUserGroupDimensionValueInfo.setExt(ext.toJSONString());
+                permissionUserGroupDimensionValueInfo.setExt(JsonUtil.formatJsonString(ext));
                 permissionUserGroupDimensionValueMapper.insertSelective(permissionUserGroupDimensionValueInfo);
 
             }else{
                 //更新
-                oldPermissionUserGroupDimensionValueInfo.setExt(ext.toJSONString());
+                oldPermissionUserGroupDimensionValueInfo.setExt(JsonUtil.formatJsonString(ext));
                 oldPermissionUserGroupDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 permissionUserGroupDimensionValueMapper.updateByPrimaryKeySelective(oldPermissionUserGroupDimensionValueInfo);
             }

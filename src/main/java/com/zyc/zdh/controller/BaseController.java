@@ -6,16 +6,18 @@ import com.google.common.collect.Lists;
 import com.zyc.notscan.BaseMapper;
 import com.zyc.zdh.config.DateConverter;
 import com.zyc.zdh.dao.ProductTagMapper;
-import com.zyc.zdh.entity.*;
+import com.zyc.zdh.entity.ProductTagInfo;
+import com.zyc.zdh.entity.User;
+import com.zyc.zdh.entity.UserAndGroupPermissionDimensionValueInfo;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import tk.mybatis.mapper.entity.Example;
@@ -145,7 +147,7 @@ public class BaseController {
         dimMap.put("dim_groups", dim_groups);
         dimMap.put("product_codes",dim_products);
 
-        setCache(cacheKey, JSON.toJSONString(dimMap));
+        setCache(cacheKey, JsonUtil.formatJsonString(dimMap));
         return dimMap;
     }
 
@@ -189,7 +191,7 @@ public class BaseController {
         dimMap.put("dim_groups", dim_groups);
         dimMap.put("product_codes", dim_products);
 
-        setCache(cacheKey, JSON.toJSONString(dimMap));
+        setCache(cacheKey, JsonUtil.formatJsonString(dimMap));
         criteria.andIn("dim_group", dim_groups);
         criteria.andIn("product_code", dim_products);
     }

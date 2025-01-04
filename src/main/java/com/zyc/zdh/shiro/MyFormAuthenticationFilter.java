@@ -99,9 +99,9 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 //		if (isAjax( ((HttpServletRequest) request))) {
 //			if(isLoginRequest(request,response) && ((HttpServletRequest) request).getMethod().equalsIgnoreCase("post") && ((HttpServletRequest) request).getRequestURL().toString().contains("login")){
 //				System.out.println("认证通过后的跳转地址2"+getSuccessUrl());
-//				System.out.println(JSON.toJSONString(((HttpServletRequest) request).getHeader("Referer")));
-//				System.out.println(JSON.toJSONString(((HttpServletRequest) request).getHeader("Origin")));
-//				System.out.println(JSON.toJSONString(((HttpServletRequest) request).getContextPath()));
+//				System.out.println(JsonUtil.formatJsonString(((HttpServletRequest) request).getHeader("Referer")));
+//				System.out.println(JsonUtil.formatJsonString(((HttpServletRequest) request).getHeader("Origin")));
+//				System.out.println(JsonUtil.formatJsonString(((HttpServletRequest) request).getContextPath()));
 //				System.out.println(((HttpServletRequest) request).getHeader("Origin")+ ((HttpServletRequest) request).getContextPath()+getSuccessUrl());
 //				httpServletResponse.setHeader("REDIRECT","REDIRECT");//告诉ajax要重定向
 //				httpServletResponse.setHeader("PATH","http://127.0.0.1"+getSuccessUrl());//ip为服务器ip地址，在此用ip代指

@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.BloodSourceMapper;
 import com.zyc.zdh.entity.BloodSourceInfo;
 import com.zyc.zdh.entity.RETURN_CODE;

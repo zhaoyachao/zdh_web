@@ -1,8 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.EtlTaskMapper;
 import com.zyc.zdh.dao.QualityMapper;
 import com.zyc.zdh.dao.QualityRuleMapper;
@@ -11,6 +9,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +25,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * 质量检测服务
@@ -274,14 +271,14 @@ public class ZdhQualityController extends BaseController {
             qualityTaskInfo.setOwner(getOwner());
             qualityTaskInfo.setIs_delete(Const.NOT_DELETE);
 
-            JSONArray jsonArray = new JSONArray();
+            List<Map<String, Object>> jsonArray = new ArrayList<>();
             for (int i = 0; i < quality_rule.length; i++) {
-                JSONObject jsonObject = new JSONObject();
+                Map<String, Object> jsonObject = new LinkedHashMap<>();
                 jsonObject.put("quality_rule", quality_rule[i]);
                 jsonObject.put("quality_columns", quality_columns[i]);
                 jsonArray.add(jsonObject);
             }
-            qualityTaskInfo.setQuality_rule_config(jsonArray.toJSONString());
+            qualityTaskInfo.setQuality_rule_config(JsonUtil.formatJsonString(jsonArray));
             qualityTaskMapper.insertSelective(qualityTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
@@ -313,14 +310,15 @@ public class ZdhQualityController extends BaseController {
             qualityTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             qualityTaskInfo.setOwner(getOwner());
             qualityTaskInfo.setIs_delete(Const.NOT_DELETE);
-            JSONArray jsonArray = new JSONArray();
+
+            List<Map<String, Object>> emptyListMap = JsonUtil.createEmptyListMap();
             for (int i = 0; i < quality_rule.length; i++) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("quality_rule", quality_rule[i]);
-                jsonObject.put("quality_columns", quality_columns[i]);
-                jsonArray.add(jsonObject);
+                Map<String, Object> emptyLinkMap = JsonUtil.createEmptyLinkMap();
+                emptyLinkMap.put("quality_rule", quality_rule[i]);
+                emptyLinkMap.put("quality_columns", quality_columns[i]);
+                emptyListMap.add(emptyLinkMap);
             }
-            qualityTaskInfo.setQuality_rule_config(jsonArray.toJSONString());
+            qualityTaskInfo.setQuality_rule_config(JsonUtil.formatJsonString(emptyListMap));
             qualityTaskMapper.updateByPrimaryKeySelective(qualityTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {

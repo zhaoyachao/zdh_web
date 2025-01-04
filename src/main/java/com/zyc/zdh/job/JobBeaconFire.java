@@ -4,7 +4,6 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.ds.simple.SimpleDataSource;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
-import com.alibaba.fastjson.JSON;
 import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.dao.BeaconFireAlarmGroupMapper;
 import com.zyc.zdh.dao.BeaconFireAlarmMsgMapper;
@@ -13,10 +12,7 @@ import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.GroovyFactory;
-import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,7 +153,7 @@ public class JobBeaconFire {
                 params.put("out", new Out());
                 String groovy = beaconFireInfo.getGroovy_script();
                 Out out = (Out)GroovyFactory.execExpress(groovy, params);
-                System.out.println(JSON.toJSONString(out));
+                System.out.println(JsonUtil.formatJsonString(out));
                 if(out != null && out.code != "0"){
                     String frequency = beaconFireInfo.getFrequency_config();
                     Long time = 1800L;
@@ -188,7 +184,7 @@ public class JobBeaconFire {
                     beaconFireAlarmMsgInfo.setDim_group(beaconFireInfo.getDim_group());
                     beaconFireAlarmMsgInfo.setProduct_code(beaconFireInfo.getProduct_code());
                     beaconFireAlarmMsgInfo.setOwner(beaconFireInfo.getOwner());
-                    beaconFireAlarmMsgInfo.setAlarm_msg(JSON.toJSONString(out));
+                    beaconFireAlarmMsgInfo.setAlarm_msg(JsonUtil.formatJsonString(out));
                     beaconFireAlarmMsgMapper.insertSelective(beaconFireAlarmMsgInfo);
                 }
             }catch (Exception e){

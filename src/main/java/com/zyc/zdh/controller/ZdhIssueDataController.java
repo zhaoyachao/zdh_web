@@ -240,7 +240,7 @@ public class ZdhIssueDataController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo issue_data_add(IssueDataInfo issueDataInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try {
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, issueDataInfo.getProduct_code(),issueDataInfo.getDim_group(), getAttrAdd());
@@ -308,7 +308,7 @@ public class ZdhIssueDataController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo issue_data_update(IssueDataInfo issueDataInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try {
 
             IssueDataInfo idi = issueDataMapper.selectByPrimaryKey(issueDataInfo);
@@ -365,7 +365,7 @@ public class ZdhIssueDataController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo issue_data_delete(String[] ids) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
 
         try {
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, issueDataMapper, issueDataMapper.getTable(), ids, getAttrDel());
@@ -392,7 +392,7 @@ public class ZdhIssueDataController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo data_apply_add(String product_code,String dim_group,String issue_id) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         //根据发布id,获取数据信息,找到对应的管理者
         try {
             IssueDataInfo issueDataInfo = issueDataMapper.selectById(issue_id);

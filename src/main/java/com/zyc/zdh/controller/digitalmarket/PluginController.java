@@ -1,8 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.PluginMapper;
 import com.zyc.zdh.entity.PluginInfo;
@@ -11,6 +9,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 智能营销-插件服务
@@ -170,9 +170,9 @@ public class PluginController extends BaseController {
                 throw new Exception("参数不可为空");
             }
 
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
             for (int i=0;i<param_code.length;i++){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
@@ -185,12 +185,14 @@ public class PluginController extends BaseController {
                 jsonArray.add(jsonObject);
             }
 
+            pluginInfo.setPlugin_json(JsonUtil.formatJsonString(jsonArray));
+
             PluginInfo oldPluginInfo = pluginMapper.selectByPrimaryKey(pluginInfo.getId());
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pluginInfo.getProduct_code(), pluginInfo.getDim_group(), getAttrEdit());
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldPluginInfo.getProduct_code(), oldPluginInfo.getDim_group(), getAttrEdit());
 
-            pluginInfo.setPlugin_json(jsonArray.toJSONString());
+
             pluginInfo.setOwner(oldPluginInfo.getOwner());
             pluginInfo.setCreate_time(oldPluginInfo.getCreate_time());
             pluginInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -224,9 +226,9 @@ public class PluginController extends BaseController {
             if(param_code==null || param_code.length<1){
                throw new Exception("参数不可为空");
             }
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
             for (int i=0;i<param_code.length;i++){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
@@ -236,10 +238,11 @@ public class PluginController extends BaseController {
                 }else{
                     jsonObject.put("param_value", param_value[i]);
                 }
-
                 jsonArray.add(jsonObject);
             }
-            pluginInfo.setPlugin_json(jsonArray.toJSONString());
+
+            pluginInfo.setPlugin_json(JsonUtil.formatJsonString(jsonArray));
+
             pluginInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             pluginInfo.setOwner(getOwner());
             pluginInfo.setIs_delete(Const.NOT_DELETE);

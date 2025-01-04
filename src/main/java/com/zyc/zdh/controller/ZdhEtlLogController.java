@@ -152,7 +152,7 @@ public class ZdhEtlLogController extends BaseController{
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_task_log_add(EtlTaskLogInfo etlTasklogInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try{
             String owner = getOwner();
             etlTasklogInfo.setOwner(owner);

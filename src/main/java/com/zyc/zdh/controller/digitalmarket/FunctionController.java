@@ -5,7 +5,6 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassLoaderUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.FunctionMapper;
 import com.zyc.zdh.entity.FunctionInfo;
@@ -16,6 +15,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.GroovyFactory;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -201,10 +201,10 @@ public class FunctionController extends BaseController {
 
             FunctionInfo oldFunctionInfo = functionMapper.selectByPrimaryKey(functionInfo.getId());
 
-            JSONArray jsonArray = new JSONArray();
+            List<Map<String, Object>> jsonArray = JsonUtil.createEmptyListMap();
             if(param_code != null && param_code.length>0){
                 for (int i=0;i<param_code.length;i++){
-                    JSONObject jsonObject = new JSONObject();
+                    Map<String, Object> jsonObject = JsonUtil.createEmptyLinkMap();
                     jsonObject.put("param_code", param_code[i]);
                     jsonObject.put("param_context", param_context[i]);
                     jsonObject.put("param_type", param_type[i]);
@@ -212,7 +212,8 @@ public class FunctionController extends BaseController {
                 }
             }
 
-            functionInfo.setParam_json(jsonArray.toJSONString());
+            functionInfo.setParam_json(JsonUtil.formatJsonString(jsonArray));
+
             functionInfo.setCreate_time(oldFunctionInfo.getCreate_time());
             functionInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             functionInfo.setIs_delete(Const.NOT_DELETE);
@@ -237,10 +238,10 @@ public class FunctionController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo<FunctionInfo> function_add(FunctionInfo functionInfo, String[] param_code, String[] param_context, String[] param_type) {
         try {
-            JSONArray jsonArray = new JSONArray();
+            List<Map<String, Object>> jsonArray = JsonUtil.createEmptyListMap();
             if(param_code != null && param_code.length>0){
                 for (int i=0;i<param_code.length;i++){
-                    JSONObject jsonObject = new JSONObject();
+                    Map<String, Object> jsonObject = JsonUtil.createEmptyLinkMap();
                     jsonObject.put("param_code", param_code[i]);
                     jsonObject.put("param_context", param_context[i]);
                     jsonObject.put("param_type", param_type[i]);
@@ -248,7 +249,7 @@ public class FunctionController extends BaseController {
                 }
             }
 
-            functionInfo.setParam_json(jsonArray.toJSONString());
+            functionInfo.setParam_json(JsonUtil.formatJsonString(jsonArray));
 
             functionInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             functionInfo.setOwner(getOwner());

@@ -12,7 +12,6 @@ import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

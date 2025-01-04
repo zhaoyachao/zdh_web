@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.entity.ProcessFlowInfo;
 import com.zyc.zdh.util.HttpUtil;
+import com.zyc.zdh.util.JsonUtil;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -135,7 +136,7 @@ public class TestA {
     public void testAPI() throws Exception {
         ProcessFlowInfo pfi=new ProcessFlowInfo();
         pfi.setFlow_id("123");
-        String result = HttpUtil.postJSON("http://127.0.0.1:8081/api/call_back_test", JSON.toJSONString(pfi));
+        String result = HttpUtil.postJSON("http://127.0.0.1:8081/api/call_back_test", JsonUtil.formatJsonString(pfi));
         System.out.println(result);
     }
 

@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
@@ -14,6 +13,7 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -136,7 +136,7 @@ public class ZdhSqlController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo sql_task_add(SqlTaskInfo sqlTaskInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try {
             String owner = getOwner();
             sqlTaskInfo.setOwner(owner);
@@ -180,7 +180,7 @@ public class ZdhSqlController extends BaseController {
     @RequestMapping(value = "/sql_task_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo sql_task_update(SqlTaskInfo sqlTaskInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
         try {
             String owner = getOwner();
             sqlTaskInfo.setOwner(owner);
@@ -237,11 +237,11 @@ public class ZdhSqlController extends BaseController {
             List<meta_database_info> meta_database_infos = new ArrayList<meta_database_info>();
 
             System.out.println("databases:" + databases);
-            JSONArray jary = JSON.parseArray(databases);
+            List<Object> jary = JsonUtil.toJavaList(databases);
             for (Object o : jary) {
                 JSONObject jo = new JSONObject();
                 String tableNames = HttpUtil.postJSON(url + "/show_tables", "{\"databaseName\":\"" + o.toString() + "\"}");
-                JSONArray tableAry = JSON.parseArray(tableNames);
+                List<Object> tableAry = JsonUtil.toJavaList(tableNames);
                 meta_database_info meta_database_info_d = new meta_database_info();
                 meta_database_info_d.setOwner(owner);
                 metaDatabaseMapper.delete(meta_database_info_d);
