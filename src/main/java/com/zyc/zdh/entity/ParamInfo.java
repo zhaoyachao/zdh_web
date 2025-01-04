@@ -67,6 +67,12 @@ public class ParamInfo {
     @Transient
     private String param_type_name;
 
+    /**
+     * 产品代码
+     */
+    private String product_code;
+
+
     public String getParam_type_name(){
         return Const.getEnumName("PARAM_TYPE", getParam_type());
     }
@@ -271,5 +277,13 @@ public class ParamInfo {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 }

@@ -320,31 +320,35 @@
         }, {
             field: 'id',
             title: 'ID',
-            sortable:false
+            sortable:true
         }, {
             field: 'param_name',
             title: '参数名称',
-            sortable:false
+            sortable:true
         }, {
             field: 'param_context',
             title: '参数说明',
-            sortable:false
+            sortable:true
+        }, {
+            field: 'version',
+            title: '参数版本',
+            sortable:true
         }, {
             field: 'param_value',
             title: '参数值',
-            sortable:false
+            sortable:true
         }, {
             field: 'param_type_name',
             title: '参数类型',
-            sortable:false
+            sortable:true
         }, {
             field: 'owner',
             title: '创建人',
-            sortable:false
+            sortable:true
         },{
             field: 'status',
             title: '状态',
-            sortable:false,
+            sortable:true,
             //events: operateEvents3,//给按钮注册事件
             formatter: function (value, row, index) {
                 var context = "未启用";

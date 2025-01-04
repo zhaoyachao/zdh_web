@@ -6,6 +6,7 @@ import com.zyc.zdh.dao.ParamMapper;
 import com.zyc.zdh.entity.ParamInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,8 @@ public class ZdhParamController extends BaseController {
 
     @Autowired
     private ParamMapper paramMapper;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
 
     /**
      * 系统参数首页
@@ -70,7 +73,7 @@ public class ZdhParamController extends BaseController {
     @SentinelResource(value = "param_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/param_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<ParamInfo>> param_list(String param_context, String version) {
+    public ReturnInfo<List<ParamInfo>> param_list(String product_code, String param_context, String version) {
         try{
             Example example=new Example(ParamInfo.class);
             Example.Criteria criteria = example.createCriteria();
@@ -78,6 +81,12 @@ public class ZdhParamController extends BaseController {
             if(!StringUtils.isEmpty(version)){
                 criteria.andEqualTo("version", version);
             }
+            if(!StringUtils.isEmpty(product_code)){
+                criteria.andEqualTo("product_code", product_code);
+            }
+
+            dynamicPermissionByProduct(zdhPermissionService, criteria);
+
             Example.Criteria criteria2 = example.createCriteria();
             if(!StringUtils.isEmpty(param_context)){
                 criteria2.orLike("param_name", getLikeCondition(param_context));
@@ -108,6 +117,8 @@ public class ZdhParamController extends BaseController {
     public ReturnInfo<ParamInfo> param_detail(String id) {
         try{
             ParamInfo paramInfo = paramMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProduct(zdhPermissionService, paramInfo.getProduct_code(), getAttrSelect());
+
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", paramInfo);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -126,6 +137,9 @@ public class ZdhParamController extends BaseController {
     @ResponseBody
     public ReturnInfo param_add(ParamInfo paramInfo) {
         try{
+
+            checkAttrPermissionByProduct(zdhPermissionService, paramInfo.getProduct_code(), getAttrAdd());
+
             paramInfo.setIs_delete(Const.NOT_DELETE);
             paramInfo.setOwner(getUser().getUserName());
             paramInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
@@ -149,6 +163,9 @@ public class ZdhParamController extends BaseController {
     @ResponseBody
     public ReturnInfo param_update(ParamInfo paramInfo) {
         try{
+
+            checkAttrPermissionByProduct(zdhPermissionService, paramInfo.getProduct_code(), getAttrEdit());
+
             debugInfo(paramInfo);
             paramInfo.setIs_delete(Const.NOT_DELETE);
             paramInfo.setOwner(getUser().getUserName());
@@ -174,6 +191,7 @@ public class ZdhParamController extends BaseController {
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo param_delete(String[] ids) {
         try {
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, paramMapper, paramMapper.getTable(), ids, getAttrDel());
             paramMapper.deleteLogicByIds("param_info",ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
@@ -197,12 +215,20 @@ public class ZdhParamController extends BaseController {
             Example example=new Example(ParamInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andIn("id", Arrays.asList(ids));
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, paramMapper, paramMapper.getTable(), ids, getAttrEdit());
+
             List<ParamInfo> paramInfos = paramMapper.selectByExample(example);
             for (ParamInfo paramInfo:paramInfos){
+                String version = paramInfo.getVersion();
+                String key = paramInfo.getProduct_code()+"_"+paramInfo.getParam_name();
+                if(!StringUtils.isEmpty(version)){
+                    key = version+"_"+key;
+                }
+
                 if(paramInfo.getParam_timeout().equalsIgnoreCase("-1")){
-                    redisUtil.set(paramInfo.getParam_name(),  paramInfo.getParam_value());
+                    redisUtil.set(key,  paramInfo.getParam_value());
                 }else{
-                    redisUtil.set(paramInfo.getParam_name(),  paramInfo.getParam_value(), StringUtils.isEmpty(paramInfo.getParam_timeout())?300L:Long.parseLong(paramInfo.getParam_timeout()), TimeUnit.SECONDS);
+                    redisUtil.set(key,  paramInfo.getParam_value(), StringUtils.isEmpty(paramInfo.getParam_timeout())?300L:Long.parseLong(paramInfo.getParam_timeout()), TimeUnit.SECONDS);
                 }
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
@@ -230,12 +256,15 @@ public class ZdhParamController extends BaseController {
         try{
             ParamInfo paramInfo = paramMapper.selectByPrimaryKey(id);
 
+            checkAttrPermissionByProduct(zdhPermissionService, paramInfo.getProduct_code(), getAttrEdit());
+
             if(version.equalsIgnoreCase("default")){
                 version = "";
             }
             //根据版本和参数code查询
             Example example=new Example(ParamInfo.class);
             Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("product_code", paramInfo.getProduct_code());
             criteria.andEqualTo("version", version);
             criteria.andEqualTo("param_name", paramInfo.getParam_name());
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);

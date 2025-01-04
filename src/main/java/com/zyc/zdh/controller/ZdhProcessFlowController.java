@@ -56,8 +56,6 @@ public class ZdhProcessFlowController extends BaseController {
     @Autowired
     private RedisUtil redisUtil;
     @Autowired
-    private Environment ev;
-    @Autowired
     private ZdhPermissionService zdhPermissionService;
 
     /**

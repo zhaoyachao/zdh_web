@@ -90,6 +90,7 @@ public class RedisUtil {
 	 * @param key
 	 */
 	public void remove(final String key) {
+		logger.debug("redis remove key: {}", key);
 		if (exists(key)) {
 			redisTemplate.delete(key);
 		}
@@ -229,7 +230,7 @@ public class RedisUtil {
 			result = operations1.get(key);
 			break;
 		}
-
+		logger.debug("redis get key: {}, value: {}", key, result);
 		return result;
 	}
 
@@ -309,6 +310,7 @@ public class RedisUtil {
 	 * @return
 	 */
 	public boolean set(final String key, Object value) {
+		logger.debug("redis set key: {}, value: {}", key, value);
 		boolean result = false;
 		try {
 			if (value instanceof List) {
@@ -385,6 +387,7 @@ public class RedisUtil {
 	 * @return
 	 */
 	public boolean set(final String key, Object value, Long expireTime) {
+		logger.debug("redis set key: {}, value: {}, expire: {}", key, value, expireTime);
 		boolean result = false;
 		try {
 			if (value instanceof List) {
@@ -467,6 +470,7 @@ public class RedisUtil {
 	 */
 	public boolean set(final String key, Object value, Long expireTime,
 			TimeUnit time) {
+		logger.debug("redis set key: {}, value: {}, expire: {}, unit: {}", key, value, expireTime, time);
 		boolean result = false;
 		if (time == null) {
 			return set(key, value, expireTime);

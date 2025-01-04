@@ -184,7 +184,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
             @Override
             public void run() {
-                Thread.currentThread().setName("自定义线程名称");
+                Thread.currentThread().setName("服务主心跳线程");
                 while(true){
                     try {
                         //此处设置10s 超时 ,quartz 故障检测时间为30s
