@@ -639,6 +639,9 @@
   + v5.6.0 [zdh_web]重构权限-支持saas模式权限控制
   + v5.6.0 [zdh_web]质量检测模块-bug修复
   
+  + v5.6.1 [zdh_web]fastjson替换为jackjson
+  + v5.6.1 [zdh_web]参数管理-新增产品code,适配saas模式
+  + v5.6.1 [zdh_web]修复调度etl, 重启清除历史执行bug
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -3467,3 +3470,7 @@
     update quality_rule_info set dim_group='group3'; 
     alter table quality_rule_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
     
+    
+## 5.6.0迁移5.6.1
+    alter table param_info add column product_code varchar(64) NOT NULL DEFAULT '' COMMENT '产品code';
+    update param_info set product_code='zdh';     
