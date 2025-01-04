@@ -145,12 +145,12 @@ public class ConfigUtil {
         return getEnv().containsProperty(key);
     }
 
-    public static boolean isInRedis(String key){
-        return getParamUtil().exists(key);
+    public static boolean isInRedis(String product_code, String key){
+        return getParamUtil().exists(product_code, key);
     }
 
-    public static boolean isInRedisValue(String key, String value){
-        String tmp = getParamUtil().getValue(key, "").toString();
+    public static boolean isInRedisValue(String product_code, String key, String value){
+        String tmp = getParamUtil().getValue(product_code, key, "").toString();
         if(StringUtils.isEmpty(tmp)){
             return false;
         }

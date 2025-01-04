@@ -7,11 +7,13 @@ import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.FileSystem;
 import oshi.software.os.OSFileStore;
+import oshi.software.os.OSThread;
 import oshi.software.os.OperatingSystem;
 import oshi.util.Util;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -44,6 +46,11 @@ public class Server {
      * 磁盘相关信息
      */
     private List<SysFile> sysFiles = new LinkedList<SysFile>();
+
+    /**
+     * 线程信息
+     */
+    private List<ThreadInfo> threadInfos = new LinkedList<>();
 
     public Cpu getCpu() {
         return cpu;
@@ -85,6 +92,14 @@ public class Server {
         this.sysFiles = sysFiles;
     }
 
+    public List<ThreadInfo> getThreadInfos() {
+        return threadInfos;
+    }
+
+    public void setThreadInfos(List<ThreadInfo> threadInfos) {
+        this.threadInfos = threadInfos;
+    }
+
     public void copyTo() throws Exception {
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
@@ -93,6 +108,7 @@ public class Server {
         setSysInfo();
         setJvmInfo();
         setSysFiles(si.getOperatingSystem());
+        setThreadInfos(si.getOperatingSystem());
     }
 
     /**
@@ -103,14 +119,14 @@ public class Server {
         long[] prevTicks = processor.getSystemCpuLoadTicks();
         Util.sleep(OSHI_WAIT_SECOND);
         long[] ticks = processor.getSystemCpuLoadTicks();
-        long nice = ticks[CentralProcessor.TickType.NICE.getIndex()] - prevTicks[CentralProcessor.TickType.NICE.getIndex()];
-        long irq = ticks[TickType.IRQ.getIndex()] - prevTicks[TickType.IRQ.getIndex()];
-        long softirq = ticks[TickType.SOFTIRQ.getIndex()] - prevTicks[TickType.SOFTIRQ.getIndex()];
-        long steal = ticks[TickType.STEAL.getIndex()] - prevTicks[TickType.STEAL.getIndex()];
-        long cSys = ticks[TickType.SYSTEM.getIndex()] - prevTicks[TickType.SYSTEM.getIndex()];
-        long user = ticks[TickType.USER.getIndex()] - prevTicks[TickType.USER.getIndex()];
-        long iowait = ticks[TickType.IOWAIT.getIndex()] - prevTicks[TickType.IOWAIT.getIndex()];
-        long idle = ticks[TickType.IDLE.getIndex()] - prevTicks[TickType.IDLE.getIndex()];
+        long nice = ticks[CentralProcessor.TickType.NICE.ordinal()] - prevTicks[CentralProcessor.TickType.NICE.ordinal()];
+        long irq = ticks[TickType.IRQ.ordinal()] - prevTicks[TickType.IRQ.ordinal()];
+        long softirq = ticks[TickType.SOFTIRQ.ordinal()] - prevTicks[TickType.SOFTIRQ.ordinal()];
+        long steal = ticks[TickType.STEAL.ordinal()] - prevTicks[TickType.STEAL.ordinal()];
+        long cSys = ticks[TickType.SYSTEM.ordinal()] - prevTicks[TickType.SYSTEM.ordinal()];
+        long user = ticks[TickType.USER.ordinal()] - prevTicks[TickType.USER.ordinal()];
+        long iowait = ticks[TickType.IOWAIT.ordinal()] - prevTicks[TickType.IOWAIT.ordinal()];
+        long idle = ticks[TickType.IDLE.ordinal()] - prevTicks[TickType.IDLE.ordinal()];
         long totalCpu = user + nice + cSys + idle + iowait + irq + softirq + steal;
         cpu.setCpuNum(processor.getLogicalProcessorCount());
         cpu.setTotal(totalCpu);
@@ -162,7 +178,7 @@ public class Server {
      */
     private void setSysFiles(OperatingSystem os) {
         FileSystem fileSystem = os.getFileSystem();
-        OSFileStore[] fsArray = fileSystem.getFileStores();
+        List<OSFileStore> fsArray = fileSystem.getFileStores();
         for (OSFileStore fs : fsArray) {
             long free = fs.getUsableSpace();
             long total = fs.getTotalSpace();
@@ -177,6 +193,28 @@ public class Server {
             sysFile.setUsage(Arith.mul(Arith.div(used, total, 4), 100));
             sysFiles.add(sysFile);
         }
+    }
+
+    /**
+     * 设置线程信息
+     */
+    private void setThreadInfos(OperatingSystem os){
+
+
+        List<OSThread> threadDetails = os.getProcess(os.getProcessId()).getThreadDetails();
+
+        for(OSThread osThread: threadDetails){
+            ThreadInfo threadInfo = new ThreadInfo();
+            threadInfo.setThreadName(osThread.getName());
+            threadInfo.setStartTime(osThread.getStartTime()+"");
+            threadInfo.setUserTime(osThread.getUserTime()+"");
+            threadInfo.setUpTime(osThread.getUpTime()+"");
+            threadInfo.setThreadId(osThread.getThreadId()+"");
+            threadInfo.setStartMemoryAddress(osThread.getStartMemoryAddress()+"");
+            threadInfo.setState(osThread.getState().name());
+            threadInfos.add(threadInfo);
+        }
+
     }
 
     /**

@@ -6,12 +6,10 @@ import com.zyc.rqueue.RQueueClient;
 import com.zyc.rqueue.RQueueManager;
 import com.zyc.rqueue.RQueueMode;
 import com.zyc.zdh.dao.QuartzJobMapper;
+import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
-import com.zyc.zdh.entity.QuartzJobInfo;
-import com.zyc.zdh.entity.TaskLogInstance;
-import com.zyc.zdh.entity.ZdhDownloadInfo;
-import com.zyc.zdh.entity.ZdhHaInfo;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.beanutils.BeanUtils;
@@ -39,6 +37,7 @@ public class RetryJob {
             logger.debug("开始检测重试任务...");
             QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
             TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+            TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             ZdhHaInfoMapper zdhHaInfoMapper=(ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
             RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
             //获取重试的任务
@@ -125,8 +124,13 @@ public class RetryJob {
                 }
                 //http://ip:port/api/v1/zdh
                 String executor=t2.getExecutor();
-                String queue_enable = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_ENABLE, "false");
-                String redis_queue_enable = ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_QUEUE_ENABLE, "false").toString();
+                TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(t2.getGroup_id());
+
+                String product_code = tgli.getProduct_code();
+                String dim_group = tgli.getDim_group();
+
+                String queue_enable = ConfigUtil.getValue(ConfigUtil.ZDH_SPARK_QUEUE_ENABLE, "false");
+                String redis_queue_enable = ConfigUtil.getParamUtil().getValue(product_code, ConfigUtil.ZDH_SPARK_QUEUE_ENABLE, "false").toString();
                 if(executor!=null && !executor.trim().equalsIgnoreCase("") && !zdhHaMap.containsKey(executor)){
                     //executor 意外死亡需要重新发送任务
                     QuartzJobInfo q2=new QuartzJobInfo();
@@ -140,7 +144,7 @@ public class RetryJob {
                     JobCommon2.insertLog(t2,"INFO","检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
 
                     //如果任务超过一定时间且executor死亡,则直接置任务失败
-                    String valid_time = ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_SKIP_RETRY_VALID_TIME, "3600").toString();
+                    String valid_time = ConfigUtil.getParamUtil().getValue(product_code, Const.ZDH_SPARK_SKIP_RETRY_VALID_TIME, "3600").toString();
                     if(!NumberUtil.isLong(valid_time)){
                         valid_time = "3600";
                     }
@@ -152,17 +156,19 @@ public class RetryJob {
                         String new_url=old_uri.getScheme()+"://"+new_authori+old_uri.getPath();
                         logger.info("重新发送请求地址:"+new_url+",参数:"+t2.getEtl_info());
                         JobCommon2.insertLog(t2,"INFO","重新发送请求地址:"+new_url+",参数:"+t2.getEtl_info());
-                        if(queue_enable.equalsIgnoreCase("true")){
-                            //本地参数配置-发送队列
-                            String queue = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY, "")+"_"+instance;
-                            RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
-                            rQueueClient.add(t2.getEtl_info());
-                        }else if(redis_queue_enable.equalsIgnoreCase("true")){
+                       if(redis_queue_enable.equalsIgnoreCase("true")){
                             //公共参数配置-发送队列
-                            String queue = ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY, "redis")+"_"+instance;
+                            String queue = ConfigUtil.getParamUtil().getValue(product_code, ConfigUtil.ZDH_SPARK_QUEUE_PRE_KEY, "redis")+"_"+instance;
                             RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
                             rQueueClient.add(t2.getEtl_info());
-                        }else{
+                        }
+//                       else if(queue_enable.equalsIgnoreCase("true")){
+//                            //本地参数配置-发送队列
+//                            String queue = ConfigUtil.getValue(ConfigUtil.ZDH_SPARK_QUEUE_PRE_KEY, "")+"_"+instance;
+//                            RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
+//                            rQueueClient.add(t2.getEtl_info());
+//                        }
+                       else{
                             HttpUtil.postJSON(new_url, t2.getEtl_info());
                         }
 

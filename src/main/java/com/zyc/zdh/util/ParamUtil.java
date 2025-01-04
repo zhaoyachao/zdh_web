@@ -29,34 +29,37 @@ public class ParamUtil {
     }
 
 
-    public boolean exists(String key){
-        if(redisUtil.exists(getKey(key)) || redisUtil.exists(key)){
+    public boolean exists(String product_code, String key){
+        if(redisUtil.exists(getKey(product_code, key)) || redisUtil.exists(getCommonKey(product_code,key))){
             return true;
         }
         return false;
     }
 
 
-    public Object getValue(String key){
+    public Object getValue(String product_code,String key){
         //根据version_key获取参数,如果不存在则获取key
-        if(redisUtil.exists(getKey(key))){
-            return redisUtil.get(getKey(key));
+        if(redisUtil.exists(getKey(product_code, key))){
+            return redisUtil.get(getKey(product_code, key));
         }
-        return redisUtil.get(key);
+        return redisUtil.get(getCommonKey(product_code, key));
     }
 
-    public Object getValue(String key, String value){
+    public Object getValue(String product_code, String key, String value){
         //根据version_key获取参数,如果不存在则获取key
-        if(redisUtil.exists(getKey(key))){
-            return redisUtil.get(getKey(key));
+        if(redisUtil.exists(getKey(product_code, key))){
+            return redisUtil.get(getKey(product_code, key));
         }
-        return redisUtil.get(key, value);
+        return redisUtil.get(getCommonKey(product_code, key), value);
     }
 
-    private String getKey(String key){
-        return version + "_" + key;
+    private String getKey(String product_code, String key){
+        return version + "_" + product_code+ "_" + key;
     }
 
+    private String getCommonKey(String product_code, String key){
+        return product_code+ "_" + key;
+    }
 
     public void setValue(Object value){
 

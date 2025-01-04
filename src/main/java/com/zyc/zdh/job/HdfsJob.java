@@ -53,7 +53,6 @@ public class HdfsJob extends JobCommon2 {
             }
 
             if (!tli.getCommand().trim().equals("")) {
-                logger.info("========+++++" + tli.getLast_time());
                 String date_nodash = DateUtil.formatNodash(tli.getLast_time());
                 String date_time = DateUtil.formatTime(tli.getLast_time());
                 String date = DateUtil.format(tli.getLast_time());

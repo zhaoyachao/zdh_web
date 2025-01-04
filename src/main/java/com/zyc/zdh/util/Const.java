@@ -90,12 +90,12 @@ public class Const {
 
     public static String ZDH_FLOW_DEFAULT_USER = "zdh_flow_default_user";//审批流默认user
 
-    public static String ZDH_DISENABLE_MORE_TASK = "zdh.disenable.more_task";//禁用more_task
-    public static String ZDH_DISENABLE_JOB_TYPE = "zdh.disenable.job_type";//禁用job_type
+    //public static String ZDH_DISENABLE_MORE_TASK = "zdh.disenable.more_task";//禁用more_task
+    //public static String ZDH_DISENABLE_JOB_TYPE = "zdh.disenable.job_type";//禁用job_type
 
-    public static String ZDH_SPARK_QUEUE_ENABLE = "zdh.spark.queue_enable";//是否启用spark etl队列
+    //public static String ZDH_SPARK_QUEUE_ENABLE = "zdh.spark.queue_enable";//是否启用spark etl队列
 
-    public static String ZDH_SPARK_QUEUE_PRE_KEY = "zdh.spark.queue_pre_key";//spark etl队列前缀
+    //public static String ZDH_SPARK_QUEUE_PRE_KEY = "zdh.spark.queue_pre_key";//spark etl队列前缀
 
     public static String ZDH_SPARK_SKIP_RETRY_VALID_TIME = "zdh.spark.skip_retry_valid_time";//etl任务重试有效时间,单位秒,100 表示100秒内可进行重试,默认3600
 

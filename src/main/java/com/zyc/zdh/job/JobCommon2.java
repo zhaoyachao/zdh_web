@@ -1712,6 +1712,12 @@ public class JobCommon2 {
         Environment environment= (Environment) SpringContext.getBean("environment");
 
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
+        TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
+
+        TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(tli.getGroup_id());
+
+        String product_code = tgli.getProduct_code();
+        String dim_group = tgli.getDim_group();
 
         String params = tli.getParams().trim();
         insertLog(tli, "INFO", "获取服务端url,指定参数:" + params);
@@ -1727,7 +1733,7 @@ public class JobCommon2 {
             }
             json = JSON.parseObject(params);
         }
-        System.out.println("========fdsfsf=========" + tli.getCur_time());
+
         String date = DateUtil.formatTime(tli.getCur_time());
         json.put("ETL_DATE", date);
         logger.info(model_log + " JOB ,处理当前日期,传递参数ETL_DATE 为" + date);
@@ -1831,7 +1837,7 @@ public class JobCommon2 {
                 String url_tmp = "";
                 String etl_info = "";
                 //校验是否禁用任务类型
-                if(ConfigUtil.isInValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task()) || ConfigUtil.isInValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
+                if(ConfigUtil.isInValue(ConfigUtil.ZDH_DISENABLE_MORE_TASK, tli.getMore_task()) || ConfigUtil.isInValue(ConfigUtil.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
                     logger.error("当前【"+tli.getMore_task()+"】类任务,被系统禁用,具体可咨询管理员");
                     insertLog(tli, "ERROR", "当前【"+tli.getMore_task()+"】类任务,被系统禁用,具体可咨询管理员");
                     throw new Exception("当前【"+tli.getMore_task()+"】类任务,被系统禁用,具体可咨询管理员");
@@ -2042,19 +2048,21 @@ public class JobCommon2 {
                     logger.info("[调度平台]:" + url_tmp + " ,参数:" + etl_info);
 
                     //新增参数判断http发送或者是队列发送
-                    if(ConfigUtil.isInEnv(Const.ZDH_SPARK_QUEUE_ENABLE) && ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_ENABLE, "false").equalsIgnoreCase("true") ){
-                        //本地参数配置-发送队列
-                        String queue = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY)+"_"+instance;
-                        insertLog(tli, "DEBUG", "[调度平台]:" + "发送任务到队列:"+queue + " ,:" + etl_info);
-                        RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
-                        rQueueClient.add(etl_info);
-                    }else if(ConfigUtil.isInRedis(Const.ZDH_SPARK_QUEUE_ENABLE) && ConfigUtil.getParamUtil().getValue(Const.ZDH_SPARK_QUEUE_ENABLE, "false").toString().equalsIgnoreCase("true") ){
+                    if(ConfigUtil.isInRedis(product_code, ConfigUtil.ZDH_SPARK_QUEUE_ENABLE) && ConfigUtil.getParamUtil().getValue(product_code, ConfigUtil.ZDH_SPARK_QUEUE_ENABLE, "false").toString().equalsIgnoreCase("true") ){
                         //公共参数配置-发送队列
-                        String queue = ConfigUtil.getValue(Const.ZDH_SPARK_QUEUE_PRE_KEY)+"_"+instance;
+                        String queue = ConfigUtil.getValue(ConfigUtil.ZDH_SPARK_QUEUE_PRE_KEY)+"_"+instance;
                         insertLog(tli, "DEBUG", "[调度平台]:" + "发送任务到队列:"+queue + " ,:" + etl_info);
                         RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
                         rQueueClient.add(etl_info);
-                    }else{
+                    }
+//                    if(ConfigUtil.isInEnv(ConfigUtil.ZDH_SPARK_QUEUE_ENABLE) && ConfigUtil.getValue(ConfigUtil.ZDH_SPARK_QUEUE_ENABLE, "false").equalsIgnoreCase("true") ){
+//                        //本地参数配置-发送队列
+//                        String queue = ConfigUtil.getValue(ConfigUtil.ZDH_SPARK_QUEUE_PRE_KEY)+"_"+instance;
+//                        insertLog(tli, "DEBUG", "[调度平台]:" + "发送任务到队列:"+queue + " ,:" + etl_info);
+//                        RQueueClient rQueueClient = RQueueManager.getRQueueClient(queue, RQueueMode.BLOCKQUEUE);
+//                        rQueueClient.add(etl_info);
+//                    }else
+                    else{
                         insertLog(tli, "DEBUG", "[调度平台]:" + url_tmp + " ,参数:" + etl_info);
                         HttpUtil.postJSON(url_tmp, etl_info);
                     }
@@ -3576,7 +3584,7 @@ public class JobCommon2 {
             }
             Boolean exe_status = true;
             //判断是否禁用任务类型
-            if(ConfigUtil.isInValue(Const.ZDH_DISENABLE_JOB_TYPE, jobType)  || ConfigUtil.isInValue(Const.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
+            if(ConfigUtil.isInValue(ConfigUtil.ZDH_DISENABLE_JOB_TYPE, jobType)  || ConfigUtil.isInValue(ConfigUtil.ZDH_DISENABLE_MORE_TASK, tli.getMore_task())){
                 logger.error("[" + jobType + "] JOB, 任务被禁用,具体可咨询系统管理员");
                 insertLog(tli, "ERROR", "[" + jobType + "] JOB,任务被禁用,具体可咨询系统管理员");
                 tli.setStatus(JobStatus.ERROR.getValue());
