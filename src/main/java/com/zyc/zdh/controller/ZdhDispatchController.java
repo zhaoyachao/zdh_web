@@ -499,7 +499,7 @@ public class ZdhDispatchController extends BaseController {
             quartzJobMapper.updateByPrimaryKey(dti);
         }else{
             //判断调度时间是否超过限制
-            if(dti.getLast_time()!=null && dti.getLast_time().getTime() >= dti.getEnd_time().getTime()){
+            if(dti.getUse_quartz_time().equalsIgnoreCase(Const.OFF) && dti.getLast_time()!=null && dti.getLast_time().getTime() >= dti.getEnd_time().getTime()){
                 result= ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"调度时间超过最大限制",null);
                 return result;
             }

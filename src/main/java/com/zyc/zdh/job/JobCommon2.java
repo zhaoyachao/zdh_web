@@ -3435,9 +3435,6 @@ public class JobCommon2 {
                     if (is_retry == 0) {
                         //调度触发,直接获取执行时间
                         Timestamp cur = getCurTime(quartzJobInfo);
-                        System.err.println(cur);
-                        System.err.println(cur);
-                        System.err.println(cur);
                         tgli.setCur_time(cur);
                         tgli.setSchedule_source(ScheduleSource.SYSTEM.getCode());
                         tgli.setEtl_date(DateUtil.formatTime(cur));
