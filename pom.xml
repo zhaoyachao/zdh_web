@@ -19,6 +19,7 @@
     </parent>
 
     <properties>
+        <build.name>zdh_web-${version}</build.name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
@@ -794,7 +795,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.version}/libs</outputDirectory>
+                            <outputDirectory>${build.name}/libs</outputDirectory>
                             <excludeTransitive>false</excludeTransitive>
                             <stripVersion>false</stripVersion>
                             <includeScope>system</includeScope>
@@ -807,7 +808,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.version}/libs</outputDirectory>
+                            <outputDirectory>${build.name}/libs</outputDirectory>
                             <excludeTransitive>false</excludeTransitive>
                             <stripVersion>false</stripVersion>
                             <includeScope>runtime</includeScope>
@@ -839,7 +840,7 @@
                                     <targetPath>META-INF/resources</targetPath>
                                 </resource>
                             </resources>
-                            <outputDirectory>${project.version}/conf</outputDirectory>
+                            <outputDirectory>${build.name}/conf</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -855,7 +856,7 @@
                                     <directory>release/bin</directory>
                                 </resource>
                             </resources>
-                            <outputDirectory>${project.version}/bin</outputDirectory>
+                            <outputDirectory>${build.name}/bin</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -871,7 +872,7 @@
                                     <directory>release/db</directory>
                                 </resource>
                             </resources>
-                            <outputDirectory>${project.version}/db</outputDirectory>
+                            <outputDirectory>${build.name}/db</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -887,7 +888,7 @@
                                     <directory>doc</directory>
                                 </resource>
                             </resources>
-                            <outputDirectory>${project.version}/doc</outputDirectory>
+                            <outputDirectory>${build.name}/doc</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -903,7 +904,7 @@
                                     <directory>src/main/webapp/WEB-INF/zdh/smart_doc</directory>
                                 </resource>
                             </resources>
-                            <outputDirectory>${project.version}/smart_doc</outputDirectory>
+                            <outputDirectory>${build.name}/smart_doc</outputDirectory>
                         </configuration>
                     </execution>
 
@@ -936,7 +937,7 @@
                     <!-- spring-boot:run 中文乱码解决 -->
                     <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
                     <mainClass>com.zyc.zdh.ZdhApplication</mainClass>
-                    <outputDirectory>${project.version}</outputDirectory>
+                    <outputDirectory>${build.name}</outputDirectory>
                     <includes>
                         <include>
                             <groupId>com.zyc</groupId>
