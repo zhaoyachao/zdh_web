@@ -642,6 +642,7 @@
   + v5.6.1 [zdh_web]fastjson替换为jackjson
   + v5.6.1 [zdh_web]参数管理-新增产品code,适配saas模式
   + v5.6.1 [zdh_web]修复调度etl, 重启清除历史执行bug
+  + v5.6.1 [zdh_web]优化打包配置
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
