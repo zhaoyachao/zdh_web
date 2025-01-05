@@ -332,7 +332,7 @@
             'click #minus_sign': function (e, value, row, index) {
 
                 layer.confirm('是否关闭调度', {
-                    btn: ['关闭','取消'], //按钮
+                    btn: ['确定','取消'], //按钮
                     cancel:function(index, layero){
                         console.log('关闭x号');
                     },
