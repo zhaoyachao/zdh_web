@@ -53,8 +53,8 @@ public class RetryJob {
                 }
                 //qj.setLast_status("retry");
                 //quartzJobMapper.updateLastStatus(qj.getJob_id(), "retry");//retry表示当前的任务是重试发起的
-                tl.setStatus("dispatch");
-                tlim.updateStatusById("dispatch",DateUtil.getCurrentTime(),tl.getId());//error表示任务已置为失败
+                tl.setStatus(JobStatus.DISPATCH.getValue());
+                tlim.updateStatusById(JobStatus.DISPATCH.getValue(),DateUtil.getCurrentTime(),tl.getId());//error表示任务已置为失败
                 logger.info("开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 //debugInfo(tl);
                 //JobCommon.insertLog(tl, "INFO", "开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
@@ -77,11 +77,12 @@ public class RetryJob {
                 zdhHaMap.put(zdhHaInfo.getId(),"");
             }
             for(TaskLogInstance t2 :taskLogsList2){
-                // 此处表示shell,datax,data_web任务在执行中,挂掉需要进行回复
-                if((Arrays.asList("shell","email","http").contains(t2.getJob_type().toLowerCase()) || Arrays.asList("datax","datax_web").contains(t2.getMore_task().toLowerCase())) && !StringUtils.isEmpty(t2.getServer_id())
+                // 此处表示shell,datax,data_web任务在执行中,挂掉需要进行恢复
+                if((Arrays.asList(JobType.SHELL.getCode(),JobType.EMAIL.getCode(),JobType.HTTP.getCode()).contains(t2.getJob_type().toUpperCase())
+                        || Arrays.asList(MoreTask.DATAX.getValue(),MoreTask.DATAX_WEB.getValue()).contains(t2.getMore_task().toUpperCase())) && !StringUtils.isEmpty(t2.getServer_id())
                 && ( !redisUtil.exists(t2.getServer_id().split(":")[0]) || !redisUtil.get(t2.getServer_id().split(":")[0]).toString().equalsIgnoreCase(t2.getServer_id()) )
                 ){
-                    if(t2.getJob_type().equalsIgnoreCase("shell")){
+                    if(t2.getJob_type().equalsIgnoreCase(JobType.SHELL.getCode())){
                         if(JobCommon2.check_thread_limit(t2)) {
                             continue;
                         }
@@ -93,7 +94,7 @@ public class RetryJob {
                     JobCommon2.chooseJobBean(t2);
                     continue;
                 }
-                if(t2.getStatus().equalsIgnoreCase("dispatch")){
+                if(t2.getStatus().equalsIgnoreCase(JobStatus.DISPATCH.getValue())){
                     //如果调度标识为空则直接跳过
                     if(t2.getServer_id()==null || t2.getServer_id().equalsIgnoreCase("")) {
                         continue;

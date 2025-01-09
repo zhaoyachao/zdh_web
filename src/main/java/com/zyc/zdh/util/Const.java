@@ -41,6 +41,12 @@ public class Const {
     public static String DELETE="1";
     public static String NOT_DELETE="0";
 
+    public static String TASK_SCHEDULE_MODE_CRON="cron";//cron表达式
+    public static String TASK_SCHEDULE_MODE_SIMPLE="simple";//简洁表达式
+
+    public static String STRATEGY_JOB_KEY_GROUP = "strategy_group"; //智能策略job_key 对应的group信息
+    public static String BEACONFIRE_JOB_KEY_GROUP = "beaconfire"; //烽火台job_key 对应的group信息
+
     public static String SMS_INIT = "0";//未处理
     public static String SMS_HANDLING = "1";//处理中
     public static String SMS_FAIL = "2";//处理失败
@@ -64,6 +70,8 @@ public class Const {
     public static String APPLY_STATUS_FAIL="2";//申请状态,申请失败
 
     public static String LINE_SEPARATOR=System.getProperty("line.separator");
+
+    public static String ZDH_CHECK_IMPLS="zdh_check_impls";//zdh 调度检查实现类
 
     public static String ZDH_IS_PASS = "zdh_is_pass";//系统是否可访问
 

@@ -33,9 +33,11 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 
     public static List<ZdhDownloadInfo> zdhDownloadInfos = new ArrayList<>();
 
+    private Object object;
+
     @Override
     public void setObject(Object o) {
-
+        this.object = o;
     }
 
     @Override

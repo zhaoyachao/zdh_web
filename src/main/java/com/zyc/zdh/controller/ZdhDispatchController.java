@@ -703,7 +703,7 @@ public class ZdhDispatchController extends BaseController {
     public ReturnInfo dispatch_system_task_add(QuartzJobInfo quartzJobInfo) {
         try{
 
-            QuartzJobInfo qji = quartzManager2.createQuartzJobInfo(quartzJobInfo.getJob_type(),quartzJobInfo.getJob_model(),new Date(), new Date(),
+            QuartzJobInfo qji = quartzManager2.createQuartzJobInfo(quartzJobInfo.getJob_type(),quartzJobInfo.getJob_model(),new Date(), DateUtil.pase("2999-12-31"),
                     quartzJobInfo.getJob_context(), quartzJobInfo.getExpr(),"-1","",  quartzJobInfo.getJob_type());
             qji.setAlarm_account(getUser().getUserName());
             qji.setAlarm_email("on");

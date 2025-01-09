@@ -21,6 +21,7 @@ public class PermissionDimensionInfo {
 
     /**
      * 维度值
+     * 废弃
      */
     private String dim_value;
 
@@ -36,6 +37,7 @@ public class PermissionDimensionInfo {
 
     /**
      * 启用状态,1:启用,2:未启用
+     * 废弃
      */
     private String enable;
 

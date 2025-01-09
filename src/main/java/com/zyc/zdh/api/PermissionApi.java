@@ -45,12 +45,12 @@ public class PermissionApi {
      * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "apply_product_by_user", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "apply_product_by_user", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo apply_product_by_user(String user_account, String product_code,String ak, String sk) {
+    public ReturnInfo apply_product_by_user(String product_code,String ak, String sk, String user_account) {
 
         try{
-            return permissionApiController.apply_product_by_user(user_account, product_code, ak, sk);
+            return permissionApiController.apply_product_by_user(product_code, ak, sk, user_account);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -64,7 +64,7 @@ public class PermissionApi {
      * @param permissionUserInfo
      * @return
      */
-    @RequestMapping(value = "add_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "add_user_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo add_user_by_product(String product_code,String ak, String sk, PermissionUserInfo permissionUserInfo) {
 
@@ -83,7 +83,7 @@ public class PermissionApi {
      * @param permissionUserInfo
      * @return
      */
-    @RequestMapping(value = "update_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "update_user_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo update_user_by_product(String product_code,String ak, String sk, PermissionUserInfo permissionUserInfo) {
 
@@ -104,7 +104,7 @@ public class PermissionApi {
      * @param enable 是否启用true/false
      * @return
      */
-    @RequestMapping(value = "enable_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "enable_user_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo enable_user_by_product(String product_code,String ak, String sk, String user_account, String enable) {
 
@@ -124,7 +124,7 @@ public class PermissionApi {
      * @param enable 是否启用true/false
      * @return
      */
-    @RequestMapping(value = "update_batch_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "update_batch_user_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo update_batch_user_by_product(String product_code,String ak, String sk, String[] user_account, String enable) {
 
@@ -144,7 +144,7 @@ public class PermissionApi {
      * @param user_account 用户账号
      * @return
      */
-    @RequestMapping(value = "auth", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "auth", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo auth(String product_code,String ak, String sk, String user_account,String password, String auth_type,
                            Map<String,List<String>> in_auths, Map<String,List<String>> out_auths) {
@@ -166,7 +166,7 @@ public class PermissionApi {
      * @param user_account 用户账号
      * @return
      */
-    @RequestMapping(value = "get_user_by_product_password", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_user_by_product_password", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PermissionUserInfo> get_user_by_product_password(String product_code,String ak, String sk, String user_account,String password) {
 
@@ -186,7 +186,7 @@ public class PermissionApi {
      * @param user_account 用户账号
      * @return
      */
-    @RequestMapping(value = "get_user_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_user_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<PermissionUserInfo> get_user_by_product(String product_code,String ak, String sk, String user_account) {
 
@@ -206,7 +206,7 @@ public class PermissionApi {
      * @param user_account 用户账号
      * @return
      */
-    @RequestMapping(value = "get_user_by_product_user", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_user_by_product_user", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<PermissionUserInfo>> get_user_list_by_product_users(String product_code,String ak, String sk, String[] user_account) {
 
@@ -224,7 +224,7 @@ public class PermissionApi {
      * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "get_user_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_user_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<PermissionUserInfo>> get_user_by_product(String product_code,String ak, String sk) {
 
@@ -244,7 +244,7 @@ public class PermissionApi {
      * @param user_group 用户组code
      * @return
      */
-    @RequestMapping(value = "add_user_group_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "add_user_group_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo add_user_group_by_product(String product_code,String ak, String sk, String user_group) {
 
@@ -264,7 +264,7 @@ public class PermissionApi {
      * @param role_info
      * @return
      */
-    @RequestMapping(value = "add_role_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "add_role_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo add_role_by_product(String product_code,String ak, String sk, RoleInfo role_info) {
 
@@ -280,15 +280,16 @@ public class PermissionApi {
      * @param product_code 产品代码
      * @param ak  ak
      * @param sk  sk
-     * @param role_info
+     * @param role_code
+     * @param enable
      * @return
      */
-    @RequestMapping(value = "enable_role_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "enable_role_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo enable_role_by_product(String product_code,String ak, String sk, RoleInfo role_info) {
+    public ReturnInfo enable_role_by_product(String product_code,String ak, String sk, String role_code, String enable) {
 
         try{
-            return permissionApiController.enable_role_by_product( product_code, ak, sk, role_info);
+            return permissionApiController.enable_role_by_product( product_code, ak, sk, role_code, enable);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -300,16 +301,16 @@ public class PermissionApi {
      * @param product_code 产品代码
      * @param ak  ak
      * @param sk  sk
-     * @param role_id 角色ID
+     * @param role_code 角色code
      * @param resource_ids 资源ID列表
      * @return
      */
-    @RequestMapping(value = "add_resource_in_role_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "add_resource_in_role_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo enable_role_by_product(String product_code,String ak, String sk, String role_id, String[] resource_ids) {
+    public ReturnInfo enable_role_by_product(String product_code,String ak, String sk, String role_code, String[] resource_ids) {
 
         try{
-            return permissionApiController.enable_role_by_product( product_code, ak,  sk,  role_id, resource_ids);
+            return permissionApiController.enable_role_by_product(product_code, ak,  sk,  role_code, resource_ids);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
@@ -326,7 +327,7 @@ public class PermissionApi {
      * @param role_code 角色code
      * @return
      */
-    @RequestMapping(value = "get_role_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_role_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<RoleInfo> get_role_by_product(String product_code,String ak, String sk, String role_code) {
 
@@ -347,7 +348,7 @@ public class PermissionApi {
      * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "get_role_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_role_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<RoleInfo>> get_role_by_product(String product_code,String ak, String sk) {
 
@@ -368,12 +369,12 @@ public class PermissionApi {
      * @param sk sk
      * @return
      */
-    @RequestMapping(value = "get_user_list_by_product_role", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_user_list_by_product_role", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<PermissionUserInfo>> get_user_list_by_product_role(String product_code,String role_code,String ak, String sk) {
+    public ReturnInfo<List<PermissionUserInfo>> get_user_list_by_product_role(String product_code,String ak, String sk, String role_code) {
 
         try{
-            return permissionApiController.get_user_list_by_product_role(product_code, role_code, ak, sk);
+            return permissionApiController.get_user_list_by_product_role(product_code, ak, sk, role_code);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
@@ -390,7 +391,7 @@ public class PermissionApi {
      * @param resource_tree_info
      * @return
      */
-    @RequestMapping(value = "add_resource_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "add_resource_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo add_resource_by_product(String product_code,String ak, String sk, ResourceTreeInfo resource_tree_info) {
 
@@ -409,7 +410,7 @@ public class PermissionApi {
      * @param resource_tree_info
      * @return
      */
-    @RequestMapping(value = "add_batch_resource_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "add_batch_resource_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo add_batch_resource_by_product(String product_code,String ak, String sk, @RequestBody List<ResourceTreeInfo> resource_tree_info) {
 
@@ -425,18 +426,18 @@ public class PermissionApi {
 
     /**
      * 通过用户账户 获取资源信息
-     * @param user_account 用户账号
      * @param product_code 产品代码
      * @param ak  ak
      * @param sk  sk
+     * @param user_account 用户账号
      * @return
      */
-    @RequestMapping(value = "resources_by_user", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "resources_by_user", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<UserResourceInfo2>> resources_by_user(String user_account, String product_code,String ak, String sk) {
+    public ReturnInfo<List<UserResourceInfo2>> resources_by_user(String product_code,String ak, String sk, String user_account) {
 
         try{
-            return permissionApiController.resources_by_user(user_account, product_code, ak, sk);
+            return permissionApiController.resources_by_user(product_code, ak, sk, user_account);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -444,96 +445,20 @@ public class PermissionApi {
 
     /**
      * 通过角色code获取资源
+     * @param product_code 产品代码
+     * @param ak  ak
+     * @param sk  sk
      * @param role_code 角色code
-     * @param product_code 产品代码
-     * @param ak  ak
-     * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "resources_by_role", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "resources_by_role", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo resources_by_role(String role_code, String product_code,String ak, String sk) {
+    public ReturnInfo resources_by_role(String product_code,String ak, String sk, String role_code) {
 
         try{
-            return permissionApiController.resources_by_role(role_code, product_code, ak, sk);
+            return permissionApiController.resources_by_role(product_code, ak, sk, role_code);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
-        }
-    }
-
-    /**
-     * 新增数据标识
-     * @param product_code 产品代码
-     * @param ak  ak
-     * @param sk  sk
-     * @param dataTagInfo
-     * @return
-     */
-    @RequestMapping(value = "add_data_tag_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public ReturnInfo add_data_tag_by_product(String product_code,String ak, String sk, DataTagInfo dataTagInfo) {
-
-        try{
-            return permissionApiController.add_data_tag_by_product(product_code, ak, sk, dataTagInfo);
-        }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
-        }
-    }
-
-    /**
-     * 新增数据标识
-     * @param product_code 产品代码
-     * @param ak  ak
-     * @param sk  sk
-     * @param dataTagInfo
-     * @return
-     */
-    @RequestMapping(value = "update_data_tag_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public ReturnInfo update_data_tag_by_product(String product_code,String ak, String sk, DataTagInfo dataTagInfo) {
-
-        try{
-            return permissionApiController.update_data_tag_by_product(product_code, ak, sk, dataTagInfo);
-        }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
-        }
-    }
-
-    /**
-     * 新增数据组标识
-     * @param product_code 产品代码
-     * @param ak  ak
-     * @param sk  sk
-     * @param dataTagGroupInfo
-     * @return
-     */
-    @RequestMapping(value = "add_data_tag_group_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public ReturnInfo add_data_tag_group_by_product(String product_code,String ak, String sk, DataTagGroupInfo dataTagGroupInfo) {
-
-        try{
-            return permissionApiController.add_data_tag_group_by_product(product_code, ak, sk, dataTagGroupInfo);
-        }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
-        }
-    }
-
-    /**
-     * 新增数据标识
-     * @param product_code 产品代码
-     * @param ak  ak
-     * @param sk  sk
-     * @param dataTagGroupInfo
-     * @return
-     */
-    @RequestMapping(value = "update_data_tag_group_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public ReturnInfo<DataTagGroupInfo> update_data_tag_group_by_product(String product_code,String ak, String sk, DataTagGroupInfo dataTagGroupInfo) {
-
-        try{
-            return permissionApiController.update_data_tag_group_by_product(product_code, ak, sk, dataTagGroupInfo);
-        }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -545,7 +470,7 @@ public class PermissionApi {
      * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "get_dimension_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_dimension_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<PermissionDimensionInfo>> get_dimension_list_by_product(String product_code,String ak, String sk) {
 
@@ -566,7 +491,7 @@ public class PermissionApi {
      * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "get_dimension_value_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_dimension_value_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<PermissionDimensionValueInfo>> get_dimension_value_list_by_product(String product_code,String ak, String sk) {
 
@@ -587,12 +512,12 @@ public class PermissionApi {
      * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "get_user_dimension_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_user_dimension_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<PermissionDimensionInfo>> get_user_dimension_list_by_product(String user_account,String product_code,String ak, String sk) {
+    public ReturnInfo<List<PermissionDimensionInfo>> get_user_dimension_list_by_product(String product_code,String ak, String sk, String user_account) {
 
         try{
-            return permissionApiController.get_user_dimension_list_by_product(user_account, product_code, ak, sk);
+            return permissionApiController.get_user_dimension_list_by_product(product_code, ak, sk, user_account);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
@@ -607,12 +532,12 @@ public class PermissionApi {
      * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "get_user_dimension_value_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_user_dimension_value_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<PermissionUserDimensionValueInfo>> get_user_dimension_value_list_by_product(String user_account, String product_code,String ak, String sk) {
+    public ReturnInfo<List<PermissionUserDimensionValueInfo>> get_user_dimension_value_list_by_product(String product_code,String ak, String sk, String user_account) {
 
         try{
-            return permissionApiController.get_user_dimension_value_list_by_product(user_account, product_code, ak, sk);
+            return permissionApiController.get_user_dimension_value_list_by_product(product_code, ak, sk, user_account);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
@@ -627,12 +552,12 @@ public class PermissionApi {
      * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "get_usergroup_dimension_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_usergroup_dimension_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<PermissionDimensionInfo>> get_usergroup_dimension_list_by_product(String group_code,String product_code,String ak, String sk) {
+    public ReturnInfo<List<PermissionDimensionInfo>> get_usergroup_dimension_list_by_product(String product_code,String ak, String sk, String group_code) {
 
         try{
-            return permissionApiController.get_usergroup_dimension_list_by_product(group_code, product_code, ak, sk);
+            return permissionApiController.get_usergroup_dimension_list_by_product(product_code, ak, sk, group_code);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
@@ -647,31 +572,18 @@ public class PermissionApi {
      * @param sk  sk
      * @return
      */
-    @RequestMapping(value = "get_usergroup_dimension_value_list_by_product", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "get_usergroup_dimension_value_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<PermissionUserGroupDimensionValueInfo>> get_usergroup_dimension_value_list_by_product(String group_code, String product_code,String ak, String sk) {
+    public ReturnInfo<List<PermissionUserGroupDimensionValueInfo>> get_usergroup_dimension_value_list_by_product(String product_code,String ak, String sk, String group_code) {
 
         try{
-            return permissionApiController.get_usergroup_dimension_value_list_by_product(group_code, product_code, ak, sk);
+            return permissionApiController.get_usergroup_dimension_value_list_by_product(product_code, ak, sk, group_code);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
             logger.error(error, e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**

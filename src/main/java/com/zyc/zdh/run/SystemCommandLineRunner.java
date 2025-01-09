@@ -602,13 +602,13 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         logger.info("初始化告警任务");
         //检测是否有email 任务 如果没有则添加
         QuartzJobInfo qj = new QuartzJobInfo();
-        qj.setJob_type("EMAIL");
-        List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.selectByJobType("EMAIL");
+        qj.setJob_type(JobType.EMAIL.getCode());
+        List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.selectByJobType(JobType.EMAIL.getCode());
         if (quartzJobInfos.size() > 0) {
             logger.info("已经存在[EMAIL]历史监控任务...");
         }else{
             String expr = ConfigUtil.getValue(ConfigUtil.EMAIL_SCHEDULE_INTERVAL, "30s");
-            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查告警任务", expr, "-1", "", "EMAIL");
+            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo(JobType.EMAIL.getCode(), JobModel.REPEAT.getValue(), new Date(), DateUtil.pase("2999-12-31"), "检查告警任务", expr, "-1", "", JobType.EMAIL.getCode());
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
             quartzManager2.addTaskToQuartz(quartzJobInfo);
@@ -619,13 +619,13 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         logger.info("初始化重试任务");
         //检测是否有retry 任务 如果没有则添加
         QuartzJobInfo qj_retry = new QuartzJobInfo();
-        qj_retry.setJob_type("RETRY");
-        List<QuartzJobInfo> quartzJobInfos2 = quartzJobMapper.selectByJobType("RETRY");
+        qj_retry.setJob_type(JobType.RETRY.getCode());
+        List<QuartzJobInfo> quartzJobInfos2 = quartzJobMapper.selectByJobType(JobType.RETRY.getCode());
         if (quartzJobInfos2.size() > 0) {
             logger.info("已经存在[RETRY]历史监控任务...");
         }else{
             String expr = ConfigUtil.getValue(ConfigUtil.RETRY_SCHEDULE_INTERVAL, "30s");
-            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查失败重试任务", expr, "-1", "", "RETRY");
+            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo(JobType.RETRY.getCode(), JobModel.REPEAT.getValue(), new Date(), DateUtil.pase("2999-12-31"), "检查失败重试任务", expr, "-1", "", JobType.RETRY.getCode());
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
             quartzManager2.addTaskToQuartz(quartzJobInfo);
@@ -635,12 +635,12 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     public void initCheck() throws Exception {
         logger.info("初始化依赖检查任务");
         //检测是否有check_dep 任务 如果没有则添加
-        List<QuartzJobInfo> quartzJobInfos3 = quartzJobMapper.selectByJobType("CHECK");
+        List<QuartzJobInfo> quartzJobInfos3 = quartzJobMapper.selectByJobType(JobType.CHECK.getCode());
         if (quartzJobInfos3.size() > 0) {
             logger.info("已经存在[CHECK]历史监控任务...");
         }else{
             String expr = ConfigUtil.getValue(ConfigUtil.CHECK_SCHEDULE_INTERVAL, "30s");
-            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查依赖任务", expr, "-1", "", "CHECK");
+            QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo(JobType.CHECK.getCode(), JobModel.REPEAT.getValue(), new Date(), DateUtil.pase("2999-12-31"), "检查依赖任务", expr, "-1", "", JobType.CHECK.getCode());
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
             quartzManager2.addTaskToQuartz(quartzJobInfo);

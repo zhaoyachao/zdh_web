@@ -6,6 +6,7 @@ import com.zyc.zdh.entity.QuartzJobInfo;
 import com.zyc.zdh.entity.StrategyGroupInfo;
 import com.zyc.zdh.entity.TaskGroupLogInstance;
 import com.zyc.zdh.entity.TaskLogInstance;
+import com.zyc.zdh.job.JobType;
 import com.zyc.zdh.job.MyJobBean;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
@@ -117,14 +118,14 @@ public class QuartzManager2 {
 					.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).build();
 			Trigger trigger = null;
 			// CronScheduleBuilder.cronSchedule(taskInfo.getTaskExpression())
+			String task_schedule_mode = Const.TASK_SCHEDULE_MODE_CRON;
 			String expression = quartzJobInfo.getExpr();
 			if (expression.contains("s") || expression.contains("m")
 					|| expression.contains("h") || expression.contains("d")) {
 				SimpleScheduleBuilder simpleScheduleBuilder = getSimpleScheduleBuilder(
 						expression, -1,quartzJobInfo.getMisfire());
 
-
-
+				task_schedule_mode = Const.TASK_SCHEDULE_MODE_SIMPLE;
 				trigger = TriggerBuilder
 						.newTrigger()
 						.withPriority(Integer.valueOf(StringUtils.isEmpty(quartzJobInfo.getPriority())?"5":quartzJobInfo.getPriority())) //设置优先级
@@ -143,7 +144,8 @@ public class QuartzManager2 {
 					.toString());
 			JobDataMap jobDataMap = trigger.getJobDataMap();
 			jobDataMap.put(MyJobBean.TASK_ID, quartzJobInfo.getJob_id());
-			jobDataMap.put(MyJobBean.TASK_TYPE, "BEACONFIRE");//烽火台告警
+			jobDataMap.put(MyJobBean.TASK_TYPE, JobType.BEACONFIRE.getCode());//烽火台告警
+			jobDataMap.put(MyJobBean.TASK_SCHEDULE_MODE, task_schedule_mode);//调度表达式模式
 			quartzJobInfo.setStatus("running");
 			schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
 
@@ -202,6 +204,7 @@ public class QuartzManager2 {
 					.withDescription(quartzJobInfo.getJob_context())
 					.withIdentity(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()).build();
 			Trigger trigger = null;
+			String task_schedule_mode = Const.TASK_SCHEDULE_MODE_CRON;
 			// CronScheduleBuilder.cronSchedule(taskInfo.getTaskExpression())
 			String expression = quartzJobInfo.getExpr();
 			if (expression.contains("s") || expression.contains("m")
@@ -209,7 +212,7 @@ public class QuartzManager2 {
 				SimpleScheduleBuilder simpleScheduleBuilder = getSimpleScheduleBuilder(
 						expression, -1,quartzJobInfo.getMisfire());
 
-
+				task_schedule_mode = Const.TASK_SCHEDULE_MODE_SIMPLE;
 
 				trigger = TriggerBuilder
 						.newTrigger()
@@ -229,6 +232,7 @@ public class QuartzManager2 {
 					.toString());
 			JobDataMap jobDataMap = trigger.getJobDataMap();
 			jobDataMap.put(MyJobBean.TASK_ID, quartzJobInfo.getJob_id());
+			jobDataMap.put(MyJobBean.TASK_SCHEDULE_MODE, task_schedule_mode);//调度表达式模式
 			quartzJobInfo.setStatus("running");
 			schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
 			//调度器,关闭自动启动
@@ -260,7 +264,7 @@ public class QuartzManager2 {
 	public void addTaskToQuartz(StrategyGroupInfo strategyGroupInfo) throws Exception {
 		try {
 			//根据调度id 和etl任务id 确定唯一的triggerkey
-			if(schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(strategyGroupInfo.getId(), "strategy_group"))!=null){
+			if(schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(strategyGroupInfo.getId(), Const.STRATEGY_JOB_KEY_GROUP))!=null){
 				logger.info("已经存在同名的triggerkey,请重新创建");
 				throw new Exception("已经存在同名的triggerkey,请重新创建");
 			}
@@ -271,28 +275,28 @@ public class QuartzManager2 {
 					.newJob(MyJobBean.class)
 					.requestRecovery(recovery) // quartz 自动故障转移
 					.withDescription(strategyGroupInfo.getGroup_context())
-					.withIdentity(strategyGroupInfo.getId(), "strategy_group").build();
+					.withIdentity(strategyGroupInfo.getId(), Const.STRATEGY_JOB_KEY_GROUP).build();
 			Trigger trigger = null;
-
+			String task_schedule_mode = Const.TASK_SCHEDULE_MODE_CRON;
 			String expression = strategyGroupInfo.getExpr();
 			if (expression.contains("s") || expression.contains("m")
 					|| expression.contains("h") || expression.contains("d")) {
 				SimpleScheduleBuilder simpleScheduleBuilder = getSimpleScheduleBuilder(
 						expression, -1,strategyGroupInfo.getMisfire());
 
-
+				task_schedule_mode = Const.TASK_SCHEDULE_MODE_SIMPLE;
 
 				trigger = TriggerBuilder
 						.newTrigger()
 						.withPriority(Integer.valueOf(StringUtils.isEmpty(strategyGroupInfo.getPriority())?"5":strategyGroupInfo.getPriority())) //设置优先级
-						.withIdentity(strategyGroupInfo.getId(), "strategy_group").startNow()
+						.withIdentity(strategyGroupInfo.getId(), Const.STRATEGY_JOB_KEY_GROUP).startNow()
 						.withSchedule(simpleScheduleBuilder).build();
 			} else {
 				CronScheduleBuilder cronScheduleBuilder = getCronScheduleBuilder(expression,strategyGroupInfo.getMisfire());
 				trigger = TriggerBuilder
 						.newTrigger()
 						.withPriority(Integer.valueOf(StringUtils.isEmpty(strategyGroupInfo.getPriority())?"5":strategyGroupInfo.getPriority())) //设置优先级
-						.withIdentity(strategyGroupInfo.getId(), "strategy_group").startNow()
+						.withIdentity(strategyGroupInfo.getId(), Const.STRATEGY_JOB_KEY_GROUP).startNow()
 						.withSchedule(cronScheduleBuilder).build();
 			}
 
@@ -301,6 +305,7 @@ public class QuartzManager2 {
 			JobDataMap jobDataMap = trigger.getJobDataMap();
 			jobDataMap.put(MyJobBean.TASK_ID, strategyGroupInfo.getId());
 			jobDataMap.put(MyJobBean.TASK_TYPE, "DIGITALMARKET");//智能营销
+			jobDataMap.put(MyJobBean.TASK_SCHEDULE_MODE, task_schedule_mode);//调度表达式模式
 			strategyGroupInfo.setStatus("running");
 			schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
 
@@ -352,6 +357,7 @@ public class QuartzManager2 {
 				// trigger.getJobDataMap().put(MyJobBean.TASK_ID,
 				// taskInfo.getTaskId());
 				// 按新的trigger重新设置job执行
+				trigger.getJobDataMap().put(MyJobBean.TASK_SCHEDULE_MODE, Const.TASK_SCHEDULE_MODE_SIMPLE);//调度表达式模式
 				schedulerFactoryBean.getScheduler().rescheduleJob(trigger.getKey(), trigger);
 			} else {
 				trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(
@@ -364,6 +370,7 @@ public class QuartzManager2 {
 						.build();
 				trigger.getJobDataMap().put(MyJobBean.TASK_ID,
 						quartzJobInfo.getJob_id());
+				trigger.getJobDataMap().put(MyJobBean.TASK_SCHEDULE_MODE, Const.TASK_SCHEDULE_MODE_CRON);//调度表达式模式
 				// 按新的trigger重新设置job执行
 				schedulerFactoryBean.getScheduler().rescheduleJob(trigger.getKey(), trigger);
 			}
@@ -462,7 +469,7 @@ public class QuartzManager2 {
 		QuartzJobInfo qji=new QuartzJobInfo();
 		try {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
-			JobKey jobKey = new JobKey(strategyGroupInfo.getId(), "strategy_group");
+			JobKey jobKey = new JobKey(strategyGroupInfo.getId(), Const.STRATEGY_JOB_KEY_GROUP);
 			scheduler.pauseJob(jobKey);
 			scheduler.deleteJob(jobKey);
 			// 在自己定义的任务表中删除任务,状态删除
@@ -528,7 +535,7 @@ public class QuartzManager2 {
 	public void pauseTask(StrategyGroupInfo strategyGroupInfo) {
 		try {
 			// Scheduler scheduler = schedulerFactoryBean.getScheduler();
-			JobKey jobKey = new JobKey(strategyGroupInfo.getId(), "strategy_group");
+			JobKey jobKey = new JobKey(strategyGroupInfo.getId(), Const.STRATEGY_JOB_KEY_GROUP);
 			schedulerFactoryBean.getScheduler().pauseJob(jobKey);
 			// 更新定时任务状态
 			strategyGroupInfo.setStatus("pause");
@@ -564,7 +571,7 @@ public class QuartzManager2 {
 	 */
 	public void resumeTask(StrategyGroupInfo strategyGroupInfo) {
 		try {
-			JobKey jobKey = new JobKey(strategyGroupInfo.getId(), "strategy_group");
+			JobKey jobKey = new JobKey(strategyGroupInfo.getId(), Const.STRATEGY_JOB_KEY_GROUP);
 			schedulerFactoryBean.getScheduler().resumeJob(jobKey);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block

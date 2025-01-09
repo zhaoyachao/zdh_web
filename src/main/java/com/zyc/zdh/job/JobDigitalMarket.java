@@ -515,7 +515,6 @@ public class JobDigitalMarket {
             for (StrategyInstance si : siList) {
                 JSONObject jsonObject1 = new JSONObject();
                 String sid = si.getId();
-                System.out.println("=======================");
 
                 jsonObject1.put("strategy_instance_id", sid);
                 //jsonObject1.put("etl_task_id", tli.getEtl_task_id());

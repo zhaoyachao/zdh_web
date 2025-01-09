@@ -316,6 +316,13 @@
             title: '策略组说明',
             sortable:false
         }, {
+            field: 'cur_time',
+            title: '逻 辑 时 间',
+            sortable:true,
+            formatter: function (value, row, index) {
+                return getMyDate(value);
+            }
+        },  {
             field: 'create_time',
             title: '任 务 创 建 时 间',
             sortable:true,

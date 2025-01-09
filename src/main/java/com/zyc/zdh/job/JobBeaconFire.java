@@ -59,7 +59,7 @@ public class JobBeaconFire {
 
                 BeaconFireInfo beaconFireInfo = beaconFireMapper.selectByPrimaryKey(beaconFireTask.getBeacon_fire_id());
                 if(beaconFireInfo == null){
-                    quartzManager2.deleteTask(beaconFireTask.getBeacon_fire_id(),"beaconfire");
+                    quartzManager2.deleteTask(beaconFireTask.getBeacon_fire_id(),Const.BEACONFIRE_JOB_KEY_GROUP);
                     continue;
                 }
                 DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(beaconFireInfo.getData_sources_choose_input());

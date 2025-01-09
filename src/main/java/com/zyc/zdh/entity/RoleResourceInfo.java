@@ -18,8 +18,10 @@ public class RoleResourceInfo {
 	@Column
    	private String id;
  	/**
- 	* 用户id
+ 	* 角色id
+	 * 废弃-role_code可做唯一标识
  	*/
+ 	@Deprecated
    	private String role_id;
  	/**
  	* 资源id

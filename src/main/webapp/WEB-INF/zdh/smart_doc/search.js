@@ -115,42 +115,26 @@ api[1].list.push({
 });
 api[1].list.push({
     order: '22',
-    desc: '新增数据标识',
+    desc: '获取产品线下所有维度',
 });
 api[1].list.push({
     order: '23',
-    desc: '新增数据标识',
+    desc: '获取产品线下所有维度',
 });
 api[1].list.push({
     order: '24',
-    desc: '新增数据组标识',
+    desc: '获取用户在产品线下所有维度',
 });
 api[1].list.push({
     order: '25',
-    desc: '新增数据标识',
-});
-api[1].list.push({
-    order: '26',
-    desc: '获取产品线下所有维度',
-});
-api[1].list.push({
-    order: '27',
-    desc: '获取产品线下所有维度',
-});
-api[1].list.push({
-    order: '28',
-    desc: '获取用户在产品线下所有维度',
-});
-api[1].list.push({
-    order: '29',
     desc: '获取用户在产品线下所有维度值',
 });
 api[1].list.push({
-    order: '30',
+    order: '26',
     desc: '获取用户在产品线下所有维度',
 });
 api[1].list.push({
-    order: '31',
+    order: '27',
     desc: '获取用户在产品线下所有维度值',
 });
 api.push({
@@ -1427,43 +1411,27 @@ api[29].list.push({
 });
 api[29].list.push({
     order: '22',
-    desc: '新增数据标识',
+    desc: '获取产品线下所有维度code',
 });
 api[29].list.push({
     order: '23',
-    desc: '新增数据标识',
+    desc: '获取产品线下所有维度值',
 });
 api[29].list.push({
     order: '24',
-    desc: '新增数据组标识',
+    desc: '获取用户在产品线下绑定的维度信息',
 });
 api[29].list.push({
     order: '25',
-    desc: '新增数据标识',
+    desc: '获取用户在产品线下所有维度值',
 });
 api[29].list.push({
     order: '26',
-    desc: '获取产品线下所有维度',
+    desc: '获取用户组在产品线下绑定所有维度信息',
 });
 api[29].list.push({
     order: '27',
-    desc: '获取产品线下所有维度',
-});
-api[29].list.push({
-    order: '28',
-    desc: '获取用户在产品线下所有维度',
-});
-api[29].list.push({
-    order: '29',
-    desc: '获取用户在产品线下所有维度值',
-});
-api[29].list.push({
-    order: '30',
-    desc: '获取用户在产品线下所有维度',
-});
-api[29].list.push({
-    order: '31',
-    desc: '获取用户在产品线下所有维度值',
+    desc: '获取用户组在产品线下所有维度值信息',
 });
 api.push({
     alias: 'PermissionController',

@@ -134,7 +134,7 @@ public interface TaskGroupLogInstanceMapper extends BaseTaskGroupLogInstanceMapp
             "<foreach collection='status' item='st' open='(' separator=',' close=')'>",
             "#{st}",
             "</foreach>",
-            " order by priority desc",
+            " order by priority desc, id asc",
             "</script>"
             }
     )

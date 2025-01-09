@@ -13,6 +13,7 @@ public enum JobType {
     GROUP("GROUP","GROUP","GROUP任务","false"),
     HDFS("HDFS","HDFS","HDFS任务","false"),
     JDBC("JDBC","JDBC","JDBC任务","false"),
+    BEACONFIRE("BEACONFIRE","BEACONFIRE","烽火台任务","false"),
     DIGITALMARKET("DIGITALMARKET","DIGITALMARKET","智能营销任务","true");
 
 

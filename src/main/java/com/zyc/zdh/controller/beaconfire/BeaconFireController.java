@@ -5,6 +5,7 @@ import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.BeaconFireMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobModel;
+import com.zyc.zdh.job.JobType;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhPermissionService;
@@ -234,11 +235,11 @@ public class BeaconFireController extends BaseController {
             if(status.equalsIgnoreCase(Const.ON)){
                 BeaconFireInfo oldBeaconFireInfo = beaconFireMapper.selectByPrimaryKey(id);
                 String expr = oldBeaconFireInfo.getExpr();
-                QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("BEACONFIRE", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查失败重试任务", expr, "-1", "", "beaconfire");
+                QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo(JobType.BEACONFIRE.getCode(), JobModel.REPEAT.getValue(), new Date(), new Date(), "烽火台告警任务", expr, "-1", "", "beaconfire");
                 quartzJobInfo.setJob_id(beaconFireInfo.getId());
                 quartzManager2.addBeaconFireTaskToQuartz(quartzJobInfo);
             }else{
-                quartzManager2.deleteTask(beaconFireInfo.getId(), "beaconfire");
+                quartzManager2.deleteTask(beaconFireInfo.getId(), Const.BEACONFIRE_JOB_KEY_GROUP);
             }
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", beaconFireInfo);

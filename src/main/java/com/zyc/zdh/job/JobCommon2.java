@@ -3372,20 +3372,20 @@ public class JobCommon2 {
         RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
         //手动重试增加重试实例,自动重试在原来的基础上
 
-        if (quartzJobInfo.getJob_type().equals("EMAIL")) {
+        if (quartzJobInfo.getJob_type().equalsIgnoreCase(JobType.EMAIL.getCode())) {
             logger.debug("调度任务[EMAIL],开始调度");
             EmailJob.run(quartzJobInfo);
             EmailJob.notice_event();
             EmailJob.beaconFireAlarm();
             return;
-        } else if (quartzJobInfo.getJob_type().equals("RETRY")) {
+        } else if (quartzJobInfo.getJob_type().equals(JobType.RETRY.getCode())) {
             logger.debug("调度任务[RETRY],开始调度");
             RetryJob.run(quartzJobInfo);
             return;
-        } else if (quartzJobInfo.getJob_type().equals("CHECK")) {
+        } else if (quartzJobInfo.getJob_type().equalsIgnoreCase(JobType.CHECK.getCode())) {
             logger.debug("调度任务[CHECK],开始调度");
             //通过redis获取check接口类,遍历所有接口实现执行任务
-            String checkImpls = redisUtil.get("zdh_check_impls", "").toString();
+            String checkImpls = redisUtil.get(Const.ZDH_CHECK_IMPLS, "").toString();
             if(!StringUtils.isEmpty(checkImpls)){
                 for (String impl: checkImpls.split(",")){
 
@@ -3409,11 +3409,11 @@ public class JobCommon2 {
             //CheckDepJob.run(quartzJobInfo);
             //CheckStrategyDepJob.run();
             return;
-        } else if (quartzJobInfo.getJob_type().equals("BLOOD")) {
+        } else if (quartzJobInfo.getJob_type().equalsIgnoreCase(JobType.BLOOD.getCode())) {
             logger.debug("调度任务[BLOOD],开始调度");
             CheckBloodSourceJob.Check(ConfigUtil.getValue(ConfigUtil.ZDP_PRODUCT));
             return;
-        } else if(quartzJobInfo.getJob_type().equals("ETL")){
+        } else if(quartzJobInfo.getJob_type().equalsIgnoreCase(JobType.ETL.getCode())){
             //线程池执行具体调度任务
             threadPoolExecutor.execute(new Runnable() {
                 @Override
@@ -3457,7 +3457,7 @@ public class JobCommon2 {
                         tgli.setStatus(JobStatus.NON.getValue());
                     }
                     //日期超限控制
-                    if (is_retry == 0 && tgli.getUse_quartz_time().equalsIgnoreCase(Const.OFF) && tgli.getCur_time().getTime() > quartzJobInfo.getEnd_time().getTime()) {
+                    if (is_retry == 0 && tgli.getCur_time().getTime()/1000 > quartzJobInfo.getEnd_time().getTime()/1000) {
                         //通知信息
                         logger.info("任务ID:"+tgli.getJob_id()+", 任务名称: "+tgli.getJob_context()+", 当前任务超过日期控制,无法生成任务组信息,自动结束,请调整调度任务组中结束时间");
                         EmailJob.send_notice(tgli.getOwner(), "调度任务结束", "任务ID:"+tgli.getJob_id()+", 任务名称: "+tgli.getJob_context()+", 当前任务超过日期控制,无法生成任务组信息,自动结束,请调整调度任务组中结束时间", "告警");
@@ -3567,7 +3567,7 @@ public class JobCommon2 {
 
         //判断自定义时间是否超过,超过删除删除调度
         Timestamp second = DateUtil.add(quartzJobInfo.getLast_time(), dateType, num);
-        if (cur.getTime() > quartzJobInfo.getEnd_time().getTime() || second.getTime() > quartzJobInfo.getEnd_time().getTime()) {
+        if (cur.getTime()/1000 > quartzJobInfo.getEnd_time().getTime()/1000 || second.getTime()/1000 > quartzJobInfo.getEnd_time().getTime()/1000) {
             quartzJobInfo.setStatus(JobStatus.FINISH.getValue());
             quartzManager2.deleteTask(quartzJobInfo, JobStatus.FINISH.getValue());
         }
@@ -3926,7 +3926,7 @@ public class JobCommon2 {
 
                 if (((JSONObject) job).getString("type").equalsIgnoreCase("tasks")) {
                     taskLogInstance.setMore_task(more_task);
-                    taskLogInstance.setJob_type("ETL");
+                    taskLogInstance.setJob_type(JobType.ETL.getCode());
                     String zdh_instance = ((JSONObject) job).getString("zdh_instance");
                     if (!org.apache.commons.lang3.StringUtils.isEmpty(zdh_instance) && org.apache.commons.lang3.StringUtils.isEmpty(taskLogInstance.getParams())) {
                         JSONObject jsonObject = new JSONObject();
@@ -3941,6 +3941,10 @@ public class JobCommon2 {
                     }
 
                 }
+
+                taskLogInstance.setJsmind_data("");
+                taskLogInstance.setRun_jsmind_data("");
+
                 if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.SHELL.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.SHELL.getCode());
@@ -3952,52 +3956,37 @@ public class JobCommon2 {
                 if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.EMAIL.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.EMAIL.getCode());
+                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
                 }
                 if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.HTTP.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.HTTP.getCode());
+                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
                 }
                 if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.FLUME.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.FLUME.getCode());
+                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
 
                 }
 
 
-                taskLogInstance.setJsmind_data("");
-                taskLogInstance.setRun_jsmind_data("");
                 if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.JDBC.getCode())) {
-                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.JDBC.getCode());
+                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
                 }
 
                 if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.HDFS.getCode())) {
-                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.HDFS.getCode());
-                }
+                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
 
-                if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.HTTP.getCode())) {
-                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setMore_task("");
-                    taskLogInstance.setJob_type(JobType.HTTP.getCode());
-                }
-
-                if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.EMAIL.getCode())) {
-                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setMore_task("");
-                    taskLogInstance.setJob_type(JobType.EMAIL.getCode());
-                }
-                if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.FLUME.getCode())) {
-                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setMore_task("");
-                    taskLogInstance.setJob_type(JobType.FLUME.getCode());
                 }
 
 
@@ -4053,7 +4042,6 @@ public class JobCommon2 {
                 //JSONObject jsonObject1 = new JSONObject();
                 Map<String, Object> jsonObject1 = JsonUtil.createEmptyLinkMap();
                 String tid = tli.getId();
-                System.out.println("=======================");
 
                 jsonObject1.put("task_log_instance_id", tid);
                 jsonObject1.put("etl_task_id", tli.getEtl_task_id());
@@ -4141,7 +4129,7 @@ public class JobCommon2 {
 
     /**
      * 检查当前运行spark任务是否超限
-     *
+     * todo 对于非spark 数据采集任务,当前未实现-后续可优化
      * @param tli
      * @return true:超限,false:未超限
      */
@@ -4164,7 +4152,7 @@ public class JobCommon2 {
                 redis_key=redis_key+"_"+zdh_instance;
             }
             TaskLogInstance t = new TaskLogInstance();
-            t.setJob_type("ETL");
+            t.setJob_type(JobType.ETL.getCode());
             t.setStatus(JobStatus.ETL.getValue());
             List<TaskLogInstance> tlis = tlim.selectByTaskLogInstance(t);
             if (redisUtil.exists(redis_key)) {

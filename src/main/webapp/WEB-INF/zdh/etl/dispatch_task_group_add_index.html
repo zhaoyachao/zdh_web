@@ -153,7 +153,7 @@
                             <label class="col-sm-2 control-label">回退时间差</label>
                             <div class="col-sm-10">
                                 <input id="time_diff" name="time_diff" type="text"
-                                       placeholder="时间差 example:1s(1秒),1m(1分钟),1d(1天)" class="form-control" aria-required="true"> </span>
+                                       placeholder="时间差,默认单位秒 example:60(60秒)" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
 
@@ -631,7 +631,7 @@
 
         //定义特定数据源展示的div
         function customerTimeShow(action) {
-            $('#div_start_end_time')[0].style.display = action;
+            //$('#div_start_end_time')[0].style.display = action;
             $('#div_step_size')[0].style.display = action;
         }
 

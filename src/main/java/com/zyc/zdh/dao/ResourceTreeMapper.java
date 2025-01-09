@@ -15,26 +15,21 @@ public interface ResourceTreeMapper extends BaseResourceTreeMapper<ResourceTreeI
     public int updateParentById(@Param("id") String id, @Param("parent") String parent, @Param("level") String level);
 
 
-    @Delete(value = "delete from role_resource_info  where role_id=#{role_id}")
-    public int deleteByRoleId(@Param("role_id") String role_id);
-
     @Delete(value = "delete from role_resource_info  where role_code=#{role_code} and product_code=#{product_code}")
     public int deleteByRoleCode(@Param("role_code") String role_code, @Param("product_code") String product_code);
 
     @Insert({
             "<script>",
             "INSERT INTO role_resource_info",
-            "(role_id, resource_id,create_time,update_time,role_code, product_code)",
+            "(resource_id,create_time,update_time,role_code, product_code)",
             "VALUES",
             "<foreach collection='list' item='user' index='index' separator =','>",
-            "(#{user.role_id}, #{user.resource_id}, #{user.create_time},#{user.update_time},#{user.role_code},#{user.product_code})",
+            "(#{user.resource_id}, #{user.create_time},#{user.update_time},#{user.role_code},#{user.product_code})",
             "</foreach >",
             "</script>"
     })
     public int updateUserResource(@Param("list") List<RoleResourceInfo> list);
 
-    @Select(value = "select * from role_resource_info where role_id=#{role_id}")
-    public List<RoleResourceInfo> selectByRoleId(@Param("role_id") String role_id);
 
     @Select(value = "select * from role_resource_info where role_code=#{role_code} and product_code=#{product_code}")
     public List<RoleResourceInfo> selectByRoleCode(@Param("role_code") String role_code, @Param("product_code") String product_code);

@@ -242,22 +242,25 @@ public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLog
 
     /**
      * 获取所有可以执行的子任务
+     * 可优化sql 提高效率
      * @param status
      * @return
      */
     @Select(
             {
             "<script>",
-            "select tli.* from task_log_instance tli,task_group_log_instance tgli where tli.status in",
+            "select tli.* from task_log_instance tli inner join task_group_log_instance tgli",
+            " on tli.group_id=tgli.id",
+            "and tgli.status = 'sub_task_dispatch'",
+            "where tli.status in",
             "<foreach collection='status' item='st' open='(' separator=',' close=')'>",
             "#{st}",
             "</foreach>",
-            " and tgli.status = 'sub_task_dispatch'",
-            " and tli.group_id=tgli.id",
             " and tli.job_type not in ",
             "<foreach collection='job_types' item='job_type' open='(' separator=',' close=')'>",
             "#{job_type}",
             "</foreach>",
+            " order by tli.priority desc, tli.id asc",
             //" and tli.job_type not in ('group','jdbc','hdfs')",
             "</script>"
             }
@@ -272,16 +275,18 @@ public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLog
     @Select(
             {
                     "<script>",
-                    "select tli.* from task_log_instance tli,task_group_log_instance tgli where tli.status in",
+                    "select tli.* from task_log_instance tli inner join task_group_log_instance tgli",
+                    " on tli.group_id=tgli.id",
+                    " and tgli.status = 'sub_task_dispatch'",
+                    "where tli.status in",
                     "<foreach collection='status' item='st' open='(' separator=',' close=')'>",
                     "#{st}",
                     "</foreach>",
-                    " and tgli.status = 'sub_task_dispatch'",
-                    " and tli.group_id=tgli.id",
                     " and tli.job_type in ",
                     "<foreach collection='job_types' item='job_type' open='(' separator=',' close=')'>",
                     "#{job_type}",
                     "</foreach>",
+                    " order by tli.priority desc, tli.id asc",
                     "</script>"
             }
     )

@@ -1,12 +1,14 @@
 package com.zyc.zdh.job;
 
+import com.zyc.zdh.dao.BeaconFireMapper;
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.StrategyGroupMapper;
-import com.zyc.zdh.dao.TaskLogInstanceMapper;
+import com.zyc.zdh.entity.BeaconFireInfo;
 import com.zyc.zdh.entity.BeaconFireTask;
 import com.zyc.zdh.entity.QuartzJobInfo;
 import com.zyc.zdh.entity.StrategyGroupInfo;
-import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.quartz.QuartzManager2;
+import com.zyc.zdh.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 
 	public static final String TASK_ID = "task_id";
 	public static final String TASK_TYPE = "task_type";
+	public static final String TASK_SCHEDULE_MODE = "task_schedule_mode";//cron, simple
 	
 	@Autowired
 	private QuartzJobMapper quartzJobMapper;
@@ -46,13 +49,13 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 	}
 
 	@Autowired
-	private TaskLogInstanceMapper taskLogInstanceMapper;
-
-	@Autowired
-	private RedisUtil redisUtil;
-
-	@Autowired
 	private StrategyGroupMapper sgm;
+
+	@Autowired
+	private QuartzManager2 quartzManager2;
+
+	@Autowired
+	private BeaconFireMapper beaconFireMapper;
 
 
 	@SuppressWarnings("unchecked")
@@ -63,14 +66,15 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 			JobDataMap jobDataMap = context.getTrigger().getJobDataMap();
 			String taskId = jobDataMap.getString(TASK_ID);
 			String taskType = jobDataMap.getString(TASK_TYPE);
+			String taskScheduleMode = jobDataMap.getString(TASK_SCHEDULE_MODE);
 
 			if (taskId == null || taskId.trim().equals("")) {
 				throw new Exception("任务id为空");
 			}
 			// 记录当前时间更新任务最后执行时间
 			Date currentTime =context.getScheduledFireTime();
-			List<String> taskTypes=Arrays.asList(new String[]{"email","check","retry","etl", "blood"});
-			if(StringUtils.isEmpty(taskType) || taskTypes.contains(taskType.toLowerCase())){
+			List<String> taskTypes=Arrays.asList(new String[]{JobType.EMAIL.getCode(),JobType.CHECK.getCode(), JobType.RETRY.getCode(), JobType.ETL.getCode(), JobType.BLOOD.getCode()});
+			if(StringUtils.isEmpty(taskType) || taskTypes.contains(taskType.toUpperCase())){
 				QuartzJobMapper quartzJobMapper2 = this.quartzJobMapper;
 				QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
 				quartzJobInfo = quartzJobMapper2.selectByPrimaryKey(taskId);
@@ -79,25 +83,38 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 					return ;
 				}
 				quartzJobInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
-				if(context.getTrigger().getNextFireTime()==null){
-					//最后一次触发,设置任务状态为已完成
-					quartzJobInfo.setStatus(JobStatus.FINISH.getValue());
+				if(context.getTrigger().getNextFireTime()==null || (quartzJobInfo.getEnd_time() != null && context.getTrigger().getNextFireTime().getTime()/1000>quartzJobInfo.getEnd_time().getTime()/1000)){
+					//删除调度, 最后一次触发,设置任务状态为已完成
+					quartzManager2.deleteTask(taskId, quartzJobInfo.getEtl_task_id());
+                    quartzJobInfo.setStatus(JobStatus.FINISH.getValue());
 				}
 				JobCommon2.chooseJobBean(quartzJobInfo,0,null,null);
-			}else if(!StringUtils.isEmpty(taskType) && taskType.equalsIgnoreCase("DIGITALMARKET")){
+			}else if(!StringUtils.isEmpty(taskType) && taskType.equalsIgnoreCase(JobType.DIGITALMARKET.getCode())){
 				//智能营销调度任务
 				StrategyGroupInfo strategyGroupInfo=new StrategyGroupInfo();
 				strategyGroupInfo = sgm.selectByPrimaryKey(taskId);
 				strategyGroupInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
-				if(context.getTrigger().getNextFireTime()==null){
+				if(context.getTrigger().getNextFireTime()==null || (strategyGroupInfo.getEnd_time() != null && context.getTrigger().getNextFireTime().getTime()/1000 >strategyGroupInfo.getEnd_time().getTime()/1000)){
+					//最后一次触发,设置任务状态为已完成
+					//删除调度
+					quartzManager2.deleteTask(taskId, Const.STRATEGY_JOB_KEY_GROUP);
 					strategyGroupInfo.setStatus(JobStatus.FINISH.getValue());
 				}
 				JobDigitalMarket.chooseJobBean(strategyGroupInfo, 0, null, null);
-			}else if(!StringUtils.isEmpty(taskType) && taskType.equalsIgnoreCase("beaconfire")){
+			}else if(!StringUtils.isEmpty(taskType) && taskType.equalsIgnoreCase(JobType.BEACONFIRE.getCode())){
+				//此处待改进,需要做留存
 				//烽火台告警模块调度任务,告警模块计划采用纯内存存储,可以理解,这部分数据可以不做一致性(原因:告警是需要时效性的,错过去的告警已经失去了告警的意义)
 				BeaconFireTask beaconFireTask = new BeaconFireTask();
 				beaconFireTask.init(taskId, new Timestamp(currentTime.getTime()));
 				JobBeaconFire.linkedBlockingQueue.add(beaconFireTask);
+				if(context.getTrigger().getNextFireTime()==null){
+					//删除调度
+					quartzManager2.deleteTask(taskId, Const.BEACONFIRE_JOB_KEY_GROUP);
+					BeaconFireInfo beaconFireInfo = new BeaconFireInfo();
+					beaconFireInfo.setId(taskId);
+					beaconFireInfo.setStatus(Const.OFF);
+					beaconFireMapper.updateByPrimaryKeySelective(beaconFireInfo);
+				}
 			}
 
 

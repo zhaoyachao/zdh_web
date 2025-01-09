@@ -39,8 +39,6 @@ public class PermissionController extends BaseController {
 
     @Autowired
     private RedisUtil redisUtil;
-    @Autowired
-    private Environment ev;
 
     @Autowired
     private PermissionMapper permissionMapper;
@@ -854,7 +852,7 @@ public class PermissionController extends BaseController {
             List<RoleResourceInfo> rris = new ArrayList<>();
             for (String rid : resource_id) {
                 RoleResourceInfo rri = new RoleResourceInfo();
-                rri.setRole_id(id);
+                //rri.setRole_id(id);
                 rri.setResource_id(rid);
                 rri.setRole_code(code);
                 rri.setCreate_time(new Timestamp(System.currentTimeMillis()));

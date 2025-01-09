@@ -12,10 +12,7 @@ import com.zyc.zdh.push.impl.AliMessagePush;
 import com.zyc.zdh.service.AccountService;
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.JsonUtil;
-import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -313,10 +310,10 @@ public class EmailJob {
                 }
             }
 
-            if(emails.size()>0 && qji.getAlarm_email()!=null  && qji.getAlarm_email().equalsIgnoreCase("on")){
+            if(emails.size()>0 && qji.getAlarm_email()!=null  && qji.getAlarm_email().equalsIgnoreCase(Const.ON)){
                 jemailService.sendEmail(emails.toArray(new String[0]),title,msg);
             }
-            if(phones.size()>0&& qji.getAlarm_sms()!=null && qji.getAlarm_sms().equalsIgnoreCase("on")){
+            if(phones.size()>0&& qji.getAlarm_sms()!=null && qji.getAlarm_sms().equalsIgnoreCase(Const.ON)){
                 logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
                 try{
                     //此处信息写入短信表,待平台接入短信服务
@@ -367,7 +364,6 @@ public class EmailJob {
         try{
             logger.debug("开始加载通知信息");
             ZdhDownloadMapper zdhDownloadMapper = (ZdhDownloadMapper) SpringContext.getBean("zdhDownloadMapper");
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
             NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
             List<ZdhDownloadInfo> zdhDownloadInfos=zdhDownloadMapper.selectNotice();
 
@@ -415,7 +411,6 @@ public class EmailJob {
         try{
             logger.debug("加载申请通知信息");
             ApplyMapper applyMapper = (ApplyMapper) SpringContext.getBean("applyMapper");
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
             NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
 
             List<ApplyInfo> applyInfos=applyMapper.selectNotice();
@@ -526,12 +521,10 @@ public class EmailJob {
     }
 
     public static void sendTxtEmail(String[] to,String subject, String context){
-
-        Environment environment= (Environment) SpringContext.getBean("environment");
         JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean(JavaMailSender.class);
 
         SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
-        simpleMailMessage.setFrom(environment.getProperty("spring.mail.username"));
+        simpleMailMessage.setFrom(ConfigUtil.getValue(ConfigUtil.SPRING_MAIL_USERNAME));
         simpleMailMessage.setTo(to);
         simpleMailMessage.setText(context);
         simpleMailMessage.setSubject(subject);
@@ -540,13 +533,11 @@ public class EmailJob {
     }
 
     public static void sendHtmlEmail(String[] to,String subject, String context) throws MessagingException {
-
-        Environment environment= (Environment) SpringContext.getBean("environment");
         JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean(JavaMailSender.class);
 
         MimeMessage mailMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage);
-        messageHelper.setFrom(environment.getProperty("spring.mail.username"));
+        messageHelper.setFrom(ConfigUtil.getValue(ConfigUtil.SPRING_MAIL_USERNAME));
         messageHelper.setTo(to);
         messageHelper.setText(context,true);
         messageHelper.setSubject(subject);
@@ -555,7 +546,6 @@ public class EmailJob {
 
     public static void sendAdminAlarmEmail(String subject, String context){
         RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-        Environment environment= (Environment) SpringContext.getBean("environment");
         //JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean("javaMailSender");
         JavaMailSender javaMailSender= (JavaMailSender)SpringContext.getBean(JavaMailSender.class);
         String key = "alarm.admin.email_"+subject;
@@ -567,9 +557,9 @@ public class EmailJob {
         }
         try{
             //多个告警邮箱,逗号分割
-            String to=environment.getProperty("alarm.admin.email");
+            String to=ConfigUtil.getValue(ConfigUtil.ALARM_ADMIN_EMAIL);
             SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
-            simpleMailMessage.setFrom(environment.getProperty("spring.mail.username"));
+            simpleMailMessage.setFrom(ConfigUtil.getValue(ConfigUtil.SPRING_MAIL_USERNAME));
             simpleMailMessage.setTo(to.split(","));
             simpleMailMessage.setText(context);
             simpleMailMessage.setSubject(subject);
@@ -583,7 +573,6 @@ public class EmailJob {
 
     public static void beaconFireAlarm(){
         BeaconFireAlarmMsgMapper beaconFireAlarmMsgMapper=(BeaconFireAlarmMsgMapper) SpringContext.getBean("beaconFireAlarmMsgMapper");
-        Environment environment= (Environment) SpringContext.getBean("environment");
         BeaconFireAlarmConfiguration beaconFireAlarmConfiguration= (BeaconFireAlarmConfiguration) SpringContext.getBean("beaconFireAlarmConfiguration");
         BeaconFireAlarmMsgInfo beaconFireAlarmMsgInfo = new BeaconFireAlarmMsgInfo();
         beaconFireAlarmMsgInfo.setStatus(Const.STATUS_COMMON_INIT);

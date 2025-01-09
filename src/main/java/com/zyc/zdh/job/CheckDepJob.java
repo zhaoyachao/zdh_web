@@ -1,5 +1,6 @@
 package com.zyc.zdh.job;
 
+import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -34,7 +35,11 @@ public class CheckDepJob implements CheckDepJobInterface{
 
     private final static String task_log_status="etl";
 
-    private final static List<String> checkJobType = Lists.newArrayList("GROUP","JDBC", "HDFS");
+    /**
+     * 检查型 job_type
+     * 一般检查型任务 为重复检查而不是同步等待
+     */
+    private final static List<String> checkJobType = Lists.newArrayList(JobType.GROUP.getCode(),JobType.JDBC.getCode(), JobType.HDFS.getCode());
 
 
     public static void run(QuartzJobInfo quartzJobInfo) {
@@ -87,7 +92,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                 }
 
                 String tmp_status=tglim.selectByPrimaryKey(tgli.getId()).getStatus();
-                if( !tmp_status.equalsIgnoreCase("kill") && !tmp_status.equalsIgnoreCase("killed") ){
+                if( !tmp_status.equalsIgnoreCase(JobStatus.KILL.getValue()) && !tmp_status.equalsIgnoreCase(JobStatus.KILLED.getValue()) ){
                     //在检查依赖时杀死任务--则不修改状态
                     updateTaskGroupLogInstanceStatus(tgli);
                 }
@@ -154,7 +159,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                         }
                         continue;
                     }
-                    if(tli.getStatus()!=null && tli.getStatus().equalsIgnoreCase("skip")){
+                    if(tli.getStatus()!=null && tli.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                         continue;
                     }
                     String action = "";
@@ -166,15 +171,15 @@ public class CheckDepJob implements CheckDepJobInterface{
                         continue;
                     }
                     boolean check = false;
-                    if (tli.getJob_type().equalsIgnoreCase("group")) {
+                    if (tli.getJob_type().equalsIgnoreCase(JobType.GROUP.getCode())) {
                         //etl_task_id 代表任务的id(quartz_job_info的job_id)
                         String job_id = tli.getEtl_task_id();
                         String etl_date = tli.getEtl_date();
                         check = JobCommon2.checkDep_group(tli.getJob_type(), tli);
-                    } else if (tli.getJob_type().equalsIgnoreCase("jdbc")) {
+                    } else if (tli.getJob_type().equalsIgnoreCase(JobType.JDBC.getCode())) {
                         // 检查jdbc 依赖
                         check = JobCommon2.checkDep_jdbc(tli.getJob_type(), tli);
-                    } else if(tli.getJob_type().equalsIgnoreCase("hdfs")) {
+                    } else if(tli.getJob_type().equalsIgnoreCase(JobType.HDFS.getCode())) {
                         // 检查hdfs 依赖
                         check = JobCommon2.checkDep_hdfs(tli.getJob_type(), tli);
                     }
@@ -213,7 +218,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                         }
                         continue;
                     }
-                    if(tl.getStatus()!=null && tl.getStatus().equalsIgnoreCase("skip")){
+                    if(tl.getStatus()!=null && tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                         continue;
                     }
                     String action = "";
@@ -275,11 +280,11 @@ public class CheckDepJob implements CheckDepJobInterface{
 
                     if(check){
                         String tmp_status=taskLogInstanceMapper.selectByPrimaryKey(tl.getId()).getStatus();
-                        if( tmp_status.equalsIgnoreCase("kill") || tmp_status.equalsIgnoreCase("killed") ) {
+                        if( tmp_status.equalsIgnoreCase(JobStatus.KILL.getValue()) || tmp_status.equalsIgnoreCase(JobStatus.KILLED.getValue()) ) {
                             continue; //在检查依赖时杀死任务
                         }
 
-                        if(tl.getJob_type().equalsIgnoreCase("shell")){
+                        if(tl.getJob_type().equalsIgnoreCase(JobType.SHELL.getCode())){
                             if(JobCommon2.check_thread_limit(tl)){
                                 //增加告警通知,每5分钟告警一次
                                 continue;
@@ -287,7 +292,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                         }
 
                         //检查spark 任务是否超过限制
-                        if(tl.getJob_type().equalsIgnoreCase("etl")){
+                        if(tl.getJob_type().equalsIgnoreCase(JobType.ETL.getCode())){
                             if(JobCommon2.check_spark_limit(tl)){
                                 continue ;
                             }
@@ -301,8 +306,10 @@ public class CheckDepJob implements CheckDepJobInterface{
                         tl.setProcess_time(pti);
 
                         //group,jdbc,hdfs为同步检查类的任务,
-                        if(!tl.getJob_type().equalsIgnoreCase("group") && !tl.getJob_type().equalsIgnoreCase("jdbc")
-                                && !tl.getJob_type().equalsIgnoreCase("hdfs")){
+//                        if(!tl.getJob_type().equalsIgnoreCase(JobType.GROUP.getCode()) && !tl.getJob_type().equalsIgnoreCase(JobType.JDBC.getCode())
+//                                && !tl.getJob_type().equalsIgnoreCase(JobType.HDFS.getCode()))
+                        if(!checkJobType.contains(tl.getJob_type().toUpperCase()))
+                        {
                             JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
                             JobCommon2.chooseJobBean(tl);
                         }else{
@@ -379,7 +386,8 @@ public class CheckDepJob implements CheckDepJobInterface{
 //            System.out.println("kill_num:"+kill_num);
 //            System.out.println("error_num:"+error_num);
             //如果 有运行状态，创建状态，杀死状态 则表示未运行完成
-            String process=((finish_num+error_num+kill_num)/tlidList.size())*100 > Double.valueOf(tgli.getProcess())? (((finish_num+error_num+kill_num)/tlidList.size())*100)+"":tgli.getProcess();
+            Double dprocess = (Double.valueOf(finish_num+error_num+kill_num)/Double.valueOf(tlidList.size()))*100;
+            String process= dprocess > Double.valueOf(tgli.getProcess())? String.format("%.2f", dprocess)+"":tgli.getProcess();
             String msg="更新进度为:"+process;
             if(finish_num==tlidList.size()){
                 //表示全部完成
@@ -403,6 +411,10 @@ public class CheckDepJob implements CheckDepJobInterface{
                 tglim.updateStatusById3(JobStatus.KILLED.getValue(),process ,DateUtil.getCurrentTime(),tgli.getId());
                 JobCommon2.insertLog(tgli,"INFO",msg);
                 JobCommon2.insertLog(tgli,"INFO","任务组已完成,存在杀死任务,具体信息请点击子任务查看");
+            }else{
+                if(dprocess > Double.valueOf(tgli.getProcess())){
+                    JobCommon2.insertLog(tgli,"INFO",msg);
+                }
             }
 
 

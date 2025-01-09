@@ -125,7 +125,7 @@ public class FlumeJob extends JobCommon2 {
             chm_ssh.remove(tli.getId());
             long t2 = System.currentTimeMillis();
 
-            insertLog(tli, "DEBUG", "[调度平台]:SSH,SSH任务执行结束,耗时:" + (t2 - t1) / 1000 + "s");
+            insertLog(tli, "DEBUG", "[调度平台]:FLUME,任务执行结束,耗时:" + (t2 - t1) / 1000 + "s");
 
             if (!error.isEmpty()) {
                 return false;
