@@ -13,6 +13,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +35,13 @@ public class RetryJob {
     public static void run(QuartzJobInfo quartzJobInfo) {
         try {
             logger.debug("开始检测重试任务...");
+            Scheduler scheduler = (Scheduler) SpringContext.getBean("scheduler");
             QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
             TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
             TaskGroupLogInstanceMapper tglim = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             ZdhHaInfoMapper zdhHaInfoMapper=(ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
             RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
+            String currentScheduleId = scheduler.getSchedulerInstanceId();
             //获取重试的任务
             List<TaskLogInstance> taskLogInstanceList=tlim.selectThreadByStatus2(JobStatus.WAIT_RETRY.getValue());
             for(TaskLogInstance tl :taskLogInstanceList){
@@ -77,8 +80,15 @@ public class RetryJob {
                 zdhHaMap.put(zdhHaInfo.getId(),"");
             }
             for(TaskLogInstance t2 :taskLogsList2){
+                //指定调度节点的重试任务,需要判断节点
+                if(!StringUtils.isEmpty(t2.getSchedule_id())){
+                    if(!t2.getSchedule_id().equalsIgnoreCase(currentScheduleId)){
+                        continue;
+                    }
+                }
+
                 // 此处表示shell,datax,data_web任务在执行中,挂掉需要进行恢复
-                if((Arrays.asList(JobType.SHELL.getCode(),JobType.EMAIL.getCode(),JobType.HTTP.getCode()).contains(t2.getJob_type().toUpperCase())
+                if((Arrays.asList(JobType.SHELL.getCode(),JobType.EMAIL.getCode(),JobType.HTTP.getCode(), JobType.FLUME.getCode()).contains(t2.getJob_type().toUpperCase())
                         || Arrays.asList(MoreTask.DATAX.getValue(),MoreTask.DATAX_WEB.getValue()).contains(t2.getMore_task().toUpperCase())) && !StringUtils.isEmpty(t2.getServer_id())
                 && ( !redisUtil.exists(t2.getServer_id().split(":")[0]) || !redisUtil.get(t2.getServer_id().split(":")[0]).toString().equalsIgnoreCase(t2.getServer_id()) )
                 ){

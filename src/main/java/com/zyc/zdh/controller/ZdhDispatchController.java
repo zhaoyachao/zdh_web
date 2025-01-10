@@ -436,39 +436,6 @@ public class ZdhDispatchController extends BaseController {
         }
     }
 
-
-    private List<Timestamp> a(Timestamp start,Timestamp end,String step_size){
-        int dateType = Calendar.DAY_OF_MONTH;
-        int num = 1;
-        if (step_size.endsWith("s")) {
-            dateType = Calendar.SECOND;
-            num = Integer.parseInt(step_size.split("s")[0]);
-        }
-        if (step_size.endsWith("m")) {
-            dateType = Calendar.MINUTE;
-            num = Integer.parseInt(step_size.split("m")[0]);
-        }
-        if (step_size.endsWith("h")) {
-            dateType = Calendar.HOUR;
-            num = Integer.parseInt(step_size.split("h")[0]);
-        }
-        if (step_size.endsWith("d")) {
-            dateType = Calendar.DAY_OF_MONTH;
-            num = Integer.parseInt(step_size.split("d")[0]);
-        }
-        List<Timestamp> result = new ArrayList<>();
-        Calendar tempStart = Calendar.getInstance();
-        tempStart.setTime(new Date(start.getTime()));
-        Calendar tempEnd = Calendar.getInstance();
-        tempEnd.setTime(new Date(end.getTime()));
-        while (!tempStart.after(tempEnd)) {
-            result.add(new Timestamp(tempStart.getTime().getTime()));
-            tempStart.add(dateType, num);
-        }
-        return result;
-    }
-
-
     /**
      * 自动执行调度任务
      *

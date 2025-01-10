@@ -9,10 +9,7 @@ import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.DAG;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.HttpUtil;
-import com.zyc.zdh.util.SpringContext;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.slf4j.Logger;
@@ -149,7 +146,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                     //调度器不相等跳过
                     if(!tli.getSchedule_id().equalsIgnoreCase(scheduleId)){
                         if(StringUtils.isEmpty(scheduleId) && !StringUtils.isEmpty(tli.getSchedule_id())){
-                            if(!redisUtil.exists("schedule_"+tli.getSchedule_id())){
+                            if(!redisUtil.exists(Const.ZDH_SCHEDULE_HEART_PRE+tli.getSchedule_id())){
                                 logger.error("run sub task: {}, not found schedule: {}", tli.getId(), tli.getSchedule_id());
                                 if((System.currentTimeMillis() - tli.getUpdate_time().getTime()) >= (10 * 60 *1000)){
                                     logger.info("run sub task: {}, not found schedule: {}, update status error", tli.getId(), tli.getSchedule_id());
@@ -208,7 +205,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                 try{
                     if(!tl.getSchedule_id().equalsIgnoreCase(scheduleId)){
                         if(StringUtils.isEmpty(scheduleId) && !StringUtils.isEmpty(tl.getSchedule_id())){
-                            if(!redisUtil.exists("schedule_"+tl.getSchedule_id())){
+                            if(!redisUtil.exists(Const.ZDH_SCHEDULE_HEART_PRE+tl.getSchedule_id())){
                                 logger.error("run sub task: {}, not found schedule: {}", tl.getId(), tl.getSchedule_id());
                                 if((System.currentTimeMillis() - tl.getUpdate_time().getTime()) >= (10 * 60 *1000)){
                                     logger.info("run sub task: {}, not found schedule: {}, update status error", tl.getId(), tl.getSchedule_id());

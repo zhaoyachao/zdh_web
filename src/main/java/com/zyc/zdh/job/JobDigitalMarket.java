@@ -377,11 +377,6 @@ public class JobDigitalMarket {
 
                 }
             });
-
-        //如果调度任务类型是一次性则删除调度
-//        if (strategyGroupInfo.getJob_model().equalsIgnoreCase(JobModel.ONCE.getValue())) {
-//            quartzManager2.deleteTask(strategyGroupInfo, JobStatus.FINISH.getValue());
-//        }
     }
 
     /**

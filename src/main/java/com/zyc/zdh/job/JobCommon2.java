@@ -3465,9 +3465,9 @@ public class JobCommon2 {
                     }
 
                     //此处更新主要是为了 日期超时时 也能记录下日志
-                    if (is_retry == 1) {
+                    if (is_retry == 2) {
                         insertLog(tgli, "INFO", "重试任务组更新信息,任务组数据处理日期:" + tgli.getEtl_date());
-                        tglim.updateByPrimaryKeySelective(tgli);
+                        tglim.insertSelective(tgli);
                     } else {
                         insertLog(tgli, "INFO", "生成任务组信息,任务组数据处理日期:" + tgli.getEtl_date());
                         tglim.insertSelective(tgli);
@@ -3509,10 +3509,10 @@ public class JobCommon2 {
             EmailJob.alarm(quartzJobInfo, "调度任务解析异常告警", "不支持的调度任务类型:"+quartzJobInfo.getJob_type()+" ,将自动杀死");
         }
 
-        //如果调度任务类型是一次性则删除调度
-        if (quartzJobInfo.getJob_model().equalsIgnoreCase(JobModel.ONCE.getValue())) {
-            quartzManager2.deleteTask(quartzJobInfo, JobStatus.FINISH.getValue());
-        }
+//        //如果调度任务类型是一次性则删除调度
+//        if (quartzJobInfo.getJob_model().equalsIgnoreCase(JobModel.ONCE.getValue())) {
+//            quartzManager2.deleteTask(quartzJobInfo, JobStatus.FINISH.getValue());
+//        }
     }
 
     /**

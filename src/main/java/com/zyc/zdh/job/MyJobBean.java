@@ -89,6 +89,10 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
                     quartzJobInfo.setStatus(JobStatus.FINISH.getValue());
 				}
 				JobCommon2.chooseJobBean(quartzJobInfo,0,null,null);
+				//如果调度任务类型是一次性则删除调度
+				if (quartzJobInfo.getJob_model().equalsIgnoreCase(JobModel.ONCE.getValue())) {
+					quartzManager2.deleteTask(quartzJobInfo, JobStatus.FINISH.getValue());
+				}
 			}else if(!StringUtils.isEmpty(taskType) && taskType.equalsIgnoreCase(JobType.DIGITALMARKET.getCode())){
 				//智能营销调度任务
 				StrategyGroupInfo strategyGroupInfo=new StrategyGroupInfo();

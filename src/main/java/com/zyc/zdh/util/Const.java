@@ -73,6 +73,8 @@ public class Const {
 
     public static String ZDH_CHECK_IMPLS="zdh_check_impls";//zdh 调度检查实现类
 
+    public static String ZDH_SCHEDULE_HEART_PRE="schedule_heart_";//执行器心态前缀
+
     public static String ZDH_IS_PASS = "zdh_is_pass";//系统是否可访问
 
     public static String ZDH_IS_PASS_USER = "zdh_is_pass_user";//系统可访问用户

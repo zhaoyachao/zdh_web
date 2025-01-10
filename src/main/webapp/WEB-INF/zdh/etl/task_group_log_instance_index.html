@@ -316,9 +316,10 @@
                     shade: 0.1,
                     area : ['60%', '80%'],
                     //area: ['450px', '500px'],
-                    content: server_context+"/task_group_retry_detail_index?id="+row.id+"&job_id="+row.job_id, //iframe的url
+                    content: server_context+"/task_group_retry_detail_index?id="+row.id+"&job_id="+row.job_id+"&ttime="+new Date().getTime(), //iframe的url
                     end : function () {
-                        console.info("弹框结束")
+                        console.info("结束重试");
+                        $('#search').click();
                     }
                 });
 

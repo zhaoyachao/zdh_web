@@ -448,7 +448,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                 while (true) {
                     try {
                         String instanceId = scheduler.getSchedulerInstanceId();
-                        redisUtil.set("schedule_"+instanceId,instanceId,50L, TimeUnit.SECONDS);
+                        //注册调度器心跳信息,用于调度器执行任务之前判断
+                        redisUtil.set(Const.ZDH_SCHEDULE_HEART_PRE+instanceId,instanceId,50L, TimeUnit.SECONDS);
                         Example example=new Example(QrtzSchedulerState.class);
                         Example.Criteria criteria=example.createCriteria();
                         criteria.andEqualTo("instance_name", instanceId);
