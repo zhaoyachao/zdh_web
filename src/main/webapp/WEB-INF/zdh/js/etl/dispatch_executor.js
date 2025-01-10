@@ -116,7 +116,7 @@
 
         }
 
-        function update_system_task(id, status) {
+        function update_system_task(id, status, is_delete) {
 
             var url = server_context+"/dispatch_system_task_create";
             if(status == "offline"){
@@ -126,7 +126,7 @@
             layer.msg('系统任务');
             $.ajax({
                 url: url,
-                data: "id=" + id,
+                data: "id=" + id+"&is_delete="+is_delete,
                 type: "post",
                 async:false,
                 dataType: "json",
@@ -162,22 +162,23 @@
                     },
                     title:"启用调度"
                 }, function(index){
-                    update_system_task(row.job_id, "online");
+                    update_system_task(row.job_id, "online", "false");
                     layer.close(layer.index)
                 }, function(index){
                 });
             },
             'click #delete': function (e, value, row, index) {
                 layer.confirm('禁用调度任务', {
-                    btn: ['确定','取消'], //按钮
-                    cancel:function(index, layero){
-                        console.log('关闭x号');
+                    btn: ['禁用','删除','取消'], //按钮
+                    btn3:function(index, layero){
+                        console.log('取消');
                     },
                     title:"禁用调度"
                 }, function(index){
-                    update_system_task(row.job_id, "offline");
+                    update_system_task(row.job_id, "offline", "false");
                     layer.close(layer.index)
                 }, function(index){
+                    update_system_task(row.job_id, "offline", "true");
                 });
             },
         };

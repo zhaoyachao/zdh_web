@@ -751,7 +751,7 @@ public class ZdhDispatchController extends BaseController {
     @RequestMapping(value="/dispatch_system_task_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo dispatch_system_task_delete(String id) {
+    public ReturnInfo dispatch_system_task_delete(String id, String is_delete) {
         try{
             if(StringUtils.isEmpty(id)){
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"禁用失败", "id参数不可为空");
@@ -770,6 +770,10 @@ public class ZdhDispatchController extends BaseController {
             jdbcTemplate.execute(sql2);
             jdbcTemplate.execute(sql3);
             quartzManager2.deleteTask(qji, "remove");
+            if(!StringUtils.isEmpty(is_delete) && is_delete.equalsIgnoreCase(Const.TRUR)){
+                quartzJobMapper.deleteByPrimaryKey(id);
+            }
+
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"禁用成功", null);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";

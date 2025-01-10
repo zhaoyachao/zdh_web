@@ -385,6 +385,7 @@ public class CheckDepJob implements CheckDepJobInterface{
             //如果 有运行状态，创建状态，杀死状态 则表示未运行完成
             Double dprocess = (Double.valueOf(finish_num+error_num+kill_num)/Double.valueOf(tlidList.size()))*100;
             String process= dprocess > Double.valueOf(tgli.getProcess())? String.format("%.2f", dprocess)+"":tgli.getProcess();
+            process = process.endsWith(".00")?process.substring(0, process.length()-3):process;
             String msg="更新进度为:"+process;
             if(finish_num==tlidList.size()){
                 //表示全部完成
