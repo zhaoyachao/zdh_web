@@ -532,13 +532,20 @@ public class StrategyGroupController extends BaseController {
         try{
             //根据id 获取策略任务信息
             StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
+            String cur_date = DateUtil.format(strategyInstance.getCur_time());
             String basePath = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_LOCAL_PATH, "/home/data/label/");
+            if(!basePath.endsWith("/")){
+                basePath = basePath + "/"+ cur_date;
+            }else{
+                basePath = basePath + cur_date;
+            }
+
             String dir =  String.format("%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id());
             String fileName = strategyInstance.getId();
             String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
             byte[] buff = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
 
-            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("日志_" + strategyInstance.getStrategy_context() + ".log", "UTF-8"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("日志_"+ cur_date +"_"+ strategyInstance.getStrategy_context() + ".log", "UTF-8"));
 
 
             String storeType = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_STORE_TYPE);

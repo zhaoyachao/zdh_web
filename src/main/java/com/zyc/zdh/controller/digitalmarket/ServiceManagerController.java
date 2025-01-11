@@ -160,6 +160,16 @@ public class ServiceManagerController extends BaseController {
                 jsonObject.put("slot_str", slot.toString());
                 content = content+" ,服务槽位: "+slot.toString();
 
+
+                //占用槽位
+                Object task_num= redisUtil.getRedisTemplate().opsForHash().get(instanceId, "task_num");
+
+                if(task_num==null){
+                    task_num = "0";
+                }
+                jsonObject.put("task_str", task_num.toString());
+                content = content+" ,执行中任务数: "+task_num.toString();
+
                 Object version_tag= redisUtil.getRedisTemplate().opsForHash().get(instanceId, "version_tag");
 
                 if(version_tag==null){
