@@ -3556,7 +3556,7 @@ public class JobCommon2 {
             num = Integer.parseInt(step_size.split("d")[0]);
         }
 
-        if (quartzJobInfo.getLast_time() == null) {
+        if (quartzJobInfo.getLast_time() == null || quartzJobInfo.getLast_time().getTime()/1000 < quartzJobInfo.getStart_time().getTime()/1000) {
             quartzJobInfo.setLast_time(quartzJobInfo.getStart_time());
             cur = quartzJobInfo.getStart_time();
         } else {

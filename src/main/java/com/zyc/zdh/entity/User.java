@@ -1,6 +1,7 @@
 package com.zyc.zdh.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class User extends PageBase implements Serializable {
 
@@ -57,6 +58,8 @@ public class User extends PageBase implements Serializable {
 	 * 产品
 	 */
 	private String product_code;
+
+	private List<String> roles;
 
 	public String getId() {
 		return id;
@@ -141,5 +144,13 @@ public class User extends PageBase implements Serializable {
 
 	public void setProduct_code(String product_code) {
 		this.product_code = product_code;
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
 }

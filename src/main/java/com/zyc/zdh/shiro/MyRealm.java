@@ -1,5 +1,6 @@
 package com.zyc.zdh.shiro;
 
+import com.google.common.collect.Lists;
 import com.zyc.zdh.dao.PermissionMapper;
 import com.zyc.zdh.dao.ResourceTreeMapper;
 import com.zyc.zdh.entity.PermissionUserInfo;
@@ -56,6 +57,9 @@ public class MyRealm extends AuthorizingRealm {
 				permissions.add(url);
 			}
 		}
+
+        //根据用户账号和产品获取角色
+
 		// 角色字符串
 		List<String> roles = new ArrayList<>();
 		// 从数据库中获取对应角色字符串并存储roles
@@ -121,6 +125,10 @@ public class MyRealm extends AuthorizingRealm {
 //		user.setTag_group_code(permissionUserInfos.get(0).getTag_group_code());
 		user.setSignature(permissionUserInfos.get(0).getSignature());
 		user.setProduct_code(permissionUserInfos.get(0).getProduct_code());
+		user.setRoles(Lists.newArrayList());
+		if(permissionUserInfos.get(0).getRoles() != null){
+			user.setRoles(Lists.newArrayList(permissionUserInfos.get(0).getRoles().split(",")));
+		}
 
 		if(user.getEnable()==null || user.getEnable().equalsIgnoreCase(Const.FALSE)){
 			throw new AuthenticationException("当前用户未启用,请联系管理员");

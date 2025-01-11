@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class Const {
 
+    public static String SUPER_ADMIN_ROLE="super_admin";//超级管理员
+
     public static String TRUR="true";
     public static String FALSE="false";
 

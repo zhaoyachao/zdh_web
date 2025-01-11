@@ -411,6 +411,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                 JobCommon2.insertLog(tgli,"INFO","任务组已完成,存在杀死任务,具体信息请点击子任务查看");
             }else{
                 if(dprocess > Double.valueOf(tgli.getProcess())){
+                    tglim.updateProcessById(process ,DateUtil.getCurrentTime(),tgli.getId());
                     JobCommon2.insertLog(tgli,"INFO",msg);
                 }
             }

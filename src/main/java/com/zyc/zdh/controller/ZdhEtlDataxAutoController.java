@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.EtlTaskDataxAutoMapper;
 import com.zyc.zdh.entity.EtlTaskDataxAutoInfo;
 import com.zyc.zdh.entity.PageResult;
@@ -128,7 +127,6 @@ public class ZdhEtlDataxAutoController extends BaseController{
     @SentinelResource(value = "etl_task_datax_auto_all_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/etl_task_datax_auto_all_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<EtlTaskDataxAutoInfo>> etl_task_datax_auto_all_list() {
         try{
             EtlTaskDataxAutoInfo etlTaskDataxAutoInfo = new EtlTaskDataxAutoInfo();

@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.ParamMapper;
 import com.zyc.zdh.entity.ParamInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -250,7 +249,6 @@ public class ZdhParamController extends BaseController {
     @SentinelResource(value = "param_merge", blockHandler = "handleReturn")
     @RequestMapping(value = "/param_merge", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo param_merge(String id, String version, String is_delete) {
         try{

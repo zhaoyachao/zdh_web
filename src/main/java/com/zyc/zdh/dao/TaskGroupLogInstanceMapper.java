@@ -151,6 +151,15 @@ public interface TaskGroupLogInstanceMapper extends BaseTaskGroupLogInstanceMapp
     @Update(value = "update task_group_log_instance set status=#{status} ,process = #{process}, update_time=#{update_time} where id=#{id}")
     public int updateStatusById3(@Param("status") String status, @Param("process") String process,@Param("update_time") String update_time, @Param("id") String id);
 
+    /**
+     * 根据id更新任务组进度
+     * @param process
+     * @param id
+     * @return
+     */
+    @Update(value = "update task_group_log_instance set process = #{process}, update_time=#{update_time} where id=#{id}")
+    public int updateProcessById(@Param("process") String process,@Param("update_time") String update_time, @Param("id") String id);
+
 
     /**
      * 任务组及子任务创建完成改变状态为create

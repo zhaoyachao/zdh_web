@@ -300,17 +300,22 @@ public class ZdhDispatchController extends BaseController {
      * 更新调度任务
      *
      * @param quartzJobInfo
+     * @param reset_last_time
      * @return
      */
     @SentinelResource(value = "dispatch_task_group_update", blockHandler = "handleReturn")
     @RequestMapping(value="/dispatch_task_group_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo dispatch_task_group_update(QuartzJobInfo quartzJobInfo) {
+    public ReturnInfo dispatch_task_group_update(QuartzJobInfo quartzJobInfo, String reset_last_time) {
 
         try{
             debugInfo(quartzJobInfo);
             quartzJobInfo.setOwner(getOwner());
             QuartzJobInfo oldQuartzJobInfo = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);
+
+            if(StringUtils.isEmpty(reset_last_time) || !reset_last_time.equalsIgnoreCase(Const.ON)){
+                quartzJobInfo.setLast_time(null);
+            }
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, quartzJobInfo.getProduct_code(), quartzJobInfo.getDim_group(), getAttrEdit());
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldQuartzJobInfo.getProduct_code(), oldQuartzJobInfo.getDim_group(), getAttrEdit());

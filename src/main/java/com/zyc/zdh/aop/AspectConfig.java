@@ -406,6 +406,11 @@ public class AspectConfig implements Ordered {
                 if (white().contains(url) || is_white || url.contains("smart_doc")) {
                     break;
                 }
+                if(getUser()!=null && getUser().getRoles().contains(Const.SUPER_ADMIN_ROLE)){
+                    //超级管理员有所有权限
+                    break;
+                }
+
                 String url_tmp = url;
                 if (url.startsWith("redis/get")) {
                     url_tmp = "redis/get";
