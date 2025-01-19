@@ -1,6 +1,6 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSON;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Id;
@@ -278,6 +278,6 @@ public class PushAppInfo {
         if(StringUtils.isEmpty(config)){
             return new HashMap<String, Object>();
         }
-        return JSON.parseObject(config, Map.class);
+        return JsonUtil.toJavaMap(config);
     }
 }

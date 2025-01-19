@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.dao.QuartzJobMapper;
 import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
@@ -18,6 +17,7 @@ import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -453,7 +453,7 @@ public class ZdhMonitorController extends BaseController {
     @SentinelResource(value = "getTotalNum", blockHandler = "handleReturn")
     @RequestMapping(value = "/getTotalNum", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<JSONObject> getTotalNum() {
+    public ReturnInfo<Map<String, Object>> getTotalNum() {
         try{
             int allTaskNum = taskLogInstanceMapper.allTaskNum();
             int allDispatchNum = taskLogInstanceMapper.allDispatchNum();
@@ -462,7 +462,7 @@ public class ZdhMonitorController extends BaseController {
             int errorNum = taskLogInstanceMapper.errorNum();
             int alarmNum = taskLogInstanceMapper.alarmNum();
 
-            JSONObject js = new JSONObject();
+            Map<String, Object> js = JsonUtil.createEmptyMap();
             js.put("allTaskNum", allTaskNum);
             js.put("allDispatchNum", allDispatchNum);
             js.put("allDispatchRunNum", allDispatchRunNum);

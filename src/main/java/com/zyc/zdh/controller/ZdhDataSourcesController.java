@@ -310,6 +310,13 @@ public class ZdhDataSourcesController extends BaseController{
             if(!dataSourcesInfo.getData_source_type().equalsIgnoreCase("jdbc")){
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"测试连接失败", "只支持JDBC类型连接测试");
             }
+            if(StringUtils.isEmpty(dataSourcesInfo.getPassword())){
+                DataSourcesInfo oldDataSourceInfo = dataSourcesMapper.selectByPrimaryKey(dataSourcesInfo.getId());
+                if(!StringUtils.isEmpty(oldDataSourceInfo.getPassword())){
+                    dataSourcesInfo.setPassword(oldDataSourceInfo.getPassword());
+                }
+            }
+
             new DBUtil().R3(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
                     "");
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"测试连接成功", null);

@@ -1,12 +1,11 @@
 package com.zyc.zdh.job;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.GroovyFactory;
 import com.zyc.zdh.util.HttpUtil;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
@@ -41,22 +40,20 @@ public class HttpJob extends JobCommon2 {
             Jinjava jj = new Jinjava();
 
             String run_jsmind = tli.getRun_jsmind_data();
-            String url = JSON.parseObject(run_jsmind).getString("url");
-            String url_type = JSON.parseObject(run_jsmind).getString("url_type");
-            String params = JSON.parseObject(run_jsmind).getString("params");
+            String url = JsonUtil.toJavaMap(run_jsmind).getOrDefault("url", "").toString();
+            String url_type = JsonUtil.toJavaMap(run_jsmind).getOrDefault("url_type", "").toString();
+            String params = JsonUtil.toJavaMap(run_jsmind).getOrDefault("params", "").toString();
             params = jj.render(params, jinJavaParam);
-            String header = JSON.parseObject(run_jsmind).getString("header");
-            String cookie = JSON.parseObject(run_jsmind).getString("cookie");
-            String proxy_url = JSON.parseObject(run_jsmind).getString("proxy_url");
-            String res_expr = JSON.parseObject(run_jsmind).getString("res_expr");
+            String header = JsonUtil.toJavaMap(run_jsmind).getOrDefault("header", "").toString();
+            String cookie = JsonUtil.toJavaMap(run_jsmind).getOrDefault("cookie", "").toString();
+            String proxy_url = JsonUtil.toJavaMap(run_jsmind).getOrDefault("proxy_url", "").toString();
+            String res_expr = JsonUtil.toJavaMap(run_jsmind).getOrDefault("res_expr", "").toString();
 
             if(StringUtils.isEmpty(url_type)){
                 throw new Exception("http任务请求类型为空");
             }
             if(!StringUtils.isEmpty(params)){
-                try{
-                    JSONObject jsonObject = JSON.parseObject(params);
-                }catch (Exception e){
+                if(!JsonUtil.isJsonValid(params)){
                     throw new Exception("请求参数必须是json格式");
                 }
             }
@@ -106,7 +103,7 @@ public class HttpJob extends JobCommon2 {
                 insertLog(tli, "info", "[" + jobType + "] JOB ,开始执行[get]请求");
                 List<NameValuePair> npl=new ArrayList<>();
                 if(!StringUtils.isEmpty(params)){
-                    JSONObject jsonObject = JSON.parseObject(params);
+                    Map<String, Object> jsonObject = JsonUtil.toJavaMap(params);
                     for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
                         String key = entry.getKey();
                         Object value = entry.getValue();
@@ -125,7 +122,7 @@ public class HttpJob extends JobCommon2 {
                 Map<String, Object> res_params = new HashMap<>();
                 res_params.put("res", result);
                 if(res_expr.contains("res.")){
-                    res_params.put("res", JSONObject.parseObject(result));
+                    res_params.put("res", JsonUtil.toJavaMap(result));
                 }
                 Object ret = GroovyFactory.execExpress(res_expr, res_params);
                 if(ret == null || StringUtils.isEmpty(ret.toString())){

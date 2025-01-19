@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.zyc.notscan.BaseMapper;
 import com.zyc.zdh.config.DateConverter;
@@ -126,7 +125,7 @@ public class BaseController {
         //检查缓存
         String cache = getCache(cacheKey);
         if(!StringUtils.isEmpty(cache)){
-            return JSON.parseObject(cache, new TypeReference<Map<String,List<String>>>(){});
+            return JsonUtil.toJavaObj(cache, new TypeReference<Map<String,List<String>>>(){});
         }
 
         //查询用户是否有所在组
@@ -166,7 +165,7 @@ public class BaseController {
         //检查缓存
         String cache = getCache(cacheKey);
         if(!StringUtils.isEmpty(cache)){
-            dimMap = JSON.parseObject(cache, new TypeReference<Map<String,List<String>>>(){});
+            dimMap = JsonUtil.toJavaObj(cache, new TypeReference<Map<String,List<String>>>(){});
             criteria.andIn("dim_group", dimMap.getOrDefault("dim_groups", Lists.newArrayList("-1")));
             criteria.andIn("product_code", dimMap.getOrDefault("product_codes", Lists.newArrayList("-1")));
             return;

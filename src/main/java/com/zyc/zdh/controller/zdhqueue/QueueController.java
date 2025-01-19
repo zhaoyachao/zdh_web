@@ -1,6 +1,5 @@
 package com.zyc.zdh.controller.zdhqueue;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.zyc.rqueue.RQueueClient;
 import com.zyc.rqueue.RQueueManager;
@@ -9,6 +8,7 @@ import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 优先级队列服务
@@ -52,7 +53,7 @@ public class QueueController extends BaseController {
     @ResponseBody
     public ReturnInfo zdh_queue_list(String queue_name,String limit, String offset) {
         try {
-            JSONObject jsonObject=new JSONObject();
+            Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
             if(StringUtils.isEmpty(queue_name)){
 
                 jsonObject.put("total", 0);
@@ -72,12 +73,12 @@ public class QueueController extends BaseController {
                 to = ret.size();
             }
             List<String> res =ret.subList( Integer.valueOf(offset), to);
-            List<JSONObject> rows = new ArrayList<>();
+            List<Map<String, Object>> rows = new ArrayList<>();
             for (String value: res){
-                JSONObject jsonObject1 = new JSONObject();
+                Map<String, Object> jsonObject1 = JsonUtil.createEmptyMap();
                 jsonObject1.put("queue_name", queue_name);
-                jsonObject1.put("msg", JSONObject.parseObject(value).getString("t"));
-                jsonObject1.put("priority", JSONObject.parseObject(value).getString("priority"));
+                jsonObject1.put("msg", JsonUtil.toJavaMap(value).getOrDefault("t", "").toString());
+                jsonObject1.put("priority", JsonUtil.toJavaMap(value).getOrDefault("priority", "").toString());
                 rows.add(jsonObject1);
             }
             jsonObject.put("total", ret.size());

@@ -1,9 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.zyc.zdh.dao.BloodSourceMapper;
 import com.zyc.zdh.entity.BloodSourceInfo;
@@ -12,6 +9,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.CheckBloodSourceJob;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.DAG;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,14 +137,14 @@ public class ZdhBloodSourceController extends BaseController{
             criteria2.andIn("version", Lists.newArrayList(version, "-1"));
             example.and(criteria2);
 
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
             List<String> inputs = new ArrayList<>();
             List<BloodSourceInfo> bloodSourceInfos = bloodSourceMapper.selectByExample(example);
             for (BloodSourceInfo bsi: bloodSourceInfos){
 
                 if(!StringUtils.isEmpty(bsi.getInput()) && bsi.getInput().contains(input) && !StringUtils.isEmpty(bsi.getInput_type())){
                     if(!inputs.contains(bsi.getInput_type()+bsi.getInput())){
-                        JSONObject jsonObject= new JSONObject();
+                        Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
                         inputs.add(bsi.getInput_type()+bsi.getInput());
                         jsonObject.put("input_type", bsi.getInput_type());
                         jsonObject.put("input", bsi.getInput());
@@ -157,7 +155,7 @@ public class ZdhBloodSourceController extends BaseController{
                 if(!StringUtils.isEmpty(bsi.getOutput()) && bsi.getOutput().contains(input) && !StringUtils.isEmpty(bsi.getOutput_type())){
                     if(!inputs.contains(bsi.getOutput_type()+bsi.getOutput())){
                         inputs.add(bsi.getOutput_type()+bsi.getOutput());
-                        JSONObject jsonObject1= new JSONObject();
+                        Map<String, Object> jsonObject1= JsonUtil.createEmptyMap();
                         inputs.add(bsi.getOutput_type()+bsi.getOutput());
                         jsonObject1.put("input_type", bsi.getOutput_type());
                         jsonObject1.put("input", bsi.getOutput());
@@ -184,12 +182,12 @@ public class ZdhBloodSourceController extends BaseController{
     @SentinelResource(value = "blood_source_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/blood_source_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<JSONArray> blood_source_detail(String input, String input_md5, String level, String stream_type) {
+    public ReturnInfo<List<Map<String, Object>>> blood_source_detail(String input, String input_md5, String level, String stream_type) {
         try{
             String product_code = getProductCode();
             DAG dag=new DAG();
             Map<String, String> source_json = new HashMap<>();
-            JSONObject jsonObject=new JSONObject();
+            Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
             List<BloodSourceInfo> bloodSourceInfos = bloodSourceMapper.selectAll();
             for (BloodSourceInfo bsi: bloodSourceInfos){
                 if(!bsi.getProduct_code().equalsIgnoreCase(product_code)){
@@ -233,13 +231,13 @@ public class ZdhBloodSourceController extends BaseController{
             }
 
             //生成血源数据
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray=JsonUtil.createEmptyListMap();
 
             //生成根节点
-            JSONObject j2=new JSONObject();
+            Map<String, Object> j2=JsonUtil.createEmptyMap();
             j2.put("id", DigestUtils.md5DigestAsHex((input+"__-__"+input_md5).getBytes()));
             j2.put("topic", input);
-            j2.put("source_json", JSON.parseObject(source_json.get(input+"__-__"+input_md5)));
+            j2.put("source_json", JsonUtil.toJavaMap(source_json.get(input+"__-__"+input_md5)));
             j2.put("background-color", "#C2DFFF");
             j2.put("isroot", true);
             jsonArray.add(j2);
@@ -254,10 +252,10 @@ public class ZdhBloodSourceController extends BaseController{
                 }
 
                 for(String chilren:downstream_map.get(key)){
-                    JSONObject j3=new JSONObject();
+                    Map<String, Object> j3=JsonUtil.createEmptyMap();
                     j3.put("id", DigestUtils.md5DigestAsHex(chilren.getBytes()));
                     j3.put("topic", chilren.split("__-__")[0]);
-                    j3.put("source_json", JSON.parseObject(source_json.get(chilren)));
+                    j3.put("source_json", JsonUtil.toJavaMap(source_json.get(chilren)));
                     j3.put("background-color", color_value);
                     j3.put("parentid", DigestUtils.md5DigestAsHex(key.getBytes()));
                     j3.put("direction","right");
@@ -271,10 +269,10 @@ public class ZdhBloodSourceController extends BaseController{
 
             for (String key:upstream_map.keySet()){
                 for(String upstream: upstream_map.get(key)){
-                    JSONObject j1=new JSONObject();
+                    Map<String, Object> j1=JsonUtil.createEmptyMap();
                     j1.put("id", DigestUtils.md5DigestAsHex(upstream.getBytes()) );
                     j1.put("topic", upstream.split("__-__")[0]);
-                    j1.put("source_json", JSON.parseObject(source_json.get(upstream)));
+                    j1.put("source_json", JsonUtil.toJavaMap(source_json.get(upstream)));
                     j1.put("background-color", "#00bb00");
                     j1.put("parentid", DigestUtils.md5DigestAsHex(key.getBytes()));
                     j1.put("direction","left");
@@ -295,18 +293,18 @@ public class ZdhBloodSourceController extends BaseController{
      * @param color
      * @return
      */
-    private JSONObject blood_source_tree(DAG dag, String input, String color){
-        JSONObject js=new JSONObject();
+    private Map<String, Object> blood_source_tree(DAG dag, String input, String color){
+        Map<String, Object> js=JsonUtil.createEmptyMap();
         js.put("id", DigestUtils.md5DigestAsHex(input.getBytes()));
         js.put("topic", input);
         js.put("background-color", color);
-        js.put("children", new JSONArray());
+        js.put("children", Lists.newArrayList());
         if(dag.getChildren(input).size()==0){
             return js;
         }
         Set<String> downstreams = (Set<String>)dag.getChildren(input);
         for (String downstream:downstreams){
-            js.getJSONArray("children").add(blood_source_tree(dag, downstream, "#2B65EC"));
+            ((List<Map<String, Object>>)js.get("children")).add(blood_source_tree(dag, downstream, "#2B65EC"));
         }
         return js;
     }

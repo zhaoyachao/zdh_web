@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.PermissionMapper;
 import com.zyc.zdh.dao.ProductTagMapper;
 import com.zyc.zdh.entity.*;
@@ -13,6 +12,7 @@ import com.zyc.zdh.shiro.MyRealm;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.Encrypt;
+import com.zyc.zdh.util.JsonUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -47,10 +47,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
@@ -105,7 +103,7 @@ public class LoginController extends BaseController{
     @ResponseBody
     @Transactional(propagation = Propagation.NESTED)
     public ReturnInfo<Object> register2(User user) {
-        JSONObject json = new JSONObject();
+        Map<String, Object> json = JsonUtil.createEmptyMap();
         try {
 
             checkProductCode(user.getProduct_code());
@@ -341,7 +339,7 @@ public class LoginController extends BaseController{
     public ReturnInfo<Object> updateUser2(User user) {
         try {
             debugInfo(user);
-            JSONObject json = new JSONObject();
+            Map<String, Object> json = JsonUtil.createEmptyMap();
             User user_old = (User) SecurityUtils.getSubject().getPrincipal();
             if (user.getPassword().equals("")) {
                 user.setPassword(user_old.getPassword());
@@ -448,7 +446,7 @@ public class LoginController extends BaseController{
     @SentinelResource(value = "user_names", blockHandler = "handleReturn")
     @RequestMapping(value = "user_names", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public  ReturnInfo<List<JSONObject>> user_names(String username) {
+    public  ReturnInfo<List<Map<String, Object>>> user_names(String username) {
 
         try{
 
@@ -463,9 +461,9 @@ public class LoginController extends BaseController{
             dynamicPermissionByProduct(zdhPermissionService, criteria);
 
             List<PermissionUserInfo> permissionUserInfos = permissionMapper.selectByExample(example);
-            List<JSONObject> user_names = new ArrayList<>();
+            List<Map<String, Object>> user_names = new ArrayList<>();
             for (PermissionUserInfo acc : permissionUserInfos) {
-                JSONObject js = new JSONObject();
+                Map<String, Object> js = JsonUtil.createEmptyMap();
                 js.put("id", acc.getUser_account());
                 js.put("name", acc.getUser_account());
                 user_names.add(js);

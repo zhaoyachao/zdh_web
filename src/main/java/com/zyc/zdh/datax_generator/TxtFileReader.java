@@ -1,6 +1,6 @@
 package com.zyc.zdh.datax_generator;
 
-import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.JsonUtil;
 
 import java.util.*;
 
@@ -145,7 +145,7 @@ public class TxtFileReader implements DataxReader{
 
         parameter.setPath(Arrays.asList(config.get("table").toString().split(",")));
 
-        JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
         parameter.setEncoding(config.get("encoding").toString());
         parameter.setFieldDelimiter(config.get("fieldDelimiter").toString());
         List<Map<String,Object>> columns=new ArrayList<>();

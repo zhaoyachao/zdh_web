@@ -195,7 +195,7 @@ public class ProjectController extends BaseController {
             List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
 
             for(int i=0;i<enum_value.length;i++){
-                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
                 jsonObject.put("enum_value", enum_value[i]);
                 jsonObject.put("enum_value_context", enum_value_context[i]);
                 jsonArray.add(jsonObject);
@@ -235,7 +235,7 @@ public class ProjectController extends BaseController {
             List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
 
             for(int i=0;i<enum_value.length;i++){
-                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
                 jsonObject.put("enum_value", enum_value[i]);
                 jsonObject.put("enum_value_context", enum_value_context[i]);
                 jsonArray.add(jsonObject);

@@ -1,6 +1,5 @@
 package com.zyc.zdh.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
@@ -9,6 +8,7 @@ import com.zyc.zdh.es.EsUtil;
 import com.zyc.zdh.hadoop.Dsi_Info;
 import com.zyc.zdh.hadoop.HadoopUtil;
 import com.zyc.zdh.hadoop.SqlTemplate;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.ResoveExcel;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
@@ -63,9 +63,9 @@ public class ZdhTestController extends BaseController{
             colm.put("三", "three");
             colm.put("四", "four");
             for (MultipartFile jar_file : files) {
-                List<JSONObject> data = ResoveExcel.importExcel(jar_file, colm, true);
-                for (JSONObject d:data){
-                    System.out.println(d.toJSONString());
+                List<Map<String, Object>> data = ResoveExcel.importExcel(jar_file, colm, true);
+                for (Map<String, Object> d:data){
+                    System.out.println(JsonUtil.formatJsonString(d));
                 }
                 EsUtil esUtil=new EsUtil(new HttpHost[]{new HttpHost("192.168.110.10", 9200, "http")});
                 esUtil.putBulkAsync("test_db", "_doc", "one", data, new BulkAsyncActionListener());

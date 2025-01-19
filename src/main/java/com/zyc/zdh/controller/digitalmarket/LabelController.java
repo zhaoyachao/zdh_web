@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.LabelMapper;
 import com.zyc.zdh.entity.LabelInfo;
@@ -185,7 +184,7 @@ public class LabelController extends BaseController {
 
             List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
             for (int i=0;i<param_code.length;i++){
-                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
@@ -255,7 +254,7 @@ public class LabelController extends BaseController {
 
             List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
             for (int i=0;i<param_code.length;i++){
-                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
@@ -374,7 +373,7 @@ public class LabelController extends BaseController {
                 throw new Exception("仅支持人查值类标签");
             }
 
-            JSONObject jsonObject=new JSONObject();
+            Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
             for (int i=0;i<param_code.length;i++){
                 if(i>=param_value.length){
                     jsonObject.put(param_code[i], "");
@@ -386,7 +385,7 @@ public class LabelController extends BaseController {
             checkPermissionByProduct(zdhPermissionService, labelInfo.getProduct_code());
 
             String variable_uid=labelInfo.getProduct_code()+"_tag_"+uid;
-            redisUtil.getRedisTemplate().opsForHash().put(variable_uid, labelInfo.getLabel_code(), jsonObject.toJSONString());
+            redisUtil.getRedisTemplate().opsForHash().put(variable_uid, labelInfo.getLabel_code(), JsonUtil.formatJsonString(jsonObject));
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {

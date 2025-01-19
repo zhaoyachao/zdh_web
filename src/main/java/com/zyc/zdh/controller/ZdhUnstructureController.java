@@ -1,8 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.jcraft.jsch.SftpException;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
@@ -286,7 +284,9 @@ public class ZdhUnstructureController extends BaseController{
         try {
             if(!StringUtils.isEmpty(etlTaskUnstructureInfo.getUnstructure_params_output())) {
                 //此处当做校验参数是否正常json格式
-                JSONObject jsonObject = JSON.parseObject(etlTaskUnstructureInfo.getUnstructure_params_output());
+                if(!JsonUtil.isJsonValid(etlTaskUnstructureInfo.getUnstructure_params_output())){
+                    throw new Exception("参数格式异常");
+                }
             }
             etlTaskUnstructureLogInfo = MapStructMapper.INSTANCE.etlTaskUnstructureInfoToEtlTaskUnstructureLogInfo(etlTaskUnstructureInfo);
             //BeanUtils.copyProperties(etlTaskUnstructureLogInfo, etlTaskUnstructureInfo);

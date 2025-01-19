@@ -1,7 +1,7 @@
 package com.zyc.zdh.entity;
 
 
-import com.alibaba.fastjson.JSONArray;
+import com.zyc.zdh.util.JsonUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -163,14 +163,14 @@ public class QuotaInfo {
 
     public List<column_data> getColumn_data_list() {
         if(getColumn_datas()!=null && !getColumn_datas().equals("")) {
-            return JSONArray.parseArray(getColumn_datas(),column_data.class);
+            return JsonUtil.toJavaListBean(getColumn_datas(),column_data.class);
         } else {
             return null;
         }
     }
 
     public void setColumn_data_list(List<column_data> column_data_list) {
-        this.column_data_list = JSONArray.parseArray(getColumn_datas(),column_data.class);
+        this.column_data_list = JsonUtil.toJavaListBean(getColumn_datas(),column_data.class);
     }
 
 

@@ -1,6 +1,6 @@
 package com.zyc.zdh.datax_generator;
 
-import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.JsonUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -260,11 +260,12 @@ public class HbaseWriter implements DataxWriter{
         parameter.setMode(config.get("mode").toString());
         parameter.setColumn(Arrays.asList(config.get("column").toString().split(",")));
 
-        JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
 
         this.name="hbase11xwriter";
         if(jsonObject.containsKey("name")){
-            this.name=jsonObject.getString("name");
+            this.name=jsonObject.getOrDefault("name", "").toString();
         }
         this.parameter=parameter;
     }

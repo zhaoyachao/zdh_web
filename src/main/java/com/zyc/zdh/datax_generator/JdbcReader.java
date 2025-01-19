@@ -1,6 +1,6 @@
 package com.zyc.zdh.datax_generator;
 
-import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 
@@ -192,10 +192,11 @@ public class JdbcReader implements DataxReader{
 
 
             parameter.setConnection(Lists.newArrayList(connection));
-            JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+            //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+            Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
             this.name=config.getOrDefault("name", "xxx").toString()+"reader";
             if(jsonObject.containsKey("name")){
-                this.name=jsonObject.getString("name");
+                this.name=jsonObject.get("name").toString();
             }
             this.parameter=parameter;
         }catch (Exception e){

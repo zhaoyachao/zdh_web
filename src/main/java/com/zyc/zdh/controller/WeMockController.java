@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.WeMockDataMapper;
 import com.zyc.zdh.dao.WeMockTreeMapper;
 import com.zyc.zdh.entity.*;
@@ -10,6 +9,7 @@ import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -24,6 +24,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * mock数据服务
@@ -540,15 +541,15 @@ public class WeMockController extends BaseController{
     @SentinelResource(value = "short_url_generator", blockHandler = "handleReturn")
     @RequestMapping(value = "/short_url_generator", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<JSONObject> short_url_generator(String param, String use_cache) {
+    public ReturnInfo<Map<String, Object>> short_url_generator(String param, String use_cache) {
         try{
-            JSONObject jsonObject = new JSONObject();
+            Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
             jsonObject.put("url", param);
             jsonObject.put("use_cache", use_cache);
             String host = ConfigUtil.getValue(ConfigUtil.ZDH_WEMOCK_SHORT_HOST, "http://127.0.0.1:9001");
             String path = ConfigUtil.getValue(ConfigUtil.ZDH_WEMOCK_SHORT_GENERATOR, "/api/short/generator");
-            String ret = HttpUtil.postJSON(host+path, jsonObject.toJSONString());
-            return ReturnInfo.buildSuccess(JSONObject.parseObject(ret));
+            String ret = HttpUtil.postJSON(host+path, JsonUtil.formatJsonString(jsonObject));
+            return ReturnInfo.buildSuccess(JsonUtil.toJavaMap(ret));
         }catch (Exception e){
             e.printStackTrace();
             return ReturnInfo.buildError(e);

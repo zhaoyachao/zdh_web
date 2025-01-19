@@ -1,6 +1,5 @@
 package com.zyc.zdh.util;
 
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +22,7 @@ public class ResoveExcel {
      * @param isEnglish 上传的文件表头是否英文, true:英文,false:中文
      * @throws Exception
      */
-    public static List<JSONObject> importExcel(MultipartFile multipartFile, Map<String, String> colNames, boolean isEnglish) throws Exception {
+    public static List<Map<String, Object>> importExcel(MultipartFile multipartFile, Map<String, String> colNames, boolean isEnglish) throws Exception {
         //检查文件是否支持
         checkFile(multipartFile);
 
@@ -38,7 +37,7 @@ public class ResoveExcel {
      * @return
      * @throws Exception
      */
-    public static List<JSONObject> importExcel(InputStream file, Map<String, String> colNames, boolean isEnglish) throws Exception {
+    public static List<Map<String, Object>> importExcel(InputStream file, Map<String, String> colNames, boolean isEnglish) throws Exception {
 
         //生成excel
         Workbook wb = readExcel(file);
@@ -52,7 +51,7 @@ public class ResoveExcel {
         List<String> en_titles = checkTitleByModel(isEnglish, titles, colNames);
 
         //读取数据,并删除表头
-        List<JSONObject> data = readExcelSheet(wb.getSheetAt(0), en_titles, 1);
+        List<Map<String, Object>> data = readExcelSheet(wb.getSheetAt(0), en_titles, 1);
 
         if(data == null || data.size()<1){
             throw new Exception("数据文件为空,请检查文件是否为空");
@@ -157,15 +156,15 @@ public class ResoveExcel {
      * @param start_row
      * @return
      */
-    private static List<JSONObject> readExcelSheet(Sheet sheet, List<String> title,int start_row) {
+    private static List<Map<String, Object>> readExcelSheet(Sheet sheet, List<String> title,int start_row) {
         //colType 是表头映射,如果为空则以excel顺序
         //colNames 为中英文映射,如果表头是中文,则映射成英文字段
-        List<JSONObject> rows = new ArrayList<>();
+        List<Map<String, Object>> rows = new ArrayList<>();
         if(sheet != null){
             int rowNos = sheet.getLastRowNum();// 得到excel的总记录条数
             for (int i = start_row; i <= rowNos; i++) {// 遍历行
                 Row row = sheet.getRow(i);
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject=JsonUtil.createEmptyMap();
                 if(row != null){
                     int columNos = row.getLastCellNum();// 表头总共的列数
                     for (int j = 0; j < columNos; j++) {

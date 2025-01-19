@@ -1,21 +1,22 @@
 package com.zyc.zdh.es;
 
-import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.http.HttpHost;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EsUtilTest {
 
     @Test
     public void put() throws Exception {
-        JSONObject jsonObject=new JSONObject();
+        Map<String, Object> jsonObject=JsonUtil.createEmptyMap();
         jsonObject.put("name","zhaoyachao");
         jsonObject.put("project","zdh");
         EsUtil esUtil=new EsUtil(new HttpHost[]{new HttpHost("192.168.110.10", 9200, "http")});
-        esUtil.put("test_db", "_doc", "1",jsonObject.toJSONString(), new SingleIndexResponseListener());
+        esUtil.put("test_db", "_doc", "1",JsonUtil.formatJsonString(jsonObject), new SingleIndexResponseListener());
         while (true){
             Thread.sleep(10000);
         }
@@ -23,11 +24,11 @@ public class EsUtilTest {
 
     @Test
     public void putAsync() throws Exception {
-        JSONObject jsonObject=new JSONObject();
+        Map<String, Object> jsonObject=JsonUtil.createEmptyMap();
         jsonObject.put("name","zhaoyachao");
         jsonObject.put("project","zdh");
         EsUtil esUtil=new EsUtil(new HttpHost[]{new HttpHost("192.168.110.10", 9200, "http")});
-        esUtil.putAsync("test_db", "_doc", "1",jsonObject.toJSONString(), new SingleAsyncActionListener());
+        esUtil.putAsync("test_db", "_doc", "1",JsonUtil.formatJsonString(jsonObject), new SingleAsyncActionListener());
         while (true){
             Thread.sleep(10000);
         }
@@ -35,9 +36,9 @@ public class EsUtilTest {
 
     @Test
     public void putBulk() throws Exception {
-        List<JSONObject> data=new ArrayList<>();
+        List<Map<String, Object>> data=new ArrayList<>();
         for (int i=0;i<10;i++){
-            JSONObject jsonObject=new JSONObject();
+            Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
             jsonObject.put("name","zhaoyachao"+i);
             jsonObject.put("project","zdh"+i);
             jsonObject.put("id",""+i);
@@ -51,9 +52,9 @@ public class EsUtilTest {
     }
     @Test
     public void putBulkAsync() throws Exception {
-        List<JSONObject> data=new ArrayList<>();
+        List<Map<String, Object>> data=new ArrayList<>();
         for (int i=0;i<10;i++){
-            JSONObject jsonObject=new JSONObject();
+            Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
             jsonObject.put("name","zhaoyachao"+i);
             jsonObject.put("project","zdh"+i);
             jsonObject.put("id",""+i);

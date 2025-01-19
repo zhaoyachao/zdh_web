@@ -1,7 +1,7 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
+import java.util.Map;
 
 @Table
 public class ResourceTreeInfo{
@@ -98,7 +99,7 @@ public class ResourceTreeInfo{
 	private String qps;
 
 	@Transient
-	private JSONObject a_attr;
+	private Map<String, Object> a_attr;
 
 	public String getId() {
 		return id;
@@ -243,8 +244,8 @@ public class ResourceTreeInfo{
 		this.qps = qps;
 	}
 
-	public JSONObject getA_attr() {
-		JSONObject jsonObject=new JSONObject();
+	public Map<String, Object> getA_attr() {
+		Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
 		if(StringUtils.isEmpty(getResource_type())){
 			return jsonObject;
 		}

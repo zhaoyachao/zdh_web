@@ -4,9 +4,6 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.RuleConstant;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.rqueue.RQueueManager;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
@@ -321,22 +318,21 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                             continue;
                                         }
 
-                                        JSONArray jsonArray= JSON.parseArray(restul);
+                                        List<Map<String, Object>> jsonArray= JsonUtil.toJavaListMap(restul);
                                         List<String> killJobs=new ArrayList<>();
-                                        for(Object jo:jsonArray){
-                                            JSONObject j=(JSONObject) jo;
-                                            if(j.getString(jobGroup).startsWith(tl.getId())){
-                                                killJobs.add(j.getString(jobGroup));
+                                        for(Map<String, Object> jo:jsonArray){
+                                            if(jo.getOrDefault(jobGroup, "").toString().startsWith(tl.getId())){
+                                                killJobs.add(jo.getOrDefault(jobGroup, "").toString());
                                             }
                                         }
 
-                                        JSONObject js=new JSONObject();
+                                        Map<String, Object> js=JsonUtil.createEmptyMap();
                                         js.put("task_logs_id",tl.getId());//写日志使用
                                         js.put("jobGroups",killJobs);
                                         js.put("job_id",tl.getJob_id());
                                         //发送杀死请求
                                         String kill_url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getZdh_port()+"/api/v1/kill";
-                                        HttpUtil.postJSON(kill_url,js.toJSONString());
+                                        HttpUtil.postJSON(kill_url, JsonUtil.formatJsonString(js));
                                         taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
                                     }else{
                                         String msg2="无法获取具体执行器,判断任务已杀死";

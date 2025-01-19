@@ -1,9 +1,9 @@
 package com.zyc.zdh.job;
 
-import com.alibaba.fastjson.JSON;
 import com.zyc.zdh.entity.EtlTaskLogInfo;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import com.zyc.zdh.util.SSHUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +46,7 @@ public class FlumeJob extends JobCommon2 {
             if(StringUtils.isEmpty(tli.getEtl_info())){
                 throw new Exception("flume无法获取执行任务信息");
             }
-            EtlTaskLogInfo taskLogInfo=JSON.parseObject(tli.getEtl_info(), EtlTaskLogInfo.class);
+            EtlTaskLogInfo taskLogInfo= JsonUtil.toJavaBean(tli.getEtl_info(), EtlTaskLogInfo.class);
             if(StringUtils.isEmpty(taskLogInfo.getFlume_command())){
                 throw new Exception("flume任务执行命令信息不可为空");
             }

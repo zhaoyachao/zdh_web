@@ -2,9 +2,8 @@ package com.zyc.zdh.job;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.druid.util.JdbcUtils;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+
+import com.google.common.collect.Lists;
 import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.jcraft.jsch.JSchException;
@@ -173,7 +172,7 @@ public class JobCommon2 {
      * @param cur_time
      */
     public static void addEtlDate2Params(TaskLogInstance tli, Timestamp cur_time){
-        Map<String, Object> new_params = JsonUtil.createEmptyLinkMap();
+        Map<String, Object> new_params = JsonUtil.createEmptyMap();
         String date = DateUtil.formatTime(cur_time);
         logger.info(" JOB ,{},处理当前日期,传递参数ETL_DATE 为 {}", tli.getMore_task(), date);
         if(StringUtils.isEmpty(tli.getParams())){
@@ -188,19 +187,6 @@ public class JobCommon2 {
 
     public static ZdhInfo create_zdhInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
                                          EtlTaskService etlTaskService, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
-
-//        JSONObject json = new JSONObject();
-//        String date = DateUtil.formatTime(tli.getCur_time());
-//        json.put("ETL_DATE", date);
-//        logger.info(" JOB ,单源,处理当前日期,传递参数ETL_DATE 为" + date);
-//        String params = tli.getParams();
-//        if(StringUtils.isEmpty(params)){
-//            tli.setParams(json.toJSONString());
-//        }else{
-//            json = JSON.parseObject(params);
-//            json.put("ETL_DATE", date);
-//            tli.setParams(json.toJSONString());
-//        }
 
         addEtlDate2Params(tli, tli.getCur_time());
 
@@ -259,21 +245,21 @@ public class JobCommon2 {
                 dataSourcesInfoOutput.setUsername(zdhNginx.getUsername());
                 dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                 if (etlTaskInfo.getData_sources_params_output() != null && !etlTaskInfo.getData_sources_params_output().trim().equals("")) {
-                    JSONObject jsonObject = JSON.parseObject(etlTaskInfo.getData_sources_params_output());
+                    Map<String, Object> jsonObject = JsonUtil.toJavaMap(etlTaskInfo.getData_sources_params_output());
                     jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + tli.getOwner());
                     etlTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                 } else {
-                    JSONObject jsonObject = new JSONObject();
+                    Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                     jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + tli.getOwner());
                     etlTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                 }
             } else {
                 if (etlTaskInfo.getData_sources_params_output() != null && !etlTaskInfo.getData_sources_params_output().trim().equals("")) {
-                    JSONObject jsonObject = JSON.parseObject(etlTaskInfo.getData_sources_params_output());
+                    Map<String, Object> jsonObject = JsonUtil.toJavaMap(etlTaskInfo.getData_sources_params_output());
                     jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + tli.getOwner());
                     etlTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                 } else {
-                    JSONObject jsonObject = new JSONObject();
+                    Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                     jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + tli.getOwner());
                     etlTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                 }
@@ -290,18 +276,6 @@ public class JobCommon2 {
     public static ZdhMoreInfo create_more_task_zdhInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
                                                        EtlTaskService etlTaskService, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper, EtlMoreTaskMapper etlMoreTaskMapper) throws Exception {
         try {
-//            JSONObject json = new JSONObject();
-//            String date = DateUtil.formatTime(tli.getCur_time());
-//            json.put("ETL_DATE", date);
-//            logger.info(" JOB ,多源,处理当前日期,传递参数ETL_DATE 为" + date);
-//            String params = tli.getParams();
-//            if(StringUtils.isEmpty(params)){
-//                tli.setParams(json.toJSONString());
-//            }else{
-//                json = JSON.parseObject(params);
-//                json.put("ETL_DATE", date);
-//                tli.setParams(json.toJSONString());
-//            }
 
             addEtlDate2Params(tli, tli.getCur_time());
 
@@ -338,21 +312,21 @@ public class JobCommon2 {
                     dataSourcesInfoOutput.setUsername(zdhNginx.getUsername());
                     dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                     if (etlMoreTaskInfo.getData_sources_params_output() != null && !etlMoreTaskInfo.getData_sources_params_output().trim().equals("")) {
-                        JSONObject jsonObject = JSON.parseObject(etlMoreTaskInfo.getData_sources_params_output());
+                        Map<String, Object> jsonObject = JsonUtil.toJavaMap(etlMoreTaskInfo.getData_sources_params_output());
                         jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlMoreTaskInfo.getOwner());
                         etlMoreTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     } else {
-                        JSONObject jsonObject = new JSONObject();
+                        Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                         jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlMoreTaskInfo.getOwner());
                         etlMoreTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     }
                 } else {
                     if (etlMoreTaskInfo.getData_sources_params_output() != null && !etlMoreTaskInfo.getData_sources_params_output().trim().equals("")) {
-                        JSONObject jsonObject = JSON.parseObject(etlMoreTaskInfo.getData_sources_params_output());
+                        Map<String, Object> jsonObject = JsonUtil.toJavaMap(etlMoreTaskInfo.getData_sources_params_output());
                         jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlMoreTaskInfo.getOwner());
                         etlMoreTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     } else {
-                        JSONObject jsonObject = new JSONObject();
+                        Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                         jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlMoreTaskInfo.getOwner());
                         etlMoreTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     }
@@ -403,18 +377,6 @@ public class JobCommon2 {
                                                SqlTaskMapper sqlTaskMapper, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
-//            JSONObject json = new JSONObject();
-//            String date = DateUtil.formatTime(tli.getCur_time());
-//            json.put("ETL_DATE", date);
-//            logger.info(" JOB ,SQL,处理当前日期,传递参数ETL_DATE 为" + date);
-//            String params = tli.getParams();
-//            if(StringUtils.isEmpty(params)){
-//                tli.setParams(json.toJSONString());
-//            }else{
-//                json = JSON.parseObject(params);
-//                json.put("ETL_DATE", date);
-//                tli.setParams(json.toJSONString());
-//            }
 
             addEtlDate2Params(tli, tli.getCur_time());
 
@@ -454,21 +416,21 @@ public class JobCommon2 {
                     dataSourcesInfoOutput.setUsername(zdhNginx.getUsername());
                     dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                     if (sqlTaskInfo.getData_sources_params_output() != null && !sqlTaskInfo.getData_sources_params_output().trim().equals("")) {
-                        JSONObject jsonObject = JSON.parseObject(sqlTaskInfo.getData_sources_params_output());
+                        Map<String, Object> jsonObject = JsonUtil.toJavaMap(sqlTaskInfo.getData_sources_params_output());
                         jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + sqlTaskInfo.getOwner());
                         sqlTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     } else {
-                        JSONObject jsonObject = new JSONObject();
+                        Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                         jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" +  sqlTaskInfo.getOwner());
                         sqlTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     }
                 } else {
                     if (sqlTaskInfo.getData_sources_params_output() != null && !sqlTaskInfo.getData_sources_params_output().trim().equals("")) {
-                        JSONObject jsonObject = JSON.parseObject(sqlTaskInfo.getData_sources_params_output());
+                        Map<String, Object> jsonObject = JsonUtil.toJavaMap(sqlTaskInfo.getData_sources_params_output());
                         jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" +  sqlTaskInfo.getOwner());
                         sqlTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     } else {
-                        JSONObject jsonObject = new JSONObject();
+                        Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                         jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" +  sqlTaskInfo.getOwner());
                         sqlTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     }
@@ -494,18 +456,6 @@ public class JobCommon2 {
         try {
 
             JarFileMapper jarFileMapper = (JarFileMapper) SpringContext.getBean("jarFileMapper");
-//            JSONObject json = new JSONObject();
-//            String date = DateUtil.formatTime(tli.getCur_time());
-//            json.put("ETL_DATE", date);
-//            logger.info(" JOB ,外部JAR,处理当前日期,传递参数ETL_DATE 为" + date);
-//            String params = tli.getParams();
-//            if(StringUtils.isEmpty(params)){
-//                tli.setParams(json.toJSONString());
-//            }else{
-//                json = JSON.parseObject(params);
-//                json.put("ETL_DATE", date);
-//                tli.setParams(json.toJSONString());
-//            }
 
             addEtlDate2Params(tli, tli.getCur_time());
 
@@ -541,18 +491,6 @@ public class JobCommon2 {
                                                      EtlTaskService etlTaskService, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper, EtlDroolsTaskMapper etlDroolsTaskMapper,
                                                      EtlMoreTaskMapper etlMoreTaskMapper, SqlTaskMapper sqlTaskMapper) throws Exception {
         try {
-//            JSONObject json = new JSONObject();
-//            String date = DateUtil.formatTime(tli.getCur_time());
-//            json.put("ETL_DATE", date);
-//            logger.info(" JOB ,Drools,处理当前日期,传递参数ETL_DATE 为" + date);
-//            String params = tli.getParams();
-//            if(StringUtils.isEmpty(params)){
-//                tli.setParams(json.toJSONString());
-//            }else{
-//                json = JSON.parseObject(params);
-//                json.put("ETL_DATE", date);
-//                tli.setParams(json.toJSONString());
-//            }
 
             addEtlDate2Params(tli, tli.getCur_time());
 
@@ -578,21 +516,21 @@ public class JobCommon2 {
                     dataSourcesInfoOutput.setUsername(zdhNginx.getUsername());
                     dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                     if (etlDroolsTaskInfo.getData_sources_params_output() != null && !etlDroolsTaskInfo.getData_sources_params_output().trim().equals("")) {
-                        JSONObject jsonObject = JSON.parseObject(etlDroolsTaskInfo.getData_sources_params_output());
+                        Map<String, Object> jsonObject = JsonUtil.toJavaMap(etlDroolsTaskInfo.getData_sources_params_output());
                         jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" +  etlDroolsTaskInfo.getOwner());
                         etlDroolsTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     } else {
-                        JSONObject jsonObject = new JSONObject();
+                        Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                         jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlDroolsTaskInfo.getOwner());
                         etlDroolsTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     }
                 } else {
                     if (etlDroolsTaskInfo.getData_sources_params_output() != null && !etlDroolsTaskInfo.getData_sources_params_output().trim().equals("")) {
-                        JSONObject jsonObject = JSON.parseObject(etlDroolsTaskInfo.getData_sources_params_output());
+                        Map<String, Object> jsonObject = JsonUtil.toJavaMap(etlDroolsTaskInfo.getData_sources_params_output());
                         jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlDroolsTaskInfo.getOwner());
                         etlDroolsTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     } else {
-                        JSONObject jsonObject = new JSONObject();
+                        Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                         jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlDroolsTaskInfo.getOwner());
                         etlDroolsTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     }
@@ -714,18 +652,6 @@ public class JobCommon2 {
 
         EtlApplyTaskMapper etlApplyTaskMapper = (EtlApplyTaskMapper) SpringContext.getBean("etlApplyTaskMapper");
         ApplyMapper applyMapper = (ApplyMapper) SpringContext.getBean("applyMapper");
-//        JSONObject json = new JSONObject();
-//        String date = DateUtil.formatTime(tli.getCur_time());
-//        json.put("ETL_DATE", date);
-//        logger.info(" JOB ,单源,处理当前日期,传递参数ETL_DATE 为" + date);
-//        String params = tli.getParams();
-//        if(StringUtils.isEmpty(params)){
-//            tli.setParams(json.toJSONString());
-//        }else{
-//            json = JSON.parseObject(params);
-//            json.put("ETL_DATE", date);
-//            tli.setParams(json.toJSONString());
-//        }
 
         addEtlDate2Params(tli, tli.getCur_time());
 
@@ -782,21 +708,21 @@ public class JobCommon2 {
                 dataSourcesInfoOutput.setUsername(zdhNginx.getUsername());
                 dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                 if (etlApplyTaskInfo.getData_sources_params_output() != null && !etlApplyTaskInfo.getData_sources_params_output().trim().equals("")) {
-                    JSONObject jsonObject = JSON.parseObject(etlApplyTaskInfo.getData_sources_params_output());
+                    Map<String, Object> jsonObject = JsonUtil.toJavaMap(etlApplyTaskInfo.getData_sources_params_output());
                     jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlApplyTaskInfo.getOwner());
                     etlApplyTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                 } else {
-                    JSONObject jsonObject = new JSONObject();
+                    Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                     jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlApplyTaskInfo.getOwner());
                     etlApplyTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                 }
             } else {
                 if (etlApplyTaskInfo.getData_sources_params_output() != null && !etlApplyTaskInfo.getData_sources_params_output().trim().equals("")) {
-                    JSONObject jsonObject = JSON.parseObject(etlApplyTaskInfo.getData_sources_params_output());
+                    Map<String, Object> jsonObject = JsonUtil.toJavaMap(etlApplyTaskInfo.getData_sources_params_output());
                     jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlApplyTaskInfo.getOwner());
                     etlApplyTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                 } else {
-                    JSONObject jsonObject = new JSONObject();
+                    Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                     jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlApplyTaskInfo.getOwner());
                     etlApplyTaskInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                 }
@@ -815,18 +741,6 @@ public class JobCommon2 {
                                                       EtlTaskFlinkMapper etlTaskFlinkMapper, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
-//            JSONObject json = new JSONObject();
-//            String date = DateUtil.formatTime(tli.getCur_time());
-//            json.put("ETL_DATE", date);
-//            logger.info(" JOB ,SQL,处理当前日期,传递参数ETL_DATE 为" + date);
-//            String params = tli.getParams();
-//            if(StringUtils.isEmpty(params)){
-//                tli.setParams(json.toJSONString());
-//            }else{
-//                json = JSON.parseObject(params);
-//                json.put("ETL_DATE", date);
-//                tli.setParams(json.toJSONString());
-//            }
 
             addEtlDate2Params(tli, tli.getCur_time());
 
@@ -859,18 +773,6 @@ public class JobCommon2 {
                                                  EtlTaskJdbcMapper etlTaskJdbcMapper, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
-//            JSONObject json = new JSONObject();
-//            String date = DateUtil.formatTime(tli.getCur_time());
-//            json.put("ETL_DATE", date);
-//            logger.info(" JOB ,SQL,处理当前日期,传递参数ETL_DATE 为" + date);
-//            String params = tli.getParams();
-//            if(StringUtils.isEmpty(params)){
-//                tli.setParams(json.toJSONString());
-//            }else{
-//                json = JSON.parseObject(params);
-//                json.put("ETL_DATE", date);
-//                tli.setParams(json.toJSONString());
-//            }
 
             addEtlDate2Params(tli, tli.getCur_time());
 
@@ -914,21 +816,21 @@ public class JobCommon2 {
                     dataSourcesInfoOutput.setUsername(zdhNginx.getUsername());
                     dataSourcesInfoOutput.setPassword(zdhNginx.getPassword());
                     if (etlTaskJdbcInfo.getData_sources_params_output() != null && !etlTaskJdbcInfo.getData_sources_params_output().trim().equals("")) {
-                        JSONObject jsonObject = JSON.parseObject(etlTaskJdbcInfo.getData_sources_params_output());
+                        Map<String, Object> jsonObject = JsonUtil.toJavaMap(etlTaskJdbcInfo.getData_sources_params_output());
                         jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlTaskJdbcInfo.getOwner());
                         etlTaskJdbcInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     } else {
-                        JSONObject jsonObject = new JSONObject();
+                        Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                         jsonObject.put("root_path", zdhNginx.getNginx_dir() + "/" + etlTaskJdbcInfo.getOwner());
                         etlTaskJdbcInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     }
                 } else {
                     if (etlTaskJdbcInfo.getData_sources_params_output() != null && !etlTaskJdbcInfo.getData_sources_params_output().trim().equals("")) {
-                        JSONObject jsonObject = JSON.parseObject(etlTaskJdbcInfo.getData_sources_params_output());
+                        Map<String, Object> jsonObject = JsonUtil.toJavaMap(etlTaskJdbcInfo.getData_sources_params_output());
                         jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlTaskJdbcInfo.getOwner());
                         etlTaskJdbcInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     } else {
-                        JSONObject jsonObject = new JSONObject();
+                        Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                         jsonObject.put("root_path", zdhNginx.getTmp_dir() + "/" + etlTaskJdbcInfo.getOwner());
                         etlTaskJdbcInfo.setData_sources_params_output(JsonUtil.formatJsonString(jsonObject));
                     }
@@ -952,18 +854,6 @@ public class JobCommon2 {
                                                    EtlTaskDataxMapper etlTaskDataxMapper, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper) throws Exception {
 
         try {
-//            JSONObject json = new JSONObject();
-//            String date = DateUtil.formatTime(tli.getCur_time());
-//            json.put("ETL_DATE", date);
-//            logger.info(" JOB ,DATAX,处理当前日期,传递参数ETL_DATE 为" + date);
-//            String params = tli.getParams();
-//            if(StringUtils.isEmpty(params)){
-//                tli.setParams(json.toJSONString());
-//            }else{
-//                json = JSON.parseObject(params);
-//                json.put("ETL_DATE", date);
-//                tli.setParams(json.toJSONString());
-//            }
 
             addEtlDate2Params(tli, tli.getCur_time());
 
@@ -1011,78 +901,69 @@ public class JobCommon2 {
     public static ZdhQualityInfo create_zdhQualityInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
                                                        QualityTaskMapper qualityTaskMapper, DataSourcesMapper dataSourcesMapper, ZdhNginxMapper zdhNginxMapper, QualityRuleMapper qualityRuleMapper) throws Exception {
 
-//        JSONObject json = new JSONObject();
-//        String date = DateUtil.formatTime(tli.getCur_time());
-//        json.put("ETL_DATE", date);
-//        logger.info(" JOB ,单源,处理当前日期,传递参数ETL_DATE 为" + date);
-//        String params = tli.getParams();
-//        if(StringUtils.isEmpty(params)){
-//            tli.setParams(json.toJSONString());
-//        }else{
-//            json = JSON.parseObject(params);
-//            json.put("ETL_DATE", date);
-//            tli.setParams(json.toJSONString());
-//        }
+        try{
+            addEtlDate2Params(tli, tli.getCur_time());
 
-        addEtlDate2Params(tli, tli.getCur_time());
-
-        String etl_task_id = tli.getEtl_task_id();
-        //获取etl 任务信息
-        QualityTaskInfo qualityTaskInfo = qualityTaskMapper.selectByPrimaryKey(etl_task_id);
-        if (qualityTaskInfo == null) {
-            logger.info("无法找到对应的[QUALITY]任务,任务id:" + etl_task_id);
-            throw new Exception("无法找到对应的[QUALITY]任务,任务id:" + etl_task_id);
-        }
-
-        //增加quality_rule_info信息
-        //JSONArray jsonArray = new JSONArray();
-        List<Map<String, Object>> jsonArray = new ArrayList<>();
-        if (!StringUtils.isEmpty(qualityTaskInfo.getQuality_rule_config())) {
-            for (Map<String, Object> obj : JsonUtil.toJavaListMap(qualityTaskInfo.getQuality_rule_config())) {
-
-                String id = obj.getOrDefault("quality_rule", "").toString();
-                QualityRuleInfo qualityRuleInfo = qualityRuleMapper.selectByPrimaryKey(id);
-                Map<String, Object> objectMap = BeanUtil.beanToMap(qualityRuleInfo);
-                //JSONObject jsonObject1 = (JSONObject) JSONObject.toJSON(qualityRuleInfo);
-                objectMap.put("quality_columns", obj.getOrDefault("quality_columns", ""));
-                jsonArray.add(objectMap);
+            String etl_task_id = tli.getEtl_task_id();
+            //获取etl 任务信息
+            QualityTaskInfo qualityTaskInfo = qualityTaskMapper.selectByPrimaryKey(etl_task_id);
+            if (qualityTaskInfo == null) {
+                logger.info("无法找到对应的[QUALITY]任务,任务id:" + etl_task_id);
+                throw new Exception("无法找到对应的[QUALITY]任务,任务id:" + etl_task_id);
             }
-        }
 
-        qualityTaskInfo.setQuality_rule_config(JsonUtil.formatJsonString(jsonArray));
+            //增加quality_rule_info信息
+            //JSONArray jsonArray = new JSONArray();
+            List<Map<String, Object>> jsonArray = new ArrayList<>();
+            if (!StringUtils.isEmpty(qualityTaskInfo.getQuality_rule_config())) {
+                for (Map<String, Object> obj : JsonUtil.toJavaListMap(qualityTaskInfo.getQuality_rule_config())) {
 
-        Map<String, Object> map = (Map<String, Object>) JsonUtil.toJavaMap(tli.getParams());
-        //此处做参数匹配转换
-        if (map != null) {
-            logger.info("单源,自定义参数不为空,开始替换:" + tli.getParams());
-            //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-            DynamicParams(map, tli, qualityTaskInfo);
-        }
-
-        //获取数据源信息
-        String data_sources_choose_input = qualityTaskInfo.getData_sources_choose_input();
-
-        DataSourcesInfo dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
-        if (dataSourcesInfoInput == null) {
-            logger.info("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
-            throw new Exception("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
-        }
-        DataSourcesInfo dataSourcesInfoOutput = null;
-
-        if (dataSourcesInfoInput.getData_source_type() != null && dataSourcesInfoInput.getData_source_type().equals("外部上传")) {
-            //获取文件服务器信息 配置到数据源选项
-            ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoInput.getOwner());
-            if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
-                dataSourcesInfoInput.setUrl(zdhNginx.getHost() + ":" + zdhNginx.getPort());
-                dataSourcesInfoInput.setUsername(zdhNginx.getUsername());
-                dataSourcesInfoInput.setPassword(zdhNginx.getPassword());
+                    String id = obj.getOrDefault("quality_rule", "").toString();
+                    QualityRuleInfo qualityRuleInfo = qualityRuleMapper.selectByPrimaryKey(id);
+                    Map<String, Object> objectMap = BeanUtil.beanToMap(qualityRuleInfo);
+                    objectMap.put("quality_columns", obj.getOrDefault("quality_columns", ""));
+                    jsonArray.add(objectMap);
+                }
             }
+
+            qualityTaskInfo.setQuality_rule_config(JsonUtil.formatJsonString(jsonArray));
+
+            Map<String, Object> map = (Map<String, Object>) JsonUtil.toJavaMap(tli.getParams());
+            //此处做参数匹配转换
+            if (map != null) {
+                logger.info("单源,自定义参数不为空,开始替换:" + tli.getParams());
+                //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
+                DynamicParams(map, tli, qualityTaskInfo);
+            }
+
+            //获取数据源信息
+            String data_sources_choose_input = qualityTaskInfo.getData_sources_choose_input();
+
+            DataSourcesInfo dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
+            if (dataSourcesInfoInput == null) {
+                logger.info("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
+                throw new Exception("[单源任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
+            }
+            DataSourcesInfo dataSourcesInfoOutput = null;
+
+            if (dataSourcesInfoInput.getData_source_type() != null && dataSourcesInfoInput.getData_source_type().equals("外部上传")) {
+                //获取文件服务器信息 配置到数据源选项
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(dataSourcesInfoInput.getOwner());
+                if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
+                    dataSourcesInfoInput.setUrl(zdhNginx.getHost() + ":" + zdhNginx.getPort());
+                    dataSourcesInfoInput.setUsername(zdhNginx.getUsername());
+                    dataSourcesInfoInput.setPassword(zdhNginx.getPassword());
+                }
+            }
+
+            ZdhQualityInfo zdhQualityInfo = new ZdhQualityInfo();
+            zdhQualityInfo.setZdhInfo(dataSourcesInfoInput, qualityTaskInfo, dataSourcesInfoOutput, tli);
+
+            return zdhQualityInfo;
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            throw e;
         }
-
-        ZdhQualityInfo zdhQualityInfo = new ZdhQualityInfo();
-        zdhQualityInfo.setZdhInfo(dataSourcesInfoInput, qualityTaskInfo, dataSourcesInfoOutput, tli);
-
-        return zdhQualityInfo;
 
     }
 
@@ -1090,63 +971,55 @@ public class JobCommon2 {
     public static ZdhUnstructureInfo create_zdhUnstructureInfo(TaskLogInstance tli, QuartzJobMapper quartzJobMapper,
                                                                EtlTaskUnstructureMapper etlTaskUnstructureMapper, DataSourcesMapper dataSourcesMapper) throws Exception {
 
-//        JSONObject json = new JSONObject();
-//        String date = DateUtil.formatTime(tli.getCur_time());
-//        json.put("ETL_DATE", date);
-//        logger.info(" JOB ,单源,处理当前日期,传递参数ETL_DATE 为" + date);
-//        String params = tli.getParams();
-//        if(StringUtils.isEmpty(params)){
-//            tli.setParams(json.toJSONString());
-//        }else{
-//            json = JSON.parseObject(params);
-//            json.put("ETL_DATE", date);
-//            tli.setParams(json.toJSONString());
-//        }
+        try{
+            addEtlDate2Params(tli, tli.getCur_time());
 
-        addEtlDate2Params(tli, tli.getCur_time());
+            String etl_task_id = tli.getEtl_task_id();
+            //获取etl 任务信息
+            EtlTaskUnstructureInfo etlTaskUnstructureInfo = etlTaskUnstructureMapper.selectByPrimaryKey(etl_task_id);
+            if (etlTaskUnstructureInfo == null) {
+                logger.info("无法找到对应的[UNSTRUCTURE]任务,任务id:" + etl_task_id);
+                throw new Exception("无法找到对应的[UNSTRUCTURE]任务,任务id:" + etl_task_id);
+            }
 
-        String etl_task_id = tli.getEtl_task_id();
-        //获取etl 任务信息
-        EtlTaskUnstructureInfo etlTaskUnstructureInfo = etlTaskUnstructureMapper.selectByPrimaryKey(etl_task_id);
-        if (etlTaskUnstructureInfo == null) {
-            logger.info("无法找到对应的[UNSTRUCTURE]任务,任务id:" + etl_task_id);
-            throw new Exception("无法找到对应的[UNSTRUCTURE]任务,任务id:" + etl_task_id);
+
+            Map<String, Object> map = (Map<String, Object>) JsonUtil.toJavaMap(tli.getParams());
+            //此处做参数匹配转换
+            if (map != null) {
+                logger.info("非结构化任务,自定义参数不为空,开始替换:" + tli.getParams());
+                //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
+                DynamicParams(map, tli, etlTaskUnstructureInfo);
+            }
+
+            //获取数据源信息
+            String data_sources_choose_input = etlTaskUnstructureInfo.getData_sources_choose_file_input();
+
+            DataSourcesInfo dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
+            if (dataSourcesInfoInput == null) {
+                logger.info("[非结构化任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
+                throw new Exception("[非结构化任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
+            }
+
+            String data_sources_choose_output = etlTaskUnstructureInfo.getData_sources_choose_file_output();
+            DataSourcesInfo dataSourcesInfoOutput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_output);
+
+            if (dataSourcesInfoOutput == null) {
+                logger.info("[非结构化任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
+                throw new Exception("[非结构化任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
+            }
+
+            String data_sources_choose_output_jdbc = etlTaskUnstructureInfo.getData_sources_choose_jdbc_output();
+            DataSourcesInfo dataSourcesInfoOutputJdbc = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_output_jdbc);
+
+
+            ZdhUnstructureInfo zdhUnstructureInfo = new ZdhUnstructureInfo();
+            zdhUnstructureInfo.setZdhInfo(dataSourcesInfoInput, etlTaskUnstructureInfo, dataSourcesInfoOutput, dataSourcesInfoOutputJdbc, tli);
+
+            return zdhUnstructureInfo;
+        }catch (Exception e){
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            throw e;
         }
-
-
-        Map<String, Object> map = (Map<String, Object>) JsonUtil.toJavaMap(tli.getParams());
-        //此处做参数匹配转换
-        if (map != null) {
-            logger.info("非结构化任务,自定义参数不为空,开始替换:" + tli.getParams());
-            //System.out.println("自定义参数不为空,开始替换:" + dti.getParams());
-            DynamicParams(map, tli, etlTaskUnstructureInfo);
-        }
-
-        //获取数据源信息
-        String data_sources_choose_input = etlTaskUnstructureInfo.getData_sources_choose_file_input();
-
-        DataSourcesInfo dataSourcesInfoInput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_input);
-        if (dataSourcesInfoInput == null) {
-            logger.info("[非结构化任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
-            throw new Exception("[非结构化任务]无法找到对应的[输入]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
-        }
-
-        String data_sources_choose_output = etlTaskUnstructureInfo.getData_sources_choose_file_output();
-        DataSourcesInfo dataSourcesInfoOutput = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_output);
-
-        if (dataSourcesInfoOutput == null) {
-            logger.info("[非结构化任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
-            throw new Exception("[非结构化任务]无法找到对应的[输出]数据源,任务id:" + etl_task_id + ",数据源id:" + data_sources_choose_input);
-        }
-
-        String data_sources_choose_output_jdbc = etlTaskUnstructureInfo.getData_sources_choose_jdbc_output();
-        DataSourcesInfo dataSourcesInfoOutputJdbc = dataSourcesMapper.selectByPrimaryKey(data_sources_choose_output_jdbc);
-
-
-        ZdhUnstructureInfo zdhUnstructureInfo = new ZdhUnstructureInfo();
-        zdhUnstructureInfo.setZdhInfo(dataSourcesInfoInput, etlTaskUnstructureInfo, dataSourcesInfoOutput, dataSourcesInfoOutputJdbc, tli);
-
-        return zdhUnstructureInfo;
 
     }
 
@@ -1154,18 +1027,6 @@ public class JobCommon2 {
                                                    EtlTaskDataxAutoMapper etlTaskDataxAutoMapper, DataSourcesMapper dataSourcesMapper, Environment environment) throws Exception {
 
         try {
-//            JSONObject json = new JSONObject();
-//            String date = DateUtil.formatTime(tli.getCur_time());
-//            json.put("ETL_DATE", date);
-//            logger.info(" JOB ,DATAX,处理当前日期,传递参数ETL_DATE 为" + date);
-//            String params = tli.getParams();
-//            if(StringUtils.isEmpty(params)){
-//                tli.setParams(json.toJSONString());
-//            }else{
-//                json = JSON.parseObject(params);
-//                json.put("ETL_DATE", date);
-//                tli.setParams(json.toJSONString());
-//            }
 
             addEtlDate2Params(tli, tli.getCur_time());
 
@@ -1240,18 +1101,6 @@ public class JobCommon2 {
                                                            EtlTaskKettleMapper etlTaskKettleMapper, DataSourcesMapper dataSourcesMapper, Environment environment) throws Exception {
 
         try {
-//            JSONObject json = new JSONObject();
-//            String date = DateUtil.formatTime(tli.getCur_time());
-//            json.put("ETL_DATE", date);
-//            logger.info(" JOB ,KETTLE,处理当前日期,传递参数ETL_DATE 为" + date);
-//            String params = tli.getParams();
-//            if(StringUtils.isEmpty(params)){
-//                tli.setParams(json.toJSONString());
-//            }else{
-//                json = JSON.parseObject(params);
-//                json.put("ETL_DATE", date);
-//                tli.setParams(json.toJSONString());
-//            }
 
             addEtlDate2Params(tli, tli.getCur_time());
 
@@ -1629,7 +1478,7 @@ public class JobCommon2 {
         String url = "http://127.0.0.1:60001/api/v1/zdh";
         String zdh_instance = null;
         if (!StringUtils.isEmpty(params)) {
-            zdh_instance = JSON.parseObject(params).getString("zdh_instance");
+            zdh_instance = JsonUtil.toJavaMap(params).getOrDefault("zdh_instance", "").toString();
         }
 
         List<ZdhHaInfo> zdhHaInfoList = zdhHaInfoMapper.selectByStatus("enabled", zdh_instance);
@@ -1768,27 +1617,16 @@ public class JobCommon2 {
         ZdhHaInfo zdhHaInfo = getZdhUrl(zdhHaInfoMapper, params);
         String url = zdhHaInfo.getZdh_url();
         String instance = zdhHaInfo.getZdh_instance();
-//        JSONObject json = new JSONObject();
 
         if (!params.equals("")) {
             logger.info(model_log + " JOB ,参数不为空判断是否有url 参数");
-            String value = JSON.parseObject(params).getString("url");
+            String value = JsonUtil.toJavaMap(params).getOrDefault("url", "").toString();
             if (value != null && !value.equals("")) {
                 url = value;
             }
         }
 
         addEtlDate2Params(tli, tli.getCur_time());
-//        String date = DateUtil.formatTime(tli.getCur_time());
-//        logger.info(model_log + " JOB ,处理当前日期,传递参数ETL_DATE 为" + date);
-//        if(StringUtils.isEmpty(params)){
-//            tli.setParams(json.toJSONString());
-//        }else{
-//            json = JSON.parseObject(params);
-//            json.put("ETL_DATE", date);
-//            tli.setParams(json.toJSONString());
-//        }
-
 
         logger.info(model_log + " JOB ,获取当前的[url]:" + url);
         JobCommon2.insertLog(tli, "INFO", model_log + " JOB ,获取当前的[url]:" + url);
@@ -2401,8 +2239,8 @@ public class JobCommon2 {
             content.setReader(reader);
             content.setWriter(writer);
 
-            JSONObject jsonObject=JSON.parseObject(zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_params_input());
-            DataxConfig dataxConfig=DataxConfig.build(Arrays.asList(content), jsonObject,jsonObject);
+            Map<String, Object> jsonObject=JsonUtil.toJavaMap(zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_params_input());
+            DataxConfig dataxConfig=DataxConfig.build(Lists.newArrayList(content), jsonObject,jsonObject);
 
             System.out.println(JsonUtil.formatJsonString(dataxConfig));
 
@@ -2461,9 +2299,9 @@ public class JobCommon2 {
         config.put("where", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_filter_input());
         config.put("splitPK", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getRepartition_cols_input());
         if(!StringUtils.isEmpty(zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_params_input())){
-            config.put("param",JSON.parseObject(zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_params_input()));
+            config.put("param",JsonUtil.toJavaMap(zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_params_input()));
         }else{
-            config.put("param",new JSONObject());
+            config.put("param", JsonUtil.createEmptyMap());
         }
         config.put("fileType", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getFile_type_input());
         config.put("encoding", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getEncoding_input());
@@ -2520,9 +2358,9 @@ public class JobCommon2 {
         config.put("column", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_table_columns());
         config.put("clear", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_clear_output());
         if(!StringUtils.isEmpty(zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_params_output())){
-            config.put("param",JSON.parseObject(zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_params_output()));
+            config.put("param",JsonUtil.toJavaMap(zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_params_output()));
         }else{
-            config.put("param",new JSONObject());
+            config.put("param", JsonUtil.createEmptyMap());
         }
         config.put("fileType", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getFile_type_output());
         config.put("encoding", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getEncoding_output());
@@ -2757,7 +2595,7 @@ public class JobCommon2 {
         jinJavaParam.put("file_path",etlTaskUnstructureInfo.getOutput_path());
         String params = etlTaskUnstructureInfo.getUnstructure_params_output();
         if(!StringUtils.isEmpty(params)){
-            JSONObject jsonObject = JSON.parseObject(params);
+            Map<String, Object> jsonObject = JsonUtil.toJavaMap(params);
             for(Map.Entry<String, Object> p:jsonObject.entrySet()){
                 jinJavaParam.put(p.getKey(), p.getValue());
             }
@@ -2858,10 +2696,10 @@ public class JobCommon2 {
             String run_jsmind = tgli.getRun_jsmind_data();
             DAG dag = new DAG();
             if (!StringUtils.isEmpty(run_jsmind)) {
-                JSONArray json_ary = JSON.parseObject(run_jsmind).getJSONArray("run_line");
+                List<Map<String, Object>> json_ary = (List<Map<String, Object>>)JsonUtil.toJavaMap(run_jsmind).get("run_line");
                 for (int i = 0; i < json_ary.size(); i++) {
-                    JSONObject jsonObject = json_ary.getJSONObject(i);
-                    dag.addEdge(jsonObject.getString("from"), jsonObject.getString("to"));
+                    Map<String, Object> jsonObject = json_ary.get(i);
+                    dag.addEdge(jsonObject.get("from").toString(), jsonObject.get("to").toString());
                 }
 
                 Set<String> parents = dag.getAllParent(tli.getId());
@@ -3050,14 +2888,14 @@ public class JobCommon2 {
 
         logger.info("checkDep_jdbc:" + tli.getRun_jsmind_data());
         if (!org.apache.commons.lang3.StringUtils.isEmpty(tli.getRun_jsmind_data())) {
-            JSONObject jdbc = JSON.parseObject(tli.getRun_jsmind_data());
-            String driver = jdbc.getString("driver");
-            String url = jdbc.getString("url");
-            String username = jdbc.getString("username");
-            String password = jdbc.getString("password");
-            String jdbc_sql = jdbc.getString("jdbc_sql");
-            if(!StringUtils.isEmpty(jdbc.getString("data_sources_choose_input"))){
-                DataSourcesInfo dsi = dataSourcesMapper.selectByPrimaryKey(jdbc.getString("data_sources_choose_input"));
+            Map<String, Object> jdbc = JsonUtil.toJavaMap(tli.getRun_jsmind_data());
+            String driver = jdbc.getOrDefault("driver", "").toString();
+            String url = jdbc.getOrDefault("url", "").toString();
+            String username = jdbc.getOrDefault("username", "").toString();
+            String password = jdbc.getOrDefault("password", "").toString();
+            String jdbc_sql = jdbc.getOrDefault("jdbc_sql", "").toString();
+            if(!StringUtils.isEmpty(jdbc.getOrDefault("data_sources_choose_input", "").toString())){
+                DataSourcesInfo dsi = dataSourcesMapper.selectByPrimaryKey(jdbc.getOrDefault("data_sources_choose_input", "").toString());
                 if(dsi!=null){
                     driver = dsi.getDriver();
                     url = dsi.getUrl();
@@ -3136,12 +2974,12 @@ public class JobCommon2 {
         Map<String, Object> param = getJinJavaParam(tli);
         Jinjava jj = new Jinjava();
         String jsmin_data = jj.render(tli.getRun_jsmind_data(), param);
-        JSONObject jsmin_json = JSON.parseObject(jsmin_data);
+        Map<String, Object> jsmin_json = JsonUtil.toJavaMap(jsmin_data);
 
-        String fs_defaultFS = jsmin_json.getString("url");
-        String hadoop_user_name = jsmin_json.getString("username");
-        String path_str = jj.render(jsmin_json.getString("hdfs_path"), param);
-        String hdfs_mode = jsmin_json.getString("hdfs_mode");
+        String fs_defaultFS = jsmin_json.getOrDefault("url", "").toString();
+        String hadoop_user_name = jsmin_json.getOrDefault("username", "").toString();
+        String path_str = jj.render(jsmin_json.getOrDefault("hdfs_path", "").toString(), param);
+        String hdfs_mode = jsmin_json.getOrDefault("hdfs_mode", "").toString();
         Configuration conf = new Configuration();
         boolean result = true;
         try {
@@ -3890,24 +3728,24 @@ public class JobCommon2 {
                 tglim.updateStatusById3(JobStatus.ERROR.getValue(), "100", DateUtil.getCurrentTime(), tgli.getId());
                 return tliList;
             }
-            JSONArray tasks = JSON.parseObject(tgli.getJsmind_data()).getJSONArray("tasks");
+            List<Map<String, Object>> tasks = (List<Map<String, Object>>)JsonUtil.toJavaMap(tgli.getJsmind_data()).getOrDefault("tasks", Lists.newArrayList());
             //JSONArray shell=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("shell");
-            JSONArray lines = JSON.parseObject(tgli.getJsmind_data()).getJSONArray("line");
-            for (Object job : tasks) {
+            List<Map<String, Object>> lines =  (List<Map<String, Object>>)JsonUtil.toJavaMap(tgli.getJsmind_data()).getOrDefault("line", Lists.newArrayList());
+            for (Map<String, Object> job : tasks) {
                 TaskLogInstance taskLogInstance = new TaskLogInstance();
                 //BeanUtils.copyProperties(taskLogInstance, tgli);
                 taskLogInstance = MapStructMapper.INSTANCE.taskGroupLogInstanceToTaskLogInstance(tgli);
 
-                String etl_task_id = ((JSONObject) job).getString("etl_task_id");//具体任务id
-                String pageSourceId = ((JSONObject) job).getString("divId");//前端生成的div 标识
-                String more_task = ((JSONObject) job).getString("more_task");
-                String is_disenable = ((JSONObject) job).getString("is_disenable");
-                String depend_level = ((JSONObject) job).getString("depend_level");
-                String schedule_id = ((JSONObject) job).getString("schedule_id");
+                String etl_task_id = ((Map<String, Object>) job).getOrDefault("etl_task_id", "").toString();//具体任务id
+                String pageSourceId = ((Map<String, Object>) job).getOrDefault("divId", "").toString();//前端生成的div 标识
+                String more_task = ((Map<String, Object>) job).getOrDefault("more_task", "").toString();
+                String is_disenable = ((Map<String, Object>) job).getOrDefault("is_disenable", "").toString();
+                String depend_level = ((Map<String, Object>) job).getOrDefault("depend_level", "").toString();
+                String schedule_id = ((Map<String, Object>) job).getOrDefault("schedule_id", "").toString();
                 if(StringUtils.isEmpty(schedule_id)){
                     schedule_id = "";
                 }
-                String time_out = ((JSONObject) job).getString("time_out");
+                String time_out = ((Map<String, Object>) job).getOrDefault("time_out", "").toString();
                 if (!org.apache.commons.lang3.StringUtils.isEmpty(time_out)) {
                     taskLogInstance.setTime_out(time_out);
                 }
@@ -3918,26 +3756,27 @@ public class JobCommon2 {
                     depend_level = "0";
                 }
 
-                String etl_context = ((JSONObject) job).getString("etl_context");
-                String command = ((JSONObject) job).getString("command");//具体任务id
-                String is_script = ((JSONObject) job).getString("is_script");//是否脚本方式执行
-                String async = ((JSONObject) job).getString("async");//同步/异步
+                String etl_context = ((Map<String, Object>) job).getOrDefault("etl_context", "").toString();
+                String command = ((Map<String, Object>) job).getOrDefault("command", "").toString();//具体任务id
+                String is_script = ((Map<String, Object>) job).getOrDefault("is_script", "").toString();//是否脚本方式执行
+                String async = ((Map<String, Object>) job).getOrDefault("async", "").toString();//同步/异步
                 taskLogInstance.setRun_time(new Timestamp(System.currentTimeMillis()));
 
-                if (((JSONObject) job).getString("type").equalsIgnoreCase("tasks")) {
+                String task_type = ((Map<String, Object>) job).getOrDefault("type", "").toString();
+                if (task_type.equalsIgnoreCase("tasks")) {
                     taskLogInstance.setMore_task(more_task);
                     taskLogInstance.setJob_type(JobType.ETL.getCode());
-                    String zdh_instance = ((JSONObject) job).getString("zdh_instance");
+                    String zdh_instance = ((Map<String, Object>) job).getOrDefault("zdh_instance", "").toString();
                     if (!org.apache.commons.lang3.StringUtils.isEmpty(zdh_instance) && org.apache.commons.lang3.StringUtils.isEmpty(taskLogInstance.getParams())) {
-                        JSONObject jsonObject = new JSONObject();
+                        Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                         jsonObject.put("zdh_instance", zdh_instance);
-                        taskLogInstance.setParams(jsonObject.toJSONString());
+                        taskLogInstance.setParams(JsonUtil.formatJsonString(jsonObject));
                     }
 
                     if (!org.apache.commons.lang3.StringUtils.isEmpty(zdh_instance) && !org.apache.commons.lang3.StringUtils.isEmpty(taskLogInstance.getParams())) {
-                        JSONObject jsonObject = JSON.parseObject(taskLogInstance.getParams());
+                        Map<String, Object> jsonObject = JsonUtil.toJavaMap(taskLogInstance.getParams());
                         jsonObject.put("zdh_instance", zdh_instance);
-                        taskLogInstance.setParams(jsonObject.toJSONString());
+                        taskLogInstance.setParams(JsonUtil.formatJsonString(jsonObject));
                     }
 
                 }
@@ -3945,47 +3784,47 @@ public class JobCommon2 {
                 taskLogInstance.setJsmind_data("");
                 taskLogInstance.setRun_jsmind_data("");
 
-                if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.SHELL.getCode())) {
+                if (task_type.equalsIgnoreCase(JobType.SHELL.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.SHELL.getCode());
                 }
-                if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.GROUP.getCode())) {
+                if (task_type.equalsIgnoreCase(JobType.GROUP.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.GROUP.getCode());
                 }
-                if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.EMAIL.getCode())) {
+                if (task_type.equalsIgnoreCase(JobType.EMAIL.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.EMAIL.getCode());
-                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setJsmind_data(JsonUtil.formatJsonString(job));
+                    taskLogInstance.setRun_jsmind_data(JsonUtil.formatJsonString(job));
                 }
-                if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.HTTP.getCode())) {
+                if (task_type.equalsIgnoreCase(JobType.HTTP.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.HTTP.getCode());
-                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setJsmind_data(JsonUtil.formatJsonString(job));
+                    taskLogInstance.setRun_jsmind_data(JsonUtil.formatJsonString(job));
                 }
-                if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.FLUME.getCode())) {
+                if (task_type.equalsIgnoreCase(JobType.FLUME.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.FLUME.getCode());
-                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setJsmind_data(JsonUtil.formatJsonString(job));
+                    taskLogInstance.setRun_jsmind_data(JsonUtil.formatJsonString(job));
 
                 }
 
 
-                if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.JDBC.getCode())) {
+                if (task_type.equalsIgnoreCase(JobType.JDBC.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.JDBC.getCode());
-                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setJsmind_data(JsonUtil.formatJsonString(job));
+                    taskLogInstance.setRun_jsmind_data(JsonUtil.formatJsonString(job));
                 }
 
-                if (((JSONObject) job).getString("type").equalsIgnoreCase(JobType.HDFS.getCode())) {
+                if (task_type.equalsIgnoreCase(JobType.HDFS.getCode())) {
                     taskLogInstance.setMore_task("");
                     taskLogInstance.setJob_type(JobType.HDFS.getCode());
-                    taskLogInstance.setJsmind_data(((JSONObject) job).toJSONString());
-                    taskLogInstance.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                    taskLogInstance.setJsmind_data(JsonUtil.formatJsonString(job));
+                    taskLogInstance.setRun_jsmind_data(JsonUtil.formatJsonString(job));
 
                 }
 
@@ -4014,12 +3853,12 @@ public class JobCommon2 {
                 tliList.add(taskLogInstance);
             }
 
-            JSONArray jary_line = new JSONArray();
-            for (Object job : lines) {
-                String pageSourceId = ((JSONObject) job).getString("pageSourceId");
-                String pageTargetId = ((JSONObject) job).getString("pageTargetId");
-                ((JSONObject) job).put("id", map.get(pageSourceId));
-                ((JSONObject) job).put("parentid", map.get(pageTargetId));
+            List<Map<String, Object>> jary_line = JsonUtil.createEmptyListMap();
+            for (Map<String, Object> job : lines) {
+                String pageSourceId = ( job).getOrDefault("pageSourceId", "").toString();
+                String pageTargetId = ( job).getOrDefault("pageTargetId", "").toString();
+                ( job).put("id", map.get(pageSourceId));
+                ( job).put("parentid", map.get(pageTargetId));
                 if (pageSourceId != null && !pageSourceId.equalsIgnoreCase("root")) {
                     boolean is_loop = dag.addEdge(map.get(pageSourceId), map.get(pageTargetId));//此处的依赖关系 都是生成的任务实例id
                     if (!is_loop) {
@@ -4028,7 +3867,7 @@ public class JobCommon2 {
                         return tliList;
                     }
 
-                    JSONObject json_line = new JSONObject();
+                    Map<String, Object> json_line = JsonUtil.createEmptyMap();
                     json_line.put("from", map.get(pageSourceId));
                     json_line.put("to", map.get(pageTargetId));
                     jary_line.add(json_line);
@@ -4039,8 +3878,7 @@ public class JobCommon2 {
             //JSONArray jary = new JSONArray();
             List<Map<String, Object>> jary = JsonUtil.createEmptyListMap();
             for (TaskLogInstance tli : tliList) {
-                //JSONObject jsonObject1 = new JSONObject();
-                Map<String, Object> jsonObject1 = JsonUtil.createEmptyLinkMap();
+                Map<String, Object> jsonObject1 = JsonUtil.createEmptyMap();
                 String tid = tli.getId();
 
                 jsonObject1.put("task_log_instance_id", tid);
@@ -4143,9 +3981,9 @@ public class JobCommon2 {
             String zdh_instance="";
             String redis_key = "zdh_spark_max";
             if(!StringUtils.isEmpty(tli.getParams())){
-                JSONObject jsonObject=JSONObject.parseObject(tli.getParams());
+                Map<String, Object> jsonObject=JsonUtil.toJavaMap(tli.getParams());
                 if(jsonObject.containsKey("zdh_instance")){
-                    zdh_instance=jsonObject.getString("zdh_instance");
+                    zdh_instance=jsonObject.getOrDefault("zdh_instance", "").toString();
                 }
             }
             if(!StringUtils.isEmpty(zdh_instance)){

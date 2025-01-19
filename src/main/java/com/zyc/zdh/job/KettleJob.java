@@ -1,9 +1,10 @@
 package com.zyc.zdh.job;
 
 import com.alibaba.druid.util.JdbcUtils;
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.entity.ZdhKettleAutoInfo;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.KettleUtil;
 
 import java.net.URI;
@@ -38,7 +39,7 @@ public class KettleJob extends JobCommon2 {
             insertLog(tli, "info", "[" + jobType + "] JOB ,kettle_type:" + kettleType+", repository_path: "+repositoryPath);
 
             String params = zdhKettleAutoInfo.getEtlTaskKettleInfo().getData_sources_params_input();
-            Map<String,String> options = JSON.parseObject(params, Map.class);
+            Map<String,String> options = JsonUtil.toJavaObj(params, new TypeReference<Map<String, String>>() {});
             if(repositoryType.equalsIgnoreCase("db")){
                 String dbType = JdbcUtils.getDbType(zdhKettleAutoInfo.getDsi_Input().getUrl(), zdhKettleAutoInfo.getDsi_Input().getDriver());
                 KettleUtil.DataSource dataSource = buildKettleDataSource(zdhKettleAutoInfo);

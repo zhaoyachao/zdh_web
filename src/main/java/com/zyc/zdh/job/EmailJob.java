@@ -1,7 +1,5 @@
 package com.zyc.zdh.job;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.config.BeaconFireAlarmConfiguration;
 import com.zyc.zdh.controller.ZdhMonitorController;
@@ -16,7 +14,6 @@ import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -487,10 +484,10 @@ public class EmailJob {
             Jinjava jj = new Jinjava();
 
             String run_jsmind = tli.getRun_jsmind_data();
-            String subject = JSON.parseObject(run_jsmind).getString("subject");
-            String to_emails = JSON.parseObject(run_jsmind).getString("to_emails");
-            String email_type = JSON.parseObject(run_jsmind).getString("email_type");
-            String email_context = JSON.parseObject(run_jsmind).getString("email_context");
+            String subject = JsonUtil.toJavaMap(run_jsmind).getOrDefault("subject", "").toString();
+            String to_emails = JsonUtil.toJavaMap(run_jsmind).getOrDefault("to_emails", "").toString();
+            String email_type = JsonUtil.toJavaMap(run_jsmind).getOrDefault("email_type", "").toString();
+            String email_context = JsonUtil.toJavaMap(run_jsmind).getOrDefault("email_context", "").toString();
             email_context = jj.render(email_context, jinJavaParam);
 
             if(StringUtils.isEmpty(email_type)){
@@ -583,8 +580,8 @@ public class EmailJob {
             for (BeaconFireAlarmMsgInfo bfami: beaconFireAlarmMsgInfos){
                 String alarm_msg = bfami.getAlarm_msg();
                 if(!StringUtils.isEmpty(alarm_msg)){
-                    JobBeaconFire.Out out = JSON.parseObject(alarm_msg, JobBeaconFire.Out.class);
-                    JSONObject jsonObject = JSON.parseObject(out.getAlarmConfig());
+                    JobBeaconFire.Out out = JsonUtil.toJavaBean(alarm_msg, JobBeaconFire.Out.class);
+                    Map<String, Object> jsonObject = JsonUtil.toJavaMap(out.getAlarmConfig());
                     if(jsonObject == null){
                         bfami.setStatus(Const.STATUS_COMMON_FAIL);
                         beaconFireAlarmMsgMapper.updateByPrimaryKey(bfami);
@@ -595,7 +592,7 @@ public class EmailJob {
                     }
                     if(jsonObject.containsKey("sms")){
                         try{
-                            String[] phones = jsonObject.getString("sms").split(",");
+                            String[] phones = jsonObject.getOrDefault("sms", "").toString().split(",");
                             AliMessageParam aliMessageParam = build(beaconFireAlarmConfiguration, phones, bfami.getId());
                             AliMessagePush aliMessagePush = new AliMessagePush();
                             aliMessagePush.send(aliMessageParam);
@@ -605,7 +602,7 @@ public class EmailJob {
                     }
                     if(jsonObject.containsKey("email")){
                         try{
-                            sendHtmlEmail(jsonObject.getString("email").split(","), out.getMessage(), JsonUtil.formatJsonString(out.o));
+                            sendHtmlEmail(jsonObject.get("email").toString().split(","), out.getMessage(), JsonUtil.formatJsonString(out.o));
                         }catch (Exception e){
                             e.printStackTrace();
                         }

@@ -301,7 +301,7 @@ public class PermissionUserGroupDimensionValueController extends BaseController 
 
             checkPermissionByOwner(product_code);
 
-            Map<String, Object> ext = JsonUtil.createEmptyLinkMap();
+            Map<String, Object> ext = JsonUtil.createEmptyMap();
 
             if(!StringUtils.isEmpty(add)){
                 add=add.equalsIgnoreCase("on")?"true":"";

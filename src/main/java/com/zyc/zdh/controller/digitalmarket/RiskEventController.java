@@ -1,8 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.RiskEventMapper;
 import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
@@ -13,6 +11,7 @@ import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -74,10 +74,10 @@ public class RiskEventController extends BaseController {
     @SentinelResource(value = "risk_test", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_test", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<JSONObject> risk_test(String uid, String data_node, String scene, String source, String id_type, String param) {
+    public ReturnInfo<Map<String, Object>> risk_test(String uid, String data_node, String scene, String source, String id_type, String param) {
 
         try{
-            JSONObject jsonObject = new JSONObject();
+            Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
             jsonObject.put("uid", uid);
             jsonObject.put("data_node", data_node);
             jsonObject.put("scene", scene);
@@ -87,9 +87,9 @@ public class RiskEventController extends BaseController {
             jsonObject.put("product_code", source);
 
             String url = ConfigUtil.getValue(ConfigUtil.ZDH_SHIP_URL, "http://127.0.0.1:9002/api/v1/ship/accept");
-            String ret = HttpUtil.postJSON(url, jsonObject.toJSONString());
+            String ret = HttpUtil.postJSON(url, JsonUtil.formatJsonString(jsonObject));
             System.out.println(ret);
-            return ReturnInfo.buildSuccess(JSONObject.parseObject(ret));
+            return ReturnInfo.buildSuccess(JsonUtil.toJavaMap(ret));
         }catch (Exception e){
             e.printStackTrace();
             return ReturnInfo.buildError(e);
@@ -198,9 +198,9 @@ public class RiskEventController extends BaseController {
 
             RiskEventInfo oldRiskEventInfo = riskEventMapper.selectByPrimaryKey(riskEventInfo.getId());
 
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray = JsonUtil.createEmptyListMap();
             for (int i=0;i<param_code.length;i++){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject=JsonUtil.createEmptyMap();
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
@@ -212,7 +212,7 @@ public class RiskEventController extends BaseController {
                 }
                 jsonArray.add(jsonObject);
             }
-            riskEventInfo.setEvent_json(jsonArray.toJSONString());
+            riskEventInfo.setEvent_json(JsonUtil.formatJsonString(jsonArray));
 
             riskEventInfo.setOwner(oldRiskEventInfo.getOwner());
             riskEventInfo.setCreate_time(oldRiskEventInfo.getCreate_time());
@@ -242,9 +242,9 @@ public class RiskEventController extends BaseController {
         try {
             riskEventInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
 
-            JSONArray jsonArray=new JSONArray();
+            List<Map<String, Object>> jsonArray = JsonUtil.createEmptyListMap();
             for (int i=0;i<param_code.length;i++){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject=JsonUtil.createEmptyMap();
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
@@ -256,7 +256,7 @@ public class RiskEventController extends BaseController {
                 }
                 jsonArray.add(jsonObject);
             }
-            riskEventInfo.setEvent_json(jsonArray.toJSONString());
+            riskEventInfo.setEvent_json(JsonUtil.formatJsonString(jsonArray));
 
             riskEventInfo.setOwner(getOwner());
             riskEventInfo.setIs_delete(Const.NOT_DELETE);
@@ -346,7 +346,7 @@ public class RiskEventController extends BaseController {
     @SentinelResource(value = "risk_result_by_request_id_and_strategygroupinstance_id", blockHandler = "handleReturn")
     @RequestMapping(value = "/risk_result_by_request_id_and_strategygroupinstance_id", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<JSONObject> risk_result_by_request_id_and_strategygroupinstance_id(String request_id, String strategy_group_instance_id) {
+    public ReturnInfo<Map<String, Object>> risk_result_by_request_id_and_strategygroupinstance_id(String request_id, String strategy_group_instance_id) {
         try {
 
             Example example = new Example(ZdhLogs.class);
@@ -355,9 +355,9 @@ public class RiskEventController extends BaseController {
             criteria.andEqualTo("job_id", strategy_group_instance_id);
             List<ZdhLogs> zdhLogs = zdhLogsMapper.selectByExample(example);
             List<String> res = new ArrayList<>();
-            JSONObject jsonObject = new JSONObject();
+            Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
             if(zdhLogs != null && zdhLogs.size() > 0){
-                jsonObject = JSONObject.parseObject(zdhLogs.get(0).getMsg());
+                jsonObject = JsonUtil.toJavaMap(zdhLogs.get(0).getMsg());
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonObject);
         } catch (Exception e) {

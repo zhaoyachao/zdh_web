@@ -1,8 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
@@ -10,12 +8,12 @@ import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -1163,15 +1161,15 @@ public class PermissionController extends BaseController {
         }
     }
 
-    private  JSONArray get_role_by_product_code(String product_code){
+    private  List<Map<String, Object>> get_role_by_product_code(String product_code){
         RoleInfo roleInfo=new RoleInfo();
         roleInfo.setProduct_code(product_code);
         roleInfo.setEnable(Const.TRUR);
         List<RoleInfo> roleInfos = roleDao.select(roleInfo);
-        JSONArray jsonArray=new JSONArray();
+        List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
         if(roleInfos != null){
             for (RoleInfo ri: roleInfos){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
                 jsonObject.put("code", ri.getCode());
                 jsonObject.put("name", ri.getName());
                 jsonArray.add(jsonObject);
@@ -1180,16 +1178,16 @@ public class PermissionController extends BaseController {
         return jsonArray;
     }
 
-    private JSONArray get_user_group_by_product_code(String product_code){
+    private List<Map<String, Object>> get_user_group_by_product_code(String product_code){
         UserGroupInfo userGroupInfo=new UserGroupInfo();
         userGroupInfo.setProduct_code(product_code);
         userGroupInfo.setEnable(Const.TRUR);
 
         List<UserGroupInfo> userGroupInfos = userGroupMapper.select(userGroupInfo);
-        JSONArray jsonArray=new JSONArray();
+        List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
         if(userGroupInfos != null){
             for (UserGroupInfo ri: userGroupInfos){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
                 jsonObject.put("code", ri.getId());
                 jsonObject.put("name", ri.getName());
                 jsonArray.add(jsonObject);
@@ -1198,15 +1196,15 @@ public class PermissionController extends BaseController {
         return jsonArray;
     }
 
-    private JSONArray get_group_by_product_code(String product_code){
+    private List<Map<String, Object>> get_group_by_product_code(String product_code){
         DataTagGroupInfo dataTagGroupInfo=new DataTagGroupInfo();
         dataTagGroupInfo.setProduct_code(product_code);
         dataTagGroupInfo.setIs_delete(Const.NOT_DELETE);
         List<DataTagGroupInfo> dataTagGroupInfos = dataTagGroupMapper.select(dataTagGroupInfo);
-        JSONArray jsonArray=new JSONArray();
+        List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
         if(dataTagGroupInfos != null){
             for (DataTagGroupInfo ri: dataTagGroupInfos){
-                JSONObject jsonObject=new JSONObject();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
                 jsonObject.put("code", ri.getTag_group_code());
                 jsonObject.put("name", ri.getTag_group_name());
                 jsonArray.add(jsonObject);
@@ -1215,9 +1213,9 @@ public class PermissionController extends BaseController {
         return jsonArray;
     }
 
-    private JSONArray get_productadmin_by_product_code(String product_code){
-        JSONArray jsonArray=new JSONArray();
-        JSONObject jsonObject=new JSONObject();
+    private List<Map<String, Object>> get_productadmin_by_product_code(String product_code){
+        List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
+        Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
         jsonObject.put("code", "product_admin");
         jsonObject.put("name", "产品管理员");
         jsonArray.add(jsonObject);

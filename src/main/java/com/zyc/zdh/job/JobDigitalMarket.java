@@ -1,9 +1,7 @@
 package com.zyc.zdh.job;
 
 import cn.hutool.core.util.NumberUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
@@ -147,9 +145,9 @@ public class JobDigitalMarket {
      */
     public static boolean checkTnDepends(StrategyInstance si, Map<String,StrategyInstance> dagStrategyInstance) throws Exception {
         //1 获取对比时间类型,相对或者绝对
-        String tn_type = JSONObject.parseObject(si.getRun_jsmind_data()).getString("tn_type");
-        String tn_unit = JSONObject.parseObject(si.getRun_jsmind_data()).getString("tn_unit");
-        String tn_value = JSONObject.parseObject(si.getRun_jsmind_data()).getString("tn_value");
+        String tn_type = JsonUtil.toJavaMap(si.getRun_jsmind_data()).getOrDefault("tn_type", "").toString();
+        String tn_unit = JsonUtil.toJavaMap(si.getRun_jsmind_data()).getOrDefault("tn_unit", "").toString();
+        String tn_value = JsonUtil.toJavaMap(si.getRun_jsmind_data()).getOrDefault("tn_value", "").toString();
         if(StringUtils.isEmpty(tn_value)){
             JobDigitalMarket.insertLog(si,"ERROR","tn模块时间参数不可为空");
             throw new Exception("tn模块时间参数不可为空");
@@ -353,11 +351,11 @@ public class JobDigitalMarket {
 
                         //在线策略小流量生效,谨慎操作,不会清理历史小流量配置,清理历史小流量需要在平台手动同步小流量
                         if(!StringUtils.isEmpty(sgi.getSmall_flow_rate()) && sgi.getGroup_type().equalsIgnoreCase(JobGroupType.ONLINE.getValue())){
-                            Map<String, String> tmp = new HashMap<>();
+                            Map<String, Object> tmp = new HashMap<>();
                             String small_flow_key = "small_flow_rate_"+sgi.getStrategy_group_id();
                             Object small_flow_value = redisUtil.get(small_flow_key);
                             if(small_flow_value != null){
-                                tmp = JSON.parseObject(small_flow_value.toString(), Map.class);
+                                tmp = JsonUtil.toJavaMap(small_flow_value.toString());
                             }
                             tmp.put(sgi.getId(), sgi.getSmall_flow_rate());
                             redisUtil.set(small_flow_key, JsonUtil.formatJsonString(tmp));
@@ -424,21 +422,21 @@ public class JobDigitalMarket {
                 //todo sgim.updateStatusById3(JobStatus.ERROR.getValue(), "100", DateUtil.getCurrentTime(), tgli.getId());
                 return siList;
             }
-            JSONArray tasks = JSON.parseObject(sgi.getJsmind_data()).getJSONArray("tasks");
+            List<Map<String, Object>> tasks = (List<Map<String, Object>>)JsonUtil.toJavaMap(sgi.getJsmind_data()).getOrDefault("tasks", Lists.newArrayList());
             //JSONArray shell=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("shell");
-            JSONArray lines = JSON.parseObject(sgi.getJsmind_data()).getJSONArray("line");
-            for (Object job : tasks) {
+            List<Map<String, Object>> lines = (List<Map<String, Object>>)JsonUtil.toJavaMap(sgi.getJsmind_data()).getOrDefault("line", Lists.newArrayList());
+            for (Map<String, Object> job : tasks) {
                 StrategyInstance si = new StrategyInstance();
                 //BeanUtils.copyProperties(si, sgi);
                 si = MapStructMapper.INSTANCE.strategyGroupInstanceToStrategyInstance(sgi);
 
-                String pageSourceId = ((JSONObject) job).getString("divId");//前端生成的div 标识
-                String more_task = ((JSONObject) job).getString("more_task");
-                String is_disenable = ((JSONObject) job).getString("is_disenable");
-                String depend_level = ((JSONObject) job).getString("depend_level");
-                String time_out = ((JSONObject) job).getString("time_out");
-                String touch_type = ((JSONObject) job).getString("touch_type");
-                String data_node = ((JSONObject) job).getString("data_node");
+                String pageSourceId = job.getOrDefault("divId", "").toString();//前端生成的div 标识
+                String more_task = job.getOrDefault("more_task", "").toString();
+                String is_disenable = job.getOrDefault("is_disenable", "").toString();
+                String depend_level = job.getOrDefault("depend_level", "").toString();
+                String time_out = job.getOrDefault("time_out", "").toString();
+                String touch_type = job.getOrDefault("touch_type", "").toString();
+                String data_node = job.getOrDefault("data_node", "").toString();
                 if (!StringUtils.isEmpty(time_out)) {
                     //si.setTime_out(time_out);
                 }
@@ -457,8 +455,8 @@ public class JobDigitalMarket {
 
                 si.setJsmind_data("");
                 si.setJsmind_data(JsonUtil.formatJsonString(job));
-                //si.setJsmind_data(((JSONObject) job).toJSONString());
-                si.setRun_jsmind_data(((JSONObject) job).toJSONString());
+                //si.setJsmind_data(job.toJSONString());
+                si.setRun_jsmind_data(JsonUtil.formatJsonString(job));
 
                 String t_id = SnowflakeIdWorker.getInstance().nextId() + "";
                 map.put(pageSourceId, t_id);//div标识和任务实例id 对应关系
@@ -478,18 +476,18 @@ public class JobDigitalMarket {
                 si.setTouch_type(touch_type);
                 si.setData_node(data_node);
 
-                String name = ((JSONObject) job).getString("name");
+                String name = job.getOrDefault("name", "").toString();
                 si.setStrategy_context(name);
                 si.setStrategy_id(pageSourceId);
                 siList.add(si);
             }
 
-            JSONArray jary_line = new JSONArray();
-            for (Object job : lines) {
-                String pageSourceId = ((JSONObject) job).getString("pageSourceId");
-                String pageTargetId = ((JSONObject) job).getString("pageTargetId");
-                ((JSONObject) job).put("id", map.get(pageSourceId));
-                ((JSONObject) job).put("parentid", map.get(pageTargetId));
+            List<Map<String, Object>> jary_line = JsonUtil.createEmptyListMap();
+            for (Map<String, Object> job : lines) {
+                String pageSourceId = job.getOrDefault("pageSourceId", "").toString();
+                String pageTargetId = job.getOrDefault("pageTargetId", "").toString();
+                job.put("id", map.get(pageSourceId));
+                job.put("parentid", map.get(pageTargetId));
                 if (pageSourceId != null && !pageSourceId.equalsIgnoreCase("root")) {
                     boolean is_loop = dag.addEdge(map.get(pageSourceId), map.get(pageTargetId));//此处的依赖关系 都是生成的任务实例id
                     if (!is_loop) {
@@ -498,7 +496,7 @@ public class JobDigitalMarket {
                         return siList;
                     }
 
-                    JSONObject json_line = new JSONObject();
+                    Map<String, Object> json_line = JsonUtil.createEmptyMap();
                     json_line.put("from", map.get(pageSourceId));
                     json_line.put("to", map.get(pageTargetId));
                     jary_line.add(json_line);
@@ -506,9 +504,9 @@ public class JobDigitalMarket {
             }
 
             //run_data 结构：run_data:[{task_log_instance_id,etl_task_id,etl_context,more_task}]
-            JSONArray jary = new JSONArray();
+            List<Map<String, Object>> jary = JsonUtil.createEmptyListMap();
             for (StrategyInstance si : siList) {
-                JSONObject jsonObject1 = new JSONObject();
+                Map<String, Object> jsonObject1 = JsonUtil.createEmptyMap();
                 String sid = si.getId();
 
                 jsonObject1.put("strategy_instance_id", sid);
@@ -520,10 +518,10 @@ public class JobDigitalMarket {
                 jary.add(jsonObject1);
             }
 
-            JSONObject jsonObject = JSON.parseObject(sgi.getJsmind_data());
+            Map<String, Object> jsonObject = JsonUtil.toJavaMap(sgi.getJsmind_data());
             jsonObject.put("run_data", jary);
             jsonObject.put("run_line", jary_line);
-            sgi.setRun_jsmind_data(jsonObject.toJSONString());
+            sgi.setRun_jsmind_data(JsonUtil.formatJsonString(jsonObject));
             //sgi.setProcess("6.5");
             sgim.updateByPrimaryKeySelective(sgi);
             //debugInfo(tgli);

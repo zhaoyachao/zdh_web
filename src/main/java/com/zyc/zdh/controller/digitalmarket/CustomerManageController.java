@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.LabelMapper;
 import com.zyc.zdh.entity.LabelInfo;
@@ -9,6 +8,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,19 +82,19 @@ public class CustomerManageController extends BaseController {
 
                 for (Object key: variable.keySet()){
                     String value = variable.get(key).toString();
-                    JSONObject jsonObject = JSONObject.parseObject(value);
+                    Map<String, Object> jsonObject = JsonUtil.toJavaMap(value);
                     String label_value = "";
                     if(labelInfoMap.containsKey(key.toString())){
                         jsonObject.put("label_name", labelInfoMap.get(key.toString()).getLabel_context());
                         List<Map<String, Object>> jsonArray = labelInfoMap.get(key.toString()).getParam_json_object();
                         if(jsonArray.size()>0){
                             for (Map<String, Object> jobject: jsonArray){
-                                String param_code = jobject.getOrDefault("param_code", "").toString();//((JSONObject)jobject).getString("param_code");
-                                String param_name = jobject.getOrDefault("param_context", "").toString();//((JSONObject)jobject).getString("param_context");
+                                String param_code = jobject.getOrDefault("param_code", "").toString();
+                                String param_name = jobject.getOrDefault("param_context", "").toString();
                                 if(StringUtils.isEmpty(label_value)){
-                                    label_value = param_name+" : "+ jsonObject.getString(param_code);
+                                    label_value = param_name+" : "+ jsonObject.getOrDefault(param_code, "").toString();
                                 }else{
-                                    label_value = label_value + " " + param_name + " : "+ jsonObject.getString(param_code);
+                                    label_value = label_value + " " + param_name + " : "+ jsonObject.getOrDefault(param_code, "").toString();
                                 }
                             }
                         }

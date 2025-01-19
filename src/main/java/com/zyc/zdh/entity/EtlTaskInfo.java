@@ -1,8 +1,8 @@
 package com.zyc.zdh.entity;
 
-
-import com.alibaba.fastjson.JSONArray;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -330,14 +330,14 @@ public class EtlTaskInfo {
 
     public List<column_data> getColumn_data_list() {
         if (getColumn_datas() != null && !getColumn_datas().equals("")) {
-            return JSONArray.parseArray(getColumn_datas(), column_data.class);
+            return JsonUtil.toJavaObj(getColumn_datas(), new TypeReference<List<column_data>>() {});
         } else {
             return null;
         }
     }
 
     public void setColumn_data_list(List<column_data> column_data_list) {
-        this.column_data_list = JSONArray.parseArray(getColumn_datas(), column_data.class);
+        this.column_data_list = JsonUtil.toJavaObj(getColumn_datas(), new TypeReference<List<column_data>>() {});
     }
 
 

@@ -1,6 +1,6 @@
 package com.zyc.zdh.datax_generator;
 
-import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.JsonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -287,7 +287,8 @@ public class FtpWriter implements DataxWriter{
         parameter.setEncoding(config.get("encoding").toString());
         parameter.setFieldDelimiter(config.get("fieldDelimiter").toString());
 
-        JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
         parameter.setNullFormat(jsonObject.getOrDefault("nullFormat","\\N ").toString());
 
         parameter.setCompress(config.getOrDefault("compress","").toString());

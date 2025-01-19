@@ -1,6 +1,7 @@
 package com.zyc.zdh.util;
 
 import com.google.common.collect.Lists;
+import com.zyc.zdh.entity.process_time_info;
 import org.junit.Test;
 
 import java.util.*;
@@ -38,5 +39,11 @@ public class JsonUtilTest {
 
         System.out.println("空map: "+JsonUtil.formatJsonString(new HashMap<>()));
         System.out.println("空List: "+JsonUtil.formatJsonString(new ArrayList<>()));
+    }
+
+    @Test
+    public void toJavaBean(){
+        String process_time="";
+        JsonUtil.toJavaBean(process_time, process_time_info.class);
     }
 }

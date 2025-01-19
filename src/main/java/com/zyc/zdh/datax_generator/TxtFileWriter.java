@@ -1,6 +1,6 @@
 package com.zyc.zdh.datax_generator;
 
-import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.JsonUtil;
 
 import java.util.*;
 
@@ -149,7 +149,8 @@ public class TxtFileWriter implements DataxWriter{
         }else {
             parameter.setFileName(config.get("table").toString());
         }
-        JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
 
         parameter.setEncoding(config.get("encoding").toString());
         parameter.setFieldDelimiter(config.get("fieldDelimiter").toString());

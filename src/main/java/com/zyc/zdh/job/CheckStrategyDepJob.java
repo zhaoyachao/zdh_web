@@ -1,8 +1,5 @@
 package com.zyc.zdh.job;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.zyc.rqueue.RQueueClient;
 import com.zyc.rqueue.RQueueManager;
@@ -138,38 +135,6 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     if(StringUtils.isEmpty(action)){
                         continue;
                     }
-//                    String pre_tasks=tl.getPre_tasks();
-//                    if(!StringUtils.isEmpty(pre_tasks)){
-//                        String[] task_ids=pre_tasks.split(",");
-//                        //获取上游 杀死,失败,杀死中的任务
-//                        List<StrategyInstance> tlis=sim.selectByIds(task_ids);
-//
-//                        int level= Integer.valueOf(tl.getDepend_level());
-//                        if(tlis!=null && tlis.size()>0 && level==0){
-//                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功), 默认成功时运行
-//                            // 上游存在失败,更新当前实例状态为kill
-//                            tl.setStatus(JobStatus.KILL.getValue());
-//                            JobDigitalMarket.updateTaskLog(tl,sim);
-//                            JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游全部成功时触发,检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为kill");
-//                            continue;
-//                        }
-//                        if(level >= 1 && level <3){
-//                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
-//                            //杀死触发,如果所有上游任务都已完成finish/skip
-//                            List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
-//                            if(tlis_finish.size()==task_ids.length){
-//                                tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
-//                                String run_jsmind_data = tl.getRun_jsmind_data();
-//                                JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
-//                                jsonObject.put("is_disenable","true");
-//                                tl.setRun_jsmind_data(jsonObject.toJSONString());
-//                                tl.setIs_disenable("true");
-//                                JobDigitalMarket.updateTaskLog(tl, sim);
-//                                JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游存在失败或者杀死时触发,检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为check_dep_finish");
-//                                continue;
-//                            }
-//                        }
-//                    }
 
                     //根据dag判断是否对当前任务进行
                     DAG dag=new DAG();
@@ -343,12 +308,12 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             if(StringUtils.isEmpty(sgi.getRun_jsmind_data())){
                 continue;
             }
-            JSONArray jary=JSON.parseObject(sgi.getRun_jsmind_data()).getJSONArray("run_data");
+            List<Map<String, Object>> jary= (List<Map<String, Object>> ) JsonUtil.toJavaMap(sgi.getRun_jsmind_data()).get("run_data");
             List<String> tlidList=new ArrayList<>();
-            for(Object obj:jary){
-                String tlid=((JSONObject) obj).getString("strategy_instance_id");
+            for(Map<String, Object> obj:jary){
+                String tlid= obj.getOrDefault("strategy_instance_id", "").toString();
                 //System.out.println("task_log_instance_id:"+tlid);
-                if(tlid!=null) {
+                if(!StringUtils.isEmpty(tlid)) {
                     tlidList.add(tlid);
                 }
             }
@@ -542,22 +507,6 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     return action;
                 }
             }
-//            if(level >= 1 && level <3){
-//                // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
-//                //杀死触发,如果所有上游任务都已完成finish/skip
-//                List<StrategyInstance> tlis_finish= sim.selectByFinishIds(task_ids);
-//                if(tlis_finish.size()==task_ids.length){
-//                    tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
-//                    String run_jsmind_data = tl.getRun_jsmind_data();
-//                    JSONObject jsonObject = JSON.parseObject(run_jsmind_data);
-//                    jsonObject.put("is_disenable","true");
-//                    tl.setRun_jsmind_data(jsonObject.toJSONString());
-//                    tl.setIs_disenable("true");
-//                    JobDigitalMarket.updateTaskLog(tl, sim);
-//                    JobDigitalMarket.insertLog(tl,"INFO","当前任务依赖级别: 上游存在失败或者杀死时触发,检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为check_dep_finish");
-//                    continue;
-//                }
-//            }
         }
 
         return action;

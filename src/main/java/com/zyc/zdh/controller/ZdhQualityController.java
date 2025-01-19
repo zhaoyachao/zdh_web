@@ -313,7 +313,7 @@ public class ZdhQualityController extends BaseController {
 
             List<Map<String, Object>> emptyListMap = JsonUtil.createEmptyListMap();
             for (int i = 0; i < quality_rule.length; i++) {
-                Map<String, Object> emptyLinkMap = JsonUtil.createEmptyLinkMap();
+                Map<String, Object> emptyLinkMap = JsonUtil.createEmptyMap();
                 emptyLinkMap.put("quality_rule", quality_rule[i]);
                 emptyLinkMap.put("quality_columns", quality_columns[i]);
                 emptyListMap.add(emptyLinkMap);

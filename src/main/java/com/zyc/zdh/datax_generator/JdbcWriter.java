@@ -1,6 +1,6 @@
 package com.zyc.zdh.datax_generator;
 
-import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.JsonUtil;
 import org.assertj.core.util.Lists;
 
 import java.util.Arrays;
@@ -172,7 +172,8 @@ public class JdbcWriter implements DataxWriter{
         parameter.setPreSql(Arrays.asList(config.get("clear").toString()));
 
         parameter.setColumn(Arrays.asList(config.get("column").toString().split(",")));
-        JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
 
         parameter.setBatchSize(Integer.valueOf(jsonObject.getOrDefault("batchSize", "1024").toString()));
         parameter.setSession(Arrays.asList(config.get("param").toString()));
@@ -184,7 +185,7 @@ public class JdbcWriter implements DataxWriter{
         parameter.setConnection(Lists.newArrayList(connection));
         this.name=config.getOrDefault("name", "xxx").toString()+"writer";
         if(jsonObject.containsKey("name")){
-            this.name=jsonObject.getString("name");
+            this.name=jsonObject.get("name").toString();
         }
         this.parameter=parameter;
     }

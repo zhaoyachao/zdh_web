@@ -1,12 +1,9 @@
 package com.zyc.zdh.other;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.entity.ProcessFlowInfo;
 import com.zyc.zdh.util.HttpUtil;
 import com.zyc.zdh.util.JsonUtil;
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 
@@ -26,11 +23,11 @@ public class TestA {
     @Test
     public void run() throws Exception {
 
-        JSONObject jo = new JSONObject();
-        jo.put("a", "1");
-        jo.put("a", "2");
-
-        System.out.println(jo.toJSONString());
+//        JSONObject jo = new JSONObject();
+//        jo.put("a", "1");
+//        jo.put("a", "2");
+//
+//        System.out.println(jo.toJSONString());
 
 
     }

@@ -1,12 +1,12 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +58,7 @@ public class VariableController extends BaseController {
             String variable_uid=product_code+"_tag_"+uid;
             String params = redisUtil.getRedisTemplate().opsForHash().get(variable_uid, variable_code).toString();
 
-            Map map = JSONObject.parseObject(params, Map.class);
+            Map map = JsonUtil.toJavaMap(params);
             return ReturnInfo.buildSuccess(map);
         }catch (Exception e){
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";

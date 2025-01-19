@@ -172,7 +172,7 @@ public class PluginController extends BaseController {
 
             List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
             for (int i=0;i<param_code.length;i++){
-                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);
@@ -228,7 +228,7 @@ public class PluginController extends BaseController {
             }
             List<Map<String, Object>> jsonArray= JsonUtil.createEmptyListMap();
             for (int i=0;i<param_code.length;i++){
-                Map<String, Object> jsonObject= JsonUtil.createEmptyLinkMap();
+                Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
                 jsonObject.put("param_code", param_code[i]);
                 jsonObject.put("param_context", param_context[i]);
                 jsonObject.put("param_operate", param_operate[i]);

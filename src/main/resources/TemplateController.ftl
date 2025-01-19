@@ -1,7 +1,6 @@
 package ${ControllerPackage};
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.entity.PageResult;

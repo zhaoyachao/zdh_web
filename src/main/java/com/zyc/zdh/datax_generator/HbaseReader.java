@@ -1,6 +1,6 @@
 package com.zyc.zdh.datax_generator;
 
-import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.JsonUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -262,7 +262,8 @@ public class HbaseReader implements DataxReader{
 
         parameter.setColumn(Arrays.asList(config.get("column").toString().split(",")));
 
-        JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
         parameter.setMode(jsonObject.getOrDefault("mode","normal").toString());
         parameter.setScanBatchSize(Integer.parseInt(jsonObject.getOrDefault("scanBatchSize", "100").toString()));
         parameter.setScanCacheSize(Integer.parseInt(jsonObject.getOrDefault("scanCacheSize", "256").toString()));
@@ -278,7 +279,7 @@ public class HbaseReader implements DataxReader{
 
         this.name="hbase11xreader";
         if(jsonObject.containsKey("name")){
-            this.name=jsonObject.getString("name");
+            this.name=jsonObject.get("name").toString();
         }
         this.parameter=parameter;
     }

@@ -1,12 +1,12 @@
 package com.zyc.zdh.controller.digitalmarket;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.entity.CommonTreeInfo;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,15 +110,15 @@ public class ServiceManagerController extends BaseController {
     @SentinelResource(value = "service_manager_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/service_manager_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<JSONObject>> service_manager_detail(String service_name) {
+    public ReturnInfo<List<Map<String, Object>>> service_manager_detail(String service_name) {
         try{
 
-            List<JSONObject> serviceList = new ArrayList<>();
+            List<Map<String, Object>> serviceList = new ArrayList<>();
 
             Map<Object, Object> services = redisUtil.getRedisTemplate().opsForHash().entries(SERVICE_INSTANCE_KEY+""+service_name);
             for (Map.Entry<Object, Object> entry: services.entrySet()){
 
-                JSONObject jsonObject = new JSONObject();
+                Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                 String instanceId = entry.getKey().toString();
 
                 Object serviceConfStr = redisUtil.getRedisTemplate().opsForHash().get(instanceId, "service");
@@ -126,10 +126,10 @@ public class ServiceManagerController extends BaseController {
                     continue;
                 }
 
-                JSONObject serviceConf = JSONObject.parseObject(serviceConfStr.toString());
-                String host = serviceConf.getString("host");
-                String pid = serviceConf.getString("pid");
-                String register_time = serviceConf.getString("register_time");
+                Map<String, Object> serviceConf = JsonUtil.toJavaMap(serviceConfStr.toString());
+                String host = serviceConf.getOrDefault("host", "").toString();
+                String pid = serviceConf.getOrDefault("pid", "").toString();
+                String register_time = serviceConf.getOrDefault("register_time", "").toString();
                 String last_time = serviceConf.getOrDefault("last_time", "").toString();
 
 
@@ -217,7 +217,7 @@ public class ServiceManagerController extends BaseController {
     @SentinelResource(value = "service_manager_stop", blockHandler = "handleReturn")
     @RequestMapping(value = "/service_manager_stop", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<JSONObject>> service_manager_stop(String service_name, String instance_id) {
+    public ReturnInfo<List<Map<String, Object>>> service_manager_stop(String service_name, String instance_id) {
         try{
             redisUtil.getRedisTemplate().opsForHash().put(instance_id, "mode",SERVICE_MODE_STOP);
             return ReturnInfo.buildSuccess();
@@ -235,7 +235,7 @@ public class ServiceManagerController extends BaseController {
     @SentinelResource(value = "service_manager_run", blockHandler = "handleReturn")
     @RequestMapping(value = "/service_manager_run", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<JSONObject>> service_manager_run(String service_name, String instance_id) {
+    public ReturnInfo<List<Map<String, Object>>> service_manager_run(String service_name, String instance_id) {
         try{
             redisUtil.getRedisTemplate().opsForHash().put(instance_id, "mode",SERVICE_MODE_RUN);
             return ReturnInfo.buildSuccess();
@@ -253,7 +253,7 @@ public class ServiceManagerController extends BaseController {
     @SentinelResource(value = "service_manager_slot_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/service_manager_slot_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<JSONObject>> service_manager_slot_update(String slot, String instance_id) {
+    public ReturnInfo<List<Map<String, Object>>> service_manager_slot_update(String slot, String instance_id) {
         try{
 
             String[] slots = slot.split(";");
@@ -262,8 +262,8 @@ public class ServiceManagerController extends BaseController {
             if(serviceStr == null){
                 throw new Exception("无法获取实例对应服务信息");
             }
-            JSONObject serviceConf = JSONObject.parseObject(serviceStr.toString());
-            String service_name = serviceConf.getString("service_name");
+            Map<String, Object> serviceConf = JsonUtil.toJavaMap(serviceStr.toString());
+            String service_name = serviceConf.getOrDefault("service_name", "").toString();
 
             //检查非当前实例是否有重复slot
             Map<Object, Object> services = redisUtil.getRedisTemplate().opsForHash().entries(SERVICE_INSTANCE_KEY+""+service_name);
@@ -308,9 +308,8 @@ public class ServiceManagerController extends BaseController {
     @SentinelResource(value = "service_manager_version_update", blockHandler = "handleReturn")
     @RequestMapping(value = "/service_manager_version_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<JSONObject>> service_manager_version_update(String version_tag, String instance_id) {
+    public ReturnInfo<List<Map<String, Object>>> service_manager_version_update(String version_tag, String instance_id) {
         try{
-
 
             Object serviceStr = redisUtil.getRedisTemplate().opsForHash().get(instance_id, "service");
             if(serviceStr == null){

@@ -1,12 +1,14 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSONArray;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
 @Table(name = "function_info")
 public class FunctionInfo {
@@ -84,7 +86,7 @@ public class FunctionInfo {
     private String is_delete;
 
     @Transient
-    private JSONArray param_json_object;
+    private List<Map<String, Object>> param_json_object;
 
     /**
      * @return id
@@ -322,10 +324,10 @@ public class FunctionInfo {
         this.return_type = return_type;
     }
 
-    public JSONArray getParam_json_object() {
+    public List<Map<String, Object>> getParam_json_object() {
         if(!StringUtils.isEmpty(param_json)){
-            return JSONArray.parseArray(param_json);
+            return JsonUtil.toJavaListMap(param_json);
         }
-        return new JSONArray();
+        return JsonUtil.createEmptyListMap();
     }
 }

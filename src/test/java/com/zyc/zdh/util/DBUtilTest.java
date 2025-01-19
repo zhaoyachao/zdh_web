@@ -1,10 +1,6 @@
 package com.zyc.zdh.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 public class DBUtilTest {
     public Logger logger= LoggerFactory.getLogger(this.getClass());
@@ -141,21 +135,20 @@ public class DBUtilTest {
             //npl.add(new BasicNameValuePair("status1","sab"));
             String result=HttpUtil.getRequest(url,npl);
             System.out.println(result);
-            JSONArray jsonArray= JSON.parseArray(result);
+            List<Map<String, Object>> jsonArray= JsonUtil.toJavaListMap(result);
             String jobGroup="jobGroup";
             List<String> killJobs=new ArrayList<>();
-            for(Object jo:jsonArray){
-                JSONObject j=(JSONObject) jo;
-                if(j.getString(jobGroup).startsWith("769515191510503424")){
-                    killJobs.add(j.getString(jobGroup));
+            for(Map<String, Object> jo:jsonArray){
+                if(jo.get(jobGroup).toString().startsWith("769515191510503424")){
+                    killJobs.add(jo.get(jobGroup).toString());
                 }
             }
-            JSONObject js=new JSONObject();
+            Map<String, Object> js=JsonUtil.createEmptyMap();
             js.put("task_logs_id","111");//写日志使用
             js.put("jobGroups",killJobs);
             //发送杀死请求
             String kill_url="http://deep-2020klzjdi:60001/api/v1/kill";
-            HttpUtil.postJSON(kill_url,js.toJSONString());
+            HttpUtil.postJSON(kill_url, JsonUtil.formatJsonString(js));
         } catch (Exception e) {
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);

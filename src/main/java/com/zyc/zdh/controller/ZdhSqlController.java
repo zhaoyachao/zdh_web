@@ -1,8 +1,6 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
 import com.zyc.zdh.dao.MetaDatabaseMapper;
 import com.zyc.zdh.dao.SqlTaskMapper;
@@ -224,7 +222,7 @@ public class ZdhSqlController extends BaseController {
     @RequestMapping(value = "/load_meta_databases", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo load_meta_databases() {
-        JSONObject js = new JSONObject();
+        Map<String, Object> js = JsonUtil.createEmptyMap();
         if (!SecurityUtils.getSubject().isPermitted("function:load_meta_databases()")) {
             js.put("data", "您没有权限访问,请联系管理员添加权限");
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "您没有权限访问,请联系管理员添加权限", "您没有权限访问,请联系管理员添加权限");
@@ -232,14 +230,13 @@ public class ZdhSqlController extends BaseController {
         String url = JobCommon2.getZdhUrl(zdhHaInfoMapper, "").getZdh_url();
         try {
             String owner=getOwner();
-            String databases = HttpUtil.postJSON(url + "/show_databases", new JSONObject().toJSONString());
+            String databases = HttpUtil.postJSON(url + "/show_databases", JsonUtil.formatJsonString(JsonUtil.createEmptyMap()));
 
             List<meta_database_info> meta_database_infos = new ArrayList<meta_database_info>();
 
             System.out.println("databases:" + databases);
             List<Object> jary = JsonUtil.toJavaList(databases);
             for (Object o : jary) {
-                JSONObject jo = new JSONObject();
                 String tableNames = HttpUtil.postJSON(url + "/show_tables", "{\"databaseName\":\"" + o.toString() + "\"}");
                 List<Object> tableAry = JsonUtil.toJavaList(tableNames);
                 meta_database_info meta_database_info_d = new meta_database_info();
@@ -281,18 +278,18 @@ public class ZdhSqlController extends BaseController {
     @SentinelResource(value = "show_databases", blockHandler = "handleReturn")
     @RequestMapping(value = "/show_databases", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<JSONArray> show_databases() {
+    public ReturnInfo<List<Map<String, Object>>> show_databases() {
         meta_database_info meta_database_info = new meta_database_info();
         try {
             String owner=getOwner();
             meta_database_info.setOwner(owner);
             List<meta_database_info> meta_database_infos = metaDatabaseMapper.select(meta_database_info);
-            JSONArray jsa = new JSONArray();
+            List<Map<String, Object>> jsa = JsonUtil.createEmptyListMap();
             Map<String, String> dbMap = new HashMap<>();
 
             for (meta_database_info o : meta_database_infos) {
                 dbMap.put(o.getDb_name(), "");
-                JSONObject jo1 = new JSONObject();
+                Map<String, Object> jo1 = JsonUtil.createEmptyMap();
                 jo1.put("id", o.getDb_name() + "." + o.getTb_name());
                 jo1.put("parent", o.getDb_name());
                 jo1.put("text", o.getTb_name());
@@ -301,7 +298,7 @@ public class ZdhSqlController extends BaseController {
 
             for (Map.Entry<String, String> entry : dbMap.entrySet()) {
                 String dbName = entry.getKey();
-                JSONObject jo1 = new JSONObject();
+                Map<String, Object> jo1 = JsonUtil.createEmptyMap();
                 jo1.put("id", dbName);
                 jo1.put("parent", "#");
                 jo1.put("text", dbName);
@@ -330,9 +327,9 @@ public class ZdhSqlController extends BaseController {
 
         String url = JobCommon2.getZdhUrl(zdhHaInfoMapper, "").getZdh_url();
         try {
-            JSONObject p = new JSONObject();
+            Map<String, Object> p = JsonUtil.createEmptyMap();
             p.put("table", table);
-            String desc_table = HttpUtil.postJSON(url + "/desc_table", p.toJSONString());
+            String desc_table = HttpUtil.postJSON(url + "/desc_table", JsonUtil.formatJsonString(p));
             return desc_table;
         } catch (Exception e) {
             String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";

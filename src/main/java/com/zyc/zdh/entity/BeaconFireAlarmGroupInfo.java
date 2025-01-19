@@ -1,6 +1,7 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.zyc.zdh.util.JsonUtil;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -242,7 +243,7 @@ public class BeaconFireAlarmGroupInfo {
         if(this.alarm_config == null){
             return new HashMap<>();
         }
-        return JSON.parseObject(this.alarm_config, Map.class);
+        return JsonUtil.toJavaObj(this.alarm_config, new TypeReference<Map<String, String>>(){});
     }
 
     public void setAlarm_config_map(Map<String, String> alarm_config_map) {

@@ -1,6 +1,5 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.JsonUtil;
@@ -679,7 +678,7 @@ public class TaskLogInstance implements Serializable {
     }
 
     public process_time_info getProcess_time2() {
-        return JSON.parseObject(process_time,process_time_info.class);
+        return JsonUtil.toJavaBean(process_time,process_time_info.class);
     }
 
     public void setProcess_time(String process_time) {

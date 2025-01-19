@@ -1,9 +1,5 @@
 package com.zyc.zdh.job;
 
-import cn.hutool.core.util.NumberUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
@@ -19,6 +15,7 @@ import org.slf4j.MDC;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -256,11 +253,14 @@ public class CheckDepJob implements CheckDepJobInterface{
                     DAG dag=new DAG();
                     TaskGroupLogInstance tgli=tglim.selectByPrimaryKey(tl.getGroup_id());
                     if(StringUtils.isEmpty(tgli.getRun_jsmind_data())){
-                        JSONObject run_jsmind_data=JSON.parseObject(tgli.getRun_jsmind_data());
-                        JSONArray run_lines=run_jsmind_data.getJSONArray("run_line");
+                        Map<String, Object> run_jsmind_data=JsonUtil.toJavaMap(tgli.getRun_jsmind_data());
+                        List<Map<String, Object>> run_lines=(List<Map<String, Object>>)run_jsmind_data.get("run_line");
+                        if(run_lines == null || run_lines.size()==0){
+                            continue;
+                        }
                         for(Object run_line: run_lines){
-                            String from=((JSONObject) run_line).getString("from");
-                            String to=((JSONObject) run_line).getString("to");
+                            String from=((Map<String, Object>) run_line).getOrDefault("from", "").toString();
+                            String to=((Map<String, Object>) run_line).getOrDefault("to", "").toString();
                             dag.addEdge(from,to);
                         }
                     }
@@ -350,12 +350,12 @@ public class CheckDepJob implements CheckDepJobInterface{
             if(StringUtils.isEmpty(tgli.getRun_jsmind_data())){
                 continue;
             }
-            JSONArray jary=JSON.parseObject(tgli.getRun_jsmind_data()).getJSONArray("run_data");
+            List<Map<String, Object>> jary=( List<Map<String, Object>>)JsonUtil.toJavaMap(tgli.getRun_jsmind_data()).get("run_data");
             List<String> tlidList=new ArrayList<>();
             for(Object obj:jary){
-                String tlid=((JSONObject) obj).getString("task_log_instance_id");
+                String tlid=((Map<String, Object>) obj).getOrDefault("task_log_instance_id", "").toString();
                 //System.out.println("task_log_instance_id:"+tlid);
-                if(tlid!=null) {
+                if(tlid!=null && !StringUtils.isEmpty(tlid)) {
                     tlidList.add(tlid);
                 }
             }
@@ -446,8 +446,8 @@ public class CheckDepJob implements CheckDepJobInterface{
             }
             try {
                 String result = HttpUtil.getRequest(flink_web_ui+"/jobs/"+flink_job_id, npl);
-                JSONObject jsonObject= JSON.parseObject(result);
-                String state = jsonObject.getString("state").toLowerCase();
+                Map<String, Object> jsonObject= JsonUtil.toJavaMap(result);
+                String state = jsonObject.getOrDefault("state", "").toString().toLowerCase();
                 String status = "";
                 String process = "100";
                 switch (state){

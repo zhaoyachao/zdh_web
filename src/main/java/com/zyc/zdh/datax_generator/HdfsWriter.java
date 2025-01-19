@@ -1,6 +1,6 @@
 package com.zyc.zdh.datax_generator;
 
-import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.JsonUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -239,7 +239,8 @@ public class HdfsWriter implements DataxWriter{
         parameter.setFieldDelimiter(config.get("fieldDelimiter").toString());
         parameter.setColumn(Arrays.asList(config.get("column").toString().split(",")));
 
-        JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
+        Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
 
         parameter.setNullFormat(jsonObject.get("nullFormat").toString());
         parameter.setHaveKerberos(Boolean.valueOf(jsonObject.getOrDefault("haveKerberos","false").toString()));

@@ -4,7 +4,6 @@ import cn.hutool.core.lang.JarClassLoader;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassLoaderUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONArray;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.FunctionMapper;
 import com.zyc.zdh.entity.FunctionInfo;
@@ -204,7 +203,7 @@ public class FunctionController extends BaseController {
             List<Map<String, Object>> jsonArray = JsonUtil.createEmptyListMap();
             if(param_code != null && param_code.length>0){
                 for (int i=0;i<param_code.length;i++){
-                    Map<String, Object> jsonObject = JsonUtil.createEmptyLinkMap();
+                    Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                     jsonObject.put("param_code", param_code[i]);
                     jsonObject.put("param_context", param_context[i]);
                     jsonObject.put("param_type", param_type[i]);
@@ -241,7 +240,7 @@ public class FunctionController extends BaseController {
             List<Map<String, Object>> jsonArray = JsonUtil.createEmptyListMap();
             if(param_code != null && param_code.length>0){
                 for (int i=0;i<param_code.length;i++){
-                    Map<String, Object> jsonObject = JsonUtil.createEmptyLinkMap();
+                    Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
                     jsonObject.put("param_code", param_code[i]);
                     jsonObject.put("param_context", param_context[i]);
                     jsonObject.put("param_type", param_type[i]);
@@ -322,12 +321,12 @@ public class FunctionController extends BaseController {
             String function_class = functionInfo.getFunction_class();
             String function_load_path = functionInfo.getFunction_load_path();
             String function_script = functionInfo.getFunction_script();
-            JSONArray jsonArray = functionInfo.getParam_json_object();
+            List<Map<String, Object>> jsonArray = functionInfo.getParam_json_object();
 
             Map<String, Object> objectMap = new LinkedHashMap<>();
             List<String> params = new ArrayList<>();
             for(int i=0;i<jsonArray.size();i++){
-                String param_code = jsonArray.getJSONObject(i).getString("param_code");
+                String param_code = jsonArray.get(i).getOrDefault("param_code", "").toString();
                 objectMap.put(param_code, param_value[i]);
                 params.add(param_code);
             }

@@ -1,6 +1,6 @@
 package com.zyc.zdh.es;
 
-import com.alibaba.fastjson.JSONObject;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.elasticsearch.ElasticsearchException;
@@ -21,6 +21,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class EsUtil {
 
@@ -166,7 +167,7 @@ public class EsUtil {
      * @param myResponseListener
      * @throws Exception
      */
-    public void putBulk(String index, String type, String idColName, List<JSONObject> jsons, ResponseListener<BulkItemResponse> myResponseListener) throws Exception {
+    public void putBulk(String index, String type, String idColName, List<Map<String, Object>> jsons, ResponseListener<BulkItemResponse> myResponseListener) throws Exception {
         if(StringUtils.isEmpty(idColName)){
             throw new Exception("批量写入ES必须指定主键字段");
         }
@@ -174,12 +175,12 @@ public class EsUtil {
         try{
             BulkRequest request = new BulkRequest();
 
-            for (JSONObject json:jsons){
-                if(StringUtils.isEmpty(json.getString(idColName))){
+            for (Map<String, Object> json:jsons){
+                if(StringUtils.isEmpty(json.getOrDefault(idColName, "").toString())){
                     throw new Exception("批量写入ES必须指定主键字段");
                 }
-                request.add(new IndexRequest(index, type,json.getString(idColName))
-                        .source(json.toJSONString(),XContentType.JSON));
+                request.add(new IndexRequest(index, type,json.get(idColName).toString())
+                        .source(JsonUtil.formatJsonString(json),XContentType.JSON));
             }
 
             BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);
@@ -208,7 +209,7 @@ public class EsUtil {
      * @param listener
      * @throws Exception
      */
-    public void putBulkAsync(String index, String type, String idColName, List<JSONObject> jsons, ActionListener<BulkResponse> listener) throws Exception {
+    public void putBulkAsync(String index, String type, String idColName, List<Map<String, Object>> jsons, ActionListener<BulkResponse> listener) throws Exception {
         if(StringUtils.isEmpty(idColName)){
             throw new Exception("批量写入ES必须指定主键字段");
         }
@@ -216,12 +217,12 @@ public class EsUtil {
         try{
             BulkRequest request = new BulkRequest();
 
-            for (JSONObject json:jsons){
-                if(StringUtils.isEmpty(json.getString(idColName))){
+            for (Map<String, Object> json:jsons){
+                if(StringUtils.isEmpty(json.getOrDefault(idColName, "").toString())){
                     throw new Exception("批量写入ES必须指定主键字段");
                 }
-                request.add(new IndexRequest(index, type,json.getString(idColName))
-                        .source(json.toJSONString(),XContentType.JSON));
+                request.add(new IndexRequest(index, type,json.get(idColName).toString())
+                        .source(JsonUtil.formatJsonString(json),XContentType.JSON));
             }
             client.bulkAsync(request, RequestOptions.DEFAULT,listener);
         }catch (Exception e){

@@ -1,6 +1,7 @@
 package com.zyc.zdh.entity;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Id;
@@ -253,7 +254,7 @@ public class PermissionUserGroupDimensionValueInfo {
 
     public Map<String, String> getExtMap() {
         if(!StringUtils.isEmpty(ext)){
-            return JSON.parseObject(ext, Map.class);
+            return JsonUtil.toJavaObj(ext, new TypeReference<Map<String, String>>() {});
         }
         return extMap;
     }

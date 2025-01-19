@@ -2,7 +2,6 @@ package com.zyc.zdh.controller;
 
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.fastjson.JSONObject;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.EmailJob;
@@ -10,6 +9,7 @@ import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
 import com.zyc.zdh.util.ExportUtil;
+import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ public class ZdhDataWareController extends BaseController {
     @SentinelResource(value = "data_ware_house_list6", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_ware_house_list6", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<JSONObject> data_ware_house_list6(String product_code, String issue_context,String current_page,String label_params,Integer  page_size) {
+    public ReturnInfo<Map<String, Object>> data_ware_house_list6(String product_code, String issue_context,String current_page,String label_params,Integer  page_size) {
         try{
             checkAttrPermissionByProduct(zdhPermissionService, product_code, getAttrSelect());
 
@@ -104,7 +104,7 @@ public class ZdhDataWareController extends BaseController {
                 total_page=total_page+1;
             }
 
-            JSONObject jsonObject=new JSONObject();
+            Map<String, Object> jsonObject= JsonUtil.createEmptyMap();
             jsonObject.put("total_page",total_page);
             jsonObject.put("total_size", list.size());
             jsonObject.put("current_page", current_page);
