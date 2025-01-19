@@ -648,6 +648,9 @@
   + v5.6.2 [zdh_web]优化代码-规范
   + v5.6.2 [zdh_web]废弃标识组模式权限,删除资源角色模型中角色id强依赖
   
+  + v5.6.3 [zdh_web]fastjson统一下线
+  + v5.6.3 [zdh_web]营销模块优化
+  
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
