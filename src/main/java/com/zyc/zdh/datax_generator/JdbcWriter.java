@@ -34,6 +34,7 @@ public class JdbcWriter implements DataxWriter{
     class Parameter{
         private String username;
         private String password;
+        private String driverClassName;
         private List<String> column;
         private List<String> preSql;
         private List<String> postSql;
@@ -56,6 +57,14 @@ public class JdbcWriter implements DataxWriter{
 
         public void setPassword(String password) {
             this.password = password;
+        }
+
+        public String getDriverClassName() {
+            return driverClassName;
+        }
+
+        public void setDriverClassName(String driverClassName) {
+            this.driverClassName = driverClassName;
         }
 
         public List<String> getColumn() {
@@ -168,6 +177,7 @@ public class JdbcWriter implements DataxWriter{
 
         parameter.setUsername(config.get("username").toString());
         parameter.setPassword(config.get("password").toString());
+        parameter.setDriverClassName(config.get("driverClassName").toString());
 
         parameter.setPreSql(Arrays.asList(config.get("clear").toString()));
 

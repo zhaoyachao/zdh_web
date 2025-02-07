@@ -2293,6 +2293,7 @@ public class JobCommon2 {
         Map<String,Object> config=new HashMap<>();
         config.put("username", username);
         config.put("password", password);
+        config.put("driverClassName", driver);
         config.put("url", url);
         config.put("table", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_table_name_input());
         config.put("column", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_table_columns());
@@ -2353,6 +2354,7 @@ public class JobCommon2 {
         Map<String,Object> config=new HashMap<>();
         config.put("username", username);
         config.put("password", password);
+        config.put("driverClassName", driver);
         config.put("url", url);
         config.put("table", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_table_name_output());
         config.put("column", zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_table_columns());

@@ -43,6 +43,7 @@ public class JdbcReader implements DataxReader{
     class Parameter{
         private String username;
         private String password;
+        private String driverClassName;
         private List<String> column;
         private String splitPk;
         private List<Connection> connection;
@@ -62,6 +63,14 @@ public class JdbcReader implements DataxReader{
 
         public void setPassword(String password) {
             this.password = password;
+        }
+
+        public String getDriverClassName() {
+            return driverClassName;
+        }
+
+        public void setDriverClassName(String driverClassName) {
+            this.driverClassName = driverClassName;
         }
 
         public List<String> getColumn() {
@@ -125,6 +134,7 @@ public class JdbcReader implements DataxReader{
      *                     "parameter": {
      *                         "username": "root",
      *                         "password": "root",
+     *                         "driverClassName": "com.mysql.cj.jdbc.Driver",
      *                         "column": [
      *                             "id",
      *                             "name"
@@ -170,6 +180,8 @@ public class JdbcReader implements DataxReader{
 
             parameter.setUsername(config.get("username").toString());
             parameter.setPassword(config.get("password").toString());
+            parameter.setDriverClassName(config.get("driverClassName").toString());
+
             if(!StringUtils.isEmpty(config.getOrDefault("splitPk","").toString())){
                 parameter.setSplitPk(config.getOrDefault("splitPk","").toString());
             }
