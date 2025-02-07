@@ -1,19 +1,75 @@
 package com.zyc.zdh.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+class TimestampJsonDeserializer extends JsonDeserializer<Timestamp> {
+    private static final DateTimeFormatter PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public TimestampJsonDeserializer() {
+    }
+
+    @Override
+    public Timestamp deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        String date = jp.getText();
+        return Timestamp.valueOf(LocalDateTime.parse(date, PATTERN));
+    }
+}
+
+class DateJsonDeserializer extends JsonDeserializer<Date> {
+    private static final DateTimeFormatter PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public DateJsonDeserializer() {
+    }
+
+    @Override
+    public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        String date = jp.getText();
+        LocalDate localDate = LocalDate.parse(date, PATTERN);
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+}
+
+class TimestampJsonSerializer extends JsonSerializer<Timestamp> {
+    private static final DateTimeFormatter PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public TimestampJsonSerializer() {
+    }
+
+    @Override
+    public void serialize(Timestamp value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+        jgen.writeString(value.toLocalDateTime().format(PATTERN));
+    }
+}
+
+class DateJsonSerializer extends JsonSerializer<Date> {
+    private static final DateTimeFormatter PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public DateJsonSerializer() {
+    }
+
+    @Override
+    public void serialize(Date value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+        LocalDateTime localDate = value.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
+        jgen.writeString(PATTERN.format(localDate));
+    }
+}
 
 public class JsonUtil {
 
@@ -22,6 +78,10 @@ public class JsonUtil {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static {
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Timestamp.class, new TimestampJsonSerializer());
+        module.addDeserializer(Timestamp.class, new TimestampJsonDeserializer());
+        OBJECT_MAPPER.registerModule(module);
         OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         OBJECT_MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         OBJECT_MAPPER.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false); // 忽略Map中的null值

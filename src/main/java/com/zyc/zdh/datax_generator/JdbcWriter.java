@@ -172,7 +172,6 @@ public class JdbcWriter implements DataxWriter{
         parameter.setPreSql(Arrays.asList(config.get("clear").toString()));
 
         parameter.setColumn(Arrays.asList(config.get("column").toString().split(",")));
-        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
         Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
 
         parameter.setBatchSize(Integer.valueOf(jsonObject.getOrDefault("batchSize", "1024").toString()));

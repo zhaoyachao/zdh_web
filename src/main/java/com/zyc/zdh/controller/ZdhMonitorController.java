@@ -563,31 +563,6 @@ public class ZdhMonitorController extends BaseController {
 
     }
 
-//    /**
-//     * 任务组实例列表
-//     * @param start_time
-//     * @param end_time
-//     * @param status
-//     * @return
-//     */
-//    @RequestMapping(value = "/task_group_log_instance_list2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-//    @ResponseBody
-//    public String task_group_log_instance_list2(String start_time, String end_time, String status) {
-//
-//        try{
-//            System.out.println("开始加载任务日志start_time:" + start_time + ",end_time:" + end_time + ",status:" + status);
-//
-//            List<TaskGroupLogInstance> list = tglim.selectByTaskLogs3(getOwner(), Timestamp.valueOf(start_time + " 00:00:00"),
-//                    Timestamp.valueOf(end_time + " 23:59:59"), status);
-//
-//            return JSON.toJSONString(list);
-//        }catch (Exception e){
-//            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-//            logger.error(error, e);
-//            return JSON.toJSONString(e.getMessage());
-//        }
-//    }
-
     /**
      * 任务组实例列表-分页
      * @param start_time
@@ -722,8 +697,6 @@ public class ZdhMonitorController extends BaseController {
             }
         }
 
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put("logs", sb.toString());
         return ReturnInfo.buildSuccess(sb.toString());
     }
 
@@ -736,8 +709,6 @@ public class ZdhMonitorController extends BaseController {
             String info = "MOCK ID:" + next.getJob_id() + ",请求ID:" + next.getTask_logs_id() + ",任务执行时间:" + next.getLog_time().toString() + ",日志[" + next.getLevel() + "]:" + next.getMsg();
             sb.append(info + "\r\n");
         }
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put("logs", sb.toString());
         return  sb.toString();
     }
 

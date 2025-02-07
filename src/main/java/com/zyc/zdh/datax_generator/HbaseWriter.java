@@ -260,7 +260,6 @@ public class HbaseWriter implements DataxWriter{
         parameter.setMode(config.get("mode").toString());
         parameter.setColumn(Arrays.asList(config.get("column").toString().split(",")));
 
-        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
         Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
 
         this.name="hbase11xwriter";

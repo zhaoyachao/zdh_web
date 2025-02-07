@@ -206,50 +206,7 @@ public class SystemController extends BaseController{
     @ResponseBody
     @Deprecated
     public ReturnInfo<String> del_system_job(){
-
         return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前功能已废弃,可使用调度管理=>调度器功能代替", "当前功能已废弃");
-//        JSONObject js=new JSONObject();
-//        if(!SecurityUtils.getSubject().isPermitted("function:del_system_job()")){
-//            js.put("data","您没有权限访问,请联系管理员添加权限");
-//            return js.toJSONString();
-//        }
-//        //1 获取所有的email,retry 任务
-//        String sql="delete from QRTZ_SIMPLE_TRIGGERS where TRIGGER_GROUP in ('email','retry','check')";
-//        String sql2="delete from QRTZ_TRIGGERS where TRIGGER_GROUP in ('email','retry','check')";
-//        String sql3="delete from QRTZ_JOB_DETAILS where  JOB_GROUP in ('email','retry','check')";
-//        jdbcTemplate.execute(sql);
-//        jdbcTemplate.execute(sql2);
-//        jdbcTemplate.execute(sql3);
-//
-//        quartzJobMapper.deleteSystemJob();
-//        //2 重新添加到调度队列
-//
-//        String expr = ev.getProperty("email.schedule.interval");
-//        QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo("EMAIL", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查告警任务", expr, "-1", "", "email");
-//        quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
-//        quartzManager2.addQuartzJobInfo(quartzJobInfo);
-//        String expr2 = ev.getProperty("retry.schedule.interval");
-//        QuartzJobInfo quartzJobInfo2 = quartzManager2.createQuartzJobInfo("RETRY", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查失败重试任务", expr2, "-1", "", "retry");
-//        quartzJobInfo2.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
-//        quartzManager2.addQuartzJobInfo(quartzJobInfo2);
-//        String expr3 = "5s";
-//        QuartzJobInfo quartzJobInfo3 = quartzManager2.createQuartzJobInfo("CHECK", JobModel.REPEAT.getValue(), new Date(), new Date(), "检查依赖任务", expr3, "-1", "", "check");
-//        quartzJobInfo3.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
-//        quartzManager2.addQuartzJobInfo(quartzJobInfo3);
-//
-//
-//        try {
-//            quartzManager2.addTaskToQuartz(quartzJobInfo);
-//            quartzManager2.addTaskToQuartz(quartzJobInfo2);
-//            quartzManager2.addTaskToQuartz(quartzJobInfo3);
-//        } catch (Exception e) {
-//            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-//            logger.error(error, e);
-//        }
-//
-//        js.put("data","success");
-//        return js.toJSONString();
-
     }
 
     /**

@@ -262,7 +262,6 @@ public class HbaseReader implements DataxReader{
 
         parameter.setColumn(Arrays.asList(config.get("column").toString().split(",")));
 
-        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
         Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
         parameter.setMode(jsonObject.getOrDefault("mode","normal").toString());
         parameter.setScanBatchSize(Integer.parseInt(jsonObject.getOrDefault("scanBatchSize", "100").toString()));

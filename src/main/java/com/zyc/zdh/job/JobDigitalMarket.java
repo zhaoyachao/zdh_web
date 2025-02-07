@@ -233,8 +233,8 @@ public class JobDigitalMarket {
         String msg = "目前支持日期参数以下模式: {{zdh_date}} => yyyy-MM-dd ,{{zdh_date_nodash}}=> yyyyMMdd " +
                 ",{{zdh_date_time}}=> yyyy-MM-dd HH:mm:ss,{{zdh_year}}=> 年,{{zdh_month}}=> 月,{{zdh_day}}=> 日," +
                 "{{zdh_hour}}=>24小时制,{{zdh_minute}}=>分钟,{{zdh_second}}=>秒,{{zdh_time}}=>时间戳";
-        logger.info(msg);
-        insertLog(si, "info", msg);
+        logger.debug(msg);
+        //insertLog(si, "info", msg);
         Timestamp cur_time = si.getCur_time();
         String date_nodash = DateUtil.formatNodash(cur_time);
         String date_time = DateUtil.formatTime(cur_time);
@@ -277,7 +277,7 @@ public class JobDigitalMarket {
                 DateUtil.class, "pase", String.class, String.class));
 
         String msg = "目前支持日期操作: {{add_day('2021-12-01 00:00:00', 1)}} => 2021-12-02 00:00:00 ,{{add_hour('2021-12-01 00:00:00', 1)}} => 2021-12-01 01:00:00,{{add_minute('2021-12-01 00:00:00', 1)}} => 2021-12-01 00:01:00, 更多高级函数, 可参考【系统内置参数】点击链接查看具体使用例子";
-        logger.info(msg);
+        logger.debug(msg);
         return jj;
     }
     /**

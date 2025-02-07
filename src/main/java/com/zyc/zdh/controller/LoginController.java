@@ -395,14 +395,6 @@ public class LoginController extends BaseController{
 
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         user.setPassword("");
-//        JSONObject json = new JSONObject();
-//        json.put("id",user.getId());
-//        json.put("userName",user.getUserName());
-//        //json.put("password",user.getUserName());
-//        json.put("email",user.getEmail());
-//        json.put("is_use_email",user.getIs_use_email());
-//        json.put("phone",user.getPhone());
-//        json.put("is_use_phone",user.getIs_use_phone());
 
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取用户信息", user);
 

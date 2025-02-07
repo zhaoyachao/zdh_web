@@ -287,7 +287,6 @@ public class FtpWriter implements DataxWriter{
         parameter.setEncoding(config.get("encoding").toString());
         parameter.setFieldDelimiter(config.get("fieldDelimiter").toString());
 
-        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
         Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
         parameter.setNullFormat(jsonObject.getOrDefault("nullFormat","\\N ").toString());
 

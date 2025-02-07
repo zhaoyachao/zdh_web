@@ -192,7 +192,6 @@ public class JdbcReader implements DataxReader{
 
 
             parameter.setConnection(Lists.newArrayList(connection));
-            //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
             Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
             this.name=config.getOrDefault("name", "xxx").toString()+"reader";
             if(jsonObject.containsKey("name")){

@@ -149,7 +149,6 @@ public class TxtFileWriter implements DataxWriter{
         }else {
             parameter.setFileName(config.get("table").toString());
         }
-        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
         Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
 
         parameter.setEncoding(config.get("encoding").toString());

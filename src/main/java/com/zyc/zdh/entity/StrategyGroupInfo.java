@@ -6,7 +6,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Table(name = "strategy_group_info")
 public class StrategyGroupInfo {
@@ -28,14 +27,14 @@ public class StrategyGroupInfo {
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private Date start_time;
+    private Timestamp start_time;
 
     /**
      * 结束时间
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private Date end_time;
+    private Timestamp end_time;
 
     /**
      * 账号
@@ -100,12 +99,12 @@ public class StrategyGroupInfo {
     /**
      * 实例逻辑调度时间
      */
-    private Date cur_time;
+    private Timestamp cur_time;
 
     /**
      * 实例开始执行时间
      */
-    private Date run_time;
+    private Timestamp run_time;
 
     /**
      * 策略关系
@@ -177,7 +176,7 @@ public class StrategyGroupInfo {
      *
      * @return start_time - 开始时间
      */
-    public Date getStart_time() {
+    public Timestamp getStart_time() {
         return start_time;
     }
 
@@ -186,7 +185,7 @@ public class StrategyGroupInfo {
      *
      * @param start_time 开始时间
      */
-    public void setStart_time(Date start_time) {
+    public void setStart_time(Timestamp start_time) {
         this.start_time = start_time;
     }
 
@@ -195,7 +194,7 @@ public class StrategyGroupInfo {
      *
      * @return end_time - 结束时间
      */
-    public Date getEnd_time() {
+    public Timestamp getEnd_time() {
         return end_time;
     }
 
@@ -204,7 +203,7 @@ public class StrategyGroupInfo {
      *
      * @param end_time 结束时间
      */
-    public void setEnd_time(Date end_time) {
+    public void setEnd_time(Timestamp end_time) {
         this.end_time = end_time;
     }
 
@@ -429,7 +428,7 @@ public class StrategyGroupInfo {
      *
      * @return cur_time - 实例逻辑调度时间
      */
-    public Date getCur_time() {
+    public Timestamp getCur_time() {
         return cur_time;
     }
 
@@ -438,7 +437,7 @@ public class StrategyGroupInfo {
      *
      * @param cur_time 实例逻辑调度时间
      */
-    public void setCur_time(Date cur_time) {
+    public void setCur_time(Timestamp cur_time) {
         this.cur_time = cur_time;
     }
 
@@ -447,7 +446,7 @@ public class StrategyGroupInfo {
      *
      * @return run_time - 实例开始执行时间
      */
-    public Date getRun_time() {
+    public Timestamp getRun_time() {
         return run_time;
     }
 
@@ -456,7 +455,7 @@ public class StrategyGroupInfo {
      *
      * @param run_time 实例开始执行时间
      */
-    public void setRun_time(Date run_time) {
+    public void setRun_time(Timestamp run_time) {
         this.run_time = run_time;
     }
 

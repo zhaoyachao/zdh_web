@@ -190,7 +190,6 @@ public class MongoDbWriter implements DataxWriter{
         parameter.setDbName(config.get("table").toString().split("\\.")[0]);
         parameter.setCollectionName(config.get("table").toString().split("\\.")[1]);
 
-        //JSONObject jsonObject=(JSONObject)config.getOrDefault("param", new JSONObject());
         Map<String, Object> jsonObject=(Map<String, Object>)config.getOrDefault("param", JsonUtil.createEmptyMap());
 
         parameter.setWriteMode(jsonObject);
