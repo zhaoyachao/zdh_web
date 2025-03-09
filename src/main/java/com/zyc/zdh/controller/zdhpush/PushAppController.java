@@ -86,6 +86,7 @@ public class PushAppController extends BaseController {
             }
 
             List<PushAppInfo> pushAppInfos = pushAppMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, pushAppInfos);
 
             return ReturnInfo.buildSuccess(pushAppInfos);
         }catch(Exception e){
@@ -135,6 +136,7 @@ public class PushAppController extends BaseController {
             int total = pushAppMapper.selectCountByExample(example);
 
             List<PushAppInfo> pushAppInfos = pushAppMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, pushAppInfos);
 
             PageResult<List<PushAppInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

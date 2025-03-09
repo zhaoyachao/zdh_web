@@ -383,6 +383,7 @@ public class WeMockController extends BaseController{
             int total = weMockDataMapper.selectCountByExample(example);
 
             List<WeMockDataInfo> weMockDataInfos=weMockDataMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, weMockDataInfos);
 
             PageResult<List<WeMockDataInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

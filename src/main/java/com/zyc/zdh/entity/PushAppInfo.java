@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Table(name = "push_app_info")
-public class PushAppInfo {
+public class PushAppInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

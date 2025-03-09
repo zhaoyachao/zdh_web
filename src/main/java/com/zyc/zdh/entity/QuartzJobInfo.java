@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 
 
 @Table
-public class QuartzJobInfo implements Serializable {
+public class QuartzJobInfo extends BaseProductAndDimGroupAuthInfo implements Serializable {
 
     /**
      * 调度任务ID

@@ -81,6 +81,7 @@ public class DataCodeController extends BaseController {
             }
 
             List<DataCodeInfo> dataCodeInfos = dataCodeMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, dataCodeInfos);
 
             return ReturnInfo.buildSuccess(dataCodeInfos);
         }catch(Exception e){
@@ -131,6 +132,7 @@ public class DataCodeController extends BaseController {
             int total = dataCodeMapper.selectCountByExample(example);
 
             List<DataCodeInfo> dataCodeInfos = dataCodeMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, dataCodeInfos);
 
             PageResult<List<DataCodeInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

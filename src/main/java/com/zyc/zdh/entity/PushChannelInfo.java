@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "push_channel_info")
-public class PushChannelInfo {
+public class PushChannelInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

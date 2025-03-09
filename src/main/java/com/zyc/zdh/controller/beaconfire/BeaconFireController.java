@@ -86,6 +86,7 @@ public class BeaconFireController extends BaseController {
             int total = beaconFireMapper.selectCountByExample(example);
 
             List<BeaconFireInfo> beaconFireInfos = beaconFireMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, beaconFireInfos);
 
             PageResult<List<BeaconFireInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

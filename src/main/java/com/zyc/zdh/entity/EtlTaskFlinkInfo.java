@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table
-public class EtlTaskFlinkInfo {
+public class EtlTaskFlinkInfo extends BaseProductAndDimGroupAuthInfo{
 
     /**
      * 主键ID

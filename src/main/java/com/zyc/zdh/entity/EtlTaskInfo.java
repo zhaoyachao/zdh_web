@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Table
-public class EtlTaskInfo {
+public class EtlTaskInfo extends BaseProductAndDimGroupAuthInfo{
 
     /**
      * 主键ID

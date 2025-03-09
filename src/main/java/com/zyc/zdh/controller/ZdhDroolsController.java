@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +96,8 @@ public class ZdhDroolsController extends BaseController{
             }
             Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
             etlDroolsTaskInfos = etlDroolsTaskMapper.selectByParams(getOwner(), etl_context, file_name, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
+            dynamicAuth(zdhPermissionService, etlDroolsTaskInfos);
+
             return ReturnInfo.buildSuccess(etlDroolsTaskInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -121,7 +122,7 @@ public class ZdhDroolsController extends BaseController{
             etlDroolsTaskInfo.setId(id);
             etlDroolsTaskInfo.setOwner(getOwner());
             etlDroolsTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
-            debugInfo(etlDroolsTaskInfo);
+
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskInfo.getProduct_code(), etlDroolsTaskInfo.getDim_group(), getAttrAdd());
             etlDroolsTaskMapper.insertSelective(etlDroolsTaskInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
@@ -170,7 +171,6 @@ public class ZdhDroolsController extends BaseController{
         try{
             String owner = getOwner();
             etlDroolsTaskInfo.setOwner(owner);
-            debugInfo(etlDroolsTaskInfo);
             EtlDroolsTaskInfo oldEtlDroolsTaskInfo = etlDroolsTaskMapper.selectByPrimaryKey(etlDroolsTaskInfo.getId());
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlDroolsTaskInfo.getProduct_code(), etlDroolsTaskInfo.getDim_group(), getAttrEdit());
@@ -182,35 +182,6 @@ public class ZdhDroolsController extends BaseController{
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
             logger.error(error, e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
-        }
-    }
-
-
-    private void debugInfo(Object obj) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (int i = 0, len = fields.length; i < len; i++) {
-            // 对于每个属性，获取属性名
-            String varName = fields[i].getName();
-            try {
-                // 获取原来的访问控制权限
-                boolean accessFlag = fields[i].isAccessible();
-                // 修改访问控制权限
-                fields[i].setAccessible(true);
-                // 获取在对象f中属性fields[i]对应的对象中的变量
-                Object o;
-                try {
-                    o = fields[i].get(obj);
-                    System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-                    logger.error(error, e);
-                }
-                // 恢复访问控制权限
-                fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            }
         }
     }
 

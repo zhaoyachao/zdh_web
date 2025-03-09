@@ -246,16 +246,19 @@
       };
 
       function operateFormatter(value, row, index) {
+          var edit_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var copy_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var del_class = "btn btn-outline btn-sm "+ get_del_class(row);
           return [
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
-              ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+              ' <button id="edit" name="edit" type="button" class="'+edit_class+'" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="copy" name="copy" type="button" class="btn btn-outline btn-sm" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
+              ' <button id="copy" name="copy" type="button" class="'+copy_class+'" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
+              ' <button id="del" name="del" type="button" class="'+del_class+'" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="strategy_group_execute" name="strategy_group_execute" type="button" class="btn btn-outline btn-sm" title="执行策略"><i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
+              ' <button id="strategy_group_execute" name="strategy_group_execute" type="button" class="'+edit_class+'" title="执行策略"><i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +
               '</div>'
@@ -265,6 +268,10 @@
       }
 
       function operateFormatter2(value, row, index) {
+          var edit_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var copy_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var del_class = "btn btn-outline btn-sm "+ get_del_class(row);
+
           var status_context = "暂停";
           if (row.status == "pause") {
               status_context = "恢复"
@@ -273,13 +280,13 @@
           return [
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
 
-              ' <button id="execute_quartz" name="execute_quartz" type="button" class="btn btn-outline btn-sm">调度\n' +
+              ' <button id="execute_quartz" name="execute_quartz" type="button" class="'+edit_class+'">调度\n' +
 
               '                                        <i class="glyphicon glyphicon-retweet" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="pause" name="pause" type="button" class="btn btn-outline btn-sm">' + status_context + '<i class="glyphicon glyphicon-pause" aria-hidden="true"></i>\n' +
+              ' <button id="pause" name="pause" type="button" class="'+edit_class+'">' + status_context + '<i class="glyphicon glyphicon-pause" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="minus_sign" name="minus_sign" type="button" class="btn btn-outline btn-sm">停用\n' +
+              ' <button id="minus_sign" name="minus_sign" type="button" class="'+edit_class+'">停用\n' +
               '                                        <i class="glyphicon glyphicon-minus-sign" aria-hidden="true"></i>\n' +
               '                                    </button>'
               +

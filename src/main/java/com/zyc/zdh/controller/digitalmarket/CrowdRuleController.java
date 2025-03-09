@@ -9,7 +9,6 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,20 +57,28 @@ public class CrowdRuleController extends BaseController {
      */
     @RequestMapping(value = "/crowd_rule_list", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String crowd_rule_list(String rule_context) {
-        Example example=new Example(CrowdRuleInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-        Example.Criteria criteria2=example.createCriteria();
-        if(!StringUtils.isEmpty(rule_context)){
-            criteria2.orLike("rule_context", getLikeCondition(rule_context));
-            criteria2.orLike("rule_json", getLikeCondition(rule_context));
-            example.and(criteria2);
+    public ReturnInfo crowd_rule_list(String rule_context) {
+        try{
+            Example example=new Example(CrowdRuleInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            Example.Criteria criteria2=example.createCriteria();
+            if(!StringUtils.isEmpty(rule_context)){
+                criteria2.orLike("rule_context", getLikeCondition(rule_context));
+                criteria2.orLike("rule_json", getLikeCondition(rule_context));
+                example.and(criteria2);
+            }
+
+            List<CrowdRuleInfo> crowdRuleInfos = crowdRuleMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, crowdRuleInfos);
+
+            return ReturnInfo.buildSuccess(crowdRuleInfos);
+        }catch (Exception e){
+            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
+            logger.error(error, e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
-        List<CrowdRuleInfo> crowdRuleInfos = crowdRuleMapper.selectByExample(example);
-
-        return JsonUtil.formatJsonString(crowdRuleInfos);
     }
 
     /**

@@ -89,6 +89,7 @@ public class LabelController extends BaseController {
 
 
             List<LabelInfo> labelInfos = labelMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, labelInfos);
 
             return ReturnInfo.buildSuccess(labelInfos);
         }catch (Exception e){

@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Table(name = "data_sources_info")
-public class DataSourcesInfo{
+public class DataSourcesInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

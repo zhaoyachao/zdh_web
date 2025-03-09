@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "crowd_file_info")
-public class CrowdFileInfo {
+public class CrowdFileInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

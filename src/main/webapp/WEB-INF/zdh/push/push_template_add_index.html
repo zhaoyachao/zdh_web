@@ -131,6 +131,8 @@
                                     <input id="check_email" name="check_email"  type="checkbox"><i></i> 邮件</label>
                                 <label class="no-padding">
                                     <input id="check_push" name="check_push"  type="checkbox"><i></i> APPPUSH</label>
+                                <label class="no-padding">
+                                    <input id="check_miniprogram" name="check_miniprogram"  type="checkbox"><i></i> 小程序</label>
                             </div>
                         </div>
 
@@ -146,6 +148,8 @@
                                         <li class="tab_li"  id="check_email_li"><a data-toggle="tab" href="#check_email_tab" aria-expanded="false">邮件配置</a>
                                         </li>
                                         <li class="tab_li"  id="check_push_li"><a data-toggle="tab" href="#check_push_tab" aria-expanded="false">APPPUSH配置</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_miniprogram_li"><a data-toggle="tab" href="#check_miniprogram_tab" aria-expanded="false">小程序</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content">
@@ -312,6 +316,43 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div id="check_miniprogram_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="miniprogram_channel" name="channel"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">通道模板</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="miniprogram_channel_template_id" name="channel_template_id" class="form-control" type="text" value="" placeholder="通道模板ID">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="miniprogram_content" name="content" class="form-control" rows="5" placeholder="内容,使用通道模板时,需和通道模板所创建的内容保持一致"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="miniprogram_params" name="params" class="form-control" placeholder="参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="miniprogram_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -393,8 +434,6 @@
 
 <script src="js/admin/dim_product_common.js"></script>
 <script src="js/admin/dim_group_common.js"></script>
-
-<script type="text/javascript" src="js/push/push_template_add.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -742,11 +781,18 @@
             "params": $("#push_params").val()
         };
 
+        var miniprogram_config = {
+            "channel": $("#miniprogram_channel").val(),
+            "channel_template_id": $("#miniprogram_channel_template_id").val(),
+            "content": $("#miniprogram_content").val(),
+            "params": $("#miniprogram_params").val()
+        };
 
         var config = {
             "sms": sms_config,
             "email": email_config,
-            "push": push_config
+            "push": push_config,
+            "miniprogram": miniprogram_config
         };
 
         return config;
@@ -769,6 +815,14 @@
                 push_server = "push"
             }else{
                 push_server = push_server +",push"
+            }
+        }
+
+        if($('#check_miniprogram').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "miniprogram"
+            }else{
+                push_server = push_server +",miniprogram"
             }
         }
         return push_server;

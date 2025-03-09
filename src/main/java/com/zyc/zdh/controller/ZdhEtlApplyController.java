@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +95,8 @@ public class ZdhEtlApplyController extends BaseController{
             }
             Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
             list = etlApplyTaskMapper.selectByParams(getOwner(), etl_context, file_name, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
+            dynamicAuth(zdhPermissionService, list);
+
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -154,11 +155,9 @@ public class ZdhEtlApplyController extends BaseController{
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo etl_apply_task_add(EtlApplyTaskInfo etlApplyTaskInfo) {
-        //String json_str=JSON.toJSONString(request.getParameterMap());
         try{
             String owner = getOwner();
             etlApplyTaskInfo.setOwner(owner);
-            debugInfo(etlApplyTaskInfo);
 
             etlApplyTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
             etlApplyTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
@@ -205,7 +204,6 @@ public class ZdhEtlApplyController extends BaseController{
             etlApplyTaskInfo.setOwner(owner);
             etlApplyTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlApplyTaskInfo.setIs_delete(Const.NOT_DELETE);
-            debugInfo(etlApplyTaskInfo);
 
             //获取旧数据是否更新说明
             EtlApplyTaskInfo oldEtlApplyTaskInfo = etlApplyTaskMapper.selectByPrimaryKey(etlApplyTaskInfo.getId());
@@ -249,35 +247,6 @@ public class ZdhEtlApplyController extends BaseController{
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
-        }
-    }
-
-
-
-    private void debugInfo(Object obj) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (int i = 0, len = fields.length; i < len; i++) {
-            // 对于每个属性，获取属性名
-            String varName = fields[i].getName();
-            try {
-                // 获取原来的访问控制权限
-                boolean accessFlag = fields[i].isAccessible();
-                // 修改访问控制权限
-                fields[i].setAccessible(true);
-                // 获取在对象f中属性fields[i]对应的对象中的变量
-                Object o;
-                try {
-                    o = fields[i].get(obj);
-                    System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-                }
-                // 恢复访问控制权限
-                fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            }
         }
     }
 

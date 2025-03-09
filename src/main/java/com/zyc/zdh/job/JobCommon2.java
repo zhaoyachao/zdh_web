@@ -913,7 +913,6 @@ public class JobCommon2 {
             }
 
             //增加quality_rule_info信息
-            //JSONArray jsonArray = new JSONArray();
             List<Map<String, Object>> jsonArray = new ArrayList<>();
             if (!StringUtils.isEmpty(qualityTaskInfo.getQuality_rule_config())) {
                 for (Map<String, Object> obj : JsonUtil.toJavaListMap(qualityTaskInfo.getQuality_rule_config())) {
@@ -3731,11 +3730,9 @@ public class JobCommon2 {
                 return tliList;
             }
             List<Map<String, Object>> tasks = (List<Map<String, Object>>)JsonUtil.toJavaMap(tgli.getJsmind_data()).getOrDefault("tasks", Lists.newArrayList());
-            //JSONArray shell=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("shell");
             List<Map<String, Object>> lines =  (List<Map<String, Object>>)JsonUtil.toJavaMap(tgli.getJsmind_data()).getOrDefault("line", Lists.newArrayList());
             for (Map<String, Object> job : tasks) {
                 TaskLogInstance taskLogInstance = new TaskLogInstance();
-                //BeanUtils.copyProperties(taskLogInstance, tgli);
                 taskLogInstance = MapStructMapper.INSTANCE.taskGroupLogInstanceToTaskLogInstance(tgli);
 
                 String etl_task_id = ((Map<String, Object>) job).getOrDefault("etl_task_id", "").toString();//具体任务id
@@ -3877,7 +3874,6 @@ public class JobCommon2 {
             }
 
             //run_data 结构：run_data:[{task_log_instance_id,etl_task_id,etl_context,more_task}]
-            //JSONArray jary = new JSONArray();
             List<Map<String, Object>> jary = JsonUtil.createEmptyListMap();
             for (TaskLogInstance tli : tliList) {
                 Map<String, Object> jsonObject1 = JsonUtil.createEmptyMap();

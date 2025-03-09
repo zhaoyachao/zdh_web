@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Table(name = "plugin_info")
-public class PluginInfo {
+public class PluginInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

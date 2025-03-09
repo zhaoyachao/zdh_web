@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table
-public class SshTaskInfo {
+public class SshTaskInfo extends BaseProductAndDimGroupAuthInfo{
 
     /**
      * 主键ID

@@ -81,6 +81,8 @@ public class ZdhApprovalController extends BaseController{
                 criteria.orLike("id", getLikeCondition(approval_context));
             }
             List<ApprovalConfigInfo> approvalConfigInfos=approvalConfigMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, approvalConfigInfos);
+
             return ReturnInfo.buildSuccess(approvalConfigInfos);
         }catch (Exception e){
             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
@@ -547,6 +549,8 @@ public class ZdhApprovalController extends BaseController{
                 event_context = getLikeCondition(event_context);
             }
             List<ApprovalEventInfo> approvalEventInfos=approvalEventMapper.selectByContext(event_context, product_codes);
+            dynamicAuth(zdhPermissionService, approvalEventInfos);
+
             return ReturnInfo.buildSuccess(approvalEventInfos);
         }catch (Exception e){
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);

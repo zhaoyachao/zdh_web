@@ -6,7 +6,7 @@ import javax.persistence.Transient;
 import java.sql.Timestamp;
 
 @Table(name = "we_mock_data_info")
-public class WeMockDataInfo {
+public class WeMockDataInfo extends BaseProductAuthInfo{
     @Id
     private String id;
 

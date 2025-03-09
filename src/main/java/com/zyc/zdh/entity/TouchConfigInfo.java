@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "touch_config_info")
-public class TouchConfigInfo {
+public class TouchConfigInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

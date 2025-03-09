@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "etl_task_unstructure_info")
-public class EtlTaskUnstructureInfo {
+public class EtlTaskUnstructureInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

@@ -44,7 +44,6 @@ public class ResoveExcel {
 
         //读取文件表头
         Row title= readTitle(wb.getSheetAt(0));
-        //System.out.println(JSON.toJSONString(title));
         //检查表头是否有为空的异常数据
         List<String> titles = checkTitle(title);
         //检查表头是否和模型匹配

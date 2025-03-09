@@ -82,6 +82,7 @@ public class EtlTaskKettleController extends BaseController {
             }
 
             List<EtlTaskKettleInfo> etlTaskKettleInfos = etlTaskKettleMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, etlTaskKettleInfos);
 
             return ReturnInfo.buildSuccess(etlTaskKettleInfos);
         }catch(Exception e){
@@ -130,6 +131,7 @@ public class EtlTaskKettleController extends BaseController {
             int total = etlTaskKettleMapper.selectCountByExample(example);
 
             List<EtlTaskKettleInfo> etlTaskKettleInfos = etlTaskKettleMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, etlTaskKettleInfos);
 
             PageResult<List<EtlTaskKettleInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

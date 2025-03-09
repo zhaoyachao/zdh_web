@@ -221,9 +221,6 @@ public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLog
             "</script>"})
     public List<TaskLogInstance> selectNoNoticeFinish();
 
-//    @Select("select a.*,b.email,b.user_name as userName,b.phone,b.is_use_email,b.is_use_phone from task_log_instance a,account_info b where a.notice_error = 'on' and a.status='error' and a.is_notice !='true' and a.owner=b.id and  TIMESTAMPDIFF(day,a.run_time,NOW()) < 2  ")
-//    public List<EmailTaskLogs> selectByStatus();
-
     @Select({"<script>",
             "SELECT * FROM task_log_instance",
             "WHERE ",

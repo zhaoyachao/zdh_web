@@ -29,14 +29,14 @@ public class AccountServiceImpl implements AccountService {
 		return accountDao.findByPw(user);
 	}
 
-	@Override
-	public List<User> findList(User user) {
-		// TODO Auto-generated method stub
-		@SuppressWarnings("rawtypes")
-		Page startPage = PageHelper.startPage(user.getPageNum2(), user.getPageSize());
-		List<User> findList = accountDao.findList(user);
-		return findList;
-	}
+//	@Override
+//	public List<User> findList(User user) {
+//		// TODO Auto-generated method stub
+//		@SuppressWarnings("rawtypes")
+//		Page startPage = PageHelper.startPage(user.getPageNum2(), user.getPageSize());
+//		List<User> findList = accountDao.findList(user);
+//		return findList;
+//	}
 
 	@Override
 	public List<User> findByUserName(User user) {

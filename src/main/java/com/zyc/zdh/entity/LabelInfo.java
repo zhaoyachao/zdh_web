@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Table(name = "label_info")
-public class LabelInfo {
+public class LabelInfo extends BaseProductAuthInfo{
     @Id
     private String id;
 

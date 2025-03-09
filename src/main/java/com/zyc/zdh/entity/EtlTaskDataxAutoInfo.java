@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "etl_task_datax_auto_info")
-public class EtlTaskDataxAutoInfo {
+public class EtlTaskDataxAutoInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

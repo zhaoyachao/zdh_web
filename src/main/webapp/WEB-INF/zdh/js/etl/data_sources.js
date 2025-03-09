@@ -197,11 +197,15 @@ function buildTable($el, cells, rows) {
       };
 
       function operateFormatter(value, row, index) {
+          var edit_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var copy_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var del_class = "btn btn-outline btn-sm "+ get_del_class(row);
+
           return [
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
-              ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+              ' <button id="edit" name="edit" type="button" class="'+edit_class+'"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm">\n' +
+              ' <button id="del" name="del" type="button" class="'+del_class+'">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +

@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "quality_rule_info")
-public class QualityRuleInfo {
+public class QualityRuleInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

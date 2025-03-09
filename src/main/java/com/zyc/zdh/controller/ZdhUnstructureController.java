@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -132,6 +131,7 @@ public class ZdhUnstructureController extends BaseController{
                 criteria.andLike("unstructure_context", getLikeCondition(unstructure_context));
             }
             etlTaskUnstructureInfos = etlTaskUnstructureMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, etlTaskUnstructureInfos);
 
             return ReturnInfo.buildSuccess(etlTaskUnstructureInfos);
         }catch (Exception e){
@@ -185,7 +185,6 @@ public class ZdhUnstructureController extends BaseController{
             etlTaskUnstructureInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskUnstructureInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskUnstructureInfo.setIs_delete(Const.NOT_DELETE);
-            debugInfo(etlTaskUnstructureInfo);
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskUnstructureInfo.getProduct_code(), etlTaskUnstructureInfo.getDim_group(), getAttrAdd());
 
@@ -228,7 +227,7 @@ public class ZdhUnstructureController extends BaseController{
             etlTaskUnstructureInfo.setOwner(owner);
             etlTaskUnstructureInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskUnstructureInfo.setIs_delete(Const.NOT_DELETE);
-            debugInfo(etlTaskUnstructureInfo);
+
             String id=etlTaskUnstructureInfo.getId();
 
             EtlTaskUnstructureInfo oldEtlTaskUnstructureInfo = etlTaskUnstructureMapper.selectByPrimaryKey(etlTaskUnstructureInfo.getId());
@@ -301,8 +300,6 @@ public class ZdhUnstructureController extends BaseController{
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
         try{
-
-            debugInfo(etlTaskUnstructureInfo);
             //获取元数据输出源
             String data_sources_choose_jdbc_output=etlTaskUnstructureInfo.getData_sources_choose_jdbc_output();
             String data_sources_choose_file_output=etlTaskUnstructureInfo.getData_sources_choose_file_output();
@@ -527,33 +524,6 @@ public class ZdhUnstructureController extends BaseController{
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
-        }
-    }
-
-    private void debugInfo(Object obj) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (int i = 0, len = fields.length; i < len; i++) {
-            // 对于每个属性，获取属性名
-            String varName = fields[i].getName();
-            try {
-                // 获取原来的访问控制权限
-                boolean accessFlag = fields[i].isAccessible();
-                // 修改访问控制权限
-                fields[i].setAccessible(true);
-                // 获取在对象f中属性fields[i]对应的对象中的变量
-                Object o;
-                try {
-                    o = fields[i].get(obj);
-                    System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-                }
-                // 恢复访问控制权限
-                fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            }
         }
     }
 

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Table(name = "beacon_fire_alarm_group_info")
-public class BeaconFireAlarmGroupInfo {
+public class BeaconFireAlarmGroupInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

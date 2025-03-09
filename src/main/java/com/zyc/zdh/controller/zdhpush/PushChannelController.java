@@ -88,6 +88,7 @@ public class PushChannelController extends BaseController {
             }
 
             List<PushChannelInfo> pushChannelInfos = pushChannelMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, pushChannelInfos);
 
             return ReturnInfo.buildSuccess(pushChannelInfos);
         }catch(Exception e){
@@ -138,6 +139,7 @@ public class PushChannelController extends BaseController {
             int total = pushChannelMapper.selectCountByExample(example);
 
             List<PushChannelInfo> pushChannelInfos = pushChannelMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, pushChannelInfos);
 
             PageResult<List<PushChannelInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

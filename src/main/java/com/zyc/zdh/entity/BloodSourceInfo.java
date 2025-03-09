@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Table(name = "blood_source_info")
-public class BloodSourceInfo {
+public class BloodSourceInfo extends BaseProductAuthInfo{
     @Id
     private Long id;
 

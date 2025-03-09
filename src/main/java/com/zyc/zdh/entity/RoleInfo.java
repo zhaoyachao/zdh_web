@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Table(name="role_info")
-public class RoleInfo extends PageBase implements Serializable {
+public class RoleInfo extends BaseProductAuthInfo implements Serializable {
 
 	/**
 	 * 

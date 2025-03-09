@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +89,7 @@ public class ZdhDataxController extends BaseController{
             dynamicPermissionByProductAndGroup(zdhPermissionService, cri);
 
             etlTaskDataxInfos = etlTaskDataxMapper.selectByExample(etlTaskDataxInfoExample);
+            dynamicAuth(zdhPermissionService, etlTaskDataxInfos);
 
             return ReturnInfo.buildSuccess(etlTaskDataxInfos);
         }catch (Exception e){
@@ -137,7 +137,6 @@ public class ZdhDataxController extends BaseController{
         try{
             String owner = getOwner();
             etlTaskDataxInfo.setOwner(owner);
-            debugInfo(etlTaskDataxInfo);
             String id=SnowflakeIdWorker.getInstance().nextId()+"";
             etlTaskDataxInfo.setId(id);
             etlTaskDataxInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
@@ -184,7 +183,7 @@ public class ZdhDataxController extends BaseController{
             String id=etlTaskDataxInfo.getId();
             etlTaskDataxInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             etlTaskDataxInfo.setIs_delete(Const.NOT_DELETE);
-            debugInfo(etlTaskDataxInfo);
+
             etlTaskDataxMapper.updateByPrimaryKeySelective(etlTaskDataxInfo);
 
             EtlTaskDataxInfo oldEtlTaskDataxInfo = etlTaskDataxMapper.selectByPrimaryKey(etlTaskDataxInfo.getId());
@@ -210,34 +209,6 @@ public class ZdhDataxController extends BaseController{
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
-        }
-    }
-
-
-    private void debugInfo(Object obj) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (int i = 0, len = fields.length; i < len; i++) {
-            // 对于每个属性，获取属性名
-            String varName = fields[i].getName();
-            try {
-                // 获取原来的访问控制权限
-                boolean accessFlag = fields[i].isAccessible();
-                // 修改访问控制权限
-                fields[i].setAccessible(true);
-                // 获取在对象f中属性fields[i]对应的对象中的变量
-                Object o;
-                try {
-                    o = fields[i].get(obj);
-                    System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-                }
-                // 恢复访问控制权限
-                fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            }
         }
     }
 

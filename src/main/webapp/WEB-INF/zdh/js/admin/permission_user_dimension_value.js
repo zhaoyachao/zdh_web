@@ -125,9 +125,12 @@
       };
 
       function operateFormatter(value, row, index) {
+          var edit_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var copy_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var del_class = "btn btn-outline btn-sm "+ get_del_class(row);
           return [
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
-              ' <button id="edit_value" name="edit_value" type="button" class="btn btn-outline btn-sm" title="更新维度值"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+              ' <button id="edit_value" name="edit_value" type="button" class="'+edit_class+'" title="更新维度值"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>\n'+
               '</div>'
 

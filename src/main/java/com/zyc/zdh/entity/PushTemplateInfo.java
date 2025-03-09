@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Table(name = "push_template_info")
-public class PushTemplateInfo {
+public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

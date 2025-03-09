@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table
-public class ApprovalConfigInfo {
+public class ApprovalConfigInfo extends BaseProductAuthInfo{
     //申请id
     @Id
     @Column

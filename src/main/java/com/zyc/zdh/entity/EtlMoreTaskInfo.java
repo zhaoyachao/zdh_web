@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table
-public class EtlMoreTaskInfo {
+public class EtlMoreTaskInfo extends BaseProductAndDimGroupAuthInfo{
 
     /**
      * 主键ID

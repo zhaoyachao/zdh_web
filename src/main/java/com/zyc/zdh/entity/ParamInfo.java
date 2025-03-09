@@ -8,7 +8,7 @@ import javax.persistence.Transient;
 import java.sql.Timestamp;
 
 @Table(name = "param_info")
-public class ParamInfo {
+public class ParamInfo extends BaseProductAuthInfo{
     @Id
     private String id;
 

@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -84,6 +83,7 @@ public class ZdhDispatchController extends BaseController {
                 quartzJobInfo.setJob_id(ids[0]);
                 list.add(quartzJobMapper.selectByPrimaryKey(quartzJobInfo));
             }
+            dynamicAuth(zdhPermissionService, list);
 
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
@@ -117,6 +117,8 @@ public class ZdhDispatchController extends BaseController {
             }
             Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
             list = quartzJobMapper.selectByParams(getOwner(), job_context, etl_context, status, last_status, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
+            dynamicAuth(zdhPermissionService, list);
+
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -248,7 +250,6 @@ public class ZdhDispatchController extends BaseController {
     public ReturnInfo dispatch_task_group_add(QuartzJobInfo quartzJobInfo) {
 
         try{
-            debugInfo(quartzJobInfo);
             quartzJobInfo.setOwner(getOwner());
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzJobInfo.setStatus("create");
@@ -260,7 +261,6 @@ public class ZdhDispatchController extends BaseController {
                     quartzJobInfo.setPlan_count("3");
                 }
             }
-            debugInfo(quartzJobInfo);
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, quartzJobInfo.getProduct_code(), quartzJobInfo.getDim_group(), getAttrAdd());
             quartzJobMapper.insertSelective(quartzJobInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
@@ -308,7 +308,6 @@ public class ZdhDispatchController extends BaseController {
     public ReturnInfo dispatch_task_group_update(QuartzJobInfo quartzJobInfo, String reset_last_time) {
 
         try{
-            debugInfo(quartzJobInfo);
             quartzJobInfo.setOwner(getOwner());
             QuartzJobInfo oldQuartzJobInfo = quartzJobMapper.selectByPrimaryKey(quartzJobInfo);
 
@@ -345,8 +344,6 @@ public class ZdhDispatchController extends BaseController {
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo dispatch_task_execute(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time,String[] sub_tasks) {
-        debugInfo(quartzJobInfo);
-
         try {
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group(), getAttrEdit());
@@ -418,8 +415,6 @@ public class ZdhDispatchController extends BaseController {
     @RequestMapping(value = "/dispatch_task_execute_time",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<String>> dispatch_task_execute_time(QuartzJobInfo quartzJobInfo, String reset_count,String concurrency,String start_time,String end_time,String[] sub_tasks) {
-        debugInfo(quartzJobInfo);
-
         try {
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
             List<Date> dates = JobCommon2.resolveQuartzExpr(quartzJobInfo.getUse_quartz_time(),dti.getStep_size(),dti.getExpr(),start_time,end_time);
@@ -447,9 +442,6 @@ public class ZdhDispatchController extends BaseController {
     @RequestMapping(value = "/dispatch_task_execute_quartz", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo dispatch_task_execute_quartz(QuartzJobInfo quartzJobInfo,String reset) {
-
-        debugInfo(quartzJobInfo);
-
         // dispatchTaskService.update(dispatchTaskInfo);
         String url = "http://127.0.0.1:60001/api/v1/zdh";
         QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
@@ -502,7 +494,6 @@ public class ZdhDispatchController extends BaseController {
     public ReturnInfo dispatch_task_quartz_pause(QuartzJobInfo quartzJobInfo) {
 
         try{
-            debugInfo(quartzJobInfo);
             QuartzJobInfo dti = quartzJobMapper.selectByPrimaryKey(quartzJobInfo.getJob_id());
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dti.getProduct_code(), dti.getDim_group(), getAttrEdit());
             if (quartzJobInfo.getStatus().equals("running")) {
@@ -781,36 +772,6 @@ public class ZdhDispatchController extends BaseController {
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"禁用失败", e);
-        }
-    }
-
-
-
-    private void debugInfo(Object obj) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (int i = 0, len = fields.length; i < len; i++) {
-            // 对于每个属性，获取属性名
-            String varName = fields[i].getName();
-            try {
-                // 获取原来的访问控制权限
-                boolean accessFlag = fields[i].isAccessible();
-                // 修改访问控制权限
-                fields[i].setAccessible(true);
-                // 获取在对象f中属性fields[i]对应的对象中的变量
-                Object o;
-                try {
-                    o = fields[i].get(obj);
-                    System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-                    logger.error(error, e);
-                }
-                // 恢复访问控制权限
-                fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            }
         }
     }
 

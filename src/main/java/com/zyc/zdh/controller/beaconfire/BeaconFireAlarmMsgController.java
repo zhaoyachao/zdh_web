@@ -80,6 +80,7 @@ public class BeaconFireAlarmMsgController extends BaseController {
             int total = beaconFireAlarmMsgMapper.selectCountByExample(example);
 
             List<BeaconFireAlarmMsgInfo> beaconFireAlarmMsgInfos = beaconFireAlarmMsgMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, beaconFireAlarmMsgInfos);
 
             PageResult<List<BeaconFireAlarmMsgInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

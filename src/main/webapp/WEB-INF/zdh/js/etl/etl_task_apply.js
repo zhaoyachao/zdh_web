@@ -22,7 +22,7 @@
               //area: ['450px', '500px'],
               content: server_context+"/etl_task_apply_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束")
+                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/etl_task_apply_list2?"+$("#etl_task_form").serialize()+"&tm="+new Date(),
@@ -148,13 +148,17 @@
       };
 
       function operateFormatter(value, row, index) {
+          var edit_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var copy_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var del_class = "btn btn-outline btn-sm "+ get_del_class(row);
+
           return [
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
-              ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+              ' <button id="edit" name="edit" type="button" class="'+edit_class+'" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="copy" name="copy" type="button" class="btn btn-outline btn-sm" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
+              ' <button id="copy" name="copy" type="button" class="'+copy_class+'" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
+              ' <button id="del" name="del" type="button" class="'+del_class+'" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +

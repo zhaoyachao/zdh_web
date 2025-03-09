@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,6 +127,8 @@ public class ZdhEtlBatchController extends BaseController {
             }
 
             list = etlTaskBatchMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, list);
+
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -176,7 +177,6 @@ public class ZdhEtlBatchController extends BaseController {
         try {
             String owner = getOwner();
             etlTaskBatchInfo.setOwner(owner);
-            debugInfo(etlTaskBatchInfo);
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskBatchInfo.getProduct_code(), etlTaskBatchInfo.getDim_group(), getAttrAdd());
 
@@ -223,7 +223,6 @@ public class ZdhEtlBatchController extends BaseController {
             etlTaskBatchInfo.setOwner(owner);
             etlTaskBatchInfo.setIs_delete(Const.NOT_DELETE);
             etlTaskBatchInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
-            debugInfo(etlTaskBatchInfo);
 
 
             //获取旧数据是否更新说明
@@ -266,7 +265,6 @@ public class ZdhEtlBatchController extends BaseController {
     public ReturnInfo<List<String>> etl_task_batch_create(EtlTaskBatchInfo etlTaskBatchInfo) {
         try {
             String owner = getOwner();
-            debugInfo(etlTaskBatchInfo);
             EtlTaskBatchInfo etbi = etlTaskBatchMapper.selectByPrimaryKey(etlTaskBatchInfo);
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etbi.getProduct_code(), etbi.getDim_group(), getAttrAdd());
@@ -281,7 +279,6 @@ public class ZdhEtlBatchController extends BaseController {
 
             //拉取JDBC下满足的表
             DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(etbi.getData_sources_choose_input());
-            debugInfo(dataSourcesInfo);
 
             String url = dataSourcesInfo.getUrl();
             List<String> tables = new DBUtil().R3(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(),
@@ -357,33 +354,6 @@ public class ZdhEtlBatchController extends BaseController {
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             return new ArrayList<String>();
-        }
-    }
-
-    private void debugInfo(Object obj) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (int i = 0, len = fields.length; i < len; i++) {
-            // 对于每个属性，获取属性名
-            String varName = fields[i].getName();
-            try {
-                // 获取原来的访问控制权限
-                boolean accessFlag = fields[i].isAccessible();
-                // 修改访问控制权限
-                fields[i].setAccessible(true);
-                // 获取在对象f中属性fields[i]对应的对象中的变量
-                Object o;
-                try {
-                    o = fields[i].get(obj);
-                    System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-                }
-                // 恢复访问控制权限
-                fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            }
         }
     }
 

@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "beacon_fire_alarm_msg_info")
-public class BeaconFireAlarmMsgInfo {
+public class BeaconFireAlarmMsgInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

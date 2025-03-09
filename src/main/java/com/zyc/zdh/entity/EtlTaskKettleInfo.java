@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "etl_task_kettle_info")
-public class EtlTaskKettleInfo {
+public class EtlTaskKettleInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

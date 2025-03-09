@@ -83,6 +83,7 @@ public class PushTemplateController extends BaseController {
             }
 
             List<PushTemplateInfo> pushTemplateInfos = pushTemplateMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, pushTemplateInfos);
 
             return ReturnInfo.buildSuccess(pushTemplateInfos);
         }catch(Exception e){
@@ -132,6 +133,7 @@ public class PushTemplateController extends BaseController {
             int total = pushTemplateMapper.selectCountByExample(example);
 
             List<PushTemplateInfo> pushTemplateInfos = pushTemplateMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, pushTemplateInfos);
 
             PageResult<List<PushTemplateInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

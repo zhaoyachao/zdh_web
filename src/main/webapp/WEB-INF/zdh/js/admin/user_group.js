@@ -85,11 +85,12 @@
       };
 
       function operateFormatter(value, row, index) {
+          var edit_class = "btn btn-outline btn-sm ";
           return [
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
-              ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="编辑"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+              ' <button id="edit" name="edit" type="button" class="'+edit_class+'" title="编辑"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="edit_dim" name="edit_dim" type="button" class="btn btn-outline btn-sm" title="绑定维度"><i class="glyphicon glyphicon-book" aria-hidden="true"></i>\n' +
+              ' <button id="edit_dim" name="edit_dim" type="button" class="'+edit_class+'" title="绑定维度"><i class="glyphicon glyphicon-book" aria-hidden="true"></i>\n' +
               '                                    </button>'
               // ' <button id="copy" name="copy" type="button" class="btn btn-outline btn-sm" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
               // '                                    </button>',

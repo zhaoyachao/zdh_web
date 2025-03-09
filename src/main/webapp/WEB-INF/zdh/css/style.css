@@ -7917,3 +7917,7 @@ body.skin-3 {
         font-size: 12px
     }
 }
+
+.auth_hidden {
+    display: none;
+}

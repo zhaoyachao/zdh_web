@@ -45,17 +45,17 @@ public class ServiceTest {
 	@Test
 	public void testPage(){
 		User user=new User();
-		user.setPageNum(2);
-		user.setPageSize(2);
+//		user.setPageNum(2);
+//		user.setPageSize(2);
 		user.setPassword("e10adc3949ba59abbe56e057f20f883e");
-		List<User> findList = accountService.findList(user);
-		System.out.println(findList.size());
-		TaskInfo taskInfo=new TaskInfo();
-		//taskInfo.setTaskPlanCount(10);
-		taskInfo.setPageNum(1);
-		Page startPage = PageHelper.startPage(2, 2);
-		List<TaskInfo> select = taskInfoMapper.select(taskInfo);
-		System.out.println("startPage.getTotal()==="+startPage.getTotal());
-		System.out.println(select.size());
+//		List<User> findList = accountService.findList(user);
+//		System.out.println(findList.size());
+//		TaskInfo taskInfo=new TaskInfo();
+//		//taskInfo.setTaskPlanCount(10);
+//		taskInfo.setPageNum(1);
+//		Page startPage = PageHelper.startPage(2, 2);
+//		List<TaskInfo> select = taskInfoMapper.select(taskInfo);
+//		System.out.println("startPage.getTotal()==="+startPage.getTotal());
+//		System.out.println(select.size());
 	}
 }

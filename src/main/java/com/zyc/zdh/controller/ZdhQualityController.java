@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -99,6 +98,8 @@ public class ZdhQualityController extends BaseController {
             }
 
             qualityRuleInfos = qualityRuleMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, qualityRuleInfos);
+
             return ReturnInfo.buildSuccess(qualityRuleInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -240,6 +241,8 @@ public class ZdhQualityController extends BaseController {
             }
 
             qualityTaskInfos = qualityTaskMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, qualityTaskInfos);
+
             return ReturnInfo.buildSuccess(qualityTaskInfos);
         }catch (Exception e){
             String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
@@ -383,7 +386,7 @@ public class ZdhQualityController extends BaseController {
      * @return
      */
     @SentinelResource(value = "quota_list", blockHandler = "handleReturn")
-    @RequestMapping(value = "/quota_list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/quota_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo<List<QuotaInfo>> quota_list(String column_desc, String column_alias, String company, String section, String service) {
 
@@ -479,35 +482,6 @@ public class ZdhQualityController extends BaseController {
             logger.error(error, e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
-        }
-    }
-
-
-    private void debugInfo(Object obj) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (int i = 0, len = fields.length; i < len; i++) {
-            // 对于每个属性，获取属性名
-            String varName = fields[i].getName();
-            try {
-                // 获取原来的访问控制权限
-                boolean accessFlag = fields[i].isAccessible();
-                // 修改访问控制权限
-                fields[i].setAccessible(true);
-                // 获取在对象f中属性fields[i]对应的对象中的变量
-                Object o;
-                try {
-                    o = fields[i].get(obj);
-                    System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-                    logger.error(error);
-                }
-                // 恢复访问控制权限
-                fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}");
-            }
         }
     }
 

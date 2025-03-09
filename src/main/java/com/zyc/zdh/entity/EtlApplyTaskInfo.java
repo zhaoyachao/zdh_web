@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Table
-public class EtlApplyTaskInfo {
+public class EtlApplyTaskInfo extends BaseProductAndDimGroupAuthInfo{
 
     @Id
     @Column

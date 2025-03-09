@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -550,7 +549,7 @@ public class PermissionController extends BaseController {
             if(StringUtils.isEmpty(rti.getQps())){
                 rti.setQps("");
             }
-            debugInfo(rti);
+
             resourceTreeMapper.insertSelective(rti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
@@ -609,7 +608,7 @@ public class PermissionController extends BaseController {
             if(StringUtils.isEmpty(rti.getQps())){
                 rti.setQps("");
             }
-            debugInfo(rti);
+
             resourceTreeMapper.insertSelective(rti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
@@ -689,7 +688,7 @@ public class PermissionController extends BaseController {
             if(StringUtils.isEmpty(rti.getQps())){
                 rti.setQps("");
             }
-            debugInfo(rti);
+
             resourceTreeMapper.updateByPrimaryKeySelective(rti);
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
@@ -846,7 +845,6 @@ public class PermissionController extends BaseController {
                 roleDao.updateByPrimaryKeySelective(roleInfo);
             }
 
-            debugInfo(resource_id);
             List<RoleResourceInfo> rris = new ArrayList<>();
             for (String rid : resource_id) {
                 RoleResourceInfo rri = new RoleResourceInfo();
@@ -1074,8 +1072,6 @@ public class PermissionController extends BaseController {
             String event_context="权限申请-"+permissionApplyInfo.getApply_type()+'-'+apply_context;
             String event_id=permissionApplyInfo.getId();
 
-
-            debugInfo(permissionApplyInfo);
             //开始审批流
             //校验账号是否有效
             PermissionUserInfo pui=new PermissionUserInfo();
@@ -1505,34 +1501,5 @@ public class PermissionController extends BaseController {
 
         return "admin/fontawesome";
     }
-
-
-    private void debugInfo(Object obj) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (int i = 0, len = fields.length; i < len; i++) {
-            // 对于每个属性，获取属性名
-            String varName = fields[i].getName();
-            try {
-                // 获取原来的访问控制权限
-                boolean accessFlag = fields[i].isAccessible();
-                // 修改访问控制权限
-                fields[i].setAccessible(true);
-                // 获取在对象f中属性fields[i]对应的对象中的变量
-                Object o;
-                try {
-                    o = fields[i].get(obj);
-                    System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-                }
-                // 恢复访问控制权限
-                fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
-            }
-        }
-    }
-
 
 }

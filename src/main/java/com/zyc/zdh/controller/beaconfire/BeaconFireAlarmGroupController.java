@@ -84,6 +84,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
             int total = beaconFireAlarmGroupMapper.selectCountByExample(example);
 
             List<BeaconFireAlarmGroupInfo> beaconFireAlarmGroupInfos = beaconFireAlarmGroupMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, beaconFireAlarmGroupInfos);
 
             PageResult<List<BeaconFireAlarmGroupInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

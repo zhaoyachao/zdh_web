@@ -138,6 +138,7 @@ public class RiskEventController extends BaseController {
             }
 
             List<RiskEventInfo> riskEventInfos = riskEventMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, riskEventInfos);
 
             return ReturnInfo.buildSuccess(riskEventInfos);
         }catch (Exception e){

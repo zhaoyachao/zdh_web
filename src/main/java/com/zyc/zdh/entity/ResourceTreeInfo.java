@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import java.util.Map;
 
 @Table
-public class ResourceTreeInfo{
+public class ResourceTreeInfo extends BaseProductAuthInfo{
 
  	/**
  	* 主键

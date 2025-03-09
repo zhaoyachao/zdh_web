@@ -6,7 +6,7 @@ import javax.persistence.Transient;
 import java.sql.Timestamp;
 
 @Table(name = "strategy_group_instance")
-public class StrategyGroupInstance {
+public class StrategyGroupInstance extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

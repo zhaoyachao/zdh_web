@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Table
-public class IssueDataInfo implements Serializable {
+public class IssueDataInfo extends BaseProductAndDimGroupAuthInfo implements Serializable {
 
     /**
      * 主键ID

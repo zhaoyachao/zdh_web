@@ -83,6 +83,7 @@ public class PluginController extends BaseController {
             }
 
             List<PluginInfo> pluginInfos = pluginMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, pluginInfos);
 
             return ReturnInfo.buildSuccess(pluginInfos);
         }catch (Exception e){

@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 
 
 @Table
-public class TaskGroupLogInstance implements Serializable {
+public class TaskGroupLogInstance extends BaseProductAndDimGroupAuthInfo implements Serializable {
 
     @Id
     @Column

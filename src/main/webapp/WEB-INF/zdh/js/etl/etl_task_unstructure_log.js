@@ -102,11 +102,14 @@
       };
 
       function operateFormatter(value, row, index) {
+          var edit_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var copy_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var del_class = "btn btn-outline btn-sm "+ get_del_class(row);
           return [
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="log" name="log" type="button" class="btn btn-outline btn-sm" title="日志"><i class="glyphicon glyphicon-file" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
+              ' <button id="del" name="del" type="button" class="'+del_class+'" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +

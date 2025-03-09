@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Table(name = "function_info")
-public class FunctionInfo {
+public class FunctionInfo extends BaseProductAuthInfo{
     @Id
     private String id;
 

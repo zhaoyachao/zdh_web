@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table
-public class EtlDroolsTaskInfo {
+public class EtlDroolsTaskInfo extends BaseProductAndDimGroupAuthInfo{
 
     /**
      * 主键ID

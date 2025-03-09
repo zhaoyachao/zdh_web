@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Table(name = "project_info")
-public class ProjectInfo {
+public class ProjectInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

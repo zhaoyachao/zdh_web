@@ -651,6 +651,9 @@
   + v5.6.3 [zdh_web]fastjson统一下线
   + v5.6.3 [zdh_web]营销模块优化
   
+  + v5.6.4 [zdh_web]新增权限前端使用标识,优化前端展示
+  + v5.6.4 [zdh_web]营销模块-统一上下游数据结构,增加参数可传递功能
+  
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】

@@ -1,5 +1,7 @@
 package com.zyc.zdh.other;
 
+import com.zyc.zdh.entity.BaseProductAuthInfo;
+import com.zyc.zdh.entity.ParamInfo;
 import com.zyc.zdh.entity.ProcessFlowInfo;
 import com.zyc.zdh.util.HttpUtil;
 import com.zyc.zdh.util.JsonUtil;
@@ -9,6 +11,24 @@ import java.util.Arrays;
 
 public class TestA {
 
+    @Test
+    public void testBaseProductAuthInfo(){
+        ParamInfo paramInfo = new ParamInfo();
+
+        paramInfo.setProduct_code("123");
+
+        if(paramInfo instanceof BaseProductAuthInfo){
+            BaseProductAuthInfo bpai = paramInfo;
+            System.out.println(bpai.getProduct_code());
+
+            ParamInfo.Auth auth = new ParamInfo.Auth();
+            //auth.setIs_add("add");
+            bpai.setAuth(auth);
+        }
+
+        //System.out.println(paramInfo.getAuth().getIs_add());
+
+    }
 
     @Test
     public void testRegex(){

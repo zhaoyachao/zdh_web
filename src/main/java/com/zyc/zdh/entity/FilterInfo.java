@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "filter_info")
-public class FilterInfo {
+public class FilterInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

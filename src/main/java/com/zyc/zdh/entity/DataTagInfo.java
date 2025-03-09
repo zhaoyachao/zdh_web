@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "data_tag_info")
-public class DataTagInfo {
+public class DataTagInfo extends BaseProductAuthInfo{
     @Id
     private String id;
 

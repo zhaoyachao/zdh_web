@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "strategy_group_info")
-public class StrategyGroupInfo {
+public class StrategyGroupInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

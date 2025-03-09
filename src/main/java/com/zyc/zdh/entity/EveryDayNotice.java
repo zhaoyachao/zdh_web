@@ -5,7 +5,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Table
-public class EveryDayNotice {
+public class EveryDayNotice extends BaseProductAuthInfo{
 
     @Id
     @Column

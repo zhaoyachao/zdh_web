@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Table(name = "risk_event_info")
-public class RiskEventInfo {
+public class RiskEventInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
     private String id;
 

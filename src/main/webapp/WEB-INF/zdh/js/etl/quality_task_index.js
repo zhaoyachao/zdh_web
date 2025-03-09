@@ -107,7 +107,7 @@ function buildTable($el, cells, rows) {
               //area: ['450px', '500px'],
               content: server_context+"/quality_task_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束")
+                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/quality_task_list?"+$("#quality_task_form").serialize()+"&tm="+new Date(),
@@ -215,9 +215,12 @@ function buildTable($el, cells, rows) {
       };
 
       function operateFormatter(value, row, index) {
+          var edit_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var copy_class = "btn btn-outline btn-sm "+ get_edit_class(row);
+          var del_class = "btn btn-outline btn-sm "+ get_del_class(row);
           return [
               ' <div style="text-align:center" >' +
-              ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+              ' <button id="edit" name="edit" type="button" class="'+edit_class+'" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>' +
               '</div>'
           ].join('');

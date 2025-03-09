@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table
-public class ApplyInfo {
+public class ApplyInfo extends BaseProductAndDimGroupAuthInfo{
     //申请id
     @Id
     @Column

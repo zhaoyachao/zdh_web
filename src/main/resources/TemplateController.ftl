@@ -87,6 +87,7 @@ public class ${ControllerName} extends BaseController {
             }
 
             List<${EntityName}> ${entityName}s = ${mapperName}.selectByExample(example);
+            dynamicAuth(zdhPermissionService, ${entityName}s);
 
             return ReturnInfo.buildSuccess(${entityName}s);
         }catch(Exception e){
@@ -136,6 +137,7 @@ public class ${ControllerName} extends BaseController {
             int total = ${mapperName}.selectCountByExample(example);
 
             List<${EntityName}> ${entityName}s = ${mapperName}.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, ${entityName}s);
 
             PageResult<List<${EntityName}>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

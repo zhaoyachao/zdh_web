@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Table
-public class UserGroupInfo implements Serializable {
+public class UserGroupInfo extends BaseProductAuthInfo implements Serializable {
 
 	/**
 	 * 

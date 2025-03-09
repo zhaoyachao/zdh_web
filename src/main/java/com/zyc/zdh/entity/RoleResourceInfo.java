@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table
-public class RoleResourceInfo {
+public class RoleResourceInfo extends BaseProductAuthInfo{
 
  	/**
  	* 主键

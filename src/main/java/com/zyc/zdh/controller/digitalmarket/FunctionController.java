@@ -82,6 +82,7 @@ public class FunctionController extends BaseController {
             }
 
             List<FunctionInfo> functionInfos = functionMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, functionInfos);
 
             return ReturnInfo.buildSuccess(functionInfos);
         }catch(Exception e){
@@ -126,6 +127,7 @@ public class FunctionController extends BaseController {
             int total = functionMapper.selectCountByExample(example);
 
             List<FunctionInfo> functionInfos = functionMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, functionInfos);
 
             PageResult<List<FunctionInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);
@@ -365,9 +367,5 @@ public class FunctionController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "执行失败", e.getMessage());
         }
     }
-
-
-
-
 
 }

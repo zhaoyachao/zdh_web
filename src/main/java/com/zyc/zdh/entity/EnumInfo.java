@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Table(name = "enum_info")
-public class EnumInfo {
+public class EnumInfo extends BaseProductAuthInfo{
     @Id
     private String id;
 

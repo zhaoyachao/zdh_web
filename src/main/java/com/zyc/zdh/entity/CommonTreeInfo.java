@@ -3,7 +3,7 @@ package com.zyc.zdh.entity;
 
 import java.sql.Timestamp;
 
-public class CommonTreeInfo {
+public class CommonTreeInfo extends BaseProductAuthInfo{
 
     private String id;
 

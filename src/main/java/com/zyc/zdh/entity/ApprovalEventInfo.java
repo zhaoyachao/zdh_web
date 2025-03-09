@@ -7,7 +7,7 @@ import javax.persistence.Transient;
 import java.sql.Timestamp;
 
 @Table
-public class ApprovalEventInfo {
+public class ApprovalEventInfo extends BaseProductAuthInfo{
 
     @Id
     @Column

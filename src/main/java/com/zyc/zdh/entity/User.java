@@ -3,7 +3,7 @@ package com.zyc.zdh.entity;
 import java.io.Serializable;
 import java.util.List;
 
-public class User extends PageBase implements Serializable {
+public class User extends BaseProductAuthInfo implements Serializable {
 
 	/**
 	 * 

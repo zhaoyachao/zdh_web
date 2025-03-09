@@ -82,6 +82,7 @@ public class ProjectController extends BaseController {
             }
 
             List<ProjectInfo> projectInfos = projectMapper.selectByExample(example);
+            dynamicAuth(zdhPermissionService, projectInfos);
 
             return ReturnInfo.buildSuccess(projectInfos);
         }catch(Exception e){
@@ -130,6 +131,7 @@ public class ProjectController extends BaseController {
             int total = projectMapper.selectCountByExample(example);
 
             List<ProjectInfo> projectInfos = projectMapper.selectByExampleAndRowBounds(example, rowBounds);
+            dynamicAuth(zdhPermissionService, projectInfos);
 
             PageResult<List<ProjectInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

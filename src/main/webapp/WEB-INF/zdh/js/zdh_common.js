@@ -203,3 +203,31 @@ function open_fontawesome(){
 function open_sparksql_api(){
     window.open("https://spark.apache.org/docs/2.4.4/api/sql/index.html");
 }
+
+function get_edit_class(row){
+    if(is_empty(row.auth)){
+        return "";
+    }
+    // if(row.auth.is_manager == 'true'){
+    //     return "";
+    // }
+    if(row.auth.actions.edit == 'true'){
+        return "";
+    }
+    return "auth_hidden";
+}
+
+function get_del_class(row){
+    if(is_empty(row.auth)){
+        return "";
+    }
+
+    // if(row.auth.is_manager == 'true'){
+    //     return "";
+    // }
+
+    if(row.auth.actions.del == 'true'){
+        return "";
+    }
+    return "auth_hidden";
+}

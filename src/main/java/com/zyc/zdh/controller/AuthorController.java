@@ -86,6 +86,7 @@ public class AuthorController extends BaseController{
     @SentinelResource(value = "zdh_version", blockHandler = "handleReturn")
     @RequestMapping(value = "/zdh_version", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
+    @Deprecated
     public ReturnInfo<List<String>> zdh_version() {
         try{
             List<String> versions = new ArrayList<>();

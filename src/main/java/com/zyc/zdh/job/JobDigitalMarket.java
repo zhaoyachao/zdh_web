@@ -423,11 +423,9 @@ public class JobDigitalMarket {
                 return siList;
             }
             List<Map<String, Object>> tasks = (List<Map<String, Object>>)JsonUtil.toJavaMap(sgi.getJsmind_data()).getOrDefault("tasks", Lists.newArrayList());
-            //JSONArray shell=JSON.parseObject(tgli.getJsmind_data()).getJSONArray("shell");
             List<Map<String, Object>> lines = (List<Map<String, Object>>)JsonUtil.toJavaMap(sgi.getJsmind_data()).getOrDefault("line", Lists.newArrayList());
             for (Map<String, Object> job : tasks) {
                 StrategyInstance si = new StrategyInstance();
-                //BeanUtils.copyProperties(si, sgi);
                 si = MapStructMapper.INSTANCE.strategyGroupInstanceToStrategyInstance(sgi);
 
                 String pageSourceId = job.getOrDefault("divId", "").toString();//前端生成的div 标识
@@ -455,7 +453,6 @@ public class JobDigitalMarket {
 
                 si.setJsmind_data("");
                 si.setJsmind_data(JsonUtil.formatJsonString(job));
-                //si.setJsmind_data(job.toJSONString());
                 si.setRun_jsmind_data(JsonUtil.formatJsonString(job));
 
                 String t_id = SnowflakeIdWorker.getInstance().nextId() + "";
