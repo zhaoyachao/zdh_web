@@ -59,10 +59,10 @@
                             <div class="col-sm-10">
                                 <select id="operate" name="operate" data-placeholder=""
                                         class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="and" mytype="">AND</option>
-                                    <option value="or" mytype="">OR</option>
-                                    <option value="not" mytype="">NOT</option>
-                                    <option value="not_use" mytype="">NOT_USE</option>
+                                    <option value="and" mytype="">AND(当前节点和上游节点取交集)</option>
+                                    <option value="or" mytype="">OR(上游节点取并集后结果和当前节点取交集)</option>
+                                    <option value="not" mytype="">NOT(上游节点取交集结果排除当前节点集)</option>
+                                    <option value="not_use" mytype="">NOT_USE(截断所有上游仅取当前节点结果)</option>
                                 </select>
                             </div>
                         </div>

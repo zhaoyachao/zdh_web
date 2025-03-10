@@ -151,8 +151,8 @@
         (function () {
 
             window.editor = monaco.editor.create(document.getElementById('groovy_code'), {
-                value: '//默认入参: strategy_instance_id: 当前策略实例id, rs: 上游结果集list<String>\n' +
-                    '//出参结构: Map集合 默认为out, 必须包含out_rs参数,表示返回的结果集\n' +
+                value: '//默认入参: strategy_instance_id: 当前策略实例id, rs: 上游结果集Set<DataPipe>\n' +
+                    '//出参结构: Map集合 默认为out, 必须包含out_rs参数,表示返回的结果集Set<DataPipe>\n' +
                     '//更多语法参考groovy\n'+
                     '//例子:\n' +
                     'if(Long.parseLong(strategy_instance_id)>0){\n' +
@@ -167,8 +167,8 @@
 
 
             window.editor = monaco.editor.create(document.getElementById('java_code'), {
-                value: '//默认入参结构: Map集合, 包含参数strategy_instance_id: 当前策略实例id, rs: 上游结果集list<String>\n' +
-                    '//出参结构: Map集合 默认为out, 必须包含out_rs参数,表示返回的结果集\n' +
+                value: '//默认入参结构: Map集合, 包含参数strategy_instance_id: 当前策略实例id, rs: 上游结果集Set<DataPipe>\n' +
+                    '//出参结构: Map集合 默认为out, 必须包含out_rs参数,表示返回的结果集类型Set<DataPipe>\n' +
                     '//java类型代码必须继承com.zyc.common.groovy.GroovyHandler\n'+
                     '//更多语法参考java\n'+
                     '//例子1:\n' +
