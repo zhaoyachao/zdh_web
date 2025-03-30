@@ -1,8 +1,8 @@
 package com.zyc.zdh.job;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.NumberUtil;
 import com.alibaba.druid.util.JdbcUtils;
-
 import com.google.common.collect.Lists;
 import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
@@ -15,6 +15,9 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.datax_generator.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.quartz.QuartzManager2;
+import com.zyc.zdh.run.SystemCommandLineRunner;
+import com.zyc.zdh.run.ZdhRunableTask;
+import com.zyc.zdh.run.ZdhThreadFactory;
 import com.zyc.zdh.service.EtlTaskService;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
@@ -38,7 +41,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -53,23 +55,19 @@ public class JobCommon2 {
 
     public static Logger logger = LoggerFactory.getLogger(JobCommon2.class);
 
-    public static String myid = "";
-
-    //instance_myid:SnowflakeIdWorker
-    public static String web_application_id = "";
-
     public static LinkedBlockingDeque<ZdhLogs> linkedBlockingDeque = new LinkedBlockingDeque<ZdhLogs>();
 
-    public static ConcurrentHashMap<String, Thread> chm = new ConcurrentHashMap<String, Thread>();
+    public static ConcurrentHashMap<String, Future<?>> chm = new ConcurrentHashMap<String, Future<?>>();
     public static ConcurrentHashMap<String, SSHUtil> chm_ssh = new ConcurrentHashMap<String, SSHUtil>();
 
-    public static DelayQueue<RetryJobInfo> retryQueue = new DelayQueue<>();
+    public static ThreadGroup threadGroup = new ThreadGroup("zdh_task");
 
     public static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(Const.ETL_THREAD_MIN_NUM,
-            Const.ETL_THREAD_MAX_NUM, Const.ETL_THREAD_KEEP_ACTIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+            Const.ETL_THREAD_MAX_NUM, Const.ETL_THREAD_KEEP_ACTIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),  new ZdhThreadFactory("zdh_task_", threadGroup));
 
     public static void logThread(ZdhLogsService zdhLogsService) {
-        new Thread(new Runnable() {
+
+        ZdhRunableTask zdhRunableTask = new ZdhRunableTask("zdh_log_thread", new Runnable() {
             @Override
             public void run() {
                 while (true) {
@@ -83,9 +81,9 @@ public class JobCommon2 {
                         logger.error(error, e);
                     }
                 }
-
             }
-        }).start();
+        });
+        threadPoolExecutor.submit(zdhRunableTask);
     }
 
     /**
@@ -117,7 +115,6 @@ public class JobCommon2 {
 
         if (!tli.getPlan_count().trim().equals("") && !tli.getPlan_count().trim().equals("-1")) {
             //任务有次数限制,重试多次后仍失败会删除任务
-            System.out.println(tli.getCount() + "================" + tli.getPlan_count().trim());
             if (tli.getCount() - 1 > Long.parseLong(tli.getPlan_count().trim())) {
                 logger.info("[" + jobType + "] JOB 检任务次测到重试数超过限制,删除任务并直接返回结束");
                 insertLog(tli, "info", "[" + jobType + "] JOB 检任务次测到重试数超过限制,删除任务并直接返回结束");
@@ -136,34 +133,6 @@ public class JobCommon2 {
         insertLog(tli, "INFO", "[" + jobType + "] JOB ,完成检查任务次数限制,未超过限制次数");
         updateTaskLog(tli, taskLogInstanceMapper);
         return false;
-    }
-
-    public static void debugInfo(Object obj) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (int i = 0, len = fields.length; i < len; i++) {
-            // 对于每个属性，获取属性名
-            String varName = fields[i].getName();
-            try {
-                // 获取原来的访问控制权限
-                boolean accessFlag = fields[i].isAccessible();
-                // 修改访问控制权限
-                fields[i].setAccessible(true);
-                // 获取在对象f中属性fields[i]对应的对象中的变量
-                Object o;
-                try {
-                    o = fields[i].get(obj);
-                    logger.info("传入的对象中包含一个如下的变量：" + varName + " = " + o);
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-                    logger.error(error, e);
-                }
-                // 恢复访问控制权限
-                fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}", e);
-            }
-        }
     }
 
     /**
@@ -3254,7 +3223,7 @@ public class JobCommon2 {
             return;
         } else if(quartzJobInfo.getJob_type().equalsIgnoreCase(JobType.ETL.getCode())){
             //线程池执行具体调度任务
-            threadPoolExecutor.execute(new Runnable() {
+            threadPoolExecutor.execute( new Runnable() {
                 @Override
                 public void run() {
 
@@ -3426,16 +3395,29 @@ public class JobCommon2 {
         QuartzJobMapper qjm = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
-        //线程池执行具体调度任务
-        //threadPoolExecutor.execute();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                run_sub_task_log_instance(tli.getJob_type(), tli);
-            }
-        });
-        thread.setName("etl_job_"+tli.getId());
-        thread.start();
+        CountDownLatch latch = new CountDownLatch(1);
+        try{
+            //线程池执行具体调度任务
+            ZdhRunableTask zdhRunableTask = new ZdhRunableTask("etl", new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        latch.await();
+                        run_sub_task_log_instance(tli.getJob_type(), tli);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            });
+            Future<?> submit = threadPoolExecutor.submit(zdhRunableTask);
+
+            JobCommon2.chm.put(String.valueOf(tli.getId()), submit);
+        }catch (Exception e){
+
+        }finally {
+            latch.countDown();
+        }
+
     }
 
 
@@ -3452,12 +3434,10 @@ public class JobCommon2 {
         insertLog(tli, "INFO", "开始执行[" + jobType + "] JOB");
 
         Thread td = Thread.currentThread();
-        td.setName(tli.getId());
         long threadId = td.getId();
-        System.out.println("线程id:" + threadId);
-        String tk = myid + "_" + threadId + "_" + tli.getId();
-        JobCommon2.chm.put(tk, td);
-
+        logger.info("线程id:" + threadId);
+        insertLog(tli, "INFO", "[" + jobType + "] JOB, 线程ID: "+threadId);
+        String tk = SystemCommandLineRunner.myid + "_" + threadId + "_" + tli.getId();
 
         tlim.updateThreadById(tk, tli.getId());
         tli.setThread_id(tk);
@@ -3549,7 +3529,7 @@ public class JobCommon2 {
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
         } finally {
-            JobCommon2.chm.remove(tk);
+            JobCommon2.chm.remove(String.valueOf(td.getId()));
         }
 
     }
@@ -4014,6 +3994,40 @@ public class JobCommon2 {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             logger.error(e.getMessage());
             JobCommon2.insertLog(tli, "ERROR", e.getMessage());
+        }
+
+        return false;
+    }
+
+
+    /**
+     * 检查当前线程池队列是否超限
+     *
+     * @param tli
+     * @return true:超限,false:未超限
+     */
+    public static boolean check_treadpool_limit(TaskLogInstance tli){
+
+        try {
+            //检查检查当前线程池队列是否超限
+            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
+            String redis_key = "zdh_threadpool_max";
+
+            if (redisUtil.exists(redis_key)) {
+                if(!NumberUtil.isInteger(redisUtil.get(redis_key).toString())){
+                    return false;
+                }
+                int max_thread = Integer.parseInt(redisUtil.get(redis_key).toString());
+                int current_thread_num = threadPoolExecutor.getQueue().size();
+                if(current_thread_num>=max_thread){
+                    String msg = String.format("检查当前机器: %s, 线程池超过阈值, 运行任务量: %d, 超过阀值: %d,跳过本次执行,等待下次检查....", SystemCommandLineRunner.web_application_id,current_thread_num, max_thread);
+                    JobCommon2.insertLog(tli, "INFO", msg);
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            logger.error(e.getMessage());
         }
 
         return false;

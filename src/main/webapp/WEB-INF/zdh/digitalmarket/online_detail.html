@@ -237,7 +237,7 @@
             }
             var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
             for (var i = 0; i < data.result.length; i++) {
-                str += '<option value=\"' + data.result[i].code + '\" hassubinfo=\"true\" mytype='+data.result[i].code_name+'>' + data.result[i].code_name + '</option>';
+                str += '<option value=\"' + data.result[i].code + '\" hassubinfo=\"true\" mytype='+data.result[i].code_name+'>' + data.result[i].code_name+'('+data.result[i].code+')' + '</option>';
             }
             $('#data_node').html(str);
             $("#data_node").trigger("chosen:updated");

@@ -3,7 +3,7 @@ package com.zyc.zdh;
 
 import com.zyc.zdh.annotation.MyMark;
 import com.zyc.zdh.controller.LoginController;
-import com.zyc.zdh.job.JobCommon2;
+import com.zyc.zdh.run.SystemCommandLineRunner;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +57,7 @@ public class ZdhApplication {
         String port = envPort == null ? "8080" : envPort;
         String line = System.lineSeparator();
         String url = line +"Version:" + version +line;
-        url = url + "Application Id:[" + JobCommon2.web_application_id +"]"+ line;
+        url = url + "Application Id:[" + SystemCommandLineRunner.web_application_id +"]"+ line;
         url = url + "Access URLs:" + line + "----------------------------------------------------------"+line;
         for (String host: getIpAddress()){
             url = url+String.format("web-URL: \t\thttp://%s:%s%s/login", host,port, envContext)+line;

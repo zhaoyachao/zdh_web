@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.entity.*;
+import com.zyc.zdh.run.SystemCommandLineRunner;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
@@ -115,7 +116,7 @@ public class CheckDepJob implements CheckDepJobInterface{
         TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         tgli.setStatus(JobStatus.SUB_TASK_DISPATCH.getValue());
         tgli.setProcess("7.5");
-        tgli.setServer_id(JobCommon2.web_application_id);//重新设置调度器标识,retry任务会定期检查标识是否有效,对于组任务只有只有CREATE 状态检查此标识才有用
+        tgli.setServer_id(SystemCommandLineRunner.web_application_id);//重新设置调度器标识,retry任务会定期检查标识是否有效,对于组任务只有只有CREATE 状态检查此标识才有用
         //更新任务依赖时间
         process_time_info pti=tgli.getProcess_time2();
         pti.setCheck_dep_time(DateUtil.getCurrentTime());
@@ -131,6 +132,7 @@ public class CheckDepJob implements CheckDepJobInterface{
      */
     public static void run_sub_task(String scheduleId) {
         try {
+
             logger.debug("开始检测子任务依赖,scheduleId: {} ....",scheduleId);
             TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper taskLogInstanceMapper=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
@@ -295,8 +297,13 @@ public class CheckDepJob implements CheckDepJobInterface{
                             }
                         }
 
+                        //检查当前线程池是否限制
+                        if(JobCommon2.check_treadpool_limit(tl)){
+                            continue;
+                        }
+
                         tl.setStatus(JobStatus.DISPATCH.getValue());
-                        tl.setServer_id(JobCommon2.web_application_id);//重新设置调度器标识,retry任务会定期检查标识是否有效
+                        tl.setServer_id(SystemCommandLineRunner.web_application_id);//重新设置调度器标识,retry任务会定期检查标识是否有效
                         //更新任务依赖时间
                         process_time_info pti=tl.getProcess_time2();
                         pti.setCheck_dep_time(DateUtil.getCurrentTime());

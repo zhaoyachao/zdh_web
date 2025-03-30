@@ -11,6 +11,7 @@ import com.zyc.zdh.dao.BeaconFireMapper;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.quartz.QuartzManager2;
+import com.zyc.zdh.run.ZdhThreadFactory;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
@@ -35,10 +36,11 @@ public class JobBeaconFire {
 
     public static LinkedBlockingQueue<BeaconFireTask> linkedBlockingQueue = new LinkedBlockingQueue<>();
 
+    public static ThreadGroup threadGroup = new ThreadGroup("zdh_bneaconfire");
 
     public static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(Const.BEACON_FIRE_THREAD_MIN_NUM,
             Const.BEACON_FIRE_THREAD_MAX_NUM, Const.BEACON_FIRE_THREAD_KEEP_ACTIVE_TIME, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>());
+            new LinkedBlockingQueue<>(),  new ZdhThreadFactory("zdh_bneaconfire_", threadGroup));
 
 
     public static void consumer(){

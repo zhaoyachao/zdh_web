@@ -7,8 +7,12 @@ import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
 import com.zyc.zdh.dao.StrategyGroupMapper;
 import com.zyc.zdh.dao.StrategyInstanceMapper;
-import com.zyc.zdh.entity.*;
+import com.zyc.zdh.entity.StrategyGroupInfo;
+import com.zyc.zdh.entity.StrategyGroupInstance;
+import com.zyc.zdh.entity.StrategyInstance;
+import com.zyc.zdh.entity.ZdhLogs;
 import com.zyc.zdh.quartz.QuartzManager2;
+import com.zyc.zdh.run.ZdhThreadFactory;
 import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
@@ -21,47 +25,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class JobDigitalMarket {
 
     public static Logger logger = LoggerFactory.getLogger(JobDigitalMarket.class);
 
-    public static String myid = "";
-
-    //instance_myid:SnowflakeIdWorker
-    public static String web_application_id = "";
-
-    public static LinkedBlockingDeque<ZdhLogs> linkedBlockingDeque = new LinkedBlockingDeque<ZdhLogs>();
-
-    public static ConcurrentHashMap<String, Thread> chm = new ConcurrentHashMap<String, Thread>();
-    public static ConcurrentHashMap<String, SSHUtil> chm_ssh = new ConcurrentHashMap<String, SSHUtil>();
-
-    public static DelayQueue<RetryJobInfo> retryQueue = new DelayQueue<>();
-
+    public static ThreadGroup threadGroup = new ThreadGroup("zdh_strategy");
     public static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(Const.DIGITAL_MARKET_THREAD_MIN_NUM,
-            Const.DIGITAL_MARKET_THREAD_MAX_NUM, Const.DIGITAL_MARKET_THREAD_KEEP_ACTIVE_TIME, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-
-    public static void logThread(ZdhLogsService zdhLogsService) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        ZdhLogs log = JobDigitalMarket.linkedBlockingDeque.take();
-                        if (log != null) {
-                            zdhLogsService.insert(log);
-                        }
-                    } catch (Exception e) {
-                        String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-                        logger.error(error, e);
-                    }
-                }
-
-            }
-        }).start();
-    }
-
+            Const.DIGITAL_MARKET_THREAD_MAX_NUM, Const.DIGITAL_MARKET_THREAD_KEEP_ACTIVE_TIME, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ZdhThreadFactory("zdh_strategy_", threadGroup));
 
     public static void updateTaskLog(StrategyGroupInstance sgi, StrategyGroupInstanceMapper sgim) {
         // debugInfo(tgli);

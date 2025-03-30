@@ -208,6 +208,16 @@ public class CrowdFileController extends BaseController {
                     if(fileName==null||fileName.trim().equalsIgnoreCase("")){
                         continue;
                     }
+
+                    int lastIndex = fileName.lastIndexOf(".");
+                    if(lastIndex>0){
+                        String fileExtension = fileName.substring(lastIndex + 1);
+                        if(!crowdFile.getFile_name().endsWith("."+fileExtension)){
+                            throw new Exception("特殊类型文件,文件名称必须以上传的文件类型后缀结尾,比如 xxx.xlsx");
+                        }
+                    }
+
+
                     System.out.println("上传文件不为空:"+fileName);
                     String tmpPath = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_TMP_PATH, "/home/tmp/file");//env.getProperty("digitalmarket.tmp.path","/home/tmp/file");
 
@@ -273,7 +283,7 @@ public class CrowdFileController extends BaseController {
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
 

@@ -654,6 +654,11 @@
   + v5.6.4 [zdh_web]新增权限前端使用标识,优化前端展示
   + v5.6.4 [zdh_web]营销模块-统一上下游数据结构,增加参数可传递功能
   
+  + v5.6.5 [zdh_web]优化代码-线程池部分
+  + v5.6.5 [zdh_web]营销模块-重构变量存储
+  + v5.6.5 [zdh_web]营销模块-新增redis操作插件
+  
+  
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
@@ -3484,4 +3489,19 @@
     
 ## 5.6.0迁移5.6.1
     alter table param_info add column product_code varchar(64) NOT NULL DEFAULT '' COMMENT '产品code';
-    update param_info set product_code='zdh';     
+    update param_info set product_code='zdh';
+    
+## 5.6.1迁移5.6.2
+    无改动
+    
+## 5.6.2迁移5.6.3
+    无改动  
+    
+## 5.6.3迁移5.6.4
+    无改动  
+    
+## 5.6.4迁移5.6.5
+    INSERT INTO plugin_info
+    (id, plugin_type, plugin_code, plugin_name, plugin_json, owner, create_time, update_time, is_delete, product_code, dim_group)
+    VALUES(1355565795773517824, 'redis', 'redis', 'redis', '[{"param_code":"url","param_context":"连接地址","param_operate":"=","param_type":"string","param_value":"127.0.0.1:6379"},{"param_code":"password","param_context":"密码","param_operate":"=","param_type":"string","param_value":""},{"param_code":"command","param_context":"操作命令","param_operate":"=","param_type":"string","param_value":""},{"param_code":"key","param_context":"键","param_operate":"=","param_type":"string","param_value":""},{"param_code":"value","param_context":"键值","param_operate":"=","param_type":"string","param_value":""},{"param_code":"expire","param_context":"过期时间(秒)","param_operate":"=","param_type":"int","param_value":""},{"param_code":"mode","param_context":"写入模式","param_operate":"=","param_type":"string","param_value":"nx"}]', 'zyc', '2025-03-29 15:34:31', '2025-03-29 21:33:02', '0', 'zdh', 'group3');
+   

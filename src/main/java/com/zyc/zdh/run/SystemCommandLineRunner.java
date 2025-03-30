@@ -32,8 +32,8 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -43,16 +43,13 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
     private Logger logger = LoggerFactory.getLogger(SystemCommandLineRunner.class);
 
-    public ThreadPoolExecutor threadPool = new ThreadPoolExecutor(Const.SYSTEM_THREAD_MIN_NUM,
-            Const.SYSTEM_THREAD_MAX_NUM, Const.SYSTEM_THREAD_KEEP_ACTIVE_TIME, TimeUnit.HOURS, new LinkedBlockingQueue<>(), new ThreadFactory() {
+    public static String myid = "";
+    //instance_myid:SnowflakeIdWorker
+    public static String web_application_id = "";
 
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread=new Thread(r);
-            thread.setName("zdh_schedule_"+thread.getId());
-            return thread;
-        }
-    });
+    public ThreadGroup threadGroup = new ThreadGroup("zdh_init");
+    public ThreadPoolExecutor threadPool = new ThreadPoolExecutor(Const.SYSTEM_THREAD_MIN_NUM,
+            Const.SYSTEM_THREAD_MAX_NUM, Const.SYSTEM_THREAD_KEEP_ACTIVE_TIME, TimeUnit.HOURS, new LinkedBlockingQueue<>(), new ZdhThreadFactory("zdh_schedule_", threadGroup));
     @Autowired
     QuartzManager2 quartzManager2;
 
@@ -139,8 +136,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
     public void clearQueue(){
         logger.info("初始化限流队列");
-        ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
-
+        ZdhRunableTask zdhRunableTask=new ZdhRunableTask("schedule ratelimit", new Runnable() {
             @Override
             public void run() {
                 while (true) {
@@ -154,38 +150,31 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                     }
                 }
             }
-
-            @Override
-            public String name() {
-                return "schedule ratelimit";
-            }
-        };
-        threadPool.submit(createThread(zdhRunableTask));
+        });
+        threadPool.submit(zdhRunableTask);
     }
 
     public void runSnowflakeIdWorker() {
         logger.info("初始化分布式id生成器");
         //获取服务id
         String myid = ConfigUtil.getValue(ConfigUtil.MYID, "0");
-        String instance=ConfigUtil.getValue(ConfigUtil.INSTANCE,"zdh_web");
-        JobCommon2.myid=myid;
+        String instance=ConfigUtil.getValue(ConfigUtil.INSTANCE, "zdh_web");
+        SystemCommandLineRunner.myid=myid;
         SnowflakeIdWorker.init(Integer.parseInt(myid), 0);
-        JobCommon2.web_application_id=instance+"_"+myid+":"+SnowflakeIdWorker.getInstance().nextId();
+        SystemCommandLineRunner.web_application_id=instance+"_"+myid+":"+SnowflakeIdWorker.getInstance().nextId();
         //检查基础参数是否重复
         String myidKey = instance+"_"+myid;
         if(redisUtil.get(myidKey)!=null){
             logger.error("请检查基础参数myid 是否已被其他机器占用,如果没有请等待30s 后重新启动,或尝试手动删除key:"+myidKey);
             System.exit(-1);
         }
-        ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
-
+        ZdhRunableTask zdhRunableTask=new ZdhRunableTask("服务主心跳线程", new Runnable() {
             @Override
             public void run() {
-                Thread.currentThread().setName("服务主心跳线程");
                 while(true){
                     try {
                         //此处设置10s 超时 ,quartz 故障检测时间为30s
-                        redisUtil.set(myidKey,JobCommon2.web_application_id,10L, TimeUnit.SECONDS);
+                        redisUtil.set(myidKey,SystemCommandLineRunner.web_application_id,10L, TimeUnit.SECONDS);
                         //此处设置2s 每2秒向redis 设置一个当前服务,作为一个心跳检测使用
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
@@ -194,13 +183,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                     }
                 }
             }
-
-            @Override
-            public String name() {
-                return "schedule id generator task";
-            }
-        };
-        threadPool.submit(createThread(zdhRunableTask));
+        });
+        threadPool.submit(zdhRunableTask);
     }
 
     public void runLogMQ(){
@@ -221,8 +205,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         ZdhHaInfoMapper zdhHaInfoMapper = (ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
         String myid = ConfigUtil.getValue(ConfigUtil.MYID, "0");
 
-        ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
-
+        ZdhRunableTask zdhRunableTask=new ZdhRunableTask("schedule kill job task", new Runnable() {
             @Override
             public void run() {
                 while(true){
@@ -232,9 +215,9 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         for(TaskLogInstance tl : tlis){
 
                             if(tl.getThread_id()!=null && tl.getThread_id().startsWith(myid)){
-                                Thread td=JobCommon2.chm.get(tl.getThread_id());
-                                if(td!=null){
-                                    String msg="杀死线程:线程名:"+td.getName()+",线程id:"+td.getId();
+                                Future<?> future = JobCommon2.chm.get(tl.getThread_id());
+                                if(future!=null){
+                                    String msg="杀死线程:线程名:"+tl.getJob_context()+",任务实例id:"+tl.getId();
                                     logger.info(msg);
                                     JobCommon2.insertLog(tl,"INFO",msg);
                                     if(tl.getMore_task().equalsIgnoreCase("ssh") || tl.getMore_task().equalsIgnoreCase("datax") || tl.getJob_type().equalsIgnoreCase("flume")){
@@ -258,14 +241,12 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         }
                                     }
                                     try{
-                                        td.interrupt();
-                                        td.stop();
-
+                                        future.cancel(true);
                                     }catch (Exception e){
                                         String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
                                         logger.error(error, e);
                                     }finally {
-                                        JobCommon2.chm.remove(tl.getThread_id());
+                                        JobCommon2.chm.remove(tl.getId());
                                         taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
                                         JobCommon2.insertLog(tl,"INFO","已杀死当前任务");
                                     }
@@ -352,19 +333,13 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                     }
                 }
             }
-
-            @Override
-            public String name() {
-                return "schedule kill job task";
-            }
-        };
-        threadPool.submit(createThread(zdhRunableTask));
+        });
+        threadPool.submit(zdhRunableTask);
     }
 
     public void quartzExecutor(){
         logger.info("初始化调度器监控");
-        ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
-
+        ZdhRunableTask zdhRunableTask=new ZdhRunableTask("schedule check executor task", new Runnable() {
             @Override
             public void run() {
                 while(true){
@@ -418,13 +393,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                     }
                 }
             }
-
-            @Override
-            public String name() {
-                return "schedule check executor task";
-            }
-        };
-        threadPool.submit(createThread(zdhRunableTask));
+        });
+        threadPool.submit(zdhRunableTask);
     }
 
     public void init2Ip(){
@@ -435,8 +405,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
     public void scheduleByCurrentServer(){
         logger.info("初始化当前系统执行器监听任务");
-        ZdhRunableTask zdhRunableTask = new ZdhRunableTask(){
-
+        ZdhRunableTask zdhRunableTask = new ZdhRunableTask("schedule current server task", new Runnable() {
             @Override
             public void run() {
                 Scheduler scheduler = (Scheduler) SpringContext.getBean("scheduler");
@@ -464,13 +433,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                     }
                 }
             }
-
-            @Override
-            public String name() {
-                return "schedule current server task";
-            }
-        };
-        threadPool.submit(createThread(zdhRunableTask));
+        });
+        threadPool.submit(zdhRunableTask);
     }
 
     /**
@@ -480,10 +444,9 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         try{
             logger.info("初始化限流插件");
             String product_code = ConfigUtil.getValue(ConfigUtil.ZDP_PRODUCT);
-            ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
+            ZdhRunableTask zdhRunableTask=new ZdhRunableTask("schedule init sentinel rule", new Runnable() {
                 @Override
                 public void run() {
-
                     while (true){
 
                         try {
@@ -524,12 +487,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         }
                     }
                 }
-
-                @Override
-                public String name() {
-                    return "schedule init sentinel rule";
-                }
-            };
+            });
 
             threadPool.submit(zdhRunableTask);
         }catch (Exception e){
@@ -543,7 +501,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
     public void removeValidSession(){
         logger.info("初始化session失效监听任务");
-        Thread t = new Thread(new Runnable() {
+
+        ZdhRunableTask zdhRunableTask = new ZdhRunableTask("schedule check session", new Runnable() {
 
             @Override
             public void run() {
@@ -566,13 +525,14 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                 }
             }
         });
-       t.start();
+
+        threadPool.submit(zdhRunableTask);
     }
 
     public void initBeaconFireConsumer(){
         try{
             logger.info("初始化烽火台监听任务");
-            ZdhRunableTask zdhRunableTask=new ZdhRunableTask(){
+            ZdhRunableTask zdhRunableTask=new ZdhRunableTask("schedule init beaconfire consumer", new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -582,13 +542,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         e.printStackTrace();
                     }
                 }
-
-                @Override
-                public String name() {
-                    return "schedule init beaconfire consumer";
-                }
-            };
-
+            });
             threadPool.submit(zdhRunableTask);
         }catch (Exception e){
 
@@ -644,13 +598,4 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         }
     }
 
-    public Thread createThread(ZdhRunableTask zdhRunableTask){
-        Thread thread=new Thread(zdhRunableTask);
-        thread.setName(zdhRunableTask.name());
-        return thread;
-    }
-
-    public interface ZdhRunableTask extends Runnable{
-        public String name();
-    }
 }

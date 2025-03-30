@@ -10,6 +10,7 @@ import com.zyc.zdh.dao.TaskGroupLogInstanceMapper;
 import com.zyc.zdh.dao.TaskLogInstanceMapper;
 import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.*;
+import com.zyc.zdh.run.SystemCommandLineRunner;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +18,6 @@ import org.quartz.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.sql.Timestamp;
 import java.util.*;
@@ -99,7 +99,7 @@ public class RetryJob {
                     }
                     logger.info("检测到任务意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
                     JobCommon2.insertLog(t2,"INFO","检测到任务意外死亡,将在本节点自动重试任务,任务id: "+t2.getId());
-                    t2.setServer_id(JobCommon2.web_application_id);
+                    t2.setServer_id(SystemCommandLineRunner.web_application_id);
                     tlim.updateByPrimaryKeySelective(t2);
                     JobCommon2.chooseJobBean(t2);
                     continue;
@@ -114,7 +114,7 @@ public class RetryJob {
                         //调度异常,进行故障转移,同自动重试
                         logger.info("检测到执行任务的调度器意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
                         JobCommon2.insertLog(t2,"INFO","检测到执行任务的调度器意外死亡,将在本节点自动重试任务,任务id: "+t2.getId());
-                        t2.setServer_id(JobCommon2.web_application_id);
+                        t2.setServer_id(SystemCommandLineRunner.web_application_id);
                         tlim.updateByPrimaryKeySelective(t2);
                         JobCommon2.chooseJobBean(t2);
                     }
@@ -200,33 +200,6 @@ public class RetryJob {
              logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
         }
 
-    }
-
-    public static void debugInfo(Object obj) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (int i = 0, len = fields.length; i < len; i++) {
-            // 对于每个属性，获取属性名
-            String varName = fields[i].getName();
-            try {
-                // 获取原来的访问控制权限
-                boolean accessFlag = fields[i].isAccessible();
-                // 修改访问控制权限
-                fields[i].setAccessible(true);
-                // 获取在对象f中属性fields[i]对应的对象中的变量
-                Object o;
-                try {
-                    o = fields[i].get(obj);
-                    logger.info("传入的对象中包含一个如下的变量：" + varName + " = " + o);
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-                }
-                // 恢复访问控制权限
-                fields[i].setAccessible(accessFlag);
-            } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            }
-        }
     }
 
 }
