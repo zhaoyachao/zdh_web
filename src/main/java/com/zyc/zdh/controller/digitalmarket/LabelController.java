@@ -9,8 +9,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -386,9 +385,26 @@ public class LabelController extends BaseController {
             checkPermissionByProduct(zdhPermissionService, labelInfo.getProduct_code());
 
             String variable_uid=labelInfo.getProduct_code()+"_tag_"+uid;
-            redisUtil.getRedisTemplate().opsForHash().put(variable_uid, labelInfo.getLabel_code(), JsonUtil.formatJsonString(jsonObject));
 
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            Map<String, Object> jsonObject2 = JsonUtil.createEmptyMap();
+            jsonObject2.put("uid", uid);
+            jsonObject2.put("product_code", labelInfo.getProduct_code());
+            jsonObject2.put("variable", labelInfo.getLabel_code());
+            jsonObject2.put("value", JsonUtil.formatJsonString(jsonObject));
+
+            String sign = HttpServerSignUtil.generatSign(jsonObject2, ConfigUtil.getValue(ConfigUtil.ZDH_VARIABLE_SERVICE_KEY));
+            jsonObject2.put("sign", sign);
+
+            String url = ConfigUtil.getValue(ConfigUtil.ZDH_VARIABLE_URL, "http://127.0.0.1:9003/api/v1/variable/update");
+            String ret = HttpUtil.postJSON(url, JsonUtil.formatJsonString(jsonObject2));
+
+            Map<String, Object> resp = JsonUtil.toJavaMap(ret);
+            if(resp.getOrDefault("code", "-1").toString().equals("0")){
+                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
+            }
+
+            throw new Exception(resp.getOrDefault("msg", "未知原因").toString());
+
         } catch (Exception e) {
             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());

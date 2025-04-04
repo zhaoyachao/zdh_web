@@ -8,10 +8,7 @@ import com.zyc.zdh.dao.ZdhLogsMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
-import com.zyc.zdh.util.ConfigUtil;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.HttpUtil;
-import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,9 +83,12 @@ public class RiskEventController extends BaseController {
             jsonObject.put("param", param);
             jsonObject.put("product_code", source);
 
+            String sign = HttpServerSignUtil.generatSign(jsonObject, ConfigUtil.getValue(ConfigUtil.ZDH_SHIP_SERVICE_KEY));
+            jsonObject.put("sign", sign);
+
             String url = ConfigUtil.getValue(ConfigUtil.ZDH_SHIP_URL, "http://127.0.0.1:9002/api/v1/ship/accept");
             String ret = HttpUtil.postJSON(url, JsonUtil.formatJsonString(jsonObject));
-            System.out.println(ret);
+            //System.out.println(ret);
             return ReturnInfo.buildSuccess(JsonUtil.toJavaMap(ret));
         }catch (Exception e){
             e.printStackTrace();

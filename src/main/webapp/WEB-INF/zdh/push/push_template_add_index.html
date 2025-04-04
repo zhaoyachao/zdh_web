@@ -158,7 +158,7 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">短信通道</label>
                                                     <div class="col-sm-10">
-                                                        <select id="channel" name="channel"
+                                                        <select id="channel" name="channel" multiple
                                                                 data-placeholder="选择通道...."
                                                                 class="chosen-select form-control m-b" >
                                                             <option value="">空</option>
@@ -628,6 +628,36 @@
                 });
             }
 
+            function init_nimiprogram(id){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/push_app_list",
+                    async:false,
+                    dataType: 'json',
+                    data: {},
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        var str = '<option value=\"'  + '\" hassubinfo=\"true\">' + '选择App' + '</option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].app + '\" hassubinfo=\"true\">' + data.result[i].app_name + '</option>';
+                        }
+                        $('#'+id).html(str);
+                        $('#'+id).trigger("chosen:updated");
+                        $('#'+id).chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
+                    }
+                });
+            }
+
             init_push_channel('channel', "sms");
 
 
@@ -639,6 +669,10 @@
             $('#check_push_tab').addClass("active");
             init_push_app('app');
             $('#check_push_tab').removeClass("active");
+
+            $('#check_miniprogram_tab').addClass("active");
+            init_nimiprogram('miniprogram_channel');
+            $('#check_miniprogram_tab').removeClass("active");
 
             if(s.id !='-1'){
                 console.info("更新-拷贝按钮触发");

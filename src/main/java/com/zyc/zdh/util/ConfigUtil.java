@@ -101,6 +101,9 @@ public class ConfigUtil {
     public static String ZDH_AUTH_PASSWORD_IV = "zdh.auth.password.iv";
     public static String IP2REGION_PATH = "ip2region.path";
     public static String ZDH_SHIP_URL = "zdh.ship.url";
+    public static String ZDH_SHIP_SERVICE_KEY = "zdh.ship.service.key";
+    public static String ZDH_VARIABLE_URL = "zdh.variable.url";
+    public static String ZDH_VARIABLE_SERVICE_KEY = "zdh.variable.service.key";
     public static String BEACON_FIRE_SMS_REGIN_ID = "beacon.fire.sms.regin.id";
     public static String BEACON_FIRE_SMS_AK = "beacon.fire.sms.ak";
     public static String BEACON_FIRE_SMS_SK = "beacon.fire.sms.sk";

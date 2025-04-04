@@ -658,6 +658,9 @@
   + v5.6.5 [zdh_web]营销模块-重构变量存储
   + v5.6.5 [zdh_web]营销模块-新增redis操作插件
   
+  + v5.6.6 [zdh_web]营销模块-标签模块删除redis直连功能
+  + v5.6.6 [zdh_web]营销模块-ship/variable模块增加签名认证
+  
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -3504,4 +3507,6 @@
     INSERT INTO plugin_info
     (id, plugin_type, plugin_code, plugin_name, plugin_json, owner, create_time, update_time, is_delete, product_code, dim_group)
     VALUES(1355565795773517824, 'redis', 'redis', 'redis', '[{"param_code":"url","param_context":"连接地址","param_operate":"=","param_type":"string","param_value":"127.0.0.1:6379"},{"param_code":"password","param_context":"密码","param_operate":"=","param_type":"string","param_value":""},{"param_code":"command","param_context":"操作命令","param_operate":"=","param_type":"string","param_value":""},{"param_code":"key","param_context":"键","param_operate":"=","param_type":"string","param_value":""},{"param_code":"value","param_context":"键值","param_operate":"=","param_type":"string","param_value":""},{"param_code":"expire","param_context":"过期时间(秒)","param_operate":"=","param_type":"int","param_value":""},{"param_code":"mode","param_context":"写入模式","param_operate":"=","param_type":"string","param_value":"nx"}]', 'zyc', '2025-03-29 15:34:31', '2025-03-29 21:33:02', '0', 'zdh', 'group3');
-   
+
+## 5.6.5迁移5.6.6
+    无改动
