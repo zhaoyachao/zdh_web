@@ -440,7 +440,6 @@ public class StrategyGroupController extends BaseController {
     @RequestMapping(value = "/strategy_group_instance_restart", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo strategy_group_instance_restart(String id) {
         try {
 
@@ -532,7 +531,12 @@ public class StrategyGroupController extends BaseController {
         //根据id 获取策略任务信息
         StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
         String basePath = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_LOCAL_PATH, "/home/data/label/");
-
+        String cur_date = DateUtil.format(strategyInstance.getCur_time());
+        if(!basePath.endsWith("/")){
+            basePath = basePath + "/"+ cur_date;
+        }else{
+            basePath = basePath + cur_date;
+        }
         String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
 
         return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "",url);
@@ -544,7 +548,6 @@ public class StrategyGroupController extends BaseController {
      */
     @RequestMapping(value = "/strategy_task_download", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    @White
     public void strategy_task_download(HttpServletResponse response, String id) {
         response.setHeader("content-type", "text/html;charset=UTF-8");
 
@@ -565,8 +568,8 @@ public class StrategyGroupController extends BaseController {
             String dir =  String.format("%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id());
             String fileName = strategyInstance.getId();
             String url = String.format("%s/%s/%s/%s", basePath, strategyInstance.getGroup_id(),strategyInstance.getGroup_instance_id(),strategyInstance.getId());
-            byte[] buff = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-
+            byte[] buff = new byte[4096];
+            //byte[] bom = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
             response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("日志_"+ cur_date +"_"+ strategyInstance.getStrategy_context() + ".log", "UTF-8"));
 
 
@@ -576,6 +579,7 @@ public class StrategyGroupController extends BaseController {
             if(storeType.equalsIgnoreCase("local")){
                 File logFile = new File(url);
                 os = response.getOutputStream();
+                //os.write(bom, 0, bom.length);
                 bis = new BufferedInputStream(new FileInputStream(logFile));
                 int i = bis.read(buff);
                 while (i != -1) {
@@ -594,6 +598,7 @@ public class StrategyGroupController extends BaseController {
                 sftp.login();
                 byte[] buff1 = sftp.download(dir, fileName);
                 os = response.getOutputStream();
+                //os.write(bom, 0, bom.length);
                 os.write(buff1, 0, buff1.length);
                 os.flush();
             }else if(storeType.equalsIgnoreCase("minio")){
@@ -605,6 +610,7 @@ public class StrategyGroupController extends BaseController {
                 MinioClient minioClient = MinioUtil.buildMinioClient(ak, sk, endpoint);
                 bis = MinioUtil.getObject(minioClient, bucket, region, url);
                 os = response.getOutputStream();
+                //os.write(bom, 0, bom.length);
                 int i = bis.read(buff);
                 while (i != -1) {
                     os.write(buff, 0, buff.length);
@@ -932,7 +938,6 @@ public class StrategyGroupController extends BaseController {
     @RequestMapping(value = "/strategy_group_version_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo strategy_group_version_add(StrategyGroupInfo strategyGroupInfo) {
         try {
 

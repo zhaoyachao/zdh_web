@@ -664,7 +664,8 @@
   + v5.6.7 [zdh_web]统一日志格式及实现
   + v5.6.7 [zdh_web]优化aop相关代码
   + v5.6.7 [zdh_web]营销模块重构代码
-  + v5.6.7 [zdh_web]
+  + v5.6.7 [zdh_web]修复下载数据bom标识兼容性问题
+  + v5.6.7 [zdh_web]修复历史白名单问题
   
   
   
@@ -3520,4 +3521,6 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1360692877092458496, '963932648793706496', '策略组实例重启', '4', 'zyc', 'fa fa-coffee', '策略组实例重启-针对在线策略用于回溯到旧版本', '28', '1', '2025-04-12 19:07:42', '2025-04-12 19:07:42', 'strategy_group_instance_restart', '5', '', '', 'zdh', '');
-    
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1360715138977501184, '963932648793706496', '下载策略数据', '4', 'zyc', 'fa fa-coffee', '', '61', '1', '2025-04-12 20:36:10', '2025-04-12 20:36:41', 'strategy_task_download', '5', '', '', 'zdh', '');
