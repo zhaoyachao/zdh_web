@@ -19,9 +19,10 @@ import java.util.List;
 public class WebMvcConfigure2x implements WebMvcConfigurer {
 
     public static List<String> excludePath = Lists.newArrayList("/register**","/statics/**","/css/**","/js/**","/fonts/**",
-            "/img/**","/smart_doc/**",
+            "/img/**","/smart_doc/**","/api-docs/**","/get_platform_name","/get_error_msg",
             "/plugins/**","/zdh_flow/**","/favicon.ico","/etl/js/**","/etl/css/**",
-            "/statics/**","/403","/404","/503","/500","/cron/**","/download/**","/api/**", "/error");
+            "/statics/**","/403","/404","/503","/500","/cron/**","/download/**","/api/**", "/error", "/register.html","/logout", "/captcha", "/check_captcha");
+
     @Autowired
     private RequestLoggingInterceptor requestLoggingInterceptor;
 
