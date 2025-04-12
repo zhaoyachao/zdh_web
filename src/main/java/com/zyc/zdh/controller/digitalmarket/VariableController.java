@@ -7,8 +7,7 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.JsonUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zyc.zdh.util.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +21,6 @@ import java.util.Map;
  */
 @Controller
 public class VariableController extends BaseController {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private RedisUtil redisUtil;
@@ -61,8 +58,7 @@ public class VariableController extends BaseController {
             Map map = JsonUtil.toJavaMap(params);
             return ReturnInfo.buildSuccess(map);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("变量查询失败", e);
         }
     }
@@ -117,7 +113,7 @@ public class VariableController extends BaseController {
             redisUtil.getRedisTemplate().opsForHash().delete(variable_uid, variable_code);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
     }
@@ -142,8 +138,7 @@ public class VariableController extends BaseController {
 
             return ReturnInfo.buildSuccess(variable);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("变量查询失败", e);
         }
     }

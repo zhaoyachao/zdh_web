@@ -1,9 +1,8 @@
 package com.zyc.zdh.cache;
 
+import com.zyc.zdh.util.LogUtil;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -15,8 +14,6 @@ import java.util.concurrent.Callable;
  * @data 2018-03-19 17:15
  **/
 public class MyCacheTemplate implements Cache {
-
-	private static final Logger logger = LoggerFactory.getLogger(MyCacheTemplate.class);
 
 	private CacheManager ehCacheManager;
 
@@ -62,7 +59,7 @@ public class MyCacheTemplate implements Cache {
 		//ehCacheManager=CacheManager.getCacheManager("ec");
 		if (ehCacheManager != null) {
 			net.sf.ehcache.Cache myEhcache = ehCacheManager.getCache(getName());
-			logger.info("取数据ehcache库===key:{}", key);
+            LogUtil.info(this.getClass(), "取数据ehcache库===key:{}", key);
 			if (myEhcache.get(key) != null) {
 				ValueWrapper v = new SimpleValueWrapper(myEhcache.get(key).getObjectValue());
 				return v;
@@ -70,7 +67,7 @@ public class MyCacheTemplate implements Cache {
 		}
 		Cache myRedis = redisCacheManager.getCache(getName());
 		if (myRedis != null) {
-			logger.info("取数据reids库===key:{}", key);
+            LogUtil.info(this.getClass(), "取数据reids库===key:{}", key);
 			if (myRedis.get(key) != null) {
 
 				//RedisCacheElement vr = new RedisCacheElement(new RedisCacheKey(key), myRedis.get(key).get());
@@ -97,12 +94,12 @@ public class MyCacheTemplate implements Cache {
 		if (ehCacheManager != null) {
 			net.sf.ehcache.Cache myEhcache = ehCacheManager.getCache(getName());
 			Element e = new Element(key, value);
-			logger.info("插入ehcache库===key:{},value:{}", key, value);
+            LogUtil.info(this.getClass(), "插入ehcache库===key:{},value:{}", key, value);
 			myEhcache.put(e);
 		}
 		Cache myRedis = redisCacheManager.getCache(getName());
 		if (myRedis != null) {
-			logger.info("插入reids库===key:{},value:{}", key, value);
+            LogUtil.info(this.getClass(), "插入reids库===key:{},value:{}", key, value);
 			myRedis.put(key, value);
 		}
 	}
@@ -116,13 +113,13 @@ public class MyCacheTemplate implements Cache {
 	public void evict(Object key) {
 		Cache myRedis = redisCacheManager.getCache(getName());
 		if (myRedis != null) {
-			logger.info("删除reids库===key:{}", key);
+            LogUtil.info(this.getClass(), "删除reids库===key:{}", key);
 			myRedis.evict(key);
 		}
 		//ehCacheManager=CacheManager.getCacheManager("ec");
 		if (ehCacheManager != null) {
 			net.sf.ehcache.Cache myEhcache = ehCacheManager.getCache(getName());
-			logger.info("删除ehcache库===key:{}", key);
+            LogUtil.info(this.getClass(), "删除ehcache库===key:{}", key);
 			if (myEhcache.isKeyInCache(key)) {
 				myEhcache.remove(key);
 			}

@@ -1,17 +1,16 @@
 package com.zyc.zdh.shiro;
 
+import com.zyc.zdh.util.LogUtil;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
-	public Logger logger= LoggerFactory.getLogger(this.getClass());
+
 	// 登录失败，异常抛出
 	@Override
 	protected boolean onLoginFailure(AuthenticationToken token,
@@ -24,9 +23,8 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 						className)
 				&& !LockedAccountException.class.getName().equals(className)
 		        && !AuthenticationException.class.getName().equals(className)) { // 用户被锁定
-			// logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e); // 非验证异常抛出
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            // LogUtil.error(this.getClass(), e); // 非验证异常抛出
+            LogUtil.error(this.getClass(), e);
 		}
 		return super.onLoginFailure(token, e, request, response);
 	}
@@ -92,7 +90,7 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-		//logger.warn("shifor onAccessDenied");
+        //LogUtil.warn(this.getClass(), "shifor onAccessDenied");
 		return super.onAccessDenied(request,response);
 
 //		HttpServletResponse httpServletResponse = (HttpServletResponse) response;

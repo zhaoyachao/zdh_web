@@ -18,8 +18,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.shiro.session.mgt.SimpleSession;
 import org.quartz.Scheduler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -40,8 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 public class SystemCommandLineRunner implements CommandLineRunner {
-
-    private Logger logger = LoggerFactory.getLogger(SystemCommandLineRunner.class);
 
     public static String myid = "";
     //instance_myid:SnowflakeIdWorker
@@ -68,8 +64,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
         String line = "----------------------------------------------------------";
-        logger.info(line);
-        logger.info("系统初始化...");
+        LogUtil.info(this.getClass(), line);
+        LogUtil.info(this.getClass(), "系统初始化...");
         initRedisParams();
         initRQueue();
         clearQueue();
@@ -88,13 +84,13 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         initRetry();
         initCheck();
 
-        logger.info("系统初始化完成...");
-        logger.info(line);
+        LogUtil.info(this.getClass(), "系统初始化完成...");
+        LogUtil.info(this.getClass(), line);
         Thread.sleep(1000*2);
     }
 
     public void initRedisParams(){
-        logger.info("初始Redis默认参数");
+        LogUtil.info(this.getClass(), "初始Redis默认参数");
         Iterator<PropertySource<?>> i = cev.getPropertySources().iterator();
         while (i.hasNext()){
             PropertySource n = i.next();
@@ -106,7 +102,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         if(!redisUtil.exists(k)){
                             redisUtil.set(k, config.get(key).toString());
                         }
-                        logger.info("zdh init redis config "+k+"====>"+config.get(key).toString());
+                        LogUtil.info(this.getClass(), "zdh init redis config " + k + "====>" + config.get(key).toString());
                     }
                 }
             }
@@ -123,7 +119,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void initRQueue(){
-        logger.info("初始分布式队列RQueue");
+        LogUtil.info(this.getClass(), "初始分布式队列RQueue");
         String redisHost = ConfigUtil.getValue(ConfigUtil.SPRING_REDIS_HOSTNAME);
         String redisPort = ConfigUtil.getValue(ConfigUtil.SPRING_REDIS_PORT);
         String redisPassword = ConfigUtil.getValue(ConfigUtil.SPRING_REDIS_PASSWORD);
@@ -135,7 +131,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void clearQueue(){
-        logger.info("初始化限流队列");
+        LogUtil.info(this.getClass(), "初始化限流队列");
         ZdhRunableTask zdhRunableTask=new ZdhRunableTask("schedule ratelimit", new Runnable() {
             @Override
             public void run() {
@@ -155,7 +151,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void runSnowflakeIdWorker() {
-        logger.info("初始化分布式id生成器");
+        LogUtil.info(this.getClass(), "初始化分布式id生成器");
         //获取服务id
         String myid = ConfigUtil.getValue(ConfigUtil.MYID, "0");
         String instance=ConfigUtil.getValue(ConfigUtil.INSTANCE, "zdh_web");
@@ -165,7 +161,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         //检查基础参数是否重复
         String myidKey = instance+"_"+myid;
         if(redisUtil.get(myidKey)!=null){
-            logger.error("请检查基础参数myid 是否已被其他机器占用,如果没有请等待30s 后重新启动,或尝试手动删除key:"+myidKey);
+            LogUtil.error(this.getClass(), "请检查基础参数myid 是否已被其他机器占用,如果没有请等待30s 后重新启动,或尝试手动删除key:" + myidKey);
             System.exit(-1);
         }
         ZdhRunableTask zdhRunableTask=new ZdhRunableTask("服务主心跳线程", new Runnable() {
@@ -178,8 +174,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         //此处设置2s 每2秒向redis 设置一个当前服务,作为一个心跳检测使用
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
-                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-                        logger.error(error, e);
+                        LogUtil.error(this.getClass(), e);
                     }
                 }
             }
@@ -188,18 +183,18 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void runLogMQ(){
-        logger.info("初始化日志");
+        LogUtil.info(this.getClass(), "初始化日志");
         ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
         JobCommon2.logThread(zdhLogsService);
     }
 
     public void runRetryMQ(){
-        logger.info("初始化重试队列事件");
+        LogUtil.info(this.getClass(), "初始化重试队列事件");
         // JobCommon.retryThread();
     }
 
     public void killJobGroup(){
-        logger.info("初始化监控杀死任务");
+        LogUtil.info(this.getClass(), "初始化监控杀死任务");
         TaskGroupLogInstanceMapper taskGroupLogInstanceMapper = (TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
         TaskLogInstanceMapper taskLogInstanceMapper = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         ZdhHaInfoMapper zdhHaInfoMapper = (ZdhHaInfoMapper) SpringContext.getBean("zdhHaInfoMapper");
@@ -210,7 +205,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
             public void run() {
                 while(true){
                     try {
-                        logger.debug("检查要杀死的任务组..");
+                        LogUtil.debug(this.getClass(), "检查要杀死的任务组..");
                         List<TaskLogInstance> tlis=taskLogInstanceMapper.selectThreadByStatus("kill");
                         for(TaskLogInstance tl : tlis){
 
@@ -218,7 +213,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                 Future<?> future = JobCommon2.chm.get(tl.getThread_id());
                                 if(future!=null){
                                     String msg="杀死线程:线程名:"+tl.getJob_context()+",任务实例id:"+tl.getId();
-                                    logger.info(msg);
+                                    LogUtil.info(this.getClass(), msg);
                                     JobCommon2.insertLog(tl,"INFO",msg);
                                     if(tl.getMore_task().equalsIgnoreCase("ssh") || tl.getMore_task().equalsIgnoreCase("datax") || tl.getJob_type().equalsIgnoreCase("flume")){
                                         SSHUtil sshUtil =JobCommon2.chm_ssh.get(tl.getId());
@@ -233,8 +228,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                                     JobCommon2.insertLog(tl,"INFO",kill_cmd);
                                                     SshUtils.kill(connectUri[0],kill_cmd);
                                                 }catch (Exception e){
-                                                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-                                                    logger.error(error, e);
+                                                    LogUtil.error(this.getClass(), e);
                                                 }
 
                                             }
@@ -243,8 +237,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                     try{
                                         future.cancel(true);
                                     }catch (Exception e){
-                                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-                                        logger.error(error, e);
+                                        LogUtil.error(this.getClass(), e);
                                     }finally {
                                         JobCommon2.chm.remove(tl.getId());
                                         taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
@@ -252,7 +245,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                     }
                                 }else{
                                     String msg="调度部分已经执行完成,ETL部分正在执行提交到后端的任务进行杀死";
-                                    logger.info(msg);
+                                    LogUtil.info(this.getClass(), msg);
                                     JobCommon2.insertLog(tl,"INFO",msg);
                                     List<NameValuePair> npl=new ArrayList<>();
 
@@ -318,7 +311,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                     }else{
                                         String msg2="无法获取具体执行器,判断任务已杀死";
                                         taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
-                                        logger.info(msg2);
+                                        LogUtil.info(this.getClass(), msg2);
                                         JobCommon2.insertLog(tl,"INFO",msg2);
                                     }
 
@@ -328,8 +321,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         // List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.select(qj);
                         Thread.sleep(1000*2);
                     } catch (Exception e) {
-                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-                        logger.error(error, e);
+                        LogUtil.error(this.getClass(), e);
                     }
                 }
             }
@@ -338,7 +330,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void quartzExecutor(){
-        logger.info("初始化调度器监控");
+        LogUtil.info(this.getClass(), "初始化调度器监控");
         ZdhRunableTask zdhRunableTask=new ZdhRunableTask("schedule check executor task", new Runnable() {
             @Override
             public void run() {
@@ -347,7 +339,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         SchedulerFactoryBean schedulerFactoryBean = (SchedulerFactoryBean) SpringContext.getBean("&schedulerFactoryBean");
                         QuartzExecutorMapper quartzExecutorMapper = (QuartzExecutorMapper) SpringContext.getBean("quartzExecutorMapper");
                         QrtzSchedulerStateMapper qrtzSchedulerStateMapper=(QrtzSchedulerStateMapper) SpringContext.getBean("qrtzSchedulerStateMapper");
-                        logger.debug("检查要操作的Quartz Executor..");
+                        LogUtil.debug(this.getClass(), "检查要操作的Quartz Executor..");
                         String instance_name = schedulerFactoryBean.getScheduler().getSchedulerInstanceId();
                         QuartzExecutorInfo qei=new QuartzExecutorInfo();
                         qei.setIs_handle("false");
@@ -387,9 +379,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         }
                         Thread.sleep(1000*2);
                     } catch (Exception e) {
-                        String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[2].getMethodName();
-                        e.printStackTrace();
-                        logger.error(error, e);
+                        LogUtil.error(this.getClass(), e);
                     }
                 }
             }
@@ -398,13 +388,13 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void init2Ip(){
-        logger.info("初始化IP库");
+        LogUtil.info(this.getClass(), "初始化IP库");
         String dbPath = ConfigUtil.getValue(ConfigUtil.IP2REGION_PATH,"");
         //IpUtil.init(dbPath);
     }
 
     public void scheduleByCurrentServer(){
-        logger.info("初始化当前系统执行器监听任务");
+        LogUtil.info(this.getClass(), "初始化当前系统执行器监听任务");
         ZdhRunableTask zdhRunableTask = new ZdhRunableTask("schedule current server task", new Runnable() {
             @Override
             public void run() {
@@ -442,7 +432,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
      */
     public void initSentinelRule(){
         try{
-            logger.info("初始化限流插件");
+            LogUtil.info(this.getClass(), "初始化限流插件");
             String product_code = ConfigUtil.getValue(ConfigUtil.ZDP_PRODUCT);
             ZdhRunableTask zdhRunableTask=new ZdhRunableTask("schedule init sentinel rule", new Runnable() {
                 @Override
@@ -478,7 +468,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                 rule.setCount(Integer.valueOf(rti.getQps()));
                                 rules.add(rule);
                             }
-                            logger.debug("限流重置规则: "+ JsonUtil.formatJsonString(rules));
+                            LogUtil.debug(this.getClass(), "限流重置规则: " + JsonUtil.formatJsonString(rules));
                             FlowRuleManager.loadRules(rules);
 
                             Thread.sleep(1000*60);
@@ -500,7 +490,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void removeValidSession(){
-        logger.info("初始化session失效监听任务");
+        LogUtil.info(this.getClass(), "初始化session失效监听任务");
 
         ZdhRunableTask zdhRunableTask = new ZdhRunableTask("schedule check session", new Runnable() {
 
@@ -513,7 +503,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         Set<String> sets = redisUtil.scan("shiro:cache:shiro-activeSessionCache1*");
                         for(String key:sets){
                             if( !((SimpleSession) shirRedisTemplate.opsForValue().get(key)).isValid()){
-                                logger.info("检测到过期session: "+ JsonUtil.formatJsonString(redisUtil.get(key)));
+                                LogUtil.info(this.getClass(), "检测到过期session: " + JsonUtil.formatJsonString(redisUtil.get(key)));
                                 redisUtil.remove(key);
                             }
                         }
@@ -521,7 +511,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                     }
 
                 }catch (Exception e){
-                    logger.info("检测到过期session异常: "+e.getMessage());
+                    LogUtil.info(this.getClass(), "检测到过期session异常: " + e.getMessage());
                 }
             }
         });
@@ -531,7 +521,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
 
     public void initBeaconFireConsumer(){
         try{
-            logger.info("初始化烽火台监听任务");
+            LogUtil.info(this.getClass(), "初始化烽火台监听任务");
             ZdhRunableTask zdhRunableTask=new ZdhRunableTask("schedule init beaconfire consumer", new Runnable() {
                 @Override
                 public void run() {
@@ -550,13 +540,11 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void initAlarmEmail() throws Exception {
-        logger.info("初始化告警任务");
+        LogUtil.info(this.getClass(), "初始化告警任务");
         //检测是否有email 任务 如果没有则添加
-        QuartzJobInfo qj = new QuartzJobInfo();
-        qj.setJob_type(JobType.EMAIL.getCode());
         List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.selectByJobType(JobType.EMAIL.getCode());
         if (quartzJobInfos.size() > 0) {
-            logger.info("已经存在[EMAIL]历史监控任务...");
+            LogUtil.info(this.getClass(), "已经存在[EMAIL]历史监控任务...");
         }else{
             String expr = ConfigUtil.getValue(ConfigUtil.EMAIL_SCHEDULE_INTERVAL, "30s");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo(JobType.EMAIL.getCode(), JobModel.REPEAT.getValue(), new Date(), DateUtil.pase("2999-12-31"), "检查告警任务", expr, "-1", "", JobType.EMAIL.getCode());
@@ -567,13 +555,11 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void initRetry() throws Exception {
-        logger.info("初始化重试任务");
+        LogUtil.info(this.getClass(), "初始化重试任务");
         //检测是否有retry 任务 如果没有则添加
-        QuartzJobInfo qj_retry = new QuartzJobInfo();
-        qj_retry.setJob_type(JobType.RETRY.getCode());
         List<QuartzJobInfo> quartzJobInfos2 = quartzJobMapper.selectByJobType(JobType.RETRY.getCode());
         if (quartzJobInfos2.size() > 0) {
-            logger.info("已经存在[RETRY]历史监控任务...");
+            LogUtil.info(this.getClass(), "已经存在[RETRY]历史监控任务...");
         }else{
             String expr = ConfigUtil.getValue(ConfigUtil.RETRY_SCHEDULE_INTERVAL, "30s");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo(JobType.RETRY.getCode(), JobModel.REPEAT.getValue(), new Date(), DateUtil.pase("2999-12-31"), "检查失败重试任务", expr, "-1", "", JobType.RETRY.getCode());
@@ -584,11 +570,11 @@ public class SystemCommandLineRunner implements CommandLineRunner {
     }
 
     public void initCheck() throws Exception {
-        logger.info("初始化依赖检查任务");
+        LogUtil.info(this.getClass(), "初始化依赖检查任务");
         //检测是否有check_dep 任务 如果没有则添加
         List<QuartzJobInfo> quartzJobInfos3 = quartzJobMapper.selectByJobType(JobType.CHECK.getCode());
         if (quartzJobInfos3.size() > 0) {
-            logger.info("已经存在[CHECK]历史监控任务...");
+            LogUtil.info(this.getClass(), "已经存在[CHECK]历史监控任务...");
         }else{
             String expr = ConfigUtil.getValue(ConfigUtil.CHECK_SCHEDULE_INTERVAL, "30s");
             QuartzJobInfo quartzJobInfo = quartzManager2.createQuartzJobInfo(JobType.CHECK.getCode(), JobModel.REPEAT.getValue(), new Date(), DateUtil.pase("2999-12-31"), "检查依赖任务", expr, "-1", "", JobType.CHECK.getCode());

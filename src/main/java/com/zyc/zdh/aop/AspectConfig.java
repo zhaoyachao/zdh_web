@@ -8,7 +8,6 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.exception.ZdhException;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -17,13 +16,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.redisson.api.RRateLimiter;
-import org.redisson.api.RateIntervalUnit;
-import org.redisson.api.RateType;
 import org.redisson.api.RedissonClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
@@ -39,10 +32,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 
 /***
@@ -54,8 +44,6 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 @Component
 public class AspectConfig implements Ordered {
-
-    private static Logger logger = LoggerFactory.getLogger(AspectConfig.class);
 
     @Pointcut("execution(* com.zyc.zdh.quartz..*(..))")
     public void pointcutMethod() {
@@ -73,7 +61,6 @@ public class AspectConfig implements Ordered {
 
     @Around(value = "pointcutMethod3()")
     public Object aroundLog(ProceedingJoinPoint pjp) throws Exception {
-        MDC.put("logId", UUID.randomUUID().toString());
         //获取返回类型
         Signature signature = pjp.getSignature();
         String returnName = "";
@@ -102,30 +89,6 @@ public class AspectConfig implements Ordered {
             //IP地址
             String ipAddr = systemFilterParam.getIp();
             String url = systemFilterParam.getRequestURL();
-            Object clearTime = redisUtil.get(Const.ZDH_RATELIMIT_CLEART_TIME);
-            if (getUser() != null) {
-                Object user_limit = redisUtil.get(Const.ZDH_USER_RATELIMIT, "200");
-                String key = Const.ZDH_RATELIMIT_KEY_USER_PRE + getUser().getUserName();
-                RRateLimiter rateLimiter = redissonClient.getRateLimiter(key);
-                //设置速率，time秒中产生count个令牌
-                rateLimiter.trySetRate(RateType.OVERALL, Long.valueOf(user_limit.toString()), 1L, RateIntervalUnit.SECONDS);
-                // 试图获取一个令牌，获取到返回true
-                boolean tryAcquire = rateLimiter.tryAcquire(1L, TimeUnit.SECONDS);
-                if(!tryAcquire){
-                    logger.warn("当前IP/账号超出流量限制,IP_LIMIT:{},USER_LIMIT:{},IP:{}, 账号:{}", -1L,user_limit, ipAddr, getUser() == null ? "" : getUser().getUserName());
-                    if (method.equalsIgnoreCase("get")) {
-                        return "403";
-                    }
-                    return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前IP/账号超出流量限制", "当前IP/账号超出流量限制");
-                }
-            }
-
-
-            if (getUser() == null) {
-                MDC.put("user_id", UUID.randomUUID().toString());
-            } else {
-                MDC.put("user_id", getUser().getUserName());
-            }
 
             long start = System.currentTimeMillis();
             String classType = pjp.getTarget().getClass().getName();
@@ -135,85 +98,11 @@ public class AspectConfig implements Ordered {
             LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
             Method currentMethod = target.getClass().getMethod(msig.getName(), msig.getParameterTypes());
             if (currentMethod.getName().contains("initBinder")) {
-                MDC.remove("user_id");
+                //MDC.remove("user_id");
                 return pjp.proceed();
             }
 
-
             String reqParam = "";
-
-            //校验账号是否启用
-            boolean is_unenable = is_unenable();
-            //校验ip黑名单
-            boolean is_ipbacklist = is_ipblacklist(SystemConfig.urlThread.get().getIp());
-            boolean is_userbacklist = is_blacklist();
-            if (is_ipbacklist || is_userbacklist || is_unenable) {
-                UserOperateLogMapper userOperateLogMapper = (UserOperateLogMapper) SpringContext.getBean("userOperateLogMapper");
-                UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();
-                userOperateLogInfo.setOwner(getUser().getUserName());
-                userOperateLogInfo.setUser_name(getUser().getUserName());
-                userOperateLogInfo.setOperate_url(url);
-                userOperateLogInfo.setOperate_input(reqParam);
-                userOperateLogInfo.setTime(String.valueOf((System.currentTimeMillis() - start) / 1000.0));
-                userOperateLogInfo.setIp(ipAddr);
-                String output = "";
-                if (is_ipbacklist) {
-                    output = String.format("用户:%s命中IP黑名单,IP地址:%s", getUser().getUserName(), ipAddr);
-                } else if (is_userbacklist) {
-                    output = String.format("用户:%s命中用户黑名单,IP地址:%s", getUser().getUserName(), ipAddr);
-                } else if(is_unenable){
-                    output = String.format("用户:%s已被禁用,IP地址:%s", getUser().getUserName(), ipAddr);
-                }
-                userOperateLogInfo.setOperate_output(output);
-
-                userOperateLogInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
-                userOperateLogInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
-                userOperateLogMapper.insertSelective(userOperateLogInfo);
-                MDC.remove("user_id");
-                if (request.getMethod().equalsIgnoreCase("get")) {
-                    return "redirect:403";
-                } else {
-                    if (returnName.contains("ReturnInfo")) {
-                        return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "命中IP/用户黑名单,禁止访问", "命中IP/用户黑名单,禁止访问");
-                    }
-                    return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "命中IP/用户黑名单,禁止访问", "命中IP/用户黑名单,禁止访问");
-                }
-            }
-
-            //校验网址是否可访问
-            boolean is_pass = is_pass(getUrl(request));
-            if (!is_pass) {
-                logger.warn("系统维护中,只有admin用户和zyc用户可访问....");
-                MDC.remove("user_id");
-                String uid = getUser() == null ? "" : getUser().getUserName();
-                logger.debug("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】请求参数:【{}】", ipAddr, uid, url, request.getMethod(), reqParam);
-                if (request.getMethod().equalsIgnoreCase("get")) {
-                    return "redirect:503";
-                } else {
-                    if (returnName.contains("ReturnInfo")) {
-                        return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "系统维护中", "系统维护中");
-                    }
-                    return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统维护中", "系统维护中");
-                }
-            }
-
-
-            //未登录且非登录请求强制跳转到登录页面
-            if (!SecurityUtils.getSubject().isAuthenticated()) {
-                //WebUtils.issueRedirect(request, response, "login");
-                //SecurityUtils.getSecurityManager().logout(subject);
-                String whiteUrl = getUrl(request);
-                if (!white().contains(whiteUrl)) {
-                    logger.error("用户未登录");
-                    logger.debug("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】请求参数:【{}】", ipAddr, "xxxx", url, request.getMethod(), reqParam);
-                    MDC.remove("user_id");
-                    return "redirect:login";
-                }
-            }
-//			//此处校验用户是否在黑名单中,有则不允许访问
-//			if(getUser()!=null && is_blacklist(getUser().getUserName())){
-//				return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "当前用户为黑名单用户,请联系管理员解封", null);
-//			}
 
             try {
                 reqParam = preHandle(pjp, request);
@@ -236,14 +125,13 @@ public class AspectConfig implements Ordered {
                     userOperateLogInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                     userOperateLogMapper.insertSelective(userOperateLogInfo);
                 } catch (Exception ex) {
-                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-                    logger.error(error, ex);
+                    LogUtil.error(this.getClass(), ex);
                 }
 
                 if (e.getMessage().contains("没有权限")) {
-                    MDC.remove("user_id");
+                    //MDC.remove("user_id");
                     String uid = getUser() == null ? "" : getUser().getUserName();
-                    logger.error("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】, 当前请求无权限", ipAddr, uid, url, request.getMethod(), reqParam);
+                    LogUtil.error(this.getClass(), "请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】, 当前请求无权限", ipAddr, uid, url, request.getMethod(), reqParam);
                     if (request.getMethod().equalsIgnoreCase("get")) {
                         //get请求无权限,返回403
                         return "403";
@@ -256,14 +144,13 @@ public class AspectConfig implements Ordered {
 
                 }
                 if (request.getMethod().equalsIgnoreCase("get")) {
-                    MDC.remove("user_id");
+                    //MDC.remove("user_id");
                     String uid = getUser() == null ? "" : getUser().getUserName();
-                    logger.error("请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】,当前请求异常,强制跳转404", ipAddr, uid, url, request.getMethod(), reqParam);
+                    LogUtil.error(this.getClass(), "请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】,当前请求异常,强制跳转404", ipAddr, uid, url, request.getMethod(), reqParam);
                     return "404";
                 }
-                String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-                logger.error(error, e);
-                MDC.remove("user_id");
+                LogUtil.error(this.getClass(), e);
+                //MDC.remove("user_id");
                 if (returnName.contains("ReturnInfo")) {
                     return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "系统错误", e);
                 }
@@ -272,11 +159,11 @@ public class AspectConfig implements Ordered {
             String uid = getUser() == null ? "" : getUser().getUserName();
             String city = IpUtil.getCityByIp(ipAddr);
             if (is_operate_log(url)){
-                logger.debug("请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】", ipAddr, city, uid, url, request.getMethod(), reqParam);
+                LogUtil.debug(this.getClass(), "请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】", ipAddr, city, uid, url, request.getMethod(), reqParam);
             }
             Object o = pjp.proceed();
             if (is_operate_log(url)){
-                logger.debug("请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,结束", ipAddr, city, uid, url);
+                LogUtil.debug(this.getClass(), "请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,结束", ipAddr, city, uid, url);
             }
             try {
                 //跳过特殊操作，etlEcharts,getTotalNum,notice_list
@@ -331,16 +218,11 @@ public class AspectConfig implements Ordered {
                     userOperateLogMapper.insertSelective(userOperateLogInfo);
                 }
             } catch (Exception e) {
-                String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-                logger.error(error, e);
+                LogUtil.error(this.getClass(), e);
             }
-            MDC.remove("user_id");
             return o;
         } catch (Throwable e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
-            MDC.remove("user_id");
-            MDC.remove("logId");
+            LogUtil.error(this.getClass(), e);
             if (returnName.contains("ReturnInfo")) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "系统错误", e);
             }
@@ -354,7 +236,7 @@ public class AspectConfig implements Ordered {
         Method method = signature.getMethod();
         if (method.isAnnotationPresent(Log.class)) {
             Log log = method.getAnnotation(Log.class);
-            logger.info(log.value());
+            LogUtil.info(this.getClass(), log.value());
         }
     }
 
@@ -390,10 +272,10 @@ public class AspectConfig implements Ordered {
                 if (requestMethods != null && requestMethods.length > 0) {
                     //校验请求类型和注解是否一致
                     if (requestMethods.length > 1) {
-                        logger.error(getUrl(request) + "请求类型: " + request.getMethod() + ", 注解类型: " + JsonUtil.formatJsonString(requestMethods));
+                        LogUtil.error(this.getClass(), getUrl(request) + "请求类型: " + request.getMethod() + ", 注解类型: " + JsonUtil.formatJsonString(requestMethods));
                     } else {
                         if (!request.getMethod().equalsIgnoreCase(requestMethods[0].toString())) {
-                            logger.error(getUrl(request) + "请求类型: " + request.getMethod() + ", 注解类型: " + JsonUtil.formatJsonString(requestMethods));
+                            LogUtil.error(this.getClass(), getUrl(request) + "请求类型: " + request.getMethod() + ", 注解类型: " + JsonUtil.formatJsonString(requestMethods));
                         }
                     }
                 } else {
@@ -428,7 +310,7 @@ public class AspectConfig implements Ordered {
             }
         }
         if (getUrl(request).contains("list") && request.getMethod().equalsIgnoreCase("get")) {
-            logger.error(getUrl(request) + "============检测属于get请求,请检查是否合法");
+            LogUtil.error(this.getClass(), getUrl(request) + "============检测属于get请求,请检查是否合法");
         }
         return reqParam;
     }
@@ -456,9 +338,8 @@ public class AspectConfig implements Ordered {
             ni.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             noticeMapper.insertSelective(ni);
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
-            logger.error("接口无权限告警异常, {}", e);
+            LogUtil.error(this.getClass(), e);
+            LogUtil.error(this.getClass(), "接口无权限告警异常, {}", e);
         }
     }
 
@@ -500,128 +381,6 @@ public class AspectConfig implements Ordered {
         return permissions;
     }
 
-    /**
-     * 校验是否禁用用户,true:禁用,false:未禁用
-     * @return
-     */
-    private boolean is_unenable(){
-        try{
-            if (getUser() == null) {
-                return false;
-            }
-            if (StringUtils.isEmpty(getUser().getUserName())) {
-                return false;
-            }
-
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-
-            return redisUtil.exists(Const.ZDH_USER_UNENABLE+"_"+getUser().getUserName());
-
-        }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
-        }
-
-        return false;
-    }
-
-    /**
-     * 查询是否命中用户名单,命中则不许访问
-     *
-     * @return
-     */
-    private boolean is_blacklist() {
-        try{
-            if (getUser() == null) {
-                return false;
-            }
-            //查询黑名单
-            if (StringUtils.isEmpty(getUser().getUserName())) {
-                return false;
-            }
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-            Object o = redisUtil.get(Const.ZDH_USER_BACKLIST);
-            if (o == null) {
-                return false;
-            }
-
-            if (Arrays.asList(o.toString().split(",")).contains(getUser().getUserName())) {
-                return true;
-            }
-        }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
-        }
-
-        return false;
-    }
-
-    /**
-     * 校验网址是否可访问,不区分用户,如果想个别用户区分,则使用黑名单限制功能
-     *
-     * @return
-     */
-    private boolean is_pass(String url) {
-        try{
-            if (url.contains("503")) {
-                return true;
-            }
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-            if (getUser() == null) {
-                return true;
-            }
-            Object pass_user = redisUtil.get(Const.ZDH_IS_PASS_USER);
-            if (pass_user != null) {
-                if (Arrays.asList(pass_user.toString().split(",")).contains(getUser().getUserName())) {
-                    return true;
-                }
-            }
-            if (getUser().getUserName().equalsIgnoreCase("admin") || getUser().getUserName().equalsIgnoreCase("zyc")) {
-                return true;
-            }
-            Object o = redisUtil.get(Const.ZDH_IS_PASS);
-            if (o == null) {
-                return true;
-            }
-            if (o != null && o.toString().equalsIgnoreCase("true")) {
-                return true;
-            }
-        }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
-        }
-
-        return false;
-    }
-
-    /**
-     * ip 是否在黑名单中
-     *
-     * @param ip
-     * @return true:命中黑名单,false:为命中黑名单
-     */
-    private boolean is_ipblacklist(String ip) {
-        try{
-
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-
-            Object o = redisUtil.get(Const.ZDH_IP_BACKLIST);
-            if (o == null) {
-                return false;
-            }
-            if (o != null && !o.toString().contains(ip)) {
-                return false;
-            }
-        }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
-        }
-
-        return true;
-    }
-
-
-
     public User getUser() {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         return user;
@@ -644,14 +403,12 @@ public class AspectConfig implements Ordered {
                     System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-                    logger.error(error, e);
+                    LogUtil.error(this.getClass(), e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-                logger.error(error, e);
+                LogUtil.error(this.getClass(), e);
             }
         }
     }

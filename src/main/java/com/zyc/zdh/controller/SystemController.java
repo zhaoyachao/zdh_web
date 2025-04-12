@@ -10,12 +10,11 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -38,7 +37,6 @@ import java.util.*;
 @Controller
 public class SystemController extends BaseController{
 
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ZdhNginxMapper zdhNginxMapper;
     @Autowired
@@ -79,8 +77,7 @@ public class SystemController extends BaseController{
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", loginBaseInfo);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "异常,返回默认配置", loginBaseInfo);
         }
 
@@ -130,8 +127,7 @@ public class SystemController extends BaseController{
             ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(getOwner());
             return ReturnInfo.buildSuccess(zdhNginx);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError(e);
         }
     }
@@ -161,8 +157,7 @@ public class SystemController extends BaseController{
 
             return ReturnInfo.buildSuccess("200");
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError(e);
         }
     }
@@ -242,8 +237,7 @@ public class SystemController extends BaseController{
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", ni);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -296,8 +290,7 @@ public class SystemController extends BaseController{
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -318,8 +311,7 @@ public class SystemController extends BaseController{
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
@@ -340,8 +332,7 @@ public class SystemController extends BaseController{
             noticeMapper.updateIsSeeByIds(ids, is_see);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -381,8 +372,7 @@ public class SystemController extends BaseController{
             }
             return ReturnInfo.buildSuccess(resultList);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError(e);
         }
     }
@@ -421,8 +411,7 @@ public class SystemController extends BaseController{
             }
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "暂无通知", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询通知失败", e);
         }
     }
@@ -456,8 +445,7 @@ public class SystemController extends BaseController{
             everyDayNoticeMapper.insertSelective(everyDayNotice);
             return ReturnInfo.buildSuccess("");
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError(e);
         }
     }

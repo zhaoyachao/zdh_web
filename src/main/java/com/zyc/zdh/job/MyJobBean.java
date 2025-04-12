@@ -9,10 +9,9 @@ import com.zyc.zdh.entity.QuartzJobInfo;
 import com.zyc.zdh.entity.StrategyGroupInfo;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
@@ -27,7 +26,6 @@ import java.util.List;
 @PersistJobDataAfterExecution
 public class MyJobBean extends QuartzJobBean implements Serializable {
 
-	private static Logger logger = LoggerFactory.getLogger(MyJobBean.class);
 	/**
 	 * 
 	 */
@@ -79,7 +77,7 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 				QuartzJobInfo quartzJobInfo = new QuartzJobInfo();
 				quartzJobInfo = quartzJobMapper2.selectByPrimaryKey(taskId);
 				if(quartzJobInfo==null){
-					logger.info("调度任务发现空的任务,任务id"+taskId);
+                    LogUtil.info(this.getClass(), "调度任务发现空的任务,任务id" + taskId);
 					return ;
 				}
 				quartzJobInfo.setQuartz_time(new Timestamp(currentTime.getTime()));
@@ -129,7 +127,7 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 //					String key=tls.getServer_id().split(":")[0];
 //					if(!redisUtil.exists(key) || !redisUtil.get(key).equals(tls.getServer_id().split(":")[1])){
 //							//故障触发
-//							logger.info("任务["+tls.getJob_context()+"],ETL_DATE:"+tls.getEtl_date()+",调度执行故障,将重新触发新的任务");
+//							LogUtil.info(this.getClass(), "任务["+tls.getJob_context()+"],ETL_DATE:"+tls.getEtl_date()+",调度执行故障,将重新触发新的任务");
 //							JobCommon2.insertLog(tls,"INFO","任务["+tls.getJob_context()+"],ETL_DATE:"+tls.getEtl_date()+",调度执行故障,将重新触发新的任务");
 //							//修改task log 任务状态为error
 //							tls.setStatus(InstanceStatus.ERROR.getValue());
@@ -146,8 +144,7 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 //			}
 
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
 		}
 
 	}

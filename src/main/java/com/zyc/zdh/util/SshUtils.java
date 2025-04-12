@@ -3,8 +3,6 @@ package com.zyc.zdh.util;
 import com.google.common.collect.ImmutableMap;
 import com.jcraft.jsch.*;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
@@ -19,7 +17,6 @@ import static org.apache.commons.lang3.StringUtils.trim;
 
 public final class SshUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SshUtils.class);
     private static final String SSH = "ssh";
     private static final String FILE = "file";
 
@@ -81,7 +78,7 @@ public final class SshUtils {
         try (SessionHolder<ChannelSftp> session = new SessionHolder<>("sftp", to);
                 FileInputStream fis = new FileInputStream(new File(from))) {
 
-            LOG.info("Uploading {} --> {}", from, session.getMaskedUri());
+            LogUtil.info(SshUtils.class, "Uploading {} --> {}", from, session.getMaskedUri());
             ChannelSftp channel = session.getChannel();
             channel.connect();
             channel.cd(to.getPath());
@@ -98,7 +95,7 @@ public final class SshUtils {
                 OutputStream os = new FileOutputStream(out);
                 BufferedOutputStream bos = new BufferedOutputStream(os)) {
 
-            LOG.info("Downloading {} --> {}", session.getMaskedUri(), to);
+            LogUtil.info(SshUtils.class, "Downloading {} --> {}", session.getMaskedUri(), to);
             ChannelSftp channel = session.getChannel();
             channel.connect();
             channel.cd(getFullPath(from.getPath()));
@@ -135,7 +132,7 @@ public final class SshUtils {
             shell(connectUri, command, baos);
             return baos.toString();
         } catch (RuntimeException e) {
-            LOG.warn(baos.toString());
+            LogUtil.warn(SshUtils.class, baos.toString());
             throw e;
         }
     }
@@ -172,7 +169,7 @@ public final class SshUtils {
             channel.setInputStream(is, true);
             channel.setOutputStream(os, true);
 
-            LOG.info("Starting shell for " + session.getMaskedUri());
+            LogUtil.info(SshUtils.class, "Starting shell for " + session.getMaskedUri());
             session.execute();
             session.assertExitStatus("Check shell output for error details.");
         } catch (InterruptedException | JSchException e) {
@@ -212,7 +209,7 @@ public final class SshUtils {
             channel.setErrStream(errPipe);
             channel.setCommand(command);
 
-            LOG.info("Starting exec for " + session.getMaskedUri());
+            LogUtil.info(SshUtils.class, "Starting exec for " + session.getMaskedUri());
             session.execute();
             String output = IOUtils.toString(is);
             session.assertExitStatus(IOUtils.toString(errIs));
@@ -242,7 +239,7 @@ public final class SshUtils {
             channel.setErrStream(errPipe);
             channel.setCommand(command);
 
-            LOG.info("Starting exec for " + session.getMaskedUri());
+            LogUtil.info(SshUtils.class, "Starting exec for " + session.getMaskedUri());
             session.execute();
             String output = IOUtils.toString(is);
             //session.assertExitStatus(IOUtils.toString(errIs));

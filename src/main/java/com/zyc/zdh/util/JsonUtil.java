@@ -8,8 +8,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -73,8 +71,6 @@ class DateJsonSerializer extends JsonSerializer<Date> {
 
 public class JsonUtil {
 
-    public static Logger logger = LoggerFactory.getLogger(JsonUtil.class);
-
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static {
@@ -103,7 +99,7 @@ public class JsonUtil {
         try {
             t = OBJECT_MAPPER.readValue(json, typeReference);
         } catch (JsonProcessingException e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(JsonUtil.class, e);
         }
         return t;
     }
@@ -121,7 +117,7 @@ public class JsonUtil {
         try {
             t = OBJECT_MAPPER.readValue(jsonArray, List.class);
         } catch (JsonProcessingException e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(JsonUtil.class, e);
         }
         return t;
     }
@@ -135,7 +131,7 @@ public class JsonUtil {
         try {
             t = OBJECT_MAPPER.readValue(jsonArray, type);
         } catch (JsonProcessingException e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(JsonUtil.class, e);
         }
         return t;
     }
@@ -154,7 +150,7 @@ public class JsonUtil {
             t = OBJECT_MAPPER.readValue(jsonArray, new TypeReference<List<Map<String, Object>>>() {
             });
         } catch (JsonProcessingException e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(JsonUtil.class, e);
         }
         return t;
     }
@@ -172,7 +168,7 @@ public class JsonUtil {
         try {
             t = OBJECT_MAPPER.readValue(json, tClass);
         } catch (JsonProcessingException e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(JsonUtil.class, e);
         }
         return t;
     }
@@ -191,7 +187,7 @@ public class JsonUtil {
         try {
             t = OBJECT_MAPPER.readValue(json, LinkedHashMap.class);
         } catch (JsonProcessingException e) {
-             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(JsonUtil.class, e);
         }
         return t;
     }
@@ -206,7 +202,7 @@ public class JsonUtil {
         try {
             return OBJECT_MAPPER.writeValueAsString(o);
         } catch (JsonProcessingException e) {
-             logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(JsonUtil.class, e);
         }
         return null;
     }

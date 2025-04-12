@@ -9,11 +9,10 @@ import com.zyc.zdh.hadoop.Dsi_Info;
 import com.zyc.zdh.hadoop.HadoopUtil;
 import com.zyc.zdh.hadoop.SqlTemplate;
 import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.LogUtil;
 import com.zyc.zdh.util.ResoveExcel;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +29,6 @@ import java.util.Map;
  */
 @Controller
 public class ZdhTestController extends BaseController{
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
-
 
     /**
      * 非结构化任务首页
@@ -93,4 +90,20 @@ public class ZdhTestController extends BaseController{
         }
     }
 
+    /**
+     * 非结构化任务首页
+     *
+     * @return
+     */
+    @RequestMapping("/test_log")
+    @White
+    public String test_log() {
+
+        try {
+            throw new Exception("测试异常");
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e.getMessage(), e);
+        }
+        return "etl/test_excel_index";
+    }
 }

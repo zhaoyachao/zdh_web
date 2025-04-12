@@ -6,6 +6,7 @@ import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.entity.ZdhKettleAutoInfo;
 import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.KettleUtil;
+import com.zyc.zdh.util.LogUtil;
 
 import java.net.URI;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class KettleJob extends JobCommon2 {
         Boolean exe_status = true;
         //执行命令
         try {
-            logger.info("kettle任务当前只支持同步kettle,异步kettle暂不支持");
+            LogUtil.info(KettleJob.class, "kettle任务当前只支持同步kettle,异步kettle暂不支持");
             insertLog(tli,"info","kettle任务当前只支持同步kettle,异步kettle暂不支持");
 
             //调用kettle 工具类
@@ -35,7 +36,7 @@ public class KettleJob extends JobCommon2 {
             String user = zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository_user();
             String password = zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository_password();
             String kettleType = zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_type();
-            logger.info("[" + jobType + "] JOB ,repository_type: "+repositoryType+", kettle_type:" + kettleType+", repository_path: "+repositoryPath);
+            LogUtil.info(KettleJob.class, "[" + jobType + "] JOB ,repository_type: " + repositoryType + ", kettle_type:" + kettleType + ", repository_path: " + repositoryPath);
             insertLog(tli, "info", "[" + jobType + "] JOB ,kettle_type:" + kettleType+", repository_path: "+repositoryPath);
 
             String params = zdhKettleAutoInfo.getEtlTaskKettleInfo().getData_sources_params_input();
@@ -62,20 +63,19 @@ public class KettleJob extends JobCommon2 {
                 throw new Exception("kettle任务异常, 未正常运行");
             }
 
-            logger.info("[" + jobType + "] JOB ,kettle_log: "+kettleResult.getLog_text());
+            LogUtil.info(KettleJob.class, "[" + jobType + "] JOB ,kettle_log: " + kettleResult.getLog_text());
             insertLog(tli, "info", "[" + jobType + "] JOB ,kettle_log: "+kettleResult.getLog_text());
 
-            logger.info("[" + jobType + "] JOB ,执行结果:" + kettleResult.getLog_text());
-//                logger.info("[" + jobType + "] JOB ,正常输出:" + result.get("out").toString().trim());
-//                logger.info("[" + jobType + "] JOB ,错误输出:" + result.get("error").toString().trim());
+            LogUtil.info(KettleJob.class, "[" + jobType + "] JOB ,执行结果:" + kettleResult.getLog_text());
+//                LogUtil.info(KettleJob.class, "[" + jobType + "] JOB ,正常输出:" + result.get("out").toString().trim());
+//                LogUtil.info(KettleJob.class, "[" + jobType + "] JOB ,错误输出:" + result.get("error").toString().trim());
             insertLog(tli, "info", "[" + jobType + "] JOB ,执行结果:" + kettleResult.getLog_text());
 
             if(kettleResult.getCode() != 0){
                 throw new Exception("kettle任务异常");
             }
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            logger.error(e.getMessage());
+            LogUtil.error(KettleJob.class, e);
             insertLog(tli, "error","[" + jobType + "] JOB ,"+ e.getMessage());
             jobFail(jobType,tli);
             exe_status = false;

@@ -2,15 +2,12 @@ package com.zyc.zdh.util;
 
 import com.jcraft.jsch.*;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Properties;
 import java.util.Vector;
 
 public class SFTPUtil {
-    private transient Logger log = LoggerFactory.getLogger(this.getClass());
          
     private ChannelSftp sftp;
            
@@ -69,31 +66,31 @@ public class SFTPUtil {
             JSch jsch = new JSch();
             if (privateKey != null) {
                 jsch.addIdentity(privateKey);// 设置私钥   
-                log.info("sftp connect,path of private key file：{}" , privateKey);   
-            }   
-            log.info("sftp connect by host:{} username:{}",host,username);   
-       
-            session = jsch.getSession(username, host, port);   
-            log.info("Session is build");   
+                LogUtil.info(this.getClass(), "sftp connect,path of private key file：{}", privateKey);
+            }
+            LogUtil.info(this.getClass(), "sftp connect by host:{} username:{}", host, username);
+
+            session = jsch.getSession(username, host, port);
+            LogUtil.info(this.getClass(), "Session is build");
             if (password != null) {
                 session.setPassword(password);     
             }   
             Properties config = new Properties();
             config.put("StrictHostKeyChecking", "no");   
                    
-            session.setConfig(config);   
-            session.connect();   
-            log.info("Session is connected");
+            session.setConfig(config);
+            session.connect();
+            LogUtil.info(this.getClass(), "Session is connected");
 
             ChannelSftp channel = (ChannelSftp)session.openChannel("sftp");
             channel.setPty(true);
             channel.connect();
-            log.info("channel is connected");   
+            LogUtil.info(this.getClass(), "channel is connected");
        
             sftp = channel;
-            log.info(String.format("sftp server host:[%s] port:[%s] is connect successfull", host, port));   
+            LogUtil.info(this.getClass(), String.format("sftp server host:[%s] port:[%s] is connect successfull", host, port));
         } catch (JSchException e) {
-            log.error("Cannot connect to specified sftp server : {}:{} \n Exception message is: {}", new Object[]{host, port, e.getMessage()});     
+            LogUtil.error(this.getClass(), "Cannot connect to specified sftp server : {}:{} \n Exception message is: {}", new Object[]{host, port, e.getMessage()});
         }   
     }     
        
@@ -103,14 +100,14 @@ public class SFTPUtil {
     public void logout(){   
         if (sftp != null) {   
             if (sftp.isConnected()) {
-                sftp.disconnect();   
-                log.info("sftp is closed already");   
+                sftp.disconnect();
+                LogUtil.info(this.getClass(), "sftp is closed already");
             }   
         }   
         if (session != null) {
             if (session.isConnected()) {
-                session.disconnect();   
-                log.info("sshSession is closed already");   
+                session.disconnect();
+                LogUtil.info(this.getClass(), "sshSession is closed already");
             }   
         }   
     }   
@@ -127,12 +124,12 @@ public class SFTPUtil {
         try {
             sftp.cd(directory);
         } catch (SftpException e) {
-            log.warn("directory is not exist");
+            LogUtil.warn(this.getClass(), "directory is not exist");
             sftp.mkdir(directory);
             sftp.cd(directory);
         }
         sftp.put(input, sftpFileName);
-        log.info("file:{} is upload successful" , sftpFileName);
+        LogUtil.info(this.getClass(), "file:{} is upload successful", sftpFileName);
     }   
        
     /**  
@@ -189,7 +186,7 @@ public class SFTPUtil {
         }
         File file = new File(saveFile);
         sftp.get(downloadFile, new FileOutputStream(file));
-        log.info("file:{} is download successful" , downloadFile);
+        LogUtil.info(this.getClass(), "file:{} is download successful", downloadFile);
     }  
        
     /**  
@@ -207,7 +204,7 @@ public class SFTPUtil {
         }
         InputStream is = sftp.get(downloadFile);
         byte[] fileData = IOUtils.toByteArray(is);
-        log.info("file:{} is download successful" , downloadFile);   
+        LogUtil.info(this.getClass(), "file:{} is download successful", downloadFile);
         return fileData;
     }   
        

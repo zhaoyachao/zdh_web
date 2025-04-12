@@ -1,7 +1,6 @@
 package com.zyc.zdh.cache;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zyc.zdh.util.LogUtil;
 import org.springframework.cache.Cache;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,8 +12,6 @@ import java.util.concurrent.Callable;
  * @data 2018-03-22 15:13
  **/
 public class MyRedisCache implements Cache {
-
-	private static final Logger logger= LoggerFactory.getLogger(MyRedisCache.class);
 
 	private String name;
 
@@ -57,7 +54,7 @@ public class MyRedisCache implements Cache {
 		Cache myRedis = redisCacheManager.getCache(getName());
 
 		if(myRedis!=null){
-			logger.info("取数据myReids库===key:{}",key);
+            LogUtil.info(this.getClass(), "取数据myReids库===key:{}", key);
 			if(myRedis.get(key)!=null){
 				//RedisCacheElement vr=new RedisCacheElement(new RedisCacheKey(key),myRedis.get(key).get());
 				return myRedis.get(key);
@@ -80,7 +77,7 @@ public class MyRedisCache implements Cache {
 	public void put(Object key, Object value) {
 		Cache myRedis = redisCacheManager.getCache(getName());
 		if(myRedis!=null){
-			logger.info("插入myReids库===key:{},value:{}",key,value);
+            LogUtil.info(this.getClass(), "插入myReids库===key:{},value:{}", key, value);
 			myRedis.put(key,value);
 		}
 	}
@@ -94,7 +91,7 @@ public class MyRedisCache implements Cache {
 	public void evict(Object key) {
 		Cache myRedis = redisCacheManager.getCache(getName());
 		if(myRedis!=null){
-			logger.info("删除myReids库===key:{}",key);
+            LogUtil.info(this.getClass(), "删除myReids库===key:{}", key);
 			myRedis.evict(key);
 		}
 	}

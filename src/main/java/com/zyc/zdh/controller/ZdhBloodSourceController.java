@@ -10,9 +10,8 @@ import com.zyc.zdh.job.CheckBloodSourceJob;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.DAG;
 import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -29,8 +28,6 @@ import java.util.*;
  */
 @Controller
 public class ZdhBloodSourceController extends BaseController{
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private BloodSourceMapper bloodSourceMapper;
@@ -83,8 +80,7 @@ public class ZdhBloodSourceController extends BaseController{
             BloodSourceInfo bloodSourceInfo = CheckBloodSourceJob.report(product_code, context, data_sources_choose_input, data_sources_file_name_input, data_sources_choose_output, data_sources_file_name_output, getOwner(), "-1");
 
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("上报失败",e);
         }
 

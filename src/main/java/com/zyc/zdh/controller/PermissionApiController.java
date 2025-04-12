@@ -10,10 +10,9 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
@@ -34,8 +33,6 @@ import java.util.*;
  */
 @Controller("permissionApiController")
 public class PermissionApiController {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private SessionDao sessionDao;
@@ -596,8 +593,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -630,8 +626,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", roleInfo);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -661,8 +656,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", roleInfos);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -704,8 +698,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserInfos);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -761,8 +754,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
@@ -856,8 +848,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionDimensionInfos);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
@@ -887,8 +878,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionDimensionInfos);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
@@ -918,8 +908,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionDimensionInfos);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
@@ -952,8 +941,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserDimensionValueInfos);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
@@ -984,8 +972,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionDimensionInfos);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
@@ -1017,8 +1004,7 @@ public class PermissionApiController {
             //返回统一信息
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", permissionUserGroupDimensionValueInfos);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }

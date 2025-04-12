@@ -15,8 +15,6 @@ import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.Scheduler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.sql.Timestamp;
@@ -28,13 +26,12 @@ import java.util.*;
 public class RetryJob {
 
     private final static String task_log_status="etl";
-    private static Logger logger = LoggerFactory.getLogger(RetryJob.class);
 
     public static List<ZdhDownloadInfo> zdhDownloadInfos = new ArrayList<>();
 
     public static void run(QuartzJobInfo quartzJobInfo) {
         try {
-            logger.debug("开始检测重试任务...");
+            LogUtil.debug(RetryJob.class, "开始检测重试任务...");
             Scheduler scheduler = (Scheduler) SpringContext.getBean("scheduler");
             QuartzJobMapper quartzJobMapper = (QuartzJobMapper) SpringContext.getBean("quartzJobMapper");
             TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
@@ -46,7 +43,7 @@ public class RetryJob {
             List<TaskLogInstance> taskLogInstanceList=tlim.selectThreadByStatus2(JobStatus.WAIT_RETRY.getValue());
             for(TaskLogInstance tl :taskLogInstanceList){
                 QuartzJobInfo qj= quartzJobMapper.selectByPrimaryKey(tl.getJob_id());
-                logger.info("检测到需要重试的任务,添加到重试队列,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
+                LogUtil.info(RetryJob.class, "检测到需要重试的任务,添加到重试队列,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 JobCommon2.insertLog(tl, "INFO", "检测到需要重试的任务,添加到重试队列,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 if (!tl.getPlan_count().equals("-1") && tl.getCount()>=Long.parseLong(tl.getPlan_count())) {
                     JobCommon2.insertLog(tl, "INFO", "检测到需要重试的任务,重试次数超过限制,实际重试:" + tl.getCount() + "次,job_id:" + tl.getJob_id() + ",job_context:" + tl.getJob_context());
@@ -58,7 +55,7 @@ public class RetryJob {
                 //quartzJobMapper.updateLastStatus(qj.getJob_id(), "retry");//retry表示当前的任务是重试发起的
                 tl.setStatus(JobStatus.DISPATCH.getValue());
                 tlim.updateStatusById(JobStatus.DISPATCH.getValue(),DateUtil.getCurrentTime(),tl.getId());//error表示任务已置为失败
-                logger.info("开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
+                LogUtil.info(RetryJob.class, "开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 //debugInfo(tl);
                 //JobCommon.insertLog(tl, "INFO", "开始执行重试任务,job_id:" + qj.getJob_id() + ",job_context:" + qj.getJob_context());
                 //tl.setRetry_type("auth");
@@ -68,7 +65,7 @@ public class RetryJob {
 
             }
             if (taskLogInstanceList == null || taskLogInstanceList.isEmpty()) {
-                logger.debug("当前没有需要重试的任务");
+                LogUtil.debug(RetryJob.class, "当前没有需要重试的任务");
             }
 
             //获取dispatch,ETL处理的任务
@@ -97,7 +94,7 @@ public class RetryJob {
                             continue;
                         }
                     }
-                    logger.info("检测到任务意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
+                    LogUtil.info(RetryJob.class, "检测到任务意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
                     JobCommon2.insertLog(t2,"INFO","检测到任务意外死亡,将在本节点自动重试任务,任务id: "+t2.getId());
                     t2.setServer_id(SystemCommandLineRunner.web_application_id);
                     tlim.updateByPrimaryKeySelective(t2);
@@ -112,7 +109,7 @@ public class RetryJob {
                     //判断标识是否有效
                     if(!redisUtil.get(t2.getServer_id().split(":")[0]).toString().equalsIgnoreCase(t2.getServer_id())){
                         //调度异常,进行故障转移,同自动重试
-                        logger.info("检测到执行任务的调度器意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
+                        LogUtil.info(RetryJob.class, "检测到执行任务的调度器意外死亡,将在本节点自动重试任务,任务id: {}", t2.getId());
                         JobCommon2.insertLog(t2,"INFO","检测到执行任务的调度器意外死亡,将在本节点自动重试任务,任务id: "+t2.getId());
                         t2.setServer_id(SystemCommandLineRunner.web_application_id);
                         tlim.updateByPrimaryKeySelective(t2);
@@ -129,7 +126,7 @@ public class RetryJob {
                     continue;
                 }
                 if(zdhHaInfos.size()<1){
-                    logger.info("没有可用的执行器,请启动zdh_server.....");
+                    LogUtil.info(RetryJob.class, "没有可用的执行器,请启动zdh_server.....");
                     continue ;
                 }
                 //http://ip:port/api/v1/zdh
@@ -149,7 +146,7 @@ public class RetryJob {
                     //此处再次确认是否正在执行中执行器发生死亡
                     TaskLogInstance second_task_logs=tlim.selectByPrimaryKey(t2.getId());
                     if(second_task_logs.getStatus().equalsIgnoreCase(task_log_status)) {
-                        logger.info("检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
+                        LogUtil.info(RetryJob.class, "检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
                     }
                     JobCommon2.insertLog(t2,"INFO","检测到执行任务的EXECUTOR意外死亡,将重新选择EXECUTOR执行任务");
 
@@ -164,7 +161,7 @@ public class RetryJob {
                         URI old_uri=URI.create(t2.getUrl());
                         String new_authori=URI.create(zdhHaInfo.getZdh_url()).getAuthority();
                         String new_url=old_uri.getScheme()+"://"+new_authori+old_uri.getPath();
-                        logger.info("重新发送请求地址:"+new_url+",参数:"+t2.getEtl_info());
+                        LogUtil.info(RetryJob.class, "重新发送请求地址:" + new_url + ",参数:" + t2.getEtl_info());
                         JobCommon2.insertLog(t2,"INFO","重新发送请求地址:"+new_url+",参数:"+t2.getEtl_info());
                        if(redis_queue_enable.equalsIgnoreCase("true")){
                             //公共参数配置-发送队列
@@ -197,7 +194,7 @@ public class RetryJob {
 
 
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(RetryJob.class, e);
         }
 
     }

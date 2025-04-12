@@ -18,14 +18,14 @@
 //
 //    public static Boolean runCommand(TaskLogInstance tli) {
 //        try {
-//            logger.info("开始执行调度命令判断是否可行");
+//            LogUtil.info(this.getClass(), "开始执行调度命令判断是否可行");
 //            DBUtil dbUtil = new DBUtil();
 //            Boolean exe_status = true;
 //            /// /连接jdbc
 //            String params = tli.getParams().trim();
 //            if (params.equals("")) {
 //                exe_status = false;
-//                logger.info("参数不可为空,必须包含特定参数,zdh.jdbc.url,zdh.jdbc.driver,zdh.jdbc.username,zdh.jdbc.password");
+//                LogUtil.info(this.getClass(), "参数不可为空,必须包含特定参数,zdh.jdbc.url,zdh.jdbc.driver,zdh.jdbc.username,zdh.jdbc.password");
 //                insertLog(tli, "error",
 //                        "参数不可为空,必须包含特定参数,zdh.jdbc.url,zdh.jdbc.driver,zdh.jdbc.username,zdh.jdbc.password");
 //
@@ -38,7 +38,7 @@
 //
 //            if (url == null || url.equals("") || driver == null || driver.equals("") || username == null || username.equals("") || password == null || password.equals("")) {
 //                exe_status = false;
-//                logger.info("[" + jobType + "] JOB ,参数不可为空");
+//                LogUtil.info(this.getClass(), "[" + jobType + "] JOB ,参数不可为空");
 //                //插入日志
 //                insertLog(tli, "error",
 //                        "参数不可为空,必须包含特定参数,zdh.jdbc.url,zdh.jdbc.driver,zdh.jdbc.username,zdh.jdbc.password");
@@ -57,7 +57,7 @@
 //            if (tli.getLast_time() == null) {
 //                //第一次执行,下次执行时间为起始时间+1
 //                if (tli.getStart_time() == null) {
-//                    logger.info("[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
+//                    LogUtil.info(this.getClass(), "[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
 //                    tli.setStart_time(new Timestamp(System.currentTimeMillis()));
 //                }
 //                tli.setNext_time(tli.getStart_time());
@@ -74,7 +74,7 @@
 //            }
 //            return exe_status;
 //        } catch (Exception e) {
-//             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+//             LogUtil.error(this.getClass(), e);
 //            //插入日志
 //            insertLog(tli, "error",
 //                    "[调度平台]:" + e.getMessage());

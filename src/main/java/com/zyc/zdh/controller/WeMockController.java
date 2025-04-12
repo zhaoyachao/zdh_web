@@ -6,14 +6,9 @@ import com.zyc.zdh.dao.WeMockTreeMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
-import com.zyc.zdh.util.ConfigUtil;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.HttpUtil;
-import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,8 +26,6 @@ import java.util.Map;
  */
 @Controller
 public class WeMockController extends BaseController{
-
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private WeMockTreeMapper weMockTreeMapper;
@@ -90,6 +83,7 @@ public class WeMockController extends BaseController{
             weMockTreeInfos.sort(Comparator.comparing(WeMockTreeInfo::getOrderN));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", weMockTreeInfos);
         }catch (Exception e){
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -141,8 +135,7 @@ public class WeMockController extends BaseController{
             weMockTreeMapper.insertSelective(wmti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
         }
 
@@ -165,8 +158,7 @@ public class WeMockController extends BaseController{
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", weMockTreeInfo);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
@@ -216,8 +208,7 @@ public class WeMockController extends BaseController{
             weMockTreeMapper.updateByPrimaryKeySelective(wmti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", wmti);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
@@ -266,8 +257,7 @@ public class WeMockController extends BaseController{
             weMockTreeMapper.insertSelective(wmti);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", wmti);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
@@ -292,8 +282,7 @@ public class WeMockController extends BaseController{
             weMockTreeMapper.deleteLogicByIds("we_mock_tree_info", new String[]{id}, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", "");
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
         }
 
@@ -319,8 +308,7 @@ public class WeMockController extends BaseController{
             update_level(id, Integer.parseInt(level));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
         }
     }
@@ -390,8 +378,7 @@ public class WeMockController extends BaseController{
             pageResult.setRows(weMockDataInfos);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -432,6 +419,7 @@ public class WeMockController extends BaseController{
             weMockDataInfo.setHttp_url(http+weMockDataInfo.getUrl());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", weMockDataInfo);
         }catch (Exception e){
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -463,6 +451,7 @@ public class WeMockController extends BaseController{
            weMockDataMapper.insertSelective(weMockDataInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", weMockDataInfo);
         }catch (Exception e){
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -497,6 +486,7 @@ public class WeMockController extends BaseController{
             weMockDataMapper.updateByPrimaryKeySelective(weMockDataInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", weMockDataInfo);
         }catch (Exception e){
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -520,6 +510,7 @@ public class WeMockController extends BaseController{
             weMockDataMapper.deleteLogicByIds("we_mock_data_info", ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", "");
         }catch (Exception e){
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
@@ -552,7 +543,7 @@ public class WeMockController extends BaseController{
             String ret = HttpUtil.postJSON(host+path, JsonUtil.formatJsonString(jsonObject));
             return ReturnInfo.buildSuccess(JsonUtil.toJavaMap(ret));
         }catch (Exception e){
-            e.printStackTrace();
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError(e);
         }
     }

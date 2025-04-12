@@ -661,6 +661,11 @@
   + v5.6.6 [zdh_web]营销模块-标签模块删除redis直连功能
   + v5.6.6 [zdh_web]营销模块-ship/variable模块增加签名认证
   
+  + v5.6.7 [zdh_web]统一日志格式及实现
+  + v5.6.7 [zdh_web]优化aop相关代码
+  + v5.6.7 [zdh_web]营销模块重构代码
+  + v5.6.7 [zdh_web]
+  
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -3510,3 +3515,9 @@
 
 ## 5.6.5迁移5.6.6
     无改动
+    
+## 5.6.6迁移5.6.7
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1360692877092458496, '963932648793706496', '策略组实例重启', '4', 'zyc', 'fa fa-coffee', '策略组实例重启-针对在线策略用于回溯到旧版本', '28', '1', '2025-04-12 19:07:42', '2025-04-12 19:07:42', 'strategy_group_instance_restart', '5', '', '', 'zdh', '');
+    

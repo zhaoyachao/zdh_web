@@ -9,8 +9,6 @@ import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.lang.reflect.Field;
@@ -23,8 +21,6 @@ import java.util.UUID;
  * 检查任务及任务组,判定上下游依赖
  */
 public class CheckDepJob implements CheckDepJobInterface{
-
-    private static Logger logger = LoggerFactory.getLogger(CheckDepJob.class);
 
     private Object object;
 
@@ -40,7 +36,7 @@ public class CheckDepJob implements CheckDepJobInterface{
     public static void run(QuartzJobInfo quartzJobInfo) {
         try {
             MDC.put("logId", UUID.randomUUID().toString());
-            logger.debug("开始检测任务组任务...");
+            LogUtil.debug(CheckDepJob.class, "开始检测任务组任务...");
             TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
@@ -56,7 +52,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                     }
                     group.setProcess("100");
                     JobCommon2.updateTaskLog(group,tglim);
-                    logger.info("当前任务组没有子任务可执行,当前任务组设为完成");
+                    LogUtil.info(CheckDepJob.class, "当前任务组没有子任务可执行,当前任务组设为完成");
                     JobCommon2.insertLog(group,"INFO","当前任务组没有子任务可执行,当前任务组设为完成");
                 }
             }
@@ -101,7 +97,7 @@ public class CheckDepJob implements CheckDepJobInterface{
             //检测flink任务是否已经完成
             check_flink_job_final_status();
         } catch (Exception e) {
-            logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(CheckDepJob.class, e);
             MDC.remove("logId");
         }
 
@@ -133,7 +129,7 @@ public class CheckDepJob implements CheckDepJobInterface{
     public static void run_sub_task(String scheduleId) {
         try {
 
-            logger.debug("开始检测子任务依赖,scheduleId: {} ....",scheduleId);
+            LogUtil.debug(CheckDepJob.class, "开始检测子任务依赖,scheduleId: {} ....", scheduleId);
             TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper taskLogInstanceMapper=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
             RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
@@ -146,9 +142,9 @@ public class CheckDepJob implements CheckDepJobInterface{
                     if(!tli.getSchedule_id().equalsIgnoreCase(scheduleId)){
                         if(StringUtils.isEmpty(scheduleId) && !StringUtils.isEmpty(tli.getSchedule_id())){
                             if(!redisUtil.exists(Const.ZDH_SCHEDULE_HEART_PRE+tli.getSchedule_id())){
-                                logger.error("run sub task: {}, not found schedule: {}", tli.getId(), tli.getSchedule_id());
+                                LogUtil.error(CheckDepJob.class, "run sub task: {}, not found schedule: {}", tli.getId(), tli.getSchedule_id());
                                 if((System.currentTimeMillis() - tli.getUpdate_time().getTime()) >= (10 * 60 *1000)){
-                                    logger.info("run sub task: {}, not found schedule: {}, update status error", tli.getId(), tli.getSchedule_id());
+                                    LogUtil.info(CheckDepJob.class, "run sub task: {}, not found schedule: {}, update status error", tli.getId(), tli.getSchedule_id());
                                     taskLogInstanceMapper.updateStatusById(JobStatus.ERROR.getValue(),DateUtil.getCurrentTime(), tli.getId());
                                 }
                             }
@@ -193,7 +189,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                     }
                 }catch (Exception e){
                     JobCommon2.updateTaskStatus(JobStatus.ERROR.getValue(),tli.getId(),"",taskLogInstanceMapper);
-                    logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                    LogUtil.error(CheckDepJob.class, e);
                 }
             }
 
@@ -205,9 +201,9 @@ public class CheckDepJob implements CheckDepJobInterface{
                     if(!tl.getSchedule_id().equalsIgnoreCase(scheduleId)){
                         if(StringUtils.isEmpty(scheduleId) && !StringUtils.isEmpty(tl.getSchedule_id())){
                             if(!redisUtil.exists(Const.ZDH_SCHEDULE_HEART_PRE+tl.getSchedule_id())){
-                                logger.error("run sub task: {}, not found schedule: {}", tl.getId(), tl.getSchedule_id());
+                                LogUtil.error(CheckDepJob.class, "run sub task: {}, not found schedule: {}", tl.getId(), tl.getSchedule_id());
                                 if((System.currentTimeMillis() - tl.getUpdate_time().getTime()) >= (10 * 60 *1000)){
-                                    logger.info("run sub task: {}, not found schedule: {}, update status error", tl.getId(), tl.getSchedule_id());
+                                    LogUtil.info(CheckDepJob.class, "run sub task: {}, not found schedule: {}, update status error", tl.getId(), tl.getSchedule_id());
                                     taskLogInstanceMapper.updateStatusById(JobStatus.ERROR.getValue(),DateUtil.getCurrentTime(), tl.getId());
                                 }
                             }
@@ -272,7 +268,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                     check=JobCommon2.checkDep(tl.getJob_type(),tl);
 
                     if(tl.getStatus().equalsIgnoreCase(JobStatus.ERROR.getValue()) || tl.getStatus().equalsIgnoreCase(JobStatus.WAIT_RETRY.getValue())){
-                        logger.info("检查依赖时发生异常,退出本次检查");
+                        LogUtil.info(CheckDepJob.class, "检查依赖时发生异常,退出本次检查");
                         JobCommon2.insertLog(tl,"ERROR","检查依赖时发生异常,退出本次检查");
                         continue;
                     }
@@ -332,12 +328,12 @@ public class CheckDepJob implements CheckDepJobInterface{
                     }
                 }catch (Exception e){
                     JobCommon2.updateTaskStatus(JobStatus.ERROR.getValue(),tl.getId(),"",taskLogInstanceMapper);
-                    logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                    LogUtil.error(CheckDepJob.class, e);
                 }
             }
 
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(CheckDepJob.class, e);
         }
 
     }
@@ -479,7 +475,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                     tlim.updateStatusById4(status,process,tli.getId());
                 }
             } catch (Exception e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                LogUtil.error(CheckDepJob.class, e);
                 //判定任务是否可重试,如果无法获取flink信息 则认为flink任务以死亡,尝试自动拉起
                 JobCommon2.jobFail("ETL",tli);
                 //tlim.updateStatusById4(JobStatus.ERROR.getValue(),"100",tli.getId());
@@ -503,15 +499,15 @@ public class CheckDepJob implements CheckDepJobInterface{
                 Object o;
                 try {
                     o = fields[i].get(obj);
-                    logger.info("传入的对象中包含一个如下的变量：" + varName + " = " + o);
+                    LogUtil.info(CheckDepJob.class, "传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                    LogUtil.error(CheckDepJob.class, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                LogUtil.error(CheckDepJob.class, e);
             }
         }
     }

@@ -11,9 +11,8 @@ import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,8 +28,6 @@ import java.util.*;
  */
 @Controller
 public class ZdhProcessFlowController extends BaseController {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ProcessFlowMapper processFlowMapper;
@@ -94,8 +91,7 @@ public class ZdhProcessFlowController extends BaseController {
             List<ProcessFlowInfo> pfis = processFlowMapper.selectByAuditorId(Const.SHOW, getUser().getUserName(), context, product_codes);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "获取流程列表", e);
         }
 
@@ -120,8 +116,7 @@ public class ZdhProcessFlowController extends BaseController {
             List<ProcessFlowInfo> pfis = processFlowMapper.selectByOwner(getUser().getUserName(), context, product_codes);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "获取流程列表", e);
         }
 
@@ -226,7 +221,7 @@ public class ZdhProcessFlowController extends BaseController {
                 //发送http请求
                 try {
                     String result = HttpUtil.postJSON(approvalEventInfo.getCall_back(), JSON.toJSONString(pfi));
-                    logger.info(result);
+                    LogUtil.info(this.getClass(), result);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -327,8 +322,7 @@ public class ZdhProcessFlowController extends BaseController {
             List<ProcessFlowInfo> pfis = processFlowMapper.selectByFlowId(flow_id, getUser().getUserName());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程进度", pfis);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "获取流程进度", e);
         }
 
@@ -636,8 +630,7 @@ public class ZdhProcessFlowController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", pfi);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新代理失败", e);
         }
 

@@ -10,18 +10,15 @@ import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.LogUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
 
 import java.sql.Timestamp;
 import java.util.*;
 
 public class CheckBloodSourceJob {
-    private static Logger logger = LoggerFactory.getLogger(CheckBloodSourceJob.class);
-
 
     public static void Check(String product_code) {
         try {
@@ -44,8 +41,7 @@ public class CheckBloodSourceJob {
 
             }
         } catch (Exception e) {
-            logger.error("{}",e);
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(CheckBloodSourceJob.class, e);
         }
     }
 
@@ -81,7 +77,7 @@ public class CheckBloodSourceJob {
             bsi.setVersion(version);
 
         } catch (Exception e) {
-            logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(CheckBloodSourceJob.class, e);
         }
 
 
@@ -218,7 +214,7 @@ public class CheckBloodSourceJob {
                     bloodSourceMappeer.insertSelective(bsi);
                     bsis.add(bsi);
                 } catch (Exception e) {
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                    LogUtil.error(CheckBloodSourceJob.class, e);
                     continue;
                 }
             }
@@ -349,7 +345,7 @@ public class CheckBloodSourceJob {
             bloodSourceMapper.insertSelective(bsi);
 
         } catch (Exception e) {
-            logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(CheckBloodSourceJob.class, e);
             throw e;
         }
 

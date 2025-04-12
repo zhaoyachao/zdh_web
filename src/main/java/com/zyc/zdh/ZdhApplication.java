@@ -6,10 +6,9 @@ import com.zyc.zdh.controller.LoginController;
 import com.zyc.zdh.run.SystemCommandLineRunner;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.DateUtil;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.mybatis.spring.annotation.MapperScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -34,7 +33,6 @@ import java.util.List;
 @EnableAspectJAutoProxy(exposeProxy = true, proxyTargetClass = true)
 //@EnableAspectJAutoProxy exposeProxy:暴露代理对象,proxyTargetClass强制使用cglib代理
 public class ZdhApplication {
-    public static Logger logger = LoggerFactory.getLogger(ZdhApplication.class);
 
     public static String start_time = DateUtil.getCurrentTime();
 
@@ -52,8 +50,8 @@ public class ZdhApplication {
 
         Environment env = context.getEnvironment();
         String version = env.getProperty(ConfigUtil.VERSION);
-        String envPort = env.getProperty("server.port");
-        String envContext = env.getProperty("server.context-path", "");
+        String envPort = env.getProperty(ConfigUtil.SERVER_PORT);
+        String envContext = env.getProperty(ConfigUtil.SERVER_SERVLET_CONTEXT_PATH, "");
         String port = envPort == null ? "8080" : envPort;
         String line = System.lineSeparator();
         String url = line +"Version:" + version +line;
@@ -63,7 +61,7 @@ public class ZdhApplication {
             url = url+String.format("web-URL: \t\thttp://%s:%s%s/login", host,port, envContext)+line;
         }
 
-        logger.info(url+line+"----------------------------------------------------------");
+        LogUtil.info(ZdhApplication.class, url + line + "----------------------------------------------------------");
     }
 
     private static List<String> getIpAddress() throws SocketException {

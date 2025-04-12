@@ -4,8 +4,6 @@ import com.zyc.zdh.entity.TaskLogInstance;
 import com.zyc.zdh.job.JobCommon2;
 import org.apache.commons.exec.*;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.HashMap;
@@ -19,7 +17,6 @@ import java.util.Map;
  */
 public class CommandUtils {
 
-    public static Logger logger= LoggerFactory.getLogger(CommandUtils.class);
     public static final String DEFAULT_CHARSET = "GBK";
 
     /**
@@ -110,11 +107,9 @@ public class CommandUtils {
 //            System.out.println(output);
             process.destroy();
         } catch (IOException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(CommandUtils.class, e);
         } catch (InterruptedException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(CommandUtils.class, e);
         }
 
         return map;
@@ -165,8 +160,7 @@ public class CommandUtils {
             System.out.println(result.get("result"));
 
         } catch (IOException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(CommandUtils.class, e);
         }
     }
 

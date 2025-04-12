@@ -18,8 +18,6 @@ import com.zyc.zdh.util.*;
 import io.minio.MinioClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -41,8 +39,6 @@ import java.util.*;
  */
 @Controller
 public class StrategyGroupController extends BaseController {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private StrategyGroupMapper strategyGroupMapper;
@@ -130,8 +126,7 @@ public class StrategyGroupController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -194,7 +189,7 @@ public class StrategyGroupController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", strategyGroupInfo);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -228,7 +223,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupMapper.insertSelective(strategyGroupInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }
@@ -248,7 +243,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupMapper.deleteLogicByIds(strategyGroupMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
@@ -307,7 +302,7 @@ public class StrategyGroupController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
@@ -380,8 +375,7 @@ public class StrategyGroupController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -402,8 +396,7 @@ public class StrategyGroupController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", strategyGroupInstance);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -432,9 +425,40 @@ public class StrategyGroupController extends BaseController {
             List<StrategyInstance> strategyGroupInstances = strategyInstanceMapper.selectByGroupInstanceId(strategy_group_instance_id, status);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", strategyGroupInstances);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+    }
+
+
+    /**
+     * 策略组实例重启
+     * @param id
+     * @return
+     */
+    @SentinelResource(value = "strategy_group_instance_restart", blockHandler = "handleReturn")
+    @RequestMapping(value = "/strategy_group_instance_restart", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    @White
+    public ReturnInfo strategy_group_instance_restart(String id) {
+        try {
+
+            StrategyGroupInstance strategyGroupInstance = strategyGroupInstanceMapper.selectByPrimaryKey(id);
+
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInstance.getProduct_code(), strategyGroupInstance.getDim_group(), getAttrEdit());
+
+            int result = strategyGroupInstanceMapper.updateGroupInstanceStatus2Create(new String[]{id});
+
+            if(result <= 0){
+                throw new Exception("未找到更新的实例");
+            }
+            JobDigitalMarket.insertLog(strategyGroupInstance, "INFO", "组实例重启");
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
 
@@ -490,8 +514,7 @@ public class StrategyGroupController extends BaseController {
             strategyGroupInstanceMapper.updateStatusById3(JobStatus.SUB_TASK_DISPATCH.getValue(), DateUtil.getCurrentTime(), strategy_group_instance_id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", strategyInstances);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -590,8 +613,7 @@ public class StrategyGroupController extends BaseController {
                 }
             }
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         }finally {
             if(os != null){
                 try {
@@ -649,7 +671,7 @@ public class StrategyGroupController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", oldStrategyGroupInstance);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -684,7 +706,7 @@ public class StrategyGroupController extends BaseController {
             redisUtil.set("small_flow_rate_"+strategyGroupId, JsonUtil.formatJsonString(tmp));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -708,8 +730,7 @@ public class StrategyGroupController extends BaseController {
             strategyInstanceMapper.updateStatusKillByGroupInstanceId(id,JobStatus.KILL.getValue());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "杀死任务组成功", null);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "杀死任务组失败", e);
         }
     }
@@ -729,8 +750,7 @@ public class StrategyGroupController extends BaseController {
             strategyInstanceMapper.updateStatusKillByIds(new String[]{id});
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "杀死任务成功", null);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "杀死任务失败", e);
         }
     }
@@ -762,8 +782,7 @@ public class StrategyGroupController extends BaseController {
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "手动跳过任务失败", e);
         }
     }
@@ -788,8 +807,7 @@ public class StrategyGroupController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "手动跳过任务失败", e);
         }
@@ -813,8 +831,7 @@ public class StrategyGroupController extends BaseController {
             quartzManager2.addTaskToQuartz(strategyGroupInfo);
             result = ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"调度开启成功",null);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             result=ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"调度开启失败",e);
 
         }
@@ -848,8 +865,7 @@ public class StrategyGroupController extends BaseController {
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"暂停成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"暂停失败", e);
         }
@@ -956,7 +972,7 @@ public class StrategyGroupController extends BaseController {
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e.getMessage());
         }
     }

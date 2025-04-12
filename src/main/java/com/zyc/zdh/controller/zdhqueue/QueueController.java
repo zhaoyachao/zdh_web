@@ -9,9 +9,8 @@ import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,8 +27,6 @@ import java.util.Map;
  */
 @Controller
 public class QueueController extends BaseController {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 队列消息列表首页
@@ -84,8 +81,7 @@ public class QueueController extends BaseController {
             jsonObject.put("rows", rows);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", jsonObject);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
@@ -104,8 +100,7 @@ public class QueueController extends BaseController {
 
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", "当前接口废弃");
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
@@ -153,7 +148,7 @@ public class QueueController extends BaseController {
             }
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "修改失败", "优先级队列内部错误,请联系管理员解决");
         }catch (Exception e){
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "修改失败", e);
         }
     }
@@ -185,7 +180,7 @@ public class QueueController extends BaseController {
             }
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "修改失败", "优先级队列内部错误,请联系管理员解决");
         }catch (Exception e){
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "修改失败", e);
         }
     }

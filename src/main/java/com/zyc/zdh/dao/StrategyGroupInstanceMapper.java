@@ -44,4 +44,17 @@ public interface StrategyGroupInstanceMapper extends BaseStrategyGroupInstanceMa
      */
     @Update(value = "update strategy_group_instance set status=#{status}, update_time=#{update_time} where id=#{id}")
     public int updateStatusById3(@Param("status") String status,@Param("update_time") String update_time, @Param("id") String id);
+
+    @Update(
+            {
+                    "<script>",
+                    "update strategy_group_instance sgi inner join strategy_instance si on sgi.id in " ,
+                    "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+                    "#{id}",
+                    "</foreach>",
+                    "and sgi.id=si.group_instance_id  set sgi.status='create',si.status='create'",
+                    "</script>"
+            }
+    )
+    public int updateGroupInstanceStatus2Create(@Param("ids") String[] ids);
 }

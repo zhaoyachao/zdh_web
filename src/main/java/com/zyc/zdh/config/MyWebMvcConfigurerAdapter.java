@@ -1,8 +1,8 @@
 //package com.zyc.zdh.config;
 //
 //import com.zyc.zdh.util.ConfigUtil;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+//
+//
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 //import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -62,7 +62,7 @@
 //	public InternalResourceViewResolver viewResolver() {
 //		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 //		// viewResolver.setPrefix("/WEB-INF/classes/views/");
-//		logger.info("web.path:"+ConfigUtil.getValue("web.path"));
+//		LogUtil.info(this.getClass(), "web.path:"+ConfigUtil.getValue("web.path"));
 //		viewResolver.setPrefix(ConfigUtil.getValue("web.path"));
 //		viewResolver.setSuffix(".html");
 //		viewResolver.setViewClass(JstlView.class);

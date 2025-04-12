@@ -27,18 +27,18 @@
 //            //当前只支持检查文件是否存在 if [ ! -f "/data/filename" ];then echo "文件不存在"; else echo "true"; fi
 //            //日期替换zdh.date => yyyy-MM-dd 模式
 //            //日期替换zdh.date.nodash=> yyyyMMdd 模式
-//            logger.info("目前支持日期参数3种模式:zdh.date => yyyy-MM-dd ,zdh.date.nodash=> yyyyMMdd " +
+//            LogUtil.info(this.getClass(), "目前支持日期参数3种模式:zdh.date => yyyy-MM-dd ,zdh.date.nodash=> yyyyMMdd " +
 //                    ",zdh.date.time=> yyyy-MM-dd HH:mm:ss");
 //            insertLog(tli, "info", "目前支持日期参数3种模式:zdh.date => yyyy-MM-dd ,zdh.date.nodash=> yyyyMMdd " +
 //                    ",zdh.date.time=> yyyy-MM-dd HH:mm:ss");
 //            if (tli.getLast_time() == null) {
 //                //第一次执行,下次执行时间为起始时间+1
 //                if (tli.getStart_time() == null) {
-//                    logger.info("[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
+//                    LogUtil.info(this.getClass(), "[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
 //                    insertLog(tli, "info", "[" + jobType + "] JOB ,开始日期为空设置当前日期为开始日期");
 //                    tli.setStart_time(new Timestamp(System.currentTimeMillis()));
 //                }
-//                logger.info("上次执行日期,下次执行日期均为空,赋值为:" + tli.getStart_time());
+//                LogUtil.info(this.getClass(), "上次执行日期,下次执行日期均为空,赋值为:" + tli.getStart_time());
 //                insertLog(tli, "info", "上次执行日期,下次执行日期均为空,赋值为:" + tli.getStart_time());
 //                tli.setLast_time(tli.getStart_time());
 //                tli.setNext_time(tli.getStart_time());
@@ -48,7 +48,7 @@
 //
 //            JSONObject json = new JSONObject();
 //            if (!params.equals("")) {
-//                logger.info("[" + jobType + "]" + " JOB ,参数不为空判断是否有url 参数");
+//                LogUtil.info(this.getClass(), "[" + jobType + "]" + " JOB ,参数不为空判断是否有url 参数");
 //                json = JSON.parseObject(params);
 //            }
 //
@@ -57,7 +57,7 @@
 //                String date_time = DateUtil.formatTime(tli.getCur_time());
 //                String date = DateUtil.format(tli.getCur_time());
 //
-//                logger.info("[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
+//                LogUtil.info(this.getClass(), "[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
 //                insertLog(tli, "info", "[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
 //                String result = "fail";
 //                if (tli.getCommand().trim().equals("")) {
@@ -78,7 +78,7 @@
 //                            replace("zdh.date.time", date_time).
 //                            replace("zdh.date", date));
 //
-//                    logger.info("[" + jobType + "] JOB ,开始连接hadoop,参数url:" + fs_defaultFS + ",用户:" + hadoop_user_name);
+//                    LogUtil.info(this.getClass(), "[" + jobType + "] JOB ,开始连接hadoop,参数url:" + fs_defaultFS + ",用户:" + hadoop_user_name);
 //                    insertLog(tli, "info", "[" + jobType + "] JOB ,开始连接hadoop,参数url:" + fs_defaultFS + ",用户:" + hadoop_user_name);
 //
 //                    FileSystem fs = FileSystem.get(new URI(fs_defaultFS), conf, hadoop_user_name);
@@ -96,13 +96,13 @@
 //                        }
 //                    }
 //                }
-//                logger.info("[" + jobType + "] JOB ,执行结果:" + result.trim());
+//                LogUtil.info(this.getClass(), "[" + jobType + "] JOB ,执行结果:" + result.trim());
 //                insertLog(tli, "info", "[" + jobType + "] JOB ,执行结果:" + result.trim());
 //                if (!result.trim().contains("success")) {
 //                    throw new Exception("文件不存在");
 //                }
 //            } else {
-//                logger.info("[" + jobType + "] JOB ,执行命令为空,默认返回成功状态");
+//                LogUtil.info(this.getClass(), "[" + jobType + "] JOB ,执行命令为空,默认返回成功状态");
 //                insertLog(tli, "info", "[" + jobType + "] JOB ,执行命令为空,默认返回成功状态");
 //            }
 //        } catch (Exception e) {

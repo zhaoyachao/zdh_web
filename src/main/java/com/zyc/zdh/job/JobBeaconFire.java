@@ -15,8 +15,6 @@ import com.zyc.zdh.run.ZdhThreadFactory;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,8 +29,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class JobBeaconFire {
-
-    public static Logger logger = LoggerFactory.getLogger(JobBeaconFire.class);
 
     public static LinkedBlockingQueue<BeaconFireTask> linkedBlockingQueue = new LinkedBlockingQueue<>();
 
@@ -210,7 +206,7 @@ public class JobBeaconFire {
             String msg = "目前支持日期参数以下模式: {{zdh_date}} => yyyy-MM-dd ,{{zdh_date_nodash}}=> yyyyMMdd " +
                     ",{{zdh_date_time}}=> yyyy-MM-dd HH:mm:ss,{{zdh_year}}=> 年,{{zdh_month}}=> 月,{{zdh_day}}=> 日," +
                     "{{zdh_hour}}=>24小时制,{{zdh_minute}}=>分钟,{{zdh_second}}=>秒,{{zdh_time}}=>时间戳";
-            logger.info(msg);
+            LogUtil.info(this.getClass(), msg);
 
             String date_nodash = DateUtil.formatNodash(cur_time);
             String date_time = DateUtil.formatTime(cur_time);

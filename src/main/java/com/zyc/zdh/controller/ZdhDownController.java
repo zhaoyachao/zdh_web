@@ -7,10 +7,9 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.ZdhDownloadInfo;
 import com.zyc.zdh.entity.ZdhNginx;
+import com.zyc.zdh.util.LogUtil;
 import com.zyc.zdh.util.SFTPUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
@@ -31,7 +30,6 @@ import java.util.List;
 @Controller
 public class ZdhDownController extends BaseController{
 
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ZdhDownloadMapper zdhDownloadMapper;
     @Autowired
@@ -64,8 +62,7 @@ public class ZdhDownController extends BaseController{
             list = zdhDownloadMapper.slectByOwner(getOwner(), file_name);
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("文件下载列表查询失败", e);
         }
 
@@ -93,8 +90,7 @@ public class ZdhDownController extends BaseController{
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
@@ -151,14 +147,11 @@ public class ZdhDownController extends BaseController{
 
 
         } catch (FileNotFoundException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         } catch (IOException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         } finally {
             zdhDownloadInfo.setDown_count(zdhDownloadInfo.getDown_count() + 1);
             zdhDownloadMapper.updateByPrimaryKeySelective(zdhDownloadInfo);
@@ -167,8 +160,7 @@ public class ZdhDownController extends BaseController{
                 try {
                     bis.close();
                 } catch (IOException e) {
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-                    logger.error(error, e);
+                    LogUtil.error(this.getClass(), e);
                 }
             }
         }

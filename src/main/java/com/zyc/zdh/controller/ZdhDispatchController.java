@@ -6,15 +6,14 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.*;
 import com.zyc.zdh.quartz.QuartzManager2;
 import com.zyc.zdh.service.ZdhPermissionService;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DateUtil;
-import com.zyc.zdh.util.MapStructMapper;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +31,6 @@ import java.util.*;
  */
 @Controller
 public class ZdhDispatchController extends BaseController {
-
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private QuartzJobMapper quartzJobMapper;
@@ -87,8 +84,7 @@ public class ZdhDispatchController extends BaseController {
 
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("查询调度任务列表失败", e);
         }
 
@@ -121,8 +117,7 @@ public class ZdhDispatchController extends BaseController {
 
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("调度任务列表2查询失败", e);
         }
 
@@ -265,8 +260,7 @@ public class ZdhDispatchController extends BaseController {
             quartzJobMapper.insertSelective(quartzJobInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
@@ -287,8 +281,7 @@ public class ZdhDispatchController extends BaseController {
             quartzJobMapper.deleteLogicByIds( quartzJobMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
@@ -322,8 +315,7 @@ public class ZdhDispatchController extends BaseController {
             quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
     }
@@ -394,8 +386,7 @@ public class ZdhDispatchController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"执行成功", null);
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"执行失败", e);
         }
@@ -426,8 +417,7 @@ public class ZdhDispatchController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"执行成功", result);
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"执行失败", e);
         }
     }
@@ -470,8 +460,7 @@ public class ZdhDispatchController extends BaseController {
             quartzManager2.addTaskToQuartz(dti);
             result = ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"调度开启成功",null);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             result=ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"调度开启失败",e);
 
         }
@@ -506,8 +495,7 @@ public class ZdhDispatchController extends BaseController {
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"暂停成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"暂停失败", e);
         }
@@ -550,8 +538,7 @@ public class ZdhDispatchController extends BaseController {
             List<String> instances = zdhHaInfoMapper.selectServerInstance();
             return ReturnInfo.buildSuccess(instances);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("查询执行server失败",e);
         }
     }
@@ -581,8 +568,7 @@ public class ZdhDispatchController extends BaseController {
             List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(example);
             return ReturnInfo.buildSuccess(qrtzSchedulerStates);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("查询失败", e);
         }
     }
@@ -608,8 +594,7 @@ public class ZdhDispatchController extends BaseController {
             quartzExecutorMapper.insertSelective(qei);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
@@ -644,6 +629,21 @@ public class ZdhDispatchController extends BaseController {
             }
             List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.selectByExample(example);
 
+            SchedulerFactoryBean schedulerFactoryBean = (SchedulerFactoryBean) SpringContext.getBean("&schedulerFactoryBean");
+            if(quartzJobInfos != null && quartzJobInfos.size()>0){
+                for (QuartzJobInfo quartzJobInfo: quartzJobInfos){
+                    TriggerKey triggerKey = new TriggerKey(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id());
+                    Trigger.TriggerState triggerState = schedulerFactoryBean.getScheduler().getTriggerState(triggerKey);
+                    if(triggerState == null || triggerState.equals(Trigger.TriggerState.NONE)){
+                        quartzJobInfo.setStatus("remove");
+                    }
+                    if(triggerState.equals(Trigger.TriggerState.PAUSED)){
+                        quartzJobInfo.setStatus("pause");
+                    }
+                }
+            }
+
+
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"查询成功", quartzJobInfos);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"查询失败", e);
@@ -671,8 +671,7 @@ public class ZdhDispatchController extends BaseController {
             quartzManager2.addQuartzJobInfo(qji);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
@@ -693,8 +692,7 @@ public class ZdhDispatchController extends BaseController {
             quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
@@ -727,8 +725,7 @@ public class ZdhDispatchController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
@@ -768,8 +765,7 @@ public class ZdhDispatchController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"禁用成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"禁用失败", e);
         }

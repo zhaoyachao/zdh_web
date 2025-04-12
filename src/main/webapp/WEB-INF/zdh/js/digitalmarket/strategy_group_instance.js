@@ -109,6 +109,32 @@
       });
 
       window.operateEvents = {
+          'click #restart': function (e, value, row, index) {
+              layer.confirm('确定重启任务组', {
+                  btn: ['确定','取消'] //按钮
+              }, function(index){
+                  $.ajax({
+                      url:server_context+"/strategy_group_instance_restart",
+                      data: "id="+row.id,
+                      type: "post",
+                      async:false,
+                      dataType: "json",
+                      success: function (data) {
+                          console.info("success");
+                          layer.msg(data.msg);
+                      },
+                      error: function (data) {
+                          console.info("error: " + data.responseText);
+                          layer.msg("请求失败"+data.responseText);
+                      }
+
+                  });
+                  //layer.close(layer.index);
+              }, function(){
+
+              });
+
+          },
           'click #log_txt': function (e, value, row, index) {
               window.open(server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.run_time + "&update_time=" + row.update_time);
               //openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
@@ -430,6 +456,7 @@
                 var class_str = "btn-primary  btn-xs";
                 var class_str2 = "btn-primary  ";
                 var context = "未运行";
+                var btn_restart_str='';
                 var btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>';
                 var btn_kill_str='<button id="kill" type="button" class="btn btn-danger btn-xs">杀死</button>';
                 if(row.is_retryed==1){
@@ -443,6 +470,7 @@
                     class_str = "btn-primary btn-xs";
                     btn_retry_str='';
                     btn_kill_str='';
+                    btn_restart_str='<button id="restart" type="button" class="btn btn-warning btn-xs">重启</button>';
                 }
                 if (value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
                     context = "运行中";
@@ -453,6 +481,8 @@
                     context = "失败";
                     class_str = "btn-danger btn-xs";
                     btn_kill_str='';
+                    btn_restart_str='<button id="restart" type="button" class="btn btn-warning btn-xs">重启</button>';
+
                 }
                 if (value == "retry") {
                     context = "重试";
@@ -467,7 +497,8 @@
                 if (value=="killed" ){
                     context = "已杀死";
                     class_str = "btn-danger btn-xs";
-                    btn_kill_str=''
+                    btn_kill_str='';
+                    btn_restart_str='<button id="restart" type="button" class="btn btn-warning btn-xs">重启</button>';
                 }
                 if (value == "create") {
                     context = "创建成功";
@@ -485,6 +516,7 @@
                     '<div style="text-align:center" >'+
                     '<div class="btn-group">'+
                     '<button type="button" class="btn '+class_str+'" >'+context+'</button>'+
+                    btn_restart_str +
                     btn_retry_str +
                     btn_kill_str +
                     '<button type="button" id="log_txt" class="btn btn-warning btn-xs">组日志</button>'+

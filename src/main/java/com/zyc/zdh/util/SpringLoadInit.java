@@ -1,8 +1,6 @@
 package com.zyc.zdh.util;
 
 import com.zyc.zdh.annotation.MyMark;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -20,8 +18,6 @@ import org.springframework.stereotype.Component;
 public class SpringLoadInit implements
 		ApplicationListener<ContextRefreshedEvent>,Ordered {
 
-	private static Logger logger = LoggerFactory
-			.getLogger(SpringLoadInit.class);
 	private ApplicationContext applicationContext;
 
 	@Override
@@ -35,7 +31,7 @@ public class SpringLoadInit implements
 	}
 	
 	private void initSocket(){
-		logger.debug("加载初始化程序完成");
+		LogUtil.debug(this.getClass(), "加载初始化程序完成");
 	}
 
 	@Override

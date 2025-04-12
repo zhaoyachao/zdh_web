@@ -17,8 +17,6 @@ import com.zyc.zdh.service.ZdhLogsService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.lang.reflect.Field;
@@ -30,8 +28,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class JobDigitalMarket {
-
-    public static Logger logger = LoggerFactory.getLogger(JobDigitalMarket.class);
 
     public static ThreadGroup threadGroup = new ThreadGroup("zdh_strategy");
     public static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(Const.DIGITAL_MARKET_THREAD_MIN_NUM,
@@ -98,16 +94,15 @@ public class JobDigitalMarket {
                 Object o;
                 try {
                     o = fields[i].get(obj);
-                    logger.info("传入的对象中包含一个如下的变量：" + varName + " = " + o);
+                    LogUtil.info(JobDigitalMarket.class, "传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                    String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-                    logger.error(error, e);
+                    LogUtil.error(JobDigitalMarket.class, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}", e);
+                LogUtil.error(JobDigitalMarket.class, e);
             }
         }
     }
@@ -207,7 +202,7 @@ public class JobDigitalMarket {
         String msg = "目前支持日期参数以下模式: {{zdh_date}} => yyyy-MM-dd ,{{zdh_date_nodash}}=> yyyyMMdd " +
                 ",{{zdh_date_time}}=> yyyy-MM-dd HH:mm:ss,{{zdh_year}}=> 年,{{zdh_month}}=> 月,{{zdh_day}}=> 日," +
                 "{{zdh_hour}}=>24小时制,{{zdh_minute}}=>分钟,{{zdh_second}}=>秒,{{zdh_time}}=>时间戳";
-        logger.debug(msg);
+        LogUtil.debug(JobDigitalMarket.class, msg);
         //insertLog(si, "info", msg);
         Timestamp cur_time = si.getCur_time();
         String date_nodash = DateUtil.formatNodash(cur_time);
@@ -251,7 +246,7 @@ public class JobDigitalMarket {
                 DateUtil.class, "pase", String.class, String.class));
 
         String msg = "目前支持日期操作: {{add_day('2021-12-01 00:00:00', 1)}} => 2021-12-02 00:00:00 ,{{add_hour('2021-12-01 00:00:00', 1)}} => 2021-12-01 01:00:00,{{add_minute('2021-12-01 00:00:00', 1)}} => 2021-12-01 00:01:00, 更多高级函数, 可参考【系统内置参数】点击链接查看具体使用例子";
-        logger.debug(msg);
+        LogUtil.debug(JobDigitalMarket.class, msg);
         return jj;
     }
     /**
@@ -337,11 +332,11 @@ public class JobDigitalMarket {
                         debugInfo(sgi);
 
                     } catch (IllegalAccessException e) {
-                        logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+                        LogUtil.error(JobDigitalMarket.class, e);
                     } catch (InvocationTargetException e) {
-                        logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+                        LogUtil.error(JobDigitalMarket.class, e);
                     } catch (Exception e) {
-                        logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+                        LogUtil.error(JobDigitalMarket.class, e);
                     }
 
 
@@ -364,7 +359,7 @@ public class JobDigitalMarket {
                 try {
                     seconds = Integer.parseInt(strategyGroupInfo.getTime_diff());
                 } catch (NumberFormatException e) {
-                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+                    LogUtil.error(JobDigitalMarket.class, e);
                 }
                 return DateUtil.add(strategyGroupInfo.getQuartz_time(), Calendar.SECOND, -seconds);
             }
@@ -521,7 +516,7 @@ public class JobDigitalMarket {
                 sim.insert(si);
             }
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(JobDigitalMarket.class, e);
             JobDigitalMarket.insertLog(sgi, "ERROR", "生成子任务失败," + e.getMessage());
         }
         return siList;

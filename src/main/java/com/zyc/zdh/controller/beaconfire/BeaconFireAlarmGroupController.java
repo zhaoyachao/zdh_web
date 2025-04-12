@@ -10,10 +10,9 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
@@ -34,8 +33,6 @@ import java.util.Map;
  */
 @Controller
 public class BeaconFireAlarmGroupController extends BaseController {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private BeaconFireAlarmGroupMapper beaconFireAlarmGroupMapper;
@@ -92,8 +89,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
 
             return ReturnInfo.buildSuccess(pageResult);
         }catch(Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("烽火台告警组信息列表查询失败", e);
         }
 
@@ -121,6 +117,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
             BeaconFireAlarmGroupInfo beaconFireAlarmGroupInfo = beaconFireAlarmGroupMapper.selectByPrimaryKey(id);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", beaconFireAlarmGroupInfo);
         } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -154,7 +151,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", beaconFireAlarmGroupInfo);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -187,7 +184,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
             beaconFireAlarmGroupMapper.insertSelective(beaconFireAlarmGroupInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", beaconFireAlarmGroupInfo);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
@@ -206,7 +203,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
             beaconFireAlarmGroupMapper.deleteLogicByIds(beaconFireAlarmGroupMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
@@ -235,8 +232,7 @@ public class BeaconFireAlarmGroupController extends BaseController {
 
             return ReturnInfo.buildSuccess(beaconFireAlarmGroupInfos);
         }catch(Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("烽火台告警组信息列表查询失败", e);
         }
 

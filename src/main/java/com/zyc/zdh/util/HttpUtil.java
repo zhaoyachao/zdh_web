@@ -143,7 +143,7 @@ public class HttpUtil {
 
   // 发送POST请求
   public static String postRequest(String path, String mediaType, HttpEntity entity, HttpHost proxy) throws Exception {
-    //logger.debug("[postRequest] resourceUrl: {}", path);
+      //LogUtil.debug(this.getClass(), "[postRequest] resourceUrl: {}", path);
     HttpPost post = new HttpPost(path);
     post.addHeader("Content-Type", mediaType);
     post.addHeader("Accept", "application/json");
@@ -173,7 +173,7 @@ public class HttpUtil {
   }
 
   public static String postRequest(String path, HttpEntity entity, Map<String,String> header, Map<String,String> cookie, HttpHost proxy) throws Exception {
-    //logger.debug("[postRequest] resourceUrl: {}", path);
+      //LogUtil.debug(this.getClass(), "[postRequest] resourceUrl: {}", path);
     HttpPost post = new HttpPost(path);
 
     //默认
@@ -226,7 +226,7 @@ public class HttpUtil {
 
 
   public static String patchRequest(String path, List<NameValuePair> parametersBody) throws Exception {
-    //logger.debug("[postRequest] resourceUrl: {}", path);
+      //LogUtil.debug(this.getClass(), "[postRequest] resourceUrl: {}", path);
     HttpPatch patch = new HttpPatch(path);
     patch.addHeader("Content-Type", "application/json");
     patch.addHeader("Accept", "application/json");

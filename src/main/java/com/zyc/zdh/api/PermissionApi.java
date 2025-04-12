@@ -3,9 +3,8 @@ package com.zyc.zdh.api;
 import com.zyc.zdh.controller.PermissionApiController;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.shiro.SessionDao;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.shiro.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +26,6 @@ import java.util.Map;
 @Controller("permissionApi")
 @RequestMapping("api")
 public class PermissionApi {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private SessionDao sessionDao;
@@ -312,9 +309,7 @@ public class PermissionApi {
         try{
             return permissionApiController.enable_role_by_product(product_code, ak,  sk,  role_code, resource_ids);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
-
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
@@ -334,9 +329,7 @@ public class PermissionApi {
         try{
             return permissionApiController.get_role_by_product(product_code, ak, sk, role_code);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
-
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -355,8 +348,7 @@ public class PermissionApi {
         try{
             return permissionApiController.get_role_by_product(product_code, ak, sk);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -376,8 +368,7 @@ public class PermissionApi {
         try{
             return permissionApiController.get_user_list_by_product_role(product_code, ak, sk, role_code);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -417,8 +408,7 @@ public class PermissionApi {
         try{
             return permissionApiController.add_batch_resource_by_product(product_code, ak, sk, resource_tree_info);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
@@ -477,8 +467,7 @@ public class PermissionApi {
         try{
             return permissionApiController.get_dimension_list_by_product(product_code, ak, sk);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
@@ -498,8 +487,7 @@ public class PermissionApi {
         try{
             return permissionApiController.get_dimension_value_list_by_product(product_code, ak, sk);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
@@ -519,8 +507,7 @@ public class PermissionApi {
         try{
             return permissionApiController.get_user_dimension_list_by_product(product_code, ak, sk, user_account);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
@@ -539,8 +526,7 @@ public class PermissionApi {
         try{
             return permissionApiController.get_user_dimension_value_list_by_product(product_code, ak, sk, user_account);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
@@ -559,8 +545,7 @@ public class PermissionApi {
         try{
             return permissionApiController.get_usergroup_dimension_list_by_product(product_code, ak, sk, group_code);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
@@ -579,8 +564,7 @@ public class PermissionApi {
         try{
             return permissionApiController.get_usergroup_dimension_value_list_by_product(product_code, ak, sk, group_code);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }

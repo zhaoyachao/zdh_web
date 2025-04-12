@@ -1,6 +1,7 @@
 package com.zyc.zdh.job;
 
 import com.zyc.zdh.entity.QuartzJobInfo;
+import com.zyc.zdh.util.LogUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -25,23 +26,17 @@ public class ClassJob extends JobCommon2{
             Object object = demo.newInstance();
             System.out.println(demo.getMethod("invoke",String.class).invoke(object,new Object[]{"amx"}));
         } catch (MalformedURLException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(ClassJob.class, e);
         } catch (InstantiationException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(ClassJob.class, e);
         } catch (InvocationTargetException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(ClassJob.class, e);
         } catch (NoSuchMethodException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(ClassJob.class, e);
         } catch (IllegalAccessException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(ClassJob.class, e);
         } catch (ClassNotFoundException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(ClassJob.class, e);
         }
 
 

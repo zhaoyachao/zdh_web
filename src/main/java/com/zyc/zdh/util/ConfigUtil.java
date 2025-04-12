@@ -18,6 +18,7 @@ public class ConfigUtil {
     public static String MYID = "myid";
     public static String INSTANCE = "instance";
     public static String SERVER_PORT = "server.port";
+    public static String SERVER_SERVLET_CONTEXT_PATH="server.servlet.context-path";
     public static String ZDP_PRODUCT = "zdp.product";
     public static String ZDP_AK = "zdp.ak";
     public static String ZDP_SK = "zdp.sk";

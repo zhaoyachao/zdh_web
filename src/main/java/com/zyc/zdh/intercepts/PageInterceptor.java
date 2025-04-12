@@ -1,6 +1,7 @@
 package com.zyc.zdh.intercepts;
 
 import com.zyc.zdh.entity.PageBase;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.ExecutorException;
 import org.apache.ibatis.executor.statement.BaseStatementHandler;
@@ -17,8 +18,6 @@ import org.apache.ibatis.scripting.xmltags.ForEachSqlNode;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tk.mybatis.mapper.util.StringUtil;
 
 import javax.xml.bind.PropertyException;
@@ -39,7 +38,7 @@ import java.util.Properties;
  */
 @Intercepts({@Signature(type=StatementHandler.class,method="prepare",args={Connection.class,Integer.class})})
 public class PageInterceptor implements Interceptor {
-	public Logger logger= LoggerFactory.getLogger(this.getClass());
+
 	private static String dialect = "";	//数据库方言
 	private static String pageSqlId = ""; //mapper.xml中需要拦截的ID(正则匹配)
 	@Override
@@ -185,8 +184,7 @@ public class PageInterceptor implements Interceptor {
 				throw new PropertyException("dialect property is not found!");
 			} catch (PropertyException e) {
 				// TODO Auto-generated catch block
-				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-				logger.error(error, e);
+                LogUtil.error(this.getClass(), e);
 			}
 		}
 		pageSqlId = p.getProperty("pageSqlId");
@@ -195,8 +193,7 @@ public class PageInterceptor implements Interceptor {
 				throw new PropertyException("pageSqlId property is not found!");
 			} catch (PropertyException e) {
 				// TODO Auto-generated catch block
-				String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-				logger.error(error, e);
+                LogUtil.error(this.getClass(), e);
 			}
 		}
 	}

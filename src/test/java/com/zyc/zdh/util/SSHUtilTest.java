@@ -2,8 +2,8 @@ package com.zyc.zdh.util;
 
 import com.jcraft.jsch.JSchException;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 
 public class SSHUtilTest {
 
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
+
 
     @Test
     public void exec() throws IOException, JSchException {
@@ -28,7 +28,7 @@ public class SSHUtilTest {
                 try {
                     Thread.sleep(20000);
                 } catch (InterruptedException e) {
-                    logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                    LogUtil.error(this.getClass(), e);
                 }
                 System.out.println("开始关闭");
 

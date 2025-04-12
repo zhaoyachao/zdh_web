@@ -10,10 +10,9 @@ import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.Encrypt;
 import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,8 +35,6 @@ import java.util.List;
 @Controller("processFlowApi")
 @RequestMapping("api")
 public class ProcessFlowApi {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private SessionDao sessionDao;
@@ -144,8 +141,7 @@ public class ProcessFlowApi {
             List<ProcessFlowInfo> pfis = processFlowMapper.selectByFlowId(flow_id, user_account);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程进度", pfis);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "获取流程进度", e);
         }
 

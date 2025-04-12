@@ -2,10 +2,7 @@ package com.zyc.zdh.job;
 
 import com.zyc.zdh.entity.EtlTaskLogInfo;
 import com.zyc.zdh.entity.TaskLogInstance;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.JsonUtil;
-import com.zyc.zdh.util.SFTPUtil;
-import com.zyc.zdh.util.SSHUtil;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -29,14 +26,14 @@ public class FlumeJob extends JobCommon2 {
         //执行命令
         try {
             long t1 = System.currentTimeMillis();
-            logger.info("flume任务当前只支持同步方式,异步方式暂不支持,当前仅支持flume采集,输出数据源暂未实现...");
+            LogUtil.info(FlumeJob.class, "flume任务当前只支持同步方式,异步方式暂不支持,当前仅支持flume采集,输出数据源暂未实现...");
             insertLog(tli,"info","flume任务当前只支持同步方式,异步方式暂不支持,当前仅支持flume采集,输出数据源暂未实现...");
             //当前只支持检查文件是否存在 if [ ! -f "/data/filename" ];then echo "文件不存在"; else echo "true"; fi
             //日期替换zdh.date => yyyy-MM-dd 模式
             //日期替换zdh.date.nodash=> yyyyMMdd 模式
 
             if(tli.getJump_script()!=null && tli.getJump_script().equalsIgnoreCase(Const.ON)){
-                logger.info("跳过脚本验证");
+                LogUtil.info(FlumeJob.class, "跳过脚本验证");
                 insertLog(tli,"info","跳过脚本验证");
                 return exe_status;
             }
@@ -60,7 +57,7 @@ public class FlumeJob extends JobCommon2 {
                 throw new Exception("flume配置信息不可为空");
             }
 
-            logger.info("[" + jobType + "] JOB ,以脚本方式执行");
+            LogUtil.info(FlumeJob.class, "[" + jobType + "] JOB ,以脚本方式执行");
             insertLog(tli, "info", "[" + jobType + "] JOB ,以脚本方式执行");
             String fileName = "job_"+tli.getId();
             String system = System.getProperty("os.name");
@@ -105,7 +102,7 @@ public class FlumeJob extends JobCommon2 {
                 sftpUtil.upload(taskLogInfo.getFlume_path()+"/jobs", file4.getName(), newcommand,"UTF-8");
 
             } catch (Exception e) {
-                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+                LogUtil.error(FlumeJob.class, e);
                 throw e;
             } finally {
                 sftpUtil.logout();
@@ -132,8 +129,7 @@ public class FlumeJob extends JobCommon2 {
             }
             return true;
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            logger.error(e.getMessage());
+            LogUtil.error(FlumeJob.class, e.getMessage(), e);
             insertLog(tli, "error","[" + jobType + "] JOB ,"+ e.getMessage());
             jobFail(jobType,tli);
             exe_status = false;
@@ -152,7 +148,7 @@ public class FlumeJob extends JobCommon2 {
                 //等待命令执行完成
                 process.waitFor(10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                LogUtil.error(FlumeJob.class, e);
             }
             InputStream is = process.getInputStream();
             input = new Scanner(is);

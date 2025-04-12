@@ -10,11 +10,10 @@ import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.LogUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import tk.mybatis.mapper.entity.Example;
@@ -27,8 +26,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class BaseController {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private String ZDH_PERMISSION_PRODUCT_DIM_GROUP_SELECT="zdh_permission_product_dim_group_select";
 
     private String ZDH_PERMISSION_PRODUCT_ATTR="zdh_permission_product_attr";
@@ -570,7 +567,7 @@ public class BaseController {
             }
             return true;
         }catch (Exception e){
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
         }
 
         return false;
@@ -735,12 +732,12 @@ public class BaseController {
 //                    System.err.println("传入的对象中包含一个如下的变量：" + varName + " = " + o);
 //                } catch (IllegalAccessException e) {
 //                    // TODO Auto-generated catch block
-//                    logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+//                     LogUtil.error(this.getClass(), e);
 //                }
 //                // 恢复访问控制权限
 //                fields[i].setAccessible(accessFlag);
 //            } catch (IllegalArgumentException e) {
-//                logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+//                 LogUtil.error(this.getClass(), e);
 //            }
 //        }
 //    }

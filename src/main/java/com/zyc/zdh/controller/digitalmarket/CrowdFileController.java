@@ -10,15 +10,10 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
-import com.zyc.zdh.util.ConfigUtil;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.MinioUtil;
-import com.zyc.zdh.util.SFTPUtil;
+import com.zyc.zdh.util.*;
 import io.minio.MinioClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,8 +39,6 @@ import java.util.List;
  */
 @Controller
 public class CrowdFileController extends BaseController {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private CrowdFileMapper crowdFileMapper;
@@ -110,8 +103,7 @@ public class CrowdFileController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pageResult);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 
@@ -142,8 +134,7 @@ public class CrowdFileController extends BaseController {
             checkPermissionByProductAndDimGroup(zdhPermissionService, crowdFileInfo.getProduct_code(), crowdFileInfo.getDim_group());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", crowdFileInfo);
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -174,7 +165,7 @@ public class CrowdFileController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", crowdFileInfo);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -246,11 +237,11 @@ public class CrowdFileController extends BaseController {
                                 fileDir.mkdirs();
                             }
                             File localFile = new File( path + "/" +crowdFileName);
-                            logger.info("crowd file upload store type: {}, path: {}", store, localFile.getAbsolutePath());
+                            LogUtil.info(this.getClass(), "crowd file upload store type: {}, path: {}", store, localFile.getAbsolutePath());
                             FileCopyUtils.copy(jar_file.getInputStream(), Files.newOutputStream(localFile.toPath()));
 
                         }else if(store.equalsIgnoreCase("sftp")){
-                            logger.info("crowd file upload store type: {}, path: {}", store, path+"/"+crowdFileName);
+                            LogUtil.info(this.getClass(), "crowd file upload store type: {}, path: {}", store, path + "/" + crowdFileName);
                             FileCopyUtils.copy(jar_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
                             //sftp
                             SFTPUtil sftp = new SFTPUtil(username, password,
@@ -260,7 +251,7 @@ public class CrowdFileController extends BaseController {
                             sftp.upload(path, fileName, is);
                             sftp.logout();
                         }else if(store.equalsIgnoreCase("minio")){
-                            logger.info("crowd file upload store type: {}, path: {}", store, path+"/"+crowdFile.getFile_name());
+                            LogUtil.info(this.getClass(), "crowd file upload store type: {}, path: {}", store, path + "/" + crowdFile.getFile_name());
                             String object_name = path+"/"+crowdFile.getFile_name();
                             String ak = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_AK);//env.getProperty("digitalmarket.minio.ak");
                             String sk = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_MINIO_SK);//env.getProperty("digitalmarket.minio.sk");
@@ -273,7 +264,7 @@ public class CrowdFileController extends BaseController {
 
                         crowdFileMapper.insertSelective(crowdFile);
                     } catch (Exception e) {
-                        logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                        LogUtil.error(this.getClass(), e);
                         throw e;
                     }
                 }
@@ -281,7 +272,7 @@ public class CrowdFileController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
@@ -302,7 +293,7 @@ public class CrowdFileController extends BaseController {
             crowdFileMapper.deleteLogicByIds(crowdFileMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
@@ -340,11 +331,11 @@ public class CrowdFileController extends BaseController {
                 }
 
                 File localFile = new File( fileDir + "/" +oldCrowdFileInfo.getFile_url());
-                logger.info("crowd file upload store type: {}, path: {}", store, localFile.getAbsolutePath());
+                LogUtil.info(this.getClass(), "crowd file upload store type: {}, path: {}", store, localFile.getAbsolutePath());
                 lines = FileUtil.readLines(localFile, "utf-8");
 
             }else if(store.equalsIgnoreCase("sftp")){
-                logger.info("crowd file upload store type: {}, path: {}", store, path+oldCrowdFileInfo.getFile_url());
+                LogUtil.info(this.getClass(), "crowd file upload store type: {}, path: {}", store, path + oldCrowdFileInfo.getFile_url());
                 //sftp
                 SFTPUtil sftp = new SFTPUtil(username, password,
                         host, new Integer(port));
@@ -364,7 +355,7 @@ public class CrowdFileController extends BaseController {
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "同步成功", null);
         } catch (Exception e) {
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "同步失败", e.getMessage());
         }

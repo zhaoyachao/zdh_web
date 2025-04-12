@@ -7,9 +7,8 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +26,6 @@ import java.util.Map;
  */
 @Controller
 public class ServiceManagerController extends BaseController {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private RedisUtil redisUtil;
@@ -97,8 +94,7 @@ public class ServiceManagerController extends BaseController {
 
             return ReturnInfo.buildSuccess(commonTreeInfos);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("变量查询失败", e);
         }
     }
@@ -185,8 +181,7 @@ public class ServiceManagerController extends BaseController {
 
             return ReturnInfo.buildSuccess(serviceList);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("服务查询失败", e);
         }
     }
@@ -204,8 +199,7 @@ public class ServiceManagerController extends BaseController {
             redisUtil.getRedisTemplate().opsForHash().put(instance_id, "mode",SERVICE_MODE_SUSPEND);
             return ReturnInfo.buildSuccess();
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("服务暂停失败", e);
         }
     }
@@ -222,8 +216,7 @@ public class ServiceManagerController extends BaseController {
             redisUtil.getRedisTemplate().opsForHash().put(instance_id, "mode",SERVICE_MODE_STOP);
             return ReturnInfo.buildSuccess();
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("服务停止失败", e);
         }
     }
@@ -240,8 +233,7 @@ public class ServiceManagerController extends BaseController {
             redisUtil.getRedisTemplate().opsForHash().put(instance_id, "mode",SERVICE_MODE_RUN);
             return ReturnInfo.buildSuccess();
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("服务重启失败", e);
         }
     }
@@ -295,8 +287,7 @@ public class ServiceManagerController extends BaseController {
             redisUtil.getRedisTemplate().opsForHash().put(instance_id, "slot", slot.replaceAll(";", ","));
             return ReturnInfo.buildSuccess();
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("更新槽位失败", e);
         }
     }
@@ -319,8 +310,7 @@ public class ServiceManagerController extends BaseController {
             redisUtil.getRedisTemplate().opsForHash().put(instance_id, "version_tag", version_tag);
             return ReturnInfo.buildSuccess();
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("更新槽位失败", e);
         }
     }

@@ -1,10 +1,9 @@
 package com.zyc.zdh.config;
 
 import com.zyc.zdh.quartz.MyJobFactory;
+import com.zyc.zdh.util.LogUtil;
 import org.quartz.Scheduler;
 import org.quartz.utils.PropertiesParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,8 +26,6 @@ import java.util.Properties;
  */
 @Configuration
 public class QuartzConfig {
-
-	public Logger logger = LoggerFactory.getLogger(this.getClass());
 
 //	@Value("${spring.datasource.url}")
 //	private String dbUrl;
@@ -104,7 +101,7 @@ public class QuartzConfig {
 					if(key.contains("zdh.schedule.")){
 						String k = key.split("zdh.schedule.")[1];
 						prop.put(k, config.get(key).toString());
-						logger.info("zdh schedule config "+k+"====>"+config.get(key).toString());
+                        LogUtil.info(this.getClass(), "zdh schedule config " + k + "====>" + config.get(key).toString());
 					}
 				}
 			}

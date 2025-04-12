@@ -10,11 +10,10 @@ import com.zyc.zdh.job.JobType;
 import com.zyc.zdh.job.MyJobBean;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
@@ -27,8 +26,6 @@ import java.util.Set;
 
 @Service("quartzManager2")
 public class QuartzManager2 {
-
-	private static Logger logger = LoggerFactory.getLogger(QuartzManager2.class);
 	@Autowired
 	private SchedulerFactoryBean schedulerFactoryBean;
 	
@@ -88,7 +85,7 @@ public class QuartzManager2 {
 		try {
 			//根据调度id 和etl任务id 确定唯一的triggerkey
 			if(schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()))!=null){
-				logger.info("已经存在同名的triggerkey,请重新创建");
+				LogUtil.info(this.getClass(), "已经存在同名的triggerkey,请重新创建");
 				throw new Exception("已经存在同名的triggerkey,请重新创建");
 			}
 
@@ -140,7 +137,7 @@ public class QuartzManager2 {
 						.withSchedule(cronScheduleBuilder).build();
 			}
 
-			logger.debug("任务的trigger创建完成triggerkey is {}", trigger.getKey()
+			LogUtil.debug(this.getClass(), "任务的trigger创建完成triggerkey is {}", trigger.getKey()
 					.toString());
 			JobDataMap jobDataMap = trigger.getJobDataMap();
 			jobDataMap.put(MyJobBean.TASK_ID, quartzJobInfo.getJob_id());
@@ -150,16 +147,13 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
 
 		} catch (SecurityException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		} catch (SchedulerException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		}
 
@@ -175,7 +169,7 @@ public class QuartzManager2 {
 		try {
 			//根据调度id 和etl任务id 确定唯一的triggerkey
 			if(schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id()))!=null){
-				logger.info("已经存在同名的triggerkey,请重新创建");
+				LogUtil.info(this.getClass(), "已经存在同名的triggerkey,请重新创建");
 				throw new Exception("已经存在同名的triggerkey,请重新创建");
 			}
 
@@ -228,7 +222,7 @@ public class QuartzManager2 {
 						.withSchedule(cronScheduleBuilder).build();
 			}
 
-			logger.debug("任务的trigger创建完成triggerkey is {}", trigger.getKey()
+			LogUtil.debug(this.getClass(), "任务的trigger创建完成triggerkey is {}", trigger.getKey()
 					.toString());
 			JobDataMap jobDataMap = trigger.getJobDataMap();
 			jobDataMap.put(MyJobBean.TASK_ID, quartzJobInfo.getJob_id());
@@ -241,16 +235,13 @@ public class QuartzManager2 {
 //			}
 			quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
 		} catch (SecurityException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		} catch (SchedulerException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		}
 
@@ -265,7 +256,7 @@ public class QuartzManager2 {
 		try {
 			//根据调度id 和etl任务id 确定唯一的triggerkey
 			if(schedulerFactoryBean.getScheduler().getTrigger(new TriggerKey(strategyGroupInfo.getId(), Const.STRATEGY_JOB_KEY_GROUP))!=null){
-				logger.info("已经存在同名的triggerkey,请重新创建");
+				LogUtil.info(this.getClass(), "已经存在同名的triggerkey,请重新创建");
 				throw new Exception("已经存在同名的triggerkey,请重新创建");
 			}
 
@@ -300,7 +291,7 @@ public class QuartzManager2 {
 						.withSchedule(cronScheduleBuilder).build();
 			}
 
-			logger.debug("任务的trigger创建完成triggerkey is {}", trigger.getKey()
+			LogUtil.debug(this.getClass(), "任务的trigger创建完成triggerkey is {}", trigger.getKey()
 					.toString());
 			JobDataMap jobDataMap = trigger.getJobDataMap();
 			jobDataMap.put(MyJobBean.TASK_ID, strategyGroupInfo.getId());
@@ -311,16 +302,13 @@ public class QuartzManager2 {
 
 			strategyGroupMapper.updateByPrimaryKeySelective(strategyGroupInfo);
 		} catch (SecurityException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		} catch (SchedulerException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		}
 
@@ -377,8 +365,7 @@ public class QuartzManager2 {
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 		}
 		// 下方可以做一些更新数据库中任务的操作
 		quartzJobInfo.setStatus("runing");
@@ -411,8 +398,7 @@ public class QuartzManager2 {
 			scheduler.pauseJob(jobKey);
 			scheduler.deleteJob(jobKey);
 		} catch (SchedulerException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 		}
 	}
 
@@ -435,8 +421,7 @@ public class QuartzManager2 {
 			quartzJobInfo.setStatus(status);
 			quartzJobMapper.updateStatus(quartzJobInfo.getJob_id(),status);
 		} catch (SchedulerException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 		}
 		return quartzJobInfo;
 	}
@@ -459,8 +444,7 @@ public class QuartzManager2 {
 			quartzJobMapper.updateStatus2(tli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
 
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 		}
 		return qji;
 	}
@@ -476,8 +460,7 @@ public class QuartzManager2 {
 			strategyGroupInfo.setStatus("finish");
 			strategyGroupMapper.updateByPrimaryKeySelective(strategyGroupInfo);
 		} catch (SchedulerException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		}
 		return qji;
@@ -501,8 +484,7 @@ public class QuartzManager2 {
 			quartzJobMapper.updateStatus2(tgli.getJob_id(),status,last_status);
 		} catch (SchedulerException e) {
 
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 		}
 		return qji;
 	}
@@ -522,8 +504,7 @@ public class QuartzManager2 {
 			quartzJobMapper.updateByPrimaryKeySelective(quartzJobInfo);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 		}
 	}
 
@@ -543,8 +524,7 @@ public class QuartzManager2 {
 			strategyGroupMapper.updateByPrimaryKeySelective(strategyGroupInfo);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 		}
 	}
 
@@ -559,8 +539,7 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().resumeJob(jobKey);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 		}
 	}
 
@@ -575,8 +554,7 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().resumeJob(jobKey);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 		}
 	}
 
@@ -591,8 +569,7 @@ public class QuartzManager2 {
 			return quartzJobMapper.selectRunJobByOwner(job_ids, product_codes, dim_groups);
 
 		} catch (SchedulerException e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 			throw e;
 		}
 	}
@@ -605,8 +582,7 @@ public class QuartzManager2 {
 			schedulerFactoryBean.getScheduler().shutdown();
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+			LogUtil.error(this.getClass(), e);
 		}
 	}
 
@@ -663,7 +639,7 @@ public class QuartzManager2 {
 		}else if(misfire.equalsIgnoreCase(Const.ALL_HISTORY)){
 			simpleScheduleBuilder = simpleScheduleBuilder.withMisfireHandlingInstructionFireNow();
 		}else if(misfire.equalsIgnoreCase(Const.LAST_HISTORY)){
-			logger.info("SimpleSchedule 调度器不支持最近一次历史任务执行,将使用默认执行策略");
+			LogUtil.info(this.getClass(), "SimpleSchedule 调度器不支持最近一次历史任务执行,将使用默认执行策略");
 		}
 
 		return simpleScheduleBuilder;

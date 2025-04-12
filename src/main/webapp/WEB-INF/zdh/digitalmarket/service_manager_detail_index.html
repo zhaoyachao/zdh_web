@@ -290,7 +290,7 @@
                         $(".btn_version").click(function () {
                             var instance_id= $(this).attr('data_id');
                             var data_version= $(this).attr('data_version');
-
+                            data_version = encodeURIComponent(data_version);
                             parent.layer.open({
                                 type: 2,
                                 title: '设置版本',

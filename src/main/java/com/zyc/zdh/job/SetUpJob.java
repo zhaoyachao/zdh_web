@@ -3,19 +3,16 @@ package com.zyc.zdh.job;
 import com.jcraft.jsch.JSchException;
 import com.zyc.zdh.dao.ServerTaskInstanceMappeer;
 import com.zyc.zdh.entity.ServerTaskInstance;
+import com.zyc.zdh.util.LogUtil;
 import com.zyc.zdh.util.SSHUtil;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SetUpJob {
-
-    private static Logger logger = LoggerFactory.getLogger(SetUpJob.class);
 
     public static void run(ServerTaskInstance sti) {
 
@@ -63,11 +60,11 @@ public class SetUpJob {
             System.out.println(out[0]+"=="+out[1]);
             sshUtil.logout();
         } catch (IOException e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(SetUpJob.class, e);
              JobCommon2.insertLog(sti.getTemplete_id(),sti.getId(),"INFO",e.getMessage());
              setStatus(sti.getId(),"2");
         } catch (JSchException e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(SetUpJob.class, e);
              JobCommon2.insertLog(sti.getTemplete_id(),sti.getId(),"INFO",e.getMessage());
              setStatus(sti.getId(),"2");
         }

@@ -8,9 +8,8 @@ import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.DBUtil;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
@@ -30,7 +29,6 @@ import java.util.Map;
 @Controller
 public class ZdhDataSourcesController extends BaseController{
 
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
     private DataSourcesMapper dataSourcesMapper;
     @Autowired
@@ -82,8 +80,7 @@ public class ZdhDataSourcesController extends BaseController{
             }
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("数据源列表查询失败",e);
         }
 
@@ -158,8 +155,7 @@ public class ZdhDataSourcesController extends BaseController{
 
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("数据源列表2查询失败",e);
         }
 
@@ -182,8 +178,7 @@ public class ZdhDataSourcesController extends BaseController{
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, dataSourcesInfo.getProduct_code(), dataSourcesInfo.getDim_group(), getAttrSelect());
             return ReturnInfo.buildSuccess(dataSourcesInfo);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("数据源信息查询失败",e);
         }
     }
@@ -203,8 +198,7 @@ public class ZdhDataSourcesController extends BaseController{
             dataSourcesMapper.deleteLogicByIds(dataSourcesMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"删除成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"删除失败", e);
         }
@@ -241,8 +235,7 @@ public class ZdhDataSourcesController extends BaseController{
             dataSourcesMapper.insertSelective(dataSourcesInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"新增成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"新增失败", e);
         }
     }
@@ -271,8 +264,7 @@ public class ZdhDataSourcesController extends BaseController{
             dataSourcesMapper.updateByPrimaryKeySelective(dataSourcesInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"更新成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"更新失败", e);
         }
 
@@ -290,8 +282,7 @@ public class ZdhDataSourcesController extends BaseController{
             List<String> result = dataSourcesMapper.selectDataSourcesType();
             return ReturnInfo.buildSuccess(result);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError(e);
         }
     }
@@ -322,8 +313,7 @@ public class ZdhDataSourcesController extends BaseController{
                     "");
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),"测试连接成功", null);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),"测试连接失败", e);
         }
     }

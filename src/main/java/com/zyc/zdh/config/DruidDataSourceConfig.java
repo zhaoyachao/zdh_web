@@ -3,8 +3,7 @@ package com.zyc.zdh.config;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zyc.zdh.util.LogUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -18,7 +17,6 @@ import java.sql.SQLException;
 
 @Configuration
 public class DruidDataSourceConfig {
-	public Logger logger= LoggerFactory.getLogger(this.getClass());
 	@Value("${spring.datasource.url}")
 	private String dbUrl;
 
@@ -106,8 +104,7 @@ public class DruidDataSourceConfig {
 			datasource.setFilters(filters);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
 		}
 		return datasource;
 	}
@@ -136,8 +133,7 @@ public class DruidDataSourceConfig {
 			datasource.setFilters(filters);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
 		}
 		return datasource;
 	}

@@ -5,9 +5,8 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.util.ConfigUtil;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +21,6 @@ import java.util.List;
  */
 @Controller
 public class AuthorController extends BaseController{
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private JemailService jemailService;
@@ -64,7 +62,7 @@ public class AuthorController extends BaseController{
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "发送成功", "请检查邮箱是否收到发送成功通知,如果5分钟内没由收到邮件,则可能发送邮件失败,请尝试再次发信");
         }catch (Exception e){
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "发送失败", e);
         }
     }
@@ -104,7 +102,7 @@ public class AuthorController extends BaseController{
             versions.add("5.1.1");
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", versions);
         }catch (Exception e){
-            logger.error("类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}" , e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }

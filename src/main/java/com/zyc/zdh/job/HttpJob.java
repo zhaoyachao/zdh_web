@@ -2,10 +2,7 @@ package com.zyc.zdh.job;
 
 import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.entity.TaskLogInstance;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.GroovyFactory;
-import com.zyc.zdh.util.HttpUtil;
-import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
@@ -30,7 +27,7 @@ public class HttpJob extends JobCommon2 {
         Boolean exe_status = true;
         //执行命令
         try {
-            logger.info("http任务当前只支持同步http,异步http暂不支持");
+            LogUtil.info(HttpJob.class, "http任务当前只支持同步http,异步http暂不支持");
             insertLog(tli,"info","http任务当前只支持同步http,异步http暂不支持");
             //当前只支持检查文件是否存在 if [ ! -f "/data/filename" ];then echo "文件不存在"; else echo "true"; fi
             //日期替换zdh.date => yyyy-MM-dd 模式
@@ -92,14 +89,14 @@ public class HttpJob extends JobCommon2 {
             String result = null;
             //post请求
             if(url_type.equalsIgnoreCase(Const.HTTP_POST)){
-                logger.info("[" + jobType + "] JOB ,开始执行[post]请求");
+                LogUtil.info(HttpJob.class, "[" + jobType + "] JOB ,开始执行[post]请求");
                 insertLog(tli, "info", "[" + jobType + "] JOB ,开始执行[post]请求,请求地址: "+url+" ,参数: "+params);
                 //校验是否有参数
                 result = HttpUtil.postJSON(url, params, header_map, cookie_map, httpHost);
                 insertLog(tli, "info", "[" + jobType + "] JOB ,请求结果: "+result);
             }
             if(url_type.equalsIgnoreCase(Const.HTTP_GET)){
-                logger.info("[" + jobType + "] JOB ,开始执行[get]请求");
+                LogUtil.info(HttpJob.class, "[" + jobType + "] JOB ,开始执行[get]请求");
                 insertLog(tli, "info", "[" + jobType + "] JOB ,开始执行[get]请求");
                 List<NameValuePair> npl=new ArrayList<>();
                 if(!StringUtils.isEmpty(params)){
@@ -134,8 +131,7 @@ public class HttpJob extends JobCommon2 {
                 }
             }
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            logger.error(e.getMessage());
+            LogUtil.error(HttpJob.class, e);
             insertLog(tli, "error","[" + jobType + "] JOB ,"+ e.getMessage());
             jobFail(jobType,tli);
             exe_status = false;
@@ -154,7 +150,7 @@ public class HttpJob extends JobCommon2 {
                 //等待命令执行完成
                 process.waitFor(10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                LogUtil.error(HttpJob.class, e);
             }
             InputStream is = process.getInputStream();
             input = new Scanner(is);

@@ -12,8 +12,6 @@ import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -30,8 +28,6 @@ import static com.zyc.zdh.job.JobCommon2.*;
 public class EmailJob {
 
     public static String jobType = "EMAIL";
-    private static Logger logger= LoggerFactory.getLogger(EmailJob.class);
-
     public static List<ZdhDownloadInfo> zdhDownloadInfos=new ArrayList<>();
 
     public static void run(QuartzJobInfo quartzJobInfo) {
@@ -40,8 +36,7 @@ public class EmailJob {
             taskLogInstanceAlarm();
             strategyInstanceAlarm();
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(EmailJob.class, e);
         }
 
     }
@@ -49,7 +44,7 @@ public class EmailJob {
 
     public static void taskLogInstanceAlarm(){
         try{
-            logger.debug("开始检测ETL失败任务...");
+            LogUtil.debug(EmailJob.class, "开始检测ETL失败任务...");
             TaskLogInstanceMapper taskLogInstanceMapper = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
 
             //获取失败的任务
@@ -58,7 +53,7 @@ public class EmailJob {
             //根据任务执行时间，主键 获取对应的日志信息
             for(TaskLogInstance tli:tlis){
 
-                logger.info("检测失败任务:"+tli.getJob_id()+",对应主键:"+tli.getId()+",对应任务组id:"+tli.getGroup_id());
+                LogUtil.info(EmailJob.class, "检测失败任务:" + tli.getJob_id() + ",对应主键:" + tli.getId() + ",对应任务组id:" + tli.getGroup_id());
 
                 String msg="失败任务:\r\n" +
                         "调度任务:"+tli.getJob_id()+",调度名:"+tli.getJob_context()+"\r\n"+
@@ -69,7 +64,7 @@ public class EmailJob {
                         "ETL日期:"+tli.getEtl_date()+"\r\n"+
                         "开始时间:"+DateUtil.formatTime(tli.getRun_time())+"\r\n";
                 alarm(tli, "任务失败通知: "+tli.getJob_context(),msg);
-                logger.info("检测失败任务:"+tli.getJob_id()+",对应主键:"+tli.getId()+",并完成更新");
+                LogUtil.info(EmailJob.class, "检测失败任务:" + tli.getJob_id() + ",对应主键:" + tli.getId() + ",并完成更新");
             }
 
             //获取超时任务
@@ -124,15 +119,14 @@ public class EmailJob {
             }
 
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(EmailJob.class, e);
         }
 
     }
 
     public static void strategyInstanceAlarm(){
         try{
-            logger.debug("开始检测营销策略失败任务...");
+            LogUtil.debug(EmailJob.class, "开始检测营销策略失败任务...");
             StrategyInstanceMapper strategyInstanceMapper= (StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
 
             //获取失败的任务
@@ -148,7 +142,7 @@ public class EmailJob {
             //根据任务执行时间，主键 获取对应的日志信息
             for(StrategyInstance si:strategyInstances){
 
-                logger.info("检测失败任务:"+si.getStrategy_context()+",对应主键:"+si.getId()+",对应任务组实例id:"+si.getGroup_instance_id()+",对应任务组:"+si.getGroup_context());
+                LogUtil.info(EmailJob.class, "检测失败任务:" + si.getStrategy_context() + ",对应主键:" + si.getId() + ",对应任务组实例id:" + si.getGroup_instance_id() + ",对应任务组:" + si.getGroup_context());
 
                 String msg="失败任务:\r\n" +
                         "策略名:"+si.getStrategy_context()+",策略Id:"+si.getId()+"\r\n"+
@@ -156,12 +150,11 @@ public class EmailJob {
                         "日期:"+si.getCur_time()+"\r\n"+
                         "开始时间:"+DateUtil.format(si.getRun_time(), "yyyy-MM-dd HH:mm:ss")+"\r\n";
                 alarm(si, "营销策略失败通知: "+si.getStrategy_context(),msg);
-                logger.info("检测失败任务:"+si.getStrategy_context()+",对应主键:"+si.getId()+",并完成更新");
+                LogUtil.info(EmailJob.class, "检测失败任务:" + si.getStrategy_context() + ",对应主键:" + si.getId() + ",并完成更新");
             }
 
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(EmailJob.class, e);
         }
 
     }
@@ -204,8 +197,7 @@ public class EmailJob {
 
             strategyInstanceMapper.updateNoticeById(Const.TRUR,si.getId());
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(EmailJob.class, e);
         }
 
     }
@@ -218,7 +210,7 @@ public class EmailJob {
             NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
 
             if(StringUtils.isEmpty(tli.getAlarm_account())){
-                logger.warn("当前告警为找到告警账号:"+JsonUtil.formatJsonString(tli));
+                LogUtil.warn(EmailJob.class, "当前告警为找到告警账号:" + JsonUtil.formatJsonString(tli));
                 return ;
             }
 
@@ -239,7 +231,7 @@ public class EmailJob {
                 jemailService.sendEmail(emails.toArray(new String[0]),title,msg);
             }
             if(phones.size()>0&& tli.getAlarm_sms()!=null && tli.getAlarm_sms().equalsIgnoreCase("on")){
-                logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
+                LogUtil.info(EmailJob.class, "手机短信监控,暂时未开通,需要连接第三方短信服务");
                 try{
                     //此处信息写入短信表,待平台接入短信服务
                     AlarmSmsMapper alarmSmsMapper=  (AlarmSmsMapper) SpringContext.getBean("alarmSmsMapper");
@@ -256,9 +248,7 @@ public class EmailJob {
                         alarmSmsMapper.insertSelective(alarmSmsInfo);
                     }
                 }catch (Exception e){
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-                    logger.error(error, e);
-                    logger.error("发送告警短信失败, {}",e);
+                    LogUtil.error(EmailJob.class, "发送告警短信失败", e);
                 }
 
             }
@@ -279,8 +269,7 @@ public class EmailJob {
             }
             taskLogInstanceMapper.updateNoticeById(Const.TRUR,tli.getId());
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(EmailJob.class, e);
         }
 
     }
@@ -291,7 +280,7 @@ public class EmailJob {
             AccountService accountService=(AccountService) SpringContext.getBean("accountService");
             NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
             if(StringUtils.isEmpty(qji.getAlarm_account())){
-                logger.warn("当前告警为找到告警账号:"+ JsonUtil.formatJsonString(qji));
+                LogUtil.warn(EmailJob.class, "当前告警为找到告警账号:" + JsonUtil.formatJsonString(qji));
                 return ;
             }
             List<User> users=accountService.findByUserName2(qji.getAlarm_account().split(","));
@@ -311,7 +300,7 @@ public class EmailJob {
                 jemailService.sendEmail(emails.toArray(new String[0]),title,msg);
             }
             if(phones.size()>0&& qji.getAlarm_sms()!=null && qji.getAlarm_sms().equalsIgnoreCase(Const.ON)){
-                logger.info("手机短信监控,暂时未开通,需要连接第三方短信服务");
+                LogUtil.info(EmailJob.class, "手机短信监控,暂时未开通,需要连接第三方短信服务");
                 try{
                     //此处信息写入短信表,待平台接入短信服务
                     AlarmSmsMapper alarmSmsMapper=  (AlarmSmsMapper) SpringContext.getBean("alarmSmsMapper");
@@ -328,9 +317,7 @@ public class EmailJob {
                         alarmSmsMapper.insertSelective(alarmSmsInfo);
                     }
                 }catch (Exception e){
-                    String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-                    logger.error(error, e);
-                    logger.error("发送告警短信失败, {}",e);
+                    LogUtil.error(EmailJob.class, "发送告警短信失败", e);
                 }
 
             }
@@ -350,8 +337,7 @@ public class EmailJob {
                 }
             }
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(EmailJob.class, e);
         }
 
     }
@@ -359,7 +345,7 @@ public class EmailJob {
     public static void notice_event(){
 
         try{
-            logger.debug("开始加载通知信息");
+            LogUtil.debug(EmailJob.class, "开始加载通知信息");
             ZdhDownloadMapper zdhDownloadMapper = (ZdhDownloadMapper) SpringContext.getBean("zdhDownloadMapper");
             NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
             List<ZdhDownloadInfo> zdhDownloadInfos=zdhDownloadMapper.selectNotice();
@@ -395,10 +381,9 @@ public class EmailJob {
 //            redisUtil.set("zdhdownloadinfos_"+key,JsonUtil.formatJsonString(a.getValue()));
 //        }
             apply_notice();
-            logger.debug("完成加载通知信息");
+            LogUtil.debug(EmailJob.class, "完成加载通知信息");
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(EmailJob.class, e);
         }
 
 
@@ -406,7 +391,7 @@ public class EmailJob {
 
     public static void apply_notice(){
         try{
-            logger.debug("加载申请通知信息");
+            LogUtil.debug(EmailJob.class, "加载申请通知信息");
             ApplyMapper applyMapper = (ApplyMapper) SpringContext.getBean("applyMapper");
             NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
 
@@ -442,10 +427,9 @@ public class EmailJob {
 //                redisUtil.set("zdhapplyinfos_"+key,JsonUtil.formatJsonString(a.getValue()));
 //            }
             }
-            logger.debug("完成加载申请通知信息");
+            LogUtil.debug(EmailJob.class, "完成加载申请通知信息");
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(EmailJob.class, e);
         }
     }
 
@@ -463,8 +447,7 @@ public class EmailJob {
             ni.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             noticeMapper.insertSelective(ni);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(EmailJob.class, e);
         }
     }
 
@@ -474,7 +457,7 @@ public class EmailJob {
         Boolean exe_status = true;
         //执行命令
         try {
-            logger.info("email任务当前只支持同步email,异步email暂不支持");
+            LogUtil.info(EmailJob.class, "email任务当前只支持同步email,异步email暂不支持");
             insertLog(tli,"info","email任务当前只支持同步email,异步email暂不支持");
             //当前只支持检查文件是否存在 if [ ! -f "/data/filename" ];then echo "文件不存在"; else echo "true"; fi
             //日期替换zdh.date => yyyy-MM-dd 模式
@@ -508,8 +491,7 @@ public class EmailJob {
 
             insertLog(tli, "info", "[" + jobType + "] JOB 发送成功");
         } catch (Exception e) {
-            logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
-            logger.error(e.getMessage());
+            LogUtil.error(EmailJob.class, e.getMessage(), e);
             insertLog(tli, "error","[" + jobType + "] JOB ,"+ e.getMessage());
             jobFail(jobType,tli);
             exe_status = false;
@@ -549,7 +531,7 @@ public class EmailJob {
         if(redisUtil.get(key) == null){
             redisUtil.set(key, "1", 1L, TimeUnit.HOURS);
         }else{
-            logger.debug("系统告警,已存在,忽略当前告警, {}", key);
+            LogUtil.debug(EmailJob.class, "系统告警,已存在,忽略当前告警, {}", key);
             return;
         }
         try{

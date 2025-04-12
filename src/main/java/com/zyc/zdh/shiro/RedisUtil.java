@@ -1,7 +1,6 @@
 package com.zyc.zdh.shiro;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zyc.zdh.util.LogUtil;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -21,8 +20,6 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class RedisUtil {
-
-	private Logger logger = LoggerFactory.getLogger(RedisUtil.class);
 
 	public RedisTemplate<String, Object> getRedisTemplate() {
 		return redisTemplate;
@@ -90,7 +87,7 @@ public class RedisUtil {
 	 * @param key
 	 */
 	public void remove(final String key) {
-		logger.debug("redis remove key: {}", key);
+        LogUtil.debug(this.getClass(), "redis remove key: {}", key);
 		if (exists(key)) {
 			redisTemplate.delete(key);
 		}
@@ -160,7 +157,7 @@ public class RedisUtil {
 					keysTmp.add(new String(cursor.next(), "Utf-8"));
 				}
 			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
+                LogUtil.error(this.getClass(), e.getMessage(), e);
 				throw new RuntimeException(e);
 			}
 			return keysTmp;
@@ -230,7 +227,7 @@ public class RedisUtil {
 			result = operations1.get(key);
 			break;
 		}
-		logger.debug("redis get key: {}, value: {}", key, result);
+        LogUtil.debug(this.getClass(), "redis get key: {}, value: {}", key, result);
 		return result;
 	}
 
@@ -310,7 +307,7 @@ public class RedisUtil {
 	 * @return
 	 */
 	public boolean set(final String key, Object value) {
-		logger.debug("redis set key: {}, value: {}", key, value);
+        LogUtil.debug(this.getClass(), "redis set key: {}, value: {}", key, value);
 		boolean result = false;
 		try {
 			if (value instanceof List) {
@@ -341,8 +338,7 @@ public class RedisUtil {
 				result = true;
 			}
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
 		}
 		return result;
 	}
@@ -387,7 +383,7 @@ public class RedisUtil {
 	 * @return
 	 */
 	public boolean set(final String key, Object value, Long expireTime) {
-		logger.debug("redis set key: {}, value: {}, expire: {}", key, value, expireTime);
+        LogUtil.debug(this.getClass(), "redis set key: {}, value: {}, expire: {}", key, value, expireTime);
 		boolean result = false;
 		try {
 			if (value instanceof List) {
@@ -415,8 +411,7 @@ public class RedisUtil {
 			redisTemplate.expire(key, expireTime, TimeUnit.DAYS);
 			result = true;
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
 		}
 		return result;
 	}
@@ -470,7 +465,7 @@ public class RedisUtil {
 	 */
 	public boolean set(final String key, Object value, Long expireTime,
 			TimeUnit time) {
-		logger.debug("redis set key: {}, value: {}, expire: {}, unit: {}", key, value, expireTime, time);
+        LogUtil.debug(this.getClass(), "redis set key: {}, value: {}, expire: {}, unit: {}", key, value, expireTime, time);
 		boolean result = false;
 		if (time == null) {
 			return set(key, value, expireTime);
@@ -501,8 +496,7 @@ public class RedisUtil {
 			redisTemplate.expire(key, expireTime, time);
 			result = true;
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
 		}
 		return result;
 	}

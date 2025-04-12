@@ -9,10 +9,7 @@ import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.MyRealm;
-import com.zyc.zdh.util.ConfigUtil;
-import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.Encrypt;
-import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -22,8 +19,6 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -55,8 +50,6 @@ import java.util.regex.Pattern;
  */
 @Controller
 public class LoginController extends BaseController{
-
-    private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     public static ApplicationContext context = null;
 
@@ -177,8 +170,7 @@ public class LoginController extends BaseController{
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "注册失败", null);
             }
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "注册失败", e);
         }
@@ -196,7 +188,7 @@ public class LoginController extends BaseController{
         model.addAttribute("msg", "登陆");
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated()) {
-            logger.info("用户已登录,跳转到首页");
+            LogUtil.info(this.getClass(), "用户已登录,跳转到首页");
             //WebUtils.issueRedirect(request, response, "/index");
             //SecurityUtils.getSecurityManager().logout(subject);
             return "redirect:index";
@@ -228,8 +220,7 @@ public class LoginController extends BaseController{
             return "index";
             //return ReturnInfo.createInfo(RETURN_CODE.SUCCESS.getCode(),"登陆成功","index.html");
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             ((HttpServletRequest) request).getSession().setAttribute("error", e.getMessage());
             return "login";
             //return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(),e.getMessage(),"login.html");
@@ -257,8 +248,7 @@ public class LoginController extends BaseController{
             }
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "", "login.html");
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), "login.html");
         }
     }
@@ -283,8 +273,7 @@ public class LoginController extends BaseController{
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "登陆成功", "index.html");
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), "login.html");
         }
     }
@@ -375,8 +364,7 @@ public class LoginController extends BaseController{
             subject.runAs(newPrincipalCollection);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         } catch (Exception e) {
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
@@ -421,8 +409,7 @@ public class LoginController extends BaseController{
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "密码已发送到注册邮箱,如果你已忘记注册邮箱,请联系管理员解决", null);
             }
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "找回密码异常", e);
         }
 
@@ -460,8 +447,7 @@ public class LoginController extends BaseController{
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", user_names);
         }catch (Exception e){
-            String error = "类:" + Thread.currentThread().getStackTrace()[1].getClassName() + " 函数:" + Thread.currentThread().getStackTrace()[1].getMethodName() + " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
 

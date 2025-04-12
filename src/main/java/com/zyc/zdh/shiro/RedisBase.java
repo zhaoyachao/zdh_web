@@ -1,8 +1,7 @@
 package com.zyc.zdh.shiro;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zyc.zdh.util.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.DataType;
@@ -22,7 +21,6 @@ import java.util.concurrent.TimeUnit;
  * @Description: TODO
  */
 public class RedisBase {
-	private Logger logger = LoggerFactory.getLogger(RedisBase.class);
 	@Autowired
 	public RedisTemplate<String, Object> redisTemplate;
 
@@ -197,8 +195,7 @@ public class RedisBase {
 				result = true;
 			}
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
 		}
 		return result;
 	}
@@ -242,8 +239,7 @@ public class RedisBase {
 			redisTemplate.expire(key, expireTime, TimeUnit.DAYS);
 			result = true;
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
 		}
 		return result;
 	}
@@ -293,8 +289,7 @@ public class RedisBase {
 			redisTemplate.expire(key, expireTime, time);
 			result = true;
 		} catch (Exception e) {
-			String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-			logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
 		}
 		return result;
 	}

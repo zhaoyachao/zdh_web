@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class SystemFilterParam implements Serializable {
 
+    private String method;
+
     private String url;
 
     private String servletPath;
@@ -15,6 +17,18 @@ public class SystemFilterParam implements Serializable {
     private String requestURI;
 
     private String ip;
+
+    private long startTime;
+
+    private long endTime;
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
 
     public String getUrl() {
         return url;
@@ -62,5 +76,21 @@ public class SystemFilterParam implements Serializable {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
     }
 }

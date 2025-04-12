@@ -1,4 +1,4 @@
-//配置访问根目录
+//配置访问根目录 example: server_context='/zdh'
 var server_context='';
 
 function is_empty(data){

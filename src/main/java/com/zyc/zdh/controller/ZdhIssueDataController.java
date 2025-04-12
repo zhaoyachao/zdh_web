@@ -13,9 +13,8 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.JemailService;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,8 +37,6 @@ import java.util.Map;
  */
 @Controller
 public class ZdhIssueDataController extends BaseController {
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
-
 
     @Autowired
     private IssueDataMapper issueDataMapper;
@@ -137,8 +134,7 @@ public class ZdhIssueDataController extends BaseController {
             checkAttrPermissionByProduct(zdhPermissionService, idi.getProduct_code(), getAttrSelect());
             return ReturnInfo.buildSuccess(idi);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("数据集市任务列表查询失败", e);
         }
     }
@@ -169,8 +165,7 @@ public class ZdhIssueDataController extends BaseController {
 
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("数据集市任务列表2查询失败"+e.getMessage(), e);
         }
     }
@@ -200,8 +195,7 @@ public class ZdhIssueDataController extends BaseController {
 
             return ReturnInfo.buildSuccess(list);
         }catch (Exception e){
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError("数据集市任务列表3查询失败"+e.getMessage(), e);
         }
     }
@@ -224,8 +218,7 @@ public class ZdhIssueDataController extends BaseController {
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
@@ -295,8 +288,7 @@ public class ZdhIssueDataController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功,等待审批", null);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
@@ -375,8 +367,7 @@ public class ZdhIssueDataController extends BaseController {
             issueDataMapper.deleteBatchByIds(ids);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
@@ -481,8 +472,7 @@ public class ZdhIssueDataController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "申请已发起", null);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "申请失败", e);
         }
 
@@ -570,8 +560,7 @@ public class ZdhIssueDataController extends BaseController {
             applyMapper.updateStatus(id, Const.STATUS_RECALL);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "撤销申请完成", null);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "撤销申请失败", e);
         }
     }
@@ -611,8 +600,7 @@ public class ZdhIssueDataController extends BaseController {
             EmailJob.apply_notice();
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "审批流程结束", null);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "审批失败", e);
         }
 
@@ -642,7 +630,7 @@ public class ZdhIssueDataController extends BaseController {
                     String context = "你申请的上游数据源【" + table + "】发生变动,请及时检查和此数据源相关的任务;" + line + message;
                     jemailService.sendEmail(to.toArray(new String[applyAlarmInfos.size()]), subject, context);
                 }catch (Exception e){
-                    logger.error("发布源变动,发送下游通知异常:{}",e);
+                    LogUtil.error(this.getClass(), "发布源变动,发送下游通知异常", e);
                 }
 
             }

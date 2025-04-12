@@ -2,15 +2,15 @@ package com.zyc.zdh.util;
 
 import org.apache.http.NameValuePair;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class DBUtilTest {
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
+
     @Test
     public void dbConnection(){
 
@@ -26,8 +26,7 @@ public class DBUtilTest {
             }
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         }
 
     }
@@ -47,8 +46,7 @@ public class DBUtilTest {
             }
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         }
 
     }
@@ -70,8 +68,7 @@ public class DBUtilTest {
             }
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         }
 
     }
@@ -98,8 +95,7 @@ public class DBUtilTest {
             }
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         }
 
     }
@@ -119,8 +115,7 @@ public class DBUtilTest {
             }
 
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         }
 
     }
@@ -150,8 +145,7 @@ public class DBUtilTest {
             String kill_url="http://deep-2020klzjdi:60001/api/v1/kill";
             HttpUtil.postJSON(kill_url, JsonUtil.formatJsonString(js));
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         }
 
     }

@@ -12,8 +12,6 @@ import com.zyc.zdh.entity.ZdhDownloadInfo;
 import com.zyc.zdh.entity.task_num_info;
 import com.zyc.zdh.util.*;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.lang.reflect.Field;
@@ -26,8 +24,6 @@ import java.util.*;
 public class CheckStrategyDepJob implements CheckDepJobInterface{
 
     private final static String task_log_status="etl";
-    private static Logger logger = LoggerFactory.getLogger(CheckStrategyDepJob.class);
-
     public static List<ZdhDownloadInfo> zdhDownloadInfos = new ArrayList<>();
 
     private Object object;
@@ -41,7 +37,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
     public void run() {
         try {
             MDC.put("logId", UUID.randomUUID().toString());
-            logger.debug("开始检测策略组任务...");
+            LogUtil.debug(this.getClass(), "开始检测策略组任务...");
             StrategyGroupInstanceMapper sgim=(StrategyGroupInstanceMapper) SpringContext.getBean("strategyGroupInstanceMapper");
             StrategyInstanceMapper sim=(StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
 
@@ -58,7 +54,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     }
                     //group.setProcess("100");
                     JobDigitalMarket.updateTaskLog(group,sgim);
-                    logger.info("当前策略组没有子任务可执行,当前任务组设为完成");
+                    LogUtil.info(this.getClass(), "当前策略组没有子任务可执行,当前任务组设为完成");
                     JobDigitalMarket.insertLog(group,"INFO","当前策略组没有子任务可执行,当前策略组设为完成");
                 }
             }
@@ -79,7 +75,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             //检测任务组是否已经完成
             create_group_final_status();
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(this.getClass(), e);
              MDC.remove("logId");
         }
 
@@ -109,7 +105,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
      */
     public static void run_sub_task() {
         try {
-            logger.debug("开始检测子任务依赖...");
+            LogUtil.debug(CheckStrategyDepJob.class, "开始检测子任务依赖...");
             StrategyGroupInstanceMapper sgim=(StrategyGroupInstanceMapper) SpringContext.getBean("strategyGroupInstanceMapper");
             StrategyInstanceMapper sim=(StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
 
@@ -274,12 +270,12 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     //更新任务状态为检查完成
                     tl.setStatus(JobStatus.ERROR.getValue());
                     JobDigitalMarket.updateTaskLog(tl,sim);
-                    logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                    LogUtil.error(CheckStrategyDepJob.class, e);
                 }
             }
 
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(CheckStrategyDepJob.class, e);
         }
 
     }
@@ -558,15 +554,15 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                 Object o;
                 try {
                     o = fields[i].get(obj);
-                    logger.info("传入的对象中包含一个如下的变量：" + varName + " = " + o);
+                    LogUtil.info(CheckStrategyDepJob.class, "传入的对象中包含一个如下的变量：" + varName + " = " + o);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block
-                     logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                    LogUtil.error(CheckStrategyDepJob.class, e);
                 }
                 // 恢复访问控制权限
                 fields[i].setAccessible(accessFlag);
             } catch (IllegalArgumentException e) {
-                 logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+                LogUtil.error(CheckStrategyDepJob.class, e);
             }
         }
     }

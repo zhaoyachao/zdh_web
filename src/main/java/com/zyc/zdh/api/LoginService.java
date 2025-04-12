@@ -7,6 +7,7 @@ import com.zyc.zdh.shiro.MyAuthenticationToken;
 import com.zyc.zdh.shiro.MyRealm;
 import com.zyc.zdh.shiro.SessionDao;
 import com.zyc.zdh.util.JsonUtil;
+import com.zyc.zdh.util.LogUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.cache.Cache;
@@ -14,8 +15,6 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.subject.support.DefaultSubjectContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,8 +33,6 @@ import java.util.concurrent.TimeUnit;
 @Controller("loginService")
 @RequestMapping("api")
 public class LoginService {
-
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private SessionDao sessionDao;
@@ -95,8 +92,7 @@ public class LoginService {
                     resultInfo.setResult(token);
                 }
             }catch (Exception e){
-                String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-                logger.error(error, e);
+                LogUtil.error(this.getClass(), e);
             }
 
         }

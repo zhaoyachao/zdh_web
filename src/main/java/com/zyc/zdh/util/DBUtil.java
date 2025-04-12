@@ -1,9 +1,6 @@
 package com.zyc.zdh.util;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +10,7 @@ import java.util.regex.Pattern;
 
 
 public class DBUtil{
-    public Logger logger= LoggerFactory.getLogger(this.getClass());
+
 
     /**
      * 验证表名是否合法
@@ -55,8 +52,7 @@ public class DBUtil{
                 resultSet.close();
             }
         } catch (SQLException e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
         }
         try {
              if(statement!=null){
@@ -70,8 +66,7 @@ public class DBUtil{
                 connection.close();
             }
         } catch (SQLException e) {
-           String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-           logger.error(error, e);
+           LogUtil.error(this.getClass(), e);
         }
 
     }
@@ -107,7 +102,7 @@ public class DBUtil{
 
            return result;
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(this.getClass(), e);
             throw e;
         }finally {
             release(connection, preparedStatement, resultSet);
@@ -144,8 +139,7 @@ public class DBUtil{
 
             return result;
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             return null;
         }finally {
             release(connection, preparedStatement, resultSet);
@@ -219,7 +213,7 @@ public class DBUtil{
             return result;
 
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(this.getClass(), e);
             throw e;
         }finally {
             release(connection, preparedStatement, resultSet);
@@ -246,7 +240,7 @@ public class DBUtil{
             return result;
 
         } catch (Exception e) {
-             logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            LogUtil.error(this.getClass(), e);
             throw e;
         }finally {
             release(connection, preparedStatement, resultSet);
@@ -285,7 +279,7 @@ public class DBUtil{
             return result;
 
         } catch (Exception e) {
-            // logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            // LogUtil.error(this.getClass(), e);
             throw e;
         }finally {
             release(connection, preparedStatement, resultSet);
@@ -333,7 +327,7 @@ public class DBUtil{
             return result;
 
         } catch (Exception e) {
-            // logger.error("类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}", e);
+            // LogUtil.error(this.getClass(), e);
             throw e;
         }finally {
             release(connection, preparedStatement, resultSet);
@@ -360,8 +354,7 @@ public class DBUtil{
             //这里可以根据返回结果(影响记录的条数)进行判断，该语句是否执行成功
             System.out.println(result);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             e_msg=e.getMessage();
             ret="false";
         }finally {
@@ -387,8 +380,7 @@ public class DBUtil{
             //这里可以根据返回结果(影响记录的条数)进行判断，该语句是否执行成功
             System.out.println(result);
         } catch (Exception e) {
-            String error = "类:"+Thread.currentThread().getStackTrace()[1].getClassName()+" 函数:"+Thread.currentThread().getStackTrace()[1].getMethodName()+ " 异常: {}";
-            logger.error(error, e);
+            LogUtil.error(this.getClass(), e);
             e_msg=e.getMessage();
             ret="false";
         }finally {
