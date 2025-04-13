@@ -117,12 +117,12 @@
       项目涉及方向较多,技术杂乱
       包含以下几个项目,以下几个项目都是单独的git仓库
       zdh_web: zdh系列项目web管理端,提供可视化配置,比如ETL,调度,mock服务,权限管理,数仓模块等
-      zdh_spark: 基于spark的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_server
-      zdh_flinkx: 基于flink sql的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_flinkx
-      zdh_mock: 基于netty的http-mock服务,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_mock
-      zdh_rqueue: 计划开发一个非高性能的优先级可控队列(用于etl任务优先级控制),github: https://github.com/zhaoyachao/zdh_rqueue
+      zdh_spark: 基于spark的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_server  gitee: https://gitee.com/yachao123/zdh_server
+      zdh_flinkx: 基于flink sql的etl处理,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_flinkx gitee: 待迁移
+      zdh_mock: 基于netty的http-mock服务,必须依赖zdh_web github: https://github.com/zhaoyachao/zdh_mock gitee: 待迁移
+      zdh_rqueue: 计划开发一个非高性能的优先级可控队列(用于etl任务优先级控制),github: https://github.com/zhaoyachao/zdh_rqueue gitee: 待迁移
       zdh_auth: 大数据统一权限管理(hadoop,hive,hbase,presto),开发中
-      zdh_magic_mirror: 是一个客户管理模块,客户画像,智能营销等服务,主要包括common,label, plugin, ship, variable, 5个模块 github: https://github.com/zhaoyachao/zdh_magic_mirror
+      zdh_magic_mirror: 是一个客户管理模块,客户画像,智能营销等服务,主要包括common,label, plugin, ship, variable, 5个模块 github: https://github.com/zhaoyachao/zdh_magic_mirror gitee: https://gitee.com/yachao123/zdh_magic_mirror
          common: 公共模块
          label: 客户管理-标签服务,必须依赖zdh_web,主要提供离线批量圈人功能
          plugin: 客户管理-通用插件服务,提供id_mapping,过滤,触达用户(发送短信,邮件等)
@@ -150,7 +150,7 @@
 # 提示
    
     zdh 分2部分,前端配置+后端数据ETL处理,此部分只包含前端配置
-    后端数据etl 请参见项目 https://github.com/zhaoyachao/zdh_server.git
+    后端数据etl 请参见项目 https://github.com/zhaoyachao/zdh_server , https://gitee.com/yachao123/zdh_server
     zdh_web 和zdh_server 保持同步 大版本会同步兼容 如果zdh_web 选择版本1.0 ,zdh_server 使用1.x 都可兼容
     二次开发同学 请选择dev 分支,dev 分支只有测试通过才会合并master,所以master 可能不是最新的,但是可保证可用性
     
