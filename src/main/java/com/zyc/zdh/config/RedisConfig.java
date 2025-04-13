@@ -29,11 +29,14 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import redis.clients.jedis.JedisPoolConfig;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -68,7 +71,9 @@ public class RedisConfig extends CachingConfigurerSupport {
 
 	private String password;
 
-	private int timeOut;
+	private int connectTimeOut;
+
+	private int readTimeOut;
 
 	private int maxIdle;// 最大空闲连接数, 默认8个
 
@@ -102,12 +107,20 @@ public class RedisConfig extends CachingConfigurerSupport {
 		this.password = password;
 	}
 
-	public int getTimeOut() {
-		return timeOut;
+	public int getConnectTimeOut() {
+		return connectTimeOut;
 	}
 
-	public void setTimeOut(int timeOut) {
-		this.timeOut = timeOut;
+	public void setConnectTimeOut(int connectTimeOut) {
+		this.connectTimeOut = connectTimeOut;
+	}
+
+	public int getReadTimeOut() {
+		return readTimeOut;
+	}
+
+	public void setReadTimeOut(int readTimeOut) {
+		this.readTimeOut = readTimeOut;
 	}
 
 	public int getMaxIdle() {
@@ -145,15 +158,27 @@ public class RedisConfig extends CachingConfigurerSupport {
 	@Autowired
 	public Environment ev;
 
-//	@Bean("jedisPoolConfig")
-//	public JedisPoolConfig jedisPoolConfig() {
-//		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-//		jedisPoolConfig.setMaxIdle(maxIdle);
-//		jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
-//		jedisPoolConfig.setTestOnBorrow(true);
-//		jedisPoolConfig.setTestWhileIdle(false);
-//		return jedisPoolConfig;
-//	}
+
+	@Bean
+	public JedisClientConfiguration jedisClientConfiguration() {
+		JedisClientConfiguration jedisClientConfiguration = JedisClientConfiguration.builder()
+				.connectTimeout(Duration.ofMillis(connectTimeOut)) // 连接超时时间
+				.readTimeout(Duration.ofMillis(readTimeOut))    // 读取超时时间
+				.usePooling()                          // 使用连接池
+				.poolConfig(jedisPoolConfig())                // 设置连接池配置
+				.build();
+		return jedisClientConfiguration;
+	}
+
+	@Bean("jedisPoolConfig")
+	public JedisPoolConfig jedisPoolConfig() {
+		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+		jedisPoolConfig.setMaxIdle(maxIdle);
+		jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
+		jedisPoolConfig.setTestOnBorrow(true);
+		jedisPoolConfig.setTestWhileIdle(false);
+		return jedisPoolConfig;
+	}
 
 	@Bean
 	public JedisConnectionFactory redisConnectionFactory() {
@@ -171,16 +196,15 @@ public class RedisConfig extends CachingConfigurerSupport {
 				rc.setPassword(password);
 			}
 
-			redisConnectionFactory=new JedisConnectionFactory(rc);
+			redisConnectionFactory=new JedisConnectionFactory(rc,jedisClientConfiguration());
 		}else{
 			RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(hostName,port);
 			if(!StringUtils.isEmpty(password)){
 				redisStandaloneConfiguration.setPassword(password);
 			}
-			redisConnectionFactory = new JedisConnectionFactory(redisStandaloneConfiguration);
-		}
 
-		//redisConnectionFactory.setPoolConfig(jedisPoolConfig);
+			redisConnectionFactory = new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration());
+		}
 
 		//redisConnectionFactory.setTimeout(timeOut);
 		//redisConnectionFactory.setPassword(password);
@@ -320,9 +344,14 @@ public class RedisConfig extends CachingConfigurerSupport {
 			for(String hp:hostName.split(",")){
 				clusterServersConfig.addNodeAddress("redis://"+hp.split(":")[0]+":"+hp.split(":")[1]);
 			}
+			clusterServersConfig.setScanInterval(5000);
+			clusterServersConfig.setRetryInterval(5000);
+			clusterServersConfig.setRetryAttempts(100000);
 			clusterServersConfig.setPassword(password);
 		}else{
 			config.useSingleServer().
+					setRetryAttempts(100000).
+					setRetryInterval(5000).
 					setAddress("redis://"+hostName+":"+port).
 					setPassword(password);
 		}

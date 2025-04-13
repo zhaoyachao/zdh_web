@@ -76,8 +76,6 @@ public class AspectConfig implements Ordered {
         try {
             RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
 
-            RedissonClient redissonClient = (RedissonClient) SpringContext.getBean("redissonClient");
-
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
             String method = request.getMethod();

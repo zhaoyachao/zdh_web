@@ -97,7 +97,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
         //tgli.setProcess_time(pti);
 
         JobDigitalMarket.updateTaskLog(sgi,sgim);
-        debugInfo(sgi);
+        //debugInfo(sgi);
     }
 
     /**
