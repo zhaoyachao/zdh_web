@@ -25,6 +25,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 @ComponentScan(basePackages = {"com.zyc.zdh"}, includeFilters = {@Filter(type = FilterType.ANNOTATION, value = MyMark.class)})
@@ -41,6 +42,11 @@ public class ZdhApplication {
         String run_mode = System.getenv("ZDH_RUN_MODE");
         if(StringUtils.isEmpty(run_mode)){
             System.err.println("启动项目前必须配置ZDH_RUN_MODE环境变量,变量值同spring.active.profile值保持一致, linux: export ZDH_RUN_MODE=prod, windows: set ZDH_RUN_MODE=prod");
+            System.exit(-1);
+        }
+
+        if(!isJdk18()){
+            System.err.println("项目依赖JDK版本1.8");
             System.exit(-1);
         }
 
@@ -82,5 +88,15 @@ public class ZdhApplication {
             }
         }
         return list;
+    }
+
+    /**
+     * 判断jdk 是否1.8
+     * @return
+     */
+    public static boolean isJdk18() {
+        String javaVersion = System.getProperty("java.version");
+        // JDK 1.8版本格式："1.8.0" 或 "1.8.0_xxx"（xxx为补丁号）
+        return Pattern.matches("1\\.8(\\.0)?(_\\d+)?", javaVersion);
     }
 }

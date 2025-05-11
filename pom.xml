@@ -5,7 +5,7 @@
 
     <groupId>com.zyc</groupId>
     <artifactId>zdh</artifactId>
-    <version>5.6.7-RELEASE</version>
+    <version>5.6.8-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>zdh_web</name>
@@ -31,7 +31,7 @@
         <jsqlparser.version>0.9.1</jsqlparser.version>
         <tk.mapper.spring.version>1.1.7</tk.mapper.spring.version>
         <redisson.version>3.22.0</redisson.version>
-        <druid.version>1.1.5</druid.version>
+        <druid.version>1.1.24</druid.version>
         <mysql.version>8.0.13</mysql.version>
         <fastjson.version>1.2.83</fastjson.version>
         <quartz.version>2.3.2</quartz.version>
@@ -102,6 +102,16 @@
             <name>maven</name>
             <url>http://repository.mulesoft.org/nexus/content/repositories/public/</url>
         </repository>
+        <repository>
+            <id>kettle</id>
+            <name>kettle</name>
+            <url>https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/</url>
+        </repository>
+        <repository>
+            <id>pentaho-releases</id>
+            <url>https://artifactory.pentaho.com/artifactory/pentaho</url>
+        </repository>
+
 
     </repositories>
 
@@ -252,6 +262,12 @@
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
             <version>${druid.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -456,6 +472,10 @@
                     <groupId>javax.servlet.jsp</groupId>
                     <artifactId>jsp-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -471,6 +491,10 @@
                     <groupId>io.netty</groupId>
                     <artifactId>netty-all</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -485,6 +509,10 @@
                 <exclusion>
                     <groupId>javax.servlet</groupId>
                     <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -674,6 +702,12 @@
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
             <version>${elasticsearch.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- urule规则引擎 -->
@@ -751,8 +785,8 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
-            <scope>system</scope>
             <version>${kettle.version}</version>
+            <scope>system</scope>
             <systemPath>${project.basedir}/lib/kettle-core-${kettle.version}.jar</systemPath>
         </dependency>
 
@@ -760,10 +794,35 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
-            <scope>system</scope>
             <version>${kettle.version}</version>
+            <scope>system</scope>
             <systemPath>${project.basedir}/lib/kettle-engine-${kettle.version}.jar</systemPath>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-vfs2</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.pentaho/pentaho-encryption-support -->
+        <dependency>
+            <groupId>org.pentaho</groupId>
+            <artifactId>pentaho-encryption-support</artifactId>
+            <version>9.4.0.0-343</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/pentaho-encryption-support-9.4.0.0-343.jar</systemPath>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/pentaho/metastore -->
+        <dependency>
+            <groupId>pentaho</groupId>
+            <artifactId>metastore</artifactId>
+            <version>9.0.0.0-423</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/metastore-9.0.0.0-423.jar</systemPath>
+        </dependency>
+
 
         <dependency>
             <groupId>io.minio</groupId>

@@ -1,18 +1,24 @@
 package com.zyc.zdh.util;
 
+import com.google.common.collect.Lists;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -163,6 +169,117 @@ public class KettleUtil {
 
         public void setPass(String pass) {
             this.pass = pass;
+        }
+    }
+
+
+    /**
+     * 获取kettle job name 集合
+     * @param dbType
+     * @param repositoryName
+     * @param dataSource
+     * @param options
+     * @param repositoryUser
+     * @param repositoryPassword
+     * @return
+     * @throws Exception
+     */
+    public List<String> getJobNamesByRepository(String dbType, String repositoryName,
+                                            KettleUtil.DataSource dataSource, Map<String, String> options, String repositoryUser,
+                                            String repositoryPassword) throws Exception {
+        List<String> names = new ArrayList<>();
+        try {
+            /**
+             * 本地调用kettle , 需在resources目录下新增kettle-password-encoder-plugins.xml
+             */
+            KettleEnvironment.init();
+            DatabaseMeta databaseMeta = new DatabaseMeta(dataSource.name, dataSource.type, dataSource.access, dataSource.host,
+                    dataSource.db, dataSource.port, dataSource.user, dataSource.pass);
+            // 关闭mysql推荐SSL连接提示
+            if (options != null) {
+                for (Map.Entry<String, String> entry : options.entrySet()) {
+                    databaseMeta.addExtraOption(dbType, entry.getKey(), entry.getValue());
+                }
+            }
+            String uuid = UUID.randomUUID().toString();
+            KettleDatabaseRepositoryMeta repositoryMeta = new KettleDatabaseRepositoryMeta(uuid, repositoryName, repositoryName, databaseMeta);
+            KettleDatabaseRepository repository = new KettleDatabaseRepository();
+            repository.init(repositoryMeta);
+
+            repository.connect(repositoryUser, repositoryPassword);
+
+            String[] jobNames = repository.getJobNames();
+
+            if(jobNames != null && jobNames.length>0){
+                names = Lists.newArrayList(jobNames);
+            }
+
+            return names;
+
+        } catch (Exception e) {
+            throw e;
+        }
+
+    }
+
+    /**
+     * 获取trans name 集合
+     * @param dbType
+     * @param repositoryName
+     * @param dataSource
+     * @param options
+     * @param repositoryUser
+     * @param repositoryPassword
+     * @return
+     * @throws Exception
+     */
+    public List<String> getTransNamesByRepository(String dbType, String repositoryName,
+                                            KettleUtil.DataSource dataSource, Map<String, String> options, String repositoryUser,
+                                            String repositoryPassword) throws Exception {
+        List<String> names = new ArrayList<>();
+        try {
+            /**
+             * 本地调用kettle , 需在resources目录下新增kettle-password-encoder-plugins.xml
+             */
+            KettleEnvironment.init();
+            DatabaseMeta databaseMeta = new DatabaseMeta(dataSource.name, dataSource.type, dataSource.access, dataSource.host,
+                    dataSource.db, dataSource.port, dataSource.user, dataSource.pass);
+            // 关闭mysql推荐SSL连接提示
+            if (options != null) {
+                for (Map.Entry<String, String> entry : options.entrySet()) {
+                    databaseMeta.addExtraOption(dbType, entry.getKey(), entry.getValue());
+                }
+            }
+            String uuid = UUID.randomUUID().toString();
+            KettleDatabaseRepositoryMeta repositoryMeta = new KettleDatabaseRepositoryMeta(uuid, repositoryName, repositoryName, databaseMeta);
+            KettleDatabaseRepository repository = new KettleDatabaseRepository();
+            repository.init(repositoryMeta);
+
+            repository.connect(repositoryUser, repositoryPassword);
+
+            RepositoryDirectoryInterface directory = repository.findDirectory("/");
+            getTransName(repository, directory, names);
+            return names;
+
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+
+    private void getTransName(Repository repository, RepositoryDirectoryInterface directoryInterface, List<String> transNames) throws KettleException {
+        List<RepositoryElementMetaInterface> transformationObjects = repository.getTransformationObjects(directoryInterface.getObjectId(), false);
+
+        if(transformationObjects != null && transformationObjects.size()>0){
+            for (RepositoryElementMetaInterface transformationObject: transformationObjects){
+                transNames.add(transformationObject.getName());
+            }
+
+            // 递归处理子目录
+            for (int i = 0; i < directoryInterface.getNrSubdirectories(); i++) {
+                RepositoryDirectoryInterface subDir = directoryInterface.getSubdirectory(i);
+                getTransName(repository, subDir, transNames);
+            }
         }
     }
 

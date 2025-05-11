@@ -1,12 +1,13 @@
 package com.zyc.zdh.api;
 
-import com.zyc.zdh.controller.PermissionApiController;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.shiro.SessionDao;
+import com.zyc.zdh.service.ZdhPermissionApiService;
 import com.zyc.zdh.util.LogUtil;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,11 +29,7 @@ import java.util.Map;
 public class PermissionApi {
 
     @Autowired
-    private SessionDao sessionDao;
-    @Autowired
-    private PermissionApiController permissionApiController;
-
-
+    private ZdhPermissionApiService zdhPermissionApiService;
 
     /**
      * 申请产品 获取ak,sk, 暂未实现
@@ -45,9 +42,8 @@ public class PermissionApi {
     @RequestMapping(value = "apply_product_by_user", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ReturnInfo apply_product_by_user(String product_code,String ak, String sk, String user_account) {
-
         try{
-            return permissionApiController.apply_product_by_user(product_code, ak, sk, user_account);
+            return zdhPermissionApiService.apply_product_by_user(product_code, ak, sk, user_account);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -66,7 +62,7 @@ public class PermissionApi {
     public ReturnInfo add_user_by_product(String product_code,String ak, String sk, PermissionUserInfo permissionUserInfo) {
 
         try{
-            return permissionApiController.add_user_by_product(product_code, ak, sk, permissionUserInfo);
+            return zdhPermissionApiService.add_user_by_product(product_code, ak, sk, permissionUserInfo);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
@@ -85,7 +81,8 @@ public class PermissionApi {
     public ReturnInfo update_user_by_product(String product_code,String ak, String sk, PermissionUserInfo permissionUserInfo) {
 
         try{
-            return permissionApiController.update_user_by_product(product_code, ak, sk, permissionUserInfo);
+            //返回统一信息
+            return zdhPermissionApiService.update_user_by_product(product_code, ak, sk, permissionUserInfo);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -106,7 +103,8 @@ public class PermissionApi {
     public ReturnInfo enable_user_by_product(String product_code,String ak, String sk, String user_account, String enable) {
 
         try{
-            return permissionApiController.enable_user_by_product(product_code, ak, sk, user_account, enable);
+            //返回统一信息
+            return zdhPermissionApiService.enable_user_by_product(product_code, ak, sk, user_account, enable);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -126,7 +124,7 @@ public class PermissionApi {
     public ReturnInfo update_batch_user_by_product(String product_code,String ak, String sk, String[] user_account, String enable) {
 
         try{
-            return permissionApiController.update_batch_user_by_product(product_code, ak, sk, user_account, enable);
+            return zdhPermissionApiService.update_batch_user_by_product(product_code, ak, sk, user_account, enable);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -147,13 +145,11 @@ public class PermissionApi {
                            Map<String,List<String>> in_auths, Map<String,List<String>> out_auths) {
 
         try{
-            return permissionApiController.auth(product_code, ak, sk, user_account, password, auth_type,
-                     in_auths,  out_auths);
+            return zdhPermissionApiService.auth(product_code, ak, sk, user_account, password, auth_type, in_auths, out_auths);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
-
 
     /**
      * 根据用户名密码获取用户信息
@@ -168,7 +164,7 @@ public class PermissionApi {
     public ReturnInfo<PermissionUserInfo> get_user_by_product_password(String product_code,String ak, String sk, String user_account,String password) {
 
         try{
-            return permissionApiController.get_user_by_product_password(product_code, ak, sk, user_account, password);
+            return zdhPermissionApiService.get_user_by_product_password(product_code, ak, sk, user_account, password);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -188,7 +184,7 @@ public class PermissionApi {
     public ReturnInfo<PermissionUserInfo> get_user_by_product(String product_code,String ak, String sk, String user_account) {
 
         try{
-            return permissionApiController.get_user_by_product(product_code, ak, sk, user_account);
+            return zdhPermissionApiService.get_user_by_product(product_code, ak, sk, user_account);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -208,7 +204,7 @@ public class PermissionApi {
     public ReturnInfo<List<PermissionUserInfo>> get_user_list_by_product_users(String product_code,String ak, String sk, String[] user_account) {
 
         try{
-            return permissionApiController.get_user_list_by_product_users(product_code, ak, sk, user_account);
+            return zdhPermissionApiService.get_user_list_by_product_users(product_code, ak, sk, user_account);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -226,7 +222,7 @@ public class PermissionApi {
     public ReturnInfo<List<PermissionUserInfo>> get_user_by_product(String product_code,String ak, String sk) {
 
         try{
-            return permissionApiController.get_user_by_product(product_code, ak, sk);
+            return zdhPermissionApiService.get_user_by_product(product_code, ak, sk);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -246,7 +242,7 @@ public class PermissionApi {
     public ReturnInfo add_user_group_by_product(String product_code,String ak, String sk, String user_group) {
 
         try{
-            return permissionApiController.add_user_group_by_product(product_code, ak, sk, user_group);
+            return zdhPermissionApiService.add_user_group_by_product(product_code, ak, sk, user_group);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -266,7 +262,7 @@ public class PermissionApi {
     public ReturnInfo add_role_by_product(String product_code,String ak, String sk, RoleInfo role_info) {
 
         try{
-            return permissionApiController.add_role_by_product(product_code, ak, sk, role_info);
+            return zdhPermissionApiService.add_role_by_product(product_code, ak, sk, role_info);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
@@ -278,7 +274,7 @@ public class PermissionApi {
      * @param ak  ak
      * @param sk  sk
      * @param role_code
-     * @param enable
+     * @param enable true/false
      * @return
      */
     @RequestMapping(value = "enable_role_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -286,7 +282,8 @@ public class PermissionApi {
     public ReturnInfo enable_role_by_product(String product_code,String ak, String sk, String role_code, String enable) {
 
         try{
-            return permissionApiController.enable_role_by_product( product_code, ak, sk, role_code, enable);
+            //返回统一信息
+            return zdhPermissionApiService.enable_role_by_product(product_code, ak, sk, role_code, enable);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
@@ -304,12 +301,14 @@ public class PermissionApi {
      */
     @RequestMapping(value = "add_resource_in_role_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo enable_role_by_product(String product_code,String ak, String sk, String role_code, String[] resource_ids) {
 
         try{
-            return permissionApiController.enable_role_by_product(product_code, ak,  sk,  role_code, resource_ids);
+            return zdhPermissionApiService.enable_role_by_product(product_code, ak, sk, role_code, resource_ids);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
         }
     }
@@ -327,9 +326,10 @@ public class PermissionApi {
     public ReturnInfo<RoleInfo> get_role_by_product(String product_code,String ak, String sk, String role_code) {
 
         try{
-            return permissionApiController.get_role_by_product(product_code, ak, sk, role_code);
+            return zdhPermissionApiService.get_role_by_product(product_code, ak, sk, role_code);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
@@ -343,10 +343,10 @@ public class PermissionApi {
      */
     @RequestMapping(value = "get_role_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<RoleInfo>> get_role_by_product(String product_code,String ak, String sk) {
+    public ReturnInfo<List<RoleInfo>> get_role_list_by_product(String product_code,String ak, String sk) {
 
         try{
-            return permissionApiController.get_role_by_product(product_code, ak, sk);
+            return zdhPermissionApiService.get_role_list_by_product(product_code, ak, sk);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -363,10 +363,10 @@ public class PermissionApi {
      */
     @RequestMapping(value = "get_user_list_by_product_role", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<List<PermissionUserInfo>> get_user_list_by_product_role(String product_code,String ak, String sk, String role_code) {
+    public ReturnInfo<List<PermissionUserInfo>> get_user_list_by_product_role(String product_code,String ak, String sk,String role_code) {
 
         try{
-            return permissionApiController.get_user_list_by_product_role(product_code, ak, sk, role_code);
+            return zdhPermissionApiService.get_user_list_by_product_role(product_code, ak, sk, role_code);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -387,7 +387,7 @@ public class PermissionApi {
     public ReturnInfo add_resource_by_product(String product_code,String ak, String sk, ResourceTreeInfo resource_tree_info) {
 
         try{
-            return permissionApiController.add_resource_by_product(product_code, ak, sk, resource_tree_info);
+            return zdhPermissionApiService.add_resource_by_product(product_code, ak, sk, resource_tree_info);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
@@ -403,12 +403,14 @@ public class PermissionApi {
      */
     @RequestMapping(value = "add_batch_resource_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
     public ReturnInfo add_batch_resource_by_product(String product_code,String ak, String sk, @RequestBody List<ResourceTreeInfo> resource_tree_info) {
 
         try{
-            return permissionApiController.add_batch_resource_by_product(product_code, ak, sk, resource_tree_info);
+            return zdhPermissionApiService.add_batch_resource_by_product(product_code, ak, sk, resource_tree_info);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
@@ -416,10 +418,10 @@ public class PermissionApi {
 
     /**
      * 通过用户账户 获取资源信息
+     * @param user_account 用户账号
      * @param product_code 产品代码
      * @param ak  ak
      * @param sk  sk
-     * @param user_account 用户账号
      * @return
      */
     @RequestMapping(value = "resources_by_user", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -427,7 +429,7 @@ public class PermissionApi {
     public ReturnInfo<List<UserResourceInfo2>> resources_by_user(String product_code,String ak, String sk, String user_account) {
 
         try{
-            return permissionApiController.resources_by_user(product_code, ak, sk, user_account);
+            return zdhPermissionApiService.resources_by_user(product_code, ak, sk, user_account);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -446,7 +448,7 @@ public class PermissionApi {
     public ReturnInfo resources_by_role(String product_code,String ak, String sk, String role_code) {
 
         try{
-            return permissionApiController.resources_by_role(product_code, ak, sk, role_code);
+            return zdhPermissionApiService.resources_by_user(product_code, ak, sk, role_code);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
@@ -454,7 +456,7 @@ public class PermissionApi {
 
 
     /**
-     * 获取产品线下所有维度
+     * 获取产品线下所有维度code
      * @param product_code 产品代码
      * @param ak  ak
      * @param sk  sk
@@ -465,7 +467,7 @@ public class PermissionApi {
     public ReturnInfo<List<PermissionDimensionInfo>> get_dimension_list_by_product(String product_code,String ak, String sk) {
 
         try{
-            return permissionApiController.get_dimension_list_by_product(product_code, ak, sk);
+            return zdhPermissionApiService.get_dimension_list_by_product(product_code, ak, sk);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
@@ -474,7 +476,7 @@ public class PermissionApi {
 
 
     /**
-     * 获取产品线下所有维度
+     * 获取产品线下所有维度值
      * @param product_code 产品代码
      * @param ak  ak
      * @param sk  sk
@@ -485,7 +487,7 @@ public class PermissionApi {
     public ReturnInfo<List<PermissionDimensionValueInfo>> get_dimension_value_list_by_product(String product_code,String ak, String sk) {
 
         try{
-            return permissionApiController.get_dimension_value_list_by_product(product_code, ak, sk);
+            return zdhPermissionApiService.get_dimension_value_list_by_product(product_code, ak, sk);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
@@ -494,7 +496,7 @@ public class PermissionApi {
 
 
     /**
-     * 获取用户在产品线下所有维度
+     * 获取用户在产品线下绑定的维度信息
      * @param product_code 产品代码
      * @param ak  ak
      * @param sk  sk
@@ -505,7 +507,7 @@ public class PermissionApi {
     public ReturnInfo<List<PermissionDimensionInfo>> get_user_dimension_list_by_product(String product_code,String ak, String sk, String user_account) {
 
         try{
-            return permissionApiController.get_user_dimension_list_by_product(product_code, ak, sk, user_account);
+            return zdhPermissionApiService.get_user_dimension_list_by_product(product_code, ak, sk, user_account);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
@@ -517,6 +519,7 @@ public class PermissionApi {
      * @param product_code 产品代码
      * @param ak  ak
      * @param sk  sk
+     * @param user_account
      * @return
      */
     @RequestMapping(value = "get_user_dimension_value_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -524,7 +527,7 @@ public class PermissionApi {
     public ReturnInfo<List<PermissionUserDimensionValueInfo>> get_user_dimension_value_list_by_product(String product_code,String ak, String sk, String user_account) {
 
         try{
-            return permissionApiController.get_user_dimension_value_list_by_product(product_code, ak, sk, user_account);
+            return zdhPermissionApiService.get_user_dimension_value_list_by_product(product_code, ak, sk, user_account);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
@@ -532,10 +535,11 @@ public class PermissionApi {
     }
 
     /**
-     * 获取用户在产品线下所有维度
+     * 获取用户组在产品线下绑定所有维度信息
      * @param product_code 产品代码
      * @param ak  ak
      * @param sk  sk
+     * @param group_code 用户组code
      * @return
      */
     @RequestMapping(value = "get_usergroup_dimension_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -543,7 +547,7 @@ public class PermissionApi {
     public ReturnInfo<List<PermissionDimensionInfo>> get_usergroup_dimension_list_by_product(String product_code,String ak, String sk, String group_code) {
 
         try{
-            return permissionApiController.get_usergroup_dimension_list_by_product(product_code, ak, sk, group_code);
+            return zdhPermissionApiService.get_usergroup_dimension_list_by_product(product_code, ak, sk, group_code);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
@@ -551,10 +555,11 @@ public class PermissionApi {
     }
 
     /**
-     * 获取用户在产品线下所有维度值
+     * 获取用户组在产品线下所有维度值信息
      * @param product_code 产品代码
      * @param ak  ak
      * @param sk  sk
+     * @param group_code 用户组code
      * @return
      */
     @RequestMapping(value = "get_usergroup_dimension_value_list_by_product", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -562,26 +567,10 @@ public class PermissionApi {
     public ReturnInfo<List<PermissionUserGroupDimensionValueInfo>> get_usergroup_dimension_value_list_by_product(String product_code,String ak, String sk, String group_code) {
 
         try{
-            return permissionApiController.get_usergroup_dimension_value_list_by_product(product_code, ak, sk, group_code);
+            return zdhPermissionApiService.get_usergroup_dimension_value_list_by_product(product_code, ak, sk, group_code);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError( "查询失败", e);
         }
     }
-
-
-    /**
-     * 验证token 是否有效
-     * @param token
-     * @return
-     */
-    private boolean valid(String token) {
-        try {
-            Session session = sessionDao.readSession(token);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-
 }

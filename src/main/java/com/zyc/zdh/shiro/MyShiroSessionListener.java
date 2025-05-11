@@ -1,5 +1,6 @@
 package com.zyc.zdh.shiro;
 
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.SpringContext;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.SessionListener;
@@ -19,7 +20,7 @@ public class MyShiroSessionListener implements SessionListener {
 		// 清除session
 		redisUtil.remove(session.getId().toString());
 		// 清除缓存
-		redisUtil.remove("shiro:cache:shiro-activeSessionCache1:"
+		redisUtil.remove(Const.SHIRO_SESSION_ID_CACHE_PREFIX_KEY
 				+ session.getId().toString());
 	}
 
@@ -30,7 +31,7 @@ public class MyShiroSessionListener implements SessionListener {
 		// 清除session
 		redisUtil.remove(session.getId().toString());
 		// 清除缓存
-		redisUtil.remove("shiro:cache:shiro-activeSessionCache1:"
+		redisUtil.remove(Const.SHIRO_SESSION_ID_CACHE_PREFIX_KEY
 				+ session.getId().toString());
 	}
 

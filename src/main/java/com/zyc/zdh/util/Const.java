@@ -5,6 +5,14 @@ import java.util.Map;
 
 public class Const {
 
+    //j2cache, myredis 都是srpingboot cachemanager 用到,和shiro 无关,shiro缓存,采用redis自定义单独实现
+    public static String JAVA_2CACHE = "j2CacheRedis";//java 2级缓存实现,
+    public static String JAVA_REDISCACHE = "myRedis";//
+
+    public static String SHIRO_SESSION_CACHE_NAME="shiro-activeSessionCache1";
+
+    public static String SHIRO_SESSION_ID_CACHE_PREFIX_KEY = "shiro:cache:shiro-activeSessionCache1:";
+
     public static String SUPER_ADMIN_ROLE="super_admin";//超级管理员
 
     public static String TRUR="true";

@@ -667,6 +667,13 @@
   + v5.6.7 [zdh_web]修复下载数据bom标识兼容性问题
   + v5.6.7 [zdh_web]修复历史白名单问题
   
+  + v5.6.8 [zdh_web]优化数据库表索引
+  + v5.6.8 [zdh_web]kettle增加任务名,修复旧版本kettle执行bug
+  + v5.6.8 [zdh_web]启动服务增加JDK版本检查
+  + v5.6.8 [zdh_web]日志打印优化参数格式
+  + v5.6.8 [zdh_web]推送服务-增加通道池
+  + v5.6.8 [zdh_web]新增任务暂停状态,废弃数字表示
+  + v5.6.8 [zdh_web]删除二级缓存
   
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
@@ -3524,3 +3531,28 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1360715138977501184, '963932648793706496', '下载策略数据', '4', 'zyc', 'fa fa-coffee', '', '61', '1', '2025-04-12 20:36:10', '2025-04-12 20:36:41', 'strategy_task_download', '5', '', '', 'zdh', '');
+
+## 5.6.7迁移5.6.8
+    alter table data_code_info add index idx_code(code);
+    
+    CREATE TABLE `push_channel_pool_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `pool_code` varchar(128) DEFAULT '' COMMENT '池code',
+      `pool_name` varchar(128) DEFAULT '' COMMENT '池名称',
+      `pool_config` text COMMENT '池配置',
+      `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+      `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
+      PRIMARY KEY (`id`),
+      KEY `idx_pool_code` (`pool_code`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='push通道池配置'
+    
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1365697172829376512, '1251925635509522432', '通道池配置', '3', 'zyc', 'fa fa-coffee', '通道池是多种通道的集合,用户在配置模板时选择通道池进行推送', '4', '1', '2025-04-26 14:32:59', '2025-04-26 14:32:59', 'push_channel_pool_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1370850188213620736, '1210897256677380096', '查询kettle任务名称列表', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2025-05-10 19:49:14', '2025-05-10 19:49:14', 'etl_task_kettle_job_list', '5', '', '', 'zdh', '');

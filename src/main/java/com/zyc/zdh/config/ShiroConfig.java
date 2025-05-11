@@ -2,6 +2,7 @@ package com.zyc.zdh.config;
 
 import com.zyc.zdh.filter.ZdhFilter;
 import com.zyc.zdh.shiro.*;
+import com.zyc.zdh.util.Const;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
@@ -222,7 +223,7 @@ public class ShiroConfig {
 	 public SessionDao sessionDao(RedisUtil redisUtil,ShiroRedisCacheManager shiroRedisCacheManager) {
 	 SessionDao sessionDao = new SessionDao();
 	 //设置缓存器的名称
-	 sessionDao.setActiveSessionsCacheName("shiro-activeSessionCache1");
+	 sessionDao.setActiveSessionsCacheName(Const.SHIRO_SESSION_CACHE_NAME);
 	 //注入缓存管理器默认的是ehcache缓存
 	 sessionDao.setCacheManager(shiroRedisCacheManager);
 	 //注入缓存管理器2(实现session由redis控制有多种方法，上一步是一种，下面这样写也行)

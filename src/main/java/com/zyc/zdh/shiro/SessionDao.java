@@ -1,5 +1,6 @@
 package com.zyc.zdh.shiro;
 
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.SimpleSession;
@@ -18,7 +19,7 @@ public class SessionDao extends EnterpriseCacheSessionDAO {
         this.cacheKey = cacheKey;
     }
 
-    private String cacheKey = "shiro:cache:shiro-activeSessionCache1:";
+    private String cacheKey = Const.SHIRO_SESSION_ID_CACHE_PREFIX_KEY;
 
     private RedisUtil redisUtil;
 
@@ -36,7 +37,7 @@ public class SessionDao extends EnterpriseCacheSessionDAO {
         Serializable sessionId = super.doCreate(session);
         //System.out.println("doCreate......" + session.getId());
         //redisUtil.set(cacheKey+session.getId().toString(), sessionToByte(session),1*60L);
-        getCacheManager().getCache("shiro-activeSessionCache1").put(session.getId().toString(), session);
+        getCacheManager().getCache(Const.SHIRO_SESSION_CACHE_NAME).put(session.getId().toString(), session);
         return session.getId();
     }
 

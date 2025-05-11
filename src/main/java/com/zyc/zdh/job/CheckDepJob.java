@@ -83,8 +83,8 @@ public class CheckDepJob implements CheckDepJobInterface{
                 }
 
                 String tmp_status=tglim.selectByPrimaryKey(tgli.getId()).getStatus();
-                if( !tmp_status.equalsIgnoreCase(JobStatus.KILL.getValue()) && !tmp_status.equalsIgnoreCase(JobStatus.KILLED.getValue()) ){
-                    //在检查依赖时杀死任务--则不修改状态
+                if( !tmp_status.equalsIgnoreCase(JobStatus.PAUSE.getValue()) && !tmp_status.equalsIgnoreCase(JobStatus.KILL.getValue()) && !tmp_status.equalsIgnoreCase(JobStatus.KILLED.getValue()) ){
+                    //在检查依赖时杀死任务/暂停任务--则不修改状态
                     updateTaskGroupLogInstanceStatus(tgli);
                 }
 
@@ -213,36 +213,14 @@ public class CheckDepJob implements CheckDepJobInterface{
                     if(tl.getStatus()!=null && tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                         continue;
                     }
+                    if(tl.getStatus()!=null && tl.getStatus().equalsIgnoreCase(JobStatus.PAUSE.getValue())){
+                        //任务暂停状态
+                        continue;
+                    }
                     String action = "";
                     //如果上游任务kill,killed 设置本实例为killed
                     String pre_tasks=tl.getPre_tasks();
                     action = checkLevel(tl, pre_tasks);
-//                    if(!StringUtils.isEmpty(pre_tasks)){
-//                        String[] task_ids=pre_tasks.split(",");
-//                        List<TaskLogInstance> tlis=taskLogInstanceMapper.selectTliByIds(task_ids);
-//
-//                        int level= Integer.valueOf(tl.getDepend_level());
-//                        if(tlis!=null && tlis.size()>0 && level==0){
-//                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
-//                            tl.setStatus(JobStatus.KILLED.getValue());
-//                            JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
-//                            JobCommon2.insertLog(tl,"INFO","检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为killed");
-//                            continue;
-//                        }
-//                        if(level >= 1){
-//                            // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,默认成功时运行
-//                            //杀死触发,如果所有上游任务都已完成
-//                            List<TaskLogInstance> tlis_finish= taskLogInstanceMapper.selectByFinishIds(task_ids);
-//                            if(tlis_finish.size()==task_ids.length){
-//                                tl.setStatus(JobStatus.SKIP.getValue());
-//                                JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tl.getId(),"100",taskLogInstanceMapper);
-//                                //JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
-//                                JobCommon2.insertLog(tl,"INFO","检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为SKIP");
-//                                continue;
-//                            }
-//                        }
-//
-//                    }
 
                     if(StringUtils.isEmpty(action)){
                         continue;

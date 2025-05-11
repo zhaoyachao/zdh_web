@@ -158,8 +158,8 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">短信通道</label>
                                                     <div class="col-sm-10">
-                                                        <select id="channel" name="channel" multiple
-                                                                data-placeholder="选择通道...."
+                                                        <select id="sms_channel_pool" name="sms_channel_pool"
+                                                                data-placeholder="选择通道池...."
                                                                 class="chosen-select form-control m-b" >
                                                             <option value="">空</option>
                                                         </select>
@@ -200,7 +200,7 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">邮箱通道</label>
                                                     <div class="col-sm-10">
-                                                        <select id="email_channel" name="email_channel"
+                                                        <select id="email_channel_pool" name="email_channel_pool"
                                                                 data-placeholder="选择通道...."
                                                                 class="chosen-select form-control m-b" >
                                                             <option value="">空</option>
@@ -571,10 +571,10 @@
             function init_push_channel(id, channel_type){
                 $.ajax({
                     type: 'POST',
-                    url: server_context+"/push_channel_list",
+                    url: server_context+"/push_channel_pool_list",
                     async:false,
                     dataType: 'json',
-                    data: {"channel_type": channel_type},
+                    data: {},
                     //成功返回
                     success: function (data) {
                         if(data.code != "200"){
@@ -583,7 +583,7 @@
                         }
                         var str = '<option value=\"'  + '\" hassubinfo=\"true\">' + '选择通道' + '</option>';
                         for (var i = 0; i < data.result.length; i++) {
-                            str += '<option value=\"' + data.result[i].channel_code + '\" hassubinfo=\"true\">' + data.result[i].channel_name + '</option>';
+                            str += '<option value=\"' + data.result[i].pool_code + '\" hassubinfo=\"true\">' + data.result[i].pool_name + '</option>';
                         }
                         $('#'+id).html(str);
                         $('#'+id).trigger("chosen:updated");
@@ -658,12 +658,11 @@
                 });
             }
 
-            init_push_channel('channel', "sms");
-
+            init_push_channel('sms_channel_pool', "sms");
 
             //此处增加样式为了解决chosen插件宽度为0问题
             $('#check_email_tab').addClass("active");
-            init_push_channel('email_channel', "email");
+            init_push_channel('email_channel_pool', "email");
             $('#check_email_tab').removeClass("active");
 
             $('#check_push_tab').addClass("active");
@@ -717,8 +716,8 @@
 
                         //sms配置
                         if(!is_empty(data.result.configMap.sms)){
-                            $("#channel").val(data.result.configMap.sms.channel);
-                            $("#channel").trigger("chosen:updated");
+                            $("#sms_channel_pool").val(data.result.configMap.sms.channel_pool);
+                            $("#sms_channel_pool").trigger("chosen:updated");
 
                             $("#channel_template_id").val(data.result.configMap.sms.channel_template_id);
                             $("#sign_name").val(data.result.configMap.sms.sign_name);
@@ -727,8 +726,8 @@
                         }
 
                         if(!is_empty(data.result.configMap.email)){
-                            $("#email_channel").val(data.result.configMap.email.channel);
-                            $("#email_channel").trigger("chosen:updated");
+                            $("#email_channel_pool").val(data.result.configMap.email.channel_pool);
+                            $("#email_channel_pool").trigger("chosen:updated");
 
                             $("#title").val(data.result.configMap.email.title);
                             $("#email_content").val(data.result.configMap.email.content);
@@ -790,7 +789,7 @@
 
     function buildConfig(){
         var sms_config = {
-            "channel": $("#channel").val(),
+            "channel_pool": $("#sms_channel_pool").val(),
             "channel_template_id": $("#channel_template_id").val(),
             "sign_name": $("#sign_name").val(),
             "content": $("#content").val(),
@@ -798,7 +797,7 @@
         };
 
         var email_config = {
-            "channel": $("#email_channel").val(),
+            "channel_pool": $("#email_channel_pool").val(),
             "title": $("#title").val(),
             "content": $("#email_content").val(),
             "params": $("#email_params").val()

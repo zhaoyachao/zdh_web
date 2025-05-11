@@ -1,5 +1,6 @@
 package com.zyc.zdh.aop;
 
+import com.google.common.collect.Maps;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.config.SystemConfig;
 import com.zyc.zdh.dao.NoticeMapper;
@@ -33,6 +34,7 @@ import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /***
@@ -279,7 +281,23 @@ public class AspectConfig implements Ordered {
                 } else {
                     //logger.error(getUrl(request)+"请求类型: "+request.getMethod()+", 注解类型: "+JsonUtil.formatJsonString(requestMethods));
                 }
-                reqParam = JsonUtil.formatJsonString(request.getParameterMap());
+
+                Map<String, Object> paramMap = Maps.newHashMap();
+                Map<String, String[]> parameterMap = request.getParameterMap();
+                if(parameterMap != null && parameterMap.size()>0){
+                    for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+                        String paramName = entry.getKey();
+                        String[] paramValues = entry.getValue();
+                        if (paramValues != null && paramValues.length == 1) {
+                            paramMap.put(paramName, paramValues[0]);
+                        }else{
+                            paramMap.put(paramName, paramValues);
+                        }
+                    }
+                }
+
+
+                reqParam = JsonUtil.formatJsonString(paramMap);
                 //验证权限
                 String url = getUrl(request);
                 String method = request.getMethod();

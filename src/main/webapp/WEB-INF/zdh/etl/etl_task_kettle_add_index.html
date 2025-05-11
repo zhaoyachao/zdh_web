@@ -20,6 +20,7 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="js/plugins/magicsuggest/magicsuggest.css" rel="stylesheet">
     <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
     <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 
@@ -154,7 +155,8 @@
                             <label class="col-sm-2 control-label">存储库</label>
                             <div class="col-sm-10">
                                 <input id="kettle_repository" name="kettle_repository" type="text"
-                                       placeholder="存储库对应的数据库名称" class="form-control" aria-required="true"> </span>
+                                       placeholder="存储库对应的数据库名称" class="form-control" aria-required="true">
+                                </span>
                             </div>
                         </div>
                         <div class="form-group">
@@ -261,6 +263,7 @@
 <script src="js/jquery.min.js?v=2.1.4"></script>
 <script src="js/bootstrap.min.js?v=3.3.6"></script>
 
+<script type="text/javascript" src="js/plugins/magicsuggest/magicsuggest.js"></script>
 <!-- Bootstrap table -->
 <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
 <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
@@ -285,10 +288,30 @@
 <script src="js/admin/dim_group_common.js"></script>
 
 <script>
+    var addressIdMagicSuggest = $('#kettle_repository_path').magicSuggest({
+        width:200,
+        queryParam: 'search',
+        method: 'post',
+        allowFreeEntries: true,
+        autoSelect:true,
+        valueField:"id",
+        displayField:"name",
+        resultAsString:true,
+        selectionStacked: true,
+        resultsField: "result",
+        //下拉框数据的获得：
+        data: []
+    });
+
     $(document).ready(function () {
         $('.i-checks').iCheck({
             checkboxClass: 'icheckbox_square-green',
             radioClass: 'iradio_square-green',
+        });
+
+
+        $('#kettle_type').chosen().on("change", function (evt, params) {
+            addressIdMagicSuggest.setData(server_context+'/etl_task_kettle_job_list?kettle_job_type='+$('#kettle_type').val()+"&repository_name="+ $('#kettle_repository').val()+"&data_sources_choose_input="+$('#data_sources_choose_input').val())
         });
     });
 
@@ -313,7 +336,6 @@
 
 
             $('#kettle_repository_type').chosen();
-            $('#kettle_type').chosen();
 
 
             //定义特定数据源展示的div
@@ -482,13 +504,16 @@
                             var kettle_repository = data.result.kettle_repository;
                             $('#kettle_repository').val(kettle_repository);
 
-                            var kettle_repository_path = data.result.kettle_repository_path;
-                            $('#kettle_repository_path').val(kettle_repository_path);
 
                             //输出文件类型参数
                             var kettle_type = data.result.kettle_type;
                             $("#kettle_type").val(kettle_type);
                             $("#kettle_type").trigger("chosen:updated");
+                            addressIdMagicSuggest.setData(server_context+'/etl_task_kettle_job_list?kettle_job_type='+$('#kettle_type').val()+"&repository_name="+ $('#kettle_repository').val()+"&data_sources_choose_input="+$('#data_sources_choose_input').val())
+
+                            var kettle_repository_path = data.result.kettle_repository_path;
+                            //$('#kettle_repository_path').val(kettle_repository_path);
+                            addressIdMagicSuggest.setValue(kettle_repository_path.split(','));
 
                             //获取元数据信息
                             var company = data.result.company;
@@ -530,7 +555,9 @@
             return;
         }
 
+        var kettle_repository_path_str = "&kettle_repository_path="+addressIdMagicSuggest.getValue();
 
+        $("[name='kettle_repository_path[]']").remove();
         var editor_str = "&data_sources_params_input="+window.editor_data_sources_params_input.getValue();
 
         $.ajax({
@@ -538,7 +565,7 @@
             url: server_context+"/etl_task_kettle_add",
             async: false,
             dataType: 'json',
-            data: $("#etl_task_kettle_add_form").serialize() +editor_str,
+            data: $("#etl_task_kettle_add_form").serialize() +editor_str+kettle_repository_path_str,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -585,7 +612,9 @@
         for (var i = 0; i < pa.length; i++) {
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
+        var kettle_repository_path_str = "&kettle_repository_path="+addressIdMagicSuggest.getValue();
 
+        $("[name='kettle_repository_path[]']").remove();
         var editor_str = "&data_sources_params_input="+window.editor_data_sources_params_input.getValue();
 
         $.ajax({
@@ -593,7 +622,7 @@
             url: server_context+"/etl_task_kettle_update",
             dataType: 'json',
             async: false,
-            data: $("#etl_task_kettle_add_form").serialize()+editor_str + "&" + "id=" + s.id,
+            data: $("#etl_task_kettle_add_form").serialize()+editor_str + kettle_repository_path_str+ "&" + "id=" + s.id,
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交

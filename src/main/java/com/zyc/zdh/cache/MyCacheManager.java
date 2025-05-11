@@ -13,6 +13,7 @@ public class MyCacheManager implements CacheManager{
 
 	private List<String> cacheNames;
 
+	//多级缓存
 	private MyCacheTemplate myCacheTemplate;
 
 	private MyRedisCache myRedisCache;

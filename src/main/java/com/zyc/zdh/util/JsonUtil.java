@@ -96,6 +96,9 @@ public class JsonUtil {
      */
     public static <T> T toJavaObj(String json, TypeReference<T> typeReference) {
         T t = null;
+        if(StringUtils.isEmpty(json)){
+            return t;
+        }
         try {
             t = OBJECT_MAPPER.readValue(json, typeReference);
         } catch (JsonProcessingException e) {

@@ -4,6 +4,7 @@ import com.zyc.zdh.cache.MyCacheManager;
 import com.zyc.zdh.cache.MyCacheTemplate;
 import com.zyc.zdh.cache.MyRedisCache;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.ParamUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
@@ -254,8 +255,8 @@ public class RedisConfig extends CachingConfigurerSupport {
 	public RedisCacheManager redisCacheManager(JedisConnectionFactory redisConnectionFactory) {
 
 		Set<String> cacheNames = new HashSet<>();
-		cacheNames.add("myRedis");
-		cacheNames.add("j2CacheRedis");
+		cacheNames.add(Const.JAVA_REDISCACHE);
+		cacheNames.add(Const.JAVA_2CACHE);
 		RedisCacheManager cacheManager = RedisCacheManager.builder(redisConnectionFactory).initialCacheNames(cacheNames).build();
 		//RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
 		// Number of seconds before expiration. Defaults to unlimited (0)
@@ -273,9 +274,10 @@ public class RedisConfig extends CachingConfigurerSupport {
 	@Primary
 	public MyCacheTemplate myCacheTemplate(RedisCacheManager redisCacheManager){
 		MyCacheTemplate myCacheTemplate=new MyCacheTemplate();
-		myCacheTemplate.setEhCacheManager(ehCacheManagerFactoryBean().getObject());
+		//删除二级ehcache缓存,分布式无法使用单机缓存
+		//myCacheTemplate.setEhCacheManager(ehCacheManagerFactoryBean().getObject());
 		myCacheTemplate.setRedisCacheManager(redisCacheManager);
-		myCacheTemplate.setName("j2CacheRedis");
+		myCacheTemplate.setName(Const.JAVA_2CACHE);
 		return myCacheTemplate;
 	}
 
@@ -289,7 +291,7 @@ public class RedisConfig extends CachingConfigurerSupport {
 	public MyRedisCache myRedisCache(RedisCacheManager redisCacheManager,RedisTemplate<String,Object> redisTemplate){
 		MyRedisCache myRedisCache=new MyRedisCache();
 		//自定义属性配置缓存名称
-		myRedisCache.setName("myRedis");
+		myRedisCache.setName(Const.JAVA_REDISCACHE);
 		//redis缓存管理器
 		myRedisCache.setRedisCacheManager(redisCacheManager);
 		//redisTemplate 实例
@@ -309,31 +311,30 @@ public class RedisConfig extends CachingConfigurerSupport {
 		cacheManager.setMyCacheTemplate(myCacheTemplate(redisCacheManager(redisConnectionFactory())));
 		cacheManager.setMyRedisCache(myRedisCache(redisCacheManager(redisConnectionFactory()),redisTemplate(redisConnectionFactory())));
 		List<String> cacheNames=new ArrayList<>();
-		cacheNames.add("j2CacheRedis");
-		cacheNames.add("myRedis");
+		cacheNames.add(Const.JAVA_2CACHE);
+		cacheNames.add(Const.JAVA_REDISCACHE);
 		cacheManager.setCacheNames(cacheNames);
 		return cacheManager;
 	}
 
 	 // 整合ehcache
-	 @Bean
-	 public EhCacheCacheManager ehCacheCacheManager() {
-		 EhCacheCacheManager ehCacheCacheManager = new EhCacheCacheManager(ehCacheManagerFactoryBean().getObject());
-		  return ehCacheCacheManager;
-	 }
+//	 @Bean
+//	 public EhCacheCacheManager ehCacheCacheManager() {
+//		 EhCacheCacheManager ehCacheCacheManager = new EhCacheCacheManager(ehCacheManagerFactoryBean().getObject());
+//		  return ehCacheCacheManager;
+//	 }
 
 
-	 @Bean
-	 public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
-	 EhCacheManagerFactoryBean cacheManagerFactoryBean = new
-	 EhCacheManagerFactoryBean();
-	 //这里暂时借用shiro的ehcache配置文件
-	 //Resource r=new ClassPathResource("ehcache-shiro.xml");
-	 Resource r=new ClassPathResource(ev.getProperty("ecache.config.location"));
-	 cacheManagerFactoryBean.setConfigLocation(r);
-	 cacheManagerFactoryBean.setShared(true);
-	 return cacheManagerFactoryBean;
-	 }
+//	 @Bean
+//	 public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
+//	 EhCacheManagerFactoryBean cacheManagerFactoryBean = new EhCacheManagerFactoryBean();
+//	 //这里暂时借用shiro的ehcache配置文件
+//	 //Resource r=new ClassPathResource("ehcache-shiro.xml");
+//	 Resource r=new ClassPathResource(ev.getProperty("ecache.config.location"));
+//	 cacheManagerFactoryBean.setConfigLocation(r);
+//	 cacheManagerFactoryBean.setShared(true);
+//	 return cacheManagerFactoryBean;
+//	 }
 
 	@Bean
 	public RedissonClient redissonClient(){

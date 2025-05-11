@@ -32,6 +32,7 @@ public class KettleJob extends JobCommon2 {
             KettleUtil kettleUtil = new KettleUtil();
             KettleUtil.KettleResult kettleResult = null;
             String repositoryType = zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository_type();
+            String repository = zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository();
             String repositoryPath = zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository_path();
             String user = zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository_user();
             String password = zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository_password();
@@ -45,9 +46,9 @@ public class KettleJob extends JobCommon2 {
                 String dbType = JdbcUtils.getDbType(zdhKettleAutoInfo.getDsi_Input().getUrl(), zdhKettleAutoInfo.getDsi_Input().getDriver());
                 KettleUtil.DataSource dataSource = buildKettleDataSource(zdhKettleAutoInfo);
                 if(kettleType.equalsIgnoreCase("trans")){
-                    kettleResult = kettleUtil.runKettleTransferByRepository(tli.getId(),tli.getEtl_context(), dbType, tli.getJob_context(), repositoryPath, dataSource,options, user, password, options);
+                    kettleResult = kettleUtil.runKettleTransferByRepository(tli.getId(),repositoryPath, dbType, repository, "/", dataSource,options, user, password, options);
                 }else if(kettleType.equalsIgnoreCase("job")){
-                    kettleResult = kettleUtil.runKettleJobByRepository(tli.getId(),tli.getEtl_context(), dbType, tli.getJob_context(), repositoryPath, dataSource,options, user, password, options);
+                    kettleResult = kettleUtil.runKettleJobByRepository(tli.getId(),repositoryPath, dbType, repository, "/", dataSource,options, user, password, options);
                 }
             }else if(repositoryType.equalsIgnoreCase("file")){
                 if(kettleType.equalsIgnoreCase("trans")){
@@ -85,11 +86,18 @@ public class KettleJob extends JobCommon2 {
 
     public static KettleUtil.DataSource buildKettleDataSource(ZdhKettleAutoInfo zdhKettleAutoInfo){
         String dbType = JdbcUtils.getDbType(zdhKettleAutoInfo.getDsi_Input().getUrl(), zdhKettleAutoInfo.getDsi_Input().getDriver());
-        URI uri = URI.create(zdhKettleAutoInfo.getDsi_Input().getUrl());
-        System.out.println(uri.getScheme());
-        System.out.println(uri.getHost());
-        System.out.println(uri.getPort());
-        System.out.println(uri.getPath());
+        String jdbcUri = zdhKettleAutoInfo.getDsi_Input().getUrl();
+        if (!jdbcUri.startsWith("jdbc:")) {
+            throw new IllegalArgumentException("Not a valid JDBC URI");
+        }
+
+        // 提取 scheme-specific part (去掉 "jdbc:")
+        String schemeSpecificPart = jdbcUri.substring(5);
+        URI uri = URI.create(schemeSpecificPart);
+        //System.out.println(uri.getScheme());
+        //System.out.println(uri.getHost());
+        //System.out.println(uri.getPort());
+        //System.out.println(uri.getPath());
         KettleUtil.DataSource dataSource = new KettleUtil.DataSource(zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository(), dbType, "Native",uri.getHost(), zdhKettleAutoInfo.getEtlTaskKettleInfo().getKettle_repository(),String.valueOf(uri.getPort()), zdhKettleAutoInfo.getDsi_Input().getUser(), zdhKettleAutoInfo.getDsi_Input().getPassword());
         return dataSource;
     }

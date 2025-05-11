@@ -55,7 +55,7 @@
 
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
-                        <input type="hidden" id="config" name="config" value="">
+                        <input type="hidden" id="pool_config" name="pool_config" value="">
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">归属产品</label>
@@ -78,91 +78,64 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">通道名称</label>
+                            <label class="col-sm-2 control-label">通道池名称</label>
                             <div class="col-sm-10">
-                                <input id="channel_name" name="channel_name" type="text"
-                                       placeholder="通道名称,不可为空" class="form-control" aria-required="true"> </span>
+                                <input id="pool_name" name="pool_name" type="text"
+                                       placeholder="通道名池称,不可为空" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">通道码</label>
+                            <label class="col-sm-2 control-label">通道池码</label>
                             <div class="col-sm-10">
-                                <input id="channel_code" name="channel_code" type="text"
-                                       placeholder="通道码,不可为空" class="form-control" aria-required="true"> </span>
+                                <input id="pool_code" name="pool_code" type="text"
+                                       placeholder="通道池码,不可为空" class="form-control" aria-required="true"> </span>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">通道类型</label>
+                            <label class="col-sm-2 control-label">短信通道</label>
                             <div class="col-sm-10">
-                                <select id="channel_type" name="channel_type"
-                                        data-placeholder="选择通道类型..."
+                                <select id="sms_channel_config" name="sms_channel_config" multiple
+                                        data-placeholder="选择通道..."
                                         class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">选择消息类型...</option>
-                                    <option value="sms" mytype="">短信</option>
-                                    <option value="email" mytype="">邮件</option>
-                                    <option value="miniprogram" mytype="">小程序</option>
-                                    <option value="6" mytype="">其他</option>
+
                                 </select>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">通道服务商</label>
+                            <label class="col-sm-2 control-label">邮件通道</label>
                             <div class="col-sm-10">
-                                <select id="channel_server" name="channel_server"
-                                        data-placeholder="选择通道服务商..."
+                                <select id="email_channel_config" name="email_channel_config" multiple
+                                        data-placeholder="选择通道..."
                                         class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">选择通道服务商...</option>
-                                    <option value="sms_ali" mytype="">阿里云短信</option>
-                                    <option value="sms_baidu" mytype="">百度云短信</option>
-                                    <option value="sms_tencent" mytype="">腾讯云短信</option>
-                                    <option value="miniapp_wechat" mytype="">微信小程序</option>
-                                    <option value="miniapp_baidu" mytype="">百度小程序</option>
-                                    <option value="miniapp_douyin" mytype="">抖音小程序</option>
-                                    <option value="miniapp_ali" mytype="">支付宝小程序</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">APP通道</label>
+                            <div class="col-sm-10">
+                                <select id="app_channel_config" name="app_channel_config" multiple
+                                        data-placeholder="选择通道..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">小程序通道</label>
+                            <div class="col-sm-10">
+                                <select id="miniprogram_channel_config" name="miniprogram_channel_config" multiple
+                                        data-placeholder="选择通道..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+
                                 </select>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">账号</label>
-                            <div class="col-sm-10">
-                                <input id="account" name="account" type="text"
-                                       placeholder="账号" class="form-control" aria-required="true"> </span>
-                            </div>
-                            <div class="form-group"></div>
-                            <label class="col-sm-2 control-label">密码</label>
-                            <div class="col-sm-10">
-                                <input id="password" name="password" type="password"
-                                       placeholder="密码" class="form-control" aria-required="true"> </span>
-                            </div>
-                            <div class="form-group"></div>
-                            <label class="col-sm-2 control-label">邮箱服务器</label>
-                            <div class="col-sm-10">
-                                <input id="server" name="server" type="text"
-                                       placeholder="邮箱服务器" class="form-control" aria-required="true"> </span>
-                            </div>
-                            <div class="form-group"></div>
-                            <label class="col-sm-2 control-label">端口</label>
-                            <div class="col-sm-10">
-                                <input id="port" name="port" type="text"
-                                       placeholder="端口" class="form-control" aria-required="true"> </span>
-                            </div>
-                            <div class="form-group"></div>
-                            <label class="col-sm-2 control-label">ak</label>
-                            <div class="col-sm-10">
-                                <input id="ak" name="ak" type="text"
-                                       placeholder="通道AK" class="form-control" aria-required="true"> </span>
-                            </div>
-                            <div class="form-group"></div>
-                            <label class="col-sm-2 control-label">sk</label>
-                            <div class="col-sm-10">
-                                <input id="sk" name="sk" type="text"
-                                       placeholder="通道SK" class="form-control" aria-required="true"> </span>
-                            </div>
-                            <div class="form-group"></div>
                             <label class="col-sm-2 control-label">其他参数</label>
                             <div class="col-sm-10">
                                 <textarea id="params" name="params" class="form-control" rows="5" placeholder="其他参数,k1=v1 结构,多个参数换行"></textarea>
@@ -260,7 +233,39 @@
                 s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
             }
 
-            $('.tab-pane').removeClass("active");
+            function init_push_channel(id, channel_type){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/push_channel_list",
+                    async:false,
+                    dataType: 'json',
+                    data: {"channel_type": channel_type},
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        var str = '<option value=\"'  + '\" hassubinfo=\"true\">' + '选择通道' + '</option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].channel_code + '\" hassubinfo=\"true\">' + data.result[i].channel_name + '</option>';
+                        }
+                        $('#'+id).html(str);
+                        $('#'+id).trigger("chosen:updated");
+                        $('#'+id).chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
+                    }
+                });
+            }
+            init_push_channel('sms_channel_config', "sms");
+            init_push_channel('email_channel_config', "email");
+            init_push_channel('app_channel_config', "app");
+            init_push_channel('miniprogram_channel_config', "miniprogram");
             //init_job_sources();
             //s.id=-1 表示新增,否则表示更新
             if(s.id==-1){
@@ -283,7 +288,7 @@
                 console.info("更新-拷贝按钮触发");
                 //开始赋值
                 $.ajax({
-                    url : server_context+"/push_channel_detail",
+                    url : server_context+"/push_channel_pool_detail",
                     data : "id=" + s.id,
                     type : "post",
                     dataType : "json",
@@ -304,28 +309,21 @@
                         $("#dim_group").val(dim_group);
                         $("#dim_group").trigger("chosen:updated");
 
-                        var channel_name=data.result.channel_name;
-                        $("#channel_name").val(channel_name);
+                        var pool_name=data.result.pool_name;
+                        $("#pool_name").val(pool_name);
 
-                        var channel_code=data.result.channel_code;
-                        $("#channel_code").val(channel_code);
+                        var pool_code=data.result.pool_code;
+                        $("#pool_code").val(pool_code);
 
-                        var channel_type=data.result.channel_type;
-                        $("#channel_type").val(channel_type);
-                        $("#channel_type").trigger("chosen:updated");
+                        var pool_config = JSON.parse(data.result.pool_config);
 
-                        var channel_server=data.result.channel_server;
-                        $("#channel_server").val(channel_server);
-                        $("#channel_server").trigger("chosen:updated");
+                        $("#sms_channel_config").val(pool_config.sms_config);
+                        $("#sms_channel_config").trigger("chosen:updated");
 
-                        var config = JSON.parse(data.result.config);
-                        $("#account").val(config.account);
-                        $("#password").val(config.password);
-                        $("#server").val(config.server);
-                        $("#port").val(config.port);
-                        $("#ak").val(config.ak);
-                        $("#sk").val(config.sk);
-                        $("#params").val(config.params);
+                        $("#email_channel_config").val(pool_config.email_config);
+                        $("#email_channel_config").trigger("chosen:updated");
+
+                        $("#params").val(pool_config.params);
 
                     },
                     error: function (data) {
@@ -345,12 +343,10 @@
 
     function buildConfig(){
         var config = {
-            "account": $("#account").val(),
-            "password": $("#password").val(),
-            "server": $("#server").val(),
-            "port": $("#port").val(),
-            "ak": $("#ak").val(),
-            "sk": $("#sk").val(),
+            "sms_config": $("#sms_channel_config").val(),
+            "email_config": $("#email_channel_config").val(),
+            "app_config": $("#app_channel_config").val(),
+            "miniprogram_config": $("#miniprogram_channel_config").val(),
             "params": $("#params").val(),
         };
 
@@ -359,18 +355,18 @@
 
     $('#save_dispatch_task').click(function () {
 
-        if($('#channel_name').val()==''){
+        if($('#pool_name').val()==''){
             layer.msg("通道名称不可为空");
             return false
         }
 
 
         var config = buildConfig();
-        $("#config").val(JSON.stringify(config));
+        $("#pool_config").val(JSON.stringify(config));
 
         $.ajax({
             type: 'POST',
-            url: server_context+"/push_channel_add",
+            url: server_context+"/push_channel_pool_add",
             dataType: 'json',
             data: $("#dispatch_task_add_form").serialize(),
             //发送数据前
@@ -422,11 +418,11 @@
         }
 
         var config = buildConfig();
-        $("#config").val(JSON.stringify(config));
+        $("#pool_config").val(JSON.stringify(config));
 
         $.ajax({
             type: 'POST',
-            url: server_context+"/push_channel_update",
+            url: server_context+"/push_channel_pool_update",
             dataType: 'json',
             data: $("#dispatch_task_add_form").serialize()+'&id='+s.id,
             //发送数据前
