@@ -5,7 +5,7 @@
 
     <groupId>com.zyc</groupId>
     <artifactId>zdh</artifactId>
-    <version>5.6.8-RELEASE</version>
+    <version>5.6.9-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>zdh_web</name>

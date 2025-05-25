@@ -8,9 +8,11 @@ import org.apache.shiro.web.util.WebUtils;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 
+	public static String ORIGINAL_REQUEST_URL = "ORIGINAL_REQUEST_URL";
 	// 登录失败，异常抛出
 	@Override
 	protected boolean onLoginFailure(AuthenticationToken token,
@@ -50,7 +52,18 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 		// sysUserService.updateByPrimaryKeySelective(user);
 		// 认证通过后的跳转地址
 		//System.out.println("认证通过后的跳转地址"+getSuccessUrl());
-		WebUtils.issueRedirect(request, response, getSuccessUrl(), null, true);
+
+		String successUrl = getSuccessUrl();
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpSession session = httpRequest.getSession();
+		Object originalUrl = session.getAttribute(ORIGINAL_REQUEST_URL);
+		if(originalUrl != null){
+			// 移除session中的URL
+			session.removeAttribute(ORIGINAL_REQUEST_URL);
+			successUrl = originalUrl.toString();
+		}
+
+		WebUtils.issueRedirect(request, response, successUrl, null, true);
 	}
 
 //	@Override
@@ -91,6 +104,20 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         //LogUtil.warn(this.getClass(), "shifor onAccessDenied");
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpSession session = httpRequest.getSession();
+
+		// 只保存GET请求的URL，POST请求可能是表单提交
+		if ("GET".equalsIgnoreCase(httpRequest.getMethod())) {
+			String requestUrl = httpRequest.getServletPath();
+			String queryString = httpRequest.getQueryString();
+			if (queryString != null) {
+				requestUrl += "?" + queryString;
+			}
+			if(!requestUrl.endsWith("login")){
+				session.setAttribute(ORIGINAL_REQUEST_URL, requestUrl);
+			}
+		}
 		return super.onAccessDenied(request,response);
 
 //		HttpServletResponse httpServletResponse = (HttpServletResponse) response;

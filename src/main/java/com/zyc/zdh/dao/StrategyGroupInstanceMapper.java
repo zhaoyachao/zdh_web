@@ -52,9 +52,9 @@ public interface StrategyGroupInstanceMapper extends BaseStrategyGroupInstanceMa
                     "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
                     "#{id}",
                     "</foreach>",
-                    "and sgi.id=si.group_instance_id  set sgi.status='create',si.status='create'",
+                    "and sgi.id=si.group_instance_id  set sgi.status='create',si.status='create', sgi.update_time=#{update_time}, si.update_time=#{update_time}",
                     "</script>"
             }
     )
-    public int updateGroupInstanceStatus2Create(@Param("ids") String[] ids);
+    public int updateGroupInstanceStatus2Create(@Param("ids") String[] ids,@Param("update_time") String update_time);
 }

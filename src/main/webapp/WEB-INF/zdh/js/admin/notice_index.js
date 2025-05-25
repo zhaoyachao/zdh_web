@@ -266,6 +266,10 @@ function buildTable($el, cells, rows) {
             field: 'msg_title',
             title: '主题',
             sortable:true
+        },{
+            field: 'owner',
+            title: '通知账号',
+            sortable:true
         }, {
             field: 'create_time',
             title: '生成时间',
@@ -273,7 +277,7 @@ function buildTable($el, cells, rows) {
             formatter: function (value, row, index) {
                 return getMyDate(value);
             }
-        }, {
+        },  {
             field: 'is_see',
             title: '是否已读',
             sortable:true,

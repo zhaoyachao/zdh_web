@@ -619,7 +619,8 @@
             },
             'click #retry': function (e, value, row, index) {
                 layer.confirm('确定重试任务吗?', {
-                    btn: ['重试', '重试最新版本'], //按钮
+                    // area: ['600px', '200px'],
+                    btn: ['重试', '重试下游'], //按钮
                     cancel:function(index, layero){
                         console.log('关闭x号');
                     },
@@ -649,10 +650,35 @@
 
                         });
                     },
-                    btn2:function () {
+                    // btn2:function () {
+                    //     $.ajax({
+                    //         url: server_context+"/strategy_retry",
+                    //         data: "id=" + row.id+"&new_version=true",
+                    //         type: "post",
+                    //         dataType: "json",
+                    //         success: function (data) {
+                    //             console.info("success");
+                    //             if(data.code != "200"){
+                    //                 layer.msg(data.msg);
+                    //                 return
+                    //             }
+                    //             layer.close(index);
+                    //             $('#exampleTableEvents').bootstrapTable('refresh', {
+                    //                 url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                    //                 contentType: "application/json;charset=utf-8",
+                    //                 dataType: "json"
+                    //             });
+                    //         },
+                    //         error: function (data) {
+                    //             console.info("error: " + data.responseText);
+                    //         }
+                    //
+                    //     });
+                    // },
+                    btn2:function(){
                         $.ajax({
                             url: server_context+"/strategy_retry",
-                            data: "id=" + row.id+"&new_version=true",
+                            data: "id=" + row.id+"&new_version=false&downstream=true",
                             type: "post",
                             dataType: "json",
                             success: function (data) {
@@ -662,6 +688,7 @@
                                     return
                                 }
                                 layer.close(index);
+
                                 $('#exampleTableEvents').bootstrapTable('refresh', {
                                     url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
                                     contentType: "application/json;charset=utf-8",
@@ -673,7 +700,32 @@
                             }
 
                         });
-                    }
+                    },
+                    // btn4:function () {
+                    //     $.ajax({
+                    //         url: server_context+"/strategy_retry",
+                    //         data: "id=" + row.id+"&new_version=true&downstream=true",
+                    //         type: "post",
+                    //         dataType: "json",
+                    //         success: function (data) {
+                    //             console.info("success");
+                    //             if(data.code != "200"){
+                    //                 layer.msg(data.msg);
+                    //                 return
+                    //             }
+                    //             layer.close(index);
+                    //             $('#exampleTableEvents').bootstrapTable('refresh', {
+                    //                 url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                    //                 contentType: "application/json;charset=utf-8",
+                    //                 dataType: "json"
+                    //             });
+                    //         },
+                    //         error: function (data) {
+                    //             console.info("error: " + data.responseText);
+                    //         }
+                    //
+                    //     });
+                    // }
                 });
             },
             'click #kill': function (e, value, row, index) {

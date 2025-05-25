@@ -182,21 +182,45 @@
 
               });
           },
-          'click #push_template_execute': function (e, value, row, index) {
-              parent.layer.open({
-                  type: 2,
-                  title: '手动执行配置',
-                  shadeClose: false,
-                  resize: true,
-                  fixed: false,
-                  maxmin: true,
-                  shade: 0.1,
-                  area : ['45%', '60%'],
-                  //area: ['450px', '500px'],
-                  content: server_context+"/push_template_task_exe_detail_index?id="+row.id, //iframe的url
-                  end : function () {
-                      console.info("弹框结束")
-                  }
+          'click #push_template_add_version': function (e, value, row, index) {
+              layer.confirm('发布新版本', {
+                  btn: ['确定','取消'] //按钮
+              }, function(index){
+                  $.ajax({
+                      url : server_context+"/push_template_add_version",
+                      data : "id=" + row.id,
+                      type : "post",
+                      dataType : "json",
+                      success : function(data) {
+                          if(data.code != '200'){
+                              console.error(data.msg);
+                              parent.layer.msg("执行失败");
+                              return ;
+                          }
+                          parent.layer.msg("执行成功");
+                          $('#exampleTableEvents').bootstrapTable('refresh', {
+                              url: server_context+"/push_template_list_by_page?"+$("#push_template_form").serialize(),
+                              contentType: "application/json;charset=utf-8",
+                              dataType: "json",
+                              queryParams: function (params) {
+                                  // 此处使用了LayUi组件 是为加载层
+                                  //loadIndex = layer.load(1);
+                                  let resRepor = {
+                                      //服务端分页所需要的参数
+                                      limit: params.limit,
+                                      offset: params.offset
+                                  };
+                                  return resRepor;
+                              }
+                          });
+                      },
+                      error: function (data) {
+                          console.info("error: " + data.responseText);
+                      }
+                  });
+                  layer.close(layer.index)
+              }, function(){
+
               });
           }
       };
@@ -214,7 +238,7 @@
               ' <button id="del" name="del" type="button" class="'+del_class+'" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="push_template_execute" name="push_template_execute" type="button" class="'+edit_class+'" title="执行策略"><i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
+              ' <button id="push_template_add_version" name="push_template_add_version" type="button" class="'+edit_class+'" title="发布新版本"><i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +
               '</div>'

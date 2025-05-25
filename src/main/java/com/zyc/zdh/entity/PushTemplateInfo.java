@@ -3,9 +3,7 @@ package com.zyc.zdh.entity;
 import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +11,7 @@ import java.util.Map;
 @Table(name = "push_template_info")
 public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     /**

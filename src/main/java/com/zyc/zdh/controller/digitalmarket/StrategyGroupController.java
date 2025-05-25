@@ -1,8 +1,11 @@
 package com.zyc.zdh.controller.digitalmarket;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.StrategyGroupInstanceMapper;
@@ -447,7 +450,29 @@ public class StrategyGroupController extends BaseController {
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, strategyGroupInstance.getProduct_code(), strategyGroupInstance.getDim_group(), getAttrEdit());
 
-            int result = strategyGroupInstanceMapper.updateGroupInstanceStatus2Create(new String[]{id});
+            //策略信息按原始数据恢复
+            String run_jsmind_data = strategyGroupInstance.getRun_jsmind_data();
+            Map<String, Object> run_jsmind_data_map = JsonUtil.toJavaMap(run_jsmind_data);
+            List<Map<String, Object>> tasks = (List<Map<String, Object>>)run_jsmind_data_map.get("tasks");
+            Map<String, Map<String, Object>> taskMap = new HashMap<>();
+            for (Map<String, Object> task: tasks){
+                taskMap.put(task.get("id").toString(), task);
+            }
+
+            List<StrategyInstance> strategyInstances = strategyInstanceMapper.selectByGroupInstanceId(id, null);
+
+            for (StrategyInstance strategyInstance: strategyInstances){
+                String strategy_id = strategyInstance.getStrategy_id();
+                Map<String, Object> stringObjectMap = taskMap.get(strategy_id);
+
+                if(!strategyInstance.getIs_disenable().equalsIgnoreCase(stringObjectMap.getOrDefault("is_disenable", "false").toString())){
+                    strategyInstance.setIs_disenable(stringObjectMap.getOrDefault("is_disenable", "false").toString());
+                    strategyInstance.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                    strategyInstanceMapper.updateByPrimaryKeySelective(strategyInstance);
+                }
+            }
+
+            int result = strategyGroupInstanceMapper.updateGroupInstanceStatus2Create(new String[]{id}, DateUtil.getCurrentTime());
 
             if(result <= 0){
                 throw new Exception("未找到更新的实例");
@@ -504,7 +529,7 @@ public class StrategyGroupController extends BaseController {
             if(ids.size()<=0){
                 throw new Exception("无法找到对应的子策略重试,请检查是否有正确选择策略实例");
             }
-            strategyInstanceMapper.updateStatusByIds(ids.toArray(new String[]{}), JobStatus.CREATE.getValue());
+            strategyInstanceMapper.updateStatusByIds(ids.toArray(new String[]{}), JobStatus.CREATE.getValue(), DateUtil.getCurrentTime());
             if(manualConfirmStrategys.size()>0){
                 for (StrategyInstance strategyInstance: manualConfirmStrategys){
                     strategyInstanceMapper.updateByPrimaryKeySelective(strategyInstance);
@@ -796,26 +821,53 @@ public class StrategyGroupController extends BaseController {
     /**
      * 手动重试
      * @param id
+     * @param downstream
      * @return
      */
     @SentinelResource(value = "strategy_retry", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_retry", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo strategy_retry(String id) {
+    public ReturnInfo strategy_retry(String id, String downstream) {
         try {
             StrategyInstance strategyInstance = strategyInstanceMapper.selectByPrimaryKey(id);
-            strategyInstanceMapper.updateStatusByIds(new String[]{id},JobStatus.CREATE.getValue());
+
+
+            DAG dag=new DAG();
+            String group_instance_id=strategyInstance.getGroup_instance_id();
+            List<StrategyInstance> strategyInstanceList2=strategyInstanceMapper.selectByGroupInstanceId(group_instance_id, null);
+            Map<String,StrategyInstance> dagStrategyInstance=new HashMap<>();
+            //此处必须使用group_instance_id实例id查询,因可能有策略实例已完成
+            for(StrategyInstance t2 :strategyInstanceList2){
+                if(t2.getGroup_instance_id().equalsIgnoreCase(group_instance_id)) {
+                    String pre_tasks2=t2.getPre_tasks();
+                    if (!StringUtils.isEmpty(pre_tasks2)) {
+                        String[] task_ids = pre_tasks2.split(",");
+                        for (String instance_id:task_ids){
+                            dag.addEdge(instance_id, t2.getId());
+                        }
+                    }
+                }
+            }
+            Set children = Sets.newHashSet();
+            if(!StringUtils.isEmpty(downstream) && downstream.equalsIgnoreCase("true")){
+                children = dag.getAllChildren(id);
+            }
+            children.add(id);
+            String[] strChildrens = Iterables.toArray(
+                    Iterables.transform(children, obj -> obj != null ? obj.toString() : null),
+                    String.class
+            );
+
+            strategyInstanceMapper.updateStatusByIds(strChildrens,JobStatus.CREATE.getValue(), DateUtil.getCurrentTime());
             strategyGroupInstanceMapper.updateStatusById3(JobStatus.SUB_TASK_DISPATCH.getValue(), DateUtil.getCurrentTime(), strategyInstance.getGroup_instance_id());
 
-            //查询所有的策略实例是否包含人工确认,包含人工确认,需要修改is_disenable=false
 
-
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动跳过任务成功", null);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "手动重试任务成功", null);
         } catch (Exception e) {
             LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "手动跳过任务失败", e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "手动重试任务失败", e);
         }
     }
 

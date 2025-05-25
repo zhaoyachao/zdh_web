@@ -18,6 +18,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.shiro.session.mgt.SimpleSession;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -84,9 +87,12 @@ public class SystemCommandLineRunner implements CommandLineRunner {
         initRetry();
         initCheck();
 
+        onlyCheckQuartz();
+
         LogUtil.info(this.getClass(), "系统初始化完成...");
         LogUtil.info(this.getClass(), line);
         Thread.sleep(1000*2);
+
     }
 
     public void initRedisParams(){
@@ -581,6 +587,53 @@ public class SystemCommandLineRunner implements CommandLineRunner {
             quartzJobInfo.setJob_id(SnowflakeIdWorker.getInstance().nextId() + "");
             quartzManager2.addQuartzJobInfo(quartzJobInfo);
             quartzManager2.addTaskToQuartz(quartzJobInfo);
+        }
+    }
+
+    public void onlyCheckQuartz(){
+        try{
+            ZdhRunableTask zdhRunableTask=new ZdhRunableTask("检查基础quartz任务", new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        LogUtil.info(this.getClass(), "异步检查基础quartz任务-开始");
+                        Thread.sleep(2000*20);
+                        Example example=new Example(QuartzJobInfo.class);
+
+                        Example.Criteria criteria = example.createCriteria();
+                        criteria.andIn("job_type", Arrays.asList(new String[]{JobType.CHECK.getCode(),JobType.RETRY.getCode()}));
+
+                        List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.selectByExample(example);
+
+                        SchedulerFactoryBean schedulerFactoryBean = (SchedulerFactoryBean) SpringContext.getBean("&schedulerFactoryBean");
+                        if(quartzJobInfos != null && quartzJobInfos.size()>0){
+                            for (QuartzJobInfo quartzJobInfo: quartzJobInfos){
+                                TriggerKey triggerKey = new TriggerKey(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id());
+                                Trigger.TriggerState triggerState = schedulerFactoryBean.getScheduler().getTriggerState(triggerKey);
+                                if(triggerState == null || triggerState.equals(Trigger.TriggerState.NONE)){
+                                    Object alarmUserStr = ConfigUtil.getParamUtil().getValue(ConfigUtil.getValue(ConfigUtil.ZDP_PRODUCT), Const.SYSTEM_ALARM_USER);
+                                    if(alarmUserStr != null){
+                                        String[] alarmUsers = alarmUserStr.toString().split(",");
+                                        for (String user: alarmUsers){
+                                            EmailJob.send_notice(user, "系统任务未启用", "【"+quartzJobInfo.getJob_type()+"】系统任务未启用", "告警");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        LogUtil.info(this.getClass(), "异步检查基础quartz任务-完成");
+
+                    } catch (InterruptedException e) {
+                        LogUtil.error(this.getClass(), e);
+                    } catch (SchedulerException e) {
+                        LogUtil.error(this.getClass(), e);
+                    }
+                }
+            });
+            threadPool.submit(zdhRunableTask);
+        }catch (Exception e){
+
         }
     }
 

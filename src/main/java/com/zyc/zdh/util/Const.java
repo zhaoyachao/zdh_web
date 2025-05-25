@@ -15,6 +15,8 @@ public class Const {
 
     public static String SUPER_ADMIN_ROLE="super_admin";//超级管理员
 
+    public static String SYSTEM_ALARM_USER="system_alarm_user";//系统告警用户
+
     public static String TRUR="true";
     public static String FALSE="false";
 
@@ -164,7 +166,7 @@ public class Const {
     public static int DIGITAL_MARKET_THREAD_MAX_NUM = 1000;
     public static long DIGITAL_MARKET_THREAD_KEEP_ACTIVE_TIME=120;
 
-    public static int SYSTEM_THREAD_MIN_NUM = 12;
+    public static int SYSTEM_THREAD_MIN_NUM = 20;
     public static int SYSTEM_THREAD_MAX_NUM = 50;
     public static long SYSTEM_THREAD_KEEP_ACTIVE_TIME=120;
 

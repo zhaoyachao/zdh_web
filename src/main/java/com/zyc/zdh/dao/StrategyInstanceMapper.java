@@ -130,14 +130,14 @@ public interface StrategyInstanceMapper extends BaseStrategyInstanceMapper<Strat
     @Update(
             {
                     "<script>",
-                    "update strategy_instance set status=#{status} where id in",
+                    "update strategy_instance set status=#{status} , update_time=#{update_time} where id in",
                     "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
                     "#{id}",
                     "</foreach>",
                     "</script>"
             }
     )
-    public int updateStatusByIds(@Param("ids") String[] ids, @Param("status") String status);
+    public int updateStatusByIds(@Param("ids") String[] ids, @Param("status") String status, @Param("update_time") String update_time);
 
 
     @Update(

@@ -278,6 +278,14 @@ public class SystemController extends BaseController{
                 cri.orLike("msg_title", getLikeCondition(message));
                 cri.orLike("msg", getLikeCondition(message));
             }
+
+            if(getUser()!=null && !getUser().getRoles().contains(Const.SUPER_ADMIN_ROLE)){
+                //超级管理员有所有权限
+                Example.Criteria criteria2=example.createCriteria();
+                criteria2.andEqualTo("owner", getOwner());
+                example.and(criteria2);
+            }
+
             example.setOrderByClause("update_time desc");
             RowBounds rowBounds=new RowBounds(offset,limit);
             int total = noticeMapper.selectCountByExample(example);

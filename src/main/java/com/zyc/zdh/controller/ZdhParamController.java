@@ -263,6 +263,7 @@ public class ZdhParamController extends BaseController {
             }
             ParamInfo oldVersionParamInfo = paramInfos.get(0);
             oldVersionParamInfo.setParam_value(paramInfo.getParam_value());
+            oldVersionParamInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             paramMapper.updateByPrimaryKey(oldVersionParamInfo);
             if(!StringUtils.isEmpty(is_delete)){
                 if(is_delete.equalsIgnoreCase(Const.TRUR)){

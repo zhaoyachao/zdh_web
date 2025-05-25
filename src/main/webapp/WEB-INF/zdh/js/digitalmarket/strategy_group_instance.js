@@ -122,6 +122,9 @@
                       success: function (data) {
                           console.info("success");
                           layer.msg(data.msg);
+                          $('#exampleTableEvents').bootstrapTable('refresh', {
+                              url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
+                          });
                       },
                       error: function (data) {
                           console.info("error: " + data.responseText);

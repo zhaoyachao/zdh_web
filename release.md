@@ -675,6 +675,10 @@
   + v5.6.8 [zdh_web]新增任务暂停状态,废弃数字表示
   + v5.6.8 [zdh_web]删除二级缓存
   
+  + v5.6.9 [zdh_web]增加认证后跳转
+  + v5.6.9 [zdh_web]优化营销策略,增加下游重试,增加更新时间
+  + v5.6.9 [zdh_web]优化代码
+  
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
@@ -3556,3 +3560,6 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1370850188213620736, '1210897256677380096', '查询kettle任务名称列表', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2025-05-10 19:49:14', '2025-05-10 19:49:14', 'etl_task_kettle_job_list', '5', '', '', 'zdh', '');
+
+## 5.6.8迁移5.6.9
+    无改动

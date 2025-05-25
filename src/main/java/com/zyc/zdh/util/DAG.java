@@ -230,4 +230,28 @@ public final class DAG {
 
         return set;
 	}
+
+	public Set getAllChildren(Object vertex){
+		Set set=new HashSet();
+		Set p1= getChildren(vertex);
+		//Set p1= Collections.unmodifiableSet(fIn.get(vertex));
+		set.addAll(p1);
+		Queue queue = new LinkedList<>();
+
+		queue.addAll(p1);
+		boolean is_run=true;
+		while(is_run){
+			Object p_vertex = queue.poll();
+			if(p_vertex == null) {
+				return set;
+			}
+			Set p=getChildren(p_vertex);
+			if(p.size()>0) {
+				queue.addAll(p);
+			}
+			set.addAll(p);
+		}
+
+		return set;
+	}
 }

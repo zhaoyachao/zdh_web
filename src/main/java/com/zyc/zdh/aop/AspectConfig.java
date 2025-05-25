@@ -1,6 +1,8 @@
 package com.zyc.zdh.aop;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.config.SystemConfig;
 import com.zyc.zdh.dao.NoticeMapper;
@@ -35,6 +37,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /***
@@ -89,7 +92,7 @@ public class AspectConfig implements Ordered {
             //IP地址
             String ipAddr = systemFilterParam.getIp();
             String url = systemFilterParam.getRequestURL();
-
+            String servletPath = systemFilterParam.getServletPath();
             long start = System.currentTimeMillis();
             String classType = pjp.getTarget().getClass().getName();
             Signature sig = pjp.getSignature();
@@ -158,16 +161,16 @@ public class AspectConfig implements Ordered {
             }
             String uid = getUser() == null ? "" : getUser().getUserName();
             String city = IpUtil.getCityByIp(ipAddr);
-            if (is_operate_log(url)){
+            if (is_operate_log(servletPath)){
                 LogUtil.debug(this.getClass(), "请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】", ipAddr, city, uid, url, request.getMethod(), reqParam);
             }
             Object o = pjp.proceed();
-            if (is_operate_log(url)){
+            if (is_operate_log(servletPath)){
                 LogUtil.debug(this.getClass(), "请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,结束", ipAddr, city, uid, url);
             }
             try {
                 //跳过特殊操作，etlEcharts,getTotalNum,notice_list
-                if (is_operate_log(url) && getUser() != null) {
+                if (is_operate_log(servletPath) && getUser() != null) {
                     UserOperateLogMapper userOperateLogMapper = (UserOperateLogMapper) SpringContext.getBean("userOperateLogMapper");
                     UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();
                     userOperateLogInfo.setOwner(getUser().getUserName());
@@ -359,15 +362,11 @@ public class AspectConfig implements Ordered {
         }
     }
 
-    private boolean is_operate_log(String url) {
-
-        String[] back_urls = new String[]{"etlEcharts", "getTotalNum", "notice_list", "user_operate_log_list", "user_operate_log_index"};
-        for (String back_url : back_urls) {
-            if (url.contains(back_url)) {
-                return false;
-            }
+    private boolean is_operate_log(String servletPath) {
+        Set<String> back_urls = Sets.newHashSet("etlEcharts", "getTotalNum", "notice_list", "user_operate_log_list", "user_operate_log_index");//不打印日志链接
+        if(back_urls.contains(servletPath)){
+            return false;
         }
-
         return true;
     }
 

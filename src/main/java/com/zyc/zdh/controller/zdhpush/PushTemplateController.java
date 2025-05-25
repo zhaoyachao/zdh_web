@@ -252,4 +252,34 @@ public class PushTemplateController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
     }
+
+    /**
+     * push模板配置新增版本
+     * @param id
+     * @return
+     */
+    @SentinelResource(value = "push_template_add_version", blockHandler = "handleReturn")
+    @RequestMapping(value = "/push_template_add_version", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    @White
+    public ReturnInfo<PushTemplateInfo> push_template_add_version(String id) {
+        try {
+            PushTemplateInfo pushTemplateInfo = pushTemplateMapper.selectByPrimaryKey(id);
+
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushTemplateInfo.getProduct_code(), pushTemplateInfo.getDim_group(), getAttrAdd());
+
+            pushTemplateInfo.setId(null);
+            pushTemplateInfo.setIs_delete(Const.NOT_DELETE);
+            pushTemplateInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            pushTemplateInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+
+            pushTemplateMapper.insertSelective(pushTemplateInfo);
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", pushTemplateInfo);
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
+        }
+    }
+
 }
