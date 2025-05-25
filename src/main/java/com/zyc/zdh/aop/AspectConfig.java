@@ -1,6 +1,5 @@
 package com.zyc.zdh.aop;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.zyc.zdh.annotation.White;
@@ -19,7 +18,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.redisson.api.RedissonClient;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
@@ -364,6 +362,13 @@ public class AspectConfig implements Ordered {
 
     private boolean is_operate_log(String servletPath) {
         Set<String> back_urls = Sets.newHashSet("etlEcharts", "getTotalNum", "notice_list", "user_operate_log_list", "user_operate_log_index");//不打印日志链接
+        if(servletPath.startsWith("/")){
+            servletPath = servletPath.substring(1);
+        }
+        int dotIndex = servletPath.indexOf('.');
+        if (dotIndex != -1) {
+            servletPath = servletPath.substring(0, dotIndex);
+        }
         if(back_urls.contains(servletPath)){
             return false;
         }
