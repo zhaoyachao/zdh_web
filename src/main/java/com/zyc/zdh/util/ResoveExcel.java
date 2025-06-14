@@ -119,8 +119,21 @@ public class ResoveExcel {
         }
     }
 
+
+    /**
+     *
+     * @param inputStream
+     * @param start_index  从0开始,如果需要从第N行开始读取,则填写N-1
+     * @return
+     * @throws IOException
+     */
+    public static List<List<String>> readExcel2List(InputStream inputStream, int start_index) throws IOException {
+        Workbook wb = readExcel(inputStream);
+        List<List<String>> data = readExcel2ListSheet(wb.getSheetAt(0), 1);
+        return data;
+    }
+
     public static Workbook readExcel(InputStream inputStream) throws IOException {
-        InputStream is = null;
         Workbook wb = null;
         try {
             wb = WorkbookFactory.create(inputStream);
@@ -174,6 +187,36 @@ public class ResoveExcel {
                             jsonObject.put(col, cell.getStringCellValue());
                         }else{
                             jsonObject.put(col, "");
+                        }
+                    }
+
+                    rows.add(jsonObject);
+                }
+            }
+        }
+
+        return rows;
+    }
+
+    private static List<List<String>> readExcel2ListSheet(Sheet sheet, int start_row) {
+        //colType 是表头映射,如果为空则以excel顺序
+        //colNames 为中英文映射,如果表头是中文,则映射成英文字段
+        List<List<String>> rows = new ArrayList<>();
+        if(sheet != null){
+            int rowNos = sheet.getLastRowNum();// 得到excel的总记录条数
+            for (int i = start_row; i <= rowNos; i++) {// 遍历行
+                Row row = sheet.getRow(i);
+
+                List<String> jsonObject= new ArrayList();
+                if(row != null){
+                    int columNos = row.getLastCellNum();// 表头总共的列数
+                    for (int j = 0; j < columNos; j++) {
+                        Cell cell = row.getCell(j);
+                        if(cell != null){
+                            cell.setCellType(CellType.STRING);
+                            jsonObject.add(cell.getStringCellValue());
+                        }else{
+                            jsonObject.add("");
                         }
                     }
 

@@ -276,6 +276,7 @@
         var map2 = new Map();
         var map3 = new Map();
         var map4 = new Map();
+        var map5 = new Map();
         //获取任务运行状态
         var run_data=jsplumb_json.run_data;
         if (run_data.length >= 1 ){
@@ -301,9 +302,10 @@
                     console.info("task_log_instance_list success");
                     for(var j=0;j<data.result.length;j++){
                         //divId->status
-                        console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
+                        //console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
                         map3.set(map2.get(data.result[j].id),data.result[j].status);
                         map4.set(data.result[j].id, data.result[j].run_time);
+                        map5.set(data.result[j].id, data.result[j].run_jsmind_data);
                     }
                 },
                 error: function (data) {
@@ -315,7 +317,7 @@
 
 
         //添加div 数据
-
+        $("#m1").html("");
         for(var i=0;i< jsplumb_json.tasks.length;i++){
             var rs=jsplumb_json.tasks[i];
             var divId=rs.divId;
@@ -325,6 +327,7 @@
             var tp=rs.type;
             var strategy_instance_id=map.get(divId);
             var run_time = map4.get(strategy_instance_id);
+            var strategy_run_jsmind_data = JSON.parse(map5.get(strategy_instance_id));
             cls_str="node node"+tp+"css tasks";
             var color=get_color_by_status(map3.get(divId), rs.is_disenable);
             console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color);
@@ -400,6 +403,8 @@
             var more_task = "任务类型: "+tp;
             var chudashiji = "触发时机: 上游成功";
             var shujuzhuangtai = "依赖数据状态: 上游成功数据";
+            var success_num = "成功量级: 未知";
+            var failed_num = "失败量级: 未知";
             if(!is_empty(rs.depend_level)){
                 if(rs.depend_level == "1"){
                     chudashiji = "触发时机: 上游杀死";
@@ -418,8 +423,14 @@
                     shujuzhuangtai = "依赖数据状态: 上游所有数据";
                 }
             }
+            if(!is_empty_strict(strategy_run_jsmind_data.success_num)){
+                success_num = "成功量级: "+strategy_run_jsmind_data.success_num;
+            }
+            if(!is_empty_strict(strategy_run_jsmind_data.failed_num)){
+                failed_num = "失败量级: "+strategy_run_jsmind_data.failed_num;
+            }
 
-            new_title = more_task + "\n" + chudashiji + "\n" + shujuzhuangtai+ "\n" + new_title;
+            new_title = more_task + "\n" + chudashiji + "\n" + shujuzhuangtai+ "\n" + new_title+"\n"+success_num+"\n"+failed_num;
 
             $("#" + divId).attr("title", new_title);
 
@@ -901,6 +912,10 @@
                 title: '任务组实例ID',
                 sortable: false,
                 visible: false
+            }, {
+                field: 'instance_type',
+                title: '任务类型',
+                sortable: true
             },{
                 field: 'group_id',
                 title: '任务组ID',
@@ -926,6 +941,22 @@
                     if(value == "2")
                         return "手动";
                     return "例行";
+                }
+            },{
+                field: 'depend_level',
+                title: '依赖级别',
+                sortable: true,
+                formatter: function (value, row, index) {
+                    if(value == "0"){
+                        return "成功触发";
+                    }else if(value == "1"){
+                        return "杀死触发";
+                    }else if(value == "2"){
+                        return "失败触发";
+                    }else if(value == "3"){
+                        return "上游完成触发";
+                    }
+                    return "未知";
                 }
             }, {
                 field: 'process_msg',
@@ -1089,7 +1120,7 @@
                     console.info("success");
                     //重新渲染图
                     var run_jsmind_data=data.result.run_jsmind_data;
-                    refash(run_jsmind_data,strategy_group_instance_id)
+                    open_json(run_jsmind_data,strategy_group_instance_id)
 
                 },
                 error: function (data) {

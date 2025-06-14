@@ -54,8 +54,7 @@ public class JobDigitalMarket {
         zdhLogs.setLevel(level.toUpperCase());
         //linkedBlockingDeque.add(zdhLogs);
 
-        RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
-        Object logType=redisUtil.get("zdh_log_type");
+        Object logType=ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_LOG_TYPE);
 
         if(logType == null || logType.toString().equalsIgnoreCase(Const.LOG_MYSQL)){
             ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");

@@ -117,6 +117,10 @@ public class ConfigUtil {
 
     public static String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
 
+    public static String getProductCode(){
+        return getValue(ZDP_PRODUCT, "zdh");
+    }
+
     public static String getValue(String key, String value){
         Environment environment= getEnv();
         return environment.getProperty(key, value);

@@ -61,7 +61,8 @@ public class ParamUtil {
         return product_code+ "_" + key;
     }
 
-    public void setValue(Object value){
-
+    public void setValue(String product_code, String key, Object value){
+        String commonKey = getCommonKey(product_code, key);
+        redisUtil.set(commonKey, value);
     }
 }

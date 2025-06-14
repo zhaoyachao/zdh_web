@@ -57,6 +57,17 @@ public class FunctionController extends BaseController {
     }
 
     /**
+     * 函数表达式demo
+     * @return
+     */
+    @RequestMapping(value = "/function_demo_index", method = RequestMethod.GET)
+    public String function_demo_index() {
+
+        return "digitalmarket/function_demo_index";
+    }
+
+
+    /**
      * 函数信息列表
      * @param context 关键字
      * @return

@@ -650,7 +650,7 @@ public class ZdhMonitorController extends BaseController {
         }
 
         StringBuilder sb = new StringBuilder();
-        Object logType=redisUtil.get("zdh_log_type");
+        Object logType=ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_LOG_TYPE);
         if(logType==null || logType.toString().equalsIgnoreCase(Const.LOG_MYSQL)){
             List<ZdhLogs> zhdLogs = zdhLogsService.selectByTime(job_id, task_log_id, ts_start, ts_end, levels);
             Iterator<ZdhLogs> it = zhdLogs.iterator();

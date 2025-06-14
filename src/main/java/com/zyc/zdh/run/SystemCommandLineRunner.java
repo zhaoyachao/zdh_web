@@ -105,8 +105,8 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                 for (String key: config.keySet()){
                     if(key.contains("zdh.init.redis.")){
                         String k = key.split("zdh.init.redis.")[1];
-                        if(!redisUtil.exists(k)){
-                            redisUtil.set(k, config.get(key).toString());
+                        if(!ConfigUtil.getParamUtil().exists(ConfigUtil.getProductCode(), k)){
+                            ConfigUtil.getParamUtil().setValue(ConfigUtil.getProductCode(), k, config.get(key).toString());
                         }
                         LogUtil.info(this.getClass(), "zdh init redis config " + k + "====>" + config.get(key).toString());
                     }

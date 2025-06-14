@@ -679,6 +679,12 @@
   + v5.6.9 [zdh_web]优化营销策略,增加下游重试,增加更新时间
   + v5.6.9 [zdh_web]优化代码
   
+  + v5.6.10 [zdh_web]优化营销模块代码,插件提出公共模块,函数模块优化
+  + v5.6.10 [zdh_web]营销模块增加异步检查逻辑,增加失败重试
+  + v5.6.10 [zdh_web]优化参数模块-统计增加产品前缀
+  + v5.6.10 [zdh_web]营销模块-新增人群文件模板下载
+  + v5.6.10 [zdh_web]流程图增加执行结果量级
+  
   
   + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
   + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
@@ -3563,3 +3569,12 @@
 
 ## 5.6.8迁移5.6.9
     无改动
+    
+## 5.6.9迁移5.6.10
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1383481812575064064, '1013053374364389376', '下载人群文件模板', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2025-06-14 16:22:48', '2025-06-14 16:22:48', 'crowd_file_document_download', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1383487130193367040, '1176308421654220800', '函数表达式demo', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2025-06-14 16:43:56', '2025-06-14 16:43:56', 'function_demo_index', '3', '', '', 'zdh', '');
+    

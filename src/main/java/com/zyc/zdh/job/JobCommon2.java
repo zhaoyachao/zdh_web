@@ -1466,8 +1466,7 @@ public class JobCommon2 {
         zdhLogs.setLevel(level.toUpperCase());
         //linkedBlockingDeque.add(zdhLogs);
 
-        RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
-        Object logType=redisUtil.get("zdh_log_type");
+        Object logType=ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_LOG_TYPE);
 
         if(logType == null || logType.toString().equalsIgnoreCase(Const.LOG_MYSQL)){
             ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
@@ -1498,8 +1497,8 @@ public class JobCommon2 {
         //linkedBlockingDeque.add(zdhLogs);
 //        ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
 //        zdhLogsService.insert(zdhLogs);
-        RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
-        Object logType=redisUtil.get("zdh_log_type");
+
+        Object logType=ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_LOG_TYPE);
 
         if(logType == null || logType.toString().equalsIgnoreCase(Const.LOG_MYSQL)){
             ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
@@ -1524,7 +1523,7 @@ public class JobCommon2 {
 //        zdhLogsService.insert(zdhLogs);
 
         RedisUtil redisUtil=(RedisUtil) SpringContext.getBean("redisUtil");
-        Object logType=redisUtil.get("zdh_log_type");
+        Object logType=ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_LOG_TYPE);
 
         if(logType == null || logType.toString().equalsIgnoreCase(Const.LOG_MYSQL)){
             ZdhLogsService zdhLogsService = (ZdhLogsService) SpringContext.getBean("zdhLogsServiceImpl");
@@ -3186,7 +3185,7 @@ public class JobCommon2 {
         } else if (quartzJobInfo.getJob_type().equalsIgnoreCase(JobType.CHECK.getCode())) {
             LogUtil.debug(JobCommon2.class, "调度任务[CHECK],开始调度");
             //通过redis获取check接口类,遍历所有接口实现执行任务
-            String checkImpls = redisUtil.get(Const.ZDH_CHECK_IMPLS, "").toString();
+            String checkImpls = ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_CHECK_IMPLS, "").toString();
             if(!StringUtils.isEmpty(checkImpls)){
                 for (String impl: checkImpls.split(",")){
 
@@ -3913,14 +3912,14 @@ public class JobCommon2 {
     public static boolean check_thread_limit(TaskLogInstance tli) {
         try {
             //检查ssh任务并行限制
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
             TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
-            if (redisUtil.exists("zdh_ssh_max_thread")) {
+
+            if (ConfigUtil.getParamUtil().exists(ConfigUtil.getProductCode(), Const.ZDH_SSH_MAX_THREAD)) {
                 TaskLogInstance t = new TaskLogInstance();
                 t.setJob_type("SHELL");
                 t.setStatus(JobStatus.ETL.getValue());
                 List<TaskLogInstance> tlis = tlim.selectByTaskLogInstance(t);
-                int max_thread = Integer.parseInt(redisUtil.get("zdh_ssh_max_thread").toString());
+                int max_thread = Integer.parseInt(ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(),Const.ZDH_SSH_MAX_THREAD).toString());
                 if (tlis.size() > max_thread) {
                     String msg = String.format("当前系统中SSH任务超过阀值: %d,跳过本次执行,等待下次检查....", max_thread);
                     JobCommon2.insertLog(tli, "INFO", msg);
@@ -3945,7 +3944,6 @@ public class JobCommon2 {
 
         try {
             //检查ssh任务并行限制
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
             TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
             int max=10;
             String zdh_instance="";
@@ -3963,8 +3961,8 @@ public class JobCommon2 {
             t.setJob_type(JobType.ETL.getCode());
             t.setStatus(JobStatus.ETL.getValue());
             List<TaskLogInstance> tlis = tlim.selectByTaskLogInstance(t);
-            if (redisUtil.exists(redis_key)) {
-                max = Integer.parseInt(redisUtil.get(redis_key).toString());
+            if (ConfigUtil.getParamUtil().exists(ConfigUtil.getProductCode(), redis_key)) {
+                max = Integer.parseInt(ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), redis_key).toString());
                 if (tlis.size() > max) {
                     String msg = String.format("检查Spark集群: %s,运行任务量: %d, 超过阀值: %d,跳过本次执行,等待下次检查....",zdh_instance,tlis.size(), max);
                     JobCommon2.insertLog(tli, "INFO", msg);
@@ -4001,14 +3999,12 @@ public class JobCommon2 {
 
         try {
             //检查检查当前线程池队列是否超限
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-            String redis_key = "zdh_threadpool_max";
 
-            if (redisUtil.exists(redis_key)) {
-                if(!NumberUtil.isInteger(redisUtil.get(redis_key).toString())){
+            if (ConfigUtil.getParamUtil().exists(ConfigUtil.getProductCode(), Const.ZDH_THREADPOOL_MAX)) {
+                if(!NumberUtil.isInteger(ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_THREADPOOL_MAX).toString())){
                     return false;
                 }
-                int max_thread = Integer.parseInt(redisUtil.get(redis_key).toString());
+                int max_thread = Integer.parseInt(ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_THREADPOOL_MAX).toString());
                 int current_thread_num = threadPoolExecutor.getQueue().size();
                 if(current_thread_num>=max_thread){
                     String msg = String.format("检查当前机器: %s, 线程池超过阈值, 运行任务量: %d, 超过阀值: %d,跳过本次执行,等待下次检查....", SystemCommandLineRunner.web_application_id,current_thread_num, max_thread);

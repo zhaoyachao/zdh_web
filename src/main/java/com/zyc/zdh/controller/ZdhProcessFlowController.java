@@ -9,6 +9,7 @@ import com.zyc.zdh.job.EmailJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
 import com.zyc.zdh.util.LogUtil;
@@ -152,7 +153,7 @@ public class ZdhProcessFlowController extends BaseController {
         flowInfo.setPre_id(pfi.getId());
         List<ProcessFlowInfo> pfis=processFlowMapper.select(flowInfo);
         if(pfis!=null && pfis.size()>0){
-            String url = redisUtil.get(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
+            String url = ConfigUtil.getValue(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
 
             for (ProcessFlowInfo f:pfis){
                 // 审批人 flowInfo1.getAuditor_id()
@@ -402,7 +403,7 @@ public class ZdhProcessFlowController extends BaseController {
                 pre_id = id;
             }
             processFlowMapper.updateIsEnd(pre_id, Const.END);
-            String url = redisUtil.get(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
+            String url = ConfigUtil.getValue(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
             if(!StringUtils.isEmpty(auditors)){
                 for (String auditor: auditors.split(",")){
                     EmailJob.send_notice(auditor, "审批通知", "你有一条审批待处理, 流程名: 【"+context+"】 请登录平台审批, "+url, "通知");
@@ -511,7 +512,7 @@ public class ZdhProcessFlowController extends BaseController {
             pre_id = id;
         }
         processFlowMapper.updateIsEnd(pre_id, Const.END);
-        String url = redisUtil.get(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
+        String url = ConfigUtil.getValue(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
         if(!StringUtils.isEmpty(auditors)){
             for (String auditor: auditors.split(",")){
                 EmailJob.send_notice(auditor, "审批通知", "你有一条审批待处理, 流程名: 【"+context+"】 请登录平台审批, "+url, "通知");
@@ -583,7 +584,7 @@ public class ZdhProcessFlowController extends BaseController {
             pre_id = id;
         }
         processFlowMapper.updateIsEnd(pre_id, Const.END);
-        String url = redisUtil.get(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
+        String url = ConfigUtil.getValue(Const.ZDH_SYSTEM_DNS, "http://127.0.0.1:8081/").toString();
         if(!StringUtils.isEmpty(auditors)){
             for (String audit: auditors.split(",")){
                 EmailJob.send_notice(audit, "审批通知", "你有一条审批待处理, 流程名: 【"+context+"】 请登录平台审批, "+url, "通知");
@@ -594,7 +595,7 @@ public class ZdhProcessFlowController extends BaseController {
     }
 
     public String getDefaultAuditor(String product_code){
-        return redisUtil.get(Const.ZDH_FLOW_DEFAULT_USER+"_"+product_code, "").toString();
+        return ConfigUtil.getParamUtil().getValue(product_code, Const.ZDH_FLOW_DEFAULT_USER, "").toString();
     }
 
     /**

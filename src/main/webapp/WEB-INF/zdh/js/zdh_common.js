@@ -8,6 +8,18 @@ function is_empty(data){
     return false;
 }
 
+/**
+ * 严格比较,按类型区分
+ * @param data
+ * @returns {boolean}
+ */
+function is_empty_strict(data){
+    if (data === "" || typeof(data)=="undefined") {
+        return true;
+    }
+    return false;
+}
+
 function guid3() {
     return $.ajax({
         url: server_context+"/get_id",
@@ -230,4 +242,8 @@ function get_del_class(row){
         return "";
     }
     return "auth_hidden";
+}
+
+function download_document(){
+    window.open(server_context+'/crowd_file_document_download');
 }

@@ -386,6 +386,8 @@
             $("#" + divId).attr("project_code",is_empty(rs.project_code)?"":rs.project_code);
             $("#" + divId).attr("project_scene",is_empty(rs.project_scene)?"":rs.project_scene);
             $("#" + divId).attr("version_tag",is_empty(rs.version_tag)?"":rs.version_tag);
+            $("#" + divId).attr("is_async",is_empty(rs.is_async)?"false":rs.is_async);
+            $("#" + divId).attr("plan_retry_count",is_empty(rs.plan_retry_count)?"0":rs.plan_retry_count);
 
             $("#" + divId).attr("more_task",is_empty(rs.more_task)?"":rs.more_task);
             $("#" + divId).attr("zdh_instance",is_empty(rs.zdh_instance)?"":rs.zdh_instance);
@@ -572,6 +574,8 @@
                 project_code: $elem.attr('project_code'),
                 project_scene: $elem.attr('project_scene'),
                 version_tag: $elem.attr('version_tag'),
+                is_async: $elem.attr('is_async'),
+                plan_retry_count: $elem.attr('plan_retry_count'),
 
                 id: $elem.attr('id'),
                 operate: $elem.attr('operate'),

@@ -21,7 +21,6 @@ import io.minio.MinioClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,9 +52,6 @@ public class StrategyGroupController extends BaseController {
 
     @Autowired
     private QuartzManager2 quartzManager2;
-
-    @Autowired
-    private Environment env;
 
     @Autowired
     private ZdhPermissionService zdhPermissionService;
@@ -113,6 +109,7 @@ public class StrategyGroupController extends BaseController {
             if(!StringUtils.isEmpty(group_context)){
                 criteria2.orLike("group_context", getLikeCondition(group_context));
                 criteria2.orLike("id", getLikeCondition(group_context));
+                criteria2.orLike("jsmind_data", getLikeCondition(group_context));
                 example.and(criteria2);
             }
 
@@ -461,14 +458,27 @@ public class StrategyGroupController extends BaseController {
             List<StrategyInstance> strategyInstances = strategyInstanceMapper.selectByGroupInstanceId(id, null);
 
             for (StrategyInstance strategyInstance: strategyInstances){
+                boolean is_update = true;
                 String strategy_id = strategyInstance.getStrategy_id();
                 Map<String, Object> stringObjectMap = taskMap.get(strategy_id);
+                Map<String, Object> run_jsmind_data2 = JsonUtil.toJavaMap(strategyInstance.getRun_jsmind_data());
+
+                run_jsmind_data2.remove(Const.STRATEGY_INSTANCE_SUCCESS_NUM);
+                run_jsmind_data2.remove(Const.STRATEGY_INSTANCE_FAILED_NUM);
+                run_jsmind_data2.remove(Const.STRATEGY_INSTANCE_RETRY_COUNT);
+                run_jsmind_data2.remove(Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME);
+
+                strategyInstance.setRun_jsmind_data(JsonUtil.formatJsonString(run_jsmind_data2));
 
                 if(!strategyInstance.getIs_disenable().equalsIgnoreCase(stringObjectMap.getOrDefault("is_disenable", "false").toString())){
                     strategyInstance.setIs_disenable(stringObjectMap.getOrDefault("is_disenable", "false").toString());
+                }
+
+                if(is_update){
                     strategyInstance.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                     strategyInstanceMapper.updateByPrimaryKeySelective(strategyInstance);
                 }
+
             }
 
             int result = strategyGroupInstanceMapper.updateGroupInstanceStatus2Create(new String[]{id}, DateUtil.getCurrentTime());
@@ -528,6 +538,22 @@ public class StrategyGroupController extends BaseController {
             if(ids.size()<=0){
                 throw new Exception("无法找到对应的子策略重试,请检查是否有正确选择策略实例");
             }
+
+            for (StrategyInstance strategyInstance:strategyInstances){
+                //重置重试次数
+                Map<String, Object> stringObjectMap = JsonUtil.toJavaMap(strategyInstance.getRun_jsmind_data());
+                stringObjectMap.remove(Const.STRATEGY_INSTANCE_SUCCESS_NUM);
+                stringObjectMap.remove(Const.STRATEGY_INSTANCE_FAILED_NUM);
+                stringObjectMap.remove(Const.STRATEGY_INSTANCE_RETRY_COUNT);
+                stringObjectMap.remove(Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME);
+
+                StrategyInstance instance = new StrategyInstance();
+                instance.setId(strategyInstance.getId());
+                instance.setRun_jsmind_data(JsonUtil.formatJsonString(stringObjectMap));
+                instance.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                strategyInstanceMapper.updateByPrimaryKeySelective(instance);
+            }
+
             strategyInstanceMapper.updateStatusByIds(ids.toArray(new String[]{}), JobStatus.CREATE.getValue(), DateUtil.getCurrentTime());
             if(manualConfirmStrategys.size()>0){
                 for (StrategyInstance strategyInstance: manualConfirmStrategys){
@@ -838,6 +864,7 @@ public class StrategyGroupController extends BaseController {
             Map<String,StrategyInstance> dagStrategyInstance=new HashMap<>();
             //此处必须使用group_instance_id实例id查询,因可能有策略实例已完成
             for(StrategyInstance t2 :strategyInstanceList2){
+                dagStrategyInstance.put(t2.getId(), t2);
                 if(t2.getGroup_instance_id().equalsIgnoreCase(group_instance_id)) {
                     String pre_tasks2=t2.getPre_tasks();
                     if (!StringUtils.isEmpty(pre_tasks2)) {
@@ -857,6 +884,19 @@ public class StrategyGroupController extends BaseController {
                     Iterables.transform(children, obj -> obj != null ? obj.toString() : null),
                     String.class
             );
+
+            //重试时-重置重试次数
+            for(String idstr: strChildrens){
+                Map<String, Object> stringObjectMap = JsonUtil.toJavaMap(dagStrategyInstance.get(idstr).getRun_jsmind_data());
+                if(stringObjectMap.containsKey(Const.STRATEGY_INSTANCE_RETRY_COUNT)){
+                    stringObjectMap.remove(Const.STRATEGY_INSTANCE_RETRY_COUNT);
+                    StrategyInstance instance = new StrategyInstance();
+                    instance.setId(idstr);
+                    instance.setRun_jsmind_data(JsonUtil.formatJsonString(stringObjectMap));
+                    instance.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                    strategyInstanceMapper.updateByPrimaryKeySelective(instance);
+                }
+            }
 
             strategyInstanceMapper.updateStatusByIds(strChildrens,JobStatus.CREATE.getValue(), DateUtil.getCurrentTime());
             strategyGroupInstanceMapper.updateStatusById3(JobStatus.SUB_TASK_DISPATCH.getValue(), DateUtil.getCurrentTime(), strategyInstance.getGroup_instance_id());

@@ -3,7 +3,7 @@ package com.zyc.zdh.intercepts;
 import com.zyc.zdh.config.SystemConfig;
 import com.zyc.zdh.dao.UserOperateLogMapper;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.shiro.RedisUtil;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
 import com.zyc.zdh.util.SpringContext;
@@ -240,9 +240,7 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
                 return false;
             }
 
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-
-            return redisUtil.exists(Const.ZDH_USER_UNENABLE+"_"+getUser().getUserName());
+            return ConfigUtil.getParamUtil().exists(getUser().getProduct_code(), Const.ZDH_USER_UNENABLE+"_"+getUser().getUserName());
 
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
@@ -265,8 +263,8 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
             if (StringUtils.isEmpty(getUser().getUserName())) {
                 return false;
             }
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-            Object o = redisUtil.get(getUser().getProduct_code()+"_"+Const.ZDH_USER_BACKLIST);
+
+            Object o = ConfigUtil.getParamUtil().getValue(getUser().getProduct_code(), Const.ZDH_USER_BACKLIST);
             if (o == null) {
                 return false;
             }
@@ -291,11 +289,10 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
             if (url.endsWith("503")) {
                 return true;
             }
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
             if (getUser() == null) {
                 return true;
             }
-            Object pass_user = redisUtil.get(getUser().getProduct_code()+"_"+Const.ZDH_IS_PASS_USER);
+            Object pass_user = ConfigUtil.getParamUtil().getValue(getUser().getProduct_code(), Const.ZDH_IS_PASS_USER);
             if (pass_user != null) {
                 if (Arrays.asList(pass_user.toString().split(",")).contains(getUser().getUserName())) {
                     return true;
@@ -304,7 +301,7 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
             if (getUser().getUserName().equalsIgnoreCase("admin") || getUser().getUserName().equalsIgnoreCase("zyc")) {
                 return true;
             }
-            Object o = redisUtil.get(getUser().getProduct_code()+"_"+Const.ZDH_IS_PASS);
+            Object o = ConfigUtil.getParamUtil().getValue(getUser().getProduct_code(),Const.ZDH_IS_PASS);
             if (o == null) {
                 return true;
             }
@@ -326,10 +323,7 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
      */
     private boolean is_ipblacklist(String ip) {
         try{
-
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-
-            Object o = redisUtil.get(Const.ZDH_IP_BACKLIST);
+            Object o = ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_IP_BACKLIST);
             if (o == null) {
                 return false;
             }

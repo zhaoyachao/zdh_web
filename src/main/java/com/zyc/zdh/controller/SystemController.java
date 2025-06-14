@@ -67,11 +67,11 @@ public class SystemController extends BaseController{
         loginBaseInfo.setPlatform_name("ZDH数据平台");
         loginBaseInfo.setBackground_image("img/b7.jpeg");
         try{
-            Object o = redisUtil.get(Const.ZDH_PLATFORM_NAME);
+            Object o = ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_PLATFORM_NAME);
             if(o!=null){
                 loginBaseInfo.setPlatform_name(o.toString());
             }
-            Object o1 = redisUtil.get(Const.ZDH_BACKGROUND_IMAGE);
+            Object o1 = ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_BACKGROUND_IMAGE);
             if(o1!=null){
                 loginBaseInfo.setBackground_image(o1.toString());
             }

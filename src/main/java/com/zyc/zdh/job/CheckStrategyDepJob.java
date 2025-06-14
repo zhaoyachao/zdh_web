@@ -132,6 +132,14 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                         continue;
                     }
 
+                    //判断是否在某个时间之后运行,用于(异步检查,重试)场景
+                    Map run_jsmind_data = JsonUtil.toJavaMap(tl.getRun_jsmind_data());
+                    if(run_jsmind_data.containsKey(Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME)){
+                        if(Long.valueOf(run_jsmind_data.get(Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME).toString()) > System.currentTimeMillis()){
+                            continue;
+                        }
+                    }
+
                     //根据dag判断是否对当前任务进行
                     DAG dag=new DAG();
                     String group_instance_id=tl.getGroup_instance_id();

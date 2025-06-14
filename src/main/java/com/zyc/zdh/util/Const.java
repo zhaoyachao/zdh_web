@@ -108,6 +108,9 @@ public class Const {
     public static String ZDH_RATELIMIT_CLEART_TIME = "zdh_ratelimit_cleart_time";//系统IP访问次数限制
     public static String ZDH_RATELIMIT_KEY_USER_PRE = "zdh_ratelimiter_user_";
 
+    public static String ZDH_SSH_MAX_THREAD = "zdh_ssh_max_thread";
+    public static String ZDH_THREADPOOL_MAX = "zdh_threadpool_max";
+
     public static String ZDH_LOG_TYPE = "zdh_log_type";//日志存储类型
 
     public static String ZDH_FLOW_DEFAULT_USER = "zdh_flow_default_user";//审批流默认user
@@ -176,6 +179,12 @@ public class Const {
 
     public static String STRATEGY_GROUP_TYPE_OFFLINE = "offline";
     public static String STRATEGY_GROUP_TYPE_ONLINE = "online";
+
+    public static String STRATEGY_INSTANCE_RETRY_COUNT = "retry_count";
+    public static String STRATEGY_INSTANCE_DOUBLECHECK_TIME = "doublecheck_time";
+    public static String STRATEGY_INSTANCE_SUCCESS_NUM = "success_num";
+    public static String STRATEGY_INSTANCE_FAILED_NUM = "failed_num";
+
 
     public static String getEnumName(String type,String code){
         Map<String, Map<String, String>> enumMap=new HashMap<>();

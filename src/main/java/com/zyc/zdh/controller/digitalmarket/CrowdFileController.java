@@ -2,6 +2,8 @@ package com.zyc.zdh.controller.digitalmarket;
 
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ListenableScheduledFuture;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.CrowdFileMapper;
 import com.zyc.zdh.entity.CrowdFileInfo;
@@ -15,6 +17,8 @@ import io.minio.MinioClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +30,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 智能营销-人群文件服务
@@ -192,6 +197,14 @@ public class CrowdFileController extends BaseController {
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, crowdFile.getProduct_code(), crowdFile.getDim_group(), getAttrAdd());
 
             //校验文件名称是否已经存在
+            Example example=new Example(CrowdFileInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("file_name", crowdFile.getFile_name());
+            int count = crowdFileMapper.selectCountByExample(example);
+            if(count > 0){
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "文件名重复", "文件名重复");
+            }
 
             if (jar_files != null && jar_files.length > 0) {
                 for (MultipartFile jar_file : jar_files) {
@@ -208,16 +221,8 @@ public class CrowdFileController extends BaseController {
                         }
                     }
 
-
-                    System.out.println("上传文件不为空:"+fileName);
-                    String tmpPath = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_TMP_PATH, "/home/tmp/file");//env.getProperty("digitalmarket.tmp.path","/home/tmp/file");
-
-                    File tempFile = new File( tmpPath + fileName);
-
                     crowdFile.setFile_url(fileName);
-                    if(tempFile.exists()){
-                        return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "文件名重复", "文件名重复");
-                    }
+                    File tempFile = File.createTempFile("crowd_file-temp-", null);
 
                     String crowdFileName = crowdFile.getFile_name();
                     try {
@@ -228,6 +233,7 @@ public class CrowdFileController extends BaseController {
                         String username = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_USERNAME, "");//env.getProperty("digitalmarket.sftp.username","");
                         String password = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PASSWORD, "");//env.getProperty("digitalmarket.sftp.password","");
                         String localPath = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_LOCAL_PATH, "/home/data/file");//env.getProperty("digitalmarket.local.path","/home/data/file");
+                        String stppath = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PATH, "");//env.getProperty("digitalmarket.sftp.path","");
                         String path = localPath+"/crowd_file";
 
                         if(store.equalsIgnoreCase("local")){
@@ -242,13 +248,14 @@ public class CrowdFileController extends BaseController {
 
                         }else if(store.equalsIgnoreCase("sftp")){
                             LogUtil.info(this.getClass(), "crowd file upload store type: {}, path: {}", store, path + "/" + crowdFileName);
+
                             FileCopyUtils.copy(jar_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
                             //sftp
                             SFTPUtil sftp = new SFTPUtil(username, password,
                                     host, new Integer(port));
                             sftp.login();
                             InputStream is = new FileInputStream(tempFile);
-                            sftp.upload(path, fileName, is);
+                            sftp.upload(stppath+"/crowd_file", fileName, is);
                             sftp.logout();
                         }else if(store.equalsIgnoreCase("minio")){
                             LogUtil.info(this.getClass(), "crowd file upload store type: {}, path: {}", store, path + "/" + crowdFile.getFile_name());
@@ -266,6 +273,10 @@ public class CrowdFileController extends BaseController {
                     } catch (Exception e) {
                         LogUtil.error(this.getClass(), e);
                         throw e;
+                    }finally {
+                        if (tempFile.exists()) {
+                            tempFile.delete();
+                        }
                     }
                 }
             }
@@ -321,7 +332,8 @@ public class CrowdFileController extends BaseController {
             String password =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PASSWORD, "");//env.getProperty("digitalmarket.sftp.password");
 
             String path = ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_SFTP_PATH, "");//env.getProperty("digitalmarket.sftp.path","");
-            List<String> lines = new ArrayList<>();
+            File localFile = null;
+            List<List<String>> lines = new ArrayList<>();
             if(store.equalsIgnoreCase("local")){
                 //本地目录
                 String localPath =  ConfigUtil.getValue(ConfigUtil.DIGITALMARKET_LOCAL_PATH, "/home/data/file");//env.getProperty("digitalmarket.local.path","/home/data/file");
@@ -330,9 +342,8 @@ public class CrowdFileController extends BaseController {
                     fileDir.mkdirs();
                 }
 
-                File localFile = new File( fileDir + "/" +oldCrowdFileInfo.getFile_url());
+                localFile = new File( fileDir + "/crowd_file/" +oldCrowdFileInfo.getFile_name());
                 LogUtil.info(this.getClass(), "crowd file upload store type: {}, path: {}", store, localFile.getAbsolutePath());
-                lines = FileUtil.readLines(localFile, "utf-8");
 
             }else if(store.equalsIgnoreCase("sftp")){
                 LogUtil.info(this.getClass(), "crowd file upload store type: {}, path: {}", store, path + oldCrowdFileInfo.getFile_url());
@@ -340,9 +351,20 @@ public class CrowdFileController extends BaseController {
                 SFTPUtil sftp = new SFTPUtil(username, password,
                         host, new Integer(port));
                 sftp.login();
-                sftp.download(path, oldCrowdFileInfo.getFile_url(), "/tmp/"+oldCrowdFileInfo.getFile_url());
-                lines = FileUtil.readLines("/tmp/"+oldCrowdFileInfo.getFile_url(), "utf-8");
+                sftp.download(path+"/crowd_file", oldCrowdFileInfo.getFile_name(), "/tmp/"+oldCrowdFileInfo.getFile_name());
+                //lines = FileUtil.readLines("/tmp/"+oldCrowdFileInfo.getFile_name(), "utf-8");
                 sftp.logout();
+                localFile = new File( "/tmp/"+oldCrowdFileInfo.getFile_name());
+            }
+
+            if(oldCrowdFileInfo.getFile_name().endsWith("xlsx")){
+                //excel 文件
+                lines = ResoveExcel.readExcel2List(new FileInputStream(localFile), 1);
+            }else if(oldCrowdFileInfo.getFile_name().endsWith("xls")){
+                lines = ResoveExcel.readExcel2List(new FileInputStream(localFile), 1);
+            }else{
+                List<String> tmp = FileUtil.readLines(localFile, "utf-8");
+                lines = tmp.parallelStream().map(s -> Lists.newArrayList(s.split("\t"))).collect(Collectors.toList());
             }
 
             //遍历lines 写入redis
@@ -350,14 +372,67 @@ public class CrowdFileController extends BaseController {
                 throw new Exception("人群文件量级超过100000,禁止同步redis");
             }
 
-            for (String line: lines){
-                redisUtil.set(oldCrowdFileInfo.getProduct_code()+"_crowd_file_"+oldCrowdFileInfo.getId()+"_"+line, line);
+            for (List<String> row: lines){
+                redisUtil.set(oldCrowdFileInfo.getProduct_code()+"_crowd_file_"+oldCrowdFileInfo.getId()+"_"+row.get(0), row.get(0));
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "同步成功", null);
         } catch (Exception e) {
             LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "同步失败", e.getMessage());
+        }
+    }
+
+
+    /**
+     * 下载模板
+     * @param response
+     */
+    @RequestMapping(value = "/crowd_file_document_download", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public void download_file(HttpServletResponse response) {
+
+        String fileName = "人群文件模板.xlsx";
+
+        Resource resource = new ClassPathResource(fileName);
+
+        File path = null;
+        response.setHeader("content-type", "text/html;charset=UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+        try {
+            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName, "UTF-8"));
+        } catch (UnsupportedEncodingException e2) {
+            e2.printStackTrace();
+        }
+        byte[] buff = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+        BufferedInputStream bis = null;
+        OutputStream os = null;
+        try {
+            //本地文件
+            path = resource.getFile();
+            os = response.getOutputStream();
+            bis = new BufferedInputStream(new FileInputStream(path));
+            int i = bis.read(buff);
+            while (i != -1) {
+                os.write(buff, 0, buff.length);
+                os.flush();
+                i = bis.read(buff);
+            }
+
+        } catch (FileNotFoundException e) {
+            LogUtil.error(this.getClass(), e);
+        } catch (IOException e) {
+            LogUtil.error(this.getClass(), e);
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+        } finally {
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    LogUtil.error(this.getClass(), e);
+                }
+            }
         }
     }
 

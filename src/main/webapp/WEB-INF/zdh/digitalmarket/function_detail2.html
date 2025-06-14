@@ -140,6 +140,9 @@
 <!--                                </select>-->
 <!--                            </div>-->
                             <label class="col-sm-2 control-label">对比表达式</label>
+                            <div class="col-sm-10"> <span class="help-block m-b-none"><a href="javascript:void(0);"
+                                                                                         onclick="code_demo()">表达式例子</a></span></div>
+                            <label class="col-sm-2 control-label"></label>
                             <div class="col-sm-10">
                                 <div id="return_operate_value" name="return_operate_value" class="monaco_div_100"></div>
                             </div>
@@ -228,6 +231,25 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">异步执行</label>
+                            <div class="col-sm-10">
+                                <select id="is_async" name="is_async" data-placeholder=""
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="true" mytype="">是</option>
+                                    <option value="false" mytype="" selected>否</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">重试次数</label>
+                            <div class="col-sm-10">
+                                <input id="plan_retry_count" name="plan_retry_count" type="text" value="0"
+                                       placeholder="重试次数,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="text-center">
                                 <button id="save_etl_info" name="save_etl_info" class="btn btn-primary" οnsubmit='return false'
                                         type="button">保存
@@ -277,6 +299,7 @@
 <script type="text/javascript" src="js/plugins/vs/basic-languages/java/java.js"></script>
 
 <script src="js/project_common.js"></script>
+<script src="js/digitalmarket/strategy_common.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -286,6 +309,10 @@
         });
 
     });
+
+    function code_demo() {
+        window.open(server_context+'/function_demo_index');
+    }
 
     window.editor_return_operate_value = monaco.editor.create(document.getElementById('return_operate_value'), {
         value: 'if(ret != null) return true else return false',
@@ -407,30 +434,30 @@
 
             if(s["rule_id"] != '-1'){
                 console.info("更新触发");
-
-                $("#rule_context").val(is_empty(s["rule_context"])?"":s["rule_context"]);
-                $("#rule_id").val(s["rule_id"]);
-                $("#rule_id").trigger("chosen:updated");
-                $("#operate").val(s.operate);
-                $("#operate").trigger("chosen:updated");
-
-                $("#data_status").val(s["data_status"]);
-                $("#data_status").trigger("chosen:updated");
-
-                $("#touch_type").val(s.touch_type);
-                $("#touch_type").trigger("chosen:updated");
-                $("#is_base").val(s.is_base);
-                $("#is_base").trigger("chosen:updated");
-
-                $("#depend_level").val(s["depend_level"]);
-                $("#depend_level").trigger("chosen:updated");
-                if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
-                    $("#time_out").val(s["time_out"]);
-                }
-                var is_disenable=s.is_disenable;
-                if(is_disenable == "true"){
-                    $('#is_disenable').iCheck('check');
-                }
+                strategy_base_param(s);
+                // $("#rule_context").val(is_empty(s["rule_context"])?"":s["rule_context"]);
+                // $("#rule_id").val(s["rule_id"]);
+                // $("#rule_id").trigger("chosen:updated");
+                // $("#operate").val(s.operate);
+                // $("#operate").trigger("chosen:updated");
+                //
+                // $("#data_status").val(s["data_status"]);
+                // $("#data_status").trigger("chosen:updated");
+                //
+                // $("#touch_type").val(s.touch_type);
+                // $("#touch_type").trigger("chosen:updated");
+                // $("#is_base").val(s.is_base);
+                // $("#is_base").trigger("chosen:updated");
+                //
+                // $("#depend_level").val(s["depend_level"]);
+                // $("#depend_level").trigger("chosen:updated");
+                // if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
+                //     $("#time_out").val(s["time_out"]);
+                // }
+                // var is_disenable=s.is_disenable;
+                // if(is_disenable == "true"){
+                //     $('#is_disenable').iCheck('check');
+                // }
 
                 //参数
                 getFunctionParam($('#rule_id').val());
@@ -457,15 +484,15 @@
                     $('#zdh_param_value_'+i).val(JSON.parse(rule_param)[i].param_value);
                 }
 
-                $("#project_code").val(s["project_code"]);
-                $("#project_code").trigger("chosen:updated");
-                var project_id = $('#project_code').find("option:selected").attr("mytype");
-                project_scene(project_id);
-
-                $("#project_scene").val(s["project_scene"]);
-                $("#project_scene").trigger("chosen:updated");
-
-                $('#version_tag').val(s.version_tag);
+                // $("#project_code").val(s["project_code"]);
+                // $("#project_code").trigger("chosen:updated");
+                // var project_id = $('#project_code').find("option:selected").attr("mytype");
+                // project_scene(project_id);
+                //
+                // $("#project_scene").val(s["project_scene"]);
+                // $("#project_scene").trigger("chosen:updated");
+                //
+                // $('#version_tag').val(s.version_tag);
             }
         })();
 
@@ -534,31 +561,41 @@
         }
 
         var more_task = 'function';
-        let data={
-            "more_task": more_task,
-            "operate": operate,
-            "touch_type": touch_type,
-            "is_disenable":is_disenable,
-            "depend_level":depend_level,
-            "time_out": time_out,
-            "is_base": is_base,
-            "data_status": data_status,
-            "project_code": project_code,
-            "project_scene": project_scene,
-            "version_tag": version_tag,
 
-            'return_diff_enable':return_diff_enable,
-            'return_value_type':return_value_type,
-            'return_value_express':return_value_express,
-            'return_operate':return_operate,
-            'return_operate_value':return_operate_value,
+        const data = get_strategy_base_param(more_task, rule_id, rule_context);
+        data.return_diff_enable = return_diff_enable;
+        data.return_value_type = return_value_type;
+        data.return_value_express = return_value_express;
+        data.return_operate = return_operate;
+        data.return_operate_value = return_operate_value;
+        data.rule_param = JSON.stringify(result);
+        data.rule_expression_cn = rule_context;
 
-            "rule_context":rule_context,
-            "rule_id":rule_id,
-
-            "rule_param": JSON.stringify(result),
-            "rule_expression_cn": rule_context,
-        };
+        // let data={
+        //     "more_task": more_task,
+        //     "operate": operate,
+        //     "touch_type": touch_type,
+        //     "is_disenable":is_disenable,
+        //     "depend_level":depend_level,
+        //     "time_out": time_out,
+        //     "is_base": is_base,
+        //     "data_status": data_status,
+        //     "project_code": project_code,
+        //     "project_scene": project_scene,
+        //     "version_tag": version_tag,
+        //
+        //     'return_diff_enable':return_diff_enable,
+        //     'return_value_type':return_value_type,
+        //     'return_value_express':return_value_express,
+        //     'return_operate':return_operate,
+        //     'return_operate_value':return_operate_value,
+        //
+        //     "rule_context":rule_context,
+        //     "rule_id":rule_id,
+        //
+        //     "rule_param": JSON.stringify(result),
+        //     "rule_expression_cn": rule_context,
+        // };
         console.info("rule_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引

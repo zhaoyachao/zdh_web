@@ -201,8 +201,7 @@ public class PermissionController extends BaseController {
 
             for (PermissionUserInfo permissionUserInfo: permissionUserInfos){
                 checkPermissionByOwner(permissionUserInfo.getProduct_code());
-                String unable_key = Const.ZDH_USER_UNENABLE+"_"+permissionUserInfo.getUser_account();
-
+                String unable_key = permissionUserInfo.getProduct_code()+"_"+Const.ZDH_USER_UNENABLE+"_"+permissionUserInfo.getUser_account();
                 if(enable.equalsIgnoreCase(Const.FALSE)){
                     //禁用用户,redis中写禁用标志
                     redisUtil.set(unable_key, "");
@@ -219,7 +218,7 @@ public class PermissionController extends BaseController {
 
             if(permissionUserInfos!=null){
                 for (PermissionUserInfo permissionUserInfo: permissionUserInfos){
-                    String unable_key = Const.ZDH_USER_UNENABLE+"_"+permissionUserInfo.getUser_account();
+                    String unable_key =permissionUserInfo.getProduct_code()+"_"+ Const.ZDH_USER_UNENABLE+"_"+permissionUserInfo.getUser_account();
                     if(enable.equalsIgnoreCase(Const.TRUR)){
                         //启用失败,重新添加用户禁用到redis
                         redisUtil.set(unable_key, "");
