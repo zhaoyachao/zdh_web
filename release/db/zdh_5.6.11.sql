@@ -3525,6 +3525,7 @@ CREATE TABLE `push_template_info` (
   `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
   `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
   `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
+  `push_msg_type` varchar(64) NOT NULL DEFAULT '' COMMENT '消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4  COMMENT='push模板配置';
 /*!40101 SET character_set_client = @saved_cs_client */;

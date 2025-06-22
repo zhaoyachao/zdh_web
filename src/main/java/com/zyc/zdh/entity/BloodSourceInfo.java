@@ -297,10 +297,12 @@ public class BloodSourceInfo extends BaseProductAuthInfo{
         this.input_json = input_json;
     }
 
+    @Override
     public String getProduct_code() {
         return product_code;
     }
 
+    @Override
     public void setProduct_code(String product_code) {
         this.product_code = product_code;
     }

@@ -51,10 +51,12 @@ public class EveryDayNotice extends BaseProductAuthInfo{
         this.show_type = show_type;
     }
 
+    @Override
     public String getProduct_code() {
         return product_code;
     }
 
+    @Override
     public void setProduct_code(String product_code) {
         this.product_code = product_code;
     }

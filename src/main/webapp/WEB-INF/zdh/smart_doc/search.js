@@ -115,15 +115,15 @@ api[1].list.push({
 });
 api[1].list.push({
     order: '22',
-    desc: '获取产品线下所有维度',
+    desc: '获取产品线下所有维度code',
 });
 api[1].list.push({
     order: '23',
-    desc: '获取产品线下所有维度',
+    desc: '获取产品线下所有维度值',
 });
 api[1].list.push({
     order: '24',
-    desc: '获取用户在产品线下所有维度',
+    desc: '获取用户在产品线下绑定的维度信息',
 });
 api[1].list.push({
     order: '25',
@@ -131,11 +131,11 @@ api[1].list.push({
 });
 api[1].list.push({
     order: '26',
-    desc: '获取用户在产品线下所有维度',
+    desc: '获取用户组在产品线下绑定所有维度信息',
 });
 api[1].list.push({
     order: '27',
-    desc: '获取用户在产品线下所有维度值',
+    desc: '获取用户组在产品线下所有维度值信息',
 });
 api.push({
     alias: 'ProcessFlowApi',
@@ -480,6 +480,10 @@ api[10].list.push({
     order: '8',
     desc: '',
 });
+api[10].list.push({
+    order: '9',
+    desc: '下载模板',
+});
 api.push({
     alias: 'CrowdRuleController',
     order: '12',
@@ -629,7 +633,7 @@ api[15].list.push({
 });
 api[15].list.push({
     order: '2',
-    desc: '函数信息列表',
+    desc: '函数表达式demo',
 });
 api[15].list.push({
     order: '3',
@@ -637,38 +641,42 @@ api[15].list.push({
 });
 api[15].list.push({
     order: '4',
-    desc: '函数信息新增首页',
+    desc: '函数信息列表',
 });
 api[15].list.push({
     order: '5',
-    desc: '函数测试首页',
+    desc: '函数信息新增首页',
 });
 api[15].list.push({
     order: '6',
-    desc: '函数明细页面',
+    desc: '函数测试首页',
 });
 api[15].list.push({
     order: '7',
-    desc: 'xx明细',
+    desc: '函数明细页面',
 });
 api[15].list.push({
     order: '8',
-    desc: '函数信息更新',
+    desc: 'xx明细',
 });
 api[15].list.push({
     order: '9',
-    desc: '函数信息新增',
+    desc: '函数信息更新',
 });
 api[15].list.push({
     order: '10',
-    desc: '函数信息删除',
+    desc: '函数信息新增',
 });
 api[15].list.push({
     order: '11',
-    desc: '根据code查询插件明细',
+    desc: '函数信息删除',
 });
 api[15].list.push({
     order: '12',
+    desc: '根据code查询插件明细',
+});
+api[15].list.push({
+    order: '13',
     desc: '函数测试',
 });
 api.push({
@@ -955,66 +963,70 @@ api[21].list.push({
 });
 api[21].list.push({
     order: '16',
-    desc: '策略组实例重试首页',
+    desc: '策略组实例重启',
 });
 api[21].list.push({
     order: '17',
-    desc: '策略组实例重试',
+    desc: '策略组实例重试首页',
 });
 api[21].list.push({
     order: '18',
-    desc: '获取下载地址',
+    desc: '策略组实例重试',
 });
 api[21].list.push({
     order: '19',
-    desc: '下载地址',
+    desc: '获取下载地址',
 });
 api[21].list.push({
     order: '20',
-    desc: '小流量配置页面',
+    desc: '下载地址',
 });
 api[21].list.push({
     order: '21',
-    desc: '小流量更新',
+    desc: '小流量配置页面',
 });
 api[21].list.push({
     order: '22',
-    desc: '小流量-生效',
+    desc: '小流量更新',
 });
 api[21].list.push({
     order: '23',
-    desc: '杀死策略组  杀死策略组-不走策略流转逻辑(杀死整个策略组时,意味着用户想要终结当前组下所有的操作)',
+    desc: '小流量-生效',
 });
 api[21].list.push({
     order: '24',
-    desc: '杀死单个任务',
+    desc: '杀死策略组  杀死策略组-不走策略流转逻辑(杀死整个策略组时,意味着用户想要终结当前组下所有的操作)',
 });
 api[21].list.push({
     order: '25',
-    desc: '手动跳过任务  更新策略组状态为执行中,策略实例状态为执行中,并策略实例执行信息中is_disenable更新为true(禁用)',
+    desc: '杀死单个任务',
 });
 api[21].list.push({
     order: '26',
-    desc: '手动重试',
+    desc: '手动跳过任务  更新策略组状态为执行中,策略实例状态为执行中,并策略实例执行信息中is_disenable更新为true(禁用)',
 });
 api[21].list.push({
     order: '27',
-    desc: '自动执行调度任务',
+    desc: '手动重试',
 });
 api[21].list.push({
     order: '28',
-    desc: '暂停调度任务',
+    desc: '自动执行调度任务',
 });
 api[21].list.push({
     order: '29',
-    desc: '删除调度任务',
+    desc: '暂停调度任务',
 });
 api[21].list.push({
     order: '30',
-    desc: '更新优先级',
+    desc: '删除调度任务',
 });
 api[21].list.push({
     order: '31',
+    desc: '更新优先级',
+});
+api[21].list.push({
+    order: '32',
     desc: '策略组版本保存',
 });
 api.push({
@@ -1098,8 +1110,8 @@ api[23].list.push({
 api.push({
     alias: 'EtlTaskKettleController',
     order: '25',
-    desc: '服务',
-    link: '服务',
+    desc: 'kettle服务',
+    link: 'kettle服务',
     list: []
 })
 api[24].list.push({
@@ -1133,6 +1145,10 @@ api[24].list.push({
 api[24].list.push({
     order: '8',
     desc: '删除',
+});
+api[24].list.push({
+    order: '9',
+    desc: 'kettle job列表/trans列表',
 });
 api.push({
     alias: 'HelpDocumentController',
@@ -3229,369 +3245,416 @@ api[62].list.push({
     desc: 'push通道配置更新',
 });
 api.push({
-    alias: 'PushTemplateController',
+    alias: 'PushChannelPoolController',
     order: '64',
+    desc: 'push通道池配置服务',
+    link: 'push通道池配置服务',
+    list: []
+})
+api[63].list.push({
+    order: '1',
+    desc: 'push通道池配置列表首页',
+});
+api[63].list.push({
+    order: '2',
+    desc: 'push通道池配置列表',
+});
+api[63].list.push({
+    order: '3',
+    desc: 'push通道池配置分页列表',
+});
+api[63].list.push({
+    order: '4',
+    desc: 'push通道池配置新增首页',
+});
+api[63].list.push({
+    order: '5',
+    desc: 'push通道池配置明细',
+});
+api[63].list.push({
+    order: '6',
+    desc: 'push通道池配置更新',
+});
+api[63].list.push({
+    order: '7',
+    desc: 'push通道池配置新增',
+});
+api[63].list.push({
+    order: '8',
+    desc: 'push通道池配置删除',
+});
+api.push({
+    alias: 'PushTemplateController',
+    order: '65',
     desc: 'push模板配置服务',
     link: 'push模板配置服务',
     list: []
 })
-api[63].list.push({
+api[64].list.push({
     order: '1',
     desc: 'push模板配置列表首页',
 });
-api[63].list.push({
+api[64].list.push({
     order: '2',
     desc: 'push模板配置列表',
 });
-api[63].list.push({
+api[64].list.push({
     order: '3',
     desc: 'push模板配置分页列表',
 });
-api[63].list.push({
+api[64].list.push({
     order: '4',
     desc: 'push模板配置新增首页',
 });
-api[63].list.push({
+api[64].list.push({
     order: '5',
     desc: 'xx明细',
 });
-api[63].list.push({
+api[64].list.push({
     order: '6',
     desc: 'push模板配置更新',
 });
-api[63].list.push({
+api[64].list.push({
     order: '7',
     desc: 'push模板配置新增',
 });
-api[63].list.push({
+api[64].list.push({
     order: '8',
     desc: 'push模板配置删除',
 });
+api[64].list.push({
+    order: '9',
+    desc: 'push模板配置新增版本',
+});
 api.push({
     alias: 'ZdhQualityController',
-    order: '65',
+    order: '66',
     desc: '质量检测服务',
     link: '质量检测服务',
     list: []
 })
-api[64].list.push({
+api[65].list.push({
     order: '1',
     desc: '质量检测规则首页',
 });
-api[64].list.push({
+api[65].list.push({
     order: '2',
     desc: '质量检测规则新增首页',
 });
-api[64].list.push({
+api[65].list.push({
     order: '3',
     desc: '质量检测规则列表',
 });
-api[64].list.push({
+api[65].list.push({
     order: '4',
     desc: '质量检测规则新增',
 });
-api[64].list.push({
+api[65].list.push({
     order: '5',
     desc: '质量检测规则更新',
 });
-api[64].list.push({
+api[65].list.push({
     order: '6',
     desc: '数据质量任务',
 });
-api[64].list.push({
+api[65].list.push({
     order: '7',
     desc: '质量检测任务新增首页',
 });
-api[64].list.push({
+api[65].list.push({
     order: '8',
     desc: '质量检测列表',
 });
-api[64].list.push({
+api[65].list.push({
     order: '9',
     desc: '质量检测任务新增',
 });
-api[64].list.push({
+api[65].list.push({
     order: '10',
     desc: '质量检测任务更新',
 });
-api[64].list.push({
+api[65].list.push({
     order: '11',
     desc: '质量检测任务删除',
 });
-api[64].list.push({
+api[65].list.push({
     order: '12',
     desc: '质量报告首页',
 });
-api[64].list.push({
+api[65].list.push({
     order: '13',
     desc: '指标首页',
 });
-api[64].list.push({
+api[65].list.push({
     order: '14',
     desc: '指标明细',
 });
-api[64].list.push({
+api[65].list.push({
     order: '15',
     desc: '质量报告明细',
 });
-api[64].list.push({
+api[65].list.push({
     order: '16',
     desc: '删除质量报告',
 });
 api.push({
     alias: 'QueueController',
-    order: '66',
+    order: '67',
     desc: '优先级队列服务  具体zdh_rqueue服务可参见zdh_rqueue项目',
     link: '优先级队列服务  具体zdh_rqueue服务可参见zdh_rqueue项目',
     list: []
 })
-api[65].list.push({
+api[66].list.push({
     order: '1',
     desc: '队列消息列表首页',
 });
-api[65].list.push({
+api[66].list.push({
     order: '2',
     desc: '队列消息列表',
 });
-api[65].list.push({
+api[66].list.push({
     order: '3',
     desc: '队列消息明细(废弃)',
 });
-api[65].list.push({
+api[66].list.push({
     order: '4',
     desc: '队列新增消息首页',
 });
-api[65].list.push({
+api[66].list.push({
     order: '5',
     desc: '新增队列消息',
 });
-api[65].list.push({
+api[66].list.push({
     order: '6',
     desc: '更新优先级(废弃)',
 });
 api.push({
     alias: 'ZdhRedisApiController',
-    order: '67',
+    order: '68',
     desc: 'redis服务',
     link: 'redis服务',
     list: []
 })
-api[66].list.push({
+api[67].list.push({
     order: '1',
     desc: '获取参数',
 });
-api[66].list.push({
+api[67].list.push({
     order: '2',
     desc: '获取参数',
 });
-api[66].list.push({
+api[67].list.push({
     order: '3',
     desc: '删除参数',
 });
-api[66].list.push({
+api[67].list.push({
     order: '4',
     desc: '获取所有参数名',
 });
-api[66].list.push({
+api[67].list.push({
     order: '5',
     desc: '新增参数',
 });
 api.push({
     alias: 'ZdhSelfServiceController',
-    order: '68',
+    order: '69',
     desc: '自助服务',
     link: '自助服务',
     list: []
 })
-api[67].list.push({
+api[68].list.push({
     order: '1',
     desc: '自助服务首页',
 });
-api[67].list.push({
+api[68].list.push({
     order: '2',
     desc: '自助服务列表',
 });
-api[67].list.push({
+api[68].list.push({
     order: '3',
     desc: '自助服务新增首页',
 });
-api[67].list.push({
+api[68].list.push({
     order: '4',
     desc: '自助服务明细',
 });
-api[67].list.push({
+api[68].list.push({
     order: '5',
     desc: '自助服务更新',
 });
-api[67].list.push({
+api[68].list.push({
     order: '6',
     desc: '自助服务新增',
 });
-api[67].list.push({
+api[68].list.push({
     order: '7',
     desc: '自助服务删除',
 });
-api[67].list.push({
+api[68].list.push({
     order: '8',
     desc: '自助服务执行',
 });
-api[67].list.push({
+api[68].list.push({
     order: '9',
     desc: '自助服务导出',
 });
 api.push({
     alias: 'ZdhSqlController',
-    order: '69',
+    order: '70',
     desc: 'spark sql服务',
     link: 'spark_sql服务',
     list: []
 })
-api[68].list.push({
+api[69].list.push({
     order: '1',
     desc: 'spark sql任务首页',
 });
-api[68].list.push({
+api[69].list.push({
     order: '2',
     desc: 'spark sql任务新增首页',
 });
-api[68].list.push({
+api[69].list.push({
     order: '3',
     desc: '模糊查询Sql任务',
 });
-api[68].list.push({
+api[69].list.push({
     order: '4',
     desc: '批量删除sql任务',
 });
-api[68].list.push({
+api[69].list.push({
     order: '5',
     desc: '新增sql 任务',
 });
-api[68].list.push({
+api[69].list.push({
     order: '6',
     desc: '更新sql 任务',
 });
-api[68].list.push({
+api[69].list.push({
     order: '7',
     desc: '加载元数据信息',
 });
-api[68].list.push({
+api[69].list.push({
     order: '8',
     desc: '查询当前数据仓库的所有数据库',
 });
-api[68].list.push({
+api[69].list.push({
     order: '9',
     desc: '获取表结构说明',
 });
 api.push({
     alias: 'ZdhSshController',
-    order: '70',
+    order: '71',
     desc: 'SSH服务',
     link: 'ssh服务',
     list: []
 })
-api[69].list.push({
+api[70].list.push({
     order: '1',
     desc: 'SSH 任务首页',
 });
-api[69].list.push({
+api[70].list.push({
     order: '2',
     desc: 'SSH任务新增首页',
 });
-api[69].list.push({
+api[70].list.push({
     order: '3',
     desc: 'ssh任务明细',
 });
-api[69].list.push({
+api[70].list.push({
     order: '4',
     desc: '删除ssh任务',
 });
-api[69].list.push({
+api[70].list.push({
     order: '5',
     desc: '新增ssh任务',
 });
-api[69].list.push({
+api[70].list.push({
     order: '6',
     desc: '更新ssh任务',
 });
-api[69].list.push({
+api[70].list.push({
     order: '7',
     desc: 'ssh任务删除文件',
 });
-api[69].list.push({
+api[70].list.push({
     order: '8',
     desc: 'ssh任务已上传文件明细',
 });
 api.push({
     alias: 'ZdhTestController',
-    order: '71',
+    order: '72',
     desc: '测试非结构化上传',
     link: '测试非结构化上传',
     list: []
 })
-api[70].list.push({
+api[71].list.push({
     order: '1',
     desc: '非结构化任务首页',
 });
-api[70].list.push({
+api[71].list.push({
     order: '2',
     desc: '',
 });
+api[71].list.push({
+    order: '3',
+    desc: '非结构化任务首页',
+});
 api.push({
     alias: 'ZdhUnstructureController',
-    order: '72',
+    order: '73',
     desc: '非结构化数据服务',
     link: '非结构化数据服务',
     list: []
 })
-api[71].list.push({
+api[72].list.push({
     order: '1',
     desc: '非结构化任务首页',
 });
-api[71].list.push({
+api[72].list.push({
     order: '2',
     desc: '非结构化任务新增首页',
 });
-api[71].list.push({
+api[72].list.push({
     order: '3',
     desc: '非结构化任务上传首页',
 });
-api[71].list.push({
+api[72].list.push({
     order: '4',
     desc: '非结构化任务日志首页',
 });
-api[71].list.push({
+api[72].list.push({
     order: '5',
     desc: '非结构化任务列表',
 });
-api[71].list.push({
+api[72].list.push({
     order: '6',
     desc: '删除 非结构化任务',
 });
-api[71].list.push({
+api[72].list.push({
     order: '7',
     desc: '新增 非结构化任务',
 });
-api[71].list.push({
+api[72].list.push({
     order: '8',
     desc: '更新 非结构化任务',
 });
-api[71].list.push({
+api[72].list.push({
     order: '9',
     desc: '手动上传文件-生成源信息',
 });
-api[71].list.push({
+api[72].list.push({
     order: '10',
     desc: '非结构化任务删除文件',
 });
-api[71].list.push({
+api[72].list.push({
     order: '11',
     desc: '非结构化任务已上传文件明细',
 });
-api[71].list.push({
+api[72].list.push({
     order: '12',
     desc: '非结构化任务日志列表',
 });
-api[71].list.push({
+api[72].list.push({
     order: '13',
     desc: '删除 非结构化任务日志',
 });

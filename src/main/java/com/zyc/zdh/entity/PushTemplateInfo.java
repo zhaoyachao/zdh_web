@@ -30,6 +30,11 @@ public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
     private String push_type;
 
     /**
+     * 消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
+     */
+    private String push_msg_type;
+
+    /**
      * 推送服务,sms,email
      */
     private String push_server;
@@ -147,6 +152,14 @@ public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
      */
     public void setPush_type(String push_type) {
         this.push_type = push_type;
+    }
+
+    public String getPush_msg_type() {
+        return push_msg_type;
+    }
+
+    public void setPush_msg_type(String push_msg_type) {
+        this.push_msg_type = push_msg_type;
     }
 
     /**
@@ -280,6 +293,7 @@ public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
      *
      * @return product_code - 产品code
      */
+    @Override
     public String getProduct_code() {
         return product_code;
     }
@@ -289,6 +303,7 @@ public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
      *
      * @param product_code 产品code
      */
+    @Override
     public void setProduct_code(String product_code) {
         this.product_code = product_code;
     }
@@ -298,6 +313,7 @@ public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
      *
      * @return dim_group - 用户组
      */
+    @Override
     public String getDim_group() {
         return dim_group;
     }
@@ -307,6 +323,7 @@ public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
      *
      * @param dim_group 用户组
      */
+    @Override
     public void setDim_group(String dim_group) {
         this.dim_group = dim_group;
     }

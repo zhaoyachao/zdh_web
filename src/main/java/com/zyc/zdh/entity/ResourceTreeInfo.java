@@ -228,10 +228,12 @@ public class ResourceTreeInfo extends BaseProductAuthInfo{
 		this.event_code = event_code;
 	}
 
+	@Override
 	public String getProduct_code() {
 		return product_code;
 	}
 
+	@Override
 	public void setProduct_code(String product_code) {
 		this.product_code = product_code;
 	}

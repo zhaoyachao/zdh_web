@@ -236,10 +236,10 @@
 [版本更新及迁移说明](release.md)
 
 # 交流群
-![qq](img/qq.jpg)
+  <img src="img/qq.jpg" alt="qq" width="300" height="300">
 
 # 支持&赞赏
   如果当前项目对你有帮助或者提供便利, 你的赞赏会给作者带来更多的动力
-  ![增加动力](img/vx打赏.jpg)
+  <img src="img/vx打赏.jpg" alt="qq" width="300" height="300">
  
  

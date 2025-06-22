@@ -685,12 +685,8 @@
   + v5.6.10 [zdh_web]营销模块-新增人群文件模板下载
   + v5.6.10 [zdh_web]流程图增加执行结果量级
   
-  
-  + v5.1.1 [zdh_web]支持hadoop,hive,hbase大数据权限(用户认证,数据权限)【未完成】
-  + v5.1.0 [zdh_web]验证kingbase链接时是否获取表名问题【未完成】
-  + v5.1.0 [zdh_web]验证sqlserver链接时是否获取表名问题【未完成】
-  + v5.1.0 [zdh_web]历史遗留支持spark-greenplum 链接器【未完成】
-  + v5.1.0 标签模块-增加标签加工任务【开发中】
+  + v5.6.11 [zdh_web]优化代码
+  + v5.6.11 [zdh_web]营销模块支持异步任务
 
   
 # 版本迁移步骤  
@@ -3578,3 +3574,6 @@
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1383487130193367040, '1176308421654220800', '函数表达式demo', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2025-06-14 16:43:56', '2025-06-14 16:43:56', 'function_demo_index', '3', '', '', 'zdh', '');
     
+## 5.6.10迁移5.6.11
+    alter table push_template_info add column push_msg_type varchar(64) NOT NULL DEFAULT '' COMMENT '消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他';
+    update push_template_info set push_msg_type=push_type;    

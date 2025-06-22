@@ -576,18 +576,22 @@ public class StrategyGroupInstance extends BaseProductAndDimGroupAuthInfo{
         this.data_node = data_node;
     }
 
+    @Override
     public String getDim_group() {
         return dim_group;
     }
 
+    @Override
     public void setDim_group(String dim_group) {
         this.dim_group = dim_group;
     }
 
+    @Override
     public String getProduct_code() {
         return product_code;
     }
 
+    @Override
     public void setProduct_code(String product_code) {
         this.product_code = product_code;
     }

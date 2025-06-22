@@ -86,6 +86,7 @@ public class BeaconFireAlarmMsgInfo extends BaseProductAndDimGroupAuthInfo{
      *
      * @return product_code - 产品code
      */
+    @Override
     public String getProduct_code() {
         return product_code;
     }
@@ -95,6 +96,7 @@ public class BeaconFireAlarmMsgInfo extends BaseProductAndDimGroupAuthInfo{
      *
      * @param product_code 产品code
      */
+    @Override
     public void setProduct_code(String product_code) {
         this.product_code = product_code;
     }
@@ -104,6 +106,7 @@ public class BeaconFireAlarmMsgInfo extends BaseProductAndDimGroupAuthInfo{
      *
      * @return dim_group - 用户组
      */
+    @Override
     public String getDim_group() {
         return dim_group;
     }
@@ -113,6 +116,7 @@ public class BeaconFireAlarmMsgInfo extends BaseProductAndDimGroupAuthInfo{
      *
      * @param dim_group 用户组
      */
+    @Override
     public void setDim_group(String dim_group) {
         this.dim_group = dim_group;
     }

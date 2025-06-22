@@ -99,10 +99,12 @@ public class RoleResourceInfo extends BaseProductAuthInfo{
 		this.update_time = update_time;
 	}
 
+	@Override
 	public String getProduct_code() {
 		return product_code;
 	}
 
+	@Override
 	public void setProduct_code(String product_code) {
 		this.product_code = product_code;
 	}
