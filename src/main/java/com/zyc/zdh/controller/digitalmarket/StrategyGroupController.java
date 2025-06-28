@@ -62,6 +62,9 @@ public class StrategyGroupController extends BaseController {
     @Autowired
     private StrategyGroupLogMapper strategyGroupLogMapper;
 
+    private static List<String> delRunJsmindDataKeys = Lists.newArrayList(Const.STRATEGY_INSTANCE_SUCCESS_NUM, Const.STRATEGY_INSTANCE_FAILED_NUM,
+            Const.STRATEGY_INSTANCE_RETRY_COUNT, Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME, Const.STRATEGY_INSTANCE_ASYNC_TASK_ID,
+            Const.STRATEGY_INSTANCE_ASYNC_TASK_STATUS, Const.STRATEGY_INSTANCE_ASYNC_TASK_EXT);
 
     @RequestMapping(value = "/get_id", method = RequestMethod.GET)
     @ResponseBody
@@ -463,10 +466,9 @@ public class StrategyGroupController extends BaseController {
                 Map<String, Object> stringObjectMap = taskMap.get(strategy_id);
                 Map<String, Object> run_jsmind_data2 = JsonUtil.toJavaMap(strategyInstance.getRun_jsmind_data());
 
-                run_jsmind_data2.remove(Const.STRATEGY_INSTANCE_SUCCESS_NUM);
-                run_jsmind_data2.remove(Const.STRATEGY_INSTANCE_FAILED_NUM);
-                run_jsmind_data2.remove(Const.STRATEGY_INSTANCE_RETRY_COUNT);
-                run_jsmind_data2.remove(Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME);
+                for(String rk: delRunJsmindDataKeys){
+                    run_jsmind_data2.remove(rk);
+                }
 
                 strategyInstance.setRun_jsmind_data(JsonUtil.formatJsonString(run_jsmind_data2));
 
@@ -542,10 +544,9 @@ public class StrategyGroupController extends BaseController {
             for (StrategyInstance strategyInstance:strategyInstances){
                 //重置重试次数
                 Map<String, Object> stringObjectMap = JsonUtil.toJavaMap(strategyInstance.getRun_jsmind_data());
-                stringObjectMap.remove(Const.STRATEGY_INSTANCE_SUCCESS_NUM);
-                stringObjectMap.remove(Const.STRATEGY_INSTANCE_FAILED_NUM);
-                stringObjectMap.remove(Const.STRATEGY_INSTANCE_RETRY_COUNT);
-                stringObjectMap.remove(Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME);
+                for(String rk: delRunJsmindDataKeys){
+                    stringObjectMap.remove(rk);
+                }
 
                 StrategyInstance instance = new StrategyInstance();
                 instance.setId(strategyInstance.getId());

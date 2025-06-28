@@ -113,9 +113,10 @@ public class JobDigitalMarket {
      */
     public static boolean checkTnDepends(StrategyInstance si, Map<String,StrategyInstance> dagStrategyInstance) throws Exception {
         //1 获取对比时间类型,相对或者绝对
-        String tn_type = JsonUtil.toJavaMap(si.getRun_jsmind_data()).getOrDefault("tn_type", "").toString();
-        String tn_unit = JsonUtil.toJavaMap(si.getRun_jsmind_data()).getOrDefault("tn_unit", "").toString();
-        String tn_value = JsonUtil.toJavaMap(si.getRun_jsmind_data()).getOrDefault("tn_value", "").toString();
+        Map<String, Object> run_jsmind_data = JsonUtil.toJavaMap(si.getRun_jsmind_data());
+        String tn_type = run_jsmind_data.getOrDefault("tn_type", "").toString();
+        String tn_unit = run_jsmind_data.getOrDefault("tn_unit", "").toString();
+        String tn_value = run_jsmind_data.getOrDefault("tn_value", "").toString();
         if(StringUtils.isEmpty(tn_value)){
             JobDigitalMarket.insertLog(si,"ERROR","tn模块时间参数不可为空");
             throw new Exception("tn模块时间参数不可为空");
@@ -163,6 +164,12 @@ public class JobDigitalMarket {
                 //校验通过
                 return true;
             }
+            if(executeTime.getTime() - System.currentTimeMillis() > 1000*60*5 ){
+                run_jsmind_data.put(Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME, System.currentTimeMillis()+1000*60*5);
+            }else{
+                run_jsmind_data.put(Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME, System.currentTimeMillis()+(executeTime.getTime() - System.currentTimeMillis()-1000));
+            }
+            si.setRun_jsmind_data(JsonUtil.formatJsonString(run_jsmind_data));
             return false;
 
         }else if(tn_type.equalsIgnoreCase(Const.TN_TYPE_ABSOLUTE)){
@@ -186,6 +193,12 @@ public class JobDigitalMarket {
             if(currentDate.getTime()>=start && currentDate.getTime()<=end){
                 return true;
             }
+            if(start - System.currentTimeMillis() > 1000*60*5 ){
+                run_jsmind_data.put(Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME, System.currentTimeMillis()+1000*60*5);
+            }else{
+                run_jsmind_data.put(Const.STRATEGY_INSTANCE_DOUBLECHECK_TIME, System.currentTimeMillis()+(start - System.currentTimeMillis()-1000));
+            }
+            si.setRun_jsmind_data(JsonUtil.formatJsonString(run_jsmind_data));
             return false;
         }
         return false;

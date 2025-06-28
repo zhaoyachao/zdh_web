@@ -164,7 +164,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                         if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                             continue;
                         }
-                        if(tl.getInstance_type().equalsIgnoreCase("tn")) {
+                        if(tl.getInstance_type().equalsIgnoreCase(InstanceType.TN.getValue())) {
                             boolean is_run = JobDigitalMarket.checkTnDepends(tl, dagStrategyInstance);
                             if (is_run || tl.getIs_disenable().equalsIgnoreCase(Const.TRUR)) {
                                 //可执行,或者跳过任务(策略的跳过-通过is_disenable实现),更新任务状态为完成
@@ -174,6 +174,9 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                                 JobDigitalMarket.insertLog(tl, "INFO", "当前策略任务:" + tl.getId() + ",检查完成:" + tl.getStatus());
                                 continue;
                             }else{
+                                tl.setStatus(JobStatus.CHECK_DEP.getValue());
+                                JobDigitalMarket.updateTaskLog(tl, sim);
+                                JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",检查TN时间不满足,当前不可运行");
                                 continue;
                             }
                         }
@@ -237,7 +240,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 
                         if(is_run){
                             //检查是否tn策略,tn策略动态判断当前时间是否可执行
-                            if(tl.getInstance_type().equalsIgnoreCase("tn")){
+                            if(tl.getInstance_type().equalsIgnoreCase(InstanceType.TN.getValue())){
                                 is_run = JobDigitalMarket.checkTnDepends(tl, dagStrategyInstance);
                                 if(is_run || tl.getIs_disenable().equalsIgnoreCase(Const.TRUR)){
                                     //可执行,或者跳过任务(策略的跳过-通过is_disenable实现),更新任务状态为完成

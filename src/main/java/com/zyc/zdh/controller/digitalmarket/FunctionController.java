@@ -30,10 +30,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.io.File;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 函数信息服务
@@ -335,12 +332,32 @@ public class FunctionController extends BaseController {
             List<String> params = new ArrayList<>();
             for(int i=0;i<jsonArray.size();i++){
                 String param_code = jsonArray.get(i).getOrDefault("param_code", "").toString();
-                objectMap.put(param_code, param_value[i]);
+                String param_type = jsonArray.get(i).getOrDefault("param_type", "").toString();
+                if(param_type.equalsIgnoreCase("int")){
+                    objectMap.put(param_code, Integer.valueOf(param_value[i]));
+                }else if(param_type.equalsIgnoreCase("long")){
+                    objectMap.put(param_code, Long.valueOf(param_value[i]));
+                }else if(param_type.equalsIgnoreCase("boolean")){
+                    objectMap.put(param_code, Boolean.valueOf(param_value[i]));
+                }else if(param_type.equalsIgnoreCase("array")){
+                    objectMap.put(param_code, param_value[i].split(","));
+                }else if(param_type.equalsIgnoreCase("map")){
+                    objectMap.put(param_code, JsonUtil.toJavaMap(param_value[i]));
+                }else if(param_type.equalsIgnoreCase("object")){
+                    objectMap.put(param_code, (Object)param_value[i]);
+                }else if(param_type.equalsIgnoreCase("list")){
+                    objectMap.put(param_code, JsonUtil.toJavaList(param_value[i]));
+                }else if(param_type.equalsIgnoreCase("set")){
+                    objectMap.put(param_code, JsonUtil.toJavaBean(param_value[i], Set.class));
+                }else{
+                    objectMap.put(param_code, param_value[i]);
+                }
+
                 params.add(param_code);
             }
 
             if(!StringUtils.isEmpty(function_class)){
-                String[] function_packages = function_class.split(",");
+                String[] function_packages = function_class.split("\\.");
                 String clsName = ArrayUtil.get(function_packages, function_packages.length-1);
                 String clsInstanceName = StringUtils.uncapitalize(clsName);
 
@@ -351,18 +368,20 @@ public class FunctionController extends BaseController {
                     Object clsInstance = cls.newInstance();
                     objectMap.put(clsInstanceName, clsInstance);
                     function_script = clsInstanceName+"."+function_name+"("+StringUtils.join(params, ",")+")";
+                    LogUtil.info(this.getClass(), "function_script: {}, param: {}", function_script, JsonUtil.formatJsonString(objectMap));
                     Object ret = GroovyFactory.execExpress(function_script, objectMap);
                     return ReturnInfo.buildSuccess(ret);
                 }else{
                     Object clsInstance = ClassLoaderUtil.loadClass(function_class).newInstance();
                     objectMap.put(clsInstanceName, clsInstance);
                     function_script = clsInstanceName+"."+function_name+"("+StringUtils.join(params, ",")+")";
+                    LogUtil.info(this.getClass(), "function_script: {}, param: {}", function_script, JsonUtil.formatJsonString(objectMap));
                     Object ret = GroovyFactory.execExpress(function_script, objectMap);
                     return ReturnInfo.buildSuccess(ret);
                 }
             }
             if(!StringUtils.isEmpty(function_script)){
-
+                LogUtil.info(this.getClass(), "function_script: {}, param: {}", function_script, JsonUtil.formatJsonString(objectMap));
                 Object ret = GroovyFactory.execExpress(function_script, function_name, objectMap);
                 return ReturnInfo.buildSuccess(ret);
             }

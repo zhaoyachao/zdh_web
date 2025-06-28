@@ -687,6 +687,9 @@
   
   + v5.6.11 [zdh_web]优化代码
   + v5.6.11 [zdh_web]营销模块支持异步任务
+  
+  + v5.6.12 [zdh_web]函数管理支持新的类型
+  + v5.6.12 [zdh_web]修复内部函数执行时类型异常bug
 
   
 # 版本迁移步骤  
@@ -3576,4 +3579,7 @@
     
 ## 5.6.10迁移5.6.11
     alter table push_template_info add column push_msg_type varchar(64) NOT NULL DEFAULT '' COMMENT '消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他';
-    update push_template_info set push_msg_type=push_type;    
+    update push_template_info set push_msg_type=push_type;  
+    
+## 5.6.11迁移5.6.12
+    无改动      

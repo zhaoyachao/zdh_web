@@ -184,6 +184,9 @@ public class Const {
     public static String STRATEGY_INSTANCE_DOUBLECHECK_TIME = "doublecheck_time";
     public static String STRATEGY_INSTANCE_SUCCESS_NUM = "success_num";
     public static String STRATEGY_INSTANCE_FAILED_NUM = "failed_num";
+    public static String STRATEGY_INSTANCE_ASYNC_TASK_ID = "async_task_id";
+    public static String STRATEGY_INSTANCE_ASYNC_TASK_STATUS = "async_task_status";
+    public static String STRATEGY_INSTANCE_ASYNC_TASK_EXT = "async_task_ext";
 
 
     public static String getEnumName(String type,String code){

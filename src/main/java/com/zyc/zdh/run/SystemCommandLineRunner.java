@@ -601,7 +601,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         Example example=new Example(QuartzJobInfo.class);
 
                         Example.Criteria criteria = example.createCriteria();
-                        criteria.andIn("job_type", Arrays.asList(new String[]{JobType.CHECK.getCode(),JobType.RETRY.getCode()}));
+                        criteria.andIn("job_type", Arrays.asList(new String[]{JobType.CHECK.getCode(),JobType.RETRY.getCode(),JobType.EMAIL.getCode()}));
 
                         List<QuartzJobInfo> quartzJobInfos = quartzJobMapper.selectByExample(example);
 
@@ -611,6 +611,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                 TriggerKey triggerKey = new TriggerKey(quartzJobInfo.getJob_id(), quartzJobInfo.getEtl_task_id());
                                 Trigger.TriggerState triggerState = schedulerFactoryBean.getScheduler().getTriggerState(triggerKey);
                                 if(triggerState == null || triggerState.equals(Trigger.TriggerState.NONE)){
+                                    LogUtil.info(this.getClass(), "异步检查基础quartz任务【"+quartzJobInfo.getJob_type()+"】,未启用");
                                     Object alarmUserStr = ConfigUtil.getParamUtil().getValue(ConfigUtil.getValue(ConfigUtil.ZDP_PRODUCT), Const.SYSTEM_ALARM_USER);
                                     if(alarmUserStr != null){
                                         String[] alarmUsers = alarmUserStr.toString().split(",");
