@@ -883,7 +883,7 @@ public class PermissionController extends BaseController {
         try{
             List<UserResourceInfo2> uris = new ArrayList<>();
             String user_account = getUser().getUserName();
-            String product_code = ConfigUtil.getValue(ConfigUtil.ZDP_PRODUCT, "zdh");
+            String product_code = getUser().getProduct_code();
             uris = resourceTreeMapper.selectResourceByUserAccount(user_account, product_code);
             uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
             return ReturnInfo.buildSuccess(uris);

@@ -388,6 +388,15 @@
                 if(value == "email"){
                     context = "邮件";
                 }
+                if(value == "miniprogram"){
+                    context = "小程序";
+                }
+                if(value == "feishurobot"){
+                    context = "飞书机器人";
+                }
+                if(value == "feishu"){
+                    context = "飞书";
+                }
 
                 return [
                     '<div style="text-align:center" >'+

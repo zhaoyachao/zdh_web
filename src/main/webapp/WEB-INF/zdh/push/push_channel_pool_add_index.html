@@ -136,6 +136,39 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">微信公众号</label>
+                            <div class="col-sm-10">
+                                <select id="wechatofficialaccount_channel_config" name="wechatofficialaccount_channel_config" multiple
+                                        data-placeholder="选择通道..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">飞书机器人通道</label>
+                            <div class="col-sm-10">
+                                <select id="feishurobot_channel_config" name="feishurobot_channel_config" multiple
+                                        data-placeholder="选择通道..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">飞书通道</label>
+                            <div class="col-sm-10">
+                                <select id="feishu_channel_config" name="feishu_channel_config" multiple
+                                        data-placeholder="选择通道..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">其他参数</label>
                             <div class="col-sm-10">
                                 <textarea id="params" name="params" class="form-control" rows="5" placeholder="其他参数,k1=v1 结构,多个参数换行"></textarea>
@@ -266,6 +299,9 @@
             init_push_channel('email_channel_config', "email");
             init_push_channel('app_channel_config', "app");
             init_push_channel('miniprogram_channel_config', "miniprogram");
+            init_push_channel('wechatofficialaccount_channel_config', "wechatofficialaccount");
+            init_push_channel('feishurobot_channel_config', "feishurobot");
+            init_push_channel('feishu_channel_config', "feishu");
             //init_job_sources();
             //s.id=-1 表示新增,否则表示更新
             if(s.id==-1){
@@ -323,6 +359,15 @@
                         $("#email_channel_config").val(pool_config.email_config);
                         $("#email_channel_config").trigger("chosen:updated");
 
+                        $("#wechatofficialaccount_channel_config").val(pool_config.wechatofficialaccount_config);
+                        $("#wechatofficialaccount_channel_config").trigger("chosen:updated");
+
+                        $("#feishurobot_channel_config").val(pool_config.feishurobot_config);
+                        $("#feishurobot_channel_config").trigger("chosen:updated");
+
+                        $("#feishu_channel_config").val(pool_config.feishu_config);
+                        $("#feishu_channel_config").trigger("chosen:updated");
+
                         $("#params").val(pool_config.params);
 
                     },
@@ -347,6 +392,9 @@
             "email_config": $("#email_channel_config").val(),
             "app_config": $("#app_channel_config").val(),
             "miniprogram_config": $("#miniprogram_channel_config").val(),
+            "wechatofficialaccount_config": $("#wechatofficialaccount_channel_config").val(),
+            "feishurobot_config": $("#feishurobot_channel_config").val(),
+            "feishu_config": $("#feishu_channel_config").val(),
             "params": $("#params").val(),
         };
 

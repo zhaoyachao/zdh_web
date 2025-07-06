@@ -18,12 +18,6 @@ public class RoleResourceInfo extends BaseProductAuthInfo{
 	@Column
    	private String id;
  	/**
- 	* 角色id
-	 * 废弃-role_code可做唯一标识
- 	*/
- 	@Deprecated
-   	private String role_id;
- 	/**
  	* 资源id
  	*/
    	private String resource_id;
@@ -58,14 +52,6 @@ public class RoleResourceInfo extends BaseProductAuthInfo{
 	public void setId(String id) {
 		this.id = id;
 	}
-
-    public String getRole_id() {
-        return role_id;
-    }
-
-    public void setRole_id(String role_id) {
-        this.role_id = role_id;
-    }
 
     public String getResource_id() {
 		return resource_id;

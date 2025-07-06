@@ -1,11 +1,10 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.dao.ProductTagMapper;
-import com.zyc.zdh.entity.ProductTagInfo;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
+import com.zyc.zdh.dao.*;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 产品标识服务
@@ -31,6 +32,21 @@ public class ProductTagController extends BaseController {
 
     @Autowired
     private ProductTagMapper productTagMapper;
+
+    @Autowired
+    private ResourceTreeMapper resourceTreeMapper;
+
+    @Autowired
+    private RoleDao roleDao;
+
+    @Autowired
+    private RoleResourceMapper roleResourceMapper;
+
+    @Autowired
+    private PermissionDimensionMapper permissionDimensionMapper;
+
+    @Autowired
+    private PermissionDimensionValueMapper permissionDimensionValueMapper;
 
     /**
      * 产品列表首页
@@ -207,10 +223,131 @@ public class ProductTagController extends BaseController {
             productTagInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             productTagInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             productTagMapper.insertSelective(productTagInfo);
+
+            //同步默认产品zdh产品下的所有资源
+            Example example=new Example(ResourceTreeInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("product_code", ConfigUtil.getProductCode());
+            List<ResourceTreeInfo> resourceTreeInfos = resourceTreeMapper.selectByExample(example);
+            Map<String, String> idMap = new HashMap<>();
+            for(ResourceTreeInfo resourceTreeInfo: resourceTreeInfos){
+                idMap.put(resourceTreeInfo.getId(), String.valueOf(SnowflakeIdWorker.getInstance().nextId()));
+                resourceTreeInfo.setProduct_code(productTagInfo.getProduct_code());
+            }
+
+            for(ResourceTreeInfo resourceTreeInfo: resourceTreeInfos){
+                resourceTreeInfo.setId(idMap.get(resourceTreeInfo.getId()));
+                if(!resourceTreeInfo.getLevel().equalsIgnoreCase("1")){
+                    //根节点,不修改父节点
+                    resourceTreeInfo.setParent(idMap.get(resourceTreeInfo.getParent()));
+                }else{
+                    resourceTreeInfo.setText(productTagInfo.getProduct_code());
+                }
+                resourceTreeInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                resourceTreeInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                resourceTreeMapper.insertSelective(resourceTreeInfo);
+            }
+
+            //同步默认产品zdh产品下的所有的角色
+            Example exampleRole=new Example(RoleInfo.class);
+            Example.Criteria criteriaRole=exampleRole.createCriteria();
+            criteriaRole.andEqualTo("product_code", ConfigUtil.getProductCode());
+            List<RoleInfo> roleInfos = roleDao.selectByExample(exampleRole);
+            for(RoleInfo roleInfo: roleInfos){
+                idMap.put(roleInfo.getId(),  String.valueOf(SnowflakeIdWorker.getInstance().nextId()));
+                roleInfo.setProduct_code(productTagInfo.getProduct_code());
+                roleInfo.setId(idMap.get(roleInfo.getId()));
+                roleInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                roleInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                roleDao.insert(roleInfo);
+            }
+
+            //同步角色和资源
+            Example exampleRoleResource=new Example(RoleResourceInfo.class);
+            Example.Criteria criteriaRoleResource=exampleRoleResource.createCriteria();
+            criteriaRoleResource.andEqualTo("product_code", ConfigUtil.getProductCode());
+            List<RoleResourceInfo> roleResourceInfos = roleResourceMapper.selectByExample(exampleRoleResource);
+
+            for(RoleResourceInfo roleResourceInfo: roleResourceInfos){
+                idMap.put(roleResourceInfo.getId(), String.valueOf(SnowflakeIdWorker.getInstance().nextId()));
+                roleResourceInfo.setProduct_code(productTagInfo.getProduct_code());
+                roleResourceInfo.setId(null);
+                roleResourceInfo.setResource_id(idMap.get(roleResourceInfo.getResource_id()));
+                roleResourceInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                roleResourceInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                roleResourceMapper.insert(roleResourceInfo);
+            }
+
+            //同步维度信息
+            Example examplePermissionDimension=new Example(PermissionDimensionInfo.class);
+            Example.Criteria criteriaPermissionDimension=examplePermissionDimension.createCriteria();
+            criteriaPermissionDimension.andEqualTo("product_code", ConfigUtil.getProductCode());
+            List<PermissionDimensionInfo> permissionDimensionInfos = permissionDimensionMapper.selectByExample(examplePermissionDimension);
+            for(PermissionDimensionInfo permissionDimensionInfo: permissionDimensionInfos){
+                //idMap.put(permissionDimensionInfo.getId(), String.valueOf(SnowflakeIdWorker.getInstance().nextId()));
+                //permissionDimensionInfo.setId(idMap.get(permissionDimensionInfo.getId()));
+                permissionDimensionInfo.setId(null);
+                permissionDimensionInfo.setProduct_code(productTagInfo.getProduct_code());
+                permissionDimensionInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                permissionDimensionInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                permissionDimensionMapper.insert(permissionDimensionInfo);
+            }
+
+            //新增基础维度值
+            PermissionDimensionValueInfo permissionDimensionValueInfoRoot = new PermissionDimensionValueInfo();
+            permissionDimensionValueInfoRoot.setIs_delete(Const.NOT_DELETE);
+            permissionDimensionValueInfoRoot.setDim_code(Const.PERMISSION_DIM_PRODUCT_CODE);
+            permissionDimensionValueInfoRoot.setProduct_code(productTagInfo.getProduct_code());
+            permissionDimensionValueInfoRoot.setParent_dim_value_code("#");
+            permissionDimensionValueInfoRoot.setOwner(getOwner());
+            permissionDimensionValueInfoRoot.setDim_value_code(Const.PERMISSION_DIM_PRODUCT_CODE);
+            permissionDimensionValueInfoRoot.setDim_value_name(Const.PERMISSION_DIM_PRODUCT_CODE);
+            permissionDimensionValueInfoRoot.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            permissionDimensionValueInfoRoot.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+
+            PermissionDimensionValueInfo permissionDimensionValueInfo = new PermissionDimensionValueInfo();
+            permissionDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
+            permissionDimensionValueInfo.setDim_code(Const.PERMISSION_DIM_PRODUCT_CODE);
+            permissionDimensionValueInfo.setProduct_code(productTagInfo.getProduct_code());
+            permissionDimensionValueInfo.setParent_dim_value_code(Const.PERMISSION_DIM_PRODUCT_CODE);
+            permissionDimensionValueInfo.setOwner(getOwner());
+            permissionDimensionValueInfo.setDim_value_code(productTagInfo.getProduct_code());
+            permissionDimensionValueInfo.setDim_value_name(productTagInfo.getProduct_name());
+            permissionDimensionValueInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            permissionDimensionValueInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+
+            PermissionDimensionValueInfo permissionDimensionValueInfoDimGroupRoot = new PermissionDimensionValueInfo();
+            permissionDimensionValueInfoDimGroupRoot.setIs_delete(Const.NOT_DELETE);
+            permissionDimensionValueInfoDimGroupRoot.setDim_code(Const.PERMISSION_DIM_GROUP_CODE);
+            permissionDimensionValueInfoDimGroupRoot.setProduct_code(productTagInfo.getProduct_code());
+            permissionDimensionValueInfoDimGroupRoot.setParent_dim_value_code("#");
+            permissionDimensionValueInfoDimGroupRoot.setOwner(getOwner());
+            permissionDimensionValueInfoDimGroupRoot.setDim_value_code(Const.PERMISSION_DIM_GROUP_CODE);
+            permissionDimensionValueInfoDimGroupRoot.setDim_value_name(Const.PERMISSION_DIM_GROUP_CODE);
+            permissionDimensionValueInfoDimGroupRoot.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            permissionDimensionValueInfoDimGroupRoot.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+
+            PermissionDimensionValueInfo permissionDimensionValueInfoDimGroup = new PermissionDimensionValueInfo();
+            permissionDimensionValueInfoDimGroup.setIs_delete(Const.NOT_DELETE);
+            permissionDimensionValueInfoDimGroup.setDim_code(Const.PERMISSION_DIM_GROUP_CODE);
+            permissionDimensionValueInfoDimGroup.setProduct_code(productTagInfo.getProduct_code());
+            permissionDimensionValueInfoDimGroup.setParent_dim_value_code(Const.PERMISSION_DIM_GROUP_CODE);
+            permissionDimensionValueInfoDimGroup.setOwner(getOwner());
+            permissionDimensionValueInfoDimGroup.setDim_value_code("group_test");
+            permissionDimensionValueInfoDimGroup.setDim_value_name("测试组");
+            permissionDimensionValueInfoDimGroup.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            permissionDimensionValueInfoDimGroup.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+
+            permissionDimensionValueMapper.insertSelective(permissionDimensionValueInfoRoot);
+            permissionDimensionValueMapper.insertSelective(permissionDimensionValueInfo);
+            permissionDimensionValueMapper.insertSelective(permissionDimensionValueInfoDimGroupRoot);
+            permissionDimensionValueMapper.insertSelective(permissionDimensionValueInfoDimGroup);
+
             //创建产品资源
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", null);
         } catch (Exception e) {
             LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新增失败", e);
         }
     }
@@ -234,6 +371,7 @@ public class ProductTagController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
         } catch (Exception e) {
             LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }

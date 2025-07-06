@@ -690,6 +690,10 @@
   
   + v5.6.12 [zdh_web]函数管理支持新的类型
   + v5.6.12 [zdh_web]修复内部函数执行时类型异常bug
+  
+  + v5.6.13 [zdh_web]多产品权限独立拆分
+  + v5.6.13 [zdh_web]推送服务-新增飞书推送方式(未完全完成)
+  + v5.6.13 [zdh_web]营销模块优化
 
   
 # 版本迁移步骤  
@@ -3582,4 +3586,43 @@
     update push_template_info set push_msg_type=push_type;  
     
 ## 5.6.11迁移5.6.12
-    无改动      
+    无改动 
+    
+## 5.6.12迁移5.6.13
+    INSERT INTO function_info
+    (id, function_context, function_name, function_class, function_load_path, function_scope, param_json, function_script, return_type, status, product_code, owner, create_time, update_time, is_delete)
+    VALUES(1383491039670571008, '字符串是否为空', 'isEmpty', 'org.apache.commons.lang3.StringUtils', '', '', '[{"param_code":"str","param_context":"输入字符串","param_type":"string"}]', '', 'boolean', 'off', 'zdh', 'zyc', '2025-06-14 16:59:28', '2025-06-14 16:59:45', '0');
+    INSERT INTO function_info
+    (id, function_context, function_name, function_class, function_load_path, function_scope, param_json, function_script, return_type, status, product_code, owner, create_time, update_time, is_delete)
+    VALUES(1383491376720646144, '去除字符串左右空格', 'trim', 'org.apache.commons.lang3.StringUtils', '', '', '[{"param_code":"str","param_context":"输入字符串","param_type":"string"}]', '', 'string', 'off', 'zdh', 'zyc', '2025-06-14 17:00:48', '2025-06-14 17:00:48', '0');
+    INSERT INTO function_info
+    (id, function_context, function_name, function_class, function_load_path, function_scope, param_json, function_script, return_type, status, product_code, owner, create_time, update_time, is_delete)
+    VALUES(1383491918477922304, '判断字符所在位置', 'indexOf', 'org.apache.commons.lang3.StringUtils', '', '', '[{"param_code":"str","param_context":"输入字符串","param_type":"string"},{"param_code":"serach","param_context":"搜索字符串","param_type":"string"}]', '', 'int', 'off', 'zdh', 'zyc', '2025-06-14 17:02:57', '2025-06-14 17:02:57', '0');
+    INSERT INTO function_info
+    (id, function_context, function_name, function_class, function_load_path, function_scope, param_json, function_script, return_type, status, product_code, owner, create_time, update_time, is_delete)
+    VALUES(1386835334133714944, '移除字符串两端的空白(如空格、制表符、换行符等)', 'strip', 'org.apache.commons.lang3.StringUtils', '', '', '[{"param_code":"str","param_context":"输入字符串","param_type":"string"}]', '', 'string', 'off', 'zdh', 'zyc', '2025-06-23 22:28:30', '2025-06-23 22:28:30', '0');
+    INSERT INTO function_info
+    (id, function_context, function_name, function_class, function_load_path, function_scope, param_json, function_script, return_type, status, product_code, owner, create_time, update_time, is_delete)
+    VALUES(1386835658823176192, '字符串比较', 'compare', 'org.apache.commons.lang3.StringUtils', '', '', '[{"param_code":"str","param_context":"输入字符串","param_type":"string"},{"param_code":"str2","param_context":"输入字符串","param_type":"string"}]', '/**
+    函数使用说明
+    参数str和str2 比较大小, str 大于 str2 返回正数, str 小于 str2 返回负数 相等返回0
+    **/', 'int', 'off', 'zdh', 'zyc', '2025-06-23 22:29:47', '2025-06-23 22:34:56', '0');
+    INSERT INTO function_info
+    (id, function_context, function_name, function_class, function_load_path, function_scope, param_json, function_script, return_type, status, product_code, owner, create_time, update_time, is_delete)
+    VALUES(1386837272409673728, '字符串比较(忽略大小写)', 'compareIgnoreCase', 'org.apache.commons.lang3.StringUtils', '', '', '[{"param_code":"str","param_context":"输入字符串","param_type":"string"},{"param_code":"str2","param_context":"输入字符串","param_type":"string"}]', '/**
+    函数使用说明
+    参数str和str2 比较大小, str 大于 str2 返回正数, str 小于 str2 返回负数 相等返回0
+    **/', 'int', 'off', 'zdh', 'zyc', '2025-06-23 22:36:12', '2025-06-23 22:36:12', '0');
+    INSERT INTO function_info
+    (id, function_context, function_name, function_class, function_load_path, function_scope, param_json, function_script, return_type, status, product_code, owner, create_time, update_time, is_delete)
+    VALUES(1386837989430136832, '字符串截取', 'substring', 'org.apache.commons.lang3.StringUtils', '', '', '[{"param_code":"str","param_context":"输入字符串","param_type":"string"},{"param_code":"start","param_context":"开始位置","param_type":"int"}]', '/**
+    函数使用说明
+    截取字符串 例子
+         * StringUtils.substring(null, *)   = null
+         * StringUtils.substring("", *)     = ""
+         * StringUtils.substring("abc", 0)  = "abc"
+         * StringUtils.substring("abc", 2)  = "c"
+         * StringUtils.substring("abc", 4)  = ""
+         * StringUtils.substring("abc", -2) = "bc"
+         * StringUtils.substring("abc", -4) = "abc"
+    **/', 'string', 'off', 'zdh', 'zyc', '2025-06-23 22:39:03', '2025-06-23 22:39:03', '0');    

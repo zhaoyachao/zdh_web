@@ -1,6 +1,7 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.google.common.collect.Lists;
 import com.zyc.zdh.dao.PermissionMapper;
 import com.zyc.zdh.dao.ProductTagMapper;
 import com.zyc.zdh.entity.*;
@@ -148,6 +149,11 @@ public class LoginController extends BaseController{
             pui.setEnable(Const.FALSE);
 
             if(ConfigUtil.getValue(ConfigUtil.ZDP_AUTO_ENABLE_PRODUCT,"").equalsIgnoreCase(product_code)){
+                pui.setEnable(Const.TRUR);
+            }
+
+            //管理员用户自动启用
+            if(Lists.newArrayList(productTagInfo1.getProduct_admin().split(",")).contains(user.getUserName())){
                 pui.setEnable(Const.TRUR);
             }
 

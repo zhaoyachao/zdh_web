@@ -235,10 +235,10 @@
 ![风控引擎配置界面](img/risk_engine.jpg)
 
 # 交流群
-<img src="img/qq.jpg" alt="qq" width="300" height="300">
+<img src="img/qq.jpg" alt="qq" width="300" height="400">
 
 # 支持&赞赏
    如果当前项目对你有帮助或者提供便利, 你的赞赏会给作者带来更多的动力  
-<img src="img/vx打赏.jpg" alt="vx" width="300" height="300">
+<img src="img/vx打赏.jpg" alt="vx" width="300" height="400">
  
  

@@ -146,6 +146,8 @@ public class Const {
     public static String PERMISSION_APPLY_TYPE_DATA_GROUP="data_group";//申请数据组
     public static String PERMISSION_APPLY_TYPE_PRODUCT_ADMIN="product_admin";//申请产品管理员
 
+    public static String PERMISSION_DIM_PRODUCT_CODE = "dim_product";
+    public static String PERMISSION_DIM_GROUP_CODE = "dim_group";
 
     public static String LOG_MYSQL="mysql";//
     public static String LOG_MONGODB="mongodb";//

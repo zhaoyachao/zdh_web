@@ -115,6 +115,8 @@
                                     <input id="check_meizu" name="check_meizu"  type="checkbox"><i></i> 魅族</label>
                                 <label class="no-padding">
                                     <input id="check_apple" name="check_apple"  type="checkbox"><i></i> APPLE</label>
+                                <label class="no-padding">
+                                    <input id="check_jpush" name="check_jpush"  type="checkbox"><i></i> JPUSH</label>
                             </div>
                         </div>
 
@@ -138,6 +140,8 @@
                                         <li class="tab_li"  id="check_meizu_li"><a data-toggle="tab" href="#check_meizu_tab" aria-expanded="false">魅族</a>
                                         </li>
                                         <li class="tab_li"  id="check_apple_li"><a data-toggle="tab" href="#check_apple_tab" aria-expanded="false">APPLE</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_jpush_li"><a data-toggle="tab" href="#check_jpush_tab" aria-expanded="false">极光</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content">
@@ -352,6 +356,35 @@
                                             </div>
                                         </div>
 
+                                        <div id="check_jpush_tab" class="tab-pane active">
+                                            <div class="panel-body">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="jpush_appid" name="jpush_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">AK</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="jpush_ak" name="jpush_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">SK</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="jpush_sk" name="meizu_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">包名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="jpush_package" name="jpush_package" class="form-control" type="text" value="" placeholder="包名">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -547,6 +580,9 @@
             $('#check_apple_tab').addClass("active");
             $('#check_apple_tab').removeClass("active");
 
+            $('#check_jpush_tab').addClass("active");
+            $('#check_jpush_tab').removeClass("active");
+
             if(s.id !='-1'){
                 console.info("更新-拷贝按钮触发");
                 //开始赋值
@@ -635,6 +671,13 @@
                             $("#apple_package").val(data.result.configMap.apple.package);
                         }
 
+                        if(!is_empty(data.result.configMap.jpush)){
+                            $("#jpush_appid").val(data.result.configMap.jpush.appid);
+                            $("#jpush_ak").val(data.result.configMap.jpush.ak);
+                            $("#jpush_sk").val(data.result.configMap.jpush.sk);
+                            $("#jpush_package").val(data.result.configMap.jpush.package);
+                        }
+
                     },
                     error: function (data) {
                         console.info("error: " + data.responseText);
@@ -702,6 +745,13 @@
             "package": $("#apple_package").val()
         };
 
+        var jpush_config = {
+            "appid": $("#jpush_appid").val(),
+            "ak": $("#jpush_ak").val(),
+            "sk": $("#jpush_sk").val(),
+            "package": $("#jpush_package").val()
+        };
+
         var config = {
             "huawei": huawei_config,
             "honor": honor_config,
@@ -710,6 +760,7 @@
             "vivo": vivo_config,
             "meizu": meizu_config,
             "apple": apple_config,
+            "jpush": jpush_config
         };
 
         return config;
@@ -760,6 +811,14 @@
                 company = "apple"
             }else{
                 company = company +",apple"
+            }
+        }
+
+        if($('#check_jpush').is(":checked")){
+            if(is_empty(company)){
+                company = "jpush"
+            }else{
+                company = company +",jpush"
             }
         }
 
