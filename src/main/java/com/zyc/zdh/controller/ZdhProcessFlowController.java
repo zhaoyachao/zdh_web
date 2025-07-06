@@ -8,7 +8,6 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.EmailJob;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.service.ZdhPermissionService;
-import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.HttpUtil;
@@ -48,8 +47,6 @@ public class ZdhProcessFlowController extends BaseController {
     private PermissionController permissionController;
     @Autowired
     private ProductTagMapper productTagMapper;
-    @Autowired
-    private RedisUtil redisUtil;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
 
