@@ -87,9 +87,13 @@
 
                         <div class="form-group">
                             <div class="text-center">
+                                <button id="add_etl_task" name="save_zdh" class="btn btn-primary"
+                                        οnsubmit='return false'
+                                        type="button">入过滤集
+                                </button>
                                 <button id="update_etl_task" name="save_zdh" class="btn btn-primary"
                                         οnsubmit='return false'
-                                        type="button">更新
+                                        type="button">出过滤集
                                 </button>
                                 <button id="reset" class="btn btn-white" type=reset>清空</button>
                             </div>
@@ -207,6 +211,63 @@
     })(document, window, jQuery);
 
 
+    $('#add_etl_task').click(function () {
+
+        if ($('#filter_code').val() == '') {
+            layer.msg("过滤code不能为空！");
+            return;
+        }
+
+        if ($('#filter_name').val() == '') {
+            layer.msg("过滤说明不能为空！");
+            return;
+        }
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        $.ajax({
+            url: server_context+"/filter_add_value",
+            type: 'post',
+            dataType: "json",
+            async: 'false',
+            data: $("#filter_add_form").serialize()+ "&" + "id=" + s.id+"&filter_operate=add",
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_etl_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
+                    return ;
+                }
+                parent.layer.msg(data.msg);
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_etl_task").removeAttr('disabled');
+                layer.error(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    })
+
     $('#update_etl_task').click(function () {
 
         if ($('#filter_code').val() == '') {
@@ -232,7 +293,7 @@
             type: 'post',
             dataType: "json",
             async: 'false',
-            data: $("#filter_add_form").serialize()+ "&" + "id=" + s.id,
+            data: $("#filter_add_form").serialize()+ "&" + "id=" + s.id+"&filter_operate=del",
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交

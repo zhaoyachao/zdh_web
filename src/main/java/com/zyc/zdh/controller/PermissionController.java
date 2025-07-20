@@ -977,14 +977,14 @@ public class PermissionController extends BaseController {
     public ReturnInfo<Object> permission_apply_by_product_code(String product_code, String apply_type) {
 
         Object result=null;
-        if(apply_type.equalsIgnoreCase("role")){
+        if(apply_type.equalsIgnoreCase(Const.PERMISSION_APPLY_TYPE_ROLE)){
             //请求角色
             result = get_role_by_product_code(product_code);
-        }else if(apply_type.equalsIgnoreCase("user_group")){
+        }else if(apply_type.equalsIgnoreCase(Const.PERMISSION_APPLY_TYPE_USER_GROUP)){
             result = get_user_group_by_product_code(product_code);
-        }else if(apply_type.equalsIgnoreCase("data_group")){
+        }else if(apply_type.equalsIgnoreCase(Const.PERMISSION_APPLY_TYPE_DATA_GROUP)){
             result = get_group_by_product_code(product_code);
-        }else if(apply_type.equalsIgnoreCase("product_admin")){
+        }else if(apply_type.equalsIgnoreCase(Const.PERMISSION_APPLY_TYPE_PRODUCT_ADMIN)){
             result = get_productadmin_by_product_code(product_code);
         }else{
 

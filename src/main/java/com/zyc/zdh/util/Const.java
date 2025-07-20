@@ -190,6 +190,9 @@ public class Const {
     public static String STRATEGY_INSTANCE_ASYNC_TASK_STATUS = "async_task_status";
     public static String STRATEGY_INSTANCE_ASYNC_TASK_EXT = "async_task_ext";
 
+    public static String FILTER_OPERATE_ADD = "add";
+    public static String FILTER_OPERATE_DEL = "del";
+
 
     public static String getEnumName(String type,String code){
         Map<String, Map<String, String>> enumMap=new HashMap<>();
