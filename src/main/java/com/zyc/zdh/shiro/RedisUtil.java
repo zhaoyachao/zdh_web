@@ -405,7 +405,7 @@ public class RedisUtil {
 			} else {
 				ValueOperations<String, Object> operations = redisTemplate
 						.opsForValue();
-				operations.set(key, value);
+				operations.set(key, value, expireTime, TimeUnit.DAYS);
 				result = true;
 			}
 			redisTemplate.expire(key, expireTime, TimeUnit.DAYS);
@@ -490,7 +490,7 @@ public class RedisUtil {
 			} else {
 				ValueOperations<String, Object> operations = redisTemplate
 						.opsForValue();
-				operations.set(key, value);
+				operations.set(key, value, expireTime, time);
 				result = true;
 			}
 			redisTemplate.expire(key, expireTime, time);

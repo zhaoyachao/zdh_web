@@ -329,7 +329,7 @@ public class StrategyGroupController extends BaseController {
     @SentinelResource(value = "strategy_group_instance_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/strategy_group_instance_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<PageResult<List<StrategyGroupInstance>>> strategy_group_instance_list(String id, String group_id,String group_context, int limit, int offset) {
+    public ReturnInfo<PageResult<List<StrategyGroupInstance>>> strategy_group_instance_list(String group_id,String group_context, int limit, int offset) {
         try{
             StrategyGroupInstance strategyGroupInstance = new StrategyGroupInstance();
             Example example = new Example(strategyGroupInstance.getClass());
@@ -404,6 +404,53 @@ public class StrategyGroupController extends BaseController {
     }
 
 
+
+    /**
+     * 策略实例更新配置
+     * @return
+     */
+    @RequestMapping(value = "/strategy_group_instance_update_index", method = RequestMethod.GET)
+    public String strategy_group_instance_update_index() {
+
+        return "digitalmarket/strategy_group_instance_update_index";
+    }
+
+    /**
+     * 策略组实例更新
+     * @param strategyGroupInstance
+     * @return
+     */
+    @SentinelResource(value = "strategy_group_instance_update", blockHandler = "handleReturn")
+    @RequestMapping(value = "/strategy_group_instance_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo strategy_group_instance_update(StrategyGroupInstance strategyGroupInstance) {
+        try {
+
+            StrategyGroupInstance newStrategyGroupInstance = new StrategyGroupInstance();
+            StrategyGroupInstance oldStrategyGroupInstance = strategyGroupInstanceMapper.selectByPrimaryKey(strategyGroupInstance.getId());
+
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldStrategyGroupInstance.getProduct_code(), oldStrategyGroupInstance.getDim_group(), getAttrEdit());
+
+            newStrategyGroupInstance.setStart_time(strategyGroupInstance.getStart_time());
+            newStrategyGroupInstance.setEnd_time(strategyGroupInstance.getEnd_time());
+            newStrategyGroupInstance.setExpr(strategyGroupInstance.getExpr());
+            newStrategyGroupInstance.setTime_diff(strategyGroupInstance.getTime_diff());
+            newStrategyGroupInstance.setPriority(strategyGroupInstance.getPriority());
+            newStrategyGroupInstance.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+            newStrategyGroupInstance.setId(oldStrategyGroupInstance.getId());
+
+            strategyGroupInstanceMapper.updateByPrimaryKeySelective(newStrategyGroupInstance);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", newStrategyGroupInstance);
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "更新失败", e);
+        }
+    }
+
+
     /**
      * 策略实例执行日志首页
      * @return
@@ -435,6 +482,8 @@ public class StrategyGroupController extends BaseController {
 
     /**
      * 策略组实例重启
+     * 重启任务组-重启任务组下所有任务
+     * 和重试任务组有部分差异,重试可选择重试的任务
      * @param id
      * @return
      */
@@ -466,12 +515,14 @@ public class StrategyGroupController extends BaseController {
                 Map<String, Object> stringObjectMap = taskMap.get(strategy_id);
                 Map<String, Object> run_jsmind_data2 = JsonUtil.toJavaMap(strategyInstance.getRun_jsmind_data());
 
+                //重置执行中产生的信息
                 for(String rk: delRunJsmindDataKeys){
                     run_jsmind_data2.remove(rk);
                 }
 
                 strategyInstance.setRun_jsmind_data(JsonUtil.formatJsonString(run_jsmind_data2));
 
+                //恢复任务本来配置
                 if(!strategyInstance.getIs_disenable().equalsIgnoreCase(stringObjectMap.getOrDefault("is_disenable", "false").toString())){
                     strategyInstance.setIs_disenable(stringObjectMap.getOrDefault("is_disenable", "false").toString());
                 }
@@ -509,6 +560,7 @@ public class StrategyGroupController extends BaseController {
 
     /**
      * 策略组实例重试
+     * 重试任务组-用户可以选择重试单独任务
      * @param strategy_group_instance_id
      * @param sub_tasks
      * @return
@@ -542,7 +594,7 @@ public class StrategyGroupController extends BaseController {
             }
 
             for (StrategyInstance strategyInstance:strategyInstances){
-                //重置重试次数
+                //重置执行中产生的信息
                 Map<String, Object> stringObjectMap = JsonUtil.toJavaMap(strategyInstance.getRun_jsmind_data());
                 for(String rk: delRunJsmindDataKeys){
                     stringObjectMap.remove(rk);

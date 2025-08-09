@@ -254,7 +254,10 @@
         '<option value="ts">日期时间戳</option>\n'+
         '            </select>\n' +
         '        </div>\n' +
-
+        '        <div class="col-sm-1">\n' +
+        '            <input name="param_value" type="text"\n' +
+        '                   placeholder="参数例子" class="form-control param_value" aria-required="true" value="zdh_param_value">\n' +
+        '        </div>\n' +
         '        <div class="col-sm-1">\n' +
         '            <button id="delete" name="delete" class="btn btn-danger"\n' +
         '                    οnsubmit=\'return false\'\n' +
@@ -290,6 +293,7 @@
                 tmp = tmp.replace("zdh_param_code", "");
                 tmp = tmp.replace("zdh_param_context", "");
                 tmp = tmp.replace("zdh_param_type", "");
+                tmp = tmp.replace("zdh_param_value", "");
                 $('#function_div').append(tmp);
                 $('#function_div #delete').click(function () {
                     $(this).parent().parent().remove();
@@ -352,9 +356,13 @@
                 if(is_empty(param_context)){
                     param_context="";
                 }
+                if(is_empty(param_value)){
+                    param_value="";
+                }
                 var tmp=template;
                 tmp = tmp.replace("zdh_param_code", param_code);
                 tmp = tmp.replace("zdh_param_context", param_context);
+                tmp = tmp.replace("zdh_param_value", param_value);
                 tmp = tmp.replace("zdh_param_type", "zdh_param_type"+i);
                 $('#function_div').append(tmp);
                 $("#zdh_param_type"+i).val(param_type);
@@ -446,6 +454,7 @@
         var ary1 = new Array();
         var ary2 = new Array();
         var ary3 = new Array();
+        var ary4 = new Array();
 
         $(".param_code").each(function(index){
             ary1[index] = $(this).val();
@@ -458,12 +467,17 @@
             ary3[index] =$(this).val();
         });
 
+        $(".param_value").each(function(index){
+            ary4[index] =$(this).val();
+        });
+
         var result = [];
         for (var i=0;i<ary1.length;i++){
             var param={
                 "param_code":ary1[i],
                 "param_context":ary2[i],
-                "param_type":ary3[i]
+                "param_type":ary3[i],
+                "param_value":ary4[i],
             };
             result.push(param);
         }
@@ -530,6 +544,7 @@
         var ary1 = new Array();
         var ary2 = new Array();
         var ary3 = new Array();
+        var ary4 = new Array();
 
         $(".param_code").each(function(index){
             ary1[index] = $(this).val();
@@ -542,12 +557,17 @@
             ary3[index] =$(this).val();
         });
 
+        $(".param_value").each(function(index){
+            ary4[index] =$(this).val();
+        });
+
         var result = [];
         for (var i=0;i<ary1.length;i++){
             var param={
                 "param_code":ary1[i],
                 "param_context":ary2[i],
-                "param_type":ary3[i]
+                "param_type":ary3[i],
+                "param_value":ary4[i],
             };
             result.push(param);
         }

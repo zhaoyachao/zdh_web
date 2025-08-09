@@ -224,6 +224,26 @@
                   }
               });
           },
+          'click #update_srategy_group_instance': function (e, value, row, index) {
+              parent.layer.open({
+                  type: 2,
+                  title: '实例更新配置',
+                  shadeClose: false,
+                  resize: true,
+                  fixed: false,
+                  maxmin: true,
+                  shade: 0.1,
+                  area : ['60%', '80%'],
+                  //area: ['450px', '500px'],
+                  content: server_context+"/strategy_group_instance_update_index?id="+row.id, //iframe的url
+                  end : function () {
+                      console.info("弹框结束");
+                      $('#exampleTableEvents').bootstrapTable('refresh', {
+                          url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
+                      });
+                  }
+              });
+          },
       };
 
       function operateFormatter(value, row, index) {
@@ -344,6 +364,20 @@
             field: 'group_context',
             title: '策略组说明',
             sortable:false
+        },  {
+            field: 'start_time',
+            title: '调 度 开 始 时 间',
+            sortable:true,
+            formatter: function (value, row, index) {
+                return getMyDate(value);
+            }
+        },  {
+            field: 'end_time',
+            title: '调 度 截 止 时 间',
+            sortable:true,
+            formatter: function (value, row, index) {
+                return getMyDate(value);
+            }
         }, {
             field: 'cur_time',
             title: '逻 辑 时 间',
@@ -525,6 +559,7 @@
                     '<button type="button" id="log_txt" class="btn btn-warning btn-xs">组日志</button>'+
                     '<button type="button" id="strategy_instance" class="btn btn-info btn-xs">子任务</button>'+
                     '<button type="button" id="small_flow_rate" class="btn btn-primary btn-xs">小流量</button>'+
+                    '<button type="button" id="update_srategy_group_instance" class="btn btn-primary btn-xs">修改配置</button>'+
                     '</div>'+
                     '</div>'
                 ].join('');

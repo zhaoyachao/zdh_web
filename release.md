@@ -696,6 +696,12 @@
   + v5.6.13 [zdh_web]营销模块优化
   
   + v5.6.14 [zdh_web]风控模块优化
+  
+  + v5.6.16 [zdh_web]优化db链接配置
+  + v5.6.16 [zdh_web]函数管理优化
+  + v5.6.16 [zdh_web]新增策略组实例修改模式
+  + v5.6.16 [zdh_web]zdh_rqueue更新版本
+  + v5.6.16 [zdh_web]营销模块-修改启动脚本(历史部分配置不生效)
 
   
 # 版本迁移步骤  
@@ -3631,3 +3637,16 @@
     
 ## 5.6.13迁移5.6.14
     无改动
+
+## 5.6.14迁移5.6.15
+    无改动
+    
+## 5.6.15迁移5.6.16
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1403688322361987072, '963932648793706496', '策略组实例更新页面', '4', 'zyc', 'fa fa-coffee', '', '70', '1', '2025-08-09 10:36:15', '2025-08-09 10:36:15', 'strategy_group_instance_update_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1403688414485680128, '963932648793706496', '策略组实例更新', '4', 'zyc', 'fa fa-coffee', '', '71', '1', '2025-08-09 10:36:37', '2025-08-09 10:36:37', 'strategy_group_instance_update', '5', '', '', 'zdh', '');
+    
+    

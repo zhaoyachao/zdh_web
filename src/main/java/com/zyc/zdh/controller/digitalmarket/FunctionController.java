@@ -200,7 +200,7 @@ public class FunctionController extends BaseController {
     @RequestMapping(value = "/function_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo<FunctionInfo> function_update(FunctionInfo functionInfo, String[] param_code, String[] param_context, String[] param_type) {
+    public ReturnInfo<FunctionInfo> function_update(FunctionInfo functionInfo, String[] param_code, String[] param_context, String[] param_type, String[] param_value) {
         try {
 
             FunctionInfo oldFunctionInfo = functionMapper.selectByPrimaryKey(functionInfo.getId());
@@ -212,6 +212,7 @@ public class FunctionController extends BaseController {
                     jsonObject.put("param_code", param_code[i]);
                     jsonObject.put("param_context", param_context[i]);
                     jsonObject.put("param_type", param_type[i]);
+                    jsonObject.put("param_value", param_value[i]);
                     jsonArray.add(jsonObject);
                 }
             }
@@ -240,7 +241,7 @@ public class FunctionController extends BaseController {
     @RequestMapping(value = "/function_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo<FunctionInfo> function_add(FunctionInfo functionInfo, String[] param_code, String[] param_context, String[] param_type) {
+    public ReturnInfo<FunctionInfo> function_add(FunctionInfo functionInfo, String[] param_code, String[] param_context, String[] param_type, String[] param_value) {
         try {
             List<Map<String, Object>> jsonArray = JsonUtil.createEmptyListMap();
             if(param_code != null && param_code.length>0){
@@ -249,6 +250,7 @@ public class FunctionController extends BaseController {
                     jsonObject.put("param_code", param_code[i]);
                     jsonObject.put("param_context", param_context[i]);
                     jsonObject.put("param_type", param_type[i]);
+                    jsonObject.put("param_value", param_value[i]);
                     jsonArray.add(jsonObject);
                 }
             }

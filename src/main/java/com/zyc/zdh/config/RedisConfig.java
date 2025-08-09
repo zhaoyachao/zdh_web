@@ -342,13 +342,13 @@ public class RedisConfig extends CachingConfigurerSupport {
 				clusterServersConfig.addNodeAddress("redis://"+hp.split(":")[0]+":"+hp.split(":")[1]);
 			}
 			clusterServersConfig.setScanInterval(5000);
-			clusterServersConfig.setRetryInterval(5000);
-			clusterServersConfig.setRetryAttempts(100000);
+			clusterServersConfig.setRetryInterval(500);
+			clusterServersConfig.setRetryAttempts(10);
 			clusterServersConfig.setPassword(password);
 		}else{
 			config.useSingleServer().
-					setRetryAttempts(100000).
-					setRetryInterval(5000).
+					setRetryAttempts(10).
+					setRetryInterval(500).
 					setAddress("redis://"+hostName+":"+port).
 					setPassword(password);
 		}
