@@ -93,4 +93,8 @@ public class SystemFilterParam implements Serializable {
     public void setEndTime(long endTime) {
         this.endTime = endTime;
     }
+
+    public long getCostTime(){
+        return System.currentTimeMillis() - startTime;
+    }
 }

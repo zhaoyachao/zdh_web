@@ -167,6 +167,9 @@ function doubleclick(id,tp) {
         case "crowd_file":
             doubleclick_crowd_file(id);
             break;
+        case "user_pool":
+            doubleclick_user_pool(id);
+            break;
         case "crowd_rule":
             doubleclick_crowd_rule(id);
             break;
@@ -305,6 +308,66 @@ function doubleclick_crowd_file(id) {
                 set_common(div, div.attr("type"), etl_task_info);
 
                 div.attr("rule_expression_cn",etl_task_info.rule_expression_cn);
+
+                div.css("width","auto");
+                div.css("display","inline-block");
+                div.css("*display","inline");
+                div.css("*zoom","1");
+                div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
+                set_new_title(div, div.attr("type"), etl_task_info);
+                div.css('background', get_color_by_status(etl_task_info.is_disenable));
+            }
+        });
+    });
+}
+
+
+function doubleclick_user_pool(id) {
+    $(id).dblclick(function () {
+        $("#etl_task_text").val("");
+        var div = $(this);
+        var rule_context=div.attr("rule_context");
+        var rule_id=div.attr("rule_id");
+        var map = new Object();
+        map["param_code"] = div.attr("param_code");
+        map["param_type"] = div.attr("param_type");
+        map["param_operate"] =  div.attr("param_operate");
+        map["param_value"] = div.attr("param_value");
+        map["product_code"] =  div.attr("product_code");
+        map["uid_type"] =  div.attr("uid_type");
+        map["source"] =  div.attr("source");
+
+        var url=server_context+'/user_pool_detail.html';
+        if( rule_id == "" || rule_id == undefined ){
+            url=url+"?rule_id=-1";
+        }else{
+            $('#user_pool_param').val(JSON.stringify(map));
+            var base_url = get_common_url(url, div);
+            url=base_url;
+        }
+        layer.open({
+            type: 2,
+            area: ['700px', '450px'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: encodeURI(url),
+            end: function () {
+                console.info("index:doubleclick:"+$("#etl_task_text").val());
+                if($("#etl_task_text").val()==""){
+                    console.info("无修改-不更新");
+                    return ;
+                }
+
+                var etl_task_info=JSON.parse($("#etl_task_text").val());
+                set_common(div, div.attr("type"), etl_task_info);
+
+                div.attr("param_code",etl_task_info.param_code);
+                div.attr("param_type",etl_task_info.param_type);
+                div.attr("param_operate",etl_task_info.param_operate);
+                div.attr("param_value",etl_task_info.param_value);
+                div.attr("product_code",etl_task_info.product_code);
+                div.attr("uid_type",etl_task_info.uid_type);
+                div.attr("source",etl_task_info.source);
 
                 div.css("width","auto");
                 div.css("display","inline-block");

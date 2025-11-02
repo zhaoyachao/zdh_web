@@ -79,6 +79,16 @@ public class CommonController extends BaseController {
     }
 
     /**
+     * 用户池页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/user_pool_detail", method = RequestMethod.GET)
+    public String user_pool_detail() {
+        return "digitalmarket/user_pool_detail";
+    }
+
+    /**
      * 人群运算模板页面
      * @return
      */

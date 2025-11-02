@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>ZDH 客户画像首页</title>
-    <meta name="keywords" content="ZDH 客户画像首页">
-    <meta name="description" content="ZDH 客户画像首页">
+    <title>ZDH 客户管理首页</title>
+    <meta name="keywords" content="ZDH 客户管理首页">
+    <meta name="description" content="ZDH 客户管理首页">
 
     <link rel="shortcut icon" href="img/favicon.ico">
     <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
@@ -27,7 +27,7 @@
         <!-- Panel Other -->
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>画像操作(依赖标签)</h5>
+                <h5>客户列表(独立管理)</h5>
                 <div class="ibox-tools">
                     <a class="collapse-link">
                         <i class="fa fa-chevron-up"></i>
@@ -43,10 +43,10 @@
             </div>
             <div class="ibox-content">
 
-                <form role="form" class="form-inline" id="variable_form">
+                <form role="form" class="form-inline" id="customer_manager_form">
 
                     <div class="form-group">
-                        <div class="input-group" >
+                        <div class="input-group">
                             <select id="product_code" name="product_code"
                                     data-placeholder="产品code...."
                                     class="chosen-select form-control m-b" >
@@ -56,9 +56,21 @@
 
                     <div class="form-group">
                         <div class="input-group" >
-                            <input id="uid" name="uid" class="form-control" type="text" value="" placeholder="用户账号">
+                            <input id="customer_manager_context" name="customer_manager_context" class="form-control" type="text" value="" placeholder="关键字">
                             <span class="add-on"><i class="icon-remove"></i></span>
                             <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select id="label_use_type" name="label_use_type"
+                                    data-placeholder="使用场景,默认不区分...."
+                                    class="chosen-select form-control m-b" >
+                                <option value="" mytype="">不  区  分</option>
+                                <option value="batch" mytype="">值查人</option>
+                                <option value="single" mytype="">人查值</option>
+                            </select>
                         </div>
                     </div>
 
@@ -66,28 +78,29 @@
                         <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
                     </div>
 
-                    <br/>
-
-
-
                 </form>
 
-                <div class="form-group col-sm-12"></div>
                 <div class="row row-lg">
-                    <div class="form-group col-sm-12">
-                                                <textarea id="variable_data"
-                                                          class="form-control" rows="5"
-                                                          placeholder=""></textarea>
-                    </div>
-                    <div class="form-group col-sm-12"></div>
 
-                    <div class="form-group col-sm-12" id="data_div">
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                                <div class="btn-group" id="exampleTableEventsToolbar" role="group">
+                                    <button id="add" type="button" class="btn btn-outline btn-default">
+                                        <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                    </button>
+                                    <button id="remove" type="button" class="btn btn-outline btn-default">
+                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true">
 
+                                </table>
+                            </div>
+                        </div>
+                        <!-- End Example Events -->
                     </div>
                 </div>
-
-
-
             </div>
         </div>
         <!-- End Panel Other -->
@@ -104,55 +117,32 @@
     <!-- 自定义js -->
     <script src="js/content.js?v=1.0.0"></script>
 
-    <script src="js/plugins/chosen/chosen.jquery.js"></script>
 
     <!-- Bootstrap table -->
     <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
 <!--    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>-->
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
     <script src="js/admin/dim_product_common.js"></script>
+
+    <script src="js/digitalmarket/customer_manager.js"></script>
+
 
 <script>
 
-    var template = "                        <div class=\"form-group\">\n" +
-        "                            <label class=\"col-sm-2 control-label\">label_name</label>\n" +
-        "\n" +
-        "                            <div class=\"col-sm-10\">\n" +
-        "                                <input type=\"text\" class=\"form-control\" value='label_value' readonly>\n" +
-        "                            </div>\n" +
-        "                        </div>";
-
     $(document).ready(function () {
 
+        $('#label_use_type').chosen();
+
         $('#search').click(function () {
-            $("#variable_data").val("");
-            $.ajax({
-                url : server_context +"/customer_portrait_detail",
-                data : $('#variable_form').serialize(),
-                type : "post",
-                dataType : "json",
-                success : function(data) {
-                    console.info("success");
-                    if(data.code != "200"){
-                        return ;
-                    }
-                    $("#variable_data").val(JSON.stringify(data.result));
-
-                    $("#data_div").empty();
-                    //动态生成页面
-                    for(var i = 0; i < data.result.length; i ++){
-                        var new_template = template.replace("label_name", data.result[i].label_name).replace("label_value", data.result[i].label_value);
-                        $("#data_div").append(new_template);
-                        $("#data_div").append(" <div class=\"form-group col-sm-12\"></div>");
-                    }
-                },
-                error: function (data) {
-                    console.info("error: " + data.responseText);
-                }
-
+            $('#exampleTableEvents').bootstrapTable('refresh', {
+                url: server_context+"/customer_manager_list?"+$("#customer_manager_form").serialize(),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json"
             });
-        });
+        })
 
     })
 

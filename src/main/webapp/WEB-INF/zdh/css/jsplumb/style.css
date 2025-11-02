@@ -37,6 +37,7 @@ html,body{height:100%;}
 .device .nodecrowd_rulecss{border:green 2px solid;background-color: LightGrey;}
 .device .nodecrowd_filecss{border:lightcoral 2px solid;}
 .device .nodecrowd_operatecss{border:black 2px solid;}
+.device .nodeuser_poolcss{border: #ffdba3 2px solid;}
 
 .device .nodefiltercss{border:dodgerblue 2px solid;}
 .device .nodeshuntcss{border:yellow 2px solid;}
@@ -54,7 +55,7 @@ html,body{height:100%;}
 .device .nodecustom_listcss{border: #FF5722 2px solid;}
 .device .nodefunctioncss{border: #6699ff 2px solid;}
 .device .nodevarpoolcss{border: #7700aa 2px solid;}
-.device .nodevariablecss{border: #ff5500 2px solid;}
+.device .nodevariablecss{border: #9535ff 2px solid;}
 
 .device .nodeflowcss{border:lightskyblue 1px solid;}
 

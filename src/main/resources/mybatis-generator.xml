@@ -64,12 +64,12 @@
 <!--            <property name="enableSubPackages" value="true" />-->
 <!--        </javaClientGenerator>-->
         <!--生成对应表及类名 -->
-<!--        <table tableName="test_info" domainObjectName="TestInfo" mapperName="BaseTestMapper">-->
-<!--            <property name="useActualColumnNames" value="true" />-->
-<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
-<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
-<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
-<!--        </table>-->
+        <table tableName="test_info" domainObjectName="TestInfo" mapperName="BaseTestMapper">
+            <property name="useActualColumnNames" value="true" />
+            <columnOverride column="id" property="id" javaType="java.lang.String"/>
+            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
+            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
+        </table>
 
 <!--        <table tableName="blood_source_info" domainObjectName="BloodSourceInfo" mapperName="BaseBloodSourceMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
@@ -428,12 +428,19 @@
 <!--                        <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--                    </table>-->
 
-                <table tableName="push_channel_pool_info" domainObjectName="PushChannelPoolInfo" mapperName="BasePushChannelPoolMapper">
-                    <property name="useActualColumnNames" value="true" />
-                    <columnOverride column="id" property="id" javaType="java.lang.String"/>
-                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>
-                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>
-                </table>
+<!--                <table tableName="push_channel_pool_info" domainObjectName="PushChannelPoolInfo" mapperName="BasePushChannelPoolMapper">-->
+<!--                    <property name="useActualColumnNames" value="true" />-->
+<!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--                </table>-->
+
+<!--        <table tableName="customer_manager_info" domainObjectName="CustomerManagerInfo" mapperName="BaseCustomerManagerMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
 
     </context>
 </generatorConfiguration>

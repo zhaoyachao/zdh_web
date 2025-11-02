@@ -702,6 +702,11 @@
   + v5.6.16 [zdh_web]新增策略组实例修改模式
   + v5.6.16 [zdh_web]zdh_rqueue更新版本
   + v5.6.16 [zdh_web]营销模块-修改启动脚本(历史部分配置不生效)
+  
+  + v5.6.17 [zdh_web]推送服务-新增通道池
+  + v5.6.17 [zdh_web]营销模块-新增用户画像(适合小数据量客户管理(50w以下))
+  + v5.6.17 [zdh_web]营销模块bug修复
+  
 
   
 # 版本迁移步骤  
@@ -3649,4 +3654,67 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1403688414485680128, '963932648793706496', '策略组实例更新', '4', 'zyc', 'fa fa-coffee', '', '71', '1', '2025-08-09 10:36:37', '2025-08-09 10:36:37', 'strategy_group_instance_update', '5', '', '', 'zdh', '');
     
+## 5.6.16迁移5.6.17
+    CREATE TABLE `customer_manager_info` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `uid` varchar(128) DEFAULT '' COMMENT '用户id',
+      `uid_type` varchar(128) DEFAULT '' COMMENT '用户id类型',
+      `source` varchar(128) DEFAULT '' COMMENT '用户所属平台',
+      `config` mediumtext COMMENT '其他信息--公司,地址等',
+      `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+      `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+      `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+      PRIMARY KEY (`id`),
+      KEY `idx_uid` (`product_code`,`uid`, `source`, `uid_type`),
+      KEY `idx_source` (`product_code`,`source`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户信息表'
+    
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1422877091350712320, '1365697172829376512', '通道池列表查询', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-10-01 09:25:34', '2025-10-01 09:25:34', 'push_channel_pool_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1422877162398027776, '1365697172829376512', '通道池列表分页查询', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-10-01 09:25:51', '2025-10-01 09:25:51', 'push_channel_pool_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1422877265074589696, '1365697172829376512', '通道池新增页面', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-10-01 09:26:16', '2025-10-01 09:26:16', 'push_channel_pool_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1422877363993055232, '1365697172829376512', '通道池明细', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-10-01 09:26:39', '2025-10-01 09:26:39', 'push_channel_pool_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1422877425905176576, '1365697172829376512', '通道池更新', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-10-01 09:26:54', '2025-10-01 09:26:54', 'push_channel_pool_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1422877484621238272, '1365697172829376512', '通道池新增', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-10-01 09:27:08', '2025-10-01 09:27:08', 'push_channel_pool_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1422877546457862144, '1365697172829376512', '通道池删除', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-10-01 09:27:23', '2025-10-01 09:27:23', 'push_channel_pool_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1434473081971150848, '1236335694494830592', '客户列表-查询(不分页)', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2025-11-02 09:23:54', '2025-11-02 09:23:54', 'customer_manager_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1434473152733253632, '1236335694494830592', '客户列表-查询(分页)', '5', 'zyc', 'fa fa-coffee', '', '2', '1', '2025-11-02 09:24:11', '2025-11-02 09:24:11', 'customer_manager_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1434473257246920704, '1236335694494830592', '客户列表-新增页面', '5', 'zyc', 'fa fa-coffee', '', '3', '1', '2025-11-02 09:24:36', '2025-11-02 09:24:36', 'customer_manager_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1434473331142168576, '1236335694494830592', '客户列表-明细', '5', 'zyc', 'fa fa-coffee', '', '4', '1', '2025-11-02 09:24:53', '2025-11-02 09:24:53', 'customer_manager_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1434473386842525696, '1236335694494830592', '客户列表-更新', '5', 'zyc', 'fa fa-coffee', '', '5', '1', '2025-11-02 09:25:07', '2025-11-02 09:25:07', 'customer_manager_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1434473491351998464, '1236335694494830592', '客户列表-新增', '5', 'zyc', 'fa fa-coffee', '', '6', '1', '2025-11-02 09:25:32', '2025-11-02 09:25:32', 'customer_manager_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1434473563259146240, '1236335694494830592', '客户列表-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2025-11-02 09:25:49', '2025-11-02 09:25:49', 'customer_manager_delete', '5', '', '', 'zdh', ''); 
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1434485913282416640, '1251927048050446336', '模板管理-微信公众号模板查询', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2025-11-02 10:14:53', '2025-11-02 10:14:53', 'push_template_wechattemplate_detail', '5', '', '', 'zdh', '');
+
     

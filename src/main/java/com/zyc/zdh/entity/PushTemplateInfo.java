@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Table(name = "push_template_info")
@@ -348,7 +349,7 @@ public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
 
     public Map<String, Object> getConfigMap(){
         if(StringUtils.isEmpty(config)){
-            return new HashMap<String, Object>();
+            return new LinkedHashMap<String, Object>();
         }
         return JsonUtil.toJavaMap(config);
     }

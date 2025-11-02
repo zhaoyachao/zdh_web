@@ -132,7 +132,7 @@ public class AspectConfig implements Ordered {
                 if (e.getMessage().contains("没有权限")) {
                     //MDC.remove("user_id");
                     String uid = getUser() == null ? "" : getUser().getUserName();
-                    LogUtil.error(this.getClass(), "请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】, 当前请求无权限", ipAddr, uid, url, request.getMethod(), reqParam);
+                    LogUtil.error(this.getClass(), "请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】, 耗时:【{}ms】, 当前请求无权限", ipAddr, uid, url, request.getMethod(), reqParam, systemFilterParam.getCostTime());
                     if (request.getMethod().equalsIgnoreCase("get")) {
                         //get请求无权限,返回403
                         return "403";
@@ -147,7 +147,7 @@ public class AspectConfig implements Ordered {
                 if (request.getMethod().equalsIgnoreCase("get")) {
                     //MDC.remove("user_id");
                     String uid = getUser() == null ? "" : getUser().getUserName();
-                    LogUtil.error(this.getClass(), "请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】,当前请求异常,强制跳转404", ipAddr, uid, url, request.getMethod(), reqParam);
+                    LogUtil.error(this.getClass(), "请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】, 耗时:【{}ms】, 当前请求异常,强制跳转404", ipAddr, uid, url, request.getMethod(), reqParam, systemFilterParam.getCostTime());
                     return "404";
                 }
                 LogUtil.error(this.getClass(), e);
@@ -164,7 +164,7 @@ public class AspectConfig implements Ordered {
             }
             Object o = pjp.proceed();
             if (is_operate_log(servletPath)){
-                LogUtil.debug(this.getClass(), "请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,结束", ipAddr, city, uid, url);
+                LogUtil.debug(this.getClass(), "请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】, 耗时:【{}ms】, 结束", ipAddr, city, uid, url, systemFilterParam.getCostTime());
             }
             try {
                 //跳过特殊操作，etlEcharts,getTotalNum,notice_list

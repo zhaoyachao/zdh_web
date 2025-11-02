@@ -115,6 +115,9 @@ public class ConfigUtil {
     public static String ZDH_SPARK_QUEUE_ENABLE = "zdh.spark.queue_enable";
     public static String ZDH_SPARK_QUEUE_PRE_KEY = "zdh.spark.queue_pre_key";
 
+    public static String ZDH_PUSHX_WECHATTEMPLATE_URL = "zdh.pushx.wechattemplate.url";
+    public static String ZDH_PUSHX_SERVICE_KEY = "zdh.pushx.service.key";
+
     public static String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
 
     public static String getProductCode(){

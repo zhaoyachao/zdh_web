@@ -379,18 +379,49 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <label class="col-sm-2 control-label">模板类型</label>
                                                     <div class="col-sm-10">
-                                                        <input id="wechatofficialaccount_title" name="wechatofficialaccount_title" class="form-control" type="text" value="" placeholder="主题">
+                                                        <select id="wechatofficialaccount_channel_template_type" name="wechatofficialaccount_channel_template_type"
+                                                                data-placeholder="选择模板类型...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="1">普通模板</option>
+                                                            <option value="2">订阅模板</option>
+                                                        </select>
                                                     </div>
-
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label class="col-sm-2 control-label">公众号内容</label>
+                                                    <label class="col-sm-2 control-label">跳转链接</label>
                                                     <div class="col-sm-10">
-                                                        <textarea id="wechatofficialaccount_content" name="wechatofficialaccount_content" class="form-control" rows="5" placeholder="这里输入内容" ></textarea>
+                                                        <input id="wechatofficialaccount_channel_url" name="wechatofficialaccount_channel_url" class="form-control" type="text" value="" placeholder="跳转链接">
                                                     </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转小程序页面</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatofficialaccount_channel_miniprogram_page" name="wechatofficialaccount_channel_miniprogram_page" class="form-control" type="text" value="" placeholder="跳转小程序页面">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">公众号模板</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="wechatofficialaccount_channel_template_id" name="wechatofficialaccount_channel_template_id" class="form-control" placeholder="公众号模板">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="wechatofficialaccount_template_search" onclick='getWechatTemplate()' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatofficialaccount_title" name="wechatofficialaccount_title" class="form-control" type="text" value="" placeholder="主题" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" id="wechat_div">
+
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">公众号参数</label>
@@ -420,7 +451,7 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">主题</label>
                                                     <div class="col-sm-10">
-                                                        <input id="feishurobot_title" name="feishurobot_title" class="form-control" type="text" value="" placeholder="主题">
+                                                        <input id="feishurobot_title" name="feishurobot_title" class="form-control" type="text" value="" placeholder="主题" >
                                                     </div>
 
                                                 </div>
@@ -698,6 +729,7 @@
             //$('#channel').chosen();
             //初始化通道code
             function init_push_channel(id, channel_type){
+                $('#wechatofficialaccount_channel_template_type').chosen();
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/push_channel_pool_list",
@@ -815,6 +847,7 @@
             $('#check_feishu_tab').removeClass("active");
 
 
+
             if(s.id !='-1'){
                 console.info("更新-拷贝按钮触发");
                 //开始赋值
@@ -899,16 +932,26 @@
 
                         }
 
-
-
                         if(!is_empty(data.result.configMap.wechatofficialaccount)){
                             $("#wechatofficialaccount_channel_pool").val(data.result.configMap.wechatofficialaccount.channel_pool);
                             $("#wechatofficialaccount_channel_pool").trigger("chosen:updated");
+                            $("#wechatofficialaccount_channel_template_id").val(data.result.configMap.wechatofficialaccount.channel_template_id);
 
+                            $("#wechatofficialaccount_channel_template_type").val(data.result.configMap.wechatofficialaccount.channel_template_type);
+                            $("#wechatofficialaccount_channel_template_type").trigger("chosen:updated");
+
+                            $("#wechatofficialaccount_channel_miniprogram_page").val(data.result.configMap.wechatofficialaccount.channel_miniprogram_page);
+                            $("#wechatofficialaccount_channel_url").val(data.result.configMap.wechatofficialaccount.channel_url);
+
+                            getWechatTemplate();
                             $("#wechatofficialaccount_title").val(data.result.configMap.wechatofficialaccount.title);
-                            $("#wechatofficialaccount_content").val(data.result.configMap.wechatofficialaccount.content);
-                            $("#wechatofficialaccount_params").val(data.result.configMap.wechatofficialaccount.params);
 
+                            var wechatMap = data.result.configMap.wechatofficialaccount.content;
+                            for (const wechatParamEnName in wechatMap) {
+                                var wechatParamValue = wechatMap[wechatParamEnName];
+                                $('#wechat_'+wechatParamEnName).val(wechatParamValue);
+                            }
+                            $("#wechatofficialaccount_params").val(data.result.configMap.wechatofficialaccount.params);
                         }
 
                         if(!is_empty(data.result.configMap.feishurobot)){
@@ -960,6 +1003,58 @@
     })(document, window, jQuery);
 
 
+    var template = "                    <div class=\"form-group col-sm-12\">\n" +
+        "                                                    <label class=\"col-sm-2 control-label wechat_cn_name\">wechat_param_cn_name</label>\n" +
+        "                                                    <div class=\"col-sm-10\">\n" +
+        "                                                         <input id=\"wechat_wechat_param_en_name\" name=\"wechat_param_en_name\" class=\"form-control wechat_en_name\" type=\"text\" value=\"\" placeholder=\"值\">\n" +
+        "                                                    </div>\n" +
+        "                                                </div>";
+    function getWechatTemplate(){
+        var wechat_template_id = $("#wechatofficialaccount_channel_template_id").val();
+        var wechat_template_type = $("#wechatofficialaccount_channel_template_type").val();
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/push_template_wechattemplate_detail",
+            dataType: 'json',
+            async: false, // 同步请求
+            data: {'template_id': wechat_template_id, 'template_type': wechat_template_type},
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#wechatofficialaccount_template_search").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#wechatofficialaccount_title").val(data.result.title);
+
+                $("#wechat_div").empty();
+                for (var i = 0; i < data.result.wechatTemplateContentParams.length; i++) {
+                    var cn_name = data.result.wechatTemplateContentParams[i].cn_name;
+                    var en_name = data.result.wechatTemplateContentParams[i].en_name;
+                    var tmp = template;
+                    tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                    tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                    $('#wechat_div').append(tmp);
+                }
+                $("#save_dispatch_task").removeAttr('disabled');
+            },
+            //处理完成
+            complete: function () {
+                $("#wechatofficialaccount_template_search").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#wechatofficialaccount_template_search").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+    }
 
     function buildConfig(){
         var sms_config = {
@@ -995,10 +1090,22 @@
             "params": $("#miniprogram_params").val()
         };
 
+
+        var contentObj = {};
+        $(".wechat_en_name").each(function(index){
+            var name = $(this).attr('name');
+            var value = $(this).val();
+            contentObj[name] = value;
+        });
+
         var  wechatofficialaccount_config = {
             "channel_pool": $("#wechatofficialaccount_channel_pool").val(),
+            "channel_template_id":  $("#wechatofficialaccount_channel_template_id").val(),
+            "channel_template_type": $("#wechatofficialaccount_channel_template_type").val(),
+            "channel_miniprogram_page": $("#wechatofficialaccount_channel_miniprogram_page").val(),
+            "channel_url": $("#wechatofficialaccount_channel_url").val(),
             "title": $("#wechatofficialaccount_title").val(),
-            "content": $("#wechatofficialaccount_content").val(),
+            "content": contentObj,
             "params": $("#wechatofficialaccount_params").val()
         };
 

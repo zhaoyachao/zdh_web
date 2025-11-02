@@ -144,6 +144,7 @@ public class HttpUtil {
   // 发送POST请求
   public static String postRequest(String path, String mediaType, HttpEntity entity, HttpHost proxy) throws Exception {
       //LogUtil.debug(this.getClass(), "[postRequest] resourceUrl: {}", path);
+    LogUtil.info(HttpUtil.class, "path: {}, param: {}, content-type: {}", path, EntityUtils.toString(entity), mediaType);
     HttpPost post = new HttpPost(path);
     post.addHeader("Content-Type", mediaType);
     post.addHeader("Accept", "application/json");

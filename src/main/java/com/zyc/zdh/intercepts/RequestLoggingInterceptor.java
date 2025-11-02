@@ -51,7 +51,7 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         MDC.remove("user_id");
         MDC.remove("logId");
         if (ex != null) {
-            LogUtil.error(this.getClass(), "Exception occurred during request processing", ex);
+            LogUtil.error(this.getClass(), "Exception occurred during request after processing", ex);
         }
     }
 
@@ -71,7 +71,7 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
 
             SystemConfig.urlThread.set(systemFilterParam);
         }catch (Exception e){
-
+            LogUtil.error(this.getClass(), "Exception occurred during request pre processing", e);
         }
 
     }

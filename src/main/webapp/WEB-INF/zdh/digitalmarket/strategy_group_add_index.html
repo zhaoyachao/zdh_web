@@ -65,6 +65,7 @@
                     <input type="hidden" id="code_text" name="code_text" value="">
                     <input type="hidden" id="function_text" name="function_text" value="">
                     <input type="hidden" id="varpool_param" name="varpool_param" value="">
+                    <input type="hidden" id="user_pool_param" name="user_pool_param" value="">
 
                     <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
                           action="">
@@ -163,6 +164,7 @@
                                             <div class="node nodedata_nodecss" data-type="data_node">在线节点</div>
                                             <div class="node nodelabelcss" data-type="label">标签</div>
                                             <div class="node nodecrowd_filecss" data-type="crowd_file">人群文件</div>
+                                            <div class="node nodeuser_poolcss" data-type="user_pool">用户池</div>
                                             <div class="node nodecrowd_operatecss" data-type="crowd_operate">运算符</div>
                                             <div class="node nodefiltercss" data-type="filter">过滤</div>
                                             <div class="node nodeshuntcss" data-type="shunt">分流器</div>
@@ -411,6 +413,16 @@
             if(tp == "crowd_file"){
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
+            if(tp == "user_pool"){
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+                $("#" + divId).attr("param_code",is_empty(rs.param_code)?"":rs.param_code);
+                $("#" + divId).attr("param_type",is_empty(rs.param_type)?"":rs.param_type);
+                $("#" + divId).attr("param_operate",is_empty(rs.param_operate)?"":rs.param_operate);
+                $("#" + divId).attr("param_value",is_empty(rs.param_value)?"":rs.param_value);
+                $("#" + divId).attr("product_code",is_empty(rs.product_code)?"":rs.product_code);
+                $("#" + divId).attr("uid_type",is_empty(rs.uid_type)?"":rs.uid_type);
+                $("#" + divId).attr("source",is_empty(rs.source)?"":rs.source);
+            }
             if(tp == "crowd_rule"){
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
@@ -583,15 +595,27 @@
                 rule_id: $elem.attr('rule_id'),
                 rule_context:$elem.attr('rule_context'),
 
+                //label
                 label_use_type: $elem.attr('label_use_type'),
                 rule_param: $elem.attr('rule_param'),
 
                 rule_expression_cn: $elem.attr('rule_expression_cn'),
                 rule_expression: $elem.attr('rule_expression'),
 
+                //crowd_file
                 crowd_file_context: $elem.attr('crowd_file_context'),
                 crowd_file: $elem.attr('crowd_file'),
 
+                //user_pool
+                param_code: $elem.attr('param_code'),
+                param_type: $elem.attr('param_type'),
+                param_operate: $elem.attr('param_operate'),
+                param_value: $elem.attr('param_value'),
+                product_code: $elem.attr('product_code'),
+                uid_type: $elem.attr('uid_type'),
+                source: $elem.attr('source'),
+
+                //crowd_rule
                 crowd_rule_context: $elem.attr('crowd_rule_context'),
                 crowd_rule: $elem.attr('crowd_rule'),
 
@@ -601,41 +625,51 @@
                 filter_title: $elem.attr('filter_title'),
                 filter: $elem.attr('filter'),
 
+                //shunt
                 shunt_context: $elem.attr('shunt_context'),
                 shunt: $elem.attr('shunt'),
                 shunt_param: $elem.attr('shunt_param'),
 
+                //rights
                 rights_context: $elem.attr('rights_context'),
                 rights: $elem.attr('rights'),
                 rights_param: $elem.attr('rights_param'),
 
+                //touch
                 touch_context: $elem.attr('touch_context'),
                 touch_id: $elem.attr('touch_id'),
                 touch_task: $elem.attr('touch_task'),
 
+                //data_node
                 data_node: $elem.attr('data_node'),
 
+                //id_mapping
                 id_mapping_code: $elem.attr('id_mapping_code'),
                 data_engine: $elem.attr('data_engine'),
 
+                //tn
                 tn_unit: $elem.attr('tn_unit'),
                 tn_type: $elem.attr('tn_type'),
                 tn_value: $elem.attr('tn_value'),
 
+                //manual_confirm
                 confirm_notice_type: $elem.attr('confirm_notice_type'),
 
+                //code_block
                 command: $elem.attr('command'),
                 code_type: $elem.attr('code_type'),
 
+                //name_list
                 name_list: $elem.attr('name_list'),
 
-
+                //function
                 return_diff_enable: $elem.attr('return_diff_enable'),
                 return_value_type: $elem.attr('return_value_type'),
                 return_value_express: $elem.attr('return_value_express'),
                 return_operate: $elem.attr('return_operate'),
                 return_operate_value: $elem.attr('return_operate_value'),
 
+                //variable, varpool
                 varpool_param: $elem.attr('varpool_param'),
 
                 varpool_domain: $elem.attr('varpool_domain'),
