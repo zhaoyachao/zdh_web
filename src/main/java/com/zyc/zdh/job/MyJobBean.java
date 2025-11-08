@@ -12,6 +12,7 @@ import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
@@ -20,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 @DisallowConcurrentExecution
@@ -61,6 +63,9 @@ public class MyJobBean extends QuartzJobBean implements Serializable {
 	protected void executeInternal(JobExecutionContext context)
 			throws JobExecutionException {
 		try {
+			String logId = UUID.randomUUID().toString();
+			MDC.put(Const.MDC_LOG_ID, logId);
+
 			JobDataMap jobDataMap = context.getTrigger().getJobDataMap();
 			String taskId = jobDataMap.getString(TASK_ID);
 			String taskType = jobDataMap.getString(TASK_TYPE);

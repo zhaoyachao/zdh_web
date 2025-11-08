@@ -19,7 +19,7 @@ public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLog
      * @param id
      * @return
      */
-    @Update(value = "update task_log_instance set status=#{status},update_time=#{update_time} where id=#{id}")
+    @Update(value = "update task_log_instance set status=#{status},update_time=#{update_time}, is_notice = case when #{status} in ('killed', 'error', 'finish') then 'false' else is_notice end where id=#{id}")
     public int updateStatusById(@Param("status") String status,@Param("update_time") String update_time, @Param("id") String id);
 
 
@@ -42,6 +42,7 @@ public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLog
             "<script>",
             "update task_log_instance ",
             " set status= case when `status`='check_dep' or `status`='waite_retry' or `status`= 'create' or (`status`='dispatch' and job_type in ('JDBC','GROUP','SHELL','HDFS')) then 'killed' else 'kill' end",
+            ",  is_notice = case when `status`='check_dep' or `status`='waite_retry' or `status`= 'create' or (`status`='dispatch' and job_type in ('JDBC','GROUP','SHELL','HDFS')) then 'false' else is_notice end",
             " where id=#{id} and (`status`='dispatch' or `status` ='etl' or `status`= 'check_dep' or `status`= 'wait_retry' or `status`= 'create')",
             "</script>",
     })
@@ -76,6 +77,7 @@ public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLog
                     ", process = #{process}",
                     "</when>",
                     ", update_time = current_timestamp()",
+                    ",  is_notice = case when #{status} in ('killed', 'error', 'finish') then 'false' else is_notice end",
                     "where id=#{id} and status not in ('kill','killed')",
                     "</script>"
             }
@@ -88,7 +90,14 @@ public interface TaskLogInstanceMapper extends BaseTaskLogInstanceMapper<TaskLog
      * @param group_id
      * @return
      */
-    @Update(value = "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`= 'dispatch' and job_type in ('JDBC','GROUP','SHELL','HDFS')) then 'killed' when `status` in ('error','finish','skip') then `status` else 'kill'  end where group_id=#{group_id} and (`status` != 'error' and `status` != 'killed')")
+    @Update(
+            { "<script>",
+                    "update task_log_instance set status= case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`= 'dispatch' and job_type in ('JDBC','GROUP','SHELL','HDFS')) then 'killed' when `status` in ('error','finish','skip') then `status` else 'kill'  end " ,
+                    ", is_notice = case when `status` in ('check_dep','wait_retry','check_dep_finish','create') or (`status`= 'dispatch' and job_type in ('JDBC','GROUP','SHELL','HDFS')) then 'false' else is_notice  end ",
+                    "where group_id=#{group_id} and (`status` != 'error' and `status` != 'killed')",
+                    "</script>"
+            }
+    )
     public int updateStatusByGroupId(@Param("group_id") String group_id);
 
     @Update(value = "update task_log_instance set is_notice=#{is_notice} where id=#{id}")

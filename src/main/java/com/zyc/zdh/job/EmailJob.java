@@ -2,7 +2,6 @@ package com.zyc.zdh.job;
 
 import com.hubspot.jinjava.Jinjava;
 import com.zyc.zdh.config.BeaconFireAlarmConfiguration;
-import com.zyc.zdh.controller.ZdhMonitorController;
 import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.push.impl.AliMessageParam;
@@ -22,17 +21,17 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static com.zyc.zdh.job.JobCommon2.*;
-
 //定期拉取失败任务并发送邮件
 public class EmailJob {
 
     public static String jobType = "EMAIL";
+
+    private static String MSG_TYPE_NOTICE = "通知";
+    private static String MSG_TYPE_ALARM = "告警";
     public static List<ZdhDownloadInfo> zdhDownloadInfos=new ArrayList<>();
 
     public static void run(QuartzJobInfo quartzJobInfo) {
         try{
-
             taskLogInstanceAlarm();
             strategyInstanceAlarm();
         }catch (Exception e){
@@ -55,15 +54,17 @@ public class EmailJob {
 
                 LogUtil.info(EmailJob.class, "检测失败任务:" + tli.getJob_id() + ",对应主键:" + tli.getId() + ",对应任务组id:" + tli.getGroup_id());
 
-                String msg="失败任务:\r\n" +
+                String msg="【失败告警】任务:"+tli.getEtl_context()+"\r\n" +
                         "调度任务:"+tli.getJob_id()+",调度名:"+tli.getJob_context()+"\r\n"+
                         "任务组:"+tli.getGroup_id()+",任务组名:"+tli.getGroup_context()+"\r\n"+
-                        "ETL任务:"+tli.getEtl_task_id()+",ETL任务名:"+tli.getEtl_context()+"\r\n"+
+                        "任务类型:"+tli.getJob_type()+"\r\n"+
+                        "任务ID:"+tli.getEtl_task_id()+",任务名:"+tli.getEtl_context()+"\r\n"+
                         "ETL任务类型:"+tli.getMore_task()+"\r\n"+
                         "任务实例id:"+tli.getId()+",任务实例名:"+tli.getEtl_context() +"\r\n"+
                         "ETL日期:"+tli.getEtl_date()+"\r\n"+
-                        "开始时间:"+DateUtil.formatTime(tli.getRun_time())+"\r\n";
-                alarm(tli, "任务失败通知: "+tli.getJob_context(),msg);
+                        "开始时间:"+DateUtil.formatTime(tli.getRun_time())+"\r\n"+
+                        "更新时间:"+DateUtil.formatTime(tli.getUpdate_time())+"\r\n";
+                alarm(tli, "【失败告警】: "+tli.getJob_context(),msg, MSG_TYPE_ALARM);
                 LogUtil.info(EmailJob.class, "检测失败任务:" + tli.getJob_id() + ",对应主键:" + tli.getId() + ",并完成更新");
             }
 
@@ -72,31 +73,41 @@ public class EmailJob {
             if(taskLogInstances!=null && taskLogInstances.size()>0){
                 System.out.println("超时任务量:"+taskLogInstances.size());
                 for(TaskLogInstance tli : taskLogInstances){
-                    String msg="超时任务:\r\n" +
+                    String msg="【超时告警】任务:\r\n" +
                             "调度任务:"+tli.getJob_id()+",调度名:"+tli.getJob_context()+"\r\n"+
                             "任务组:"+tli.getGroup_id()+",任务组名:"+tli.getGroup_context()+"\r\n"+
-                            "ETL任务:"+tli.getEtl_task_id()+",ETL任务名:"+tli.getEtl_context()+"\r\n"+
+                            "任务类型:"+tli.getJob_type()+"\r\n"+
+                            "任务ID:"+tli.getEtl_task_id()+",任务名:"+tli.getEtl_context()+"\r\n"+
                             "ETL任务类型:"+tli.getMore_task()+"\r\n"+
                             "任务实例id:"+tli.getId()+",任务实例名:"+tli.getEtl_context() +"\r\n"+
                             "ETL日期:"+tli.getEtl_date()+"\r\n"+
-                            "开始时间:"+DateUtil.formatTime(tli.getRun_time())+"\r\n";
+                            "开始时间:"+DateUtil.formatTime(tli.getRun_time())+"\r\n"+
+                            "更新时间:"+DateUtil.formatTime(tli.getUpdate_time())+"\r\n";
                     if (tli.getJob_type().equalsIgnoreCase(ShellJob.jobType)){
-                        msg = msg +"\r\nSHELL任务超时自动杀死";
-                        ZdhMonitorController zdhmc = (ZdhMonitorController) SpringContext.getBean("zdhMonitorController");
-                        zdhmc.killJob(tli.getId());
+                        //msg = msg +"\r\nSHELL任务超时自动杀死";
+                        //ZdhMonitorController zdhmc = (ZdhMonitorController) SpringContext.getBean("zdhMonitorController");
+                        //zdhmc.killJob(tli.getId());
 
                     }
-                    alarm(tli, "任务超时通知: "+tli.getJob_context(),msg);
+                    alarm(tli, "【超时告警】: "+tli.getJob_context(),msg, MSG_TYPE_ALARM);
                 }
             }
 
             //超时,但之后完成任务
             List<TaskLogInstance> taskLogInstances2= taskLogInstanceMapper.selectOverTimeFinish();
             if(taskLogInstances2!=null && taskLogInstances2.size()>0){
-                System.out.println("超时完成任务量:"+taskLogInstances2.size());
                 for(TaskLogInstance tli : taskLogInstances2){
-                    String msg="超时任务id:"+tli.getId()+" ,已完成,完成时间:"+ DateUtil.formatTime(tli.getUpdate_time());
-                    alarm(tli, "超时任务完成通知: "+tli.getJob_context(),msg);
+                    String msg="【超时后完成通知】任务:"+tli.getEtl_context()+"\r\n" +
+                            "调度任务:"+tli.getJob_id()+",调度名:"+tli.getJob_context()+"\r\n"+
+                            "任务组:"+tli.getGroup_id()+",任务组名:"+tli.getGroup_context()+"\r\n"+
+                            "任务类型:"+tli.getJob_type()+"\r\n"+
+                            "任务ID:"+tli.getEtl_task_id()+",任务名:"+tli.getEtl_context()+"\r\n"+
+                            "ETL任务类型:"+tli.getMore_task()+"\r\n"+
+                            "任务实例id:"+tli.getId()+",任务实例名:"+tli.getEtl_context() +"\r\n"+
+                            "ETL日期:"+tli.getEtl_date()+"\r\n"+
+                            "开始时间:"+DateUtil.formatTime(tli.getRun_time())+"\r\n"+
+                            "更新时间:"+DateUtil.formatTime(tli.getUpdate_time())+"\r\n";
+                    alarm(tli, "【超时后完成通知】: "+tli.getJob_context(),msg, MSG_TYPE_NOTICE);
                 }
             }
 
@@ -105,16 +116,17 @@ public class EmailJob {
             if(taskLogInstances3!=null && taskLogInstances3.size()>0){
                 for(TaskLogInstance tli : taskLogInstances3){
 
-                    String msg="任务完成通知:\r\n" +
+                    String msg= "【完成通知】任务:"+tli.getEtl_context()+"\r\n" +
                             "调度任务:"+tli.getJob_id()+",调度名:"+tli.getJob_context()+"\r\n"+
                             "任务组:"+tli.getGroup_id()+",任务组名:"+tli.getGroup_context()+"\r\n"+
-                            "ETL任务:"+tli.getEtl_task_id()+",ETL任务名:"+tli.getEtl_context()+"\r\n"+
+                            "任务类型:"+tli.getJob_type()+"\r\n"+
+                            "任务ID:"+tli.getEtl_task_id()+",任务名:"+tli.getEtl_context()+"\r\n"+
                             "ETL任务类型:"+tli.getMore_task()+"\r\n"+
                             "任务实例id:"+tli.getId()+",任务实例名:"+tli.getEtl_context() +"\r\n"+
                             "ETL日期:"+tli.getEtl_date()+"\r\n"+
                             "开始时间:"+DateUtil.formatTime(tli.getRun_time())+"\r\n"+
-                            "完成时间:"+ DateUtil.formatTime(tli.getUpdate_time());
-                    alarm(tli, "任务完成通知: "+tli.getJob_context(),msg);
+                            "更新时间:"+DateUtil.formatTime(tli.getUpdate_time())+"\r\n";
+                    alarm(tli, "【完成通知】: "+tli.getJob_context(),msg, MSG_TYPE_NOTICE);
                 }
             }
 
@@ -202,7 +214,7 @@ public class EmailJob {
 
     }
 
-    private static void alarm(TaskLogInstance tli, String title, String msg){
+    private static void alarm(TaskLogInstance tli, String title, String msg, String msg_type){
         try{
             JemailService jemailService= (JemailService) SpringContext.getBean("jemailServiceImpl");
             TaskLogInstanceMapper taskLogInstanceMapper = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
@@ -210,7 +222,7 @@ public class EmailJob {
             NoticeMapper noticeMapper = (NoticeMapper) SpringContext.getBean("noticeMapper");
 
             if(StringUtils.isEmpty(tli.getAlarm_account())){
-                LogUtil.warn(EmailJob.class, "当前告警为找到告警账号:" + JsonUtil.formatJsonString(tli));
+                LogUtil.warn(EmailJob.class, "当前告警未找到告警账号:" + JsonUtil.formatJsonString(tli));
                 return ;
             }
 
@@ -219,7 +231,6 @@ public class EmailJob {
             List<String> phones=new ArrayList<>();
             for(User user:users){
                 if(user.getEmail()!=null){
-                    System.out.println("email:"+user.getEmail());
                     emails.add(user.getEmail());
                 }
                 if(user.getPhone()!=null){
@@ -239,7 +250,7 @@ public class EmailJob {
                     alarmSmsInfo.setTitle(title);
                     alarmSmsInfo.setMsg(msg);
                     alarmSmsInfo.setMsg_url("log_txt.html?job_id="+tli.getJob_id()+"&task_log_id="+tli.getId());
-                    alarmSmsInfo.setMsg_type("通知");
+                    alarmSmsInfo.setMsg_type(msg_type);
                     alarmSmsInfo.setStatus(Const.SMS_INIT);
                     alarmSmsInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
                     alarmSmsInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -256,7 +267,7 @@ public class EmailJob {
             if( !StringUtils.isEmpty(tli.getAlarm_account()) && tli.getAlarm_zdh()!=null  && tli.getAlarm_zdh().equalsIgnoreCase("on")){
                 for(User user:users){
                     NoticeInfo ni=new NoticeInfo();
-                    ni.setMsg_type("通知");
+                    ni.setMsg_type(msg_type);
                     ni.setMsg_title(title);
                     ni.setMsg_url("log_txt.html?job_id="+tli.getJob_id()+"&task_log_id="+tli.getId());
                     ni.setMsg(msg);
@@ -458,11 +469,11 @@ public class EmailJob {
         //执行命令
         try {
             LogUtil.info(EmailJob.class, "email任务当前只支持同步email,异步email暂不支持");
-            insertLog(tli,"info","email任务当前只支持同步email,异步email暂不支持");
+            JobCommon2.insertLog(tli,"info","email任务当前只支持同步email,异步email暂不支持");
             //当前只支持检查文件是否存在 if [ ! -f "/data/filename" ];then echo "文件不存在"; else echo "true"; fi
             //日期替换zdh.date => yyyy-MM-dd 模式
             //日期替换zdh.date.nodash=> yyyyMMdd 模式
-            Map<String, Object> jinJavaParam = getJinJavaParam(tli);
+            Map<String, Object> jinJavaParam = JobCommon2.getJinJavaParam(tli);
 
             Jinjava jj = new Jinjava();
 
@@ -489,11 +500,11 @@ public class EmailJob {
                 throw new Exception("无法识别的email类型,系统只支持txt,html格式");
             }
 
-            insertLog(tli, "info", "[" + jobType + "] JOB 发送成功");
+            JobCommon2.insertLog(tli, "info", "[" + jobType + "] JOB 发送成功");
         } catch (Exception e) {
             LogUtil.error(EmailJob.class, e.getMessage(), e);
-            insertLog(tli, "error","[" + jobType + "] JOB ,"+ e.getMessage());
-            jobFail(jobType,tli);
+            JobCommon2.insertLog(tli, "error","[" + jobType + "] JOB ,"+ e.getMessage());
+            JobCommon2.jobFail(jobType,tli);
             exe_status = false;
         }
         return exe_status;

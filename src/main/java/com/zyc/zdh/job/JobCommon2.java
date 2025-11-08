@@ -34,6 +34,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
+import org.slf4j.MDC;
 import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.FileCopyUtils;
@@ -54,6 +55,8 @@ public class JobCommon2 {
     public static LinkedBlockingDeque<ZdhLogs> linkedBlockingDeque = new LinkedBlockingDeque<ZdhLogs>();
 
     public static ConcurrentHashMap<String, Future<?>> chm = new ConcurrentHashMap<String, Future<?>>();
+    public static ConcurrentHashMap<String, Thread> chm_thread = new ConcurrentHashMap<String, Thread>();
+    public static ConcurrentHashMap<String, Process> chm_process = new ConcurrentHashMap<String, Process>();
     public static ConcurrentHashMap<String, SSHUtil> chm_ssh = new ConcurrentHashMap<String, SSHUtil>();
 
     public static ThreadGroup threadGroup = new ThreadGroup("zdh_task");
@@ -101,7 +104,7 @@ public class JobCommon2 {
         tli.setCount(tli.getCount() + 1);
 
         //设置执行的进度
-        tli.setProcess("8");
+        tli.setProcess(ProcessEnum.CHECK_COUNT);
 
         if (tli.getPlan_count().trim().equals("-1")) {
             LogUtil.info(JobCommon2.class, "[" + jobType + "] JOB ,当前任务未设置执行次数限制");
@@ -500,7 +503,7 @@ public class JobCommon2 {
             }
 
 
-            if (etlDroolsTaskInfo.getMore_task().equalsIgnoreCase("ETL")) {
+            if (etlDroolsTaskInfo.getMore_task().equalsIgnoreCase(MoreTask.ETL.getValue())) {
                 //解析Drools任务中的单任务
                 String etl_id = etlDroolsTaskInfo.getEtl_id();
                 //获取etl 任务信息
@@ -1672,7 +1675,7 @@ public class JobCommon2 {
 
                 insertLog(tli, "DEBUG", "[调度平台]:" + model_log + " JOB ,开始发送ETL处理请求");
                 //tli.setEtl_date(date);
-                tli.setProcess("10");
+                tli.setProcess(ProcessEnum.CREATE_ETL_TASKINFO);
                 tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                 updateTaskLog(tli, tlim);
                 String executor = zdhHaInfo.getId();
@@ -1714,7 +1717,7 @@ public class JobCommon2 {
                         tli.setLast_status("finish");
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                         tli.setStatus(JobStatus.FINISH.getValue());
-                        tli.setProcess("100");
+                        tli.setProcess(ProcessEnum.FINISH);
                         tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                     }
@@ -1785,7 +1788,7 @@ public class JobCommon2 {
                             //tli.setLast_status("finish");
                             //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                             tli.setStatus(JobStatus.FINISH.getValue());
-                            tli.setProcess("100");
+                            tli.setProcess(ProcessEnum.FINISH);
                         }
                         tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
@@ -1808,7 +1811,7 @@ public class JobCommon2 {
                         tli.setLast_status("finish");
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                         tli.setStatus(JobStatus.FINISH.getValue());
-                        tli.setProcess("100");
+                        tli.setProcess(ProcessEnum.FINISH);
                         tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                     }
@@ -1827,7 +1830,7 @@ public class JobCommon2 {
                         tli.setLast_status("finish");
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                         tli.setStatus(JobStatus.FINISH.getValue());
-                        tli.setProcess("100");
+                        tli.setProcess(ProcessEnum.FINISH);
                         tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                     }
@@ -1844,7 +1847,7 @@ public class JobCommon2 {
                         tli.setLast_status("finish");
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                         tli.setStatus(JobStatus.FINISH.getValue());
-                        tli.setProcess("100");
+                        tli.setProcess(ProcessEnum.FINISH);
                         tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                     }
@@ -1861,7 +1864,7 @@ public class JobCommon2 {
                         tli.setLast_status("finish");
                         //此处是按照同步方式设计的,如果执行的命令是异步命令那些需要用户自己维护这个状态
                         tli.setStatus(JobStatus.FINISH.getValue());
-                        tli.setProcess("100");
+                        tli.setProcess(ProcessEnum.FINISH);
                         tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
                         updateTaskLog(tli, tlim);
                     }
@@ -1911,7 +1914,7 @@ public class JobCommon2 {
                     LogUtil.info(JobCommon2.class, model_log + " JOB ,更新调度任务状态为etl");
                     tli.setLast_status("etl");
                     tli.setStatus(JobStatus.ETL.getValue());
-                    tli.setProcess("15");
+                    tli.setProcess(ProcessEnum.INIT_ETL_ENGINE15);
                     //tlim.updateTaskLogsById3(tli);
                     //updateTaskLog(tli, tlim);
                     tlim.updateStatusById3("etl", "15", tli.getId());
@@ -1923,7 +1926,7 @@ public class JobCommon2 {
             LogUtil.info(JobCommon2.class, msg);
             insertLog(tli, "ERROR", msg);
             tli.setStatus(JobStatus.ERROR.getValue());
-            tli.setProcess("17");
+            tli.setProcess(ProcessEnum.INIT_ETL_ENGINE17);
             tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             updateTaskLog(tli, tlim);
             //更新执行状态为error
@@ -2606,7 +2609,7 @@ public class JobCommon2 {
      */
     public static void updateTaskLogEtlDate(TaskLogInstance tli, TaskLogInstanceMapper tlim) {
         tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
-        tli.setProcess("6");
+        tli.setProcess(ProcessEnum.INIT_DISPATCH_TIME);
         updateTaskLog(tli, tlim);
     }
 
@@ -2814,7 +2817,7 @@ public class JobCommon2 {
             insertLog(tli, "INFO", msg);
             tli.setThread_id(""); //设置为空主要是为了 在检查依赖任务期间杀死
             tli.setStatus(JobStatus.CHECK_DEP.getValue());
-            tli.setProcess("7");
+            tli.setProcess(ProcessEnum.CHECK_DEP);
             tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             updateTaskLog(tli, tlim);
             return false;
@@ -3123,11 +3126,7 @@ public class JobCommon2 {
         insertLog(tli, "ERROR", msg);
         int interval_time = (tli.getInterval_time() == null || tli.getInterval_time().equals("")) ? 5 : Integer.parseInt(tli.getInterval_time());
         //调度时异常
-        updateTaskLogError(tli, "9", tlim, status, interval_time);
-
-//        if (status.equalsIgnoreCase("error")) {
-//            quartzManager2.deleteTask(tli, "finish", status);
-//        }
+        updateTaskLogError(tli, ProcessEnum.DISPATCH_JOB_FAIL, tlim, status, interval_time);
     }
 
     public static void setJobLastStatus(TaskLogInstance tli, String task_logs_id, TaskLogInstanceMapper tlim) {
@@ -3145,7 +3144,7 @@ public class JobCommon2 {
         LogUtil.info(JobCommon2.class, msg);
         insertLog(tli, "ERROR", msg);
         int interval_time = (tli.getInterval_time() == null || tli.getInterval_time().equals("")) ? 5 : Integer.parseInt(tli.getInterval_time());
-        updateTaskLogError(tli, "17", tlim, status, interval_time);
+        updateTaskLogError(tli, ProcessEnum.INIT_ETL_ENGINE17, tlim, status, interval_time);
 //        if (status.equalsIgnoreCase("error")) {
 //            quartzManager2.deleteTask(tli, "finish", status);
 //        }
@@ -3171,7 +3170,10 @@ public class JobCommon2 {
         TaskLogInstanceMapper tlim = (TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
         RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
         //手动重试增加重试实例,自动重试在原来的基础上
-
+        String logId = UUID.randomUUID().toString();
+        if(StringUtils.isEmpty(MDC.get(Const.MDC_LOG_ID))){
+            MDC.put(Const.MDC_LOG_ID, logId);
+        }
         if (quartzJobInfo.getJob_type().equalsIgnoreCase(JobType.EMAIL.getCode())) {
             LogUtil.debug(JobCommon2.class, "调度任务[EMAIL],开始调度");
             EmailJob.run(quartzJobInfo);
@@ -3188,7 +3190,7 @@ public class JobCommon2 {
             String checkImpls = ConfigUtil.getParamUtil().getValue(ConfigUtil.getProductCode(), Const.ZDH_CHECK_IMPLS, "").toString();
             if(!StringUtils.isEmpty(checkImpls)){
                 for (String impl: checkImpls.split(",")){
-
+                    MDC.put(Const.MDC_LOG_ID, UUID.randomUUID().toString());
                     try {
                         CheckDepJobInterface cdji = (CheckDepJobInterface)Class.forName(impl).newInstance();
                         cdji.setObject(quartzJobInfo);
@@ -3219,6 +3221,7 @@ public class JobCommon2 {
                 @Override
                 public void run() {
 
+                    MDC.put(Const.MDC_LOG_ID, logId);
                     TaskGroupLogInstance tgli = new TaskGroupLogInstance();
                     try {
                         //复制quartzjobinfo到tli,任务基础信息完成复制
@@ -3395,6 +3398,7 @@ public class JobCommon2 {
                 public void run() {
                     try {
                         latch.await();
+                        MDC.put(Const.MDC_LOG_ID, UUID.randomUUID().toString());
                         run_sub_task_log_instance(tli.getJob_type(), tli);
                     }catch (Exception e){
                         e.printStackTrace();
@@ -3426,6 +3430,7 @@ public class JobCommon2 {
         insertLog(tli, "INFO", "开始执行[" + jobType + "] JOB");
 
         Thread td = Thread.currentThread();
+        JobCommon2.chm_thread.put(String.valueOf(tli.getId()), td);
         long threadId = td.getId();
         LogUtil.info(JobCommon2.class, "线程id:" + threadId);
         insertLog(tli, "INFO", "[" + jobType + "] JOB, 线程ID: "+threadId);
@@ -3444,7 +3449,7 @@ public class JobCommon2 {
                 LogUtil.error(JobCommon2.class, "[" + jobType + "] JOB, 任务被禁用,具体可咨询系统管理员");
                 insertLog(tli, "ERROR", "[" + jobType + "] JOB,任务被禁用,具体可咨询系统管理员");
                 tli.setStatus(JobStatus.ERROR.getValue());
-                tli.setProcess("100");
+                tli.setProcess(ProcessEnum.FINISH);
                 updateTaskLog(tli, tlim);
                 return ;
             }
@@ -3465,12 +3470,13 @@ public class JobCommon2 {
 //              updateTaskLog(tli,tlim);
             } else if (jobType.equalsIgnoreCase(JobType.SHELL.getCode())) {
                 tli.setStatus(JobStatus.ETL.getValue());
+                tli.setProcess(ProcessEnum.EXEC_SCRIPT);
                 updateTaskLog(tli, tlim);
                 exe_status = ShellJob.shellCommand(tli);
                 if (exe_status) {
                     //设置任务状态为finish
                     tli.setStatus(JobStatus.FINISH.getValue());
-                    tli.setProcess("100");
+                    tli.setProcess(ProcessEnum.FINISH);
                     updateTaskLog(tli, tlim);
                 }
             }else if (jobType.equalsIgnoreCase(JobType.HTTP.getCode())) {
@@ -3480,7 +3486,7 @@ public class JobCommon2 {
                 if (exe_status) {
                     //设置任务状态为finish
                     tli.setStatus(JobStatus.FINISH.getValue());
-                    tli.setProcess("100");
+                    tli.setProcess(ProcessEnum.FINISH);
                     updateTaskLog(tli, tlim);
                 }
             }else if (jobType.equalsIgnoreCase(JobType.EMAIL.getCode())) {
@@ -3490,7 +3496,7 @@ public class JobCommon2 {
                 if (exe_status) {
                     //设置任务状态为finish
                     tli.setStatus(JobStatus.FINISH.getValue());
-                    tli.setProcess("100");
+                    tli.setProcess(ProcessEnum.FINISH);
                     updateTaskLog(tli, tlim);
                 }
             } else if (jobType.equalsIgnoreCase(JobType.FLUME.getCode())) {
@@ -3514,14 +3520,16 @@ public class JobCommon2 {
                 if (exe_status) {
                     //设置任务状态为finish
                     tli.setStatus(JobStatus.FINISH.getValue());
-                    tli.setProcess("100");
+                    tli.setProcess(ProcessEnum.FINISH);
                     updateTaskLog(tli, tlim);
                 }
             }
         } catch (Exception e) {
             LogUtil.error(JobCommon2.class, e);
         } finally {
-            JobCommon2.chm.remove(String.valueOf(td.getId()));
+            JobCommon2.chm.remove(tli.getId());
+            JobCommon2.chm_thread.remove(tli.getId());
+            JobCommon2.chm_process.remove(tli.getId());
         }
 
     }
@@ -3888,7 +3896,7 @@ public class JobCommon2 {
                         tli.setStatus(JobStatus.NON.getValue());
                     } else {
                         tli.setStatus(JobStatus.SKIP.getValue());
-                        tli.setProcess("100");
+                        tli.setProcess(ProcessEnum.FINISH);
                     }
                 }
 

@@ -9,6 +9,7 @@ import com.zyc.zdh.dao.ZdhHaInfoMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.JobCommon2;
 import com.zyc.zdh.job.JobStatus;
+import com.zyc.zdh.job.ProcessEnum;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.monitor.Server;
 import com.zyc.zdh.quartz.QuartzManager2;
@@ -206,7 +207,7 @@ public class ZdhMonitorController extends BaseController {
             taskLogInstanceMapper.updateStatusById2(id);
             TaskLogInstance tli = taskLogInstanceMapper.selectByPrimaryKey(id);
             JobCommon2.insertLog(tli, "INFO", "接受到杀死请求,开始进行杀死操作...");
-            if (tli.getStatus().equalsIgnoreCase("killed")) {
+            if (tli.getStatus().equalsIgnoreCase(JobStatus.KILLED.getValue())) {
                 JobCommon2.insertLog(tli, "INFO", "任务已杀死");
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "杀死任务成功", null);
@@ -255,7 +256,7 @@ public class ZdhMonitorController extends BaseController {
             taskLogInstanceMapper.updateStatusByGroupId(id);
             TaskGroupLogInstance tgli = tglim.selectByPrimaryKey(id);
             JobCommon2.insertLog(tgli, "INFO", "接受到杀死请求,开始进行杀死操作...");
-            if (tgli.getStatus().equalsIgnoreCase("killed")) {
+            if (tgli.getStatus().equalsIgnoreCase(JobStatus.KILLED.getValue())) {
                 JobCommon2.insertLog(tgli, "INFO", "任务已杀死");
             }
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "杀死任务组成功", null);
@@ -309,7 +310,7 @@ public class ZdhMonitorController extends BaseController {
             tli.setIs_retryed("0");
             tli.setId(new_id);
             tli.setCount(0);
-            tli.setProcess("1");
+            tli.setProcess(ProcessEnum.INIT);
             tli.setRun_time(new Timestamp(System.currentTimeMillis()));
             tli.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             tli.setStatus(JobStatus.CREATE.getValue());

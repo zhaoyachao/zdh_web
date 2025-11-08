@@ -15,7 +15,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 检查任务及任务组,判定上下游依赖
@@ -35,7 +34,6 @@ public class CheckDepJob implements CheckDepJobInterface{
 
     public static void run(QuartzJobInfo quartzJobInfo) {
         try {
-            MDC.put("logId", UUID.randomUUID().toString());
             LogUtil.debug(CheckDepJob.class, "开始检测任务组任务...");
             TaskGroupLogInstanceMapper tglim=(TaskGroupLogInstanceMapper) SpringContext.getBean("taskGroupLogInstanceMapper");
             TaskLogInstanceMapper tlim=(TaskLogInstanceMapper) SpringContext.getBean("taskLogInstanceMapper");
@@ -98,7 +96,7 @@ public class CheckDepJob implements CheckDepJobInterface{
             check_flink_job_final_status();
         } catch (Exception e) {
             LogUtil.error(CheckDepJob.class, e);
-            MDC.remove("logId");
+            MDC.remove(Const.MDC_LOG_ID);
         }
 
     }
@@ -177,7 +175,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                     }
                     if (check) {
                         tli.setStatus(JobStatus.FINISH.getValue());
-                        tli.setProcess("100");
+                        tli.setProcess(ProcessEnum.FINISH);
                         JobCommon2.updateTaskLog(tli, taskLogInstanceMapper);
                     }else{
                         if( !tli.getStatus().equalsIgnoreCase(JobStatus.ERROR.getValue()) && !tli.getStatus().equalsIgnoreCase(JobStatus.WAIT_RETRY.getValue())){
@@ -293,7 +291,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                         }else{
                             //任务组依赖检查直接设置为已完成--理论上此处不会执行,如果执行,代表数据异常
                             tl.setStatus(JobStatus.FINISH.getValue());
-                            tl.setProcess("100");
+                            tl.setProcess(ProcessEnum.FINISH);
                             JobCommon2.updateTaskLog(tl,taskLogInstanceMapper);
                         }
 
@@ -455,7 +453,7 @@ public class CheckDepJob implements CheckDepJobInterface{
             } catch (Exception e) {
                 LogUtil.error(CheckDepJob.class, e);
                 //判定任务是否可重试,如果无法获取flink信息 则认为flink任务以死亡,尝试自动拉起
-                JobCommon2.jobFail("ETL",tli);
+                JobCommon2.jobFail(JobType.ETL.getCode(),tli);
                 //tlim.updateStatusById4(JobStatus.ERROR.getValue(),"100",tli.getId());
             }
 
@@ -524,13 +522,13 @@ public class CheckDepJob implements CheckDepJobInterface{
             //tlis!=null && tlis.size()>0 &&
             if(level==0){
                 // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3:执行结束后运行(成功/失败/跳过),默认成功时运行
-                if(checkByInStatus(pre_task_log_instances, Lists.newArrayList("kill", "killed", "error"))){
+                if(checkByInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.KILL.getValue(), JobStatus.KILLED.getValue(), JobStatus.ERROR.getValue()))){
                     //包含失败,杀死,杀死中, 设置状态为以杀死
                     tli.setStatus(JobStatus.KILLED.getValue());
                     JobCommon2.updateTaskLog(tli,taskLogInstanceMapper);
                     JobCommon2.insertLog(tli,"INFO","当前任务依赖上游任务[成功]触发,检测到上游任务:"+tlis.get(0).getId()+",失败或者已被杀死,更新本任务状态为killed");
                     return action;
-                }else if(checkByNotInStatus(pre_task_log_instances, Lists.newArrayList("finish", "skip"))){
+                }else if(checkByNotInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.FINISH.getValue(), JobStatus.SKIP.getValue()))){
                     //不包含失败,杀死,杀死中任务,但是存在成功,跳过之外状态的任务也跳过
                     return action;
                 }else{
@@ -540,22 +538,22 @@ public class CheckDepJob implements CheckDepJobInterface{
             }
             if(level == 1){
                 // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3:执行结束后运行(成功/失败/跳过),默认成功时运行
-                if(!checkByNotInStatus(pre_task_log_instances, Lists.newArrayList("finish", "skip"))){
+                if(!checkByNotInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.FINISH.getValue(), JobStatus.SKIP.getValue()))){
                     //上游状态都是finish,skip, 则当前任务设为跳过
                     tli.setStatus(JobStatus.SKIP.getValue());
-                    JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tli.getId(),"100",taskLogInstanceMapper);
+                    JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tli.getId(),ProcessEnum.FINISH, taskLogInstanceMapper);
                     //JobCommon2.updateTaskLog(tli,taskLogInstanceMapper);
                     JobCommon2.insertLog(tli,"INFO","当前任务依赖上游任务[杀死]触发,检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为SKIP");
                     return action;
                 }
 
-                if(checkByInStatus(pre_task_log_instances, Lists.newArrayList("killed"))){
+                if(checkByInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.KILLED.getValue()))){
                     //触发
                     action = "do";
                     JobCommon2.insertLog(tli,"INFO","当前任务依赖上游任务[杀死]触发,检测到上游任务:"+pre_tasks+",已杀死");
-                }else if(checkByInStatus(pre_task_log_instances, Lists.newArrayList("error"))){
+                }else if(checkByInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.ERROR.getValue()))){
                     tli.setStatus(JobStatus.KILLED.getValue());
-                    JobCommon2.updateTaskStatus(JobStatus.KILLED.getValue(),tli.getId(),"100",taskLogInstanceMapper);
+                    JobCommon2.updateTaskStatus(JobStatus.KILLED.getValue(),tli.getId(), ProcessEnum.FINISH,taskLogInstanceMapper);
                     //JobCommon2.updateTaskLog(tli,taskLogInstanceMapper);
                     JobCommon2.insertLog(tli,"INFO","当前任务依赖上游任务[杀死]触发,检测到上游任务:"+pre_tasks+",存在失败,更新本任务状态为KILLED");
                     return action;
@@ -567,24 +565,24 @@ public class CheckDepJob implements CheckDepJobInterface{
             if(level == 2){
                 // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3:执行结束后运行(成功/失败/跳过),默认成功时运行
                 //任务只包含finish,skip
-                if(!checkByNotInStatus(pre_task_log_instances, Lists.newArrayList("finish", "skip"))){
+                if(!checkByNotInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.FINISH.getValue(), JobStatus.SKIP.getValue()))){
                     //上游状态都是finish,skip, 则当前任务设为跳过
                     tli.setStatus(JobStatus.SKIP.getValue());
-                    JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tli.getId(),"100",taskLogInstanceMapper);
+                    JobCommon2.updateTaskStatus(JobStatus.SKIP.getValue(),tli.getId(),ProcessEnum.FINISH,taskLogInstanceMapper);
                     JobCommon2.insertLog(tli,"INFO","当前任务依赖上游任务[失败]触发,检测到上游任务:"+pre_tasks+",都已完成或者跳过,更新本任务状态为SKIP");
                     return action;
                 }
 
-                if(checkByInStatus(pre_task_log_instances, Lists.newArrayList("killed"))){
+                if(checkByInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.KILLED.getValue()))){
                     tli.setStatus(JobStatus.KILLED.getValue());
-                    JobCommon2.updateTaskStatus(JobStatus.KILLED.getValue(),tli.getId(),"100",taskLogInstanceMapper);
+                    JobCommon2.updateTaskStatus(JobStatus.KILLED.getValue(),tli.getId(),ProcessEnum.FINISH,taskLogInstanceMapper);
                     JobCommon2.insertLog(tli,"INFO","当前任务依赖上游任务[失败]触发,检测到上游任务:"+pre_tasks+",存在已杀死任务,更新本任务状态为KILLED");
                     return action;
                 }
 
                 //包含error, 且不包含finish,skip,error之前的状态任务表示上游都已完成,可进行判断是否触发
-                if(checkByInStatus(pre_task_log_instances, Lists.newArrayList("error")) &&
-                        !checkByNotInStatus(pre_task_log_instances, Lists.newArrayList("finish", "skip", "error"))){
+                if(checkByInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.ERROR.getValue())) &&
+                        !checkByNotInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.FINISH.getValue(), JobStatus.SKIP.getValue(), JobStatus.ERROR.getValue()))){
                     action = "do";
                     JobCommon2.insertLog(tli,"INFO","当前任务依赖上游任务[失败]触发,检测到上游任务:"+pre_tasks+",已失败");
                 }else {
@@ -607,12 +605,12 @@ public class CheckDepJob implements CheckDepJobInterface{
             if(level == 3){
                 // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3:执行结束后运行(成功/失败/跳过),默认成功时运行
                 //上游都执行结束后触发,上游任务状态只包含(完成,失败,跳过),则触发当前任务
-                if(!checkByNotInStatus(pre_task_log_instances, Lists.newArrayList("finish","skip","error"))){
+                if(!checkByNotInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.FINISH.getValue(), JobStatus.SKIP.getValue(), JobStatus.ERROR.getValue()))){
                     action = "do";
                     JobCommon2.insertLog(tli,"INFO","当前任务依赖上游任务[执行结束后]触发,检测到上游任务:"+pre_tasks+",已执行结束");
-                }else if(checkByInStatus(pre_task_log_instances, Lists.newArrayList("killed"))){
+                }else if(checkByInStatus(pre_task_log_instances, Lists.newArrayList(JobStatus.KILLED.getValue()))){
                     tli.setStatus(JobStatus.KILLED.getValue());
-                    JobCommon2.updateTaskStatus(JobStatus.KILLED.getValue(),tli.getId(),"100",taskLogInstanceMapper);
+                    JobCommon2.updateTaskStatus(JobStatus.KILLED.getValue(),tli.getId(),ProcessEnum.FINISH,taskLogInstanceMapper);
                     //JobCommon2.updateTaskLog(tli,taskLogInstanceMapper);
                     JobCommon2.insertLog(tli,"INFO","当前任务依赖上游任务[执行结束后]触发,检测到上游任务:"+pre_tasks+",存在已杀死任务,更新本任务状态为KILLED");
                     return action;

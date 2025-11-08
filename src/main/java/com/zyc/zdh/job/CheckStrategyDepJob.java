@@ -36,7 +36,6 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
     @Override
     public void run() {
         try {
-            MDC.put("logId", UUID.randomUUID().toString());
             LogUtil.debug(this.getClass(), "开始检测策略组任务...");
             StrategyGroupInstanceMapper sgim=(StrategyGroupInstanceMapper) SpringContext.getBean("strategyGroupInstanceMapper");
             StrategyInstanceMapper sim=(StrategyInstanceMapper) SpringContext.getBean("strategyInstanceMapper");
@@ -64,7 +63,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             // 此处可做任务并发限制,当前未限制并发
             for(StrategyGroupInstance sgi :sgis){
                 String tmp_status=sgim.selectByPrimaryKey(sgi.getId()).getStatus();
-                if( !tmp_status.equalsIgnoreCase("kill") && !tmp_status.equalsIgnoreCase("killed") ){
+                if( !tmp_status.equalsIgnoreCase(JobStatus.KILL.getValue()) && !tmp_status.equalsIgnoreCase(JobStatus.KILLED.getValue()) ){
                     //在检查依赖时杀死任务--则不修改状态
                     updateTaskGroupLogInstanceStatus(sgi);
                 }
@@ -76,7 +75,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             create_group_final_status();
         } catch (Exception e) {
             LogUtil.error(this.getClass(), e);
-             MDC.remove("logId");
+            MDC.remove(Const.MDC_LOG_ID);
         }
 
     }
@@ -414,13 +413,13 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 
             if(level == 0){
                 // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功), 默认成功时运行
-                if(checkByInStatus(sis, Lists.newArrayList("kill", "killed", "error"))){
+                if(checkByInStatus(sis, Lists.newArrayList(JobStatus.KILL.getValue(), JobStatus.KILLED.getValue(), JobStatus.ERROR.getValue()))){
                     //包含失败,杀死,杀死中, 设置状态为以杀死
                     si.setStatus(JobStatus.KILL.getValue());
                     JobDigitalMarket.updateTaskLog(si,sim);
                     JobDigitalMarket.insertLog(si,"INFO","当前任务依赖级别: 上游全部成功时触发,检测到上游任务:"+pre_tasks+",失败或者已被杀死,更新本任务状态为kill");
                     return action;
-                }else if(checkByNotInStatus(sis, Lists.newArrayList("finish", "skip"))){
+                }else if(checkByNotInStatus(sis, Lists.newArrayList(JobStatus.FINISH.getValue(), JobStatus.SKIP.getValue()))){
                     //不包含失败,杀死,杀死中任务,但是存在成功,跳过之外状态的任务也跳过
                     return action;
                 }else{
@@ -439,7 +438,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 
             if(level == 1){
                 // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
-                if(!checkByNotInStatus(sis, Lists.newArrayList("finish", "skip"))){
+                if(!checkByNotInStatus(sis, Lists.newArrayList(JobStatus.FINISH.getValue(), JobStatus.SKIP.getValue()))){
                     //上游状态都是finish,skip, 则当前任务设为跳过
                     si.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                     String run_jsmind_data = si.getRun_jsmind_data();
@@ -452,10 +451,10 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     return action;
                 }
 
-                if(checkByInStatus(sis, Lists.newArrayList("killed"))){
+                if(checkByInStatus(sis, Lists.newArrayList(JobStatus.KILLED.getValue()))){
                     //触发
                     action = "do";
-                }else if(checkByInStatus(sis, Lists.newArrayList("error"))){
+                }else if(checkByInStatus(sis, Lists.newArrayList(JobStatus.ERROR.getValue()))){
                     si.setStatus(JobStatus.KILL.getValue());
                     JobDigitalMarket.updateTaskLog(si,sim);
                     //JobCommon2.updateTaskLog(tli,taskLogInstanceMapper);
@@ -469,7 +468,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             if(level == 2){
                 // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3: 上游执行完即可运行(不关心上游是否成功) 默认成功时运行
                 //任务只包含finish,skip
-                if(!checkByNotInStatus(sis, Lists.newArrayList("finish", "skip"))){
+                if(!checkByNotInStatus(sis, Lists.newArrayList(JobStatus.FINISH.getValue(), JobStatus.SKIP.getValue()))){
                     //上游状态都是finish,skip, 则当前任务设为跳过
                     si.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());
                     String run_jsmind_data = si.getRun_jsmind_data();
@@ -483,7 +482,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                     return action;
                 }
 
-                if(checkByInStatus(sis, Lists.newArrayList("killed"))){
+                if(checkByInStatus(sis, Lists.newArrayList(JobStatus.KILLED.getValue()))){
                     si.setStatus(JobStatus.KILL.getValue());
                     JobDigitalMarket.updateTaskLog(si,sim);
                     JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",存在失败,更新本任务状态为KILL");
@@ -491,8 +490,8 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                 }
 
                 //包含error, 且不包含finish,skip,error之前的状态任务表示上游都已完成,可进行判断是否触发
-                if(checkByInStatus(sis, Lists.newArrayList("error")) &&
-                        !checkByNotInStatus(sis, Lists.newArrayList("finish", "skip", "error"))){
+                if(checkByInStatus(sis, Lists.newArrayList(JobStatus.ERROR.getValue())) &&
+                        !checkByNotInStatus(sis, Lists.newArrayList(JobStatus.FINISH.getValue(),JobStatus.SKIP.getValue(),JobStatus.ERROR.getValue()))){
                     action = "do";
                 }else {
                     return action;
@@ -503,9 +502,9 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
             if(level == 3){
                 // 此处判定级别0：成功时运行,1:杀死时运行,2:失败时运行,3:执行结束后运行(成功/失败/跳过),默认成功时运行
                 //上游都执行结束后触发,上游任务状态只包含(完成,失败,跳过),则触发当前任务
-                if(!checkByNotInStatus(sis, Lists.newArrayList("finish","skip","error"))){
+                if(!checkByNotInStatus(sis, Lists.newArrayList(JobStatus.FINISH.getValue(),JobStatus.SKIP.getValue(),JobStatus.ERROR.getValue()))){
                     action = "do";
-                }else if(checkByInStatus(sis, Lists.newArrayList("killed"))){
+                }else if(checkByInStatus(sis, Lists.newArrayList(JobStatus.KILLED.getValue()))){
                     si.setStatus(JobStatus.KILL.getValue());
                     JobDigitalMarket.updateTaskLog(si,sim);
                     JobDigitalMarket.insertLog(si,"INFO","检测到上游任务:"+pre_tasks+",存在失败,更新本任务状态为KILL");

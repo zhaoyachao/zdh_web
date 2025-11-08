@@ -596,8 +596,10 @@ public class StrategyGroupController extends BaseController {
             for (StrategyInstance strategyInstance:strategyInstances){
                 //重置执行中产生的信息
                 Map<String, Object> stringObjectMap = JsonUtil.toJavaMap(strategyInstance.getRun_jsmind_data());
-                for(String rk: delRunJsmindDataKeys){
-                    stringObjectMap.remove(rk);
+                if(ids.contains(strategyInstance.getId())){
+                    for(String rk: delRunJsmindDataKeys){
+                        stringObjectMap.remove(rk);
+                    }
                 }
 
                 StrategyInstance instance = new StrategyInstance();

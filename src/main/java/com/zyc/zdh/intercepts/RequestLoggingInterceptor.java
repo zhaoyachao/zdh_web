@@ -3,6 +3,7 @@ package com.zyc.zdh.intercepts;
 import com.zyc.zdh.config.SystemConfig;
 import com.zyc.zdh.entity.SystemFilterParam;
 import com.zyc.zdh.entity.User;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.MDC;
@@ -25,12 +26,12 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        MDC.put("logId", UUID.randomUUID().toString());
+        MDC.put(Const.MDC_LOG_ID, UUID.randomUUID().toString());
 
         if (getUser() == null) {
-            MDC.put("user_id", UUID.randomUUID().toString());
+            MDC.put(Const.MDC_USER_ID, UUID.randomUUID().toString());
         } else {
-            MDC.put("user_id", getUser().getUserName());
+            MDC.put(Const.MDC_USER_ID, getUser().getUserName());
         }
         logRequest(request);
         return true;
@@ -48,8 +49,8 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        MDC.remove("user_id");
-        MDC.remove("logId");
+        MDC.remove(Const.MDC_USER_ID);
+        MDC.remove(Const.MDC_LOG_ID);
         if (ex != null) {
             LogUtil.error(this.getClass(), "Exception occurred during request after processing", ex);
         }

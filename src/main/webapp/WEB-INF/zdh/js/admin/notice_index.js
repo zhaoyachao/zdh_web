@@ -261,7 +261,20 @@ function buildTable($el, cells, rows) {
         }, {
             field: 'msg_type',
             title: '通知类型',
-            sortable:true
+            sortable:true,
+            formatter: function (value, row, index) {
+                var class_str = "btn-danger btn-xs";
+                if (value == "通知") {
+                    class_str = "btn-primary  btn-xs"
+                }
+                return [
+                    '<div style="text-align:center" >'+
+                    '<div class="btn-group">'+
+                    '<button type="button" class="btn '+class_str+'">'+value+'</button>'+
+                    '</div>'+
+                    '</div>'
+                ].join('');
+            }
         }, {
             field: 'msg_title',
             title: '主题',

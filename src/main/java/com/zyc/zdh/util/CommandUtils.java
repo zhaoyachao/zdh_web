@@ -8,16 +8,19 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 执行系统命令工具类
  *
- * @author Storm
+ * @author zyc
  *
  */
 public class CommandUtils {
 
     public static final String DEFAULT_CHARSET = "GBK";
+
+    public static final long DEFAULT_TIMEOUT = 60 * 60 * 24;
 
     /**
      * 执行指定命令
@@ -68,52 +71,92 @@ public class CommandUtils {
         }
     }
 
+    /**
+     * 当前执行仅适用于当前平台
+     * @param tli
+     * @param cmd
+     * @param param
+     * @param command
+     * @param charsetName
+     * @return
+     * @throws IOException
+     */
     public static Map<String,String> exeCommand2(TaskLogInstance tli, String cmd, String param, String command, String charsetName) throws IOException {
         Map map=new HashMap<String,String>();
         ProcessBuilder processBuilder = new ProcessBuilder();
         try {
+            processBuilder.redirectErrorStream(true);//合并输出流
             processBuilder.command(cmd,param ,command);
             Process process = processBuilder.start();
 
-//            StringBuilder output = new StringBuilder();
+            JobCommon2.chm_process.put(tli.getId(), process);
+            new Thread(() -> readStream(tli,process.getInputStream(), charsetName)).start();
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(),charsetName));
-            BufferedReader reader_err = new BufferedReader(
-                    new InputStreamReader(process.getErrorStream(),charsetName));
+            int exitVal = -1;
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-//                output.append(line + "\n");
-                JobCommon2.insertLog(tli,"INFO","实时日志:"+line);
+            String timeout = tli.getTime_out();
+            if(StringUtils.isEmpty(timeout)){
+                //此处不设置超时,是非常危险的,可优化
+                exitVal = process.waitFor();
+            }else{
+                boolean isCompleted = process.waitFor(Long.valueOf(timeout), TimeUnit.SECONDS);
+                if (isCompleted) {
+                    // 正常退出，返回退出码
+                    exitVal = process.exitValue();
+                } else {
+                    // 超时，强制终止
+                    try{
+                        process.getInputStream().close();
+                        process.destroy();
+                    }catch (Exception e){
+                        LogUtil.error(CommandUtils.class, e);
+                    }finally {
+                        process.destroyForcibly();
+                    }
+                    JobCommon2.insertLog(tli,"INFO","实时日志: 超时,已强制终止");
+                }
             }
-            while ((line = reader_err.readLine()) != null) {
-//                output.append(line + "\n");
-                JobCommon2.insertLog(tli,"ERROR","实时日志:"+line);
-            }
 
-            int exitVal = process.waitFor();
             if (exitVal == 0) {
-                System.out.println("Success!");
                 map.put("result","success");
-//                map.put("out",output);
                 map.put("error","");
             } else {
-                System.out.println("Error!");
                 map.put("result","fail");
                 map.put("out","");
-//                map.put("error",output);
             }
-//            System.out.println(output);
-            process.destroy();
+
+            if (process.isAlive()) {
+                try{
+                    process.getInputStream().close();
+                    process.destroyForcibly();
+                }catch (Exception e){
+                }
+                JobCommon2.insertLog(tli,"INFO","实时日志: 结束后检测到进程,再次强杀进程");
+            }
         } catch (IOException e) {
             LogUtil.error(CommandUtils.class, e);
         } catch (InterruptedException e) {
             LogUtil.error(CommandUtils.class, e);
         }
-
         return map;
+    }
 
+    // 复用读取流工具方法
+    private static void readStream(TaskLogInstance tli, InputStream is, String charsetName) {
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(is, charsetName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if(Thread.currentThread().isInterrupted()){
+                    throw new Exception("停止运行");
+                }
+                JobCommon2.insertLog(tli,"INFO","实时日志:"+line);
+            }
+        } catch (Exception e) {
+            // 子进程被终止时，流会关闭，此处无需报错
+            JobCommon2.insertLog(tli,"INFO","实时日志: 流已关闭（子进程终止）");
+            System.out.println(" 流已关闭（子进程终止）");
+        }
     }
 
     /**

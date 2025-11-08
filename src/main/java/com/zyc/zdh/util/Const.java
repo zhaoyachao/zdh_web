@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class Const {
 
+    public static String MDC_LOG_ID = "logId";
+    public static String MDC_USER_ID = "user_id";
     //j2cache, myredis 都是srpingboot cachemanager 用到,和shiro 无关,shiro缓存,采用redis自定义单独实现
     public static String JAVA_2CACHE = "j2CacheRedis";//java 2级缓存实现,
     public static String JAVA_REDISCACHE = "myRedis";//

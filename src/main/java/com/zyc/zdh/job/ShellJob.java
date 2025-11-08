@@ -45,6 +45,7 @@ public class ShellJob extends JobCommon2 {
                 LogUtil.info(ShellJob.class, "[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
                 insertLog(tli, "info", "[" + jobType + "] JOB ,COMMAND:" + tli.getCommand());
                 Map result = new HashMap<String,String>();
+                result.put("result", "fail");
                 if (tli.getCommand().trim().equals("")) {
                     result.put("result", "success");
                 } else {

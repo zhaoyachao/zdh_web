@@ -1,6 +1,7 @@
 package com.zyc.zdh.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zyc.zdh.job.ProcessEnum;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.JsonUtil;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -723,29 +724,6 @@ public class TaskLogInstance implements Serializable {
 
     public String getProcess_msg() {
         //默认是1,开始调度是5,调整调度时间etl_date是7,检查调度次数是8,调度执行的任务命令失败是9,完成拼接信息是10,发送成功/失败是15/17,超过20表示在server端执行
-         switch (getProcess()){
-             case "1":
-                 return "未开始";
-             case "5":
-                 return "开始调度";
-             case "6":
-                 return "调整调度时间";
-             case "7":
-                 return "检查依赖任务";
-             case "8":
-                 return "检查调度次数";
-             case "9":
-                 return "执行调度脚本";
-             case "10":
-                 return "组装ETL信息";
-             case "15":
-             case "17":
-                 return "连接server";
-             case "100":
-                 return "采集完成";
-             default:
-                 return "server";
-
-         }
+        return ProcessEnum.getProcessName(getProcess());
     }
 }

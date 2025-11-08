@@ -216,9 +216,9 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                         for(TaskLogInstance tl : tlis){
 
                             if(tl.getThread_id()!=null && tl.getThread_id().startsWith(myid)){
-                                Future<?> future = JobCommon2.chm.get(tl.getThread_id());
+                                Future<?> future = JobCommon2.chm.get(tl.getId());
                                 if(future!=null){
-                                    String msg="杀死线程:线程名:"+tl.getJob_context()+",任务实例id:"+tl.getId();
+                                    String msg="杀死线程:线程id:"+tl.getThread_id()+",任务名:"+tl.getJob_context()+",任务实例id:"+tl.getId();
                                     LogUtil.info(this.getClass(), msg);
                                     JobCommon2.insertLog(tl,"INFO",msg);
                                     if(tl.getMore_task().equalsIgnoreCase("ssh") || tl.getMore_task().equalsIgnoreCase("datax") || tl.getJob_type().equalsIgnoreCase("flume")){
@@ -240,13 +240,40 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                             }
                                         }
                                     }
+
+                                    try{
+                                        Process process = JobCommon2.chm_process.get(tl.getId());
+                                        if(process != null){
+                                            process.getInputStream().close();
+                                            process.destroyForcibly();
+                                        }
+                                        msg="杀死进程完成";
+                                        LogUtil.info(this.getClass(), msg);
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                        msg="杀死进程异常";
+                                        LogUtil.error(this.getClass(), msg, e);
+                                        JobCommon2.insertLog(tl,"ERROR",msg);
+                                    }
+
+                                    try{
+                                        Thread thread = JobCommon2.chm_thread.get(tl.getId());
+                                        if(thread != null){
+                                            thread.interrupt();
+                                        }
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+
                                     try{
                                         future.cancel(true);
                                     }catch (Exception e){
                                         LogUtil.error(this.getClass(), e);
                                     }finally {
                                         JobCommon2.chm.remove(tl.getId());
-                                        taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
+                                        JobCommon2.chm_thread.remove(tl.getId());
+                                        JobCommon2.chm_process.remove(tl.getId());
+                                        taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
                                         JobCommon2.insertLog(tl,"INFO","已杀死当前任务");
                                     }
                                 }else{
@@ -260,7 +287,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         //如果找不到flink_job_id,历史服务器,则跳过
                                         if(StringUtils.isEmpty(tl.getApplication_id()) || StringUtils.isEmpty(tl.getHistory_server())){
                                             if(System.currentTimeMillis()-tl.getUpdate_time().getTime() > 2*60*1000){
-                                                taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
+                                                taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
                                             }
                                             continue;
                                         }
@@ -272,10 +299,10 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                             String restul=HttpUtil.getRequest(cancel_url,npl);
                                         }catch (Exception e){
                                             JobCommon2.insertLog(tl,"INFO","杀死当前任务异常,判定服务已死亡,自动更新状态为killed");
-                                            taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
+                                            taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
                                             continue;
                                         }
-                                        taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
+                                        taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
                                         JobCommon2.insertLog(tl,"INFO","已杀死当前任务");
                                         continue;
                                     }else{
@@ -294,7 +321,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         try{
                                             restul=HttpUtil.getRequest(url,npl);
                                         }catch (Exception e){
-                                            taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
+                                            taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
                                             continue;
                                         }
 
@@ -313,10 +340,10 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         //发送杀死请求
                                         String kill_url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getZdh_port()+"/api/v1/kill";
                                         HttpUtil.postJSON(kill_url, JsonUtil.formatJsonString(js));
-                                        taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
+                                        taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
                                     }else{
                                         String msg2="无法获取具体执行器,判断任务已杀死";
-                                        taskLogInstanceMapper.updateStatusById("killed",DateUtil.getCurrentTime(),tl.getId());
+                                        taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
                                         LogUtil.info(this.getClass(), msg2);
                                         JobCommon2.insertLog(tl,"INFO",msg2);
                                     }

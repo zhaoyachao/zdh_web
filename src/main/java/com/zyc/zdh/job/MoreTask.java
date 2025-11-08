@@ -20,8 +20,8 @@ public enum MoreTask {
     KETTLE("13","KETTLE","KETTLE");
 
 
-    private String value;
     private String code;
+    private String value;
     private String desc;
 
     private MoreTask(String code,String value,String desc) {
