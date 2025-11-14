@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -220,13 +222,22 @@ public class ZdhEtlController extends BaseController{
             System.out.println(up_file);
             if (up_file != null) {
                 String fileName = up_file.getOriginalFilename();
+                String normalizedFileName = fileName == null ? "null" : fileName;
                 System.out.println("上传文件不为空");
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
-                File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
-                File fileDir = new File(zdhNginx.getTmp_dir() + "/" + owner);
+
+                Path ownerRoot = Paths.get(zdhNginx.getTmp_dir(), owner).normalize();
+                File fileDir = ownerRoot.toFile();
                 if (!fileDir.exists()) {
                     fileDir.mkdirs();
                 }
+                Path targetPath = ownerRoot.resolve(normalizedFileName).normalize();
+                if (!targetPath.startsWith(ownerRoot)) {
+                    Path safeNamePath = Paths.get(normalizedFileName).getFileName();
+                    String safeFileName = safeNamePath == null ? normalizedFileName : safeNamePath.toString();
+                    targetPath = ownerRoot.resolve(safeFileName).normalize();
+                }
+                File tempFile = targetPath.toFile();
                 String nginx_dir = zdhNginx.getNginx_dir();
 
                 FileCopyUtils.copy(up_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
@@ -236,7 +247,8 @@ public class ZdhEtlController extends BaseController{
                             zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
                     sftp.login();
                     InputStream is = new FileInputStream(tempFile);
-                    sftp.upload(nginx_dir + "/" + owner + "/", fileName, is);
+                    String uploadFileName = targetPath.getFileName() != null ? targetPath.getFileName().toString() : normalizedFileName;
+                    sftp.upload(nginx_dir + "/" + owner + "/", uploadFileName, is);
                     sftp.logout();
                 }
             }
