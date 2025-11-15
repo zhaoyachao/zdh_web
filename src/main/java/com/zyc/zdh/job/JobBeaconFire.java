@@ -151,7 +151,7 @@ public class JobBeaconFire {
                 params.put("out", new Out());
                 String groovy = beaconFireInfo.getGroovy_script();
                 Out out = (Out)GroovyFactory.execExpress(groovy, params);
-                System.out.println(JsonUtil.formatJsonString(out));
+                //System.out.println(JsonUtil.formatJsonString(out));
                 if(out != null && out.code != "0"){
                     String frequency = beaconFireInfo.getFrequency_config();
                     Long time = 1800L;

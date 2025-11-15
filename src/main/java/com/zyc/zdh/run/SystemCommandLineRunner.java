@@ -315,7 +315,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                     if(zdhHaInfo!=null){
                                         String url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getWeb_port()+"/api/v1/applications/"+zdhHaInfo.getApplication_id()+"/jobs";
                                         //获取杀死的任务名称
-                                        System.out.println(url);
+                                        //System.out.println(url);
                                         //npl.add(new BasicNameValuePair("status","running"));
                                         String restul="";
                                         try{

@@ -214,24 +214,21 @@ public class ZdhEtlController extends BaseController{
     @ResponseBody
     public ReturnInfo etl_task_add_file(MultipartFile up_file, HttpServletRequest request) {
         try{
-            String json_str = JsonUtil.formatJsonString(request.getParameterMap());
             String owner = getOwner();
-            System.out.println(json_str);
-            System.out.println(up_file);
             if (up_file != null) {
-                String fileName = up_file.getOriginalFilename();
-                System.out.println("上传文件不为空");
+                String fileName = MultipartFileUtil.getFileName(up_file);
                 ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
-                File tempFile = new File(zdhNginx.getTmp_dir() + "/" + owner + "/" + fileName);
-                File fileDir = new File(zdhNginx.getTmp_dir() + "/" + owner);
+                String localDir = zdhNginx.getTmp_dir() + "/" + owner;
+                LogUtil.info(this.getClass(), "fileName: {}, fileDir: {}", fileName, localDir);
+                File tempFile = new File(localDir + "/" + fileName);
+                File fileDir = new File(localDir);
                 if (!fileDir.exists()) {
                     fileDir.mkdirs();
                 }
                 String nginx_dir = zdhNginx.getNginx_dir();
 
                 FileCopyUtils.copy(up_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
-                if (!zdhNginx.getHost().equals("")) {
-                    System.out.println("通过sftp上传文件");
+                if (!StringUtils.isEmpty(zdhNginx.getHost())) {
                     SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
                             zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
                     sftp.login();

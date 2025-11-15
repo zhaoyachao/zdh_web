@@ -71,7 +71,7 @@ public class EmailJob {
             //获取超时任务
             List<TaskLogInstance> taskLogInstances= taskLogInstanceMapper.selectOverTime();
             if(taskLogInstances!=null && taskLogInstances.size()>0){
-                System.out.println("超时任务量:"+taskLogInstances.size());
+                //System.out.println("超时任务量:"+taskLogInstances.size());
                 for(TaskLogInstance tli : taskLogInstances){
                     String msg="【超时告警】任务:\r\n" +
                             "调度任务:"+tli.getJob_id()+",调度名:"+tli.getJob_context()+"\r\n"+
@@ -184,7 +184,7 @@ public class EmailJob {
             List<String> phones=new ArrayList<>();
             for(User user:users){
                 if(user.getEmail()!=null){
-                    System.out.println("email:"+user.getEmail());
+                    //System.out.println("email:"+user.getEmail());
                     emails.add(user.getEmail());
                 }
                 if(user.getPhone()!=null){
@@ -299,7 +299,7 @@ public class EmailJob {
             List<String> phones=new ArrayList<>();
             for(User user:users){
                 if(user.getEmail()!=null){
-                    System.out.println("email:"+user.getEmail());
+                    //System.out.println("email:"+user.getEmail());
                     emails.add(user.getEmail());
                 }
                 if(user.getPhone()!=null){

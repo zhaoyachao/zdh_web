@@ -155,7 +155,7 @@ public class ZdhSshController extends BaseController{
 
             if (jar_files != null && jar_files.length > 0) {
                 for (MultipartFile jar_file : jar_files) {
-                    String fileName = jar_file.getOriginalFilename();
+                    String fileName = MultipartFileUtil.getFileName(jar_file);
                     if(fileName==null||fileName.trim().equalsIgnoreCase("")){
                         continue;
                     }
@@ -246,8 +246,8 @@ public class ZdhSshController extends BaseController{
 
             if (jar_files != null && jar_files.length > 0) {
                 for (MultipartFile jar_file : jar_files) {
-                    String fileName = jar_file.getOriginalFilename();
-                    if(fileName.isEmpty()){
+                    String fileName = MultipartFileUtil.getFileName(jar_file);
+                    if(fileName == null || fileName.isEmpty()){
                         System.out.println("上传文件名称为空"+fileName);
                         continue;
                     }

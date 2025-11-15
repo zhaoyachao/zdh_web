@@ -35,7 +35,7 @@ public class CheckBloodSourceJob {
 
             for (BloodSourceInfo bsi : bsis) {
                 if (!StringUtils.isEmpty(bsi.getInput())&& !StringUtils.isEmpty(bsi.getOutput_type())){
-                    System.out.println("Blood: "+ JsonUtil.formatJsonString(bsi));
+                    //System.out.println("Blood: "+ JsonUtil.formatJsonString(bsi));
                     bloodSourceMapper.insertSelective(bsi);
                 }
 
@@ -173,8 +173,8 @@ public class CheckBloodSourceJob {
             String etl_sql = jj.render(etlTaskJdbcInfo.getEtl_sql(), jinJavaParam);
             String[] sqls = etl_sql.split(";\r\n|;\n");
             for (String sql : sqls) {
-                System.out.println(sql);
-                System.out.println("======");
+                //System.out.println(sql);
+                //System.out.println("======");
                 try {
                     List<SQLStatement> sqlStatementList = SQLUtils.parseStatements(sql, dbType);
                     SQLStatement stmt = sqlStatementList.get(0);
@@ -287,7 +287,7 @@ public class CheckBloodSourceJob {
                 bsi.setOutput(StringUtils.join(output_tables, ","));
                 bsi.setVersion(version);
                 bloodSourceMappeer.insertSelective(bsi);
-                System.out.println("Spark: "+JsonUtil.formatJsonString(bsi));
+                //System.out.println("Spark: "+JsonUtil.formatJsonString(bsi));
                 bsis.add(bsi);
             }
 

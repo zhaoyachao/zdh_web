@@ -38,9 +38,9 @@ public class AliMessagePush implements MessagePush {
             throw e;
         } catch (ClientException e) {
             // 打印错误码
-            System.out.println("ErrCode:" + e.getErrCode());
-            System.out.println("ErrMsg:" + e.getErrMsg());
-            System.out.println("RequestId:" + e.getRequestId());
+//            System.out.println("ErrCode:" + e.getErrCode());
+//            System.out.println("ErrMsg:" + e.getErrMsg());
+//            System.out.println("RequestId:" + e.getRequestId());
             throw e;
         }
     }

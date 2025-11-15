@@ -1989,14 +1989,14 @@ public class JobCommon2 {
                             try {
                                 in = new FileInputStream(zdhNginx.getTmp_dir() + "/" + zdhNginx.getOwner() + "/" + jarFileInfo.getFile_name());
                                 ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-                                System.out.println("bytes available:" + in.available());
+                                //System.out.println("bytes available:" + in.available());
                                 byte[] temp = new byte[1024];
                                 int size = 0;
                                 while ((size = in.read(temp)) != -1) {
                                     out.write(temp, 0, size);
                                 }
-                                byte[] bytes = out.toByteArray();
-                                System.out.println("bytes size got is:" + bytes.length);
+                                //byte[] bytes = out.toByteArray();
+                                //System.out.println("bytes size got is:" + bytes.length);
                                 sftpUtil.upload(script_path, jarFileInfo.getFile_name(), in);
 
                             } catch (Exception e) {
@@ -2205,7 +2205,7 @@ public class JobCommon2 {
             Map<String, Object> jsonObject=JsonUtil.toJavaMap(zdhDataxAutoInfo.getEtlTaskDataxAutoInfo().getData_sources_params_input());
             DataxConfig dataxConfig=DataxConfig.build(Lists.newArrayList(content), jsonObject,jsonObject);
 
-            System.out.println(JsonUtil.formatJsonString(dataxConfig));
+            LogUtil.info(JobCommon2.class, JsonUtil.formatJsonString(dataxConfig));
 
             String t_id = zdhDataxAutoInfo.getTask_logs_id();
             String python_home=zdhDataxAutoInfo.getPython_home();

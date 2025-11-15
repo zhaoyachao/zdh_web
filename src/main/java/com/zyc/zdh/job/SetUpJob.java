@@ -55,9 +55,9 @@ public class SetUpJob {
         String cmd=org.apache.commons.lang.StringUtils.join(cmd_list,";");
         try {
             sshUtil.login();
-            System.out.println(cmd);
+            //System.out.println(cmd);
             String[] out=sshUtil.exec2(cmd,sti.getId(),sti.getTemplete_id());
-            System.out.println(out[0]+"=="+out[1]);
+            //System.out.println(out[0]+"=="+out[1]);
             sshUtil.logout();
         } catch (IOException e) {
             LogUtil.error(SetUpJob.class, e);

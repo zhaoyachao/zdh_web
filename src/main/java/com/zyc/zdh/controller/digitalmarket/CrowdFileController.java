@@ -3,7 +3,6 @@ package com.zyc.zdh.controller.digitalmarket;
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.ListenableScheduledFuture;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.CrowdFileMapper;
 import com.zyc.zdh.entity.CrowdFileInfo;
@@ -32,7 +31,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -208,7 +206,7 @@ public class CrowdFileController extends BaseController {
 
             if (jar_files != null && jar_files.length > 0) {
                 for (MultipartFile jar_file : jar_files) {
-                    String fileName = jar_file.getOriginalFilename();
+                    String fileName = MultipartFileUtil.getFileName(jar_file);
                     if(fileName==null||fileName.trim().equalsIgnoreCase("")){
                         continue;
                     }

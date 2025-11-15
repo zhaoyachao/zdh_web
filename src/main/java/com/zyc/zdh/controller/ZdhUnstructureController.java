@@ -303,7 +303,7 @@ public class ZdhUnstructureController extends BaseController{
             List<String> etl_sqls=new ArrayList<>();
             if (files != null && files.length > 0) {
                 for (MultipartFile jar_file : files) {
-                    String fileName = jar_file.getOriginalFilename();
+                    String fileName = MultipartFileUtil.getFileName(jar_file);
                     if(fileName==null||fileName.trim().equalsIgnoreCase("")){
                         continue;
                     }
