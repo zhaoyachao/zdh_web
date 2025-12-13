@@ -3679,7 +3679,7 @@
       PRIMARY KEY (`id`),
       KEY `idx_uid` (`product_code`,`uid`, `source`, `uid_type`),
       KEY `idx_source` (`product_code`,`source`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户信息表'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户信息表';
     
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
@@ -3745,7 +3745,7 @@
         PRIMARY KEY (`id`),
         KEY `idx_tid` (`tid`),
         KEY `idx_product_code` (`product_code`,`tid`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信标签信息表'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信标签信息表';
    
     CREATE TABLE `wechat_qrcode_info` (
         `id` bigint NOT NULL AUTO_INCREMENT,
@@ -3768,7 +3768,7 @@
         PRIMARY KEY (`id`),
         KEY `idx_qrcode` (`qrcode`),
         KEY `idx_product_code` (`product_code`,`qrcode`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信二维码信息表'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信二维码信息表';
 
     CREATE TABLE `wechat_qrscene_info` (
         `id` bigint NOT NULL AUTO_INCREMENT,
@@ -3783,7 +3783,7 @@
         PRIMARY KEY (`id`),
         KEY `idx_qrcode` (`qrscene`),
         KEY `idx_product_code` (`product_code`,`qrscene`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信二维码场景信息表'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信二维码场景信息表';
 
     CREATE TABLE `wechat_menu_info` (
         `id` bigint NOT NULL AUTO_INCREMENT,
