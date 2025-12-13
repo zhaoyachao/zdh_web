@@ -15,68 +15,301 @@
 
     <![endif]-->
     <style>
-        html, body {width: 100%;height: 100%;overflow: hidden;}
-        /**/
-        body {background-image: url("img/b7.jpeg");background-repeat: no-repeat; background-size: 100% 100%;}
-        body:after {content:'';background-repeat:no-repeat;background-size:cover;-webkit-filter:blur(3px);-moz-filter:blur(3px);-o-filter:blur(3px);-ms-filter:blur(3px);filter:blur(3px);position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1;}
-        .layui-container {width: 100%;height: 100%;overflow: hidden}
-        .admin-login-background {width:360px;height:300px;position:absolute;left:50%;top:40%;margin-left:-180px;margin-top:-100px;}
-        .logo-title {text-align:center;letter-spacing:2px;padding:14px 0;}
-        .logo-title h1 {color:#1E9FFF;font-size:25px;font-weight:bold;}
-        .login-form {background-color:#fff;border:1px solid #fff;border-radius:3px;padding:14px 20px;box-shadow:0 0 8px #eeeeee;}
-        .login-form .layui-form-item {position:relative;}
-        .login-form .layui-form-item label {position:absolute;left:1px;top:1px;width:38px;line-height:36px;text-align:center;color:#d2d2d2;}
-        .login-form .layui-form-item input {padding-left:36px;}
-        .captcha {width:60%;display:inline-block;}
-        .captcha-img {display:inline-block;width:34%;float:right;}
-        .captcha-img img {height:34px;border:1px solid #e6e6e6;height:36px;width:100%;}
+        html, body {width: 100%;height: 100%;overflow: hidden;margin: 0;padding: 0;font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
+
+        body {
+            background: linear-gradient(135deg,
+                rgba(102, 126, 234, 0.9) 0%,
+                rgba(118, 75, 162, 0.9) 50%,
+                rgba(92, 107, 192, 0.9) 100%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none"/><path d="M0,0 L100,100 M100,0 L0,100" stroke="rgba(255,255,255,0.05)" stroke-width="1"/><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></svg>');
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            animation: rotateBackground 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotateBackground {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 16px;
+            padding: 40px 30px;
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 40px 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-title h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 300;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-title p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .login-form .layui-form-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .login-form .layui-form-item label {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            z-index: 2;
+        }
+
+        .login-form .layui-form-item input {
+            padding-left: 45px;
+            height: 48px;
+            border: 2px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .login-form .layui-form-item input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-form .layui-form-item input::placeholder {
+            color: #bbb;
+        }
+
+        .captcha-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .captcha {
+            flex: 1;
+        }
+
+        .captcha-img {
+            flex-shrink: 0;
+            width: 130px;
+            height: 52px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .captcha-img:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+        .captcha-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .login-btn {
+            height: 48px;
+            line-height: 48px;
+            font-size: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-links {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .login-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .login-links a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .language-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .language-switch a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 5px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .language-switch a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .logo-title h1 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="layui-container">
-    <div class="admin-login-background">
-        <div class="layui-form login-form">
-            <form class="layui-form" action="" method="post" id="login">
-                <div class="layui-form-item logo-title">
-                    <h1 id="platform_name">ZDH数据平台</h1>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-icon layui-icon-release" for="product_code"></label>
-                    <input id="product_code" type="text" name="product_code" lay-verify="required|account" placeholder="企业标识,当前默认zdh" autocomplete="off" class="layui-input" value="zdh">
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-icon layui-icon-username" for="username"></label>
-                    <input id="username" type="text" name="username" lay-verify="required|account" placeholder="用户名: zyc" autocomplete="off" class="layui-input" >
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-icon layui-icon-password" for="password"></label>
-                    <input id="password" type="password" name="password" lay-verify="required|password" placeholder="密码: 123456" autocomplete="off" class="layui-input">
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-icon layui-icon-vercode" for="captcha"></label>
-                    <input id="captcha" type="text" name="captcha" lay-verify="required|captcha" placeholder="图形验证码" autocomplete="off" class="layui-input verification captcha">
-                    <div class="captcha-img">
-                        <img id="captcha_img" src="captcha" onclick="refash_captcha()">
-                    </div>
-                </div>
-<!--                <div class="layui-form-item">-->
-<!--                    <input type="checkbox" name="rememberMe" value="true" lay-skin="primary" title="记住密码">-->
-<!--                </div>-->
+<div class="language-switch">
+<!--    <a href="javascript:void(0)">中文</a>-->
+<!--    <a href="javascript:void(0)">EN</a>-->
+</div>
 
-                <div class="layui-form-item">
-                    <button class="layui-btn layui-btn layui-btn-normal layui-btn-fluid" lay-submit="ddddd" lay-filter="login4444" onclick="login2();return false;">登 入</button>
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <div class="layui-input-inline">
-                            <a href="register.html" target="_blank">注册新账号</a>
-                            <a id="retrieve_password" href="javascript:void(0);"
-                               onclick="retrieve_password()">找回密码</a>
-                        </div>
+<div class="login-container">
+    <div class="login-card">
+        <div class="logo-title">
+            <h1 id="platform_name">ZDH数据平台</h1>
+            <p>智能数字化平台</p>
+        </div>
+
+        <form class="layui-form login-form" action="" method="post" id="login">
+            <div class="layui-form-item">
+                <label class="layui-icon layui-icon-release" for="product_code"></label>
+                <input id="product_code" type="text" name="product_code" lay-verify="required" placeholder="企业标识" autocomplete="off" class="layui-input" value="zdh">
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-icon layui-icon-username" for="username"></label>
+                <input id="username" type="text" name="username" lay-verify="required" placeholder="用户名" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-icon layui-icon-password" for="password"></label>
+                <input id="password" type="password" name="password" lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-icon layui-icon-vercode" for="captcha"></label>
+                <div class="captcha-group">
+                    <input id="captcha" type="text" name="captcha" lay-verify="required" placeholder="图形验证码" autocomplete="off" class="layui-input captcha">
+                    <div class="captcha-img">
+                        <img id="captcha_img" src="captcha" onclick="refash_captcha()" alt="验证码">
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="layui-form-item">
+                <button class="layui-btn login-btn layui-btn-fluid" lay-submit lay-filter="login" onclick="login2();return false;">登 录</button>
+            </div>
+
+            <div class="login-links">
+                <a href="register.html" target="_blank">注册新账号</a>
+                <a id="retrieve_password" href="javascript:void(0);" onclick="retrieve_password()">找回密码</a>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -105,7 +338,7 @@
                 }
                 $('#platform_name').html(data.result.platform_name);
                 //$("#videoCoverLayer").css('background-image', 'url(' + src + ')');
-                $("body").css('background-image', 'url(' + data.result.background_image + ')');
+                //$("body").css('background-image', 'url(' + data.result.background_image + ')');
             },
             //处理完成
             complete: function () {

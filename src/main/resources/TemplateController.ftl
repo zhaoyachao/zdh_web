@@ -33,6 +33,8 @@ import java.util.List;
 
 /**
  * ${tableDesc}服务
+ *
+ * 使用权限控制需要${EntityName} 继承BaseProductAuthInfo 或者 BaseProductAndDimGroupAuthInfo
  */
 @Controller
 public class ${ControllerName} extends BaseController {
@@ -70,6 +72,7 @@ public class ${ControllerName} extends BaseController {
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
             dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+            //dynamicPermissionByProduct(zdhPermissionService, criteria);
 
             if(!StringUtils.isEmpty(product_code)){
                 criteria.andEqualTo("product_code", product_code);
@@ -115,6 +118,7 @@ public class ${ControllerName} extends BaseController {
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
 
             dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
+            //dynamicPermissionByProduct(zdhPermissionService, criteria);
 
             if(!StringUtils.isEmpty(product_code)){
                 criteria.andEqualTo("product_code", product_code);
@@ -170,7 +174,8 @@ public class ${ControllerName} extends BaseController {
     public ReturnInfo<${EntityName}> ${controller}_detail(String id) {
         try {
             ${EntityName} ${entityName} = ${mapperName}.selectByPrimaryKey(id);
-            //checkAttrPermissionByProductAndDimGroup(zdhPermissionService,  ${entityName}.getProduct_code(),  ${entityName}.getDim_group(), getAttrSelect());
+            //checkAttrPermissionByProductAndDimGroup(zdhPermissionService,  ${entityName}.getProduct_code(), ${entityName}.getDim_group(), getAttrSelect());
+            //checkAttrPermissionByProduct(zdhPermissionService,  ${entityName}.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", ${entityName});
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -194,6 +199,8 @@ public class ${ControllerName} extends BaseController {
 
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, ${entityName}.getProduct_code(), ${entityName}.getDim_group(), getAttrEdit());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, old${EntityName}.getProduct_code(), old${EntityName}.getDim_group(), getAttrEdit());
+            //checkAttrPermissionByProduct(zdhPermissionService, ${entityName}.getProduct_code(), getAttrEdit());
+            //checkAttrPermissionByProduct(zdhPermissionService, old${EntityName}.getProduct_code(), getAttrEdit());
 
 
             ${entityName}.setCreate_time(old${EntityName}.getCreate_time());
@@ -229,6 +236,7 @@ public class ${ControllerName} extends BaseController {
             ${entityName}.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, ${entityName}.getProduct_code(), ${entityName}.getDim_group(), getAttrAdd());
+            //checkAttrPermissionByProduct(zdhPermissionService, ${entityName}.getProduct_code(), getAttrAdd());
             ${mapperName}.insertSelective(${entityName});
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", ${entityName});
         } catch (Exception e) {

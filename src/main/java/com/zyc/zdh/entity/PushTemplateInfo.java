@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

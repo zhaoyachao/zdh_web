@@ -176,7 +176,7 @@ public class RetryJob {
 //                            rQueueClient.add(t2.getEtl_info());
 //                        }
                        else{
-                            HttpUtil.postJSON(new_url, t2.getEtl_info());
+                           HttpUtil.postJSON(new_url, t2.getEtl_info());
                         }
 
                         t2.setExecutor(zdhHaInfo.getId());

@@ -712,6 +712,16 @@
   + v5.6.18 [zdh_web]优化日志id丢失问题
   + v5.6.18 [zdh_web]优化代码
   + v5.6.18 [zdh_web]修复历史bug
+
+  + v5.6.19 [zdh_web]增加内容短链生成(点击短链可直接查询结果)
+  + v5.6.19 [zdh_web]代码生成工具-支持生成前端(html,js)
+  + v5.6.19 [zdh_web]优化日志结构
+  + v5.6.19 [zdh_web]引入ai编码, 优化系统登录页面
+  + v5.6.19 [zdh_web]首页增加ai问答(仅开发了一个页面功能暂未实现-计划做当前项目的客服问答)
+  + v5.6.19 [zdh_web]pushx模块增加微信相关推送
+  + v5.6.19 [zdh_web]优化http工具类-增加重试,链接池,日志等功能
+  + v5.6.19 [zdh_web]前端优化文件上传-支持托拽(部分功能)
+  + v5.6.19 [zdh_web]优化客户画像批量上传
   
 
   
@@ -766,8 +776,7 @@
       `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
-  
-  
+
 ## 4.7.16迁移4.7.17
      CREATE TABLE `etl_task_batch_info` (
        `id` bigint NOT NULL AUTO_INCREMENT,
@@ -811,7 +820,7 @@
      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
     alter table resource_tree_info add column notice_title varchar(8) not null default '' comment '提示语';
-  
+
 ## 4.7.17迁移4.7.18
     CREATE TABLE `quartz_executor_info` (
       `id` bigint NOT NULL AUTO_INCREMENT,
@@ -1039,6 +1048,7 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code)
     VALUES(939848526425231360, '936943441596649472', '同步redis', '4', '1', 'fa fa-coffee', '', '7', '1', '2022-02-06 11:42:30', '2022-02-06 11:42:30', 'param_to_redis', '5', '', '');
+
 ## 4.7.18迁移5.0.0
 
     INSERT INTO resource_tree_info
@@ -1846,8 +1856,6 @@
      (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
      VALUES(1019003620370157568, '802848818109353984', 'API文档', '2', 'zyc', 'fa fa-coffee', '', '0', '1', '2022-09-12 21:56:35', '2022-09-12 21:56:35', 'smart_doc/api.html', '2', '接口文档', '', 'zdh');
 
-
-     
 ## 5.1.0迁移5.1.1
     CREATE TABLE `we_mock_tree_info` (
       `id` bigint NOT NULL AUTO_INCREMENT,
@@ -2206,7 +2214,7 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code)
     VALUES(1122102818098909184, '963932648793706496', 'idmapping页面', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2023-06-24 09:55:59', '2023-06-24 09:55:59', 'id_mapping_detail', '3', '', '', 'zdh');
-    
+
 ## 5.1.1迁移5.1.2
      CREATE TABLE `risk_event_info` (
        `id` bigint NOT NULL AUTO_INCREMENT,
@@ -2671,7 +2679,7 @@
      alter table data_sources_info add column dim_group varchar(64) not null default '' comment '用户组';
      update data_sources_info set product_code ='zdh';
      update data_sources_info set dim_group ='group3';
-     
+
 ## 5.1.3迁移5.2.0
     alter table strategy_group_instance add column small_flow_rate varchar(16) not null default '' comment '小流量比例:1,100';
     
@@ -2793,7 +2801,7 @@
       `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
       PRIMARY KEY (`id`)
     ) comment '烽火台告警信息' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-     
+
 ## 5.2.0迁移5.2.1
     无变动,仅优化逻辑
 ## 5.2.1迁移5.2.2
@@ -2916,7 +2924,6 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1188458463701766144, '1170678953501790208', '告警组-按用户查询列表', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2023-12-24 12:29:38', '2023-12-24 12:31:05', 'beacon_fire_alarm_group_list_by_owner', '5', '', '', 'zdh', '');
 
-        
 ## 5.2.2迁移5.2.3
     INSERT INTO resource_tree_info
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
@@ -2927,7 +2934,7 @@
     INSERT INTO resource_tree_info
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1191876453948461056, '963932648793706496', '更新策略实例优先级', '4', 'zyc', 'fa fa-coffee', '', '60', '1', '2024-01-02 22:51:31', '2024-01-02 22:51:31', 'strategy_instance_priority', '5', '', '', 'zdh', '');
-      
+
 ## 5.2.3迁移5.3.0
     alter table permission_user_info add column `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间';
     alter table permission_user_info add column `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间';
@@ -3091,12 +3098,12 @@
 
 ## 5.3.1迁移5.3.2
     无改动
-    
+
 ## 5.3.2迁移5.3.3
     INSERT INTO resource_tree_info
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1229211615895752704, '963932648793706496', '代码块demo页面', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2024-04-14 23:28:07', '2024-04-14 23:36:30', 'code_block_demo_index', '3', '', '', 'zdh', '1');
-    
+
 ## 5.3.3迁移5.3.4
     update quartz_job_info set jsmind_data  = regexp_replace(jsmind_data, "\"单源ETL\"", "\"ETL\"");
     update quartz_job_info set jsmind_data  = regexp_replace(jsmind_data, "\"多源源ETL\"", "\"MORE_ETL\"");
@@ -3254,7 +3261,7 @@
 
 ## 5.3.5迁移5.3.6
     无改动
-    
+
 ## 5.3.6迁移5.4.0
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
@@ -3352,10 +3359,7 @@
       `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT 'push app 配置';
- 
- 
- 
- 
+
 ## 5.4.0迁移5.4.1
     无改动
 ## 5.4.1迁移5.5.0
@@ -3434,7 +3438,7 @@
     alter table permission_usergroup_dimension_value_info add column ext text comment '权限扩展信息';
     update permission_user_dimension_value_info set ext='{"add":"true","edit":"true","approve":"true","del":"true"}';
     update permission_usergroup_dimension_value_info set ext='{"add":"true","edit":"true","approve":"true","del":"true"}';
-    
+
 ## 5.5.4迁移5.5.5
 
     CREATE TABLE `data_code_info` (
@@ -3533,21 +3537,20 @@
     alter table quality_rule_info add column dim_group varchar(64) NOT NULL DEFAULT '' COMMENT '用户组';
     update quality_rule_info set dim_group='group3'; 
     alter table quality_rule_info add column is_delete varchar(16) default "0" comment '是否删除,0:未删除,1:删除';
-    
-    
+
 ## 5.6.0迁移5.6.1
     alter table param_info add column product_code varchar(64) NOT NULL DEFAULT '' COMMENT '产品code';
     update param_info set product_code='zdh';
-    
+
 ## 5.6.1迁移5.6.2
     无改动
-    
+
 ## 5.6.2迁移5.6.3
     无改动  
-    
+
 ## 5.6.3迁移5.6.4
     无改动  
-    
+
 ## 5.6.4迁移5.6.5
     INSERT INTO plugin_info
     (id, plugin_type, plugin_code, plugin_name, plugin_json, owner, create_time, update_time, is_delete, product_code, dim_group)
@@ -3555,7 +3558,7 @@
 
 ## 5.6.5迁移5.6.6
     无改动
-    
+
 ## 5.6.6迁移5.6.7
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
@@ -3591,7 +3594,7 @@
 
 ## 5.6.8迁移5.6.9
     无改动
-    
+
 ## 5.6.9迁移5.6.10
     INSERT INTO resource_tree_info
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
@@ -3599,14 +3602,14 @@
     INSERT INTO resource_tree_info
     (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1383487130193367040, '1176308421654220800', '函数表达式demo', '4', 'zyc', 'fa fa-coffee', '', '12', '1', '2025-06-14 16:43:56', '2025-06-14 16:43:56', 'function_demo_index', '3', '', '', 'zdh', '');
-    
+
 ## 5.6.10迁移5.6.11
     alter table push_template_info add column push_msg_type varchar(64) NOT NULL DEFAULT '' COMMENT '消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他';
     update push_template_info set push_msg_type=push_type;  
-    
+
 ## 5.6.11迁移5.6.12
     无改动 
-    
+
 ## 5.6.12迁移5.6.13
     INSERT INTO function_info
     (id, function_context, function_name, function_class, function_load_path, function_scope, param_json, function_script, return_type, status, product_code, owner, create_time, update_time, is_delete)
@@ -3645,13 +3648,13 @@
          * StringUtils.substring("abc", -2) = "bc"
          * StringUtils.substring("abc", -4) = "abc"
     **/', 'string', 'off', 'zdh', 'zyc', '2025-06-23 22:39:03', '2025-06-23 22:39:03', '0');    
-    
+
 ## 5.6.13迁移5.6.14
     无改动
 
 ## 5.6.14迁移5.6.15
     无改动
-    
+
 ## 5.6.15迁移5.6.16
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
@@ -3659,7 +3662,7 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1403688414485680128, '963932648793706496', '策略组实例更新', '4', 'zyc', 'fa fa-coffee', '', '71', '1', '2025-08-09 10:36:37', '2025-08-09 10:36:37', 'strategy_group_instance_update', '5', '', '', 'zdh', '');
-    
+
 ## 5.6.16迁移5.6.17
     CREATE TABLE `customer_manager_info` (
       `id` bigint NOT NULL AUTO_INCREMENT,
@@ -3723,4 +3726,122 @@
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1434485913282416640, '1251927048050446336', '模板管理-微信公众号模板查询', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2025-11-02 10:14:53', '2025-11-02 10:14:53', 'push_template_wechattemplate_detail', '5', '', '', 'zdh', '');
 
-    
+## 5.6.17迁移5.6.18
+    无改动
+
+## 5.6.18迁移5.6.19
+    CREATE TABLE `wechat_tag_info` (
+        `id` bigint NOT NULL AUTO_INCREMENT,
+        `tid` varchar(128) DEFAULT '' COMMENT '微信tag_id',
+        `tname` varchar(128) DEFAULT '' COMMENT '微信tag_name',
+        `count` bigint DEFAULT '0' COMMENT '用户量',
+        `wechat_app` varchar(128) DEFAULT '' COMMENT '公众号',
+        `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+        `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+        `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+        `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+        PRIMARY KEY (`id`),
+        KEY `idx_tid` (`tid`),
+        KEY `idx_product_code` (`product_code`,`tid`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信标签信息表'
+   
+    CREATE TABLE `wechat_qrcode_info` (
+        `id` bigint NOT NULL AUTO_INCREMENT,
+        `qrcode` varchar(128) DEFAULT '' COMMENT '二维码code',
+        `qrcode_name` varchar(128) DEFAULT '' COMMENT '二维码名称',
+        `expire_seconds` varchar(128) DEFAULT '' COMMENT '有效时间（秒），最大2592000',
+        `action_name` varchar(128) DEFAULT '' COMMENT '二维码类型：QR_SCENE(临时整型)/QR_STR_SCENE(临时字符串)/QR_LIMIT_SCENE(永久整型)/QR_LIMIT_STR_SCENE(永久字符串)',
+        `action_info` mediumtext COMMENT '二维码详细信息',
+        `ticket` text COMMENT '获取的二维码ticket，凭借此ticket可以在有效时间内换取二维码。',
+        `qrcode_image` mediumtext COMMENT '二维码base64',
+        `url` text COMMENT '二维码图片解析后的地址，开发者可根据该地址自行生成需要的二维码图片',
+        `qrcode_custom_image` mediumtext COMMENT '自定义二维码base64',
+        `wechat_app` varchar(128) DEFAULT '' COMMENT '公众号',
+        `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+        `status` varchar(100) DEFAULT '' COMMENT '1:新建,2:成功,3:失败,4:过期',
+        `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+        `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+        `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+        PRIMARY KEY (`id`),
+        KEY `idx_qrcode` (`qrcode`),
+        KEY `idx_product_code` (`product_code`,`qrcode`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信二维码信息表'
+
+    CREATE TABLE `wechat_qrscene_info` (
+        `id` bigint NOT NULL AUTO_INCREMENT,
+        `qrscene` varchar(128) DEFAULT '' COMMENT '场景',
+        `qrscene_name` varchar(128) DEFAULT '' COMMENT '场景名称',
+        `wechat_app` varchar(128) DEFAULT '' COMMENT '公众号',
+        `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+        `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+        `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+        `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+        PRIMARY KEY (`id`),
+        KEY `idx_qrcode` (`qrscene`),
+        KEY `idx_product_code` (`product_code`,`qrscene`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信二维码场景信息表'
+
+    CREATE TABLE `wechat_menu_info` (
+        `id` bigint NOT NULL AUTO_INCREMENT,
+        `wechat_app` varchar(128) DEFAULT '' COMMENT '公众号',
+        `menu_type` varchar(16) DEFAULT '1' COMMENT '1:自定义菜单,2:个性化菜单',
+        `status` varchar(16) DEFAULT '' COMMENT '1:新建,2:启用,3:禁用',
+        `menu_name` varchar(128) DEFAULT '' COMMENT '菜单名称',
+        `tag_id` varchar(16) comment '微信tag_id',
+        `client_platform_type` varchar(4) comment '客户端版本，当前只具体到系统型号：IOS(1), Android(2),Others(3)',
+        `config`mediumtext COMMENT '菜单配置',
+        `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+        `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+        `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+        `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+        PRIMARY KEY (`id`),
+        KEY `idx_wechat_app` (`wechat_app`),
+        KEY `idx_product_code` (`product_code`,`wechat_app`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信菜单信息表';
+
+
+    CREATE TABLE `wechat_subscription_info` (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+        `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+        `wechat_id` varchar(100) NOT NULL DEFAULT ''COMMENT '服务号ID',
+        `openid` varchar(100) NOT NULL DEFAULT ''COMMENT '用户OpenID',
+        `unionid` varchar(100) NOT NULL DEFAULT ''COMMENT '用户unionid',
+        `remark` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+        `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '关注状态:1-关注,2-取消关注',
+        `subscribe_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '关注时间',
+        `unsubscribe_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '取注时间',
+        `subscribe_scene` varchar(100) NOT NULL DEFAULT '' COMMENT '关注渠道,ADD_SCENE_SEARCH 公众号搜索，ADD_SCENE_ACCOUNT_MIGRATION 公众号迁移，ADD_SCENE_PROFILE_CARD 名片分享，ADD_SCENE_QR_CODE 扫描二维码，ADD_SCENE_PROFILE_LINK 图文页内名称点击，ADD_SCENE_PROFILE_ITEM 图文页右上角菜单，ADD_SCENE_PAID 支付后关注，ADD_SCENE_WECHAT_ADVERTISEMENT 微信广告，ADD_SCENE_REPRINT 他人转载，ADD_SCENE_LIVESTREAM 视频号直播，ADD_SCENE_CHANNELS 视频号，ADD_SCENE_WXA 小程序关注，ADD_SCENE_OTHERS 其他',
+        `qr_scene_str` varchar(100) NOT NULL DEFAULT '' COMMENT '二维码扫码场景描述（开发者自定义）',
+        `is_delete` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除标志:0-未删除,1-已删除',
+        `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+        PRIMARY KEY (`id`),
+        KEY `idx_wechat_channel` (`wechat_channel`),
+        KEY `idx_wechat_id` (`wechat_id`),
+        KEY `idx_openid` (`openid`),
+        KEY `idx_status` (`status`),
+        KEY `idx_create_time` (`create_time`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信关注状态表';
+
+    CREATE TABLE `wechat_callback_log` (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+        `wechat_channel` varchar(100) NOT NULL COMMENT '服务号',
+        `wechat_id` varchar(100) NOT NULL COMMENT '服务号ID',
+        `openid` varchar(64) NOT NULL COMMENT '用户OpenID',
+        `msg_type` varchar(32) NOT NULL COMMENT '消息类型',
+        `event` varchar(128) NOT NULL COMMENT '事件类型',
+        `event_key` varchar(100) NOT NULL COMMENT '事件key',
+        `ext` mediumtext COMMENT '回调内容',
+        `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+        PRIMARY KEY (`id`),
+        KEY `idx_wechat_channel` (`wechat_channel`),
+        KEY `idx_wechat_id` (`wechat_id`),
+        KEY `idx_openid` (`openid`),
+        KEY `idx_event` (`event`,`event_key`),
+        KEY `idx_create_time` (`create_time`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信回调表';

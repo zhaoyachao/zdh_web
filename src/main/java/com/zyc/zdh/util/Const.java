@@ -195,6 +195,11 @@ public class Const {
     public static String FILTER_OPERATE_ADD = "add";
     public static String FILTER_OPERATE_DEL = "del";
 
+    public static String WECHAT_MENU_STAUTS_INIT = "1";
+    public static String WECHAT_MENU_STAUTS_ENABLE = "2";
+    public static String WECHAT_MENU_STATUS_UNENABLE = "3";
+    public static String WECHAT_MENU_STATUS_FAIL = "4";
+
 
     public static String getEnumName(String type,String code){
         Map<String, Map<String, String>> enumMap=new HashMap<>();

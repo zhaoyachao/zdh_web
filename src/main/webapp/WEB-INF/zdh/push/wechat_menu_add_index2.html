@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 微信菜单信息表新增</title>
+
+    <meta name="keywords" content="ZDH 微信菜单信息表新增">
+    <meta name="description" content="ZDH 微信菜单信息表新增">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content  animated fadeInRight">
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>功能列表</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div>
+                            <select id="product_code" name="product_code"
+                                    data-placeholder="产品code"
+                                    class="chosen-select form-control m-b" tabindex="2">
+                                <option value="">空</option>
+                            </select>
+                        </div><br />
+                        <div> <input id="wechat_app" name="wechat_app" class="form-control" type="text" value="" placeholder="微信服务号"></div><br />
+                        <div> <input id="search_input" name="search_input" class="form-control" type="text" value="" placeholder="菜单信息"></div><br />
+                        <div id="using_json"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>资源配置</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="using_json6" style="width: 100%; height: 800px">
+                            <iframe id="ifm" src="" style="width: 100%; height: 100%" frameBorder="0"></iframe>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <!-- jsTree plugin javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+    <script src="js/plugins/jsTree/jstree.min.js"></script>
+
+    <script src="js/admin/dim_product_common.js"></script>
+    <style>
+        .jstree-open > .jstree-anchor > .fa-folder:before {
+            content: "\f07c";
+        }
+
+        .jstree-default .jstree-icon.none {
+            width: 0;
+        }
+    </style>
+
+    <script>
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();//定义一个全局变量-存储任务ID
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        if (s.id == -1) {
+            console.info("新增按钮触发");
+
+        } else {
+
+            buildParam()
+        }
+
+        function buildParam() {
+            if (s.id != '-1') {
+                console.info("更新按钮触发--开始赋值对应参数");
+                //开始赋值
+                $.ajax({
+                    url: server_context+"/wechat_menu_detail",
+                    data: "id=" + s.id,
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        console.info("success");
+                        // layer.alert(JSON.stringify(data[0]))
+
+                        //初始化输入数据源select 组件
+                        var product_code = data.result.product_code;
+                        $("#product_code").val(product_code);
+                        $("#product_code").prop("disabled","true");
+                        $("#product_code").trigger("chosen:updated");
+
+
+                        //获取ETL 说明
+                        var wechat_app = data.result.wechat_app;
+                        $("#wechat_app").val(wechat_app);
+                        $("#wechat_app").attr("readonly","readonly");
+
+                        init_jstree(s.id);
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+
+
+            }
+        }
+
+        function init_jstree(id){
+            $('#using_json').jstree("destroy");
+            $('#using_json').jstree({
+                "plugins" : [ "types","search"],
+                //'plugins' : ["checkbox"], //出现选择框
+                //'checkbox': { cascade: "", three_state: true }, //不级联
+                'core' : {
+                    "check_callback": true,
+                    'data' :  function (obj, callback){
+                        $.ajax({
+                            type : "post",
+                            url : server_context+"/wechat_menu_detail",
+                            data : {"id": id},
+                            dataType : "json",
+                            async:'false',
+                            success : function(data) {
+                                console.info(data);
+                                if(data.code == "200") {
+                                    callback.call(this, data.result.menu_list);
+                                }else{
+                                    callback.call(this, []);
+                                    layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    }
+
+
+                } })
+                .bind('dblclick.jstree',function(e){
+                    console.info(e.target.id);
+                    var node_id=e.target.id.split("_anchor")[0];
+                    console.info("event:"+e.target.id.split("_anchor")[0]);
+                    if(!id){
+                        layer.msg("请双击资源名称！");
+                        return ;
+                    }
+                    $('#using_json').jstree("open_node", node_id);
+                    var node = $('#using_json').jstree("get_node", node_id);
+                    console.info("id:"+node.id+",parent:"+node.parent+",text:"+node.text);
+                    //$('#jstree').jstree('create_node', $(parent_node), { "text":new_node_text, "id":new_node_id }, position, false, false);
+                    var parent_ary = $('#using_json').jstree("get_path", node_id);
+                    console.info("level:"+parent_ary.length);
+                    var level=parent_ary.length;
+
+
+                    var is_open = $('#using_json').jstree("is_open", node_id);
+                    console.info("is_open:"+is_open);
+                    $("#ifm").attr("src", encodeURI(server_context+"/wechat_menu_add_index3?id="+s.id+"&text="+node.text+"&level="+level+"&node_id="+node_id));
+
+                });
+        }
+
+        $(document).ready(function () {
+
+            $('#search_input').keyup(function () {
+                $('#using_json').jstree(true).search($('#search_input').val());
+
+            });
+
+        });
+
+        function refash(id){
+            $('#using_json').jstree(true).refresh();
+            $('#using_json').jstree("open_node", id);
+        }
+
+    </script>
+
+</body>
+
+</html>

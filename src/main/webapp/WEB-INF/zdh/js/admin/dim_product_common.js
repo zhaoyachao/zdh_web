@@ -23,7 +23,9 @@
                   }
                   $('#product_code').html(str);
                   $("#product_code").trigger("chosen:updated");
-                  $('#product_code').chosen();
+                  $('#product_code').chosen().on("change", function (evt, params) {
+                      product_callback();
+                  });
               },
               //处理完成
               complete: function () {

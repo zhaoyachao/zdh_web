@@ -3,10 +3,12 @@ package com.zyc.zdh.entity;
 import com.zyc.zdh.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
 
 @Table(name = "customer_manager_info")
 public class CustomerManagerInfo extends BaseProductAuthInfo{

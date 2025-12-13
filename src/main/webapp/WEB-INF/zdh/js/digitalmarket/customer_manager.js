@@ -12,7 +12,7 @@
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
-              title: '标签配置',
+              title: '客户配置',
               shadeClose: false,
               resize: true,
               fixed: false,
@@ -25,7 +25,7 @@
                   console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/customer_manager_list?"+$("#customer_manager_form").serialize()+"&tm="+new Date(),
+                      url: server_context+"/customer_manager_list_by_page?"+$("#customer_manager_form").serialize()+"&tm="+new Date(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -56,6 +56,30 @@
         }
 
     });
+
+      $('#batchadd').click(function () {
+          parent.layer.open({
+              type: 2,
+              title: '批量上传配置',
+              shadeClose: false,
+              resize: true,
+              fixed: false,
+              maxmin: true,
+              shade: 0.1,
+              area : ['45%', '60%'],
+              //area: ['450px', '500px'],
+              content: server_context+"/customer_manager_batchadd_index?id=-1", //iframe的url
+              end : function () {
+                  console.info("弹框结束");
+                  $('#exampleTableEvents-table').bootstrapTable('destroy');
+                  $('#exampleTableEvents').bootstrapTable('refresh', {
+                      url: server_context+"/customer_manager_list_by_page?"+$("#customer_manager_form").serialize()+"&tm="+new Date(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
+                  });
+              }
+          });
+      });
 
       function deleteMs(ids) {
           $.ajax({
@@ -277,20 +301,35 @@
 
       $('#exampleTableEvents').bootstrapTable('destroy').bootstrapTable({
       method: "POST",
-      url: server_context+"/customer_manager_list?"+$("#customer_manager_form").serialize(),
+      url: server_context+"/customer_manager_list_by_page?"+$("#customer_manager_form").serialize(),
       search: true,
       pagination: true,
       showRefresh: true,
       showToggle: true,
       showColumns: true,
+          sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+          pageNumber: 1,                       //初始化加载第一页，默认第一页
+          pageSize: 10,                       //每页的记录行数（*）
       iconSize: 'outline',
-      responseHandler:function (res) {
-          if(res.code != "200"){
+          queryParams: function (params) {
+              // 此处使用了LayUi组件 是为加载层
+              //loadIndex = layer.load(1);
+              let resRepor = {
+                  //服务端分页所需要的参数
+                  limit: params.limit,
+                  offset: params.offset
+              };
+              return resRepor;
+          },
+          responseHandler: res => {
+              // 关闭加载层
+              //layer.close(loadIndex);
               layer.msg(res.msg);
-              return ;
-          }
-          return res.result;
-      },
+              return {
+                  "total":res.result.total,
+                  "rows": res.result.rows
+              }
+          },
       toolbar: '#exampleTableEventsToolbar',
       icons: {
         refresh: 'glyphicon-repeat',

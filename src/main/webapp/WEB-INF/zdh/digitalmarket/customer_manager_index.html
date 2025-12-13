@@ -92,8 +92,11 @@
                                     <button id="remove" type="button" class="btn btn-outline btn-default">
                                         <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
                                     </button>
+                                    <button id="batchadd" type="button" class="btn btn-outline btn-default">
+                                        <i class="glyphicon glyphicon-file" aria-hidden="true"></i>
+                                    </button>
                                 </div>
-                                <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true">
+                                <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true" data-content-type="application/x-www-form-urlencoded" data-query-params="queryParams">
 
                                 </table>
                             </div>
@@ -138,9 +141,19 @@
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
-                url: server_context+"/customer_manager_list?"+$("#customer_manager_form").serialize(),
+                url: server_context+"/customer_manager_list_by_page?"+$("#customer_manager_form").serialize(),
                 contentType: "application/json;charset=utf-8",
-                dataType: "json"
+                dataType: "json",
+                queryParams: function (params) {
+                    // 此处使用了LayUi组件 是为加载层
+                    //loadIndex = layer.load(1);
+                    let resRepor = {
+                        //服务端分页所需要的参数
+                        limit: params.limit,
+                        offset: params.offset
+                    };
+                    return resRepor;
+                },
             });
         })
 

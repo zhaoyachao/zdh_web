@@ -3596,6 +3596,141 @@ CREATE TABLE `push_channel_pool_info` (
   KEY `idx_pool_code` (`pool_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='push通道池配置'
 
+CREATE TABLE `customer_manager_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `uid` varchar(128) DEFAULT '' COMMENT '用户id',
+  `uid_type` varchar(128) DEFAULT '' COMMENT '用户id类型',
+  `source` varchar(128) DEFAULT '' COMMENT '用户所属平台',
+  `config` mediumtext COMMENT '其他信息--公司,地址等',
+  `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+  PRIMARY KEY (`id`),
+  KEY `idx_uid` (`product_code`,`uid`, `source`, `uid_type`),
+  KEY `idx_source` (`product_code`,`source`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户信息表'
+
+CREATE TABLE `wechat_tag_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `tid` varchar(128) DEFAULT '' COMMENT '微信tag_id',
+  `tname` varchar(128) DEFAULT '' COMMENT '微信tag_name',
+  `count` bigint DEFAULT '0' COMMENT '用户量',
+  `wechat_app` varchar(128) DEFAULT '' COMMENT '公众号',
+  `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+  PRIMARY KEY (`id`),
+  KEY `idx_tid` (`tid`),
+  KEY `idx_product_code` (`product_code`,`tid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信标签信息表'
+
+CREATE TABLE `wechat_qrcode_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `qrcode` varchar(128) DEFAULT '' COMMENT '二维码code',
+  `qrcode_name` varchar(128) DEFAULT '' COMMENT '二维码名称',
+  `expire_seconds` varchar(128) DEFAULT '' COMMENT '有效时间（秒），最大2592000',
+  `action_name` varchar(128) DEFAULT '' COMMENT '二维码类型：QR_SCENE(临时整型)/QR_STR_SCENE(临时字符串)/QR_LIMIT_SCENE(永久整型)/QR_LIMIT_STR_SCENE(永久字符串)',
+  `action_info` mediumtext COMMENT '二维码详细信息',
+  `ticket` text COMMENT '获取的二维码ticket，凭借此ticket可以在有效时间内换取二维码。',
+  `qrcode_image` mediumtext COMMENT '二维码base64',
+  `url` text COMMENT '二维码图片解析后的地址，开发者可根据该地址自行生成需要的二维码图片',
+  `qrcode_custom_image` mediumtext COMMENT '自定义二维码base64',
+  `wechat_app` varchar(128) DEFAULT '' COMMENT '公众号',
+  `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+  `status` varchar(100) DEFAULT '' COMMENT '1:新建,2:成功,3:失败,4:过期',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+  PRIMARY KEY (`id`),
+  KEY `idx_qrcode` (`qrcode`),
+  KEY `idx_product_code` (`product_code`,`qrcode`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信二维码信息表'
+
+
+CREATE TABLE `wechat_qrscene_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `qrscene` varchar(128) DEFAULT '' COMMENT '场景',
+  `qrscene_name` varchar(128) DEFAULT '' COMMENT '场景名称',
+  `wechat_app` varchar(128) DEFAULT '' COMMENT '公众号',
+  `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+  PRIMARY KEY (`id`),
+  KEY `idx_qrcode` (`qrscene`),
+  KEY `idx_product_code` (`product_code`,`qrscene`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信二维码场景信息表'
+
+
+CREATE TABLE `wechat_menu_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `wechat_app` varchar(128) DEFAULT '' COMMENT '公众号',
+  `menu_type` varchar(16) DEFAULT '1' COMMENT '1:自定义菜单,2:个性化菜单',
+  `status` varchar(16) DEFAULT '' COMMENT '1:新建,2:启用,3:禁用',
+  `menu_name` varchar(128) DEFAULT '' COMMENT '菜单名称',
+  `tag_id` varchar(16) comment '微信tag_id',
+  `client_platform_type` varchar(4) comment '客户端版本，当前只具体到系统型号：IOS(1), Android(2),Others(3)',
+  `config`mediumtext COMMENT '菜单配置',
+  `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+  PRIMARY KEY (`id`),
+  KEY `idx_wechat_app` (`wechat_app`),
+  KEY `idx_product_code` (`product_code`,`wechat_app`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信菜单信息表';
+
+
+CREATE TABLE `wechat_subscription_info` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+  `wechat_id` varchar(100) NOT NULL DEFAULT ''COMMENT '服务号ID',
+  `openid` varchar(100) NOT NULL DEFAULT ''COMMENT '用户OpenID',
+  `unionid` varchar(100) NOT NULL DEFAULT ''COMMENT '用户unionid',
+  `remark` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '关注状态:1-关注,2-取消关注',
+  `subscribe_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '关注时间',
+  `unsubscribe_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '取注时间',
+  `subscribe_scene` varchar(100) NOT NULL DEFAULT '' COMMENT '关注渠道,ADD_SCENE_SEARCH 公众号搜索，ADD_SCENE_ACCOUNT_MIGRATION 公众号迁移，ADD_SCENE_PROFILE_CARD 名片分享，ADD_SCENE_QR_CODE 扫描二维码，ADD_SCENE_PROFILE_LINK 图文页内名称点击，ADD_SCENE_PROFILE_ITEM 图文页右上角菜单，ADD_SCENE_PAID 支付后关注，ADD_SCENE_WECHAT_ADVERTISEMENT 微信广告，ADD_SCENE_REPRINT 他人转载，ADD_SCENE_LIVESTREAM 视频号直播，ADD_SCENE_CHANNELS 视频号，ADD_SCENE_WXA 小程序关注，ADD_SCENE_OTHERS 其他',
+  `qr_scene_str` varchar(100) NOT NULL DEFAULT '' COMMENT '二维码扫码场景描述（开发者自定义）',
+  `is_delete` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除标志:0-未删除,1-已删除',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_wechat_channel` (`wechat_channel`),
+  KEY `idx_wechat_id` (`wechat_id`),
+  KEY `idx_openid` (`openid`),
+  KEY `idx_status` (`status`),
+  KEY `idx_create_time` (`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信关注状态表';
+
+CREATE TABLE `wechat_callback_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `wechat_channel` varchar(100) NOT NULL COMMENT '服务号',
+  `wechat_id` varchar(100) NOT NULL COMMENT '服务号ID',
+  `openid` varchar(64) NOT NULL COMMENT '用户OpenID',
+  `msg_type` varchar(32) NOT NULL COMMENT '消息类型',
+  `event` varchar(128) NOT NULL COMMENT '事件类型',
+  `event_key` varchar(100) NOT NULL COMMENT '事件key',
+  `ext` mediumtext COMMENT '回调内容',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_wechat_channel` (`wechat_channel`),
+  KEY `idx_wechat_id` (`wechat_id`),
+  KEY `idx_openid` (`openid`),
+  KEY `idx_event` (`event`,`event_key`),
+  KEY `idx_create_time` (`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信回调表';
+
+
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
 DROP TABLE IF EXISTS QRTZ_SCHEDULER_STATE;

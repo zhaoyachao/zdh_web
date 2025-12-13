@@ -18,6 +18,29 @@ public class ResoveExcel {
     /**
      *
      * @param multipartFile 上传文件,支持xls, xlsx格式
+     * @param colNames 字段按顺序
+     * @throws Exception
+     */
+    public static List<Map<String, Object>> importExcel(MultipartFile multipartFile, List<String> colNames) throws Exception {
+        //检查文件是否支持
+        checkFile(multipartFile);
+
+        //生成excel
+        Workbook wb = readExcel(multipartFile.getInputStream());
+
+        //读取数据,并删除表头
+        List<Map<String, Object>> data = readExcelSheet(wb.getSheetAt(0), colNames, 1);
+
+        if(data == null || data.size()<1){
+            throw new Exception("数据文件为空,请检查文件是否为空");
+        }
+
+        return data;
+    }
+
+    /**
+     *
+     * @param multipartFile 上传文件,支持xls, xlsx格式
      * @param colNames 中英文字段映射,key:中文 value:英文
      * @param isEnglish 上传的文件表头是否英文, true:英文,false:中文
      * @throws Exception

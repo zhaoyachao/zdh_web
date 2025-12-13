@@ -1,4 +1,4 @@
-package com.zyc.zdh.push;
+package com.zyc.zdh.pushx.entity;
 
 public class WechatTemplateRequest {
 

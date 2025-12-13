@@ -247,3 +247,11 @@ function get_del_class(row){
 function download_document(){
     window.open(server_context+'/crowd_file_document_download');
 }
+
+function download_document_customer_manager(){
+    window.open(server_context+'/customer_manager_document_download');
+}
+
+function product_callback(){
+
+}

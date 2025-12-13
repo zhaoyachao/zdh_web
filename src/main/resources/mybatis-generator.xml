@@ -11,25 +11,33 @@
         <!--自定义代码生成插件 -->
         <plugin type="com.zyc.generator.ZdhMybatisPlugin">
             <!--自定义代码生成插件-生成controller,entity,baseMapper, mapper包路径 -->
-            <property name="controllerPackage" value="com.zyc.zdh.controller"/>
+            <property name="controllerPackage" value="com.zyc.zdh.controller.zdhpush"/>
             <property name="entityPackage" value="com.zyc.zdh.entity"/>
             <!--自定义代码生成插件-生成baseMapper包路径,basemapper的作用,继承注解方式实现代码逻辑,basemapper 和dao层mapper分离可以防止代码覆盖自定义的逻辑 -->
             <property name="baseMapperPackage" value="com.zyc.notscan.base"/>
             <property name="mapperPackage" value="com.zyc.zdh.dao"/>
+            <property name="htmlPackage" value="src/main/webapp/WEB-INF/zdh/push"/>
+            <property name="jsPackage" value="src/main/webapp/WEB-INF/zdh/js/push"/>
 
             <!--自定义代码生成插件-生成controller,entity,baseMapper, mapper包, 是否启用配置 -->
             <property name="enableGeneratorController" value="true"/>
             <property name="enableGeneratorBaseMapper" value="true"/>
             <property name="enableGeneratorMapper" value="true"/>
+            <property name="enableGeneratorHtml" value="true"/>
 
             <!--自定义代码生成插件-生成controller,entity,baseMapper, mapper包, 是否启用覆盖配置 -->
             <property name="overwriteController" value="false"/>
             <property name="overwriteBaseMapper" value="true"/>
             <property name="overwriteMapper" value="false"/>
+            <property name="overwriteHtml" value="false"/>
+
             <!--自定义代码生成插件-生成controller,baseMapper, mapper层生成模板配置 -->
             <property name="templateControllerFile" value="src/main/resources/TemplateController.ftl"/>
             <property name="templateBaseMapperFile" value="src/main/resources/TemplateBaseMapper.ftl"/>
             <property name="templateMapperFile" value="src/main/resources/TemplateMapper.ftl"/>
+            <property name="templateHtmlFile" value="src/main/resources/TemplateHtml.ftl"/>
+            <property name="templateAddHtmlFile" value="src/main/resources/TemplateAddHtml.ftl"/>
+            <property name="templateJsFile" value="src/main/resources/TemplateJs.ftl"/>
 
         </plugin>
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
@@ -436,6 +444,34 @@
 <!--                </table>-->
 
 <!--        <table tableName="customer_manager_info" domainObjectName="CustomerManagerInfo" mapperName="BaseCustomerManagerMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--            <table tableName="wechat_tag_info" domainObjectName="WechatTagInfo" mapperName="BaseWechatTagMapper">-->
+<!--                <property name="useActualColumnNames" value="true" />-->
+<!--                <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--            </table>-->
+
+<!--        <table tableName="wechat_qrcode_info" domainObjectName="WechatQrcodeInfo" mapperName="BaseWechatQrcodeMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="wechat_qrscene_info" domainObjectName="WechatQrsceneInfo" mapperName="BaseWechatQrsceneMapper">-->
+<!--            <property name="useActualColumnNames" value="true" />-->
+<!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="wechat_menu_info" domainObjectName="WechatMenuInfo" mapperName="BaseWechatMenuMapper">-->
 <!--            <property name="useActualColumnNames" value="true" />-->
 <!--            <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->

@@ -527,24 +527,53 @@ public class WeMockController extends BaseController{
 
     /**
      * 短链生成
-     * @param param
+     * @param param 参数，可以是URL链接或文本内容
+     * @param content 内容参数，当param不是URL时使用此参数
+     * @param use_cache 是否使用缓存
      * @return
      */
     @SentinelResource(value = "short_url_generator", blockHandler = "handleReturn")
     @RequestMapping(value = "/short_url_generator", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<Map<String, Object>> short_url_generator(String param, String use_cache) {
+    public ReturnInfo<Map<String, Object>> short_url_generator(String param, String content, String use_cache) {
         try{
-            Map<String, Object> jsonObject = JsonUtil.createEmptyMap();
-            jsonObject.put("url", param);
-            jsonObject.put("use_cache", use_cache);
+            Map<String, Object> map = JsonUtil.createEmptyMap();
+
+            // 判断参数类型：如果param是URL链接，则使用url参数，否则使用content参数
+            if (isValidUrl(param)) {
+                map.put("url", param);
+            } else {
+                // 如果param不是URL，检查content参数
+                if (StringUtils.isNotEmpty(content)) {
+                    map.put("content", content);
+                } else {
+                    throw new Exception("请输入URL链接或文本内容");
+                }
+            }
+
+            map.put("use_cache", use_cache);
             String host = ConfigUtil.getValue(ConfigUtil.ZDH_WEMOCK_SHORT_HOST, "http://127.0.0.1:9001");
             String path = ConfigUtil.getValue(ConfigUtil.ZDH_WEMOCK_SHORT_GENERATOR, "/api/short/generator");
-            String ret = HttpUtil.postJSON(host+path, JsonUtil.formatJsonString(jsonObject));
+            String ret = HttpUtil.postJSON(host+path, JsonUtil.formatJsonString(map));
             return ReturnInfo.buildSuccess(JsonUtil.toJavaMap(ret));
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
             return ReturnInfo.buildError(e);
         }
+    }
+
+    /**
+     * 验证字符串是否为有效的URL
+     * @param url 待验证的字符串
+     * @return 是否为有效的URL
+     */
+    private boolean isValidUrl(String url) {
+        if (StringUtils.isEmpty(url)) {
+            return false;
+        }
+
+        // 简单的URL验证逻辑
+        String urlPattern = "^(https?|ftp)://[^\\s/$.?#].[^\\s]*$";
+        return url.matches(urlPattern);
     }
 }

@@ -296,7 +296,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         npl.add(new BasicNameValuePair("mode","cancel"));
                                         JobCommon2.insertLog(tl,"INFO","杀死任务url: "+cancel_url);
                                         try{
-                                            String restul=HttpUtil.getRequest(cancel_url,npl);
+                                            String restul= HttpUtil.getRequest(cancel_url,npl);
                                         }catch (Exception e){
                                             JobCommon2.insertLog(tl,"INFO","杀死当前任务异常,判定服务已死亡,自动更新状态为killed");
                                             taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
@@ -319,7 +319,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         //npl.add(new BasicNameValuePair("status","running"));
                                         String restul="";
                                         try{
-                                            restul=HttpUtil.getRequest(url,npl);
+                                            restul= HttpUtil.getRequest(url,npl);
                                         }catch (Exception e){
                                             taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
                                             continue;

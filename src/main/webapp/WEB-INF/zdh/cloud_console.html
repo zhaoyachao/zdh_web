@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZDH 云服务控制台</title>
+    <meta name="keywords" content="ZDH, 云服务, 控制台">
+    <meta name="description" content="ZDH 云服务平台总控制台">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+    <style>
+        .console-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .chat-box {
+            padding: 15px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+
+        .user-message {
+            flex-direction: row-reverse;
+        }
+
+        .assistant-message {
+            flex-direction: row;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1ab394;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            flex-shrink: 0;
+        }
+
+        .user-message .avatar {
+            background: #337ab7;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px;
+            border-radius: 18px;
+            background: #f8f9fa;
+            border: 1px solid #e7eaec;
+            word-wrap: break-word;
+        }
+
+        .user-message .message-content {
+            background: #337ab7;
+            color: white;
+            border-color: #2e6da4;
+        }
+
+        .chat-input {
+            margin-top: 20px;
+        }
+
+        #questionInput {
+            border-radius: 20px;
+            padding: 12px 20px;
+            border: 2px solid #e7eaec;
+        }
+
+        #questionInput:focus {
+            border-color: #1ab394;
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+    <div class="console-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h1><i class="fa fa-cloud"></i> ZDH 云服务控制台</h1>
+                    <p class="text-muted">智能问答助手</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-question-circle"></i> 智能问答助手</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="chat-box">
+                            <div class="chat-messages" id="chatMessages" style="height: 500px; overflow-y: auto; margin-bottom: 20px; padding: 10px; border: 1px solid #e7eaec; border-radius: 5px;"></div>
+
+                            <div class="chat-input">
+                                <div class="input-group">
+                                    <input type="text" id="questionInput" class="form-control" placeholder="请输入您的问题..." onkeypress="handleKeyPress(event)">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary" type="button" onclick="askQuestion()">
+                                            <i class="fa fa-paper-plane"></i> 发送
+                                        </button>
+                                        <button class="btn btn-default" type="button" onclick="clearChat()">
+                                            <i class="fa fa-trash"></i> 清空
+                                        </button>
+                                    </span>
+                                </div>
+                                <small class="text-muted">支持关于云服务、系统操作、故障排查等相关问题的咨询</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/zdh_common.js"></script>
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <script>
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                askQuestion();
+            }
+        }
+
+        function askQuestion() {
+            const question = $('#questionInput').val().trim();
+            if (!question) {
+                return;
+            }
+
+            // 添加用户问题到聊天窗口
+            addMessage('user', question);
+            $('#questionInput').val('');
+
+            // 显示正在思考
+            addMessage('assistant', '思考中...', true);
+
+            updateMessage('当前开发中...');
+            // 发送请求到后端
+        }
+
+        function addMessage(role, content, isThinking = false) {
+            const messageDiv = $('<div>').addClass('message ' + role + '-message');
+            if (isThinking) {
+                messageDiv.attr('id', 'thinking-message');
+            }
+
+            const avatar = $('<span>').addClass('avatar').html(
+                role === 'user' ? '<i class="fa fa-user"></i>' : '<i class="fa fa-robot"></i>'
+            );
+
+            const contentDiv = $('<div>').addClass('message-content').text(content);
+
+            messageDiv.append(avatar).append(contentDiv);
+            $('#chatMessages').append(messageDiv);
+            $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+        }
+
+        function updateMessage(content) {
+            $('#thinking-message .message-content').text(content);
+            $('#thinking-message').removeAttr('id');
+        }
+
+        function clearChat() {
+            $('#chatMessages').empty();
+            // 添加欢迎消息
+            addMessage('assistant', '您好！我是智能问答助手，我可以帮助您解答关于云服务平台的各种问题。请问您有什么需要帮助的吗？');
+        }
+
+        // 初始化聊天窗口
+        $(document).ready(function() {
+            clearChat(); // 初始化欢迎消息
+        });
+    </script>
+</body>
+
+</html>
