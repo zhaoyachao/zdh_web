@@ -5,17 +5,18 @@ cd "$bin_path/.."
 pt=`pwd`
 APP_NAME=${pt}"/zdh_web.jar"
 RUN_MODE=prod
+if [ -n "$2" ]; then
+    RUN_MODE="$2"
+fi
 echo "当前环境:$RUN_MODE"
 export ZDH_RUN_MODE=$RUN_MODE
 
-#APP_DIR=./
 APP_DIR=`pwd`
-echo "当前路径"
-echo $APP_DIR
+echo "当前路径:$APP_DIR"
 
 #使用说明，用来提示输入参数
 usage() {
- echo "Usage: sh zdh_web.sh [start|stop|restart|status]"
+ echo "Usage: sh zdh_web.sh [start|stop|restart|status] [prod|dev]"
  exit 1
 }
 

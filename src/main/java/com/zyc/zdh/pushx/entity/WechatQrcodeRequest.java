@@ -5,6 +5,21 @@ public class WechatQrcodeRequest {
     private String action_name;
     private Integer expire_seconds;
     private String scene_str;
+
+    private Integer is_edit;
+
+    private String url;
+
+    private String appid;
+
+    private String path;
+
+    private Integer open_version;
+
+    private String debug_url;
+
+    private Integer permit_sub_rule;
+
     private String sign;
 
     public String getChannel() {
@@ -37,6 +52,62 @@ public class WechatQrcodeRequest {
 
     public void setScene_str(String scene_str) {
         this.scene_str = scene_str;
+    }
+
+    public Integer getIs_edit() {
+        return is_edit;
+    }
+
+    public void setIs_edit(Integer is_edit) {
+        this.is_edit = is_edit;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getAppid() {
+        return appid;
+    }
+
+    public void setAppid(String appid) {
+        this.appid = appid;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public Integer getOpen_version() {
+        return open_version;
+    }
+
+    public void setOpen_version(Integer open_version) {
+        this.open_version = open_version;
+    }
+
+    public String getDebug_url() {
+        return debug_url;
+    }
+
+    public void setDebug_url(String debug_url) {
+        this.debug_url = debug_url;
+    }
+
+    public Integer getPermit_sub_rule() {
+        return permit_sub_rule;
+    }
+
+    public void setPermit_sub_rule(Integer permit_sub_rule) {
+        this.permit_sub_rule = permit_sub_rule;
     }
 
     public String getSign() {

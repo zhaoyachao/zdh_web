@@ -723,7 +723,14 @@
   + v5.6.19 [zdh_web]前端优化文件上传-支持托拽(部分功能)
   + v5.6.19 [zdh_web]优化客户画像批量上传
   + v5.6.19 [zdh_web]5.6.19是5.6.x最后一个版本,5.7.x版本会删除所有闭源依赖(minio等)
-  
+
+  + v5.7.0 [zdh_web]重构代码,优化项目结构
+  + v5.7.0 [zdh_web]新增产品资源同步
+  + v5.7.0 [zdh_web]优化httputil
+  + v5.7.0 [zdh_web]推送服务-新增微信相关推送能力
+  + v5.7.0 [zdh_web]优化文件上传
+  + v5.7.0 [zdh_web]权限增加url唯一限制,部分接口修改权限控制仅管理员可修改
+  + v5.7.0 [zdh_web]审批流修改跨产品审批bug
 
   
 # 版本迁移步骤  
@@ -3846,3 +3853,317 @@
         KEY `idx_event` (`event`,`event_key`),
         KEY `idx_create_time` (`create_time`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信回调表';
+
+## 5.6.19迁移5.7.0
+
+    CREATE TABLE `wechat_rule_info` (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+        `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+        `rule_name` varchar(100) NOT NULL DEFAULT ''COMMENT '规则名称',
+        `event` varchar(128) NOT NULL COMMENT '事件类型',
+        `event_key` varchar(100) NOT NULL COMMENT '事件key',
+        `weight` varchar(8) NOT NULL COMMENT '权重',
+        `rule_config` mediumtext COMMENT '回复规则',
+        `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+        `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+        `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+        `status`varchar(8) NOT NULL DEFAULT '2' COMMENT '状态:1-启用,2-禁用',
+        `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_wechat_channel` (`wechat_channel`),
+    KEY `idx_event` (`event`),
+    KEY `idx_event_key` (`event_key`),
+    KEY `idx_create_time` (`create_time`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信回复规则表';
+    
+    
+    CREATE TABLE IF NOT EXISTS push_task_log (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',
+        request_id BIGINT COMMENT '由当前服务自动生成(表示当前一次会话id)',
+        message_id BIGINT COMMENT '由当前服务生成,唯一的一条消息id',
+        source VARCHAR(16) NOT NULL COMMENT '来源，一般指平台名称',
+        sub_source VARCHAR(64) COMMENT '子来源，SAAS服务使用方公司的标识',
+        template_id VARCHAR(128) NOT NULL COMMENT '推送模版ID',
+        acc VARCHAR(128) NOT NULL COMMENT '推送账号',
+        acc_type VARCHAR(16) NOT NULL COMMENT '账号类型',
+        title VARCHAR(256) COMMENT '推送标题',
+        content TEXT COMMENT '推送内容，支持变量',
+        sign_name VARCHAR(64) COMMENT '内容签名',
+        param TEXT COMMENT '自定义参数，JSON格式',
+        `ref` VARCHAR(255) COMMENT '其他引用',
+        channel VARCHAR(64) COMMENT '渠道',
+        request_time VARCHAR(32) COMMENT '请求时间,毫秒级时间戳',
+        push_server VARCHAR(64) COMMENT '当前推送服务',
+        push_msg_type VARCHAR(8) COMMENT '消息类型',
+        queue_name VARCHAR(128) COMMENT '队列名称',
+        channel_pool VARCHAR(64) COMMENT '通道池',
+        channel_acc VARCHAR(128) COMMENT '通道可识别的用户账号',
+        channel_acc_type VARCHAR(16) COMMENT '通道用户账号类型',
+        device_type VARCHAR(16) COMMENT '设备类型, ios, huawei, android',
+        device_id VARCHAR(256) COMMENT '设备ID',
+        app VARCHAR(64) COMMENT 'app标识, 主要用于push推送时区分app应用',
+        push_channel VARCHAR(64) COMMENT '通道商',
+        channel_template_id VARCHAR(128) COMMENT '通道商模版id',
+        id_mapping_url VARCHAR(512) COMMENT '完整id mapping url',
+        is_html TINYINT(1) DEFAULT 0 COMMENT '是否html, 0:false, 1:true',
+        app_id VARCHAR(64) COMMENT '小程序应用id',
+        miniprogram_state VARCHAR(32) DEFAULT 'formal' COMMENT '跳转小程序类型：developer为开发版；trial为体验版；formal为正式版；默认为正式版',
+        page VARCHAR(512) COMMENT '点击模板卡片后的跳转页面，仅限本小程序内的页面',
+        lang VARCHAR(16) DEFAULT 'zh_CN' COMMENT '进入小程序查看的语言类型',
+        url VARCHAR(512) COMMENT 'URL',
+        status VARCHAR(8) COMMENT '当前任务状态: 1:新建,2:发送中,3:调用成功,4:调用失败',
+        error_code VARCHAR(255) COMMENT '失败码',
+        error_msg VARCHAR(512) COMMENT '失败说明',
+        third_code VARCHAR(255) COMMENT '第三方失败码',
+        third_msg VARCHAR(512) COMMENT '第三方失败说明',
+        deliver_time VARCHAR(32) COMMENT '送达时间',
+        deliver_status VARCHAR(32) COMMENT '送达状态',
+        channels VARCHAR(512) COMMENT '已经使用过的通道列表，JSON数组格式',
+        `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+        `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
+        `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+        create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_source (source),
+    INDEX idx_template_id (template_id),
+    INDEX idx_acc (acc),
+    INDEX idx_acc_type (acc_type),
+    INDEX idx_create_time (create_time),
+    INDEX idx_request_id (request_id),
+    INDEX idx_message_id (message_id),
+    INDEX idx_status (status)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='推送任务基础表';
+    
+    
+    CREATE TABLE `wechat_media_info` (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+        `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+        `media_name` varchar(128) NOT NULL DEFAULT '' COMMENT '规则名称',
+        `media_desc` varchar(512) NOT NULL DEFAULT '' COMMENT '素材说明',
+        `media_category` varchar(8) NOT NULL DEFAULT '' COMMENT '素材分类,1:永久,2:临时',
+        `media_type` varchar(16) NOT NULL DEFAULT '' COMMENT '素材类型,image, voice, video, thumb',
+        `media_str` mediumtext COMMENT '素材字符串,base64加密,素材不超过1M大小',
+        `media_id` varchar(512) NOT NULL DEFAULT '' COMMENT '素材id',
+        `url` text COMMENT '素材链接',
+        `title` varchar(128) NOT NULL DEFAULT '' COMMENT '视频标题',
+        `introduction` text COMMENT '视频标题简介',
+        `valid_start_time` varchar(20) NOT NULL DEFAULT ''  COMMENT '有效开始时间',
+        `valid_end_time` varchar(20) NOT NULL DEFAULT '' COMMENT '有效结束时间',
+        `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+        `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+        `is_delete` varchar(8) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+        `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_wechat_channel` (`wechat_channel`),
+    KEY `idx_media_id` (`media_id`),
+    KEY `idx_media_name` (`media_name`),
+    KEY `idx_create_time` (`create_time`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信素材表';
+    
+    alter table wechat_qrcode_info add column `appid` varchar(256) not null DEFAULT '' COMMENT '小程序appid' after qrcode_custom_image,
+    add column `path` varchar(256) not null DEFAULT '' COMMENT '小程序页面路径'  after appid,
+    add column `open_version` varchar(8) not null DEFAULT '3' COMMENT '小程序版本,1:开发版 2:体验版 3:正式版'  after path,
+    add column `debug_url` text COMMENT '测试链接'  after open_version,
+    add column `permit_sub_rule` varchar(8) not null DEFAULT '1' COMMENT '子路径独占规则,1:不占用 2:独占' after debug_url;
+
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1439659600709160960, '1251925635509522432', '微信服务', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2025-11-16 16:53:16', '2025-11-16 16:53:16', '', '1', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1440477003969990656, '1439659600709160960', '微信标签', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-11-18 23:01:21', '2025-11-18 23:01:21', 'wechat_tag_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1441227630736052224, '1439659600709160960', '微信二维码', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-11-21 00:44:04', '2025-11-21 00:44:04', 'wechat_qrcode_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1441228994446888960, '1439659600709160960', '微信菜单', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-11-21 00:49:29', '2025-11-21 00:49:29', 'wechat_menu_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1441750812706476032, '1439659600709160960', '微信场景', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-11-22 11:23:00', '2025-11-22 11:23:00', 'wechat_qrscene_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1444502365553037312, '802848818109353984', '控制台', '2', 'zyc', 'fa fa-coffee', '', '-1', '1', '2025-11-30 01:36:42', '2025-12-31 09:53:47', 'cloud_console', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1450892516483141632, '1439659600709160960', '自动回复', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-12-17 16:48:52', '2025-12-17 16:48:52', 'wechat_rule_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1452294164623396864, '1251925635509522432', '消息记录', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2025-12-21 13:38:31', '2025-12-21 13:38:31', 'push_task_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1454271454639034368, '1439659600709160960', '微信素材', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2025-12-27 00:35:34', '2025-12-27 00:35:34', 'wechat_media_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456306298827051008, '1440477003969990656', '微信标签列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 15:21:19', '2026-01-01 15:21:19', 'wechat_tag_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456306377038237696, '1440477003969990656', '微信标签分页列表', '5', 'zyc', 'fa fa-coffee', '', '2', '1', '2026-01-01 15:21:37', '2026-01-01 15:21:37', 'wechat_tag_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456306506659008512, '1440477003969990656', '微信标签-新增页面', '5', 'zyc', 'fa fa-coffee', '', '3', '1', '2026-01-01 15:22:08', '2026-01-01 15:22:08', 'wechat_tag_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456306729154252800, '1440477003969990656', '微信标签-明细', '5', 'zyc', 'fa fa-coffee', '', '4', '1', '2026-01-01 15:23:01', '2026-01-01 15:23:01', 'wechat_tag_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456306791762628608, '1440477003969990656', '微信标签-更新', '5', 'zyc', 'fa fa-coffee', '', '5', '1', '2026-01-01 15:23:16', '2026-01-01 15:23:16', 'wechat_tag_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456306853976739840, '1440477003969990656', '微信标签-新增', '5', 'zyc', 'fa fa-coffee', '', '6', '1', '2026-01-01 15:23:31', '2026-01-01 15:23:31', 'wechat_tag_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456306913552633856, '1440477003969990656', '微信标签-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-01-01 15:23:45', '2026-01-01 15:23:45', 'wechat_tag_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456307096554311680, '1440477003969990656', '微信标签-同步微信', '5', 'zyc', 'fa fa-coffee', '', '8', '1', '2026-01-01 15:24:29', '2026-01-01 15:24:29', 'wechat_tag_cloud_edit', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456307202359824384, '1440477003969990656', '微信标签-微信删除', '5', 'zyc', 'fa fa-coffee', '', '8', '1', '2026-01-01 15:24:54', '2026-01-01 15:24:54', 'wechat_tag_cloud_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456307966348103680, '1441227630736052224', '微信二维码-列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 15:27:56', '2026-01-01 15:27:56', 'wechat_qrcode_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456308021759053824, '1441227630736052224', '微信二维码-分页列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 15:28:09', '2026-01-01 15:28:09', 'wechat_qrcode_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456308141514821632, '1441227630736052224', '微信二维码-新增页面', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 15:28:38', '2026-01-01 15:29:14', 'wechat_qrcode_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456308221806383104, '1441227630736052224', '微信二维码-自定义二维码页面', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 15:28:57', '2026-01-01 15:28:57', 'wechat_qrcode_custom_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456308858577227776, '1441227630736052224', '微信二维码-新增自定义二维码', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:31:29', '2026-01-01 15:31:29', 'wechat_qrcode_custom_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456311848822378496, '1441227630736052224', '微信二维码-明细', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:43:22', '2026-01-01 15:43:22', 'wechat_qrcode_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456311893592379392, '1441227630736052224', '微信二维码-更新', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:43:32', '2026-01-01 15:43:32', 'wechat_qrcode_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456311962639011840, '1441227630736052224', '微信二维码-新增', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:43:49', '2026-01-01 15:43:49', 'wechat_qrcode_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456312012018552832, '1441227630736052224', '微信二维码-删除', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:44:01', '2026-01-01 15:44:01', 'wechat_qrcode_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456312088799481856, '1441227630736052224', '微信二维码-生成二维码', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:44:19', '2026-01-01 15:44:19', 'wechat_qrcode_cloud_edit', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456312164930293760, '1441227630736052224', '微信二维码-更新二维码规则', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:44:37', '2026-01-01 15:44:37', 'wechat_qrcode_cloud_app_edit', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456312223386308608, '1441227630736052224', '微信二维码-发布二维码规则', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:44:51', '2026-01-01 15:44:51', 'wechat_qrcode_cloud_app_publish', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456312458443493376, '1441228994446888960', '微信菜单-列表', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:45:47', '2026-01-01 15:45:47', 'wechat_menu_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456312505075765248, '1441228994446888960', '微信菜单-分页列表', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:45:58', '2026-01-01 15:45:58', 'wechat_menu_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456312660155961344, '1441228994446888960', '微信菜单-新增页面', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:46:35', '2026-01-01 15:46:35', 'wechat_menu_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456312748278288384, '1441228994446888960', '微信菜单-菜单配置新增页面', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:46:56', '2026-01-01 15:48:29', 'wechat_menu_add_index2', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456312910107119616, '1441228994446888960', '微信菜单-菜单配置页面', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:47:35', '2026-01-01 15:47:35', 'wechat_menu_add_index3', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456313261799510016, '1441228994446888960', '微信菜单-明细', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:48:59', '2026-01-01 15:48:59', 'wechat_menu_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456314346303918080, '1441228994446888960', '微信菜单-更新', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:53:17', '2026-01-01 15:53:17', 'wechat_menu_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456314417707749376, '1441228994446888960', '微信菜单-新增', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:53:34', '2026-01-01 15:53:34', 'wechat_menu_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456314467968094208, '1441228994446888960', '微信菜单-删除', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:53:46', '2026-01-01 15:53:46', 'wechat_menu_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456314545348808704, '1441228994446888960', '微信菜单-新增菜单按钮', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:54:05', '2026-01-01 15:54:05', 'wechat_menu_add_node', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456314610477961216, '1441228994446888960', '微信菜单-更新菜单按钮', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:54:20', '2026-01-01 15:54:20', 'wechat_menu_update_node', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456314673119891456, '1441228994446888960', '微信菜单-删除菜单按钮', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:54:35', '2026-01-01 15:54:35', 'wechat_menu_del_node', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456314748592197632, '1441228994446888960', '微信菜单-上传微信', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:54:53', '2026-01-01 15:54:53', 'wechat_menu_upload', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456314909863186432, '1441750812706476032', '微信场景-列表', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:55:32', '2026-01-01 15:55:32', 'wechat_qrscene_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456314959532134400, '1441750812706476032', '微信场景-分页列表', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:55:43', '2026-01-01 15:55:43', 'wechat_qrscene_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456315068235911168, '1441750812706476032', '微信场景-新增页面', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:56:09', '2026-01-01 15:56:09', 'wechat_qrscene_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456315121344188416, '1441750812706476032', '微信场景-明细', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:56:22', '2026-01-01 15:56:22', 'wechat_qrscene_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456315166172909568, '1441750812706476032', '微信场景-更新', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:56:33', '2026-01-01 15:56:33', 'wechat_qrscene_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456315211030990848, '1441750812706476032', '微信场景-新增', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:56:43', '2026-01-01 15:56:43', 'wechat_qrscene_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456315258514706432, '1441750812706476032', '微信场景-删除', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 15:56:55', '2026-01-01 15:56:55', 'wechat_qrscene_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329909055000576, '1450892516483141632', '自动回复-列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:08', '2026-01-01 16:55:08', 'wechat_rule_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329909059194880, '1450892516483141632', '自动回复-分页列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:08', '2026-01-01 16:55:08', 'wechat_rule_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329909059194881, '1450892516483141632', '自动回复-新增页面', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:08', '2026-01-01 16:55:08', 'wechat_rule_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329909059194882, '1450892516483141632', '自动回复-明细', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:08', '2026-01-01 16:55:08', 'wechat_rule_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329909063389184, '1450892516483141632', '自动回复-新增', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:08', '2026-01-01 16:55:08', 'wechat_rule_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329909063389185, '1450892516483141632', '自动回复-更新', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:08', '2026-01-01 16:55:08', 'wechat_rule_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329909063389186, '1450892516483141632', '自动回复-删除', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:08', '2026-01-01 16:55:08', 'wechat_rule_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329984447614976, '1454271454639034368', '微信素材-列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:26', '2026-01-01 16:55:26', 'wechat_media_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329984447614977, '1454271454639034368', '微信素材-分页列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:26', '2026-01-01 16:55:26', 'wechat_media_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329984451809280, '1454271454639034368', '微信素材-新增页面', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:26', '2026-01-01 16:55:26', 'wechat_media_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329984451809281, '1454271454639034368', '微信素材-明细', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:26', '2026-01-01 16:55:26', 'wechat_media_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329984451809282, '1454271454639034368', '微信素材-新增', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:26', '2026-01-01 16:55:26', 'wechat_media_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329984456003584, '1454271454639034368', '微信素材-更新', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:26', '2026-01-01 16:55:26', 'wechat_media_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456329984456003585, '1454271454639034368', '微信素材-删除', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-01 16:55:26', '2026-01-01 16:55:26', 'wechat_media_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456330939561938944, '893810193274507264', '菜单配置-快速生成', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 16:59:13', '2026-01-01 16:59:13', 'jstree_quick_add_nodes', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1456331792071004160, '1450892516483141632', '自动回复-启用禁用', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 17:02:37', '2026-01-01 17:02:37', 'wechat_rule_status', '5', '', '', 'zdh', '');
+    

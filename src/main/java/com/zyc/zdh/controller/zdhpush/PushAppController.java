@@ -46,7 +46,6 @@ public class PushAppController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/push_app_index", method = RequestMethod.GET)
-    @White
     public String push_app_index() {
 
         return "push/push_app_index";
@@ -62,7 +61,6 @@ public class PushAppController extends BaseController {
     @SentinelResource(value = "push_app_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_app_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PushAppInfo>> push_app_list(String context, String product_code, String dim_group) {
         try{
             Example example=new Example(PushAppInfo.class);
@@ -106,7 +104,6 @@ public class PushAppController extends BaseController {
     @SentinelResource(value = "push_app_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_app_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<PushAppInfo>>> push_app_list_by_page(String context,String product_code, String dim_group, int limit, int offset) {
         try{
             Example example=new Example(PushAppInfo.class);
@@ -151,7 +148,6 @@ public class PushAppController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/push_app_add_index", method = RequestMethod.GET)
-    @White
     public String push_app_add_index() {
 
         return "push/push_app_add_index";
@@ -185,7 +181,6 @@ public class PushAppController extends BaseController {
     @RequestMapping(value = "/push_app_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PushAppInfo> push_app_update(PushAppInfo pushAppInfo) {
         try {
             check_push_app(pushAppInfo.getApp(), pushAppInfo.getId());
@@ -218,7 +213,6 @@ public class PushAppController extends BaseController {
     @RequestMapping(value = "/push_app_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PushAppInfo> push_app_add(PushAppInfo pushAppInfo) {
         try {
 
@@ -247,7 +241,6 @@ public class PushAppController extends BaseController {
     @RequestMapping(value = "/push_app_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo push_app_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, pushAppMapper, pushAppMapper.getTable(), ids);

@@ -1909,7 +1909,7 @@ public class JobCommon2 {
 //                    }else
                     else{
                         insertLog(tli, "DEBUG", "[调度平台]:" + url_tmp + " ,参数:" + etl_info);
-                        HttpUtil.postJSON(url_tmp, etl_info);
+                        HttpUtil.builder().retryCount(0).postJSON(url_tmp, etl_info);
                     }
                     LogUtil.info(JobCommon2.class, model_log + " JOB ,更新调度任务状态为etl");
                     tli.setLast_status("etl");

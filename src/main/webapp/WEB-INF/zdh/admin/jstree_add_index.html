@@ -70,6 +70,7 @@
                                                     <div class="col-sm-10">
                                                         <input id="product_code" name="product_code" class="form-control" type="text" value="" readonly placeholder="产品代码">
                                                     </div>
+                                                    <div class="form-group"></div>
                                                     <label class="col-sm-2 control-label">父节点名称</label>
                                                     <div class="col-sm-10">
                                                         <input id="parent_text" name="parent_text" class="form-control" type="text" value="" readonly placeholder="父节点名称">
@@ -166,6 +167,9 @@
                                                         </button>
                                                         <button id="cancel" name="cancel" class="btn btn-white" οnsubmit='return false'
                                                                 type="button">取消
+                                                        </button>
+                                                        <button id="execute_quick" name="execute_quick" class="btn btn-default" οnsubmit='return false'
+                                                                type="button">快速生成(管理员使用)
                                                         </button>
                                                     </div>
                                                 </div>
@@ -549,6 +553,66 @@
         $.ajax({
             type: 'POST',
             url: server_context+"/jstree_add_node",
+            dataType: 'json',
+            async:'false',
+            data: $("#jstree_add_node_from").serialize()+"&parent="+s.id+"&text="+$("#child").val()+"&level="+(parseInt(s.level)+1),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#execute").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#execute").removeAttr('disabled');
+                layer.close(index1);
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
+                    return ;
+                }
+                parent.refash(s.id);
+                parent.layer.msg("执行成功");
+                //window.parent.create_node(s.id,node);
+                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                // parent.layer.close(index); //再执行关闭
+
+            },
+            //处理完成
+            complete: function () {
+                $("#execute").removeAttr('disabled');
+                //layer.close(index1);
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#execute").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+
+    });
+    $('#execute_quick').click(function () {
+
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+
+        //增加子节点,返回子节点id
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/jstree_quick_add_nodes",
             dataType: 'json',
             async:'false',
             data: $("#jstree_add_node_from").serialize()+"&parent="+s.id+"&text="+$("#child").val()+"&level="+(parseInt(s.level)+1),

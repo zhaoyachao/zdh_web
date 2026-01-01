@@ -34,6 +34,12 @@ public class Const {
     public static String END="1";
     public static String NOT_END="0";
 
+    public static String RESOURCE_TYPE_DIRECTORY="1";//目录
+    public static String RESOURCE_TYPE_MENU="2";//菜单
+    public static String RESOURCE_TYPE_PAGE="3";//页面
+    public static String RESOURCE_TYPE_METHOD="4";//方法
+    public static String RESOURCE_TYPE_INTERFACE="5";//接口
+
     //通用任务类状态管理
     public static String STATUS_COMMON_INIT="1";
     public static String STATUS_COMMON_RUNNING="2";

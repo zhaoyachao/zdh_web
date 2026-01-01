@@ -5,4 +5,6 @@ import com.zyc.zdh.pushx.entity.WechatQrcodeResponse;
 
 public interface PushxWechatQrcodeService {
     WechatQrcodeResponse createQrcode(WechatQrcodeInfo wechatQrcodeInfo);
+    WechatQrcodeResponse qrcodeJumpAdd(WechatQrcodeInfo wechatQrcodeInfo);
+    WechatQrcodeResponse qrcodeJumpPublish(WechatQrcodeInfo wechatQrcodeInfo);
 }

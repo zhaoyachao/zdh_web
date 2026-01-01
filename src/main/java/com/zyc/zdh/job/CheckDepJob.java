@@ -424,7 +424,7 @@ public class CheckDepJob implements CheckDepJobInterface{
                 continue;
             }
             try {
-                String result = HttpUtil.getRequest(flink_web_ui+"/jobs/"+flink_job_id, npl);
+                String result = HttpUtil.builder().retryCount(0).getRequest(flink_web_ui+"/jobs/"+flink_job_id, npl);
                 Map<String, Object> jsonObject= JsonUtil.toJavaMap(result);
                 String state = jsonObject.getOrDefault("state", "").toString().toLowerCase();
                 String status = "";

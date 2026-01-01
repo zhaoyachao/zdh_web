@@ -397,6 +397,9 @@
                 if(value == "feishu"){
                     context = "飞书";
                 }
+                if(value == "wechatofficialaccount"){
+                    context = "公众号";
+                }
 
                 return [
                     '<div style="text-align:center" >'+

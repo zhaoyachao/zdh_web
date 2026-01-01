@@ -50,7 +50,6 @@ public class PushTemplateController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/push_template_index", method = RequestMethod.GET)
-    @White
     public String push_template_index() {
 
         return "push/push_template_index";
@@ -66,7 +65,6 @@ public class PushTemplateController extends BaseController {
     @SentinelResource(value = "push_template_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_template_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PushTemplateInfo>> push_template_list(String context, String product_code, String dim_group) {
         try{
             Example example=new Example(PushTemplateInfo.class);
@@ -110,7 +108,6 @@ public class PushTemplateController extends BaseController {
     @SentinelResource(value = "push_template_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_template_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<PushTemplateInfo>>> push_template_list_by_page(String context,String product_code, String dim_group, int limit, int offset) {
         try{
             Example example=new Example(PushTemplateInfo.class);
@@ -155,7 +152,6 @@ public class PushTemplateController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/push_template_add_index", method = RequestMethod.GET)
-    @White
     public String push_template_add_index() {
 
         return "push/push_template_add_index";
@@ -169,7 +165,6 @@ public class PushTemplateController extends BaseController {
     @SentinelResource(value = "push_template_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_template_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PushTemplateInfo> push_template_detail(String id) {
         try {
             PushTemplateInfo pushTemplateInfo = pushTemplateMapper.selectByPrimaryKey(id);
@@ -189,7 +184,6 @@ public class PushTemplateController extends BaseController {
     @RequestMapping(value = "/push_template_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PushTemplateInfo> push_template_update(PushTemplateInfo pushTemplateInfo) {
         try {
 
@@ -221,7 +215,6 @@ public class PushTemplateController extends BaseController {
     @RequestMapping(value = "/push_template_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PushTemplateInfo> push_template_add(PushTemplateInfo pushTemplateInfo) {
         try {
             pushTemplateInfo.setOwner(getOwner());
@@ -247,7 +240,6 @@ public class PushTemplateController extends BaseController {
     @RequestMapping(value = "/push_template_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo push_template_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, pushTemplateMapper, pushTemplateMapper.getTable(), ids);
@@ -269,7 +261,6 @@ public class PushTemplateController extends BaseController {
     @RequestMapping(value = "/push_template_add_version", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PushTemplateInfo> push_template_add_version(String id) {
         try {
             PushTemplateInfo pushTemplateInfo = pushTemplateMapper.selectByPrimaryKey(id);
@@ -294,13 +285,12 @@ public class PushTemplateController extends BaseController {
      * 获取公众号模板
      * @param wechatofficialaccount_channel_pool 通道池
      * @param template_id 微信公众号模板
-     * @param template_type 模板类型，1:普通模板,2:订阅模板
+     * @param template_type 模板类型，1:普通模板,2:订阅模板,3:小程序模板
      * @return
      */
     @SentinelResource(value = "push_template_wechattemplate_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_template_wechattemplate_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<WechatTemplate> push_template_wechattemplate_detail(String wechatofficialaccount_channel_pool, String template_id, String template_type) {
         try {
 
@@ -311,27 +301,59 @@ public class PushTemplateController extends BaseController {
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushChannelPoolInfo.getProduct_code(), pushChannelPoolInfo.getDim_group(), getAttrSelect());
 
-            //获取通道
-            Map<String, Object> stringObjectMap = JsonUtil.toJavaMap(pushChannelPoolInfo.getPool_config());
-
-            if(!stringObjectMap.containsKey("wechatofficialaccount_config")){
-               throw new Exception("通道池无微信公众号模板配置");
+            if(template_type.equals("1") || template_type.equals("2")) {
+                WechatTemplate template = getWechatTemplate(pushChannelPoolInfo, template_id, template_type);
+                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", template);
+            }else if(template_type.equals("3")){
+                WechatTemplate template = getWechatMiniprogramTemplate(pushChannelPoolInfo, template_id, template_type);
+                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", template);
             }
-            List<String> wechat = (List<String>)stringObjectMap.get("wechatofficialaccount_config");
-            String wechat_channel = wechat.get(0);
-
-            //调用pushx获取微信模板信息
-            WechatTemplateResponse wechatTemplateResponse = pushxWechatTemplateService.getWechatTemplate(wechat_channel, template_id, template_type);
-            List<WechatTemplate> data = wechatTemplateResponse.getData();
-
-            if(data == null || (data.size() == 0)){
-                throw new Exception("未找到模板信息");
-            }
-            WechatTemplate template = data.get(0);
-
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", template);
+            throw new Exception("模板类型错误");
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
+    }
+
+    private WechatTemplate getWechatTemplate(PushChannelPoolInfo pushChannelPoolInfo, String template_id, String template_type) throws Exception {
+
+        //获取通道
+        Map<String, Object> stringObjectMap = JsonUtil.toJavaMap(pushChannelPoolInfo.getPool_config());
+
+        if(!stringObjectMap.containsKey("wechatofficialaccount_config")){
+            throw new Exception("通道池无微信公众号模板配置");
+        }
+        List<String> wechat = (List<String>)stringObjectMap.get("wechatofficialaccount_config");
+        String wechat_channel = wechat.get(0);
+
+        //调用pushx获取微信模板信息
+        WechatTemplateResponse wechatTemplateResponse = pushxWechatTemplateService.getWechatTemplate(wechat_channel, template_id, template_type);
+        List<WechatTemplate> data = wechatTemplateResponse.getData();
+
+        if(data == null || (data.size() == 0)){
+            throw new Exception("未找到模板信息");
+        }
+        WechatTemplate template = data.get(0);
+        return template;
+    }
+
+    private WechatTemplate getWechatMiniprogramTemplate(PushChannelPoolInfo pushChannelPoolInfo, String template_id, String template_type) throws Exception {
+        //获取通道
+        Map<String, Object> stringObjectMap = JsonUtil.toJavaMap(pushChannelPoolInfo.getPool_config());
+
+        if(!stringObjectMap.containsKey("miniprogram_config")){
+            throw new Exception("通道池无微信公众号模板配置");
+        }
+        List<String> wechat = (List<String>)stringObjectMap.get("miniprogram_config");
+        String wechat_channel = wechat.get(0);
+
+        //调用pushx获取微信模板信息
+        WechatTemplateResponse wechatTemplateResponse = pushxWechatTemplateService.getWechatMiniprogramTemplate(wechat_channel, template_id, template_type);
+        List<WechatTemplate> data = wechatTemplateResponse.getData();
+
+        if(data == null || (data.size() == 0)){
+            throw new Exception("未找到模板信息");
+        }
+        WechatTemplate template = data.get(0);
+        return template;
     }
 }

@@ -2,7 +2,6 @@ package com.zyc.zdh.controller.zdhpush;
 
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.PushChannelMapper;
 import com.zyc.zdh.entity.PageResult;
@@ -43,7 +42,6 @@ public class PushChannelController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/push_channel_index", method = RequestMethod.GET)
-    @White
     public String push_channel_index() {
 
         return "push/push_channel_index";
@@ -59,7 +57,6 @@ public class PushChannelController extends BaseController {
     @SentinelResource(value = "push_channel_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_channel_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PushChannelInfo>> push_channel_list(String context, String product_code, String dim_group, String channel_type) {
         try{
             Example example=new Example(PushChannelInfo.class);
@@ -108,7 +105,6 @@ public class PushChannelController extends BaseController {
     @SentinelResource(value = "push_channel_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_channel_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<PushChannelInfo>>> push_channel_list_by_page(String context,String product_code, String dim_group, int limit, int offset) {
         try{
             Example example=new Example(PushChannelInfo.class);
@@ -154,7 +150,6 @@ public class PushChannelController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/push_channel_add_index", method = RequestMethod.GET)
-    @White
     public String push_channel_add_index() {
 
         return "push/push_channel_add_index";
@@ -168,7 +163,6 @@ public class PushChannelController extends BaseController {
     @SentinelResource(value = "push_channel_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_channel_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PushChannelInfo> push_channel_detail(String id) {
         try {
             PushChannelInfo pushChannelInfo = pushChannelMapper.selectByPrimaryKey(id);
@@ -188,7 +182,6 @@ public class PushChannelController extends BaseController {
     @RequestMapping(value = "/push_channel_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PushChannelInfo> push_channel_update(PushChannelInfo pushChannelInfo) {
         try {
 
@@ -221,7 +214,6 @@ public class PushChannelController extends BaseController {
     @RequestMapping(value = "/push_channel_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PushChannelInfo> push_channel_add(PushChannelInfo pushChannelInfo) {
         try {
             pushChannelInfo.setOwner(getOwner());
@@ -248,7 +240,6 @@ public class PushChannelController extends BaseController {
     @RequestMapping(value = "/push_channel_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo push_channel_delete(String[] ids) {
         try {
             checkPermissionByProductAndDimGroup(zdhPermissionService, pushChannelMapper, pushChannelMapper.getTable(), ids);
@@ -272,7 +263,6 @@ public class PushChannelController extends BaseController {
     @RequestMapping(value = "/push_channel_update_status", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PushChannelInfo> push_channel_update_status(String id, String status) {
         try {
 

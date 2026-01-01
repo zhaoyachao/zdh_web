@@ -23,7 +23,6 @@
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
     <script src="js/jquery.min.js?v=2.1.4"></script>
-    <script src="js/fileinput.js" type="text/javascript"></script>
     <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
     <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 </head>
@@ -138,6 +137,8 @@
 <!-- Bootstrap table -->
 <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
 <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<script src="js/fileinput.js" type="text/javascript"></script>
 <!-- 自定义js -->
 <script src="js/content.js?v=1.0.0"></script>
 
@@ -153,7 +154,6 @@
 <script src="js/plugins/iCheck/icheck.min.js"></script>
 
 <script src="js/admin/dim_product_common.js"></script>
-<script src="js/admin/dim_group_common.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -285,8 +285,6 @@
         //     return;
         // }
 
-        var formData = new FormData($("#${controller}_form")[0]);//获取表单中的文件
-
         var index1 = layer.load(1, {
             shade: [0.1,'#fff'] //0.1透明度的白色背景
         });
@@ -294,9 +292,7 @@
             type: 'POST',
             url: server_context+"/${controller}_add",
             async: false,
-            data:formData,
-            processData: false,
-            contentType: false,
+            data:$("#${controller}_form").serialize(),
             dataType: 'json',
             //发送数据前
             beforeSend: function () {
@@ -336,7 +332,6 @@
         for(var i = 0; i < pa.length; i ++){
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
-
 
         $.ajax({
             type: 'POST',

@@ -92,7 +92,7 @@ public class HttpJob extends JobCommon2 {
                 LogUtil.info(HttpJob.class, "[" + jobType + "] JOB ,开始执行[post]请求");
                 insertLog(tli, "info", "[" + jobType + "] JOB ,开始执行[post]请求,请求地址: "+url+" ,参数: "+params);
                 //校验是否有参数
-                result = HttpUtil.postJSON(url, params, header_map, cookie_map, httpHost);
+                result = HttpUtil.builder().proxy(httpHost).retryCount(0).postJSON(url, params, header_map, cookie_map);
                 insertLog(tli, "info", "[" + jobType + "] JOB ,请求结果: "+result);
             }
             if(url_type.equalsIgnoreCase(Const.HTTP_GET)){
@@ -110,7 +110,7 @@ public class HttpJob extends JobCommon2 {
                         npl.add(new BasicNameValuePair(key,value.toString()));
                     }
                 }
-                result = HttpUtil.getRequest(url, npl, header_map, cookie_map, httpHost);
+                result = HttpUtil.builder().retryCount(0).proxy(httpHost).getRequest(url, npl, header_map, cookie_map);
                 insertLog(tli, "info", "[" + jobType + "] JOB ,请求结果: "+result);
             }
 

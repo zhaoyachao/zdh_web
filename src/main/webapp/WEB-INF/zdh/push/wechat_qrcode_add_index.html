@@ -114,7 +114,6 @@
                                         class="chosen-select form-control m-b" >
                                     <option value="">空</option>
                                 </select>
-
                             </div>
                         </div>
                         <div class="form-group">
@@ -122,6 +121,63 @@
                             <div class="col-sm-10">
                                 <input id="ticket" name="ticket" type="text"
                                        placeholder="获取的二维码ticket，凭借此ticket可以在有效时间内换取二维码。" class="form-control" aria-required="true" readonly> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">二维码内容</label>
+                            <div class="col-sm-10">
+                                <input id="url" name="url" type="text"
+                                       placeholder="二维码内容" class="form-control" aria-required="true" readonly> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">跳转小程序</label>
+                            <div class="col-sm-10">
+                                <input id="appid" name="appid" type="text"
+                                       placeholder="跳转小程序appid" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">小程序页面</label>
+                            <div class="col-sm-10">
+                                <input id="path" name="path" type="text"
+                                       placeholder="跳转小程序页面" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">测试链接</label>
+                            <div class="col-sm-10">
+                                <input id="debug_url" name="debug_url" type="text"
+                                       placeholder="测试链接,最多5个" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">小程序版本</label>
+                            <div class="col-sm-10">
+                                <select id="open_version" name="open_version"
+                                        data-placeholder="二维码场景...."
+                                        class="chosen-select form-control m-b" >
+                                    <option value="1">开发版</option>
+                                    <option value="2">体验版</option>
+                                    <option value="3">正式版</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">规则生效范围</label>
+                            <div class="col-sm-10">
+                                <select id="permit_sub_rule" name="permit_sub_rule"
+                                        data-placeholder="规则生效范围...."
+                                        class="chosen-select form-control m-b" >
+                                    <option value="1">不占用</option>
+                                    <option value="2">独占</option>
+                                </select>
                             </div>
                         </div>
 
@@ -349,6 +405,21 @@
                             $("#ticket").val(ticket);
                             var url = data.result.url;
                             $("#url").val(url);
+
+                            var appid = data.result.appid;
+                            $("#appid").val(appid);
+                            var path = data.result.path;
+                            $("#path").val(path);
+                            var open_version = data.result.open_version;
+                            $("#open_version").val(open_version);
+                            $("#open_version").trigger("chosen:updated");
+
+                            var debug_url = data.result.debug_url;
+                            $("#debug_url").val(debug_url);
+
+                            var permit_sub_rule = data.result.permit_sub_rule;
+                            $("#permit_sub_rule").val(permit_sub_rule);
+                            $("#permit_sub_rule").trigger("chosen:updated");
 
                             var create_time = data.result.create_time;
                             $("#create_time").val(getMyDate(create_time));

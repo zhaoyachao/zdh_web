@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.zdhpush;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.WechatQrcodeMapper;
 import com.zyc.zdh.entity.PageResult;
@@ -63,7 +62,6 @@ public class WechatQrcodeController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_qrcode_index", method = RequestMethod.GET)
-    @White
     public String wechat_qrcode_index() {
 
         return "push/wechat_qrcode_index";
@@ -78,7 +76,6 @@ public class WechatQrcodeController extends BaseController {
     @SentinelResource(value = "wechat_qrcode_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_qrcode_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<WechatQrcodeInfo>> wechat_qrcode_list(String context, String product_code) {
         try{
             Example example=new Example(WechatQrcodeInfo.class);
@@ -119,7 +116,6 @@ public class WechatQrcodeController extends BaseController {
     @SentinelResource(value = "wechat_qrcode_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_qrcode_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<WechatQrcodeInfo>>> wechat_qrcode_list_by_page(String context,String product_code, int limit, int offset) {
         try{
             Example example=new Example(WechatQrcodeInfo.class);
@@ -161,7 +157,6 @@ public class WechatQrcodeController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_qrcode_add_index", method = RequestMethod.GET)
-    @White
     public String wechat_qrcode_add_index() {
 
         return "push/wechat_qrcode_add_index";
@@ -172,7 +167,6 @@ public class WechatQrcodeController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_qrcode_custom_index", method = RequestMethod.GET)
-    @White
     public String wechat_qrcode_custom_index() {
 
         return "push/wechat_qrcode_custom_index";
@@ -181,19 +175,12 @@ public class WechatQrcodeController extends BaseController {
     /**
      * 自定义二维码添加
      * @param id
-     * @param qrcode_content
-     * @param qrcode_size
-     * @param qrcode_text
-     * @param qrcode_text_size
-     * @param qrcode_text_color
-     * @param qrcode_text_blod
      * @return
      */
     @SentinelResource(value = "wechat_qrcode_custom_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_qrcode_custom_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatQrcodeInfo> wechat_qrcode_custom_add(String id, MultipartFile jar_files) {
         try {
             WechatQrcodeInfo wechatQrcodeInfo = wechatQrcodeMapper.selectByPrimaryKey(id);
@@ -224,7 +211,6 @@ public class WechatQrcodeController extends BaseController {
     @SentinelResource(value = "wechat_qrcode_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_qrcode_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<WechatQrcodeInfo> wechat_qrcode_detail(String id) {
         try {
             WechatQrcodeInfo wechatQrcodeInfo = wechatQrcodeMapper.selectByPrimaryKey(id);
@@ -244,7 +230,6 @@ public class WechatQrcodeController extends BaseController {
     @RequestMapping(value = "/wechat_qrcode_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatQrcodeInfo> wechat_qrcode_update(WechatQrcodeInfo wechatQrcodeInfo) {
         try {
 
@@ -277,7 +262,6 @@ public class WechatQrcodeController extends BaseController {
     @RequestMapping(value = "/wechat_qrcode_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatQrcodeInfo> wechat_qrcode_add(WechatQrcodeInfo wechatQrcodeInfo) {
         try {
             wechatQrcodeInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
@@ -304,7 +288,6 @@ public class WechatQrcodeController extends BaseController {
     @RequestMapping(value = "/wechat_qrcode_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo wechat_qrcode_delete(String[] ids) {
         try {
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatQrcodeMapper, wechatQrcodeMapper.getTable(), ids, getAttrDel());
@@ -326,7 +309,6 @@ public class WechatQrcodeController extends BaseController {
     @RequestMapping(value = "/wechat_qrcode_cloud_edit", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo wechat_qrcode_cloud_edit(String id) {
         try {
             WechatQrcodeInfo wechatQrcodeInfo = wechatQrcodeMapper.selectByPrimaryKey(id);
@@ -354,6 +336,72 @@ public class WechatQrcodeController extends BaseController {
             LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+        }
+    }
+
+    /**
+     * 微信端-更新二维码规则
+     * @param id
+     * @return
+     */
+    @SentinelResource(value = "wechat_qrcode_cloud_app_edit", blockHandler = "handleReturn")
+    @RequestMapping(value = "/wechat_qrcode_cloud_app_edit", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo wechat_qrcode_cloud_app_edit(String id) {
+        try {
+            WechatQrcodeInfo wechatQrcodeInfo = wechatQrcodeMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProduct(zdhPermissionService,  wechatQrcodeInfo.getProduct_code(), getAttrSelect());
+
+            //判断状态是否可以修改规则1:生成二维码,2:规则创建,3:规则发布
+            if(wechatQrcodeInfo.getStatus().equals("3")){
+                throw new Exception("二维码规则已发布，无法修改");
+            }
+
+            WechatQrcodeResponse qrcodeResponse = pushxWechatQrcodeService.qrcodeJumpAdd(wechatQrcodeInfo);
+
+            if(qrcodeResponse.isSuccess()){
+                wechatQrcodeInfo.setStatus("2");
+                wechatQrcodeInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                wechatQrcodeMapper.updateByPrimaryKeySelective(wechatQrcodeInfo);
+                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新建成功", null);
+            }
+            throw new Exception("新建失败: "+qrcodeResponse.getMsg());
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "新建失败", e.getMessage());
+        }
+    }
+
+
+    /**
+     * 微信端-二维码规则发布
+     * @param id
+     * @return
+     */
+    @SentinelResource(value = "wechat_qrcode_cloud_app_publish", blockHandler = "handleReturn")
+    @RequestMapping(value = "/wechat_qrcode_cloud_app_publish", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo wechat_qrcode_cloud_app_publish(String id) {
+        try {
+            WechatQrcodeInfo wechatQrcodeInfo = wechatQrcodeMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProduct(zdhPermissionService,  wechatQrcodeInfo.getProduct_code(), getAttrSelect());
+
+            WechatQrcodeResponse qrcodeResponse = pushxWechatQrcodeService.qrcodeJumpPublish(wechatQrcodeInfo);
+
+            if(qrcodeResponse.isSuccess()){
+                wechatQrcodeInfo.setStatus("3");
+                wechatQrcodeInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                wechatQrcodeMapper.updateByPrimaryKeySelective(wechatQrcodeInfo);
+                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "发布成功", null);
+            }
+            throw new Exception("发布失败: "+qrcodeResponse.getMsg());
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "发布失败", e.getMessage());
         }
     }
 }

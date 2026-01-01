@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.zdhpush;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.WechatQrsceneMapper;
 import com.zyc.zdh.entity.PageResult;
@@ -45,7 +44,6 @@ public class WechatQrsceneController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_qrscene_index", method = RequestMethod.GET)
-    @White
     public String wechat_qrscene_index() {
 
         return "push/wechat_qrscene_index";
@@ -61,7 +59,6 @@ public class WechatQrsceneController extends BaseController {
     @SentinelResource(value = "wechat_qrscene_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_qrscene_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<WechatQrsceneInfo>> wechat_qrscene_list(String context, String product_code, String dim_group) {
         try{
             Example example=new Example(WechatQrsceneInfo.class);
@@ -105,7 +102,6 @@ public class WechatQrsceneController extends BaseController {
     @SentinelResource(value = "wechat_qrscene_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_qrscene_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<WechatQrsceneInfo>>> wechat_qrscene_list_by_page(String context,String product_code, String dim_group, int limit, int offset) {
         try{
             Example example=new Example(WechatQrsceneInfo.class);
@@ -150,7 +146,6 @@ public class WechatQrsceneController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_qrscene_add_index", method = RequestMethod.GET)
-    @White
     public String wechat_qrscene_add_index() {
 
         return "push/wechat_qrscene_add_index";
@@ -164,7 +159,6 @@ public class WechatQrsceneController extends BaseController {
     @SentinelResource(value = "wechat_qrscene_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_qrscene_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<WechatQrsceneInfo> wechat_qrscene_detail(String id) {
         try {
             WechatQrsceneInfo wechatQrsceneInfo = wechatQrsceneMapper.selectByPrimaryKey(id);
@@ -184,7 +178,6 @@ public class WechatQrsceneController extends BaseController {
     @RequestMapping(value = "/wechat_qrscene_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatQrsceneInfo> wechat_qrscene_update(WechatQrsceneInfo wechatQrsceneInfo) {
         try {
 
@@ -217,7 +210,6 @@ public class WechatQrsceneController extends BaseController {
     @RequestMapping(value = "/wechat_qrscene_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatQrsceneInfo> wechat_qrscene_add(WechatQrsceneInfo wechatQrsceneInfo) {
         try {
             wechatQrsceneInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
@@ -244,7 +236,6 @@ public class WechatQrsceneController extends BaseController {
     @RequestMapping(value = "/wechat_qrscene_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo wechat_qrscene_delete(String[] ids) {
         try {
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatQrsceneMapper, wechatQrsceneMapper.getTable(), ids, getAttrDel());

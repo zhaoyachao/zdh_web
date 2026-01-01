@@ -43,7 +43,6 @@ public class PushChannelPoolController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/push_channel_pool_index", method = RequestMethod.GET)
-    @White
     public String push_channel_pool_index() {
 
         return "push/push_channel_pool_index";
@@ -59,7 +58,6 @@ public class PushChannelPoolController extends BaseController {
     @SentinelResource(value = "push_channel_pool_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_channel_pool_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<PushChannelPoolInfo>> push_channel_pool_list(String context, String product_code, String dim_group) {
         try{
             Example example=new Example(PushChannelPoolInfo.class);
@@ -103,7 +101,6 @@ public class PushChannelPoolController extends BaseController {
     @SentinelResource(value = "push_channel_pool_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_channel_pool_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<PushChannelPoolInfo>>> push_channel_pool_list_by_page(String context,String product_code, String dim_group, int limit, int offset) {
         try{
             Example example=new Example(PushChannelPoolInfo.class);
@@ -148,7 +145,6 @@ public class PushChannelPoolController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/push_channel_pool_add_index", method = RequestMethod.GET)
-    @White
     public String push_channel_pool_add_index() {
 
         return "push/push_channel_pool_add_index";
@@ -162,7 +158,6 @@ public class PushChannelPoolController extends BaseController {
     @SentinelResource(value = "push_channel_pool_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/push_channel_pool_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PushChannelPoolInfo> push_channel_pool_detail(String id) {
         try {
             PushChannelPoolInfo pushChannelPoolInfo = pushChannelPoolMapper.selectByPrimaryKey(id);
@@ -182,7 +177,6 @@ public class PushChannelPoolController extends BaseController {
     @RequestMapping(value = "/push_channel_pool_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PushChannelPoolInfo> push_channel_pool_update(PushChannelPoolInfo pushChannelPoolInfo) {
         try {
 
@@ -215,7 +209,6 @@ public class PushChannelPoolController extends BaseController {
     @RequestMapping(value = "/push_channel_pool_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<PushChannelPoolInfo> push_channel_pool_add(PushChannelPoolInfo pushChannelPoolInfo) {
         try {
             pushChannelPoolInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
@@ -242,7 +235,6 @@ public class PushChannelPoolController extends BaseController {
     @RequestMapping(value = "/push_channel_pool_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo push_channel_pool_delete(String[] ids) {
         try {
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushChannelPoolMapper, pushChannelPoolMapper.getTable(), ids, getAttrDel());

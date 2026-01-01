@@ -120,6 +120,33 @@
               var ids = new Array();// 声明一个数组
               ids.push(row.id);
               deleteMs(ids)
+          },
+          'click #async': function (e, value, row, index) {
+              $.ajax({
+                  url : server_context+"/product_tag_async",
+                  data : {"id": row.id},
+                  type : "post",
+                  async:false,
+                  dataType : "json",
+                  success : function(data) {
+                      if(data.code != '200'){
+                          console.error(data.msg);
+                          parent.layer.msg("执行失败");
+                          return ;
+                      }
+                      parent.layer.msg("执行成功");
+
+                      $('#exampleTableEvents').bootstrapTable('refresh', {
+                          url: server_context+"/product_tag_list?"+$("#product_tag_form").serialize(),
+                          contentType: "application/json;charset=utf-8",
+                          dataType: "json"
+                      });
+                  },
+                  error: function (data) {
+                      console.info("error: " + data.responseText);
+                  }
+
+              });
           }
       };
 
@@ -131,6 +158,8 @@
               ' <button id="edit" name="edit" type="button" class="'+edit_class+'" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>\n'+
               ' <button id="del" name="del" type="button" class="'+del_class+'" title="删除"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+              '                                    </button>\n'+
+              ' <button id="async" name="async" type="button" class="'+edit_class+'" title="同步"><i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
               '                                    </button>\n'+
               '</div>'
 

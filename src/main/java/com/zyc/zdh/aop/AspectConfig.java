@@ -62,6 +62,19 @@ public class AspectConfig implements Ordered {
     }
 
 
+    /**
+     * 环绕通知，用于记录用户操作日志和处理权限控制
+     * 该方法在控制器方法执行前后进行处理，包括：
+     * 1. 获取请求信息和返回类型
+     * 2. 处理GET请求的缓存头
+     * 3. 验证用户权限
+     * 4. 记录用户操作日志
+     * 5. 处理异常情况并记录错误日志
+     *
+     * @param pjp 连接点，可以获取目标方法的信息和参数
+     * @return Object 目标方法的返回值，或处理后的响应结果
+     * @throws Exception 可能抛出的异常
+     */
     @Around(value = "pointcutMethod3()")
     public Object aroundLog(ProceedingJoinPoint pjp) throws Exception {
         //获取返回类型
@@ -77,8 +90,6 @@ public class AspectConfig implements Ordered {
         }
 
         try {
-            RedisUtil redisUtil = (RedisUtil) SpringContext.getBean("redisUtil");
-
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
             String method = request.getMethod();
@@ -104,15 +115,15 @@ public class AspectConfig implements Ordered {
             }
 
             String reqParam = "";
-
+            String uid = getUser() == null ? "" : getUser().getUserName();
             try {
                 reqParam = preHandle(pjp, request);
             } catch (Exception e) {
                 try {
                     UserOperateLogMapper userOperateLogMapper = (UserOperateLogMapper) SpringContext.getBean("userOperateLogMapper");
                     UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();
-                    userOperateLogInfo.setOwner(getUser().getUserName());
-                    userOperateLogInfo.setUser_name(getUser().getUserName());
+                    userOperateLogInfo.setOwner(uid);
+                    userOperateLogInfo.setUser_name(uid);
                     userOperateLogInfo.setOperate_url(url);
                     userOperateLogInfo.setOperate_input(reqParam);
                     userOperateLogInfo.setTime(String.valueOf((System.currentTimeMillis() - start) / 1000.0));
@@ -130,8 +141,6 @@ public class AspectConfig implements Ordered {
                 }
 
                 if (e.getMessage().contains("没有权限")) {
-                    //MDC.remove("user_id");
-                    String uid = getUser() == null ? "" : getUser().getUserName();
                     LogUtil.error(this.getClass(), "请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】, 耗时:【{}ms】, 当前请求无权限", ipAddr, uid, url, request.getMethod(), reqParam, systemFilterParam.getCostTime());
                     if (request.getMethod().equalsIgnoreCase("get")) {
                         //get请求无权限,返回403
@@ -145,8 +154,6 @@ public class AspectConfig implements Ordered {
 
                 }
                 if (request.getMethod().equalsIgnoreCase("get")) {
-                    //MDC.remove("user_id");
-                    String uid = getUser() == null ? "" : getUser().getUserName();
                     LogUtil.error(this.getClass(), "请求源IP:【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】, 耗时:【{}ms】, 当前请求异常,强制跳转404", ipAddr, uid, url, request.getMethod(), reqParam, systemFilterParam.getCostTime());
                     return "404";
                 }
@@ -157,7 +164,6 @@ public class AspectConfig implements Ordered {
                 }
                 return ReturnInfo.createInfo(RETURN_CODE.FAIL.getCode(), "系统错误", e);
             }
-            String uid = getUser() == null ? "" : getUser().getUserName();
             String city = IpUtil.getCityByIp(ipAddr);
             if (is_operate_log(servletPath)){
                 LogUtil.debug(this.getClass(), "请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】,类型:【{}】,请求参数:【{}】", ipAddr, city, uid, url, request.getMethod(), reqParam);
@@ -171,8 +177,8 @@ public class AspectConfig implements Ordered {
                 if (is_operate_log(servletPath) && getUser() != null) {
                     UserOperateLogMapper userOperateLogMapper = (UserOperateLogMapper) SpringContext.getBean("userOperateLogMapper");
                     UserOperateLogInfo userOperateLogInfo = new UserOperateLogInfo();
-                    userOperateLogInfo.setOwner(getUser().getUserName());
-                    userOperateLogInfo.setUser_name(getUser().getUserName());
+                    userOperateLogInfo.setOwner(uid);
+                    userOperateLogInfo.setUser_name(uid);
                     userOperateLogInfo.setOperate_url(url);
                     userOperateLogInfo.setOperate_input(reqParam);
                     userOperateLogInfo.setIp(ipAddr);
@@ -402,8 +408,13 @@ public class AspectConfig implements Ordered {
     }
 
     public User getUser() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return user;
+        try{
+            User user = (User) SecurityUtils.getSubject().getPrincipal();
+            return user;
+        }catch (Exception e){
+            LogUtil.error(this.getClass(), "获取当前用户异常",e);
+            return null;
+        }
     }
 
     private void debugInfo(Object obj) {

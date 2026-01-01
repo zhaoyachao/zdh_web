@@ -6,6 +6,7 @@ import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
+import com.zyc.zdh.util.JsonUtil;
 import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -375,5 +377,244 @@ public class ProductTagController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e);
         }
     }
+    /**
+     * 同步产品菜单及维度信息
+     * @param id 产品id
+     * @return
+     */
+    @SentinelResource(value = "product_tag_async", blockHandler = "handleReturn")
+    @RequestMapping(value = "/product_tag_async", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo<Object> product_tag_async(String id) {
+        try {
 
+            // 检查目标产品是否存在
+            ProductTagInfo targetProduct = productTagMapper.selectByPrimaryKey(id);
+            if (targetProduct == null) {
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "目标产品不存在", null);
+            }
+
+            // 检查源产品是否存在
+            ProductTagInfo productTagInfo = new ProductTagInfo();
+            productTagInfo.setProduct_code(ConfigUtil.getProductCode());
+            productTagInfo.setIs_delete(Const.NOT_DELETE);
+
+            ProductTagInfo sourceProduct = productTagMapper.selectOne(productTagInfo);
+            if (sourceProduct == null) {
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "源产品不存在", null);
+            }
+
+            // 检查权限
+            checkPermissionByOwner(targetProduct.getProduct_code());
+
+            // 同步资源树信息
+            syncResourceTreeInfo(targetProduct.getProduct_code(), sourceProduct.getProduct_code());
+
+            // 同步角色信息
+            syncRoleInfo(targetProduct.getProduct_code(), sourceProduct.getProduct_code());
+
+            // 同步权限维度信息
+            syncPermissionDimensionInfo(targetProduct.getProduct_code(), sourceProduct.getProduct_code());
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "同步成功", null);
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "同步失败", e);
+        }
+    }
+
+    /**
+     * 同步资源树信息
+     */
+    private void syncResourceTreeInfo(String product_code, String base_product_code) throws Exception {
+
+        // 查询源产品下的所有资源树信息
+        Example exampleSource=new Example(ResourceTreeInfo.class);
+        Example.Criteria criteriaSource=exampleSource.createCriteria();
+        criteriaSource.andEqualTo("product_code", base_product_code);
+        List<ResourceTreeInfo> baseResourceTreeInfos = resourceTreeMapper.selectByExample(exampleSource);
+
+        Example example=new Example(ResourceTreeInfo.class);
+        Example.Criteria criteria=example.createCriteria();
+        criteria.andEqualTo("product_code", product_code);
+        List<ResourceTreeInfo> resourceTreeInfos = resourceTreeMapper.selectByExample(example);
+
+        //根据资源url 或者 text 生成菜单等信息
+        Map<String, ResourceTreeInfo> baseResourceTreeInfoMapById = new HashMap<>();
+        Map<String, ResourceTreeInfo> baseResourceTreeInfoMap = new HashMap<>();
+        for(ResourceTreeInfo resourceTreeInfo: baseResourceTreeInfos){
+            baseResourceTreeInfoMapById.put(resourceTreeInfo.getId(), resourceTreeInfo);
+            if(!StringUtils.isEmpty(resourceTreeInfo.getUrl())){
+//                if(baseResourceTreeInfoMap.containsKey(resourceTreeInfo.getUrl())){
+//                    throw new Exception("产品:"+resourceTreeInfo.getProduct_code()+", 存在重复的资源: "+resourceTreeInfo.getUrl());
+//                }
+                baseResourceTreeInfoMap.put(resourceTreeInfo.getUrl(), resourceTreeInfo);
+            }else if(!StringUtils.isEmpty(resourceTreeInfo.getText())){
+//                if(baseResourceTreeInfoMap.containsKey(resourceTreeInfo.getText())){
+//                    throw new Exception("产品:"+resourceTreeInfo.getProduct_code()+", 存在重复的资源: "+resourceTreeInfo.getText());
+//                }
+                baseResourceTreeInfoMap.put(resourceTreeInfo.getText(), resourceTreeInfo);
+            }
+        }
+
+        Map<String, ResourceTreeInfo> resourceTreeInfoMapById = new HashMap<>();
+        Map<String, ResourceTreeInfo> resourceTreeInfoMap = new HashMap<>();
+        for(ResourceTreeInfo resourceTreeInfo: resourceTreeInfos){
+            resourceTreeInfoMapById.put(resourceTreeInfo.getId(), resourceTreeInfo);
+            if(!StringUtils.isEmpty(resourceTreeInfo.getUrl())){
+//                if(resourceTreeInfoMap.containsKey(resourceTreeInfo.getUrl())){
+//                    throw new Exception("产品:"+resourceTreeInfo.getProduct_code()+", 存在重复的资源: "+resourceTreeInfo.getUrl());
+//                }
+                resourceTreeInfoMap.put(resourceTreeInfo.getUrl(), resourceTreeInfo);
+            }else if(!StringUtils.isEmpty(resourceTreeInfo.getText())){
+//                if(resourceTreeInfoMap.containsKey(resourceTreeInfo.getText())){
+//                    throw new Exception("产品:"+resourceTreeInfo.getProduct_code()+", 存在重复的资源: "+resourceTreeInfo.getText());
+//                }
+                resourceTreeInfoMap.put(resourceTreeInfo.getText(), resourceTreeInfo);
+            }
+        }
+
+        List<ResourceTreeInfo> newResourceTreeInfos = new ArrayList<>();
+        Map<String, ResourceTreeInfo> newResourceTreeInfoMap = new HashMap<>();
+        //对比新增的资源树信息
+        for(ResourceTreeInfo resourceTreeInfo: baseResourceTreeInfos){
+            if(!StringUtils.isEmpty(resourceTreeInfo.getUrl())){
+                if(!resourceTreeInfoMap.containsKey(resourceTreeInfo.getUrl())){
+                    newResourceTreeInfos.add(resourceTreeInfo);
+                    newResourceTreeInfoMap.put(resourceTreeInfo.getUrl(), resourceTreeInfo);
+                }
+            }else if(!StringUtils.isEmpty(resourceTreeInfo.getText())){
+                //新增的资源树信息
+                if(!resourceTreeInfoMap.containsKey(resourceTreeInfo.getText())){
+                    newResourceTreeInfos.add(resourceTreeInfo);
+                    newResourceTreeInfoMap.put(resourceTreeInfo.getText(), resourceTreeInfo);
+                }
+            }
+        }
+
+        //根据新增的资源生成新的映射关系
+        Map<String, String> idMap = new HashMap<>();
+
+        for(ResourceTreeInfo resourceTreeInfo: newResourceTreeInfos) {
+            String rid = resourceTreeInfo.getId();
+            //生成新的rid
+            String newRid = String.valueOf(SnowflakeIdWorker.getInstance().nextId());
+            idMap.put(rid, newRid);
+        }
+
+        //开始替换id和parent
+        for(ResourceTreeInfo resourceTreeInfo: newResourceTreeInfos) {
+            String rid = resourceTreeInfo.getId();
+            String parent = resourceTreeInfo.getParent();
+            if(parent.equals("#")){
+                continue;
+            }
+            String newParentId = "";
+            //根据parent 查找对应的资源信息
+            ResourceTreeInfo baseResourceTreeInfo = baseResourceTreeInfoMapById.get(parent);
+
+            //在产品中查找是否已经存在节点
+            String urlOrText = StringUtils.isEmpty(baseResourceTreeInfo.getUrl())?baseResourceTreeInfo.getText():baseResourceTreeInfo.getUrl();
+            if(resourceTreeInfoMap.containsKey(urlOrText)){
+                //当前新增的资源,使用历史的父节点信息
+                newParentId =  resourceTreeInfoMap.get(urlOrText).getId();
+            }else{
+                //当前新增资源,使用新增的资源作为父节点
+                newParentId = idMap.get(newResourceTreeInfoMap.get(urlOrText).getId());
+            }
+            String s = JsonUtil.formatJsonString(resourceTreeInfo);
+            ResourceTreeInfo newResourceTreeInfo = JsonUtil.toJavaBean(s, ResourceTreeInfo.class);
+            newResourceTreeInfo.setId(idMap.get(rid));
+            if(!newResourceTreeInfo.getParent().equals("#")){
+                newResourceTreeInfo.setParent(newParentId);
+            }
+            newResourceTreeInfo.setProduct_code(product_code);
+            if(!StringUtils.isEmpty(newResourceTreeInfo.getOrder())){
+                newResourceTreeInfo.setOrder(newResourceTreeInfo.getOrder());
+            }
+            newResourceTreeInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            newResourceTreeInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+            LogUtil.info(this.getClass(),"新增资源树信息:{}", JsonUtil.formatJsonString(newResourceTreeInfo));
+
+            resourceTreeMapper.insertSelective(newResourceTreeInfo);
+        }
+
+    }
+
+    /**
+     * 同步角色信息
+     */
+    private void syncRoleInfo(String product_code, String base_product_code) {
+        // 删除目标产品下已有的角色信息
+        RoleInfo roleInfo = new RoleInfo();
+        roleInfo.setProduct_code(base_product_code);
+        List<RoleInfo> baseRoleInfos = roleDao.select(roleInfo);
+        roleInfo.setProduct_code(product_code);
+        List<RoleInfo> roleInfos = roleDao.select(roleInfo);
+
+        for(RoleInfo baseRoleInfo: baseRoleInfos){
+            String code = baseRoleInfo.getCode();
+            //遍历在新产品中是否存在角色
+            boolean flag = false;
+            for(RoleInfo roleInfo1: roleInfos){
+                if(roleInfo1.getCode().equals(code)){
+                    flag = true;
+                }
+            }
+            if(!flag){
+                String s = JsonUtil.formatJsonString(baseRoleInfo);
+                RoleInfo roleInfo1 = JsonUtil.toJavaBean(s, RoleInfo.class);
+                roleInfo1.setId(SnowflakeIdWorker.getInstance().nextId()+"");
+                roleInfo1.setProduct_code(product_code);
+                roleInfo1.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                roleInfo1.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                LogUtil.info(this.getClass(),"新增角色信息:{}", JsonUtil.formatJsonString(roleInfo1));
+                roleDao.insertSelective(roleInfo1);
+            }
+        }
+    }
+
+    /**
+     * 同步权限维度信息
+     */
+    private void syncPermissionDimensionInfo(String product_code, String base_product_code) throws Exception {
+        Example examplePermissionDimension=new Example(PermissionDimensionInfo.class);
+        Example.Criteria criteriaPermissionDimension=examplePermissionDimension.createCriteria();
+        criteriaPermissionDimension.andEqualTo("product_code", product_code);
+        criteriaPermissionDimension.andEqualTo("is_delete", Const.NOT_DELETE);
+        List<PermissionDimensionInfo> permissionDimensionInfos = permissionDimensionMapper.selectByExample(examplePermissionDimension);
+
+        // 查询源产品下的所有权限维度信息
+        Example exampleSourcePermissionDimension=new Example(PermissionDimensionInfo.class);
+        Example.Criteria criteriaSourcePermissionDimension=exampleSourcePermissionDimension.createCriteria();
+        criteriaSourcePermissionDimension.andEqualTo("product_code", base_product_code);
+        criteriaSourcePermissionDimension.andEqualTo("is_delete", Const.NOT_DELETE);
+        List<PermissionDimensionInfo> basePermissionDimensionInfos = permissionDimensionMapper.selectByExample(exampleSourcePermissionDimension);
+
+        // 插入新的权限维度信息
+        for(PermissionDimensionInfo basePermissionDimensionInfo: basePermissionDimensionInfos){
+
+            String dim_code = basePermissionDimensionInfo.getDim_code();
+            //遍历在新产品中是否存在角色
+            boolean flag = false;
+            for(PermissionDimensionInfo permissionDimensionInfo1: permissionDimensionInfos){
+                if(permissionDimensionInfo1.getDim_code().equals(dim_code)){
+                    flag = true;
+                }
+            }
+            if(!flag){
+                String s = JsonUtil.formatJsonString(basePermissionDimensionInfo);
+                PermissionDimensionInfo permissionDimensionInfo = JsonUtil.toJavaBean(s, PermissionDimensionInfo.class);
+                permissionDimensionInfo.setId(null);
+                permissionDimensionInfo.setProduct_code(product_code);
+                permissionDimensionInfo.setOwner(getOwner());
+                permissionDimensionInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+                permissionDimensionInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                LogUtil.info(this.getClass(),"新增权限维度信息:{}", JsonUtil.formatJsonString(permissionDimensionInfo));
+                permissionDimensionMapper.insertSelective(permissionDimensionInfo);
+            }
+        }
+    }
 }

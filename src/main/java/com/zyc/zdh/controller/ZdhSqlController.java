@@ -221,14 +221,14 @@ public class ZdhSqlController extends BaseController {
         String url = JobCommon2.getZdhUrl(zdhHaInfoMapper, "").getZdh_url();
         try {
             String owner=getOwner();
-            String databases = HttpUtil.postJSON(url + "/show_databases", JsonUtil.formatJsonString(JsonUtil.createEmptyMap()));
+            String databases = HttpUtil.builder().retryCount(0).postJSON(url + "/show_databases", JsonUtil.formatJsonString(JsonUtil.createEmptyMap()));
 
             List<meta_database_info> meta_database_infos = new ArrayList<meta_database_info>();
 
             System.out.println("databases:" + databases);
             List<Object> jary = JsonUtil.toJavaList(databases);
             for (Object o : jary) {
-                String tableNames = HttpUtil.postJSON(url + "/show_tables", "{\"databaseName\":\"" + o.toString() + "\"}");
+                String tableNames = HttpUtil.builder().retryCount(0).postJSON(url + "/show_tables", "{\"databaseName\":\"" + o.toString() + "\"}");
                 List<Object> tableAry = JsonUtil.toJavaList(tableNames);
                 meta_database_info meta_database_info_d = new meta_database_info();
                 meta_database_info_d.setOwner(owner);
@@ -318,7 +318,7 @@ public class ZdhSqlController extends BaseController {
         try {
             Map<String, Object> p = JsonUtil.createEmptyMap();
             p.put("table", table);
-            String desc_table = HttpUtil.postJSON(url + "/desc_table", JsonUtil.formatJsonString(p));
+            String desc_table = HttpUtil.builder().retryCount(0).postJSON(url + "/desc_table", JsonUtil.formatJsonString(p));
             return desc_table;
         } catch (Exception e) {
             LogUtil.error(this.getClass(), e);

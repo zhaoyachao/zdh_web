@@ -153,7 +153,7 @@ public class TestA {
     public void testAPI() throws Exception {
         ProcessFlowInfo pfi=new ProcessFlowInfo();
         pfi.setFlow_id("123");
-        String result = HttpUtil.postJSON("http://127.0.0.1:8081/api/call_back_test", JsonUtil.formatJsonString(pfi));
+        String result = HttpUtil.builder().retryCount(0).postJSON("http://127.0.0.1:8081/api/call_back_test", JsonUtil.formatJsonString(pfi));
         System.out.println(result);
     }
 

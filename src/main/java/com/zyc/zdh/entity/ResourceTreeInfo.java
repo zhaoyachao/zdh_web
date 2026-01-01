@@ -77,9 +77,9 @@ public class ResourceTreeInfo extends BaseProductAuthInfo{
    	private Timestamp update_time;
 
 	/**
-	 * 资源类型1:目录,2:页面,3:方法,4:接口
+	 * 资源类型1:目录,2:菜单,3:页面,4:方法,5:接口
 	 */
-	private String resource_type;//1:目录,2:页面,3:方法,4:接口
+	private String resource_type;//1:目录,2:菜单,3:页面,4:方法,5:接口
 
 	/**
 	 * 提示语

@@ -391,7 +391,7 @@ public class LabelController extends BaseController {
             jsonObject2.put("sign", sign);
 
             String url = ConfigUtil.getValue(ConfigUtil.ZDH_VARIABLE_URL, "http://127.0.0.1:9003/api/v1/variable/update");
-            String ret = HttpUtil.postJSON(url, JsonUtil.formatJsonString(jsonObject2));
+            String ret = HttpUtil.builder().retryCount(0).postJSON(url, JsonUtil.formatJsonString(jsonObject2));
 
             Map<String, Object> resp = JsonUtil.toJavaMap(ret);
             if(resp.getOrDefault("code", "-1").toString().equals("0")){

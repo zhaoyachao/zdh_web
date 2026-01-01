@@ -143,7 +143,7 @@ public class DBUtilTest {
             js.put("jobGroups",killJobs);
             //发送杀死请求
             String kill_url="http://deep-2020klzjdi:60001/api/v1/kill";
-            HttpUtil.postJSON(kill_url, JsonUtil.formatJsonString(js));
+            HttpUtil.builder().retryCount(0).postJSON(kill_url, JsonUtil.formatJsonString(js));
         } catch (Exception e) {
             LogUtil.error(this.getClass(), e);
         }

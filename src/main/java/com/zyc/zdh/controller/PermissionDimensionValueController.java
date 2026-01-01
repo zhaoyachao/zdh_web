@@ -227,6 +227,7 @@ public class PermissionDimensionValueController extends BaseController {
         try {
             checkPermissionByOwner(permissionDimensionValueInfo.getProduct_code());
 
+            permissionDimensionValueInfo.setId(null);
             permissionDimensionValueInfo.setOwner(getOwner());
             permissionDimensionValueInfo.setIs_delete(Const.NOT_DELETE);
             permissionDimensionValueInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));

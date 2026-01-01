@@ -296,7 +296,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         npl.add(new BasicNameValuePair("mode","cancel"));
                                         JobCommon2.insertLog(tl,"INFO","杀死任务url: "+cancel_url);
                                         try{
-                                            String restul= HttpUtil.getRequest(cancel_url,npl);
+                                            String restul = HttpUtil.builder().retryCount(0).getRequest(cancel_url,npl);
                                         }catch (Exception e){
                                             JobCommon2.insertLog(tl,"INFO","杀死当前任务异常,判定服务已死亡,自动更新状态为killed");
                                             taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
@@ -319,7 +319,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         //npl.add(new BasicNameValuePair("status","running"));
                                         String restul="";
                                         try{
-                                            restul= HttpUtil.getRequest(url,npl);
+                                            restul= HttpUtil.builder().retryCount(0).getRequest(url,npl);
                                         }catch (Exception e){
                                             taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
                                             continue;
@@ -339,7 +339,7 @@ public class SystemCommandLineRunner implements CommandLineRunner {
                                         js.put("job_id",tl.getJob_id());
                                         //发送杀死请求
                                         String kill_url="http://"+zdhHaInfo.getZdh_host()+":"+zdhHaInfo.getZdh_port()+"/api/v1/kill";
-                                        HttpUtil.postJSON(kill_url, JsonUtil.formatJsonString(js));
+                                        HttpUtil.builder().retryCount(0).postJSON(kill_url, JsonUtil.formatJsonString(js));
                                         taskLogInstanceMapper.updateStatusById(JobStatus.KILLED.getValue(),DateUtil.getCurrentTime(),tl.getId());
                                     }else{
                                         String msg2="无法获取具体执行器,判断任务已杀死";

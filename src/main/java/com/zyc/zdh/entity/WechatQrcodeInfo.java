@@ -86,6 +86,15 @@ public class WechatQrcodeInfo extends BaseProductAuthInfo{
 
     private String qrcode_custom_image;
 
+    private String appid;
+
+    private String path;
+
+    private String open_version;
+
+    private String debug_url;
+
+    private String permit_sub_rule;
 
     /**
      * @return id
@@ -367,5 +376,45 @@ public class WechatQrcodeInfo extends BaseProductAuthInfo{
 
     public void setQrcode_custom_image(String qrcode_custom_image) {
         this.qrcode_custom_image = qrcode_custom_image;
+    }
+
+    public String getAppid() {
+        return appid;
+    }
+
+    public void setAppid(String appid) {
+        this.appid = appid;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getOpen_version() {
+        return open_version;
+    }
+
+    public void setOpen_version(String open_version) {
+        this.open_version = open_version;
+    }
+
+    public String getDebug_url() {
+        return debug_url;
+    }
+
+    public void setDebug_url(String debug_url) {
+        this.debug_url = debug_url;
+    }
+
+    public String getPermit_sub_rule() {
+        return permit_sub_rule;
+    }
+
+    public void setPermit_sub_rule(String permit_sub_rule) {
+        this.permit_sub_rule = permit_sub_rule;
     }
 }

@@ -86,7 +86,7 @@ public class ZdhProcessFlowController extends BaseController {
             if(!StringUtils.isEmpty(context)){
                 context = getLikeCondition(context);
             }
-            List<ProcessFlowInfo> pfis = processFlowMapper.selectByAuditorId(Const.SHOW, getUser().getUserName(), context, product_codes);
+            List<ProcessFlowInfo> pfis = processFlowMapper.selectByAuditorId(Const.SHOW, getUser().getUserName(), context);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
@@ -107,11 +107,10 @@ public class ZdhProcessFlowController extends BaseController {
     public ReturnInfo<List<ProcessFlowInfo>> process_flow_list2(String context) {
         try{
             //String product_code = ev.getProperty("zdh.product", "zdh");
-            List<String> product_codes = getPermissionByProduct(zdhPermissionService);
             if(!StringUtils.isEmpty(context)){
                 context = getLikeCondition(context);
             }
-            List<ProcessFlowInfo> pfis = processFlowMapper.selectByOwner(getUser().getUserName(), context, product_codes);
+            List<ProcessFlowInfo> pfis = processFlowMapper.selectByOwner(getUser().getUserName(), context);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "获取流程列表", pfis);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
@@ -218,7 +217,7 @@ public class ZdhProcessFlowController extends BaseController {
             if(!StringUtils.isEmpty(approvalEventInfo.getCall_back())){
                 //发送http请求
                 try {
-                    String result = HttpUtil.postJSON(approvalEventInfo.getCall_back(), JSON.toJSONString(pfi));
+                    String result = HttpUtil.builder().retryCount(0).postJSON(approvalEventInfo.getCall_back(), JSON.toJSONString(pfi));
                     LogUtil.info(this.getClass(), result);
                 } catch (Exception e) {
                     e.printStackTrace();

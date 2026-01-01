@@ -131,6 +131,8 @@ public class PermissionController extends BaseController {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", result);
             }
 
+            checkPermissionByOwner(product_code);
+
             Example example=new Example(PermissionUserInfo.class);
             Example.Criteria criteria=example.createCriteria();
 
@@ -267,6 +269,9 @@ public class PermissionController extends BaseController {
     public ReturnInfo<PermissionUserInfo> user_detail(String id) {
         try {
             PermissionUserInfo user = permissionMapper.selectByPrimaryKey(id);
+            if(!user.getUser_account().equals(getOwner()) && !checkPermission(user.getProduct_code(), getOwner())){
+                throw new Exception("无权限操作");
+            }
             user.setUser_password("");
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", user);
         } catch (Exception e) {
@@ -441,6 +446,10 @@ public class PermissionController extends BaseController {
     public ReturnInfo<Object> role_enable(String[] ids, String enable) {
 
         try {
+            List<RoleInfo> roleInfos = roleDao.selectObjectByIds(roleDao.getTable(), ids);
+            for (RoleInfo role : roleInfos) {
+                checkPermissionByOwner(role.getProduct_code());
+            }
             int result = roleDao.updateEnable(ids, enable);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", getBaseException());
         } catch (Exception e) {
@@ -462,6 +471,7 @@ public class PermissionController extends BaseController {
     public ReturnInfo<RoleInfo> role_detail(String id) {
         try {
             RoleInfo role = roleDao.selectByPrimaryKey(id);
+            checkPermissionByOwner(role.getProduct_code());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", role);
         } catch (Exception e) {
             LogUtil.error(this.getClass(), e);
@@ -502,6 +512,85 @@ public class PermissionController extends BaseController {
     }
 
     /**
+     * 快速添加资源节点
+     * 一键生成 增删改查
+     * @param rti
+     * @return
+     */
+    @SentinelResource(value = "jstree_quick_add_nodes", blockHandler = "handleReturn")
+    @RequestMapping(value = "/jstree_quick_add_nodes", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<Object> jstree_quick_add_nodes(ResourceTreeInfo rti) {
+        //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
+        try {
+            if (rti.getNotice_title()!=null && rti.getNotice_title().length() > 4) {
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "参数验证不通过-提示语长度不可超过4个汉字", null);
+            }
+            if (org.apache.commons.lang3.StringUtils.isEmpty(rti.getProduct_code())) {
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", null);
+            }
+
+            ResourceTreeInfo parent = resourceTreeMapper.selectByPrimaryKey(rti.getParent());
+
+            if(!parent.getText().endsWith("_index")){
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前仅支持_index结尾的菜单子节点生成", null);
+            }
+
+            checkPermissionByOwner(parent.getProduct_code());
+
+            List<ResourceTreeInfo> list = new ArrayList<>();
+            //列表资源
+            list.add(quickResourceTreeInfo(parent, "list", "列表", Const.RESOURCE_TYPE_INTERFACE));
+            list.add(quickResourceTreeInfo(parent, "list_by_page", "分页列表", Const.RESOURCE_TYPE_INTERFACE));
+            list.add(quickResourceTreeInfo(parent, "add_index", "新增页面", Const.RESOURCE_TYPE_PAGE));
+            list.add(quickResourceTreeInfo(parent, "detail", "明细", Const.RESOURCE_TYPE_INTERFACE));
+            list.add(quickResourceTreeInfo(parent, "add", "新增", Const.RESOURCE_TYPE_INTERFACE));
+            list.add(quickResourceTreeInfo(parent, "update", "更新", Const.RESOURCE_TYPE_INTERFACE));
+            list.add(quickResourceTreeInfo(parent, "delete", "删除", Const.RESOURCE_TYPE_INTERFACE));
+            int order = 0;
+            for (ResourceTreeInfo r : list) {
+                order++;
+                Example example=new Example(ResourceTreeInfo.class);
+                Example.Criteria criteria = example.createCriteria();
+                criteria.andEqualTo("product_code", r.getProduct_code());
+                criteria.andEqualTo("url", r.getUrl());
+
+                int count = resourceTreeMapper.selectCountByExample(example);
+                if(count > 0){
+                    return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前url已存在"+r.getUrl(), null);
+                }
+                r.setOrder(String.valueOf(order));
+                resourceTreeMapper.insertSelective(r);
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), RETURN_CODE.SUCCESS.getDesc(), getBaseException());
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), e.getMessage(), getBaseException(e));
+        }
+
+    }
+
+    private ResourceTreeInfo quickResourceTreeInfo(ResourceTreeInfo parent, String suffix, String textSuffix, String resourceType) throws Exception {
+        ResourceTreeInfo rti = new ResourceTreeInfo();
+        rti.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+        rti.setParent(parent.getId());
+        rti.setText(parent.getText()+"-"+textSuffix);
+        rti.setLevel(String.valueOf(Integer.valueOf(parent.getLevel())+1));
+        rti.setOwner(getOwner());
+        rti.setProduct_code(parent.getProduct_code());
+        rti.setResource_type(resourceType);
+        rti.setIcon("fa fa-coffee");
+        rti.setUrl(parent.getUrl().replaceAll("_index", "")+"_"+suffix);
+        rti.setCreate_time(new Timestamp(System.currentTimeMillis()));
+        rti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+        rti.setIs_enable(Const.ENABLE);
+        rti.setResource_desc("");
+        rti.setNotice_title("");
+        rti.setEvent_code("");
+        rti.setQps("");
+        return rti;
+    }
+    /**
      * 资源树-新增资源
      * @param rti
      * @return
@@ -518,7 +607,24 @@ public class PermissionController extends BaseController {
             if (org.apache.commons.lang3.StringUtils.isEmpty(rti.getProduct_code())) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", null);
             }
-            //校验code是否重复
+            checkAttrPermissionByProduct(zdhPermissionService,  rti.getProduct_code(), getAttrAdd());
+            //校验url是否重复
+            //资源类型1:目录,2:页面,3:方法,4:接口
+            if(Integer.valueOf(rti.getResource_type()) > 1 && Integer.valueOf(rti.getLevel()) > 1){
+                if(StringUtils.isEmpty(rti.getUrl())){
+                    return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前资源必须填写url", null);
+                }
+
+                Example example=new Example(ResourceTreeInfo.class);
+                Example.Criteria criteria = example.createCriteria();
+                criteria.andEqualTo("product_code", rti.getProduct_code());
+                criteria.andEqualTo("url", rti.getUrl());
+
+                int count = resourceTreeMapper.selectCountByExample(example);
+                if(count > 0){
+                    return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前url已存在", null);
+                }
+            }
 
             String id = SnowflakeIdWorker.getInstance().nextId() + "";
             rti.setId(id);
@@ -565,11 +671,14 @@ public class PermissionController extends BaseController {
             if (org.apache.commons.lang3.StringUtils.isEmpty(rti.getProduct_code())) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "产品代码不可为空", null);
             }
-
+            checkAttrPermissionByProduct(zdhPermissionService,  rti.getProduct_code(), getAttrAdd());
             //校验是否当前产品下已经存在根
             ResourceTreeInfo resourceTreeInfo=new ResourceTreeInfo();
             resourceTreeInfo.setProduct_code(rti.getProduct_code());
             resourceTreeInfo.setParent("#");
+            resourceTreeInfo.setIcon(null);
+            resourceTreeInfo.setOrder(null);
+            resourceTreeInfo.setUrl(null);
             resourceTreeInfo = resourceTreeMapper.selectOne(resourceTreeInfo);
             if(resourceTreeInfo != null){
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前产品下已存在根", null);
@@ -618,16 +727,24 @@ public class PermissionController extends BaseController {
     @ResponseBody
     public ReturnInfo<List<ResourceTreeInfo>> jstree_node(String parent_id, String text,String product_code) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-        if(org.apache.commons.lang3.StringUtils.isEmpty(product_code)){
-            return ReturnInfo.build("201","产品参数不可为空",getBaseException());
-        }
-        Example example=new Example(ResourceTreeInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("product_code", product_code);
+        try{
+            if(org.apache.commons.lang3.StringUtils.isEmpty(product_code)){
+                return ReturnInfo.build("201","产品参数不可为空",getBaseException());
+            }
 
-        List<ResourceTreeInfo> rtis = resourceTreeMapper.selectByExample(example);
-        rtis.sort(Comparator.comparing(ResourceTreeInfo::getOrderN));
-        return ReturnInfo.build("200","查询成功",rtis);
+            checkAttrPermissionByProduct(zdhPermissionService,  product_code, getAttrSelect());
+
+            Example example=new Example(ResourceTreeInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("product_code", product_code);
+
+            List<ResourceTreeInfo> rtis = resourceTreeMapper.selectByExample(example);
+            rtis.sort(Comparator.comparing(ResourceTreeInfo::getOrderN));
+            return ReturnInfo.build("200","查询成功",rtis);
+        }catch (Exception e){
+            LogUtil.error(this.getClass(), e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查找节点失败",e);
+        }
     }
 
     /**
@@ -643,6 +760,7 @@ public class PermissionController extends BaseController {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try{
             ResourceTreeInfo resourceTreeInfo = resourceTreeMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProduct(zdhPermissionService,  resourceTreeInfo.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "",resourceTreeInfo);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);
@@ -661,6 +779,26 @@ public class PermissionController extends BaseController {
     public ReturnInfo<Object> jstree_update_node(ResourceTreeInfo rti) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
+            checkAttrPermissionByProduct(zdhPermissionService,  rti.getProduct_code(), getAttrEdit());
+            //校验是否根节点
+            //校验url是否重复
+            //资源类型1:目录,2:页面,3:方法,4:接口
+            if(Integer.valueOf(rti.getResource_type()) > 1 && Integer.valueOf(rti.getLevel()) > 1){
+                if(StringUtils.isEmpty(rti.getUrl())){
+                    return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前资源必须填写url", null);
+                }
+                Example example=new Example(ResourceTreeInfo.class);
+                Example.Criteria criteria = example.createCriteria();
+                criteria.andEqualTo("product_code", rti.getProduct_code());
+                criteria.andEqualTo("url", rti.getUrl());
+                criteria.andNotEqualTo("id", rti.getId());
+                int count = resourceTreeMapper.selectCountByExample(example);
+
+                if(count > 0){
+                    return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前url已存在", null);
+                }
+            }
+
             rti.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             rti.setCreate_time(null);
             rti.setOwner(getOwner());
@@ -687,6 +825,7 @@ public class PermissionController extends BaseController {
 
     /**
      * 删除资源信息
+     * 当前删除为物理删除-删除后无法恢复信息
      * @param id 主键ID
      * @return
      */
@@ -725,6 +864,8 @@ public class PermissionController extends BaseController {
     public ReturnInfo<Object> jstree_update_parent(String id, String parent_id, String level) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
+            ResourceTreeInfo rti = resourceTreeMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProduct(zdhPermissionService,  rti.getProduct_code(), getAttrSelect());
             resourceTreeMapper.updateParentById(id, parent_id, level);
             //递归修改层级
             update_level(id, Integer.parseInt(level));
@@ -767,8 +908,13 @@ public class PermissionController extends BaseController {
             if(url.contains(".")){
                 urlStr = url.split("\\.")[0];
             }
-            criteria.andEqualTo("url", url);
-            criteria.orEqualTo("url", urlStr);
+            criteria.andEqualTo("product_code", getUser().getProduct_code());
+            Example.Criteria criteria2 = example.createCriteria();
+            criteria2.andEqualTo("url", url);
+            criteria2.orEqualTo("url", urlStr);
+
+            example.and(criteria2);
+
             List<ResourceTreeInfo> resourceTreeInfos = resourceTreeMapper.selectByExample(example);
 
             if(resourceTreeInfos != null && resourceTreeInfos.size() >= 1){
@@ -797,6 +943,7 @@ public class PermissionController extends BaseController {
     public ReturnInfo<Object> jstree_add_permission(String id, String[] resource_id, String code, String name,String product_code) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try {
+            checkAttrPermissionByProduct(zdhPermissionService,  product_code, getAttrAdd());
             if (id.equalsIgnoreCase("-1")) {
                 //检查code是否已经存在
                 RoleInfo roleInfo=new RoleInfo();
@@ -862,6 +1009,8 @@ public class PermissionController extends BaseController {
     public ReturnInfo<List<RoleResourceInfo>> jstree_permission_list(String id,String code, String product_code) {
         //{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
         try{
+
+            checkAttrPermissionByProduct(zdhPermissionService,  product_code, getAttrSelect());
             List<RoleResourceInfo> uris = new ArrayList<>();
 
             uris = resourceTreeMapper.selectByRoleCode(code, product_code);
@@ -1128,6 +1277,7 @@ public class PermissionController extends BaseController {
     public ReturnInfo<PermissionApplyInfo> permission_apply_detail(String id){
         try{
             PermissionApplyInfo pai = permissionApplyMapper.selectByPrimaryKey(id);
+
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", pai);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", getBaseException(e));

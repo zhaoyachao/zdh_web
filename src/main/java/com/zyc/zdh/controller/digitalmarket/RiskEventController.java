@@ -83,7 +83,7 @@ public class RiskEventController extends BaseController {
             jsonObject.put("sign", sign);
 
             String url = ConfigUtil.getValue(ConfigUtil.ZDH_SHIP_URL, "http://127.0.0.1:9002/api/v1/ship/accept");
-            String ret = HttpUtil.postJSON(url, JsonUtil.formatJsonString(jsonObject));
+            String ret = HttpUtil.builder().retryCount(0).postJSON(url, JsonUtil.formatJsonString(jsonObject));
             //System.out.println(ret);
             return ReturnInfo.buildSuccess(JsonUtil.toJavaMap(ret));
         }catch (Exception e){

@@ -338,7 +338,7 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">小程序通道</label>
                                                     <div class="col-sm-10">
-                                                        <select id="miniprogram_channel" name="channel"
+                                                        <select id="miniprogram_channel_pool" name="miniprogram_channel_pool"
                                                                 data-placeholder="选择通道...."
                                                                 class="chosen-select form-control m-b" >
                                                             <option value="">空</option>
@@ -346,18 +346,45 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="col-sm-2 control-label">通道模板</label>
+                                                    <label class="col-sm-2 control-label">小程序模板</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="miniprogram_channel_template_id" name="channel_template_id" class="form-control" type="text" value="" placeholder="模板ID">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="miniprogram_template_search" onclick='getWechatMiniProgramTemplate()' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
                                                     <div class="col-sm-10">
-                                                        <input id="miniprogram_channel_template_id" name="channel_template_id" class="form-control" type="text" value="" placeholder="通道模板ID">
+                                                        <input id="miniprogram_title" name="miniprogram_title" class="form-control" placeholder="内容,使用通道模板时,需和通道模板所创建的内容保持一致"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group" id="miniprogram_div">
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转页面</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="miniprogram_channel_page" name="miniprogram_channel_page" class="form-control" type="text" value="" placeholder="跳转页面">
                                                     </div>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label class="col-sm-2 control-label">内容</label>
+                                                    <label class="col-sm-2 control-label">小程序类型</label>
                                                     <div class="col-sm-10">
-                                                        <textarea id="miniprogram_content" name="content" class="form-control" rows="5" placeholder="内容,使用通道模板时,需和通道模板所创建的内容保持一致"></textarea>
+                                                        <select id="miniprogram_channel_miniprogram_state" name="miniprogram_channel_miniprogram_state"
+                                                                data-placeholder="选择消息应用场景...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="developer">开发版</option>
+                                                            <option value="trial">体验版</option>
+                                                            <option value="formal">正式版</option>
+                                                        </select>
                                                     </div>
                                                 </div>
+
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">参数</label>
                                                     <div class="col-sm-8">
@@ -398,6 +425,13 @@
                                                     <label class="col-sm-2 control-label">跳转链接</label>
                                                     <div class="col-sm-10">
                                                         <input id="wechatofficialaccount_channel_url" name="wechatofficialaccount_channel_url" class="form-control" type="text" value="" placeholder="跳转链接">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatofficialaccount_channel_miniprogram_appid" name="wechatofficialaccount_channel_miniprogram_appid" class="form-control" type="text" value="" placeholder="跳转小程序appid">
                                                     </div>
                                                 </div>
 
@@ -918,35 +952,35 @@
                 });
             }
 
-            function init_nimiprogram(id){
-                $.ajax({
-                    type: 'POST',
-                    url: server_context+"/push_app_list",
-                    async:false,
-                    dataType: 'json',
-                    data: {},
-                    //成功返回
-                    success: function (data) {
-                        if(data.code != "200"){
-                            layer.msg(data.msg);
-                            return ;
-                        }
-                        var str = '<option value=\"'  + '\" hassubinfo=\"true\">' + '选择App' + '</option>';
-                        for (var i = 0; i < data.result.length; i++) {
-                            str += '<option value=\"' + data.result[i].app + '\" hassubinfo=\"true\">' + data.result[i].app_name + '</option>';
-                        }
-                        $('#'+id).html(str);
-                        $('#'+id).trigger("chosen:updated");
-                        $('#'+id).chosen();
-                    },
-                    //处理完成
-                    complete: function () {
-                    },
-                    //报错
-                    error: function (data) {
-                    }
-                });
-            }
+            // function init_nimiprogram(id){
+            //     $.ajax({
+            //         type: 'POST',
+            //         url: server_context+"/push_app_list",
+            //         async:false,
+            //         dataType: 'json',
+            //         data: {},
+            //         //成功返回
+            //         success: function (data) {
+            //             if(data.code != "200"){
+            //                 layer.msg(data.msg);
+            //                 return ;
+            //             }
+            //             var str = '<option value=\"'  + '\" hassubinfo=\"true\">' + '选择App' + '</option>';
+            //             for (var i = 0; i < data.result.length; i++) {
+            //                 str += '<option value=\"' + data.result[i].app + '\" hassubinfo=\"true\">' + data.result[i].app_name + '</option>';
+            //             }
+            //             $('#'+id).html(str);
+            //             $('#'+id).trigger("chosen:updated");
+            //             $('#'+id).chosen();
+            //         },
+            //         //处理完成
+            //         complete: function () {
+            //         },
+            //         //报错
+            //         error: function (data) {
+            //         }
+            //     });
+            // }
 
             init_push_channel('sms_channel_pool', "sms");
 
@@ -960,7 +994,7 @@
             $('#check_push_tab').removeClass("active");
 
             $('#check_miniprogram_tab').addClass("active");
-            init_nimiprogram('miniprogram_channel');
+            init_push_channel('miniprogram_channel_pool',"miniprogram");
             $('#check_miniprogram_tab').removeClass("active");
 
             $('#check_wechatofficialaccount_tab').addClass("active");
@@ -1065,6 +1099,37 @@
 
                         }
 
+                        if(!is_empty(data.result.configMap.miniprogram)){
+                            $("#miniprogram_channel_pool").val(data.result.configMap.miniprogram.channel_pool);
+                            $("#miniprogram_channel_pool").trigger("chosen:updated");
+                            $("#miniprogram_channel_template_id").val(data.result.configMap.miniprogram.channel_template_id);
+
+                            // $("#miniprogram_channel_template_type").val(data.result.configMap.wechatofficialaccount.channel_template_type);
+                            // $("#miniprogram_channel_template_type").trigger("chosen:updated");
+
+                            // $("#miniprogram_channel_miniprogram_appid").val(data.result.configMap.miniprogram.channel_miniprogram_appid);
+                            $("#miniprogram_channel_page").val(data.result.configMap.miniprogram.channel_page);
+                            //$("#miniprogram_channel_url").val(data.result.configMap.miniprogram.channel_url);
+
+                            //getWechatTemplate();
+                            $("#miniprogram_title").val(data.result.configMap.miniprogram.title);
+
+                            var wechatList = data.result.configMap.miniprogram.content;
+
+                            $("#miniprogram_div").empty();
+                            for (let i = 0; i < wechatList.length; i++) {
+                                var cn_name = wechatList[i].cn_name;
+                                var en_name = wechatList[i].en_name;
+                                var value = wechatList[i].value;
+                                var tmp = miniprogramTemplate;
+                                tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                                tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                                $('#miniprogram_div').append(tmp);
+                                $('#miniprogram_'+en_name).val(value);
+                            }
+                            $("#wechatofficialaccount_params").val(data.result.configMap.wechatofficialaccount.params);
+                        }
+
                         if(!is_empty(data.result.configMap.wechatofficialaccount)){
                             $("#wechatofficialaccount_channel_pool").val(data.result.configMap.wechatofficialaccount.channel_pool);
                             $("#wechatofficialaccount_channel_pool").trigger("chosen:updated");
@@ -1073,6 +1138,7 @@
                             $("#wechatofficialaccount_channel_template_type").val(data.result.configMap.wechatofficialaccount.channel_template_type);
                             $("#wechatofficialaccount_channel_template_type").trigger("chosen:updated");
 
+                            $("#wechatofficialaccount_channel_miniprogram_appid").val(data.result.configMap.wechatofficialaccount.channel_miniprogram_appid);
                             $("#wechatofficialaccount_channel_miniprogram_page").val(data.result.configMap.wechatofficialaccount.channel_miniprogram_page);
                             $("#wechatofficialaccount_channel_url").val(data.result.configMap.wechatofficialaccount.channel_url);
 
@@ -1093,15 +1159,6 @@
                                 $('#wechat_'+en_name).val(value);
                             }
 
-                            // for (const wechatParamEnName in wechatMap) {
-                            //     var wechatParamValue = wechatMap[wechatParamEnName];
-                            //     $('#wechat_'+wechatParamEnName).val(wechatParamValue);
-                            //     $("#wechat_div").empty();
-                            //     for (var i = 0; i < data.result.wechatTemplateContentParams.length; i++) {
-                            //
-                            //     }
-                            //
-                            // }
                             $("#wechatofficialaccount_params").val(data.result.configMap.wechatofficialaccount.params);
                         }
 
@@ -1185,15 +1242,22 @@
         "                                                         <input id=\"wechat_wechat_param_en_name\" name=\"wechat_param_en_name\" class=\"form-control wechat_en_name\" type=\"text\" value=\"\" placeholder=\"值\">\n" +
         "                                                    </div>\n" +
         "                                                </div>";
+    var miniprogramTemplate = "                    <div class=\"form-group col-sm-12\">\n" +
+        "                                                    <label class=\"col-sm-2 control-label wechatminiprogram_cn_name\">wechat_param_cn_name</label>\n" +
+        "                                                    <div class=\"col-sm-10\">\n" +
+        "                                                         <input id=\"miniprogram_wechat_param_en_name\" name=\"wechat_param_en_name\" class=\"form-control wechatminiprogram_en_name\" type=\"text\" value=\"\" placeholder=\"值\">\n" +
+        "                                                    </div>\n" +
+        "                                                </div>";
     function getWechatTemplate(){
         var wechat_template_id = $("#wechatofficialaccount_channel_template_id").val();
         var wechat_template_type = $("#wechatofficialaccount_channel_template_type").val();
+        var wechatofficialaccount_channel_pool = $("#wechatofficialaccount_channel_pool").val();
         $.ajax({
             type: 'POST',
             url: server_context+"/push_template_wechattemplate_detail",
             dataType: 'json',
             async: false, // 同步请求
-            data: {'template_id': wechat_template_id, 'template_type': wechat_template_type},
+            data: {'template_id': wechat_template_id, 'template_type': wechat_template_type, "wechatofficialaccount_channel_pool": wechatofficialaccount_channel_pool},
             //发送数据前
             beforeSend: function () {
                 // 禁用按钮防止重复提交
@@ -1232,6 +1296,54 @@
         });
     }
 
+    function getWechatMiniProgramTemplate(){
+        var wechat_template_id = $("#miniprogram_channel_template_id").val();
+        var wechat_template_type = "3";
+        var wechatofficialaccount_channel_pool = $("#wechatofficialaccount_channel_pool").val();
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/push_template_wechattemplate_detail",
+            dataType: 'json',
+            async: false, // 同步请求
+            data: {'template_id': wechat_template_id, 'template_type': wechat_template_type,"wechatofficialaccount_channel_pool": wechatofficialaccount_channel_pool},
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#miniprogram_template_search").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#miniprogram_title").val(data.result.title);
+
+                $("#miniprogram_div").empty();
+                for (var i = 0; i < data.result.wechatTemplateContentParams.length; i++) {
+                    var cn_name = data.result.wechatTemplateContentParams[i].cn_name;
+                    var en_name = data.result.wechatTemplateContentParams[i].en_name;
+                    var tmp = miniprogramTemplate;
+                    tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                    tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                    $('#miniprogram_div').append(tmp);
+                }
+                $("#save_dispatch_task").removeAttr('disabled');
+            },
+            //处理完成
+            complete: function () {
+                $("#miniprogram_template_search").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#miniprogram_template_search").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+    }
+
     function buildConfig(){
         var sms_config = {
             "channel_pool": $("#sms_channel_pool").val(),
@@ -1259,10 +1371,26 @@
             "params": $("#push_params").val()
         };
 
+        var miniprogramContentList = [];
+
+        $(".wechatminiprogram_en_name").each(function(index){
+            var en_name = $(this).attr('name');
+            var value = $(this).val();
+            var cn_name = $(this).closest('.form-group').find('.wechatminiprogram_en_name').text();
+            miniprogramContentList.push({
+                en_name: en_name,
+                cn_name: cn_name,
+                value: value
+            });
+        });
+
         var miniprogram_config = {
-            "channel": $("#miniprogram_channel").val(),
+            "channel_pool": $("#miniprogram_channel_pool").val(),
             "channel_template_id": $("#miniprogram_channel_template_id").val(),
-            "content": $("#miniprogram_content").val(),
+            "channel_page": $("#miniprogram_channel_page").val(),
+            "title": $("#miniprogram_title").val(),
+            "channel_miniprogram_state": $("#miniprogram_channel_miniprogram_state").val(),
+            "content": miniprogramContentList,
             "params": $("#miniprogram_params").val()
         };
 
@@ -1283,6 +1411,7 @@
             "channel_template_id":  $("#wechatofficialaccount_channel_template_id").val(),
             "channel_template_type": $("#wechatofficialaccount_channel_template_type").val(),
             "channel_miniprogram_page": $("#wechatofficialaccount_channel_miniprogram_page").val(),
+            "channel_miniprogram_appid": $("#wechatofficialaccount_channel_miniprogram_appid").val(),
             "channel_url": $("#wechatofficialaccount_channel_url").val(),
             "title": $("#wechatofficialaccount_title").val(),
             "content": contentList,

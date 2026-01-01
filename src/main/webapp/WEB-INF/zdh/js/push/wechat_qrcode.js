@@ -114,6 +114,68 @@
 
           });
       }
+      function wechat_qrcode_cloud_app_edit(id) {
+          var index_loading = parent.layer.load(1, {
+              shade: [0.1,'#fff'] //0.1透明度的白色背景
+          });
+          $.ajax({
+              url : server_context+"/wechat_qrcode_cloud_app_edit",
+              data : {"id": id},
+              type : "post",
+              dataType : "json",
+              success : function(data) {
+                  if(data.code != '200'){
+                      console.error(data.msg);
+                      parent.layer.msg("执行失败");
+                      return ;
+                  }
+                  parent.layer.msg("执行成功");
+                  $('#exampleTableEvents').bootstrapTable('refresh', {
+                      url: server_context+"/wechat_qrcode_list_by_page?"+$("#wechat_menu_form").serialize(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
+                  });
+              },
+              error: function (data) {
+                  console.info("error: " + data.responseText);
+              },
+              complete: function () {
+                  parent.layer.close(index_loading);
+              }
+
+          });
+      }
+      function wechat_qrcode_cloud_app_publish(id) {
+          var index_loading = parent.layer.load(1, {
+              shade: [0.1,'#fff'] //0.1透明度的白色背景
+          });
+          $.ajax({
+              url : server_context+"/wechat_qrcode_cloud_app_publish",
+              data : {"id": id},
+              type : "post",
+              dataType : "json",
+              success : function(data) {
+                  if(data.code != '200'){
+                      console.error(data.msg);
+                      parent.layer.msg("执行失败");
+                      return ;
+                  }
+                  parent.layer.msg("执行成功");
+                  $('#exampleTableEvents').bootstrapTable('refresh', {
+                      url: server_context+"/wechat_qrcode_list_by_page?"+$("#wechat_menu_form").serialize(),
+                      contentType: "application/json;charset=utf-8",
+                      dataType: "json"
+                  });
+              },
+              error: function (data) {
+                  console.info("error: " + data.responseText);
+              },
+              complete: function () {
+                  parent.layer.close(index_loading);
+              }
+
+          });
+      }
 
       window.operateEvents = {
           'click #edit': function (e, value, row, index) {
@@ -212,6 +274,26 @@
 
               });
           },
+          'click #wechat_qrcode_cloud_app_edit': function (e, value, row, index) {
+              layer.confirm('是否关联小程序', {
+                  btn: ['确定','取消'] //按钮
+              }, function(index){
+                  wechat_qrcode_cloud_app_edit(row.id);
+                  layer.close(layer.index)
+              }, function(){
+
+              });
+          },
+          'click #wechat_qrcode_cloud_app_publish': function (e, value, row, index) {
+              layer.confirm('是否发布规则', {
+                  btn: ['确定','取消'] //按钮
+              }, function(index){
+                  wechat_qrcode_cloud_app_publish(row.id);
+                  layer.close(layer.index)
+              }, function(){
+
+              });
+          },
       };
 
       function operateFormatter(value, row, index) {
@@ -227,9 +309,13 @@
               ' <button id="del" name="del" type="button" class="'+del_class+'" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="wechat_qrcode_cloud_edit" name="wechat_qrcode_cloud_edit" type="button" class="'+edit_class+'" title="同步到微信"><i class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></i>\n' +
+              ' <button id="wechat_qrcode_cloud_edit" name="wechat_qrcode_cloud_edit" type="button" class="'+edit_class+'" title="生成二维码"><i class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="wechat_qrcode_custom_edit" name="wechat_qrcode_custom_edit" type="button" class="'+edit_class+'" title="自定义二维码"><i class="glyphicon glyphicon-qrcode" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="wechat_qrcode_cloud_app_edit" name="wechat_qrcode_cloud_app_edit" type="button" class="'+edit_class+'" title="关联小程序"><i class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="wechat_qrcode_cloud_app_publish" name="wechat_qrcode_cloud_app_publish" type="button" class="'+edit_class+'" title="发布规则"><i class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></i>\n' +
               '                                    </button>'
                +
               '</div>'
@@ -345,7 +431,18 @@
           {
               field: 'action_name',
               title: '二维码类型',
-              sortable:false
+              sortable:false,
+              formatter: function (value, row, index) {
+                  if(is_empty(value)){
+                      return "";
+                  }
+                  if(value == "QR_SCENE" || value == "QR_STR_SCENE"){
+                      return "临时二维码";
+                  }else if(value == "QR_LIMIT_SCENE" || value == "QR_LIMIT_STR_SCENE"){
+                      return "永久二维码";
+                  }
+                  return '';
+              }
           },
           {
               field: 'wechat_app',

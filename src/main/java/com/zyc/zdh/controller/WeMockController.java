@@ -41,7 +41,6 @@ public class WeMockController extends BaseController{
      */
     @RequestMapping("/wemock_index")
     public String wemock_index() {
-
         return "wemock/wemock_index";
     }
 
@@ -554,7 +553,7 @@ public class WeMockController extends BaseController{
             map.put("use_cache", use_cache);
             String host = ConfigUtil.getValue(ConfigUtil.ZDH_WEMOCK_SHORT_HOST, "http://127.0.0.1:9001");
             String path = ConfigUtil.getValue(ConfigUtil.ZDH_WEMOCK_SHORT_GENERATOR, "/api/short/generator");
-            String ret = HttpUtil.postJSON(host+path, JsonUtil.formatJsonString(map));
+            String ret = HttpUtil.builder().retryCount(0).postJSON(host+path, JsonUtil.formatJsonString(map));
             return ReturnInfo.buildSuccess(JsonUtil.toJavaMap(ret));
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);

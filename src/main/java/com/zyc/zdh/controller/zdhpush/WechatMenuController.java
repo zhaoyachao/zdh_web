@@ -2,7 +2,6 @@ package com.zyc.zdh.controller.zdhpush;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.google.common.collect.Lists;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.WechatMenuMapper;
 import com.zyc.zdh.entity.PageResult;
@@ -47,12 +46,13 @@ public class WechatMenuController extends BaseController {
     @Autowired
     private PushxWechatMenuService pushxWechatMenuService;
 
+    private static final String MENU_TYPE_CUSTOM = "1";
+    private static final String MENU_TYPE_CONDITIONAL = "2";
     /**
      * 微信菜单信息表列表首页
      * @return
      */
     @RequestMapping(value = "/wechat_menu_index", method = RequestMethod.GET)
-    @White
     public String wechat_menu_index() {
 
         return "push/wechat_menu_index";
@@ -67,7 +67,6 @@ public class WechatMenuController extends BaseController {
     @SentinelResource(value = "wechat_menu_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_menu_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<WechatMenuInfo>> wechat_menu_list(String context, String product_code) {
         try{
             Example example=new Example(WechatMenuInfo.class);
@@ -108,7 +107,6 @@ public class WechatMenuController extends BaseController {
     @SentinelResource(value = "wechat_menu_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_menu_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<WechatMenuInfo>>> wechat_menu_list_by_page(String context,String product_code, int limit, int offset) {
         try{
             Example example=new Example(WechatMenuInfo.class);
@@ -150,7 +148,6 @@ public class WechatMenuController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_menu_add_index", method = RequestMethod.GET)
-    @White
     public String wechat_menu_add_index() {
 
         return "push/wechat_menu_add_index";
@@ -161,7 +158,6 @@ public class WechatMenuController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_menu_add_index2", method = RequestMethod.GET)
-    @White
     public String wechat_menu_add_index2() {
 
         return "push/wechat_menu_add_index2";
@@ -172,7 +168,6 @@ public class WechatMenuController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_menu_add_index3", method = RequestMethod.GET)
-    @White
     public String wechat_menu_add_index3() {
 
         return "push/wechat_menu_add_index3";
@@ -186,7 +181,6 @@ public class WechatMenuController extends BaseController {
     @SentinelResource(value = "wechat_menu_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_menu_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<WechatMenuInfo> wechat_menu_detail(String id) {
         try {
             WechatMenuInfo wechatMenuInfo = wechatMenuMapper.selectByPrimaryKey(id);
@@ -206,7 +200,6 @@ public class WechatMenuController extends BaseController {
     @RequestMapping(value = "/wechat_menu_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatMenuInfo> wechat_menu_update(WechatMenuInfo wechatMenuInfo) {
         try {
             String id = wechatMenuInfo.getId();
@@ -241,7 +234,6 @@ public class WechatMenuController extends BaseController {
     @RequestMapping(value = "/wechat_menu_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatMenuInfo> wechat_menu_add(WechatMenuInfo wechatMenuInfo) {
         try {
 
@@ -286,6 +278,8 @@ public class WechatMenuController extends BaseController {
 
     /**
      * 微信菜单信息表删除
+     * 删除微信自定义菜单,会同时删除所有的个性化菜单
+     * 删除逻辑可不开放给用户,菜单可直接更新
      * @param ids
      * @return
      */
@@ -293,7 +287,6 @@ public class WechatMenuController extends BaseController {
     @RequestMapping(value = "/wechat_menu_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo wechat_menu_delete(String[] ids) {
         try {
             if(ids.length > 1){
@@ -323,7 +316,6 @@ public class WechatMenuController extends BaseController {
     @RequestMapping(value = "/wechat_menu_add_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatMenuInfo> wechat_menu_add_node(WechatMenuInfo.ButtionTree buttionTree) {
         try {
             String id = buttionTree.getId();
@@ -358,7 +350,6 @@ public class WechatMenuController extends BaseController {
     @RequestMapping(value = "/wechat_menu_update_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatMenuInfo> wechat_menu_update_node(WechatMenuInfo.ButtionTree buttionTree, String node_id) {
         try {
             String id = buttionTree.getId();
@@ -412,7 +403,6 @@ public class WechatMenuController extends BaseController {
     @RequestMapping(value = "/wechat_menu_del_node", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatMenuInfo> wechat_menu_del_node(String id, String node_id) {
         try {
 
@@ -449,7 +439,6 @@ public class WechatMenuController extends BaseController {
     @RequestMapping(value = "/wechat_menu_upload", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo wechat_menu_upload(String id) {
         try {
             WechatMenuInfo wechatMenuInfo = wechatMenuMapper.selectByPrimaryKey(id);

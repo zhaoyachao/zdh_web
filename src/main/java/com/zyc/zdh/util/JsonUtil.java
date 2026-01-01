@@ -169,6 +169,9 @@ public class JsonUtil {
     public static <T> T toJavaBean(String json, Class<T> tClass) {
         T t = null;
         try {
+            if(StringUtils.isEmpty(json)){
+                return t;
+            }
             t = OBJECT_MAPPER.readValue(json, tClass);
         } catch (JsonProcessingException e) {
             LogUtil.error(JsonUtil.class, e);

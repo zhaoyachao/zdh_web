@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.zdhpush;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.WechatTagMapper;
 import com.zyc.zdh.entity.PageResult;
@@ -47,7 +46,6 @@ public class WechatTagController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_tag_index", method = RequestMethod.GET)
-    @White
     public String wechat_tag_index() {
 
         return "push/wechat_tag_index";
@@ -62,7 +60,6 @@ public class WechatTagController extends BaseController {
     @SentinelResource(value = "wechat_tag_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_tag_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<WechatTagInfo>> wechat_tag_list(String context, String product_code) {
         try{
             Example example=new Example(WechatTagInfo.class);
@@ -102,7 +99,6 @@ public class WechatTagController extends BaseController {
     @SentinelResource(value = "wechat_tag_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_tag_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<WechatTagInfo>>> wechat_tag_list_by_page(String context,String product_code, int limit, int offset) {
         try{
             Example example=new Example(WechatTagInfo.class);
@@ -144,7 +140,6 @@ public class WechatTagController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_tag_add_index", method = RequestMethod.GET)
-    @White
     public String wechat_tag_add_index() {
 
         return "push/wechat_tag_add_index";
@@ -158,7 +153,6 @@ public class WechatTagController extends BaseController {
     @SentinelResource(value = "wechat_tag_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_tag_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<WechatTagInfo> wechat_tag_detail(String id) {
         try {
             WechatTagInfo wechatTagInfo = wechatTagMapper.selectByPrimaryKey(id);
@@ -178,7 +172,6 @@ public class WechatTagController extends BaseController {
     @RequestMapping(value = "/wechat_tag_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatTagInfo> wechat_tag_update(WechatTagInfo wechatTagInfo) {
         try {
 
@@ -210,7 +203,6 @@ public class WechatTagController extends BaseController {
     @RequestMapping(value = "/wechat_tag_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatTagInfo> wechat_tag_add(WechatTagInfo wechatTagInfo) {
         try {
             wechatTagInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
@@ -237,7 +229,6 @@ public class WechatTagController extends BaseController {
     @RequestMapping(value = "/wechat_tag_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo wechat_tag_delete(String[] ids) {
         try {
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatTagMapper, wechatTagMapper.getTable(), ids, getAttrDel());
@@ -259,7 +250,6 @@ public class WechatTagController extends BaseController {
     @RequestMapping(value = "/wechat_tag_cloud_edit", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo wechat_tag_cloud_edit(String id) {
         try {
             WechatTagInfo wechatTagInfo = wechatTagMapper.selectByPrimaryKey(id);
@@ -305,7 +295,6 @@ public class WechatTagController extends BaseController {
     @RequestMapping(value = "/wechat_tag_cloud_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo wechat_tag_cloud_delete(String id) {
         try {
             WechatTagInfo wechatTagInfo = wechatTagMapper.selectByPrimaryKey(id);

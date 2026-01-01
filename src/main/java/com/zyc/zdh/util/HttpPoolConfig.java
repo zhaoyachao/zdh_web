@@ -12,6 +12,7 @@ public class HttpPoolConfig {
     private int retryCount = 3;               // 重试次数
     private long evictIdleTime = 30000;       // 空闲连接清理时间(ms)
     private long retryInterval = 1;        // 重试间隔时间(ms)
+    private int connectionRequestTimeout = 5000;
 
     // 单例实例
     private static final HttpPoolConfig INSTANCE = new HttpPoolConfig();
@@ -85,6 +86,15 @@ public class HttpPoolConfig {
 
     public HttpPoolConfig setRetryInterval(long retryInterval) {
         this.retryInterval = retryInterval;
+        return this;
+    }
+
+    public int getConnectionRequestTimeout() {
+        return connectionRequestTimeout;
+    }
+
+    public HttpPoolConfig setConnectionRequestTimeout(int connectionRequestTimeout) {
+        this.connectionRequestTimeout = connectionRequestTimeout;
         return this;
     }
 
