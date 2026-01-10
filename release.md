@@ -3968,6 +3968,37 @@
     add column `debug_url` text COMMENT '测试链接'  after open_version,
     add column `permit_sub_rule` varchar(8) not null DEFAULT '1' COMMENT '子路径独占规则,1:不占用 2:独占' after debug_url;
 
+    CREATE TABLE `wechat_draft_info` (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+        `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+        `draft_name` varchar(128) NOT NULL DEFAULT '' COMMENT '草稿名称',
+        `article_type` varchar(128) NOT NULL DEFAULT 'news' COMMENT '文章类型，分别有图文消息（news）、图片消息（newspic），不填默认为图文消息（news）',
+        `title` varchar(32) NOT NULL DEFAULT '' COMMENT '标题',
+        `author` varchar(16) NOT NULL DEFAULT '' COMMENT '作者',
+        `digest` varchar(128) NOT NULL DEFAULT '' COMMENT '图文消息的摘要，总长度不超过128个字。仅有单图文消息才有摘要，多图文此处为空。如果本字段为没有填写，则默认抓取正文前54个字',
+        `content` text COMMENT '图文消息的具体内容',
+        `content_source_url` text COMMENT '即点击“阅读原文”后的URL',
+        `thumb_media_id` text COMMENT 'article_type为图文消息（news）时必填，图文消息的封面图片素材id（必须是永久MediaID）',
+        `need_open_comment` varchar(4) NOT NULL DEFAULT '0' COMMENT '是否打开评论，0不打开(默认)，1打开',
+        `only_fans_can_comment` varchar(4) NOT NULL DEFAULT '0' COMMENT '是否粉丝才可评论，0所有人可评论(默认)，1粉丝才可评论',
+        `pic_crop_235_1` varchar(128) NOT NULL DEFAULT '' COMMENT '图文消息封面裁剪为2.35:1规格的坐标字段。以原始图片（thumb_media_id）左上角（0,0），右下角（1,1）建立平面坐标系，经过裁剪后的图片，其左上角所在的坐标即为（X1,Y1）,右下角所在的坐标则为（X2,Y2），用分隔符_拼接为X1_Y1_X2_Y2，每个坐标值的精度为不超过小数点后6位数字。示例见下图，图中(X1,Y1) 等于（0.1945,0）,(X2,Y2)等于（1,0.5236），所以请求参数值为0.1945_0_1_0.5236。',
+        `pic_crop_1_1` varchar(128) NOT NULL DEFAULT '' COMMENT '图文消息封面裁剪为1:1规格的坐标字段，裁剪原理同pic_crop_235_1，裁剪后的图片必须符合规格要求。',
+        `image_info` text COMMENT '图片消息里的图片相关信息，图片数量最多为20张，首张图片即为封面图',
+        `cover_info` text COMMENT '图片消息的封面信息',
+        `product_info` text COMMENT '商品信息',
+        `media_id` varchar(512) NOT NULL DEFAULT '' COMMENT '草稿上传微信后生成的素材id',
+        `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+        `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+        `is_delete` varchar(8) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+        `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_wechat_channel` (`wechat_channel`),
+    KEY `idx_product_media_id` (`product_code`,`media_id`),
+    KEY `idx_draft_name` (`draft_name`),
+    KEY `idx_create_time` (`create_time`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信草稿表';
+
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1439659600709160960, '1251925635509522432', '微信服务', '3', 'zyc', 'fa fa-coffee', '', '', '1', '2025-11-16 16:53:16', '2025-11-16 16:53:16', '', '1', '', '', 'zdh', '');
@@ -4166,4 +4197,28 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1456331792071004160, '1450892516483141632', '自动回复-启用禁用', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-01 17:02:37', '2026-01-01 17:02:37', 'wechat_rule_status', '5', '', '', 'zdh', '');
-    
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1458971535824916480, '1439659600709160960', '微信草稿', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2026-01-08 23:52:01', '2026-01-08 23:52:01', 'wechat_draft_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1458972088177004544, '1458971535824916480', '微信草稿-列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-01-08 23:54:12', '2026-01-08 23:54:12', 'wechat_draft_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1458972088181198848, '1458971535824916480', '微信草稿-分页列表', '5', 'zyc', 'fa fa-coffee', '', '2', '1', '2026-01-08 23:54:12', '2026-01-08 23:54:12', 'wechat_draft_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1458972088185393152, '1458971535824916480', '微信草稿-新增页面', '5', 'zyc', 'fa fa-coffee', '', '3', '1', '2026-01-08 23:54:12', '2026-01-08 23:54:12', 'wechat_draft_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1458972088185393153, '1458971535824916480', '微信草稿-明细', '5', 'zyc', 'fa fa-coffee', '', '4', '1', '2026-01-08 23:54:12', '2026-01-08 23:54:12', 'wechat_draft_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1458972088185393154, '1458971535824916480', '微信草稿-新增', '5', 'zyc', 'fa fa-coffee', '', '5', '1', '2026-01-08 23:54:12', '2026-01-08 23:54:12', 'wechat_draft_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1458972088189587456, '1458971535824916480', '微信草稿-更新', '5', 'zyc', 'fa fa-coffee', '', '6', '1', '2026-01-08 23:54:12', '2026-01-08 23:54:12', 'wechat_draft_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1458972088189587457, '1458971535824916480', '微信草稿-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-01-08 23:54:12', '2026-01-08 23:54:12', 'wechat_draft_delete', '5', '', '', 'zdh', '');
+        

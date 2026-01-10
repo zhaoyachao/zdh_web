@@ -610,8 +610,9 @@ function doubleclick_touch(id) {
             url=url+"?rule_id=-1"
         }else{
             var touch_task=div.attr("touch_task");
+            var touch_template_id=div.attr("touch_template_id");
             var base_url = get_common_url(url, div);
-            url=base_url+"&touch_task="+touch_task;
+            url=base_url+"&touch_task="+touch_task+"&touch_template_id="+touch_template_id;
         }
         layer.open({
             type: 2,
@@ -630,6 +631,7 @@ function doubleclick_touch(id) {
 
 
                 div.attr("touch_task",etl_task_info.touch_task);
+                div.attr("touch_template_id",etl_task_info.touch_template_id);
                 div.attr("touch_context",etl_task_info.touch_context);
                 div.attr("touch_param",etl_task_info.touch_param);
                 //div.width(etl_task_info.etl_context.length*16)

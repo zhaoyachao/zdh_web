@@ -100,17 +100,25 @@
 <!--                                </select>-->
 <!--                            </div>-->
 <!--                        </div>-->
-                        <div class="form-group zdh zdh_touch" hidden>
+<!--                        <div class="form-group zdh zdh_touch" hidden>-->
 
-                            <label class="col-sm-2 control-label">触达模板</label>
+<!--                            <label class="col-sm-2 control-label">触达模板</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <select id="rule_id" name="rule_id" data-placeholder=""-->
+<!--                                        class="chosen-select form-control m-b" tabindex="2">-->
+<!--                                    <option value="" mytype="">空</option>-->
+<!--                                    <option value="1" mytype="">测试模板1</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+
+<!--                        </div>-->
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">推送模板</label>
                             <div class="col-sm-10">
-                                <select id="rule_id" name="rule_id" data-placeholder=""
-                                        class="chosen-select form-control m-b" tabindex="2">
-                                    <option value="" mytype="">空</option>
-                                    <option value="1" mytype="">测试模板1</option>
-                                </select>
+                                <input id="touch_template_id" name="touch_template_id" type="text"
+                                       placeholder="推送模板" class="form-control" aria-required="true"> </span>
                             </div>
-
                         </div>
 
 
@@ -316,43 +324,8 @@
                 });
             }
 
-            function init_zdh_instance(){
-                $.ajax({
-                    type: 'POST',
-                    url: server_context+"/zdh_instance_list",
-                    dataType: 'json',
-                    async: false,
-                    data: '',
-                    //成功返回
-                    success: function (data) {
-                        if(data.code != "200"){
-                            layer.msg(data.msg);
-                            return ;
-                        }
-                        var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\"></option>';
-                        for (var i = 0; i < data.result.length; i++) {
-                            str += '<option value=\"' + data.result[i]+ "\" mytype=\"" + data.result[i] + "\" hassubinfo=\"true\">" + data.result[i] + "</option>"
-                        }
-                        //ETL单任务下拉框
-                        $('#zdh_instance').html(str);
-                        $('#zdh_instance').chosen().on("change", function (evt, params) {
-                            $("#zdh_instance").trigger("chosen:updated");
-                        });
-
-                    },
-                    //处理完成
-                    complete: function () {
-                        console.info("complete")
-                    },
-                    //报错
-                    error: function (data) {
-                        console.info("error: " + data.responseText);
-                    }
-                });
-            }
-
             $('#touch_task').chosen().on("change", function (evt, params) {
-                choseMoreTask($("#touch_task").val())
+                //choseMoreTask($("#touch_task").val())
             });
 
             function choseMoreTask(touch_task){
@@ -382,46 +355,14 @@
                 $("#rule_context").val(is_empty(s["rule_context"])?"":s["rule_context"]);
 
                 var touch_task=s["touch_task"];
+                var touch_template_id=s["touch_template_id"];
                 console.info("touch_task:"+touch_task);
-                choseMoreTask(touch_task);
+                //choseMoreTask(touch_task);
                 $("#touch_task").val(touch_task);
                 $("#touch_task").trigger("chosen:updated");
-
+                $("#touch_template_id").val(touch_template_id);
 
                 strategy_base_param(s);
-
-                // $("#rule_id").val(s["rule_id"]);
-                // $("#rule_id").trigger("chosen:updated");
-                // $("#operate").val(s.operate);
-                // $("#operate").trigger("chosen:updated");
-                //
-                // $("#data_status").val(s["data_status"]);
-                // $("#data_status").trigger("chosen:updated");
-                //
-                // $("#touch_type").val(s.touch_type);
-                // $("#touch_type").trigger("chosen:updated");
-                // $("#is_base").val(s.is_base);
-                // $("#is_base").trigger("chosen:updated");
-                //
-                // $("#depend_level").val(s["depend_level"]);
-                // $("#depend_level").trigger("chosen:updated");
-                // if (!s["time_out"] && typeof(s["time_out"])!="undefined"){
-                //     $("#time_out").val(s["time_out"]);
-                // }
-                // var is_disenable=s['is_disenable'];
-                // if(is_disenable=="true"){
-                //     $('#is_disenable').iCheck('check');
-                // }
-                //
-                // $("#project_code").val(s["project_code"]);
-                // $("#project_code").trigger("chosen:updated");
-                // var project_id = $('#project_code').find("option:selected").attr("mytype");
-                // project_scene(project_id);
-                //
-                // $("#project_scene").val(s["project_scene"]);
-                // $("#project_scene").trigger("chosen:updated");
-                //
-                // $('#version_tag').val(s.version_tag);
             }
         })();
 
@@ -431,50 +372,31 @@
 
     $('#save_etl_info').click(function () {
 
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
         //自定义实现
         var rule_context=$('#rule_context').val();
         var touch_context=$('#rule_id').find("option:selected").text();
-        var rule_id=$('#rule_id').find("option:selected").val();
         var touch_task=$('#touch_task').find("option:selected").val();
-        var operate=$('#operate').find("option:selected").val();
-        var data_status=$('#data_status').find("option:selected").val();
-        var touch_type=$('#touch_type').find("option:selected").val();
-        var is_base=$('#is_base').find("option:selected").val();
-        var project_code=$('#project_code').find("option:selected").val();
-        var project_scene=$('#project_scene').find("option:selected").val();
-        var version_tag=$('#version_tag').val();
+        var touch_template_id=$('#touch_template_id').val();
 
-        var depend_level=$('#depend_level').find("option:selected").val();
-        var time_out=$('#time_out').val();
-        var is_disenable = "false";
-        if($('#is_disenable').is(':checked')){
-            is_disenable="true"
+        var rule_id = s['rule_id'];
+        if(s['rule_id'] == -1){
+            rule_id = guid3();
         }
 
         var more_task="touch";
         const data = get_strategy_base_param(more_task, rule_id, rule_context);
         data.touch_context = touch_context;
         data.touch_task = touch_task;
+        data.touch_template_id = touch_template_id;
 
-        // let data={
-        //     "more_task": "touch",
-        //     "operate": operate,
-        //     "touch_type": touch_type,
-        //     "is_disenable":is_disenable,
-        //     "depend_level":depend_level,
-        //     "time_out": time_out,
-        //     "is_base": is_base,
-        //     "data_status": data_status,
-        //     "project_code": project_code,
-        //     "project_scene": project_scene,
-        //     "version_tag": version_tag,
-        //
-        //     "touch_context":touch_context,
-        //     "rule_id":rule_id,
-        //     "touch_task":touch_task,
-        //     "rule_context": rule_context
-        //
-        // };
         console.info("touch_detail:"+JSON.stringify(data));
         $("#etl_task_text",window.parent.document).val(JSON.stringify(data));
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引

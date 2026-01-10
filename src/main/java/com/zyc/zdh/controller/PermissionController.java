@@ -532,7 +532,7 @@ public class PermissionController extends BaseController {
 
             ResourceTreeInfo parent = resourceTreeMapper.selectByPrimaryKey(rti.getParent());
 
-            if(!parent.getText().endsWith("_index")){
+            if(!parent.getUrl().endsWith("_index")){
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前仅支持_index结尾的菜单子节点生成", null);
             }
 

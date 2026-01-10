@@ -449,6 +449,7 @@
             if(tp == "touch"){
                 $("#" + divId).attr("touch_context",is_empty(rs.touch_context)?"":rs.touch_context);
                 $("#" + divId).attr("touch_task",is_empty(rs.touch_task)?"":rs.touch_task);
+                $("#" + divId).attr("touch_template_id",is_empty(rs.touch_template_id)?"":rs.touch_template_id);
                 $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
             }
             if(tp == "plugin"){
@@ -639,6 +640,7 @@
                 touch_context: $elem.attr('touch_context'),
                 touch_id: $elem.attr('touch_id'),
                 touch_task: $elem.attr('touch_task'),
+                touch_template_id: $elem.attr('touch_template_id'),
 
                 //data_node
                 data_node: $elem.attr('data_node'),

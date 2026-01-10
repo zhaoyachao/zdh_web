@@ -138,6 +138,8 @@
                                 <label class="no-padding">
                                     <input id="check_wechatcustommessage" name="check_wechatcustommessage"  type="checkbox"><i></i> 微信客服</label>
                                 <label class="no-padding">
+                                    <input id="check_wechatnews" name="check_wechatnews"  type="checkbox"><i></i> 微信图文</label>
+                                <label class="no-padding">
                                     <input id="check_feishurobot" name="check_feishurobot"  type="checkbox"><i></i> 飞书机器人</label>
                                 <label class="no-padding">
                                     <input id="check_feishu" name="check_feishu"  type="checkbox"><i></i> 飞书</label>
@@ -162,6 +164,8 @@
                                         <li class="tab_li"  id="check_wechatofficialaccount_li"><a data-toggle="tab" href="#check_wechatofficialaccount_tab" aria-expanded="false">微信公众号</a>
                                         </li>
                                         <li class="tab_li"  id="check_wechatcustommessage_li"><a data-toggle="tab" href="#check_wechatcustommessage_tab" aria-expanded="false">微信客服</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_wechatnews_li"><a data-toggle="tab" href="#check_wechatnews_tab" aria-expanded="false">微信图文</a>
                                         </li>
                                         <li class="tab_li"  id="check_feishurobot_li"><a data-toggle="tab" href="#check_feishurobot_tab" aria-expanded="false">飞书机器人</a>
                                         </li>
@@ -621,6 +625,41 @@
                                             </div>
                                         </div>
 
+                                        <div id="check_wechatnews_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">微信公众号通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="wechatnews_channel_pool" name="wechatnews_channel_pool"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">草稿素材</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatnews_channel_media_id" name="wechatnews_channel_media_id" class="form-control" type="text" value="" placeholder="草稿素材ID必填">
+                                                    </div>
+                                                </div>
+
+
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">公众号参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="wechatnews_params" name="wechatnews_params" class="form-control" placeholder="公众号参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="wechatnews_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
                                         <div id="check_feishurobot_tab" class="tab-pane active">
                                             <div class="panel-body">
                                                 <div class="form-group">
@@ -1005,6 +1044,10 @@
             init_push_channel('wechatcustommessage_channel_pool', "wechatofficialaccount");
             $('#check_wechatcustommessage_tab').removeClass("active");
 
+            $('#check_wechatnews_tab').addClass("active");
+            init_push_channel('wechatnews_channel_pool', "wechatofficialaccount");
+            $('#check_wechatnews_tab').removeClass("active");
+
             $('#check_feishurobot_tab').addClass("active");
             init_push_channel('feishurobot_channel_pool', "feishurobot");
             $('#check_feishurobot_tab').removeClass("active");
@@ -1012,7 +1055,6 @@
             $('#check_feishu_tab').addClass("active");
             init_push_channel('feishu_channel_pool', "feishu");
             $('#check_feishu_tab').removeClass("active");
-
 
 
             if(s.id !='-1'){
@@ -1185,6 +1227,15 @@
                             $("#wechatcustommessage_channel_is_ai_msg").val(data.result.configMap.wechatcustommessage.channel_is_ai_msg);
 
                             $("#wechatcustommessage_params").val(data.result.configMap.wechatcustommessage.params);
+                        }
+
+                        if(!is_empty(data.result.configMap.wechatnews)){
+                            $("#wechatnews_channel_pool").val(data.result.configMap.wechatnews.channel_pool);
+                            $("#wechatnews_channel_pool").trigger("chosen:updated");
+
+                            $("#wechatnews_channel_media_id").val(data.result.configMap.wechatnews.channel_media_id);
+
+                            $("#wechatnews_params").val(data.result.configMap.wechatnews.params);
                         }
 
                         if(!is_empty(data.result.configMap.feishurobot)){
@@ -1438,6 +1489,12 @@
             "params": $("#wechatcustommessage_params").val()
         }
 
+        var wechatnews_config = {
+            "channel_pool": $("#wechatnews_channel_pool").val(),
+            "channel_media_id": $("#wechatnews_channel_media_id").val(),
+            "params": $("#wechatcustommessage_params").val()
+        }
+
         var feishurobot_config = {
             "channel_pool": $("#feishurobot_channel_pool").val(),
             "title": $("#feishurobot_title").val(),
@@ -1460,6 +1517,7 @@
             "miniprogram": miniprogram_config,
             "wechatofficialaccount": wechatofficialaccount_config,
             "wechatcustommessage": wechatcustommessage_config,
+            "wechatnews": wechatnews_config,
             "feishurobot": feishurobot_config,
             "feishu": feishu_config
         };
@@ -1507,6 +1565,14 @@
                 push_server = "wechatcustommessage"
             }else{
                 push_server = push_server +",wechatcustommessage"
+            }
+        }
+
+        if($('#check_wechatnews').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "wechatnews"
+            }else{
+                push_server = push_server +",wechatnews"
             }
         }
 
