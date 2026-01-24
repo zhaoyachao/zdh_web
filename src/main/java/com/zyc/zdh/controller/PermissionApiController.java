@@ -158,10 +158,10 @@ public class PermissionApiController {
      */
     @RequestMapping(value = "get_user_by_product_password", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ReturnInfo<PermissionUserInfo> get_user_by_product_password(String product_code,String ak, String sk, String user_account,String password) {
+    public ReturnInfo<PermissionUserInfo> get_user_by_product_password(String product_code,String ak, String sk, String user_account) {
 
         try{
-            return zdhPermissionApiService.get_user_by_product_password(product_code, ak, sk, user_account, password);
+            return zdhPermissionApiService.get_user_by_product_password(product_code, ak, sk, user_account);
         }catch (Exception e){
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }

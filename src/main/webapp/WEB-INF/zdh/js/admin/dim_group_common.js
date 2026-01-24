@@ -21,7 +21,7 @@
                   for (var i = 0; i < data.result.length; i++) {
                       str += '<option value=\"' + data.result[i].dim_value_code + '\" hassubinfo=\"true\">' + data.result[i].dim_value_name + '</option>';
                   }
-                  console.info(data.result.length);
+
                   $('#dim_group').html(str);
                   $("#dim_group").trigger("chosen:updated");
                   $('#dim_group').chosen();

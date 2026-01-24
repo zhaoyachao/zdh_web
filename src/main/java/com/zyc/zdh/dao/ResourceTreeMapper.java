@@ -36,22 +36,6 @@ public interface ResourceTreeMapper extends BaseResourceTreeMapper<ResourceTreeI
 
 
     @Select(value = "" +
-            "select distinct  a.user_account as user_id,c.resource_id,d.`text`,d.url,d.icon,d.order,d.level,d.parent,d.resource_type ,d.notice_title,d.event_code \n" +
-            "from \n" +
-            "permission_user_info a,\n" +
-            "role_info b,\n" +
-            "role_resource_info c,\n" +
-            "resource_tree_info d  \n" +
-            "where \n" +
-            "a.product_code=#{product_code} \n"+
-            "and a.product_code=b.product_code \n"+
-            "and a.product_code=c.product_code \n"+
-            "and a.product_code=d.product_code \n"+
-            "and find_in_set(b.code, a.roles) and b.code=c.role_code and c.resource_id = d.id and a.user_account=#{user_account} and b.enable='true'"
-    )
-    public List<UserResourceInfo2> selectResourceByUserAccount(@Param("user_account") String user_account, @Param("product_code") String product_code);
-
-    @Select(value = "" +
             "select distinct b.code as user_id, c.resource_id,d.`text`,d.url,d.icon,d.order,d.level,d.parent,d.resource_type ,d.notice_title,d.event_code \n" +
             "from \n" +
             "role_info b,\n" +
@@ -64,5 +48,20 @@ public interface ResourceTreeMapper extends BaseResourceTreeMapper<ResourceTreeI
             "and b.code=#{role_code} and b.code=c.role_code and c.resource_id = d.id  and b.enable='true'"
     )
     public List<UserResourceInfo2> selectResourceByRoleCode(@Param("role_code") String role_code, @Param("product_code") String product_code);
+
+    @Select(  {"<script>"+
+            "select distinct  c.resource_id,d.`text`,d.url,d.icon,d.order,d.level,d.parent,d.resource_type ,d.notice_title,d.event_code " +
+            "from " +
+            "role_resource_info c inner join " +
+            "resource_tree_info d  " +
+            "on c.product_code=#{product_code} and c.resource_id = d.id  "+
+            "and c.role_code in ",
+            "<foreach collection='role_codes' item='role_code' open='(' separator=',' close=')'>",
+            " #{role_code}",
+            "</foreach>",
+            "</script>"
+    }
+    )
+    public List<UserResourceInfo2> selectResourceByRoleCodes(@Param("role_codes") List<String> role_codes, @Param("product_code") String product_code);
 
 }

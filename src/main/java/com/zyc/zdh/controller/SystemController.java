@@ -7,7 +7,6 @@ import com.zyc.zdh.dao.NoticeMapper;
 import com.zyc.zdh.dao.ZdhNginxMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
-import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.ConfigUtil;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
@@ -16,7 +15,6 @@ import org.apache.ibatis.session.RowBounds;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,10 +37,6 @@ public class SystemController extends BaseController{
 
     @Autowired
     private ZdhNginxMapper zdhNginxMapper;
-    @Autowired
-    private RedisUtil redisUtil;
-    @Autowired
-    private Environment ev;
     @Autowired
     private EveryDayNoticeMapper everyDayNoticeMapper;
     @Autowired

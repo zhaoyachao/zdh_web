@@ -160,8 +160,14 @@ public class Const {
     public static String LOG_MYSQL="mysql";//
     public static String LOG_MONGODB="mongodb";//
 
-    public static String PARAM_TYPE_STRING="1";//参数类型,字符串
-    public static String PARAM_TYPE_JSON="2";//参数类型,json
+    public static String PARAM_TYPE_STRING="string";//参数类型,字符串
+    public static String PARAM_TYPE_JSON="json";//参数类型,json
+    public static String PARAM_TYPE_INT="int";//参数类型,整数
+    public static String PARAM_TYPE_BIGINT="bigint";//参数类型,大整数
+    public static String PARAM_TYPE_FLOAT="float";//参数类型,浮点数
+    public static String PARAM_TYPE_BOOLEAN="boolean";//参数类型,布尔
+    public static String PARAM_TYPE_XML="xml";//参数类型,xml
+    public static String PARAM_TYPE_HTML="html";//参数类型,html
 
     public static String AUDITOR_RULE_LEADER="leader";
     public static String AUDITOR_RULE_SECURITY="security";
@@ -220,6 +226,13 @@ public class Const {
         Map<String,String> paramType=new HashMap<>();
         paramType.put(PARAM_TYPE_STRING, "字符串");
         paramType.put(PARAM_TYPE_JSON, "JSON");
+        paramType.put(PARAM_TYPE_INT, "整数");
+        paramType.put(PARAM_TYPE_BIGINT, "大整数");
+        paramType.put(PARAM_TYPE_FLOAT, "浮点数");
+        paramType.put(PARAM_TYPE_BOOLEAN, "布尔");
+        paramType.put(PARAM_TYPE_XML, "XML");
+        paramType.put(PARAM_TYPE_HTML, "HTML");
+
 
         enumMap.put("PERMISSION_APPLY", permission);
         enumMap.put("PARAM_TYPE", paramType);

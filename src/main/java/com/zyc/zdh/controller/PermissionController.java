@@ -1033,7 +1033,11 @@ public class PermissionController extends BaseController {
             List<UserResourceInfo2> uris = new ArrayList<>();
             String user_account = getUser().getUserName();
             String product_code = getUser().getProduct_code();
-            uris = resourceTreeMapper.selectResourceByUserAccount(user_account, product_code);
+            if(StringUtils.isEmpty(user_account)){
+                throw new Exception("用户账号不能为空");
+            }
+            List<String> roles = getUser().getRoles();
+            uris = resourceTreeMapper.selectResourceByRoleCodes(roles, product_code);
             uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
             return ReturnInfo.buildSuccess(uris);
         }catch (Exception e){

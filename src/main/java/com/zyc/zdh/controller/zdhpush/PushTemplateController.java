@@ -2,7 +2,7 @@ package com.zyc.zdh.controller.zdhpush;
 
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
+import com.zyc.notscan.ExampleBuilder;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.PushChannelPoolMapper;
 import com.zyc.zdh.dao.PushTemplateMapper;
@@ -187,6 +187,15 @@ public class PushTemplateController extends BaseController {
     public ReturnInfo<PushTemplateInfo> push_template_update(PushTemplateInfo pushTemplateInfo) {
         try {
 
+            Example build = ExampleBuilder.forEntity(PushTemplateInfo.class)
+                    .andNotEqualTo("id", pushTemplateInfo.getId())
+                    .andEqualTo("template_id", pushTemplateInfo.getTemplate_id())
+                    .andEqualTo("is_delete", Const.NOT_DELETE)
+                    .build();
+            if (pushTemplateMapper.selectCountByExample(build) > 0) {
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前模板ID已存在", null);
+            }
+
             PushTemplateInfo oldPushTemplateInfo = pushTemplateMapper.selectByPrimaryKey(pushTemplateInfo.getId());
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushTemplateInfo.getProduct_code(), pushTemplateInfo.getDim_group(), getAttrEdit());
@@ -221,6 +230,15 @@ public class PushTemplateController extends BaseController {
             pushTemplateInfo.setIs_delete(Const.NOT_DELETE);
             pushTemplateInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             pushTemplateInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+
+            //校验模板id 是否重复
+            Example build = ExampleBuilder.forEntity(PushTemplateInfo.class)
+                    .andEqualTo("template_id", pushTemplateInfo.getTemplate_id())
+                    .andEqualTo("is_delete", Const.NOT_DELETE)
+                    .build();
+            if (pushTemplateMapper.selectCountByExample(build) > 0) {
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "当前模板ID已存在", null);
+            }
 
             checkAttrPermissionByProductAndDimGroup(zdhPermissionService, pushTemplateInfo.getProduct_code(), pushTemplateInfo.getDim_group(), getAttrAdd());
             pushTemplateMapper.insertSelective(pushTemplateInfo);

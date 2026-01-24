@@ -732,7 +732,9 @@
   + v5.7.0 [zdh_web]权限增加url唯一限制,部分接口修改权限控制仅管理员可修改
   + v5.7.0 [zdh_web]审批流修改跨产品审批bug
 
-  
+  + v5.7.1 [zdh_web]优化推送模块
+  + v5.7.1 [zdh_web]营销模块安全优化
+
 # 版本迁移步骤  
 ## 4.7.15迁移4.7.16
     alter table data_sources_info add column update_time timestamp default null comment '更新时间';
@@ -4221,4 +4223,7 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1458972088189587457, '1458971535824916480', '微信草稿-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-01-08 23:54:12', '2026-01-08 23:54:12', 'wechat_draft_delete', '5', '', '', 'zdh', '');
-        
+
+## 5.7.0迁移5.7.1
+    update param_info set param_type='string' where param_type = 1 ;
+    update param_info set param_type='json' where param_type = 2 ;

@@ -44,10 +44,9 @@ public class MyRealm extends AuthorizingRealm {
 		// 权限字符串
 		List<String> permissions = new ArrayList<>();
 		// 从数据库中获取对应权限字符串并存储permissions
-		//System.out.println(user.getUserName());
 		List<UserResourceInfo2> uris=new ArrayList<>();
-		uris=( (ResourceTreeMapper)SpringContext.getBean("resourceTreeMapper")).selectResourceByUserAccount(user.getUserName(), user.getProduct_code());
-        for(UserResourceInfo2 uri2:uris){
+		uris= ( (ResourceTreeMapper)SpringContext.getBean("resourceTreeMapper")).selectResourceByRoleCodes(user.getRoles(), user.getProduct_code());
+		for(UserResourceInfo2 uri2:uris){
         	if(!StringUtils.isEmpty(uri2.getUrl())){
 				String url = uri2.getUrl();
 				if(url.startsWith("/")) {

@@ -81,7 +81,7 @@ public interface ZdhPermissionApiService {
      * @param user_account 用户账号
      * @return
      */
-    public ReturnInfo<PermissionUserInfo> get_user_by_product_password(String product_code,String ak, String sk, String user_account,String password) ;
+    public ReturnInfo<PermissionUserInfo> get_user_by_product_password(String product_code,String ak, String sk, String user_account) ;
 
 
     /**

@@ -1,6 +1,7 @@
 package com.zyc.zdh.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.zyc.zdh.annotation.OperateLog;
 import com.zyc.zdh.dao.DataSourcesMapper;
 import com.zyc.zdh.entity.DataSourcesInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
@@ -44,7 +45,7 @@ public class ZdhDataSourcesController extends BaseController{
     }
 
     /**
-     * 数据源列表
+     * 数
      * v5.6.0+版本废弃组标识权限
      * @return
      */
@@ -93,6 +94,7 @@ public class ZdhDataSourcesController extends BaseController{
      * @param url 连接串
      * @return
      */
+    @OperateLog(ignore = true)
     @SentinelResource(value = "data_sources_list2", blockHandler = "handleReturn")
     @RequestMapping(value = "/data_sources_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody

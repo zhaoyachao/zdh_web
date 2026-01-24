@@ -287,20 +287,17 @@ public class ZdhPermissionApiServiceImpl implements ZdhPermissionApiService {
      * @return
      */
     @Override
-    public ReturnInfo<PermissionUserInfo> get_user_by_product_password(String product_code,String ak, String sk, String user_account,String password) {
+    public ReturnInfo<PermissionUserInfo> get_user_by_product_password(String product_code,String ak, String sk, String user_account) {
 
         try{
             //检查ak,sk
             check_aksk(product_code, ak, sk);
 
-            //password解密
-            String user_password = aes(password, ConfigUtil.getValue(ConfigUtil.ZDH_AUTH_PASSWORD_KEY).toString(), ConfigUtil.getValue(ConfigUtil.ZDH_AUTH_PASSWORD_IV).toString());
 
             //更新用户
             Example example=new Example(PermissionUserInfo.class);
             Example.Criteria criteria = example.createCriteria();
             criteria.andEqualTo("user_account", user_account);
-            criteria.andEqualTo("user_password", user_password);
             criteria.andEqualTo("product_code", product_code);
             criteria.andEqualTo("enable", Const.TRUR);
 
@@ -751,8 +748,13 @@ public class ZdhPermissionApiServiceImpl implements ZdhPermissionApiService {
 
             check_user_account(user_account);
 
+            ReturnInfo<PermissionUserInfo> returnInfo = get_user_by_product_password(product_code, ak, sk, user_account);
+            String roles = returnInfo.getResult().getRoles();
+            if (roles == null || roles.isEmpty()){
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "用户未绑定角色", null);
+            }
             //通过product_code 用户绑定角色,角色绑定资源
-            List<UserResourceInfo2> uris = resourceTreeMapper.selectResourceByUserAccount(user_account, product_code);
+            List<UserResourceInfo2> uris = resourceTreeMapper.selectResourceByRoleCodes(Lists.newArrayList(roles.split(",")), product_code);
             if(uris != null){
                 uris.sort(Comparator.comparing(UserResourceInfo2::getOrderN));
             }

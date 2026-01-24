@@ -2,13 +2,13 @@ package com.zyc.zdh.aop;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.zyc.zdh.annotation.OperateLog;
 import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.config.SystemConfig;
 import com.zyc.zdh.dao.NoticeMapper;
 import com.zyc.zdh.dao.UserOperateLogMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.exception.ZdhException;
-import com.zyc.zdh.shiro.RedisUtil;
 import com.zyc.zdh.util.*;
 import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
@@ -48,14 +48,14 @@ import java.util.Set;
 @Component
 public class AspectConfig implements Ordered {
 
-    @Pointcut("execution(* com.zyc.zdh.quartz..*(..))")
-    public void pointcutMethod() {
-    }
+//    @Pointcut("execution(* com.zyc.zdh.quartz..*(..))")
+//    public void pointcutMethod() {
+//    }
 
     //在方法上的自定义注解使用@annotation,类上自定义注解使用@within(com.zyc.springboot.类名)
-    @Pointcut("@annotation(com.zyc.zdh.aop.Log)")
-    public void pointcutMethod2() {
-    }
+//    @Pointcut("@annotation(com.zyc.zdh.aop.Log)")
+//    public void pointcutMethod2() {
+//    }
 
     @Pointcut("execution(* com.zyc.zdh.controller.*.*.*(..)) || (execution(* com.zyc.zdh.controller.*.*(..)) && !execution(* com.zyc.zdh.controller.MyErrorConroller.*(..)) && !execution(* com.zyc.zdh.controller.LoginController.getLogin(..)) && !execution(* com.zyc.zdh.controller.LoginController.captcha(..)) && !execution(* com.zyc.zdh.controller.LoginController.login(..)) && !execution(* com.zyc.zdh.controller.LoginController.login1(..)) && !execution(* com.zyc.zdh.controller.LoginController.getIndex(..)) && !execution(* com.zyc.zdh.controller.PermissionApiController.*(..)) && !execution(* com.zyc.zdh.controller.BaseController.*(..)) )")
     public void pointcutMethod3() {
@@ -80,10 +80,12 @@ public class AspectConfig implements Ordered {
         //获取返回类型
         Signature signature = pjp.getSignature();
         String returnName = "";
+        OperateLog operateLog = null;
         if (signature instanceof MethodSignature) {
             MethodSignature methodSignature = (MethodSignature) signature;
             // 被切的方法
             Method method = methodSignature.getMethod();
+            operateLog = method.getAnnotation(OperateLog.class);
             // 返回类型
             Class<?> methodReturnType = method.getReturnType();
             returnName = methodReturnType.getName();
@@ -135,7 +137,9 @@ public class AspectConfig implements Ordered {
                     }
                     userOperateLogInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
                     userOperateLogInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
-                    userOperateLogMapper.insertSelective(userOperateLogInfo);
+                    if(operateLog == null || !operateLog.ignore()){
+                        userOperateLogMapper.insertSelective(userOperateLogInfo);
+                    }
                 } catch (Exception ex) {
                     LogUtil.error(this.getClass(), ex);
                 }
@@ -222,7 +226,9 @@ public class AspectConfig implements Ordered {
                         //未知的object类型
                         userOperateLogInfo.setOperate_output(JsonUtil.formatJsonString("未知的返回值类型,请管理员确认"));
                     }
-                    userOperateLogMapper.insertSelective(userOperateLogInfo);
+                    if(operateLog == null || !operateLog.ignore()){
+                        userOperateLogMapper.insertSelective(userOperateLogInfo);
+                    }
                 }
             } catch (Exception e) {
                 LogUtil.error(this.getClass(), e);

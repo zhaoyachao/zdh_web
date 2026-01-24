@@ -128,6 +128,7 @@ public class PushTaskController extends BaseController {
                 example.and(criteria2);
             }
 
+            example.setOrderByClause("id desc");
             RowBounds rowBounds=new RowBounds(offset,limit);
             int total = pushTaskMapper.selectCountByExample(example);
 

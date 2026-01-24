@@ -60,7 +60,7 @@
                             在指定范围内选择
                         </p>
                         <div class="m-b-sm">
-                            <small><strong>示例：</strong> 设置值为1-100</small>
+                            <small><strong>示例：</strong> 设置值为1-100, 无效槽位可设置为-1</small>
                         </div>
                         <div id="small_flow_rate"></div>
 
@@ -116,7 +116,7 @@
         var start = s.slot.split(",")[0];
         var end = s.slot.split(",")[1];
         $("#small_flow_rate").ionRangeSlider({
-            min: 1,
+            min: -1,
             max: 100,
             step: 1,
             type: 'double',

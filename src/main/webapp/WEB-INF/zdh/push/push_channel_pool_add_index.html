@@ -105,6 +105,17 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">语音通道</label>
+                            <div class="col-sm-10">
+                                <select id="voice_channel_config" name="voice_channel_config" multiple
+                                        data-placeholder="选择通道..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">邮件通道</label>
                             <div class="col-sm-10">
                                 <select id="email_channel_config" name="email_channel_config" multiple
@@ -296,6 +307,7 @@
                 });
             }
             init_push_channel('sms_channel_config', "sms");
+            init_push_channel('voice_channel_config', "voice");
             init_push_channel('email_channel_config', "email");
             init_push_channel('app_channel_config', "app");
             init_push_channel('miniprogram_channel_config', "miniprogram");
@@ -356,6 +368,9 @@
                         $("#sms_channel_config").val(pool_config.sms_config);
                         $("#sms_channel_config").trigger("chosen:updated");
 
+                        $("#voice_channel_config").val(pool_config.voice_config);
+                        $("#voice_channel_config").trigger("chosen:updated");
+
                         $("#email_channel_config").val(pool_config.email_config);
                         $("#email_channel_config").trigger("chosen:updated");
 
@@ -389,6 +404,7 @@
     function buildConfig(){
         var config = {
             "sms_config": $("#sms_channel_config").val(),
+            "voice_config": $("#voice_channel_config").val(),
             "email_config": $("#email_channel_config").val(),
             "app_config": $("#app_channel_config").val(),
             "miniprogram_config": $("#miniprogram_channel_config").val(),

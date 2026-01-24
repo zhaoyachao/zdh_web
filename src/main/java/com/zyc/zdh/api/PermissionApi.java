@@ -152,26 +152,6 @@ public class PermissionApi {
     }
 
     /**
-     * 根据用户名密码获取用户信息
-     * @param product_code 产品代码
-     * @param ak  ak
-     * @param sk  sk
-     * @param user_account 用户账号
-     * @return
-     */
-    @RequestMapping(value = "get_user_by_product_password", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public ReturnInfo<PermissionUserInfo> get_user_by_product_password(String product_code,String ak, String sk, String user_account,String password) {
-
-        try{
-            return zdhPermissionApiService.get_user_by_product_password(product_code, ak, sk, user_account, password);
-        }catch (Exception e){
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
-        }
-    }
-
-
-    /**
      * 获取用户信息
      * @param product_code 产品代码
      * @param ak  ak

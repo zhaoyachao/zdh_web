@@ -38,7 +38,7 @@ public class ReturnInfo<T> {
         this.msg = msg;
     }
 
-    public Object getResult() {
+    public T getResult() {
         return result;
     }
 
