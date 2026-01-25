@@ -101,8 +101,14 @@
                             <div class="form-group"></div>
                             <label class="col-sm-2 control-label">客户端类型</label>
                             <div class="col-sm-10">
-                                <input id="client_platform_type" name="client_platform_type" type="text"
-                                       placeholder="客户端版本，当前只具体到系统型号：IOS(1), Android(2),Others(3)，不填则不做匹配" class="form-control" aria-required="true"> </span>
+                                <select id="client_platform_type" name="client_platform_type"
+                                        data-placeholder="客户端类型...."
+                                        class="chosen-select form-control m-b" >
+                                    <option value="" mytype="">不限制</option>
+                                    <option value="1" mytype="">IOS</option>
+                                    <option value="2" mytype="">Android</option>
+                                    <option value="3" mytype="">Others</option>
+                                </select>
                             </div>
                         </div>
 
@@ -177,6 +183,7 @@
     });
 
     $('#menu_type').chosen();
+    $('#client_platform_type').chosen();
 
     (function (document, window, $) {
 
@@ -237,6 +244,7 @@
 
                             var client_platform_type = data.result.client_platform_type;
                             $("#client_platform_type").val(client_platform_type);
+                            $("#client_platform_type").trigger("chosen:updated");
 
                         },
                         error: function (data) {

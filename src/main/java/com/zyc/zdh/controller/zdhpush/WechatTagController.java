@@ -207,6 +207,7 @@ public class WechatTagController extends BaseController {
         try {
             wechatTagInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
             wechatTagInfo.setOwner(getOwner());
+            wechatTagInfo.setTid(null);
             wechatTagInfo.setIs_delete(Const.NOT_DELETE);
             wechatTagInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             wechatTagInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));

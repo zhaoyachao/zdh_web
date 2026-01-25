@@ -253,7 +253,9 @@
 
 
                             var tid = data.result.tid;
-                            $("#tid").val(tid);
+                            if(s.is_copy != "true"){
+                                $("#tid").val(tid);
+                            }
                             var tname = data.result.tname;
                             $("#tname").val(tname);
                             var wechat_app = data.result.wechat_app;
