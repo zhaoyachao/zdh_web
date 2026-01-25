@@ -264,12 +264,13 @@ public class WechatMediaController extends BaseController {
                 if(!StringUtils.isEmpty(mediaResponse.getData().getMedia_id())){
                     wechatMediaInfo.setMedia_id(mediaResponse.getData().getMedia_id());
                 }
+                if(!StringUtils.isEmpty(mediaResponse.getData().getThumb_media_id())){
+                    wechatMediaInfo.setMedia_id(mediaResponse.getData().getThumb_media_id());
+                }
                 if(!StringUtils.isEmpty(mediaResponse.getData().getCreated_at())){
                     wechatMediaInfo.setValid_start_time(mediaResponse.getData().getCreated_at());
                     wechatMediaInfo.setValid_end_time(Long.valueOf(mediaResponse.getData().getCreated_at()) +3*24*60*60 + "");
                 }
-
-
                 wechatMediaMapper.insertSelective(wechatMediaInfo);
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", wechatMediaInfo);
             }

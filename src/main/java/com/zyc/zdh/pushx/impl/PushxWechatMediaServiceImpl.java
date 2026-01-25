@@ -48,7 +48,7 @@ public class PushxWechatMediaServiceImpl implements PushxWechatMediaService {
 
             // 发送HTTP请求
             String json = JsonUtil.formatJsonString(wechatMediaRequest);
-            String response = HttpUtil.builder().retryCount(0).postJSON(ConfigUtil.getValue(ConfigUtil.ZDH_PUSHX_BASE_URL) + MEDIA_CREATE, json);
+            String response = HttpUtil.builder().connectionTimeout(5000).connectionRequestTimeout(5000).retryCount(0).postJSON(ConfigUtil.getValue(ConfigUtil.ZDH_PUSHX_BASE_URL) + MEDIA_CREATE, json);
 
             // 记录日志并返回结果
             LogUtil.info(this.getClass(), "pushx media create response: {}", response);
