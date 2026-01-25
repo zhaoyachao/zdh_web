@@ -76,7 +76,9 @@ public class PushAppController extends BaseController {
             }
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("app_name", getLikeCondition(context));
+                criteria.orLike("app", getLikeCondition(context));
+                criteria.orLike("config", getLikeCondition(context));
                 example.and(criteria2);
             }
 
@@ -121,7 +123,9 @@ public class PushAppController extends BaseController {
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("app_name", getLikeCondition(context));
+                criteria.orLike("app", getLikeCondition(context));
+                criteria.orLike("config", getLikeCondition(context));
                 example.and(criteria2);
             }
 

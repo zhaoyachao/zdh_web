@@ -89,7 +89,13 @@ public class WechatMediaController extends BaseController {
             }
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("media_name", getLikeCondition(context));
+                criteria.orLike("media_desc", getLikeCondition(context));
+                criteria.orLike("media_category", getLikeCondition(context));
+                criteria.orLike("media_type", getLikeCondition(context));
+                criteria.orLike("media_id", getLikeCondition(context));
+                criteria.orLike("title", getLikeCondition(context));
+
                 example.and(criteria2);
             }
 
@@ -135,7 +141,12 @@ public class WechatMediaController extends BaseController {
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("media_name", getLikeCondition(context));
+                criteria.orLike("media_desc", getLikeCondition(context));
+                criteria.orLike("media_category", getLikeCondition(context));
+                criteria.orLike("media_type", getLikeCondition(context));
+                criteria.orLike("media_id", getLikeCondition(context));
+                criteria.orLike("title", getLikeCondition(context));
                 example.and(criteria2);
             }
 

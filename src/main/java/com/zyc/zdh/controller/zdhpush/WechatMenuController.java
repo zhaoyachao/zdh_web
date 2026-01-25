@@ -81,6 +81,7 @@ public class WechatMenuController extends BaseController {
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
                 criteria2.orLike("name", getLikeCondition(context));
+                criteria2.orLike("config", getLikeCondition(context));
                 example.and(criteria2);
             }
 
@@ -122,6 +123,7 @@ public class WechatMenuController extends BaseController {
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
                 criteria2.orLike("name", getLikeCondition(context));
+                criteria2.orLike("config", getLikeCondition(context));
                 example.and(criteria2);
             }
 

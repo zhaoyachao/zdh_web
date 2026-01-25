@@ -77,7 +77,9 @@ public class PushChannelController extends BaseController {
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria.orLike("channel_name", getLikeCondition(context));
+                criteria.orLike("channel_code", getLikeCondition(context));
+                criteria.orLike("config", getLikeCondition(context));
                 example.and(criteria2);
             }
 
@@ -122,7 +124,9 @@ public class PushChannelController extends BaseController {
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria.orLike("channel_name", getLikeCondition(context));
+                criteria.orLike("channel_code", getLikeCondition(context));
+                criteria.orLike("config", getLikeCondition(context));
                 example.and(criteria2);
             }
 

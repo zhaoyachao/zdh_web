@@ -79,7 +79,9 @@ public class WechatDraftController extends BaseController {
             }
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("draft_name", getLikeCondition(context));
+                criteria2.orLike("title", getLikeCondition(context));
+                criteria2.orLike("content", getLikeCondition(context));
                 example.and(criteria2);
             }
 
@@ -121,7 +123,9 @@ public class WechatDraftController extends BaseController {
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("draft_name", getLikeCondition(context));
+                criteria2.orLike("title", getLikeCondition(context));
+                criteria2.orLike("content", getLikeCondition(context));
                 example.and(criteria2);
             }
 

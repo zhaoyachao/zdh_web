@@ -74,7 +74,8 @@ public class WechatQrsceneController extends BaseController {
             }
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("qrscene", getLikeCondition(context));
+                criteria2.orLike("qrscene_name", getLikeCondition(context));
                 example.and(criteria2);
             }
 
@@ -119,7 +120,8 @@ public class WechatQrsceneController extends BaseController {
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("qrscene", getLikeCondition(context));
+                criteria2.orLike("qrscene_name", getLikeCondition(context));
                 example.and(criteria2);
             }
 

@@ -78,7 +78,9 @@ public class WechatRuleController extends BaseController {
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("rule_config", getLikeCondition(context));
+                criteria2.orLike("rule_name", getLikeCondition(context));
+                criteria2.orLike("event_key", getLikeCondition(context));
                 example.and(criteria2);
             }
 
@@ -120,7 +122,9 @@ public class WechatRuleController extends BaseController {
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("rule_config", getLikeCondition(context));
+                criteria2.orLike("rule_name", getLikeCondition(context));
+                criteria2.orLike("event_key", getLikeCondition(context));
                 example.and(criteria2);
             }
 

@@ -305,12 +305,35 @@
           },
           {
               field: 'event',
-              title: '事件类型',
-              sortable:false
+              title: '规则事件',
+              sortable:false,
+              formatter: function (value, row, index) {
+                  var context = "关键字";
+                  var class_str = "btn-primary  btn-xs"
+                  if (value == "text") {
+                      context = "关键字";
+                  }else if(value == "subscribe"){
+                      context = "关注";
+                  }else if(value == "click"){
+                      context = "点击";
+                  }else if(value == "scan"){
+                      context = "扫描";
+                  }else if(value = "unfound"){
+                      context = "默认规则";
+                  }
+
+                  return [
+                      '<div style="text-align:center" >'+
+                      '<div class="btn-group">'+
+                      '<button id="enable" type="button" class="btn '+class_str+'">'+context+'</button>'+
+                      '</div>'+
+                      '</div>'
+                  ].join('');
+              }
           },
           {
               field: 'event_key',
-              title: '事件key',
+              title: '匹配规则',
               sortable:false
           },
           {
@@ -325,7 +348,7 @@
           },
           {
               field: 'status',
-              title: '状态:1-启用,2-禁用',
+              title: '状态',
               sortable:false,
               events: operateEvents,//给按钮注册事件
               formatter: function (value, row, index) {

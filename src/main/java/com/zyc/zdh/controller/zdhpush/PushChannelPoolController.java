@@ -73,7 +73,9 @@ public class PushChannelPoolController extends BaseController {
             }
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("pool_name", getLikeCondition(context));
+                criteria.orLike("pool_code", getLikeCondition(context));
+                criteria.orLike("pool_config", getLikeCondition(context));
                 example.and(criteria2);
             }
 
