@@ -116,9 +116,8 @@
                                     <option value="1" mytype="">营销</option>
                                     <option value="2" mytype="">通知</option>
                                     <option value="3" mytype="">验证码</option>
-                                    <option value="4" mytype="">语音</option>
-                                    <option value="5" mytype="">告警</option>
-                                    <option value="6" mytype="">其他</option>
+                                    <option value="4" mytype="">告警</option>
+                                    <option value="5" mytype="">其他</option>
                                 </select>
                             </div>
                         </div>
@@ -134,7 +133,7 @@
                                 <label class="no-padding">
                                     <input id="check_email" name="check_email"  type="checkbox"><i></i> 邮件</label>
                                 <label class="no-padding">
-                                    <input id="check_push" name="check_push"  type="checkbox"><i></i> APPPUSH</label>
+                                    <input id="check_apppush" name="check_apppush"  type="checkbox"><i></i> APPPUSH</label>
                                 <label class="no-padding">
                                     <input id="check_miniprogram" name="check_miniprogram"  type="checkbox"><i></i> 小程序</label>
                                 <label class="no-padding">
@@ -163,7 +162,7 @@
                                         </li>
                                         <li class="tab_li"  id="check_email_li"><a data-toggle="tab" href="#check_email_tab" aria-expanded="false">邮件配置</a>
                                         </li>
-                                        <li class="tab_li"  id="check_push_li"><a data-toggle="tab" href="#check_push_tab" aria-expanded="false">APPPUSH配置</a>
+                                        <li class="tab_li"  id="check_apppush_li"><a data-toggle="tab" href="#check_apppush_tab" aria-expanded="false">APPPUSH配置</a>
                                         </li>
                                         <li class="tab_li"  id="check_miniprogram_li"><a data-toggle="tab" href="#check_miniprogram_tab" aria-expanded="false">小程序</a>
                                         </li>
@@ -346,7 +345,7 @@
                                             </div>
                                         </div>
 
-                                        <div id="check_push_tab" class="tab-pane active">
+                                        <div id="check_apppush_tab" class="tab-pane active">
                                             <div class="panel-body">
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">APP</label>
@@ -1155,9 +1154,9 @@
             init_push_channel('email_channel_pool', "email");
             $('#check_email_tab').removeClass("active");
 
-            $('#check_push_tab').addClass("active");
+            $('#check_apppush_tab').addClass("active");
             init_push_app('app');
-            $('#check_push_tab').removeClass("active");
+            $('#check_apppush_tab').removeClass("active");
 
             $('#check_miniprogram_tab').addClass("active");
             init_push_channel('miniprogram_channel_pool',"miniprogram");
@@ -1258,25 +1257,25 @@
 
                         }
 
-                        if(!is_empty(data.result.configMap.push)){
-                            $("#app").val(data.result.configMap.push.app);
+                        if(!is_empty(data.result.configMap.apppush)){
+                            $("#app").val(data.result.configMap.apppush.app);
                             $("#app").trigger("chosen:updated");
 
-                            $("#scene").val(data.result.configMap.push.scene);
+                            $("#scene").val(data.result.configMap.apppush.scene);
                             $("#scene").trigger("chosen:updated");
 
-                            $("#click_type").val(data.result.configMap.push.click_type);
+                            $("#click_type").val(data.result.configMap.apppush.click_type);
                             $("#click_type").trigger("chosen:updated");
 
-                            $("#click_app").val(data.result.configMap.push.click_app);
+                            $("#click_app").val(data.result.configMap.apppush.click_app);
                             $("#click_app").trigger("chosen:updated");
 
-                            $("#click_url").val(data.result.configMap.push.click_url);
+                            $("#click_url").val(data.result.configMap.apppush.click_url);
 
 
-                            $("#push_title").val(data.result.configMap.push.title);
-                            $("#push_content").val(data.result.configMap.push.content);
-                            $("#push_params").val(data.result.configMap.push.params);
+                            $("#push_title").val(data.result.configMap.apppush.title);
+                            $("#push_content").val(data.result.configMap.apppush.content);
+                            $("#push_params").val(data.result.configMap.apppush.params);
 
                         }
 
@@ -1561,7 +1560,7 @@
             "params": $("#email_params").val()
         };
 
-        var push_config = {
+        var apppush_config = {
             "app": $("#app").val(),
             "scene": $("#scene").val(),
             "click_type": $("#click_type").val(),
@@ -1665,7 +1664,7 @@
             "sms": sms_config,
             "voice": voice_config,
             "email": email_config,
-            "push": push_config,
+            "apppush": apppush_config,
             "miniprogram": miniprogram_config,
             "wechatofficialaccount": wechatofficialaccount_config,
             "wechatcustommessage": wechatcustommessage_config,
@@ -1696,11 +1695,11 @@
                 push_server = push_server +",email"
             }
         }
-        if($('#check_push').is(":checked")){
+        if($('#check_apppush').is(":checked")){
             if(is_empty(push_server)){
-                push_server = "push"
+                push_server = "apppush"
             }else{
-                push_server = push_server +",push"
+                push_server = push_server +",apppush"
             }
         }
 
