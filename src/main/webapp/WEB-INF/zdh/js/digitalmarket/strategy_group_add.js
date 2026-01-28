@@ -6,6 +6,8 @@ function guid2() {
         async: false
     }).responseText;
 }
+
+
 $(document).ready(function(){
     
     //设置左侧为可复制的
@@ -31,59 +33,13 @@ $(document).ready(function(){
                     jsPlumb.addEndpoint(id, { anchors: "Bottom" }, hollowCircle);
                     jsPlumb.draggable(id);
                     jsPlumb.makeTarget(id, {
-                        anchor: "Continuous"
+                        anchor: "Continuous",
+                        maxConnections: -1  // 明确指定允许无限连接
                     });
                     $("#" + id).draggable({ containment: "parent",grid: [10, 10] });
                     doubleclick("#" + id,tp);
         }
     });
-
-    //基本连接线样式
-    var connectorPaintStyle = {
-        lineWidth: 2,
-        strokeStyle: "#61b8d0",
-    };
-
-    // 鼠标悬浮在连接线上的样式
-    var connectorHoverStyle = {
-        lineWidth: 2,
-        strokeStyle: "green",
-    };
-
-    //端点的颜色样式
-    var paintStyle = {
-        fillStyle: "#ccc",
-        radius: 10,
-        lineWidth:6 ,
-    };
-
-    // 鼠标悬浮在端点上的样式
-    var hoverPaintStyle = {
-        fillStyle: "#aaa",
-    };
-
-    //设置连接端点和连接线
-    var hollowCircle = {
-        endpoint: ["Dot", { radius: 2 }],  //端点的形状
-        connectorStyle: connectorPaintStyle,
-        connectorHoverStyle: connectorHoverStyle,
-        paintStyle: paintStyle,
-        hoverPaintStyle: hoverPaintStyle ,
-        isSource: true,    //是否可以拖动（作为连线起点）
-        connector: ["StateMachine", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],  //连接线的样式种类有[Bezier],[Flowchart],[StateMachine ],[Straight ]
-        isTarget: true,    //是否可以放置（连线终点）
-        maxConnections: -1,    // 设置连接点最多可以连接几条线
-        connectorOverlays:[
-            [ "Arrow", { width:10, length:20, location:1, id:"arrow" } ],
-            ["Custom", {
-                create:function(component) {
-                    return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
-                },
-                location:0.5,
-                id:"customOverlay",
-            }],
-        ],
-    };
 
     //鼠标进入增加一个删除的小图标
     $("#m1").on("mouseenter", ".node", function () {

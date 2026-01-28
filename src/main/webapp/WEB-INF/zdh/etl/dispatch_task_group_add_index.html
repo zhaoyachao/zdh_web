@@ -392,60 +392,11 @@
 <script src="js/admin/dim_product_common.js"></script>
 <script src="js/admin/dim_group_common.js"></script>
 
+<script type="text/javascript" src="js/jsplumb/jsplumb_common.js"></script>
 <script type="text/javascript" src="js/jsplumb/dispatch_task_group_index.js"></script>
 
 <script type="text/javascript">
 
-    function add_node_zdh(more_task,etl_id,etl_context){
-        var id = "div"+etl_id;
-    }
-
-    //基本连接线样式
-    var connectorPaintStyle = {
-        lineWidth: 2,
-        strokeStyle: "#61b8d0"
-    };
-
-    // 鼠标悬浮在连接线上的样式
-    var connectorHoverStyle = {
-        lineWidth: 2,
-        strokeStyle: "green"
-    };
-
-    //端点的颜色样式
-    var paintStyle = {
-        fillStyle: "#ccc",
-        radius: 10,
-        lineWidth:6
-    };
-
-    // 鼠标悬浮在端点上的样式
-    var hoverPaintStyle = {
-        fillStyle: "#aaa"
-    };
-
-
-    var hollowCircle = {
-        endpoint: ["Dot", { radius: 3 }],  //端点的形状
-        connectorStyle: connectorPaintStyle,
-        connectorHoverStyle: connectorHoverStyle,
-        paintStyle: paintStyle,
-        hoverPaintStyle: hoverPaintStyle ,
-        isSource: true,    //是否可以拖动（作为连线起点）
-        connector: ["StateMachine", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],  //连接线的样式种类有[Bezier],[Flowchart],[StateMachine ],[Straight ]
-        isTarget: true,    //是否可以放置（连线终点）
-        maxConnections: -1,    // 设置连接点最多可以连接几条线
-        connectorOverlays:[
-            [ "Arrow", { width:10, length:20, location:1, id:"arrow" } ],
-            ["Custom", {
-                create:function(component) {
-                    return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
-                },
-                location:0.5,
-                id:"customOverlay"
-            }]
-        ]
-    };
 
     function open_json(json) {
         var jsplumb_json=JSON.parse(json);
@@ -601,22 +552,6 @@
             };
             ojson.tasks.push(param)
         });
-
-        // $("#m1 .shell").each(function (idx, elem) {
-        //     var $elem = $(elem);
-        //     var param={
-        //         id: $elem.attr('id'),
-        //         is_script: $elem.attr('is_script'),
-        //         etl_context:$elem.text(),
-        //         command:$elem.attr('command'),
-        //         divId:$elem.attr('id'),
-        //         name: $elem[0].innerText,
-        //         positionX: parseInt($elem.css("left"), 10),
-        //         positionY: parseInt($elem.css("top"), 10),
-        //         type:$elem.data('type')
-        //     }
-        //     ojson.shell.push(param)
-        // });
 
         $.each(jsPlumb.getConnections(), function (idx, connection) {
             var param={

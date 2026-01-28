@@ -1,3 +1,4 @@
+
 $(document).ready(function(){
     
     //设置左侧为可复制的
@@ -13,6 +14,7 @@ $(document).ready(function(){
             return v.toString(16);
         });
     }
+
     //设置右侧为拖拽存放区
     var i=0;
     $("#m1").droppable({
