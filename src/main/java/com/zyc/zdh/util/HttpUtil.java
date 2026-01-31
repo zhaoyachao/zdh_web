@@ -2,6 +2,7 @@ package com.zyc.zdh.util;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
@@ -11,6 +12,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -165,27 +167,39 @@ public class HttpUtil {
 
         long startTime = System.currentTimeMillis();
         try {
+            HttpGet get = new HttpGet(fullUrl);
+
+            HttpClientContext context = HttpClientContext.create();
+            setCookie(context, cookie);
+            setHeader(get, header);
+
             // 构建请求日志信息
             StringBuilder requestLog = new StringBuilder("HTTP请求 - ")
                     .append("Method: GET, ")
                     .append("URL: ").append(fullUrl);
 
-            if (parametersBody != null && !parametersBody.isEmpty()) {
-                requestLog.append(", Parameters: ").append(parametersBody);
-            }
-            if (header != null && !header.isEmpty()) {
-                requestLog.append(", Headers: ").append(header);
-            }
-            if (cookie != null && !cookie.isEmpty()) {
-                requestLog.append(", Cookies: ").append(cookie);
+            // 记录实际设置的请求头
+            Header[] allHeaders = get.getAllHeaders();
+            Map<String, String> actualHeaders = new HashMap<>();
+            for (Header h : allHeaders) {
+                actualHeaders.put(h.getName(), h.getValue());
             }
 
+            if (!actualHeaders.isEmpty()) {
+                requestLog.append(", Headers: ").append(actualHeaders);
+            }
+
+            CookieStore cookieStore = context.getCookieStore();
+            if (cookieStore != null && !cookieStore.getCookies().isEmpty()) {
+                Map<String, String> actualCookies = new HashMap<>();
+                for (org.apache.http.cookie.Cookie c : cookieStore.getCookies()) {
+                    actualCookies.put(c.getName(), c.getValue());
+                }
+                requestLog.append(", Cookies: ").append(actualCookies);
+            }
+
+            // 记录请求体内容
             LogUtil.info(HttpUtil.class, requestLog.toString());
-
-            HttpGet get = new HttpGet(fullUrl);
-            HttpClientContext context = HttpClientContext.create();
-            setCookie(context, cookie);
-            setHeader(get, header);
 
             CloseableHttpClient client = httpClient;
 
@@ -232,39 +246,50 @@ public class HttpUtil {
                                    Map<String, String> cookie) throws Exception {
         long startTime = System.currentTimeMillis();
         try {
-            // 构建请求日志信息
-            StringBuilder requestLog = new StringBuilder("HTTP请求 - ")
-                .append("Method: POST, ")
-                .append("URL: ").append(path);
-
-            if (header != null && !header.isEmpty()) {
-                requestLog.append(", Headers: ").append(header);
-            }
-            if (cookie != null && !cookie.isEmpty()) {
-                requestLog.append(", Cookies: ").append(cookie);
-            }
-
-            // 记录请求体内容
-            if (entity instanceof StringEntity) {
-                try {
-                    String requestBody = EntityUtils.toString(entity);
-                    requestLog.append(", Body: ").append(requestBody);
-                    // 重新创建entity，因为toString消耗了流
-                    entity = new StringEntity(requestBody, StandardCharsets.UTF_8);
-                } catch (Exception e) {
-                    LogUtil.warn(HttpUtil.class, "无法记录POST请求体内容", e);
-                }
-            }
-
-            LogUtil.info(HttpUtil.class, requestLog.toString());
-
             HttpPost post = new HttpPost(path);
-
+            post.setEntity(entity);
+            // 设置请求头
             HttpClientContext context = HttpClientContext.create();
             setCookie(context, cookie);
             setHeader(post, header);
 
-            post.setEntity(entity);
+            // 构建请求日志信息
+            StringBuilder requestLog = new StringBuilder("HTTP请求 - ")
+                    .append("Method: POST, ")
+                    .append("URL: ").append(path);
+
+            // 记录实际设置的请求头
+            Header[] allHeaders = post.getAllHeaders();
+            Map<String, String> actualHeaders = new HashMap<>();
+            for (Header h : allHeaders) {
+                actualHeaders.put(h.getName(), h.getValue());
+            }
+
+            if (!actualHeaders.isEmpty()) {
+                requestLog.append(", Headers: ").append(actualHeaders);
+            }
+
+            CookieStore cookieStore = context.getCookieStore();
+            if (cookieStore != null && !cookieStore.getCookies().isEmpty()) {
+                Map<String, String> actualCookies = new HashMap<>();
+                for (org.apache.http.cookie.Cookie c : cookieStore.getCookies()) {
+                    actualCookies.put(c.getName(), c.getValue());
+                }
+                requestLog.append(", Cookies: ").append(actualCookies);
+            }
+
+            // 记录请求体内容
+            try {
+                if (entity != null) {
+                    BufferedHttpEntity bufferedEntity = new BufferedHttpEntity(entity);
+                    String content = EntityUtils.toString(bufferedEntity);
+                    requestLog.append(", Body: ").append(content);
+                }
+            } catch (Exception e) {
+                LogUtil.error(HttpUtil.class,"无法记录POST请求体内容", e);
+            }
+
+            LogUtil.info(HttpUtil.class, requestLog.toString());
 
             CloseableHttpClient client = httpClient;
 
@@ -307,26 +332,52 @@ public class HttpUtil {
     public String patchRequest(String path, List<NameValuePair> parametersBody) throws Exception {
         long startTime = System.currentTimeMillis();
         try {
-            // 构建请求日志信息
-            StringBuilder requestLog = new StringBuilder("HTTP请求 - ")
-                .append("Method: PATCH, ")
-                .append("URL: ").append(path);
-
-            if (parametersBody != null && !parametersBody.isEmpty()) {
-                requestLog.append(", Parameters: ").append(parametersBody);
-            }
-
-            LogUtil.info(HttpUtil.class, requestLog.toString());
-
             HttpPatch patch = new HttpPatch(path);
+            HttpEntity entity = new UrlEncodedFormEntity(parametersBody, StandardCharsets.UTF_8);
+            patch.setEntity(entity);
+
+            // 设置请求头
             HttpClientContext context = HttpClientContext.create();
             setCookie(context, null);
             setHeader(patch, null);
 
-            patch.addHeader("Content-Type", "application/json");
-            patch.addHeader("Accept", "application/json");
-            HttpEntity entity = new UrlEncodedFormEntity(parametersBody, StandardCharsets.UTF_8);
-            patch.setEntity(entity);
+            // 构建请求日志信息
+            StringBuilder requestLog = new StringBuilder("HTTP请求 - ")
+                    .append("Method: PATCH, ")
+                    .append("URL: ").append(path);
+
+            // 记录实际设置的请求头
+            Header[] allHeaders = patch.getAllHeaders();
+            Map<String, String> actualHeaders = new HashMap<>();
+            for (Header h : allHeaders) {
+                actualHeaders.put(h.getName(), h.getValue());
+            }
+
+            if (!actualHeaders.isEmpty()) {
+                requestLog.append(", Headers: ").append(actualHeaders);
+            }
+
+            CookieStore cookieStore = context.getCookieStore();
+            if (cookieStore != null && !cookieStore.getCookies().isEmpty()) {
+                Map<String, String> actualCookies = new HashMap<>();
+                for (org.apache.http.cookie.Cookie c : cookieStore.getCookies()) {
+                    actualCookies.put(c.getName(), c.getValue());
+                }
+                requestLog.append(", Cookies: ").append(actualCookies);
+            }
+
+            // 记录请求体内容
+            try {
+                if (entity != null) {
+                    BufferedHttpEntity bufferedEntity = new BufferedHttpEntity(entity);
+                    String content = EntityUtils.toString(bufferedEntity);
+                    requestLog.append(", Body: ").append(content);
+                }
+            } catch (Exception e) {
+                LogUtil.error(HttpUtil.class,"无法记录POST请求体内容", e);
+            }
+
+            LogUtil.info(HttpUtil.class, requestLog.toString());
 
             CloseableHttpClient client = httpClient;
 

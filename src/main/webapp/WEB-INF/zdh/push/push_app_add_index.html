@@ -143,6 +143,8 @@
                                         </li>
                                         <li class="tab_li"  id="check_jpush_li"><a data-toggle="tab" href="#check_jpush_tab" aria-expanded="false">极光</a>
                                         </li>
+                                        <li class="tab_li"  id="check_getui_li"><a data-toggle="tab" href="#check_getui_tab" aria-expanded="false">个推</a>
+                                        </li>
                                     </ul>
                                     <div class="tab-content">
                                         <div id="check_huawei_tab" class="tab-pane active">
@@ -332,19 +334,19 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">APPID</label>
                                                     <div class="col-sm-10">
-                                                        <input id="apple_appid" name="apple_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                        <input id="apple_appid" name="apple_appid" class="form-control" type="text" value="" placeholder="team_id">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">AK</label>
                                                     <div class="col-sm-10">
-                                                        <input id="apple_ak" name="apple_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                        <input id="apple_ak" name="apple_ak" class="form-control" type="text" value="" placeholder="key_id">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">SK</label>
                                                     <div class="col-sm-10">
-                                                        <textarea id="apple_sk" name="apple_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                        <textarea id="apple_sk" name="apple_sk" class="form-control" rows="5" placeholder="p8文件内容"></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -374,13 +376,43 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">SK</label>
                                                     <div class="col-sm-10">
-                                                        <textarea id="jpush_sk" name="meizu_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                        <textarea id="jpush_sk" name="getui_sk" class="form-control" rows="5" placeholder="SK"></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">包名</label>
                                                     <div class="col-sm-10">
                                                         <input id="jpush_package" name="jpush_package" class="form-control" type="text" value="" placeholder="包名">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_getui_tab" class="tab-pane active">
+                                            <div class="panel-body">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="getui_appid" name="getui_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">AK</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="getui_ak" name="getui_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">SK</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="getui_sk" name="getui_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">包名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="getui_package" name="getui_package" class="form-control" type="text" value="" placeholder="包名">
                                                     </div>
                                                 </div>
                                             </div>
@@ -583,6 +615,9 @@
             $('#check_jpush_tab').addClass("active");
             $('#check_jpush_tab').removeClass("active");
 
+            $('#check_getui_tab').addClass("active");
+            $('#check_getui_tab').removeClass("active");
+
             if(s.id !='-1'){
                 console.info("更新-拷贝按钮触发");
                 //开始赋值
@@ -678,6 +713,14 @@
                             $("#jpush_package").val(data.result.configMap.jpush.package);
                         }
 
+                        if(!is_empty(data.result.configMap.getui)){
+                            $("#getui_appid").val(data.result.configMap.getui.appid);
+                            $("#getui_ak").val(data.result.configMap.getui.ak);
+                            $("#getui_sk").val(data.result.configMap.getui.sk);
+                            $("#getui_package").val(data.result.configMap.getui.package);
+                        }
+
+
                     },
                     error: function (data) {
                         console.info("error: " + data.responseText);
@@ -752,6 +795,13 @@
             "package": $("#jpush_package").val()
         };
 
+        var getui_config = {
+            "appid": $("#getui_appid").val(),
+            "ak": $("#getui_ak").val(),
+            "sk": $("#getui_sk").val(),
+            "package": $("#getui_package").val()
+        };
+
         var config = {
             "huawei": huawei_config,
             "honor": honor_config,
@@ -760,7 +810,8 @@
             "vivo": vivo_config,
             "meizu": meizu_config,
             "apple": apple_config,
-            "jpush": jpush_config
+            "jpush": jpush_config,
+            "getui": getui_config
         };
 
         return config;
@@ -819,6 +870,14 @@
                 company = "jpush"
             }else{
                 company = company +",jpush"
+            }
+        }
+
+        if($('#check_getui').is(":checked")){
+            if(is_empty(company)){
+                company = "getui"
+            }else{
+                company = company +",getui"
             }
         }
 
