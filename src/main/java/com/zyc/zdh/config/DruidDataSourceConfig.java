@@ -1,45 +1,50 @@
 package com.zyc.zdh.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.stat.DruidStatManagerFacade;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
 import com.zyc.zdh.util.LogUtil;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 @Configuration
+@EnableTransactionManagement
+@MapperScan(basePackages = {"com.zyc.zdh.dao"},    sqlSessionFactoryRef = "sqlSessionFactory",  sqlSessionTemplateRef = "sqlSessionTemplate")
 public class DruidDataSourceConfig {
-	@Value("${spring.datasource.url}")
-	private String dbUrl;
+
+	@Value("${spring.datasource.name}")
+	private String name;
 
 	@Value("${spring.datasource.url}")
-	private String dbUrl2;
+	private String dbUrl;
 
 	@Value("${spring.datasource.username}")
 	private String username;
 
-	@Value("${spring.datasource.username}")
-	private String username2;
-
 	@Value("${spring.datasource.password}")
 	private String password;
 
-	@Value("${spring.datasource.password}")
-	private String password2;
-
 	@Value("${spring.datasource.driver-class-name}")
 	private String driverClassName;
-
-	@Value("${spring.datasource.driver-class-name}")
-	private String driverClassName2;
 
 	@Value("${spring.datasource.initialSize}")
 	private int initialSize;
@@ -80,11 +85,13 @@ public class DruidDataSourceConfig {
 	@Value("${spring.datasource.logSlowSql}")
 	private String logSlowSql;
 
+
 	@Bean
 	@Primary
 	public DataSource dataSource() {
 		// @Primary 注解作用是当程序选择dataSource时选择被注解的这个
 		DruidDataSource datasource = new DruidDataSource();
+		datasource.setName(name);
 		datasource.setUrl(dbUrl);
 		datasource.setUsername(username);
 		datasource.setPassword(password);
@@ -109,39 +116,41 @@ public class DruidDataSourceConfig {
 		return datasource;
 	}
 
+	/**
+	 * 创建主数据源的 SqlSessionFactory
+	 */
+	@Bean(name = "sqlSessionFactory")
+	@Primary
+	public SqlSessionFactory sqlSessionFactory2(@Qualifier("dataSource") javax.sql.DataSource dataSource) throws Exception {
+		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+		bean.setDataSource(dataSource);
 
-	@Bean(name = "dataSource2")
-	public DataSource dataSource2() {
-		// @Primary 注解作用是当程序选择dataSource时选择被注解的这个
-		DruidDataSource datasource = new DruidDataSource();
-		datasource.setUrl(dbUrl2);
-		datasource.setUsername(username2);
-		datasource.setPassword(password2);
-		datasource.setDriverClassName(driverClassName2);
-		datasource.setInitialSize(initialSize);
-		datasource.setMinIdle(minIdle);
-		datasource.setMaxActive(maxActive);
-		datasource.setMaxWait(maxWait);
-		datasource.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
-		datasource.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
-		datasource.setValidationQuery(validationQuery);
-		datasource.setTestWhileIdle(testWhileIdle);
-		datasource.setTestOnBorrow(testOnBorrow);
-		datasource.setTestOnReturn(testOnReturn);
-		datasource.setPoolPreparedStatements(poolPreparedStatements);
-		try {
-			datasource.setFilters(filters);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-            LogUtil.error(this.getClass(), e);
-		}
-		return datasource;
+		// 设置Mapper XML文件位置, 此处不设置,采用tk.mapper
+//        bean.setMapperLocations(new PathMatchingResourcePatternResolver()
+//                .getResources("classpath:mapper/secondary/*.xml"));
+
+		// 设置类型别名包
+		bean.setTypeAliasesPackage("com.zyc.zdh.entity");
+
+		return bean.getObject();
 	}
 
-	@Bean(name = "jdbcTemplate")
-	public JdbcTemplate jdbcTemplate(){
-		JdbcTemplate jdbcTemplate=new JdbcTemplate(dataSource2());
-		return jdbcTemplate;
+	/**
+	 * 创建主数据源的 SqlSessionTemplate
+	 */
+	@Bean(name = "sqlSessionTemplate")
+	@Primary
+	public SqlSessionTemplate sqlSessionTemplate2(@Qualifier("sqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+		return new SqlSessionTemplate(sqlSessionFactory);
+	}
+
+	/**
+	 * 创建主数据源的事务
+	 */
+	@Bean(name = "transactionManager")
+	@Primary
+	public PlatformTransactionManager transactionManager(@Qualifier("dataSource") javax.sql.DataSource dataSource) {
+		return new DataSourceTransactionManager(dataSource);
 	}
 
 	@Bean

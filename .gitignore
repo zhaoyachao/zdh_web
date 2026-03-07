@@ -45,4 +45,5 @@ doc/*
 smart_doc/*
 
 .comate
+.vscode
 

@@ -41,9 +41,6 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
 
-	@Autowired
-	Environment ev;
-
 	@Value("${cookie.path:'/'}")
 	private String cookiePath;
 

@@ -174,7 +174,7 @@ public class AspectConfig implements Ordered {
             }
             Object o = pjp.proceed();
             if (is_operate_log(servletPath)){
-                LogUtil.debug(this.getClass(), "请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】, 耗时:【{}ms】, 结束", ipAddr, city, uid, url, systemFilterParam.getCostTime());
+                LogUtil.debug(this.getClass(), "请求源IP:【{}】【{}】,用户:【{}】,请求URL:【{}】, 耗时:【{}ms】, 响应结果:【{}】", ipAddr, city, uid, url, systemFilterParam.getCostTime(), toJson(o));
             }
             try {
                 //跳过特殊操作，etlEcharts,getTotalNum,notice_list
@@ -448,6 +448,15 @@ public class AspectConfig implements Ordered {
                 LogUtil.error(this.getClass(), e);
             }
         }
+    }
+
+    private String toJson(Object o){
+        try{
+            return JsonUtil.formatJsonString(o);
+        }catch (Exception e){
+            LogUtil.error(this.getClass(), "响应结果序列化异常", e);
+        }
+        return "无法序列化";
     }
 
 }

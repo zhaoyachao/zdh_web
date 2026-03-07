@@ -1,19 +1,24 @@
 package com.zyc.zdh.config;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.zyc.zdh.quartz.MyJobFactory;
 import com.zyc.zdh.util.LogUtil;
 import org.quartz.Scheduler;
 import org.quartz.utils.PropertiesParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -27,40 +32,27 @@ import java.util.Properties;
 @Configuration
 public class QuartzConfig {
 
-//	@Value("${spring.datasource.url}")
-//	private String dbUrl;
-//
-//	@Value("${spring.datasource.username}")
-//	private String username;
-//
-//	@Value("${spring.datasource.password}")
-//	private String password;
-//
-//	@Value("${spring.datasource.driver-class-name}")
-//	private String driverClassName;
-//
-//	@Value("${quartz.instancename}")
-//	private String quartzInstance;
-//
-//	@Value("${org.quartz.threadPool.threadCount}")
-//	private String threadCount;
+	@Autowired
+	private Environment ev;
 
 	@Autowired
-	Environment ev;
+	private ConfigurableEnvironment cev;
 
 	@Autowired
-	ConfigurableEnvironment cev;
+	private DataSource dataSource;
 
-	@Resource(name = "dataSource2")
-	DataSource dataSource2;
-
+	@Bean(name = "jdbcTemplate")
+	public JdbcTemplate jdbcTemplate(){
+		JdbcTemplate jdbcTemplate=new JdbcTemplate(dataSource);
+		return jdbcTemplate;
+	}
 
 	@Bean
 	public SchedulerFactoryBean schedulerFactoryBean(MyJobFactory myJobFactory) {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
 
 		schedulerFactoryBean.setQuartzProperties(quartzProperties(cev));
-		schedulerFactoryBean.setDataSource(dataSource2);
+		schedulerFactoryBean.setDataSource(dataSource);
 		// 使job实例(本文中job实例是MyJobBean)支持spring 容器管理
 		schedulerFactoryBean.setOverwriteExistingJobs(true);
 		schedulerFactoryBean.setJobFactory(myJobFactory);

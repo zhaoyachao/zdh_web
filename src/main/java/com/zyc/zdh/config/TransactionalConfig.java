@@ -17,19 +17,21 @@ import javax.sql.DataSource;
  *springboot中使用事物,一般使用默认的即可,<br>
  *添加@EnableTransactionManagement注解,<br>
  *在使用事物的地方添加@Transactional注解即可
+ *
+ * 5.7.2及之后版本废弃,具体事务在每个数据源配置单独实现(原因: 需要支持多数据源)
  */
-@Configuration
-@EnableTransactionManagement
-public class TransactionalConfig {
-
-	@Bean
-	@Primary
-    public PlatformTransactionManager txManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
-	
-	@Bean
-	public PlatformTransactionManager txManager2(DataSource dataSource){
-		return new DataSourceTransactionManager(dataSource);
-	}
-}
+//@Configuration
+//@EnableTransactionManagement
+//public class TransactionalConfig {
+//
+//	@Bean
+//	@Primary
+//    public PlatformTransactionManager txManager(DataSource dataSource) {
+//        return new DataSourceTransactionManager(dataSource);
+//    }
+//
+//	@Bean
+//	public PlatformTransactionManager txManager2(DataSource dataSource){
+//		return new DataSourceTransactionManager(dataSource);
+//	}
+//}

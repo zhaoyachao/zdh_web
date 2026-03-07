@@ -4,6 +4,10 @@ import cn.hutool.core.util.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 日志统一工具类
+ * 使用参数格式同log4j一致
+ */
 public class LogUtil {
 
     private static CallerInfo getCallerInfo() {
@@ -55,6 +59,12 @@ public class LogUtil {
         log.error(error,getPre(cls), e);
     }
 
+    /**
+     *
+     * @param cls
+     * @param message 这是一个条消息:{}
+     * @param args 测试参数
+     */
     public static void info(Class cls, String message, Object... args){
         String formattedStr = StrUtil.format(message, args);
         String info = "{} info: {}";
@@ -62,6 +72,12 @@ public class LogUtil {
         log.info(info,getPre(cls), formattedStr);
     }
 
+    /**
+     *
+     * @param cls
+     * @param message 这是一个条消息:{}
+     * @param args 测试参数
+     */
     public static void warn(Class cls, String message, Object... args){
         String formattedStr = StrUtil.format(message, args);
         String info = "{} warn: {}";
@@ -69,6 +85,12 @@ public class LogUtil {
         log.warn(info,getPre(cls), formattedStr);
     }
 
+    /**
+     *
+     * @param cls
+     * @param message 这是一个条消息:{}
+     * @param args 测试参数
+     */
     public static void debug(Class cls, String message, Object... args){
         String formattedStr = StrUtil.format(message, args);
         String info = "{} debug: {}";

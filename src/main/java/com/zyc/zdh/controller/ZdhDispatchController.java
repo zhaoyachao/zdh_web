@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,8 +43,6 @@ public class ZdhDispatchController extends BaseController {
     private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
     @Autowired
     private QuartzExecutorMapper quartzExecutorMapper;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
 
@@ -699,7 +696,7 @@ public class ZdhDispatchController extends BaseController {
     }
 
     /**
-     * 重新创建系统调度任务
+     * 启用/创建系统调度任务
      * @param id
      * @return
      */
@@ -717,9 +714,9 @@ public class ZdhDispatchController extends BaseController {
             String sql=String.format("delete from QRTZ_SIMPLE_TRIGGERS where TRIGGER_GROUP in ('%s')", qji.getJob_type());
             String sql2=String.format("delete from QRTZ_TRIGGERS where TRIGGER_GROUP in ('%s')", qji.getJob_type());
             String sql3=String.format("delete from QRTZ_JOB_DETAILS where  JOB_GROUP in ('%s')", qji.getJob_type());
-            jdbcTemplate.execute(sql);
-            jdbcTemplate.execute(sql2);
-            jdbcTemplate.execute(sql3);
+            quartzJobMapper.deleteBySql(sql);
+            quartzJobMapper.deleteBySql(sql2);
+            quartzJobMapper.deleteBySql(sql3);
 
             quartzManager2.addTaskToQuartz(qji);
 
@@ -732,7 +729,7 @@ public class ZdhDispatchController extends BaseController {
     }
 
     /**
-     * 删除系统调度任务
+     * 删除/禁用系统调度任务
      * @param id
      * @return
      */
@@ -755,9 +752,9 @@ public class ZdhDispatchController extends BaseController {
             String sql=String.format("delete from QRTZ_SIMPLE_TRIGGERS where TRIGGER_GROUP in ('%s')", qji.getJob_type());
             String sql2=String.format("delete from QRTZ_TRIGGERS where TRIGGER_GROUP in ('%s')", qji.getJob_type());
             String sql3=String.format("delete from QRTZ_JOB_DETAILS where  JOB_GROUP in ('%s')", qji.getJob_type());
-            jdbcTemplate.execute(sql);
-            jdbcTemplate.execute(sql2);
-            jdbcTemplate.execute(sql3);
+            quartzJobMapper.deleteBySql(sql);
+            quartzJobMapper.deleteBySql(sql2);
+            quartzJobMapper.deleteBySql(sql3);
             quartzManager2.deleteTask(qji, "remove");
             if(!StringUtils.isEmpty(is_delete) && is_delete.equalsIgnoreCase(Const.TRUR)){
                 quartzJobMapper.deleteByPrimaryKey(id);

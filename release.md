@@ -735,6 +735,11 @@
   + v5.7.1 [zdh_web]优化推送模块
   + v5.7.1 [zdh_web]营销模块安全优化
 
+  + v5.7.2 [zdh_web]支持多数据源(为之后接入doris做日志存储做基础)
+  + v5.7.2 [zdh_web]优化日志格式,优化流程图展示
+  + v5.7.2 [zdh_web]推送模板优化, 新增个推推送配置, 
+  + v5.7.2 [zdh_web]
+
 # 版本迁移步骤  
 ## 4.7.15迁移4.7.16
     alter table data_sources_info add column update_time timestamp default null comment '更新时间';

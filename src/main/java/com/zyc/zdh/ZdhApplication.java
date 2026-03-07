@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 
 
 @ComponentScan(basePackages = {"com.zyc.zdh"}, includeFilters = {@Filter(type = FilterType.ANNOTATION, value = MyMark.class)})
-@MapperScan(basePackages = {"com.zyc.zdh.dao"})
 @SpringBootApplication()
 @EnableAspectJAutoProxy(exposeProxy = true, proxyTargetClass = true)
 //@EnableAspectJAutoProxy exposeProxy:暴露代理对象,proxyTargetClass强制使用cglib代理

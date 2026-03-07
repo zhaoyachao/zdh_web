@@ -39,7 +39,7 @@ var hollowCircle = {
     isTarget: true,    //是否可以放置（连线终点）
     maxConnections: -1,    // 设置连接点最多可以连接几条线
     connectorOverlays:[
-        [ "Arrow", { width:10, length:20, location:1, id:"arrow" } ],
+        [ "Arrow", { width:10, length:14, location:1, id:"arrow", foldback:0.9, paintStyle:{ fillStyle:"#4a90e2", strokeStyle:"#4a90e2" } } ],
         ["Custom", {
             create:function(component) {
                 return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');

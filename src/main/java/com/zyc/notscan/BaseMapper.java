@@ -1,6 +1,7 @@
 package com.zyc.notscan;
 
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -99,4 +100,11 @@ public interface BaseMapper<T> extends Mapper<T> {
     }
     )
     public T selectTest(@Param("table_name") String table_name, @Param("map") Map<String,Object> map);
+
+    @Delete({
+            "<script>",
+            "${sql}",
+            "</script>"
+    })
+    public void deleteBySql(@Param("sql") String sql);
 }

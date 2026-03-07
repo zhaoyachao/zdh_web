@@ -35,8 +35,8 @@ public class ServiceTest {
 	
 	//@TestA
 	public void testTransaction(){
-		PlatformTransactionManager a=(PlatformTransactionManager) SpringContext.getBean("txManager");
-		PlatformTransactionManager b=(PlatformTransactionManager) SpringContext.getBean("txManager2");
+		PlatformTransactionManager a=(PlatformTransactionManager) SpringContext.getBean("transactionManager");
+		PlatformTransactionManager b=(PlatformTransactionManager) SpringContext.getBean("transactionManager2");
 		System.out.println(a.getClass());
 		System.out.println(b.getClass());
 

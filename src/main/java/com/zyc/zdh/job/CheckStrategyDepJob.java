@@ -257,7 +257,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
 
                         if(is_run){
                             //上游都已完成,可执行,任务发完执行集群 此处建议使用优先级队列 todo
-                            System.out.println("模拟发放任务--开始");
+                            LogUtil.info(CheckStrategyDepJob.class, "模拟发放任务--开始");
                             JobDigitalMarket.insertLog(tl,"INFO","当前策略任务:"+tl.getId()+",推送类型:"+tl.getTouch_type());
                             if(tl.getStatus().equalsIgnoreCase(JobStatus.SKIP.getValue())){
                                 continue;
@@ -265,9 +265,7 @@ public class CheckStrategyDepJob implements CheckDepJobInterface{
                             if(tl.getTouch_type()==null || tl.getTouch_type().equalsIgnoreCase("queue")){
                                 resovleStrategyInstance(tl);
                             }
-                            System.out.println("=======================");
-                            System.out.println(JsonUtil.formatJsonString(tl));
-                            System.out.println("模拟发放任务--结束");
+                            LogUtil.info(CheckStrategyDepJob.class, "模拟发放任务--结束, 任务: {}", JsonUtil.formatJsonString(tl));
 
                             //更新任务状态为检查完成
                             tl.setStatus(JobStatus.CHECK_DEP_FINISH.getValue());

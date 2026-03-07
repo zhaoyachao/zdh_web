@@ -201,6 +201,35 @@
           return num;
       }
 
+      function get_push_server_name(push_server){
+          switch (push_server) {
+              case "sms":
+                  return "短信";
+              case "voice":
+                  return "语音";
+              case "email":
+                  return "邮件";
+              case "apppush":
+                  return "APPPUSH";
+              case "miniprogram":
+                  return "小程序";
+              case "wechatofficialaccount":
+                  return "微信公众号";
+              case "feishurobot":
+                  return "飞书机器人";
+              case "feishu":
+                  return "飞书";
+              case "wechatcustommessage":
+                  return "微信客服";
+              case "wechatnews":
+                  return "微信图文";
+              default:
+                  return "未知"
+
+          }
+      }
+
+
 
       $('#exampleTableEvents').bootstrapTable('destroy').bootstrapTable({
       method: "POST",
@@ -277,6 +306,14 @@
               title: '推送模版ID',
               sortable:false
           },
+            {
+                field: 'push_server',
+                title: '当前推送服务',
+                sortable:false,
+                formatter: function (value, row, index) {
+                    return get_push_server_name(value);
+                }
+            },
           {
               field: 'acc',
               title: '推送账号',
@@ -305,12 +342,10 @@
           {
               field: 'request_time',
               title: '请求时间,毫秒级时间戳',
-              sortable:false
-          },
-          {
-              field: 'push_server',
-              title: '当前推送服务',
-              sortable:false
+              sortable:false,
+              formatter: function (value, row, index) {
+                  return getMyDate(value/1000);
+              }
           },
           {
               field: 'push_msg_type',
@@ -345,7 +380,10 @@
           {
               field: 'deliver_time',
               title: '送达时间',
-              sortable:false
+              sortable:false,
+              formatter: function (value, row, index) {
+                  return is_empty(value)?"":getMyDate(value/1000);
+              }
           },
           {
               field: 'deliver_status',
