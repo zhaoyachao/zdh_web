@@ -4232,3 +4232,6 @@
 ## 5.7.0迁移5.7.1
     update param_info set param_type='string' where param_type = 1 ;
     update param_info set param_type='json' where param_type = 2 ;
+
+## 5.7.1迁移5.7.2
+    alter table push_app_info modify column config mediumtext comment 'app配置,json结构';

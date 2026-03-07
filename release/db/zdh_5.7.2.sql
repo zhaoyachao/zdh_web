@@ -3514,7 +3514,7 @@ CREATE TABLE `push_app_info` (
   `app` varchar(128) DEFAULT '' COMMENT 'app',
   `app_name` varchar(128) DEFAULT '' COMMENT 'app名称',
   `company` varchar(256) DEFAULT '' COMMENT '厂商,多个逗号分割',
-  `config` text COMMENT 'app配置,json结构',
+  `config` mediumtext COMMENT 'app配置,json结构',
   `status` varchar(8) NOT NULL DEFAULT '0' COMMENT '状态,0:编辑,1:启用,2:禁用',
   `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
