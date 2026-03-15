@@ -21,7 +21,7 @@ public class HttpUtilTest {
         NameValuePair nvp2=new BasicNameValuePair("job", "IT");
         list.add(nvp);
         list.add(nvp2);
-        System.out.println(HttpUtil.getRequest("http://127.0.0.1:9001/api/v1/test", list));
+        System.out.println(HttpUtil.builder().getRequest("http://127.0.0.1:9001/api/v1/test", list));
     }
 
     @Test

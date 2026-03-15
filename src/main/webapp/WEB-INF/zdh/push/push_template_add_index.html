@@ -675,6 +675,27 @@
                                                     </div>
                                                 </div>
 
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_menu_head_content_div">
+                                                    <label class="col-sm-2 control-label">菜单描述</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_menu_head_content" name="wechatcustommessage_channel_menu_head_content" class="form-control" type="text" value="" placeholder="菜单描述必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_menu_content_div">
+                                                    <label class="col-sm-2 control-label">菜单内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="wechatcustommessage_channel_menu_content" name="wechatcustommessage_channel_menu_content" class="form-control" rows="5" placeholder="菜单内容, 多个菜单换行, 菜单id#菜单内容"></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_menu_tail_content_div">
+                                                    <label class="col-sm-2 control-label">菜单结尾</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_menu_tail_content" name="wechatcustommessage_channel_menu_tail_content" class="form-control" type="text" value="" placeholder="菜单描述必填">
+                                                    </div>
+                                                </div>
+
                                                 <div class="form-group wechatcustommessage_div wechatcustommessage_channel_card_id_div">
                                                     <label class="col-sm-2 control-label">卡券ID</label>
                                                     <div class="col-sm-10">
@@ -987,7 +1008,9 @@
                 }else if(channel_msgtype=="mpnewsarticle"){
                     $('.wechatcustommessage_channel_article_id_div').show();
                 }else if(channel_msgtype=="msgmenu"){
-
+                    $('.wechatcustommessage_channel_menu_content_div').show();
+                    $('.wechatcustommessage_channel_menu_head_content_div').show();
+                    $('.wechatcustommessage_channel_menu_tail_content_div').show();
                 }else if (channel_msgtype=="wxcard"){
                     $('.wechatcustommessage_channel_card_id_div').show();
                 }else if(channel_msgtype == "miniprogram"){
@@ -1363,6 +1386,10 @@
                             $("#wechatcustommessage_channel_app_id").val(data.result.configMap.wechatcustommessage.channel_app_id);
                             $("#wechatcustommessage_channel_pagepath").val(data.result.configMap.wechatcustommessage.channel_pagepath);
                             $("#wechatcustommessage_channel_article_id").val(data.result.configMap.wechatcustommessage.channel_article_id);
+                            $("#wechatcustommessage_channel_menu_content").val(data.result.configMap.wechatcustommessage.channel_menu_content);
+                            $("#wechatcustommessage_channel_menu_head_content").val(data.result.configMap.wechatcustommessage.channel_menu_head_content);
+                            $("#wechatcustommessage_channel_menu_tail_content").val(data.result.configMap.wechatcustommessage.channel_menu_tail_content);
+
                             $("#wechatcustommessage_channel_kf_account").val(data.result.configMap.wechatcustommessage.channel_kf_account);
                             $("#wechatcustommessage_channel_is_ai_msg").val(data.result.configMap.wechatcustommessage.channel_is_ai_msg);
 
@@ -1634,6 +1661,9 @@
             "channel_app_id": $("#wechatcustommessage_channel_app_id").val(),
             "channel_pagepath": $("#wechatcustommessage_channel_pagepath").val(),
             "channel_article_id": $("#wechatcustommessage_channel_article_id").val(),
+            "channel_menu_content": $("#wechatcustommessage_channel_menu_content").val(),
+            "channel_menu_head_content": $("#wechatcustommessage_channel_menu_head_content").val(),
+            "channel_menu_tail_content": $("#wechatcustommessage_channel_menu_tail_content").val(),
             "channel_kf_account": $("#wechatcustommessage_channel_kf_account").val(),
             "channel_is_ai_msg": $("#wechatcustommessage_channel_is_ai_msg").val(),
             "params": $("#wechatcustommessage_params").val()

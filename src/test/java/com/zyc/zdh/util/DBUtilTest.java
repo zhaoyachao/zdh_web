@@ -128,7 +128,7 @@ public class DBUtilTest {
         try {
             List<NameValuePair> npl=new ArrayList<>();
             //npl.add(new BasicNameValuePair("status1","sab"));
-            String result=HttpUtil.getRequest(url,npl);
+            String result=HttpUtil.builder().getRequest(url,npl);
             System.out.println(result);
             List<Map<String, Object>> jsonArray= JsonUtil.toJavaListMap(result);
             String jobGroup="jobGroup";

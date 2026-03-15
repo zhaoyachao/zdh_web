@@ -255,3 +255,21 @@ function download_document_customer_manager(){
 function product_callback(){
 
 }
+
+function cron() {
+    parent.layer.open({
+        type: 2,
+        title: 'cron表达式生成',
+        shadeClose: false,
+        resize: true,
+        fixed: false,
+        maxmin: true,
+        shade: 0.1,
+        area : ['45%', '60%'],
+        //area: ['450px', '500px'],
+        content: server_context+"/cron.html", //iframe的url
+        end : function () {
+            console.info("弹框结束")
+        }
+    });
+}

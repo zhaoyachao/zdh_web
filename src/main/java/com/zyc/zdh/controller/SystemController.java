@@ -363,7 +363,6 @@ public class SystemController extends BaseController{
     @ResponseBody
     public ReturnInfo<List<String>> cronExpression2executeDates(String crontab) throws ParseException {
         try{
-            System.out.println(crontab);
             List<String> resultList = new ArrayList<String>() ;
             CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
             cronTriggerImpl.setCronExpression(crontab);//这里写要准备猜测的cron表达式

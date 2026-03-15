@@ -26,7 +26,7 @@
             <property name="enableGeneratorHtml" value="true"/>
 
             <!--自定义代码生成插件-生成controller,entity,baseMapper, mapper包, 是否启用覆盖配置 -->
-            <property name="overwriteController" value="false"/>
+            <property name="overwriteController" value="true"/>
             <property name="overwriteBaseMapper" value="true"/>
             <property name="overwriteMapper" value="false"/>
             <property name="overwriteHtml" value="false"/>
@@ -505,5 +505,12 @@
 <!--            <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--            <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--        </table>-->
+
+<!--                <table tableName="push_config_info" domainObjectName="PushConfigInfo" mapperName="BasePushConfigMapper">-->
+<!--                    <property name="useActualColumnNames" value="true" />-->
+<!--                    <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--                </table>-->
     </context>
 </generatorConfiguration>
