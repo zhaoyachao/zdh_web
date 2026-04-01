@@ -145,6 +145,8 @@
                                         </li>
                                         <li class="tab_li"  id="check_getui_li"><a data-toggle="tab" href="#check_getui_tab" aria-expanded="false">个推</a>
                                         </li>
+                                        <li class="tab_li"  id="check_baiduyun_li"><a data-toggle="tab" href="#check_baiduyun_tab" aria-expanded="false">百度云</a>
+                                        </li>
                                     </ul>
                                     <div class="tab-content">
                                         <div id="check_huawei_tab" class="tab-pane active">
@@ -417,6 +419,36 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div id="check_baiduyun_tab" class="tab-pane active">
+                                            <div class="panel-body">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="baiduyun_appid" name="baiduyun_appid" class="form-control" type="text" value="" placeholder="厂商应用ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">AK</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="baiduyun_ak" name="baiduyun_ak" class="form-control" type="text" value="" placeholder="AK">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">SK</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="baiduyun_sk" name="baiduyun_sk" class="form-control" rows="5" placeholder="SK"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">包名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="baiduyun_package" name="baiduyun_package" class="form-control" type="text" value="" placeholder="包名">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -618,6 +650,9 @@
             $('#check_getui_tab').addClass("active");
             $('#check_getui_tab').removeClass("active");
 
+            $('#check_baiduyun_tab').addClass("active");
+            $('#check_baiduyun_tab').removeClass("active");
+
             if(s.id !='-1'){
                 console.info("更新-拷贝按钮触发");
                 //开始赋值
@@ -720,6 +755,13 @@
                             $("#getui_package").val(data.result.configMap.getui.package);
                         }
 
+                        if(!is_empty(data.result.configMap.baiduyun)){
+                            $("#baiduyun_appid").val(data.result.configMap.baiduyun.appid);
+                            $("#baiduyun_ak").val(data.result.configMap.baiduyun.ak);
+                            $("#baiduyun_sk").val(data.result.configMap.baiduyun.sk);
+                            $("#baiduyun_package").val(data.result.configMap.baiduyun.package);
+                        }
+
 
                     },
                     error: function (data) {
@@ -802,6 +844,13 @@
             "package": $("#getui_package").val()
         };
 
+        var baiduyun_config = {
+            "appid": $("#baiduyun_appid").val(),
+            "ak": $("#baiduyun_ak").val(),
+            "sk": $("#baiduyun_sk").val(),
+            "package": $("#baiduyun_package").val()
+        };
+
         var config = {
             "huawei": huawei_config,
             "honor": honor_config,
@@ -811,7 +860,8 @@
             "meizu": meizu_config,
             "apple": apple_config,
             "jpush": jpush_config,
-            "getui": getui_config
+            "getui": getui_config,
+            "baiduyun": baiduyun_config
         };
 
         return config;
@@ -880,13 +930,18 @@
                 company = company +",getui"
             }
         }
+        if($('#check_baiduyun').is(":checked")){
+            if(is_empty(company)){
+                company = "baiduyun"
+            }else{
+                company = company +",baiduyun"
+            }
+        }
 
         return company;
     }
 
     $('#save_dispatch_task').click(function () {
-
-
 
 
         var config = buildConfig();

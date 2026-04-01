@@ -284,12 +284,20 @@
           {
               field: 'request_id',
               title: '由当前服务自动生成(表示当前一次会话id)',
-              sortable:false
+              sortable:true,
+              formatter: function(value, row, index) {
+                  // 关键：将 Long 转为字符串，避免 Number 类型精度截取
+                  return value + ''; // 简单粗暴，直接转字符串，保留所有位数
+              }
           },
           {
               field: 'message_id',
               title: '由当前服务生成,唯一的一条消息id',
-              sortable:false
+              sortable:true,
+              formatter: function(value, row, index) {
+                  // 关键：将 Long 转为字符串，避免 Number 类型精度截取
+                  return value + ''; // 简单粗暴，直接转字符串，保留所有位数
+              }
           },
           {
               field: 'source',
@@ -344,7 +352,7 @@
               title: '请求时间,毫秒级时间戳',
               sortable:false,
               formatter: function (value, row, index) {
-                  return getMyDate(value/1000);
+                  return is_empty(value) || value == null ? "": getMyDate(Number(value));
               }
           },
           {
@@ -382,7 +390,7 @@
               title: '送达时间',
               sortable:false,
               formatter: function (value, row, index) {
-                  return is_empty(value)?"":getMyDate(value/1000);
+                  return is_empty(value) || value == null ? "": getMyDate(Number(value));
               }
           },
           {

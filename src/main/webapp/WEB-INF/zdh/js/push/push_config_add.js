@@ -12,7 +12,12 @@
       var id = getUrlParam('id');
       
       if (id != '-1' && id != null) {
+          $('#update_dispatch_task').show();
+          $('#save_dispatch_task').hide();
           loadConfigData(id);
+      }else{
+          $('#update_dispatch_task').hide();
+          $('#save_dispatch_task').show();
       }
 
       function loadConfigData(id) {
@@ -25,6 +30,8 @@
                   if (data.code == '200') {
                       var config = data.result;
                       $('#id').val(config.id);
+                      $('#product_code').val(config.product_code);
+                      $('#product_code').trigger("chosen:updated");
                       $('#config_key').val(config.config_key);
                       $('#config_name').val(config.config_name);
                       $('#config_type').val(config.config_type);
@@ -113,15 +120,18 @@
               'config_key': configKey,
               'config_name': configName,
               'config_type': configType,
-              'config_json': configJson,
+              'config': JSON.stringify(configJson),
               'description': description
           };
-          
+          var url = server_context + "/push_config_add";
+          if(!is_empty(id)){
+              url = server_context + "/push_config_update";
+          }
+
           $.ajax({
-              url: server_context + "/push_config_save",
-              data: JSON.stringify(formData),
+              url: url,
+              data: formData,
               type: "post",
-              contentType: "application/json;charset=utf-8",
               dataType: "json",
               success: function(data) {
                   if (data.code == '200') {

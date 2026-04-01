@@ -14,12 +14,12 @@ public class PushTaskLog extends BaseProductAndDimGroupAuthInfo {
     /**
      * 由当前服务自动生成(表示当前一次会话id)
      */
-    private Long request_id;
+    private String request_id;
 
     /**
      * 由当前服务生成,唯一的一条消息id
      */
-    private Long message_id;
+    private String message_id;
 
     /**
      * 来源，一般指平台名称
@@ -221,6 +221,8 @@ public class PushTaskLog extends BaseProductAndDimGroupAuthInfo {
      */
     private String channels;
 
+    private String ext;
+
     private String is_delete;
 
     private String product_code;
@@ -250,7 +252,7 @@ public class PushTaskLog extends BaseProductAndDimGroupAuthInfo {
      *
      * @return request_id - 由当前服务自动生成(表示当前一次会话id)
      */
-    public Long getRequest_id() {
+    public String getRequest_id() {
         return request_id;
     }
 
@@ -259,7 +261,7 @@ public class PushTaskLog extends BaseProductAndDimGroupAuthInfo {
      *
      * @param request_id 由当前服务自动生成(表示当前一次会话id)
      */
-    public void setRequest_id(Long request_id) {
+    public void setRequest_id(String request_id) {
         this.request_id = request_id;
     }
 
@@ -268,7 +270,7 @@ public class PushTaskLog extends BaseProductAndDimGroupAuthInfo {
      *
      * @return message_id - 由当前服务生成,唯一的一条消息id
      */
-    public Long getMessage_id() {
+    public String getMessage_id() {
         return message_id;
     }
 
@@ -277,7 +279,7 @@ public class PushTaskLog extends BaseProductAndDimGroupAuthInfo {
      *
      * @param message_id 由当前服务生成,唯一的一条消息id
      */
-    public void setMessage_id(Long message_id) {
+    public void setMessage_id(String message_id) {
         this.message_id = message_id;
     }
 
@@ -999,6 +1001,14 @@ public class PushTaskLog extends BaseProductAndDimGroupAuthInfo {
      */
     public void setChannels(String channels) {
         this.channels = channels;
+    }
+
+    public String getExt() {
+        return ext;
+    }
+
+    public void setExt(String ext) {
+        this.ext = ext;
     }
 
     public String getIs_delete() {

@@ -124,7 +124,12 @@ public class PushTaskController extends BaseController {
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
-                criteria2.orLike("context", getLikeCondition(context));
+                criteria2.orLike("request_id", getLikeCondition(context));
+                criteria2.orLike("message_id", getLikeCondition(context));
+                criteria2.orLike("content", getLikeCondition(context));
+                criteria2.orLike("template_id", getLikeCondition(context));
+                criteria2.orLike("channel_acc", getLikeCondition(context));
+                criteria2.orLike("acc", getLikeCondition(context));
                 example.and(criteria2);
             }
 
