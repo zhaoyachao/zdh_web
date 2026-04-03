@@ -24,10 +24,10 @@ public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
      */
     private String template_id;
 
-    /**
-     * 消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
-     */
-    private String push_type;
+//    /**
+//     * 消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
+//     */
+//    private String push_type;
 
     /**
      * 消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
@@ -136,23 +136,23 @@ public class PushTemplateInfo extends BaseProductAndDimGroupAuthInfo{
         this.template_id = template_id;
     }
 
-    /**
-     * 获取消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
-     *
-     * @return push_type - 消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
-     */
-    public String getPush_type() {
-        return push_type;
-    }
+//    /**
+//     * 获取消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
+//     *
+//     * @return push_type - 消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
+//     */
+//    public String getPush_type() {
+//        return push_type;
+//    }
 
-    /**
-     * 设置消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
-     *
-     * @param push_type 消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
-     */
-    public void setPush_type(String push_type) {
-        this.push_type = push_type;
-    }
+//    /**
+//     * 设置消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
+//     *
+//     * @param push_type 消息类型,1:营销,2:通知,3:验证码,4:告警,5:其他
+//     */
+//    public void setPush_type(String push_type) {
+//        this.push_type = push_type;
+//    }
 
     public String getPush_msg_type() {
         return push_msg_type;

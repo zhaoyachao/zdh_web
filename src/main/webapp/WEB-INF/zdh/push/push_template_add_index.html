@@ -109,7 +109,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">消息类型</label>
                             <div class="col-sm-10">
-                                <select id="push_type" name="push_type"
+                                <select id="push_msg_type" name="push_msg_type"
                                         data-placeholder="选择消息类型..."
                                         class="chosen-select form-control m-b" tabindex="2">
                                     <option value="" mytype="">选择消息类型...</option>
@@ -1236,9 +1236,9 @@
                         var template_id=data.result.template_id;
                         $("#template_id").val(template_id);
 
-                        var push_type=data.result.push_type;
-                        $("#push_type").val(push_type);
-                        $("#push_type").trigger("chosen:updated");
+                        var push_msg_type=data.result.push_msg_type;
+                        $("#push_msg_type").val(push_msg_type);
+                        $("#push_msg_type").trigger("chosen:updated");
 
                         var push_servers=data.result.push_server.split(",");
                         for (var i = 0; i < push_servers.length; i++) {
