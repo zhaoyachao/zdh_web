@@ -26,7 +26,6 @@
               //area: ['450px', '500px'],
               content: server_context+"/permission_usergroup_dimension_value_add_index?id=-1&product_code="+product_code+"&group_code="+group_code, //iframe的url
               end : function () {
-                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/permission_usergroup_dimension_list?"+$("#permission_dimension_form").serialize()+"&tm="+new Date(),
@@ -111,7 +110,6 @@
                   //area: ['450px', '500px'],
                   content: server_context+"/permission_usergroup_dimension_value_add_index.html?id="+dim_code+"&product_code="+product_code+"&group_code="+group_code+"&dim_code="+dim_code, //iframe的url
                   end : function () {
-                      console.info("弹框结束");
                       $('#exampleTableEvents-table').bootstrapTable('destroy');
                       $('#exampleTableEvents').bootstrapTable('refresh', {
                           url: server_context+"/permission_usergroup_dimension_list?"+$("#permission_dimension_form").serialize()+"&tm="+new Date(),

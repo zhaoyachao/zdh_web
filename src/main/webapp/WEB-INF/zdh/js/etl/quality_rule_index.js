@@ -107,7 +107,6 @@ function buildTable($el, cells, rows) {
               //area: ['450px', '500px'],
               content: server_context+"/quality_rule_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/quality_rule_list?"+$("#quality_rule_form").serialize()+"&tm="+new Date(),

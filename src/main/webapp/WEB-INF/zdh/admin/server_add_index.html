@@ -284,11 +284,9 @@
 
         $("#build_type").chosen();
         if (s.id == -1) {
-            console.info("新增按钮触发");
             $('#save_zdh').show();
             $('#update_zdh').hide()
         }else{
-            console.info("更新按钮触发");
             $('#save_zdh').hide()
             $('#update_zdh').show();
             buildParam()

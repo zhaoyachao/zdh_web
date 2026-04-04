@@ -22,7 +22,6 @@
               //area: ['450px', '500px'],
               content: server_context+"/plugin_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/plugin_list?"+$("#plugin_form").serialize()+"&tm="+new Date(),

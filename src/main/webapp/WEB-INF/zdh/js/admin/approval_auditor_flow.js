@@ -67,7 +67,6 @@
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url : server_context+"/approval_auditor_flow_list"
                   });

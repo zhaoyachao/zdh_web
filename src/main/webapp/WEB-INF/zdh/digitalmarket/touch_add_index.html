@@ -260,7 +260,6 @@
                             layer.msg(data.msg);
                             return ;
                         }
-                        console.info("success");
 
                         var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">空</option>';
                         for (var i = 0; i < data.result.enum_json_object.length; i++) {
@@ -286,11 +285,9 @@
             } else {
 
                 if (s.is_copy == "true") {
-                    console.info("拷贝按钮触发");
                     $('#update_etl_task').hide();
                     $('#save_etl_task').show();
                 } else {
-                    console.info("更新按钮触发");
                     $('#save_etl_task').hide();
                     $('#update_etl_task').show();
                 }
@@ -336,7 +333,6 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
-                            console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             var product_code=data.result.product_code;

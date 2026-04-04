@@ -564,7 +564,6 @@
                 type: "post",
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url: server_context+"/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group_id="+s.group_id,
                         contentType: "application/json;charset=utf-8",
@@ -599,7 +598,6 @@
                             type: "post",
                             dataType: "json",
                             success: function (data) {
-                                console.info("success");
                                 if(data.code != "200"){
                                     layer.msg(data.msg);
                                     return
@@ -650,7 +648,6 @@
                             type: "post",
                             dataType: "json",
                             success: function (data) {
-                                console.info("success");
                                 if(data.code != "200"){
                                     layer.msg(data.msg);
                                     return
@@ -712,7 +709,6 @@
                         type: "post",
                         dataType: "json",
                         success: function (data) {
-                            console.info("success");
                             layer.close(index);
                             $('#exampleTableEvents').bootstrapTable('refresh', {
                                 url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
@@ -751,7 +747,6 @@
                                 layer.msg(data.msg);
                                 return ;
                             }
-                            console.info("success");
                             layer.close(index);
                             $('#exampleTableEvents').bootstrapTable('refresh', {
                                 url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
@@ -1053,7 +1048,6 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success");
                     //初始化输入数据源select 组件
                     var run_jsmind_data=data.result.run_jsmind_data;
                     open_json(run_jsmind_data,strategy_group_instance_id)
@@ -1074,7 +1068,6 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success");
                     //重新渲染图
                     var run_jsmind_data=data.result.run_jsmind_data;
                     open_json(run_jsmind_data,strategy_group_instance_id)

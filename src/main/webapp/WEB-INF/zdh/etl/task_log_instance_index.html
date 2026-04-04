@@ -506,7 +506,6 @@
                 type: "post",
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url: server_context+"/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group_id="+s.group_id,
                         contentType: "application/json;charset=utf-8",
@@ -540,7 +539,6 @@
                             type: "post",
                             dataType: "json",
                             success: function (data) {
-                                console.info("success");
                                 if(data.code != "200"){
                                     layer.msg(data.msg);
                                     return
@@ -560,7 +558,6 @@
                             type: "post",
                             dataType: "json",
                             success: function (data) {
-                                console.info("success");
                                 if(data.code != "200"){
                                     layer.msg(data.msg);
                                     return
@@ -591,7 +588,6 @@
                         type: "post",
                         dataType: "json",
                         success: function (data) {
-                            console.info("success");
                             layer.close(index)
                         },
                         error: function (data) {
@@ -621,7 +617,6 @@
                         type: "post",
                         dataType: "json",
                         success: function (data) {
-                            console.info("success");
                             layer.close(index)
                         },
                         error: function (data) {
@@ -646,7 +641,6 @@
                             layer.msg(data.msg);
                             return ;
                         }
-                        console.info("success");
                         if (!data.result && typeof data.result != "undefined" && data.result != 0 || data.result.length < 1) {
                             if (typeof row.history_server == "undefined"){
                                 layer.msg("无法找到历史服务器并且应用程序已经死亡");
@@ -929,7 +923,6 @@
                         layer.msg(data.msg);
                         return ;
                     }
-                    console.info("success");
                     //初始化输入数据源select 组件
                     var run_jsmind_data=data.result[0].run_jsmind_data;
                     open_json(run_jsmind_data,s.group_id)
@@ -954,7 +947,6 @@
                         layer.msg(data.msg);
                         return ;
                     }
-                    console.info("success");
                     //重新渲染图
                     var run_jsmind_data=data.result[0].run_jsmind_data;
                     refash(run_jsmind_data,s.group_id)

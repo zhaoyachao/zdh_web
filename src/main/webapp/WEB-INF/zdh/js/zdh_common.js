@@ -120,7 +120,6 @@ function getResourceDesc(){
         //成功返回
         success: function (data) {
             if(data.code != '200'){
-                console.info(data.msg);
                 return ;
             }
             layer.open({
@@ -139,7 +138,6 @@ function getResourceDesc(){
         },
         //处理完成
         complete: function () {
-            console.info("complete")
         },
         //报错
         error: function (data) {
@@ -207,7 +205,6 @@ function open_fontawesome(){
         //area: ['450px', '500px'],
         content: server_context+"/fontawesome.html", //iframe的url
         end : function () {
-            console.info("弹框结束")
         }
     });
 }
@@ -269,7 +266,6 @@ function cron() {
         //area: ['450px', '500px'],
         content: server_context+"/cron.html", //iframe的url
         end : function () {
-            console.info("弹框结束")
         }
     });
 }

@@ -278,7 +278,6 @@
                 type: "post",
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url: server_context+"/task_group_log_instance_list?" + $("#task_logs_form").serialize()+"&job_id="+s.job_id,
                         contentType: "application/json;charset=utf-8",
@@ -369,7 +368,6 @@
                             layer.msg(data.msg);
                             return ;
                         }
-                        console.info("success");
                         if (!data.result && typeof data.result != "undefined" && data.result != 0 || data.result.length < 1) {
                             if (typeof row.history_server == "undefined"){
                                 layer.msg("无法找到历史服务器并且应用程序已经死亡");

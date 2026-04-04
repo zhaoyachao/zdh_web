@@ -21,7 +21,6 @@
               area : ['100%', '100%'],
               content: server_context+"/push_config_add_index?id=-1",
               end : function () {
-                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/push_config_list_by_page?"+$("#push_config_form").serialize()+"&tm="+new Date(),

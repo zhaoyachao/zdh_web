@@ -22,7 +22,6 @@
               //area: ['450px', '500px'],
               content: server_context+"/project_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/project_list_by_page?"+$("#project_form").serialize(),

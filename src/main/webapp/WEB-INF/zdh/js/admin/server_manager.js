@@ -62,14 +62,12 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
                     layer.msg(data.msg);
                 },
                 complete: function () {
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url: 'server_manager_list'
                     });
-                    console.info("complete")
                 },
                 error: function (data) {
                     layer.msg(data.msg);
@@ -95,14 +93,12 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
                     layer.msg(context+data.msg);
                 },
                 complete: function () {
                     $('#exampleTableEvents2').bootstrapTable('refresh', {
                         url: server_context+'/server_manager_online_list'
                     });
-                    console.info("complete")
                 },
                 error: function (data) {
                     layer.msg(context+'失败');
@@ -141,7 +137,6 @@
                     //area: ['450px', '500px'],
                     content: server_context+"/server_build_exe_detail?id="+row.id, //iframe的url
                     end : function () {
-                        console.info("弹框结束")
                     }
                 });
 

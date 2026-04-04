@@ -247,7 +247,6 @@
                 },
                 //处理完成
                 complete: function () {
-                    console.info("complete")
                 },
                 //报错
                 error: function (data) {
@@ -272,7 +271,6 @@
                 },
                 //处理完成
                 complete: function () {
-                    console.info("complete")
                 },
                 //报错
                 error: function (data) {
@@ -334,7 +332,6 @@
                     },
                     //处理完成
                     complete: function () {
-                        console.info("complete")
                     },
                     //报错
                     error: function (data) {
@@ -792,7 +789,6 @@
                 },
                 //处理完成
                 complete: function () {
-                    console.info("complete");
                     layer.close(index1);
                     layer.msg("同步元数据完成");
                 },
@@ -819,7 +815,6 @@
                 },
                 //处理完成
                 complete: function () {
-                    console.info("complete");
                     layer.close(index1)
                 },
                 //报错
@@ -862,7 +857,6 @@
                 },
                 //处理完成
                 complete: function () {
-                    console.info("complete")
                 },
                 //报错
                 error: function (data) {
@@ -887,8 +881,6 @@
                 data: {},
                 //成功返回
                 success: function (data) {
-                    console.info("success");
-                    console.info(data.length);
                     if(data.length>=1){
                         window.open("http://"+data[0].zdh_host+":"+data[0].web_port)
                     }else{
@@ -897,7 +889,6 @@
                 },
                 //处理完成
                 complete: function () {
-                    console.info("complete")
                 },
                 //报错
                 error: function (data) {

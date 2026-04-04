@@ -22,7 +22,6 @@
               //area: ['450px', '500px'],
               content: server_context+"/label_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/label_list?"+$("#label_form").serialize()+"&tm="+new Date(),
@@ -188,7 +187,6 @@
                       async:false,
                       dataType: "json",
                       success: function (data) {
-                          console.info("success");
                           if(data.code != "200"){
                               layer.msg(data.msg);
                               return

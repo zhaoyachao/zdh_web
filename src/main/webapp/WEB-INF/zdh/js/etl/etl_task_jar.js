@@ -61,7 +61,6 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success");
                     $('#exampleTableEvents').bootstrapTable('refresh', {
                         url : server_context+'/etl_task_jar_list'
                     });

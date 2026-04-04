@@ -144,7 +144,6 @@ function buildTable($el, cells, rows) {
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success");
                   if(data.code != "200"){
                       layer.msg(data.msg);
                       return

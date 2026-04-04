@@ -22,7 +22,6 @@
               //area: ['450px', '500px'],
               content: server_context+"/etl_task_unstructure_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/etl_task_unstructure_list?"+$("#etl_task_unstructure_from").serialize()+"&tm="+new Date(),
@@ -64,7 +63,6 @@
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success");
                   if(data.code != "200"){
                       parent.layer.msg(data.msg);
                       return

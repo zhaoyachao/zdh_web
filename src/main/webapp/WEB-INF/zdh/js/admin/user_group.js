@@ -48,7 +48,6 @@
                   //area: ['450px', '500px'],
                   content: server_context+"/user_group_add_index.html?id="+ row.id, //iframe的url
                   end : function () {
-                      console.info("弹框结束");
                       $('#exampleTableEvents-table').bootstrapTable('destroy');
                       $('#exampleTableEvents').bootstrapTable('refresh', {
                           url: server_context+"/user_group_list2?"+$("#user_group_form").serialize()+"&tm="+new Date(),
@@ -72,7 +71,6 @@
                   //area: ['450px', '500px'],
                   content: server_context+"/permission_usergroup_dimension_value_index.html?group_code="+ row.group_code+"&product_code="+row.product_code, //iframe的url
                   end : function () {
-                      console.info("弹框结束");
                       $('#exampleTableEvents-table').bootstrapTable('destroy');
                       $('#exampleTableEvents').bootstrapTable('refresh', {
                           url: server_context+"/user_group_list2?"+$("#user_group_form").serialize()+"&tm="+new Date(),

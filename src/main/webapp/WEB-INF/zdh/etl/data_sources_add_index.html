@@ -292,10 +292,9 @@
             $('#data_source_type').chosen();
 
             if (s.id == -1) {
-                console.info("新增按钮触发")
+
             }else{
                //根据id 获取数据源信息
-                console.info("更新按钮触发");
                 $.ajax({
                     type: 'POST',
                     url: server_context+"/data_sources_info",
@@ -342,11 +341,9 @@
         });
 
         if (s.id == -1) {
-            console.info("新增按钮触发");
             $('#save_zdh').show();
             $('#update_zdh').hide()
         }else{
-            console.info("更新按钮触发");
             $('#save_zdh').hide();
             $('#update_zdh').show()
 

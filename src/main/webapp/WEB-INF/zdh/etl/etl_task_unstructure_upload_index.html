@@ -203,11 +203,9 @@
                 //init_table_name(s.id)
 
                 if (s.is_copy == "true") {
-                    console.info("拷贝按钮触发");
                     $('#update_etl_task').hide();
                     $('#save_etl_task').show()
                 } else {
-                    console.info("更新按钮触发");
                     $('#save_etl_task').hide();
                     $('#update_etl_task').show();
                 }
@@ -256,7 +254,6 @@
                                 layer.msg(data.msg);
                                 return ;
                             }
-                            console.info("success");
 
                             //获取ETL 说明
                             var unstructure_context = data.result[0].unstructure_context;

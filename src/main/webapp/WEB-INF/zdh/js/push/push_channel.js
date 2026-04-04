@@ -22,7 +22,6 @@
               //area: ['450px', '500px'],
               content: server_context+"/push_channel_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/push_channel_list_by_page?"+$("#push_channel_form").serialize()+"&tm="+new Date(),
@@ -195,7 +194,6 @@
                   //area: ['450px', '500px'],
                   content: server_context+"/push_channel_task_exe_detail_index?id="+row.id, //iframe的url
                   end : function () {
-                      console.info("弹框结束")
                   }
               });
           }

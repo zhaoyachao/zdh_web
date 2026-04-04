@@ -252,11 +252,9 @@
             }else{
                 //init_table_name(s.id)
                 if(s.is_copy =="true"){
-                    console.info("拷贝按钮触发");
                     $('#update_etl_task').hide();
                     $('#save_etl_task').show();
                 }else{
-                    console.info("更新按钮触发");
                     $('#save_etl_task').hide();
                     $('#update_etl_task').show()
                 }
@@ -298,7 +296,6 @@
                         async: false,
                         dataType : "json",
                         success : function(data) {
-                            console.info("success");
 
                             var product_code=data[0].product_code;
                             $("#product_code").val(product_code);
@@ -364,7 +361,6 @@
             async: false,
             dataType : "json",
             success : function(data) {
-                console.info("success");
                 //获取输入数据源id
                 $("#file_list").html("");
                 for (var i = 0; i < data.length; i++) {

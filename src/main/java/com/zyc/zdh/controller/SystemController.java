@@ -326,12 +326,12 @@ public class SystemController extends BaseController{
      * @return
      */
     @SentinelResource(value = "notice_update_see", blockHandler = "handleReturn")
-    @RequestMapping(value = "/notice_update_see", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/notice_update_see", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo<Object> notice_update_see(String[] ids, String is_see) {
+    public ReturnInfo<Object> notice_update_see(String[] ids) {
         try{
-            noticeMapper.updateIsSeeByIds(ids, is_see);
+            noticeMapper.updateIsSeeByIds(ids, "true");
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", null);
         }catch (Exception e){
             LogUtil.error(this.getClass(), e);

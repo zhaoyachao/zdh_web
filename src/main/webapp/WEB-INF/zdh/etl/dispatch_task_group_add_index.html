@@ -719,11 +719,9 @@
                 $('#save_dispatch_task').show();
             }else{
                 if(s.is_copy == "true"){
-                    console.info("拷贝按钮触发");
                     $('#update_dispatch_task').hide();
                     $('#save_dispatch_task').show();
                 }else{
-                    console.info("更新按钮触发");
                     $('#save_dispatch_task').hide();
                     $('#update_dispatch_task').show();
                 }
@@ -826,7 +824,6 @@
                             layer.msg(data.msg);
                             return ;
                         }
-                        console.info("success");
 
                         var product_code=data.result[0].product_code;
                         $("#product_code").val(product_code);

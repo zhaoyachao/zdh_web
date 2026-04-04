@@ -228,7 +228,6 @@
 
             //s.id=-1 表示新增,否则表示更新
             if (s.id == -1) {
-                console.info("新增按钮触发");
                 //$('#data_sources_table_name_input').chosen();
                 //$('#data_sources_table_name_output').chosen();
                 $('#update_etl_task').hide();
@@ -236,11 +235,9 @@
             } else {
 
                 if (s.is_copy == "true") {
-                    console.info("拷贝按钮触发");
                     $('#update_etl_task').hide();
                     $('#save_etl_task').show()
                 } else {
-                    console.info("更新按钮触发");
                     $('#save_etl_task').hide();
                     $('#update_etl_task').show();
                 }
@@ -276,9 +273,7 @@
 
             function buildParam() {
                 if (s.id != '-1') {
-                    console.info("更新按钮触发--开始赋值对应参数");
                     //开始赋值
-
                     $.ajax({
                         url: server_context+"/crowd_file_detail",
                         data: "id=" + s.id,
@@ -286,7 +281,6 @@
                         async: false,
                         dataType: "json",
                         success: function (data) {
-                            console.info("success");
                             // layer.alert(JSON.stringify(data[0]))
 
                             //获取输入数据源id
@@ -405,7 +399,6 @@
             //处理完成
             complete: function () {
                 $("#save_etl_task").removeAttr('disabled');
-                console.info("complete");
                 layer.close(index1);
             },
             //报错

@@ -755,7 +755,6 @@
                         //area: ['450px', '500px'],
                         content: server_context+"/wemock_data_add_index?id=-1&product_code="+product_code+"&mock_tree_id="+tree_id, //iframe的url
                         end : function () {
-                            console.info("弹框结束");
                             $('#exampleTableEvents').bootstrapTable('refresh', {
                                 url: server_context+"/wemock_data_list?"+we_tree_id,
                                 contentType: "application/json;charset=utf-8",

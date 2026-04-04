@@ -105,7 +105,6 @@
                   //area: ['450px', '500px'],
                   content: server_context+"/permission_user_dimension_value_index.html?user_account="+ row.user_account+"&product_code="+row.product_code, //iframe的url
                   end : function () {
-                      console.info("弹框结束");
                       $('#exampleTableEvents-table').bootstrapTable('destroy');
                       $('#exampleTableEvents').bootstrapTable('refresh', {
                           url: server_context+"/user_list?"+$("#user_form").serialize()+"&tm="+new Date(),

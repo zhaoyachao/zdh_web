@@ -87,7 +87,6 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
                     top.layer.close(index);
                     layer.msg(data.msg);
                     $("#execute").removeAttr('disabled');
@@ -114,14 +113,11 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
-                    console.info(data);
                     top.layer.close(index);
                     msg=data.msg
                 },
                 complete: function () {
                     $("#execute_quartz").removeAttr('disabled');
-                    console.info("complete");
                 },
                 error: function (data) {
                     $("#execute_quartz").removeAttr('disabled');
@@ -156,7 +152,6 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
                     if(data.code != "200"){
                         layer.msg(data.msg);
                         return
@@ -176,7 +171,6 @@
                 },
                 complete: function () {
                     $("#pause").removeAttr('disabled');
-                    console.info("complete")
                 },
                 error: function (data) {
                     $("#pause").removeAttr('disabled');
@@ -202,7 +196,6 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
                     if(data.code != "200"){
                         layer.msg(data.msg);
                         return
@@ -217,7 +210,6 @@
                 },
                 complete: function () {
                     $("#minus_sign").removeAttr('disabled');
-                    console.info("complete")
                 },
                 error: function (data) {
                     $("#minus_sign").removeAttr('disabled');
@@ -269,7 +261,6 @@
                     //area: ['450px', '500px'],
                     content: server_context+"/task_group_exe_detail_index?id="+row.job_id, //iframe的url
                     end : function () {
-                        console.info("弹框结束")
                     }
                 });
 

@@ -107,7 +107,6 @@ function buildTable($el, cells, rows) {
               //area: ['450px', '500px'],
               content: server_context+"/quality_task_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束");
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/quality_task_list?"+$("#quality_task_form").serialize()+"&tm="+new Date(),
@@ -149,7 +148,6 @@ function buildTable($el, cells, rows) {
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success");
                   if(data.code != "200"){
                       parent.layer.msg(data.msg);
                       return

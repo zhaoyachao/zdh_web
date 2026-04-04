@@ -142,7 +142,6 @@ $(document).ready(function(){
         if(info.sourceId==info.targetId){//判断当开始和终点为一个节点时，不连线。
             return false
         }
-        console.info("链接自动建立");
         return true // 链接会自动建立
     })
 

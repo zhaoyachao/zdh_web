@@ -56,7 +56,6 @@
               async:false,
               dataType: "json",
               success: function (data) {
-                  console.info("success");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
                   });
@@ -91,7 +90,6 @@
                           async:false,
                           dataType: "json",
                           success: function (data) {
-                              console.info("success");
                               $('#exampleTableEvents').bootstrapTable('refresh', {
                                   url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
                               });
@@ -120,7 +118,6 @@
                       async:false,
                       dataType: "json",
                       success: function (data) {
-                          console.info("success");
                           layer.msg(data.msg);
                           $('#exampleTableEvents').bootstrapTable('refresh', {
                               url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
@@ -160,7 +157,6 @@
                   //area: ['450px', '500px'],
                   content: server_context+"/strategy_group_retry_detail_index?id="+row.id, //iframe的url
                   end : function () {
-                      console.info("弹框结束");
                       $('#exampleTableEvents').bootstrapTable('refresh', {
                           url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
                       });
@@ -183,7 +179,6 @@
                       type: "post",
                       dataType: "json",
                       success: function (data) {
-                          console.info("success");
                           if(data.code != "200"){
                               layer.msg(data.msg);
                               return
@@ -217,7 +212,6 @@
                   //area: ['450px', '500px'],
                   content: server_context+"/small_flow_rate_index?id="+row.id+"&small_flow_rate="+small_flow_rate, //iframe的url
                   end : function () {
-                      console.info("弹框结束");
                       $('#exampleTableEvents').bootstrapTable('refresh', {
                           url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
                       });
@@ -237,7 +231,6 @@
                   //area: ['450px', '500px'],
                   content: server_context+"/strategy_group_instance_update_index?id="+row.id, //iframe的url
                   end : function () {
-                      console.info("弹框结束");
                       $('#exampleTableEvents').bootstrapTable('refresh', {
                           url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
                       });

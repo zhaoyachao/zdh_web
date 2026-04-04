@@ -22,7 +22,6 @@
               //area: ['450px', '500px'],
               content: server_context+"/param_add_index?id=-1", //iframe的url
               end : function () {
-                  console.info("弹框结束");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url: server_context+"/param_list?"+$("#param_from").serialize()+"&tm="+new Date(),
                       contentType: "application/json;charset=utf-8",
@@ -86,7 +85,6 @@
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success");
                   if(data.code != "200"){
                       parent.layer.msg(data.msg);
                       return
@@ -112,7 +110,6 @@
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success");
                   if(data.code != "200"){
                       parent.layer.msg(data.msg);
                       return
@@ -190,7 +187,6 @@
                               async:false,
                               dataType: "json",
                               success: function (data) {
-                                  console.info("success");
                                   $('#exampleTableEvents').bootstrapTable('refresh', {
                                       url: server_context+"/param_list"
                                   });

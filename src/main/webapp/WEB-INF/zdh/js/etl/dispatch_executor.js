@@ -25,7 +25,6 @@
                 //area: ['450px', '500px'],
                 content: server_context+"/dispatch_system_task_add_index.html?id=-1", //iframe的url
                 end : function () {
-                    console.info("弹框结束");
                     $('#exampleTableEvents2').bootstrapTable('refresh', {
                         url: server_context+"/dispatch_system_task_list",
                         contentType: "application/json;charset=utf-8",
@@ -45,7 +44,6 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
                     if(data.code != "200"){
                         parent.layer.msg(data.msg);
                         return
@@ -57,7 +55,7 @@
                     });
                 },
                 complete: function () {
-                    console.info("complete")
+
                 },
                 error: function (data) {
                     parent.layer.msg('操作失败');
@@ -131,7 +129,6 @@
                 async:false,
                 dataType: "json",
                 success: function (data) {
-                    console.info("success");
                     if(data.code != "200"){
                         parent.layer.msg(data.msg);
                         return

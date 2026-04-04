@@ -62,7 +62,6 @@
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success");
                   if(data.code != "200"){
                       parent.layer.msg(data.msg);
                       return

@@ -1031,11 +1031,9 @@
                 $('#save_dispatch_task').show();
             }else{
                 if(s.is_copy == "true"){
-                    console.info("拷贝按钮触发");
                     $('#update_dispatch_task').hide();
                     $('#save_dispatch_task').show();
                 }else{
-                    console.info("更新按钮触发");
                     $('#save_dispatch_task').hide();
                     $('#update_dispatch_task').show();
                 }
@@ -1207,7 +1205,6 @@
 
 
             if(s.id !='-1'){
-                console.info("更新-拷贝按钮触发");
                 //开始赋值
                 $.ajax({
                     url : server_context+"/push_template_detail",
@@ -1219,7 +1216,6 @@
                             layer.msg(data.msg);
                             return ;
                         }
-                        console.info("success");
                        // layer.alert(JSON.stringify(data[0]))
                         //获取调度任务说明
                         var template_name=data.result.template_name;
@@ -1503,7 +1499,6 @@
             //处理完成
             complete: function () {
                 $("#wechatofficialaccount_template_search").removeAttr('disabled');
-                console.info("complete")
             },
             //报错
             error: function (data) {
@@ -1551,7 +1546,6 @@
             //处理完成
             complete: function () {
                 $("#miniprogram_template_search").removeAttr('disabled');
-                console.info("complete")
             },
             //报错
             error: function (data) {
@@ -1815,7 +1809,6 @@
             //处理完成
             complete: function () {
                 $("#save_dispatch_task").removeAttr('disabled');
-                console.info("complete")
             },
             //报错
             error: function (data) {
@@ -1869,7 +1862,6 @@
             //处理完成
             complete: function () {
                 $("#update_dispatch_task").removeAttr('disabled');
-                console.info("complete")
             },
             //报错
             error: function (data) {

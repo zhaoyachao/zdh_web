@@ -771,11 +771,9 @@
                 $('#save_dispatch_task').show();
             }else{
                 if(s.is_copy == "true"){
-                    console.info("拷贝按钮触发");
                     $('#update_dispatch_task').hide();
                     $('#save_dispatch_task').show();
                 }else{
-                    console.info("更新按钮触发");
                     $('#save_dispatch_task').hide();
                     $('#update_dispatch_task').show();
                 }
@@ -856,7 +854,6 @@
                             layer.msg(data.msg);
                             return ;
                         }
-                        console.info("success");
                        // layer.alert(JSON.stringify(data[0]))
                         //获取调度任务说明
                         var group_context=data.result.group_context;

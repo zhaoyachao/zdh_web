@@ -126,7 +126,6 @@ function buildTable($el, cells, rows) {
               type : "post",
               dataType : "json",
               success : function(data) {
-                  console.info("success");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
                       url : 'notice_list2'
                   });
@@ -152,15 +151,13 @@ function buildTable($el, cells, rows) {
                   $(rows).each(function() {// 通过获得别选中的来进行遍历
                       ids.push(this.id);// cid为获得到的整条数据中的一列
                   });
-                  console.log(ids);
                   $.ajax({
                       url : server_context+"/notice_update_see",
-                      data : "ids=" + ids+"&is_see=true",
-                      type : "get",
+                      data : 'ids='+ids,
+                      type : "post",
                       dataType : "json",
                       async:false,
                       success : function(data) {
-                          console.info("success");
                           $('#exampleTableEvents').bootstrapTable('refresh', {
                               url : 'notice_list2'
                           });

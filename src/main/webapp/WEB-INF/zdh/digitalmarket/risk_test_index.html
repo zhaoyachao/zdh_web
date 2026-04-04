@@ -357,7 +357,6 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success");
                     $("#risk_data").val(JSON.stringify(data.result));
                 },
                 error: function (data) {
@@ -375,7 +374,6 @@
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                    console.info("success");
                     var request_id =  $('#request_id').val();
                     var str = '<option value=\"\" mytype=\"\" hassubinfo=\"true\">选择策略树实例</option>';
                     for (var i = 0; i < data.result.length; i++) {
@@ -408,7 +406,6 @@
                 async:false,
                 dataType : "json",
                 success : function(data) {
-                    console.info("success");
 
                     $.ajax({
                         url : server_context +"/risk_result_by_request_id_and_strategygroupinstance_id",
