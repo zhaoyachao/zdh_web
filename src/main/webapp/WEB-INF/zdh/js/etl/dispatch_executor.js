@@ -139,11 +139,9 @@
                     });
                 },
                 complete: function () {
-                    console.info("complete")
                 },
                 error: function (data) {
                     parent.layer.msg('操作失败');
-
                     console.info("error: " + data.responseText);
                 }
 

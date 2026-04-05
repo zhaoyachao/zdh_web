@@ -440,7 +440,7 @@
                                         }
                                     }else{
                                         //父节点存在,才可展示菜单
-                                        console.info(data.result[i].text+ " , 父节点不存在");
+                                        //console.info(data.result[i].text+ " , 父节点不存在");
                                         if(runPath.has(data.result[i].parent)){
                                             $('#side-menu').append(li_tmplete);
                                         }
@@ -833,7 +833,6 @@
                 //成功返回
                 success: function (data) {
                     if(data.code != '200'){
-                        console.info(data.msg);
                         return ;
                     }
                     if(data.result.show_type == "1"){

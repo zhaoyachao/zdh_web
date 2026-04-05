@@ -68,7 +68,6 @@
               dataType : "json",
               success : function(data) {
                   if(data.code != '200'){
-                      console.error(data.msg);
                       layer.msg("执行失败");
                       return ;
                   }
