@@ -209,8 +209,12 @@
                   return "邮件";
               case "apppush":
                   return "APPPUSH";
-              case "miniprogram":
-                  return "小程序";
+              case "miniprogramwechat":
+                  return "微信小程序";
+              case "miniprogrambaidu":
+                  return "百度小程序";
+              case "miniprogramdouyin":
+                  return "抖音小程序";
               case "wechatofficialaccount":
                   return "微信公众号";
               case "feishurobot":
@@ -281,7 +285,7 @@
           },
           {
               field: 'request_id',
-              title: '由当前服务自动生成(表示当前一次会话id)',
+              title: '会话id',
               sortable:true,
               formatter: function(value, row, index) {
                   // 关键：将 Long 转为字符串，避免 Number 类型精度截取
@@ -290,7 +294,7 @@
           },
           {
               field: 'message_id',
-              title: '由当前服务生成,唯一的一条消息id',
+              title: '消息id',
               sortable:true,
               formatter: function(value, row, index) {
                   // 关键：将 Long 转为字符串，避免 Number 类型精度截取
@@ -299,12 +303,12 @@
           },
           {
               field: 'source',
-              title: '来源，一般指平台名称',
+              title: '来源',
               sortable:false
           },
           {
               field: 'sub_source',
-              title: '子来源，SAAS服务使用方公司的标识',
+              title: '子来源',
               sortable:false
           },
           {
@@ -360,7 +364,7 @@
           },
           {
               field: 'status',
-              title: '当前任务状态: 1:新建,2:发送中,3:调用成功,4:调用失败',
+              title: '当前任务状态',
               sortable:false
           },
           {

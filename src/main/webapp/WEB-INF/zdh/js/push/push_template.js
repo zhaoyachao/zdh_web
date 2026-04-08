@@ -345,7 +345,7 @@
             title: '模板ID',
             sortable:true
         },  {
-            field: 'push_type',
+            field: 'push_msg_type',
             title: '消息类型',
             sortable:true,
             formatter: function (value, row, index) {

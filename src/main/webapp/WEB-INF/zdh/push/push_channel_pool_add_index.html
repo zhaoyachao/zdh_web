@@ -136,9 +136,31 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">小程序通道</label>
+                            <label class="col-sm-2 control-label">微信小程序通道</label>
                             <div class="col-sm-10">
-                                <select id="miniprogram_channel_config" name="miniprogram_channel_config" multiple
+                                <select id="miniprogramwechat_channel_config" name="miniprogramwechat_channel_config" multiple
+                                        data-placeholder="选择通道..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">百度小程序通道</label>
+                            <div class="col-sm-10">
+                                <select id="miniprogrambaidu_channel_config" name="miniprogrambaidu_channel_config" multiple
+                                        data-placeholder="选择通道..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">抖音小程序通道</label>
+                            <div class="col-sm-10">
+                                <select id="miniprogramdouyin_channel_config" name="miniprogramdouyin_channel_config" multiple
                                         data-placeholder="选择通道..."
                                         class="chosen-select form-control m-b" tabindex="2">
 
@@ -310,7 +332,9 @@
             init_push_channel('voice_channel_config', "voice");
             init_push_channel('email_channel_config', "email");
             init_push_channel('app_channel_config', "app");
-            init_push_channel('miniprogram_channel_config', "miniprogram");
+            init_push_channel('miniprogramwechat_channel_config', "miniprogram");
+            init_push_channel('miniprogrambaidu_channel_config', "miniprogram");
+            init_push_channel('miniprogramdouyin_channel_config', "miniprogram");
             init_push_channel('wechatofficialaccount_channel_config', "wechatofficialaccount");
             init_push_channel('feishurobot_channel_config', "feishurobot");
             init_push_channel('feishu_channel_config', "feishu");
@@ -371,6 +395,15 @@
                         $("#email_channel_config").val(pool_config.email_config);
                         $("#email_channel_config").trigger("chosen:updated");
 
+                        $("#miniprogramwechat_channel_config").val(pool_config.miniprogramwechat_config);
+                        $("#miniprogramwechat_channel_config").trigger("chosen:updated");
+
+                        $("#miniprogrambaidu_channel_config").val(pool_config.miniprogrambaidu_config);
+                        $("#miniprogrambaidu_channel_config").trigger("chosen:updated");
+
+                        $("#miniprogramdouyin_channel_config").val(pool_config.miniprogramdouyin_config);
+                        $("#miniprogramdouyin_channel_config").trigger("chosen:updated");
+
                         $("#wechatofficialaccount_channel_config").val(pool_config.wechatofficialaccount_config);
                         $("#wechatofficialaccount_channel_config").trigger("chosen:updated");
 
@@ -404,7 +437,9 @@
             "voice_config": $("#voice_channel_config").val(),
             "email_config": $("#email_channel_config").val(),
             "app_config": $("#app_channel_config").val(),
-            "miniprogram_config": $("#miniprogram_channel_config").val(),
+            "miniprogramwechat_config": $("#miniprogramwechat_channel_config").val(),
+            "miniprogrambaidu_config": $("#miniprogrambaidu_channel_config").val(),
+            "miniprogramdouyin_config": $("#miniprogramdouyin_channel_config").val(),
             "wechatofficialaccount_config": $("#wechatofficialaccount_channel_config").val(),
             "feishurobot_config": $("#feishurobot_channel_config").val(),
             "feishu_config": $("#feishu_channel_config").val(),

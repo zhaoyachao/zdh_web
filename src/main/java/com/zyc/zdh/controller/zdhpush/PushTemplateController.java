@@ -2,6 +2,7 @@ package com.zyc.zdh.controller.zdhpush;
 
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.google.common.collect.Lists;
 import com.zyc.notscan.ExampleBuilder;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.PushChannelPoolMapper;
@@ -9,6 +10,7 @@ import com.zyc.zdh.dao.PushTemplateMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.pushx.PushxWechatTemplateService;
 import com.zyc.zdh.pushx.entity.WechatTemplate;
+import com.zyc.zdh.pushx.entity.WechatTemplateContentParam;
 import com.zyc.zdh.pushx.entity.WechatTemplateResponse;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
@@ -305,7 +307,7 @@ public class PushTemplateController extends BaseController {
      * 获取公众号模板
      * @param wechatofficialaccount_channel_pool 通道池
      * @param template_id 微信公众号模板
-     * @param template_type 模板类型，1:普通模板,2:订阅模板,3:小程序模板
+     * @param template_type 模板类型，1:普通模板,2:订阅模板,3:微信小程序模板,4:百度小程序模板,5:抖音小程序模板
      * @return
      */
     @SentinelResource(value = "push_template_wechattemplate_detail", blockHandler = "handleReturn")
@@ -326,6 +328,17 @@ public class PushTemplateController extends BaseController {
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", template);
             }else if(template_type.equals("3")){
                 WechatTemplate template = getWechatMiniprogramTemplate(pushChannelPoolInfo, template_id, template_type);
+//                WechatTemplate template = new WechatTemplate();
+//                template.setTemplate_id(template_id);
+//                template.setTitle("小程序测试");
+//                template.setPrimary_industry("IT科技");
+//
+//                WechatTemplateContentParam wechatTemplateContentParam = new WechatTemplateContentParam();
+//                wechatTemplateContentParam.setEn_name("uname");
+//                wechatTemplateContentParam.setCn_name("用户名");
+//                wechatTemplateContentParam.setDesc("用户名");
+
+//                template.setWechatTemplateContentParams(Lists.newArrayList(wechatTemplateContentParam));
                 return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", template);
             }
             throw new Exception("模板类型错误");
