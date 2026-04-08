@@ -61,7 +61,8 @@ public class HttpServerSignUtil {
                         clazz == Float.class ||
                         clazz == Double.class ||
                         clazz == Character.class ||
-                        clazz == Boolean.class
+                        clazz == Boolean.class ||
+                        clazz == String.class
         );
     }
 
