@@ -224,6 +224,7 @@ function doubleclick_label(id) {
                 div.css("display","inline-block");
                 div.css("*display","inline");
                 div.css("*zoom","1");
+                div.attr("type",etl_task_info.more_task);
                 div.attr("title", etl_task_info.rule_expression_cn);
                 div.html("("+ etl_task_info.operate +")"+etl_task_info.rule_context);
                 set_new_title(div, div.attr("type"), etl_task_info);
@@ -1263,7 +1264,6 @@ function set_common(div, tp, rs){
     div.attr("version_tag",rs.version_tag);
     div.attr("is_async",rs.is_async);
     div.attr("plan_retry_count",rs.plan_retry_count);
-
 }
 
 function set_new_title(div, tp, rs){

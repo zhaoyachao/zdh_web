@@ -885,6 +885,9 @@ public class StrategyGroupController extends BaseController {
             String run_jsmind_data = strategyInstance.getRun_jsmind_data();
             Map<String, Object> jsonObject = JsonUtil.toJavaMap(run_jsmind_data);
             jsonObject.put("is_disenable","true");
+            for(String rk: delRunJsmindDataKeys){
+                jsonObject.remove(rk);
+            }
             strategyInstance.setRun_jsmind_data(JsonUtil.formatJsonString(jsonObject));
             strategyInstance.setIs_disenable("true");
             strategyInstanceMapper.updateByPrimaryKeySelective(strategyInstance);

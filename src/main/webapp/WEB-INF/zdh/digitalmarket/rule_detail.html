@@ -616,10 +616,10 @@
             result.push(param);
         }
 
-        const data = get_strategy_base_param(more_task, rule_id, rule_context);
+        const data = get_strategy_base_param(more_task, rule_id, rule_expression_cn);
         data.label_use_type = label_use_type;
         data.rule_param = JSON.stringify(result);
-        data.rule_expression_cn = rule_context;
+        data.rule_expression_cn = rule_expression_cn;
 
         // let data={
         //     "more_task": more_task,
