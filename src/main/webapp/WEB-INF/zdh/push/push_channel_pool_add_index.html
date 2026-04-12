@@ -202,6 +202,17 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">webhook通道</label>
+                            <div class="col-sm-10">
+                                <select id="webhook_channel_config" name="webhook_channel_config" multiple
+                                        data-placeholder="选择通道..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">其他参数</label>
                             <div class="col-sm-10">
                                 <textarea id="params" name="params" class="form-control" rows="5" placeholder="其他参数,k1=v1 结构,多个参数换行"></textarea>
@@ -338,6 +349,7 @@
             init_push_channel('wechatofficialaccount_channel_config', "wechatofficialaccount");
             init_push_channel('feishurobot_channel_config', "feishurobot");
             init_push_channel('feishu_channel_config', "feishu");
+            init_push_channel('webhook_channel_config', "webhook");
             //init_job_sources();
             //s.id=-1 表示新增,否则表示更新
             if(s.id==-1){
@@ -413,6 +425,9 @@
                         $("#feishu_channel_config").val(pool_config.feishu_config);
                         $("#feishu_channel_config").trigger("chosen:updated");
 
+                        $("#webhook_channel_config").val(pool_config.webhook_config);
+                        $("#webhook_channel_config").trigger("chosen:updated");
+
                         $("#params").val(pool_config.params);
 
                     },
@@ -443,6 +458,7 @@
             "wechatofficialaccount_config": $("#wechatofficialaccount_channel_config").val(),
             "feishurobot_config": $("#feishurobot_channel_config").val(),
             "feishu_config": $("#feishu_channel_config").val(),
+            "webhook_config": $("#webhook_channel_config").val(),
             "params": $("#params").val(),
         };
 

@@ -150,6 +150,8 @@
                                     <input id="check_feishurobot" name="check_feishurobot"  type="checkbox"><i></i> 飞书机器人</label>
                                 <label class="no-padding">
                                     <input id="check_feishu" name="check_feishu"  type="checkbox"><i></i> 飞书</label>
+                                <label class="no-padding">
+                                    <input id="check_webhook" name="check_webhook"  type="checkbox"><i></i> webhook</label>
                             </div>
                         </div>
 
@@ -183,6 +185,8 @@
                                         <li class="tab_li"  id="check_feishurobot_li"><a data-toggle="tab" href="#check_feishurobot_tab" aria-expanded="false">飞书机器人</a>
                                         </li>
                                         <li class="tab_li"  id="check_feishu_li"><a data-toggle="tab" href="#check_feishu_tab" aria-expanded="false">飞书</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_webhook_li"><a data-toggle="tab" href="#check_webhook_tab" aria-expanded="false">webhook</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content">
@@ -992,6 +996,45 @@
 
                                             </div>
                                         </div>
+
+                                        <div id="check_webhook_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">webhook通道池</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="webhook_channel_pool" name="webhook_channel_pool"
+                                                                data-placeholder="选择通道池...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="webhook_title" name="webhook_title" class="form-control" type="text" value="" placeholder="主题" >
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="webhook_content" name="webhook_content" class="form-control" rows="5" placeholder="这里输入内容" ></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">webhook参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="webhook_params" name="webhook_params" class="form-control" placeholder="webhook参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="webhook_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -1347,6 +1390,9 @@
             init_push_channel('feishu_channel_pool', "feishu");
             $('#check_feishu_tab').removeClass("active");
 
+            $('#check_webhook_tab').addClass("active");
+            init_push_channel('webhook_channel_pool', "webhook");
+            $('#check_webhook_tab').removeClass("active");
 
             if(s.id !='-1'){
                 //开始赋值
@@ -1624,6 +1670,16 @@
                             $("#feishu_title").val(data.result.configMap.feishu.title);
                             $("#feishu_content").val(data.result.configMap.feishu.content);
                             $("#feishu_params").val(data.result.configMap.feishu.params);
+
+                        }
+
+                        if(!is_empty(data.result.configMap.webhook)){
+                            $("#webhook_channel_pool").val(data.result.configMap.webhook.channel_pool);
+                            $("#webhook_channel_pool").trigger("chosen:updated");
+
+                            $("#webhook_title").val(data.result.configMap.webhook.title);
+                            $("#webhook_content").val(data.result.configMap.webhook.content);
+                            $("#webhook_params").val(data.result.configMap.webhook.params);
 
                         }
 
@@ -2051,6 +2107,12 @@
             "params": $("#feishu_params").val()
         };
 
+        var webhook_config = {
+            "channel_pool": $("#webhook_channel_pool").val(),
+            "title": $("#webhook_title").val(),
+            "content": $("#webhook_content").val(),
+            "params": $("#webhook_params").val()
+        };
 
         var config = {
             "sms": sms_config,
@@ -2064,7 +2126,8 @@
             "wechatcustommessage": wechatcustommessage_config,
             "wechatnews": wechatnews_config,
             "feishurobot": feishurobot_config,
-            "feishu": feishu_config
+            "feishu": feishu_config,
+            "webhook": webhook_config
         };
 
         return config;
@@ -2158,6 +2221,14 @@
                 push_server = "feishu"
             }else{
                 push_server = push_server +",feishu"
+            }
+        }
+
+        if($('#check_webhook').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "webhook"
+            }else{
+                push_server = push_server +",webhook"
             }
         }
 
