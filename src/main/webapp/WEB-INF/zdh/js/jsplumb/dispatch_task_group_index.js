@@ -40,51 +40,52 @@ $(document).ready(function(){
     });
 
     //基本连接线样式
-    var connectorPaintStyle = {
-        lineWidth: 2,
-        strokeStyle: "#61b8d0",
-    };
+    // var connectorPaintStyle = {
+    //     lineWidth: 2,
+    //     strokeStyle: "#61b8d0",
+    // };
+    //
+    // // 鼠标悬浮在连接线上的样式
+    // var connectorHoverStyle = {
+    //     lineWidth: 2,
+    //     strokeStyle: "green",
+    // };
+    //
+    // //端点的颜色样式
+    // var paintStyle = {
+    //     fillStyle: "#ccc",
+    //     radius: 10,
+    //     lineWidth:6 ,
+    // };
+    //
+    // // 鼠标悬浮在端点上的样式
+    // var hoverPaintStyle = {
+    //     fillStyle: "#aaa",
+    // };
 
-    // 鼠标悬浮在连接线上的样式
-    var connectorHoverStyle = {
-        lineWidth: 2,
-        strokeStyle: "green",
-    };
-
-    //端点的颜色样式
-    var paintStyle = {
-        fillStyle: "#ccc",
-        radius: 10,
-        lineWidth:6 ,
-    };
-
-    // 鼠标悬浮在端点上的样式
-    var hoverPaintStyle = {
-        fillStyle: "#aaa",
-    };
-
-    //设置连接端点和连接线
-    var hollowCircle = {
-        endpoint: ["Dot", { radius: 5 }],  //端点的形状
-        connectorStyle: connectorPaintStyle,
-        connectorHoverStyle: connectorHoverStyle,
-        paintStyle: paintStyle,
-        hoverPaintStyle: hoverPaintStyle ,
-        isSource: true,    //是否可以拖动（作为连线起点）
-        connector: ["StateMachine", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],  //连接线的样式种类有[Bezier],[Flowchart],[StateMachine ],[Straight ]
-        isTarget: true,    //是否可以放置（连线终点）
-        maxConnections: -1,    // 设置连接点最多可以连接几条线
-        connectorOverlays:[
-            [ "Arrow", { width:10, length:20, location:1, id:"arrow" } ],
-            ["Custom", {
-                create:function(component) {
-                    return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
-                },
-                location:0.5,
-                id:"customOverlay",
-            }],
-        ],
-    };
+    // //设置连接端点和连接线
+    // var hollowCircle = {
+    //     endpoint: ["Dot", { radius: 5 }],  //端点的形状
+    //     connectorStyle: connectorPaintStyle,
+    //     connectorHoverStyle: connectorHoverStyle,
+    //     paintStyle: paintStyle,
+    //     hoverPaintStyle: hoverPaintStyle ,
+    //     isSource: true,    //是否可以拖动（作为连线起点）
+    //     //connector: ["StateMachine", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],  //连接线的样式种类有[Bezier],[Flowchart],[StateMachine ],[Straight ]
+    //     connector: ["Bezier", { curviness: 50 }],  //连接线的样式种类有[Bezier],[Flowchart],[StateMachine ],[Straight ]
+    //     isTarget: true,    //是否可以放置（连线终点）
+    //     maxConnections: -1,    // 设置连接点最多可以连接几条线
+    //     connectorOverlays:[
+    //         [ "Arrow", { width:10, length:14, location:1, id:"arrow", foldback:0.9, paintStyle:{ fillStyle:"#4a90e2", strokeStyle:"#4a90e2" } } ],
+    //         ["Custom", {
+    //             create:function(component) {
+    //                 return $('<span style="background:#fff;position:relative;z-index:999;cursor:pointer;"></span>');
+    //             },
+    //             location:0.5,
+    //             id:"customOverlay",
+    //         }],
+    //     ],
+    // };
 
     //鼠标进入增加一个删除的小图标
     $("#m1").on("mouseenter", ".node", function () {
