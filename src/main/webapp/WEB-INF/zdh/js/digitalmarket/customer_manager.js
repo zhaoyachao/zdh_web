@@ -344,14 +344,18 @@
         }, {
             field: 'uid',
             title: '用户ID',
-            sortable:false
+            sortable:true
         }, {
             field: 'uid_type',
             title: '用户类型',
-            sortable:false,
+            sortable:true,
             cellStyle: formatTableUnit,
             formatter: paramsMatter
-        },{
+        }, {
+            field: 'source',
+            title: '归属平台',
+            sortable:true
+        }, {
             field: 'create_time',
             title: '任 务 创 建 时 间',
             sortable:true,
