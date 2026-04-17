@@ -2,6 +2,7 @@ package ${ControllerPackage};
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.annotation.White;
+import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.entity.PageResult;
 import ${EntityPackage}.${EntityName};
 import ${EntityPackage}.RETURN_CODE;

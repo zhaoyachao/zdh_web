@@ -12,7 +12,7 @@
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
-              title: '${tableDesc}配置',
+              title: '微信用户标签明细配置',
               shadeClose: false,
               resize: true,
               fixed: false,
@@ -20,11 +20,11 @@
               shade: 0.1,
               area : ['100%', '100%'],//[宽度,高度]
               //area: ['450px', '500px'],
-              content: server_context+"/${controller}_add_index?id=-1", //iframe的url
+              content: server_context+"/wechat_user_tag_add_index?id=-1", //iframe的url
               end : function () {
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/${controller}_list_by_page?"+$("#${controller}_form").serialize()+"&tm="+new Date(),
+                      url: server_context+"/wechat_user_tag_list_by_page?"+$("#wechat_user_tag_form").serialize()+"&tm="+new Date(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -58,7 +58,7 @@
 
       function deleteMs(ids) {
           $.ajax({
-              url : server_context+"/${controller}_delete",
+              url : server_context+"/wechat_user_tag_delete",
               data : "ids=" + ids,
               type : "post",
               dataType : "json",
@@ -70,7 +70,7 @@
                   }
                   parent.layer.msg("执行成功");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/${controller}_list_by_page?"+$("#${controller}_form").serialize(),
+                      url: server_context+"/wechat_user_tag_list_by_page?"+$("#wechat_user_tag_form").serialize(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -83,52 +83,6 @@
       }
 
       window.operateEvents = {
-          'click #edit': function (e, value, row, index) {
-              $("#id").val(row.id);
-              top.layer.open({
-                  type: 2,
-                  title: '${tableDesc}配置',
-                  shadeClose: false,
-                  resize: true,
-                  fixed: false,
-                  maxmin: true,
-                  shade: 0.1,
-                  area : ['100%', '100%'],
-                  //area: ['450px', '500px'],
-                  content: server_context+"/${controller}_add_index?id="+row.id, //iframe的url
-                  end:function () {
-                      $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: server_context+"/${controller}_list_by_page?"+$("#${controller}_form").serialize(),
-                          contentType: "application/json;charset=utf-8",
-                          dataType: "json"
-                      });
-                  }
-              });
-
-          },
-          'click #copy': function (e, value, row, index) {
-              $("#id").val(row.id);
-              top.layer.open({
-                  type: 2,
-                  title: '${tableDesc}配置',
-                  shadeClose: false,
-                  resize: true,
-                  fixed: false,
-                  maxmin: true,
-                  shade: 0.1,
-                  area : ['100%', '100%'],
-                  //area: ['450px', '500px'],
-                  content: server_context+"/${controller}_add_index?id="+row.id+"&is_copy=true", //iframe的url
-                  end:function () {
-                      $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: server_context+"/${controller}_list_by_page?"+$("#${controller}_form").serialize(),
-                          contentType: "application/json;charset=utf-8",
-                          dataType: "json"
-                      });
-                  }
-              });
-
-          },
           'click #del': function (e, value, row, index) {
               layer.confirm('是否删除任务', {
                   btn: ['确定','取消'] //按钮
@@ -143,17 +97,12 @@
           },
 
       };
-
       function operateFormatter(value, row, index) {
           var edit_class = "btn btn-outline btn-sm "+ get_edit_class(row);
           var copy_class = "btn btn-outline btn-sm "+ get_edit_class(row);
           var del_class = "btn btn-outline btn-sm "+ get_del_class(row);
           return [
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
-              ' <button id="edit" name="edit" type="button" class="'+edit_class+'" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
-              '                                    </button>',
-              ' <button id="copy" name="copy" type="button" class="'+copy_class+'" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
-              '                                    </button>',
               ' <button id="del" name="del" type="button" class="'+del_class+'" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
               '                                    </button>'
@@ -206,7 +155,7 @@
       $('#exampleTableEvents').bootstrapTable('destroy').bootstrapTable({
       method: "POST",
       dataType: 'json',
-      url: server_context+"/${controller}_list_by_page?"+$("#${controller}_form").serialize(),
+      url: server_context+"/wechat_user_tag_list_by_page?"+$("#wechat_user_tag_form").serialize(),
           search: true,
           pagination: true,
           showRefresh: true,
@@ -248,13 +197,37 @@
                 field:'state',
                 sortable:false
             },
-            <#list columns as col>
           {
-              field: '${col.actualColumnName}',
-              title: '${col.remarks}',
+              field: 'id',
+              title: '',
               sortable:false
           },
-          </#list>
+          {
+              field: 'wechat_channel',
+              title: '服务号',
+              sortable:false
+          },
+          {
+              field: 'wechat_id',
+              title: '服务号ID',
+              sortable:false
+          },
+          {
+              field: 'openid',
+              title: '用户OpenID',
+              sortable:false
+          },
+          {
+              field: 'unionid',
+              title: '用户unionid',
+              sortable:false
+          },
+          {
+              field: 'tag_id',
+              title: '微信标签id',
+              sortable:false
+          },
+
           {
             field: 'create_time',
             title: '任 务 创 建 时 间',
@@ -262,7 +235,16 @@
             formatter: function (value, row, index) {
                 return getMyDate(value);
             }
-        },{
+        },
+            {
+                field: 'update_time',
+                title: '更新时间',
+                sortable:false,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
+            },
+            {
             field: 'operate',
             title: '常用操作按钮事件',
             events: operateEvents,//给按钮注册事件

@@ -12,7 +12,7 @@
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
-              title: '${tableDesc}配置',
+              title: '微信关注状态表配置',
               shadeClose: false,
               resize: true,
               fixed: false,
@@ -20,11 +20,11 @@
               shade: 0.1,
               area : ['100%', '100%'],//[宽度,高度]
               //area: ['450px', '500px'],
-              content: server_context+"/${controller}_add_index?id=-1", //iframe的url
+              content: server_context+"/wechat_follow_add_index?id=-1", //iframe的url
               end : function () {
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/${controller}_list_by_page?"+$("#${controller}_form").serialize()+"&tm="+new Date(),
+                      url: server_context+"/wechat_follow_list_by_page?"+$("#wechat_follow_form").serialize()+"&tm="+new Date(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -58,7 +58,7 @@
 
       function deleteMs(ids) {
           $.ajax({
-              url : server_context+"/${controller}_delete",
+              url : server_context+"/wechat_follow_delete",
               data : "ids=" + ids,
               type : "post",
               dataType : "json",
@@ -70,7 +70,7 @@
                   }
                   parent.layer.msg("执行成功");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/${controller}_list_by_page?"+$("#${controller}_form").serialize(),
+                      url: server_context+"/wechat_follow_list_by_page?"+$("#wechat_follow_form").serialize(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -87,7 +87,7 @@
               $("#id").val(row.id);
               top.layer.open({
                   type: 2,
-                  title: '${tableDesc}配置',
+                  title: '微信关注状态表配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
@@ -95,10 +95,10 @@
                   shade: 0.1,
                   area : ['100%', '100%'],
                   //area: ['450px', '500px'],
-                  content: server_context+"/${controller}_add_index?id="+row.id, //iframe的url
+                  content: server_context+"/wechat_follow_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: server_context+"/${controller}_list_by_page?"+$("#${controller}_form").serialize(),
+                          url : server_context+'/wechat_follow_list_by_page?'+$("#wechat_follow_form").serialize()+"&tm="+new Date(),
                           contentType: "application/json;charset=utf-8",
                           dataType: "json"
                       });
@@ -106,11 +106,11 @@
               });
 
           },
-          'click #copy': function (e, value, row, index) {
+          'click #edit_tag': function (e, value, row, index) {
               $("#id").val(row.id);
               top.layer.open({
                   type: 2,
-                  title: '${tableDesc}配置',
+                  title: '用户标签配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
@@ -118,10 +118,10 @@
                   shade: 0.1,
                   area : ['100%', '100%'],
                   //area: ['450px', '500px'],
-                  content: server_context+"/${controller}_add_index?id="+row.id+"&is_copy=true", //iframe的url
+                  content: server_context+"/wechat_follow_add_tag_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: server_context+"/${controller}_list_by_page?"+$("#${controller}_form").serialize(),
+                          url: server_context+"/wechat_follow_list_by_page?"+$("#wechat_follow_form").serialize(),
                           contentType: "application/json;charset=utf-8",
                           dataType: "json"
                       });
@@ -206,7 +206,7 @@
       $('#exampleTableEvents').bootstrapTable('destroy').bootstrapTable({
       method: "POST",
       dataType: 'json',
-      url: server_context+"/${controller}_list_by_page?"+$("#${controller}_form").serialize(),
+      url: server_context+"/wechat_follow_list_by_page?"+$("#wechat_follow_form").serialize(),
           search: true,
           pagination: true,
           showRefresh: true,
@@ -248,13 +248,115 @@
                 field:'state',
                 sortable:false
             },
-            <#list columns as col>
           {
-              field: '${col.actualColumnName}',
-              title: '${col.remarks}',
+              field: 'id',
+              title: '主键ID',
               sortable:false
           },
-          </#list>
+          {
+              field: 'wechat_channel',
+              title: '服务号',
+              sortable:false
+          },
+          {
+              field: 'wechat_id',
+              title: '服务号ID',
+              sortable:false
+          },
+          {
+              field: 'openid',
+              title: '用户OpenID',
+              sortable:false
+          },
+          {
+              field: 'unionid',
+              title: '用户unionid',
+              sortable:false
+          },
+          {
+              field: 'remark',
+              title: '备注',
+              sortable:false
+          },
+          {
+              field: 'status',
+              title: '关注状态',
+              sortable:false,
+              formatter: function (value, row, index) {
+                  var context = "取消关注";
+                  var class_str = "btn-danger btn-xs";
+                  if (value == "1") {
+                      context = "关注";
+                      class_str = "btn-primary  btn-xs"
+                  }
+                  if (value == "2") {
+                      context = "取消关注";
+                      class_str = "btn-danger  btn-xs"
+                  }
+                  return [
+                      '<div style="text-align:center" >'+
+                      '<div class="btn-group">'+
+                      '<button type="button" class="btn '+class_str+'">'+context+'</button>'+
+                      '</div>'+
+                      '</div>'
+                  ].join('');
+              }
+          },
+          {
+              field: 'subscribe_time',
+              title: '关注时间',
+              sortable:false,
+              formatter: function (value, row, index) {
+                  return getMyDate(value);
+              }
+          },
+          {
+              field: 'unsubscribe_time',
+              title: '取注时间',
+              sortable:false,
+              formatter: function (value, row, index) {
+                  return getMyDate(value);
+              }
+          },
+          {
+              field: 'subscribe_scene',
+              title: '关注渠道',
+              sortable:false,
+              formatter: function (value, row, index) {
+                  if(value == "ADD_SCENE_AEARCH"){
+                      return "公众号搜索";
+                  }else if(value == "ADD_SCENE_ACCOUNT_MIGRATION"){
+                      return "公众号迁移";
+                  }else if(value == "ADD_SCENE_PROFILE_CARD"){
+                      return "名片分享";
+                  }else if(value == "ADD_SCENE_QR_CODE"){
+                      return "扫描二维码";
+                  }else if(value == "ADD_SCENE_PROFILE_LINK"){
+                      return "图文页内名称点击";
+                  }else if(value == "ADD_SCENE_PROFILE_ITEM"){
+                      return "图文页右上角菜单";
+                  }else if(value == "ADD_SCENE_PAID"){
+                      return "支付后关注";
+                  }else if(value == "ADD_SCENE_WECHAT_ADVERTISEMENT"){
+                      return "微信广告";
+                  }else if(value == "ADD_SCENE_REPRINT"){
+                      return "他者转载";
+                  }else if(value == "ADD_SCENE_LIVESTREAM"){
+                      return "视频号直播";
+                  }else if(value == "ADD_SCENE_CHANNELS"){
+                      return "视频号";
+                  }else if(value == "ADD_SCENE_WXA"){
+                      return "小程序关注";
+                  }else if(value == "ADD_SCENE_OTHERS"){
+                      return "其他";
+                  }
+              }
+          },
+          {
+              field: 'qr_scene_str',
+              title: '二维码扫码场景描述（开发者自定义）',
+              sortable:false
+          },
           {
             field: 'create_time',
             title: '任 务 创 建 时 间',
@@ -262,7 +364,16 @@
             formatter: function (value, row, index) {
                 return getMyDate(value);
             }
-        },{
+        },
+            {
+                field: 'update_time',
+                title: '更新时间',
+                sortable:false,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
+            },
+            {
             field: 'operate',
             title: '常用操作按钮事件',
             events: operateEvents,//给按钮注册事件
