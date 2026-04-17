@@ -742,6 +742,8 @@
   + v5.7.3 [zdh_web]推送模块-新增统一参数配置功能
   + v5.7.3 [zdh_web]优化HttpUtil 工具类
   + v5.7.3 [zdh_web]营销模块-修复bug
+  + v5.7.3 [zdh_web]推送服务-新增服务号打标功能
+  + v5.7.3 [zdh_web]修复代码生成工具bug
 
 # 版本迁移步骤  
 ## 4.7.15迁移4.7.16
@@ -4303,3 +4305,19 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1464736282105090051, '1464735889027502080', '粉丝管理-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-01-24 21:39:03', '2026-01-24 21:39:03', 'wechat_follow_delete', '5', '', '', 'zdh', '');
+
+    alter table push_task_log add column ext mediumtext comment '扩展信息' after channels;
+    
+    CREATE TABLE `wechat_user_tag_info` (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+    `wechat_id` varchar(100) NOT NULL DEFAULT ''COMMENT '服务号ID',
+    `openid` varchar(100) NOT NULL DEFAULT ''COMMENT '用户OpenID',
+    `unionid` varchar(100) NOT NULL DEFAULT ''COMMENT '用户unionid',
+    `tag_id` varchar(100) NOT NULL DEFAULT '' COMMENT '微信标签id',
+    `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+    PRIMARY KEY (`id`),
+    KEY `idx_wechat_channel_key` (`wechat_channel`,`openid`,`tag_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT '微信用户标签明细';

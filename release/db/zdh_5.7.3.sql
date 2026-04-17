@@ -3816,6 +3816,7 @@ CREATE TABLE IF NOT EXISTS push_task_log (
     deliver_time VARCHAR(32) COMMENT '送达时间',
     deliver_status VARCHAR(32) COMMENT '送达状态',
     channels VARCHAR(512) COMMENT '已经使用过的通道列表，JSON数组格式',
+    ext mediumtext COMMENT '扩展信息',
     `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
     `dim_group` varchar(64) NOT NULL DEFAULT '' COMMENT '用户组',
     `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
@@ -3873,6 +3874,19 @@ CREATE TABLE `push_config_info` (
   KEY `idx_config_key` (`product_code`,`config_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT 'push 通用配置';
 
+CREATE TABLE `wechat_user_tag_info` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+  `wechat_id` varchar(100) NOT NULL DEFAULT ''COMMENT '服务号ID',
+  `openid` varchar(100) NOT NULL DEFAULT ''COMMENT '用户OpenID',
+  `unionid` varchar(100) NOT NULL DEFAULT ''COMMENT '用户unionid',
+  `tag_id` varchar(100) NOT NULL DEFAULT '' COMMENT '微信标签id',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  PRIMARY KEY (`id`),
+  KEY `idx_wechat_channel_key` (`wechat_channel`,`openid`,`tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT '微信用户标签明细';
 
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
