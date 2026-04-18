@@ -3,8 +3,10 @@ package com.zyc.zdh.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.zyc.notscan.BaseMapper;
+import com.zyc.notscan.ExampleBuilder;
 import com.zyc.zdh.config.DateConverter;
 import com.zyc.zdh.dao.ProductTagMapper;
+import com.zyc.zdh.dao.WechatMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.shiro.RedisUtil;
@@ -24,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class BaseController {
     private String ZDH_PERMISSION_PRODUCT_DIM_GROUP_SELECT="zdh_permission_product_dim_group_select";
@@ -703,6 +706,32 @@ public class BaseController {
 
         setCache(key, JsonUtil.formatJsonString(baseProductAuthInfo));
         return baseProductAuthInfo;
+    }
+
+    /**
+     * 获取有权限的服务号列表
+     * @return
+     * @throws Exception
+     */
+    public List<String> getWechatChannelList(WechatMapper wechatMapper, ZdhPermissionService zdhPermissionService) throws Exception {
+        List<String> permissionByProduct = getPermissionByProduct(zdhPermissionService);
+        //根据产品code查询所有的服务号
+        Example example = ExampleBuilder.forEntity(WechatInfo.class)
+                .andEqualTo("is_delete", Const.NOT_DELETE)
+                .andIn("product_code", permissionByProduct)
+                .build();
+        List<WechatInfo> wechatInfos = wechatMapper.selectByExample(example);
+        List<String> collect = wechatInfos.stream().map(wechatInfo -> wechatInfo.getWechat_channel()).collect(Collectors.toList());
+        return collect;
+    }
+
+    public String getProductCodeByChannel(WechatMapper wechatMapper, String wechat_channel){
+        WechatInfo wechatInfo = new WechatInfo();
+        wechatInfo.setWechat_channel(wechat_channel);
+        wechatInfo.setIs_delete(Const.NOT_DELETE);
+
+        wechatInfo = wechatMapper.selectOne(wechatInfo);
+        return wechatInfo.getProduct_code();
     }
 
 

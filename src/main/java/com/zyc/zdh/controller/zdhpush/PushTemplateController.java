@@ -2,7 +2,6 @@ package com.zyc.zdh.controller.zdhpush;
 
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.google.common.collect.Lists;
 import com.zyc.notscan.ExampleBuilder;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.PushChannelPoolMapper;
@@ -10,7 +9,6 @@ import com.zyc.zdh.dao.PushTemplateMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.pushx.PushxWechatTemplateService;
 import com.zyc.zdh.pushx.entity.WechatTemplate;
-import com.zyc.zdh.pushx.entity.WechatTemplateContentParam;
 import com.zyc.zdh.pushx.entity.WechatTemplateResponse;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;

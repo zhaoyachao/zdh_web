@@ -2,23 +2,21 @@ package com.zyc.zdh.controller.zdhpush;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.google.common.collect.Lists;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
+import com.zyc.zdh.dao.WechatMapper;
+import com.zyc.zdh.dao.WechatUserTagMapper;
 import com.zyc.zdh.entity.PageResult;
-import com.zyc.zdh.entity.WechatUserTagInfo;
 import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.User;
+import com.zyc.zdh.entity.WechatUserTagInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.pushx.PushxWechatTagService;
 import com.zyc.zdh.pushx.entity.WechatTagResponse;
-import com.zyc.zdh.util.Const;
 import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.shiro.SecurityUtils;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
@@ -28,12 +26,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
-import com.zyc.zdh.dao.WechatUserTagMapper;
-
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 微信用户标签明细服务
@@ -49,13 +46,14 @@ public class WechatUserTagController extends BaseController {
     private ZdhPermissionService zdhPermissionService;
     @Autowired
     private PushxWechatTagService pushxWechatTagService;
+    @Autowired
+    private WechatMapper wechatMapper;
 
     /**
      * 微信用户标签明细列表首页
      * @return
      */
     @RequestMapping(value = "/wechat_user_tag_index", method = RequestMethod.GET)
-    @White
     public String wechat_user_tag_index() {
 
         return "push/wechat_user_tag_index";
@@ -70,16 +68,18 @@ public class WechatUserTagController extends BaseController {
     @SentinelResource(value = "wechat_user_tag_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_user_tag_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<WechatUserTagInfo>> wechat_user_tag_list(String context, String wechat_channel) {
         try{
             Example example=new Example(WechatUserTagInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-            criteria.andEqualTo("wechat_channel", StringUtils.isEmpty(wechat_channel)?"":wechat_channel);
+            criteria.andIn("wechat_channel", getWechatChannelList(wechatMapper, zdhPermissionService));
             //dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
             //dynamicPermissionByProduct(zdhPermissionService, criteria);
 
+            if(!StringUtils.isEmpty(wechat_channel)){
+                criteria.andEqualTo("wechat_channel", wechat_channel);
+            }
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
@@ -110,15 +110,18 @@ public class WechatUserTagController extends BaseController {
     @SentinelResource(value = "wechat_user_tag_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_user_tag_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<WechatUserTagInfo>>> wechat_user_tag_list_by_page(String context,String wechat_channel, int limit, int offset) {
         try{
             Example example=new Example(WechatUserTagInfo.class);
             Example.Criteria criteria=example.createCriteria();
             criteria.andEqualTo("is_delete", Const.NOT_DELETE);
-            criteria.andEqualTo("wechat_channel", StringUtils.isEmpty(wechat_channel)?"":wechat_channel);
+            criteria.andIn("wechat_channel", getWechatChannelList(wechatMapper, zdhPermissionService));
             //dynamicPermissionByProductAndGroup(zdhPermissionService, criteria);
             //dynamicPermissionByProduct(zdhPermissionService, criteria);
+
+            if(!StringUtils.isEmpty(wechat_channel)){
+                criteria.andEqualTo("wechat_channel", wechat_channel);
+            }
 
             Example.Criteria criteria2=example.createCriteria();
             if(!StringUtils.isEmpty(context)){
@@ -149,7 +152,6 @@ public class WechatUserTagController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_user_tag_add_index", method = RequestMethod.GET)
-    @White
     public String wechat_user_tag_add_index() {
 
         return "push/wechat_user_tag_add_index";
@@ -163,10 +165,10 @@ public class WechatUserTagController extends BaseController {
     @SentinelResource(value = "wechat_user_tag_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_user_tag_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<WechatUserTagInfo> wechat_user_tag_detail(String id) {
         try {
             WechatUserTagInfo wechatUserTagInfo = wechatUserTagMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, wechatUserTagInfo.getWechat_channel()), getAttrSelect());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService,  wechatUserTagInfo.getProduct_code(), wechatUserTagInfo.getDim_group(), getAttrSelect());
             //checkAttrPermissionByProduct(zdhPermissionService,  wechatUserTagInfo.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", wechatUserTagInfo);
@@ -184,7 +186,6 @@ public class WechatUserTagController extends BaseController {
     @RequestMapping(value = "/wechat_user_tag_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatUserTagInfo> wechat_user_tag_add(WechatUserTagInfo wechatUserTagInfo) {
         try {
             wechatUserTagInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
@@ -193,6 +194,7 @@ public class WechatUserTagController extends BaseController {
             wechatUserTagInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             wechatUserTagInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
+            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper,wechatUserTagInfo.getWechat_channel()), getAttrAdd());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatUserTagInfo.getProduct_code(), wechatUserTagInfo.getDim_group(), getAttrAdd());
             //checkAttrPermissionByProduct(zdhPermissionService, wechatUserTagInfo.getProduct_code(), getAttrAdd());
             WechatTagResponse batchuntagging = pushxWechatTagService.batchuntagging(wechatUserTagInfo, Lists.newArrayList(wechatUserTagInfo.getOpenid()));
@@ -216,7 +218,6 @@ public class WechatUserTagController extends BaseController {
     @RequestMapping(value = "/wechat_user_tag_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo wechat_user_tag_delete(String[] ids) {
         try {
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatUserTagMapper, wechatUserTagMapper.getTable(), ids, getAttrDel());
@@ -227,6 +228,11 @@ public class WechatUserTagController extends BaseController {
                   throw new Exception("微信用户标签明细删除失败,请选择同一标签进行删除");
               }
             }
+            Set<String> collect = wechatUserTagInfos.stream().map(wechatUserTagInfo -> wechatUserTagInfo.getWechat_channel()).collect(Collectors.toSet());
+            for (String wechat_channel:collect){
+                checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, wechat_channel), getAttrDel());
+            }
+
             WechatTagResponse batchuntagging = pushxWechatTagService.batchuntagging(wechatUserTagInfos.get(0), Lists.newArrayList(ids));
             if(!batchuntagging.isSuccess()){
                 throw new Exception(batchuntagging.getMsg());

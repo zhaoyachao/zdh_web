@@ -4321,3 +4321,66 @@
     PRIMARY KEY (`id`),
     KEY `idx_wechat_channel_key` (`wechat_channel`,`openid`,`tag_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT '微信用户标签明细';
+
+    CREATE TABLE `wechat_info` (
+        `id` bigint NOT NULL AUTO_INCREMENT,
+        `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+        `wechat_id` varchar(100) NOT NULL DEFAULT ''COMMENT '服务号ID',
+        `owner` varchar(100) DEFAULT '' COMMENT '拥有者',
+        `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+        `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+        `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+    PRIMARY KEY (`id`),
+    KEY `idx_wechat_channel_key` (`product_code`,`wechat_channel`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT '微信信息表';
+
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1494801046596227072, '1439659600709160960', '用户标签管理', '4', 'zyc', 'fa fa-coffee', '', '10', '1', '2026-04-17 20:45:42', '2026-04-17 20:45:42', 'wechat_user_tag_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1494801086148513792, '1494801046596227072', '用户标签管理-列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-04-17 20:45:51', '2026-04-17 20:45:51', 'wechat_user_tag_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1494801086152708096, '1494801046596227072', '用户标签管理-分页列表', '5', 'zyc', 'fa fa-coffee', '', '2', '1', '2026-04-17 20:45:51', '2026-04-17 20:45:51', 'wechat_user_tag_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1494801086152708097, '1494801046596227072', '用户标签管理-新增页面', '5', 'zyc', 'fa fa-coffee', '', '3', '1', '2026-04-17 20:45:51', '2026-04-17 20:45:51', 'wechat_user_tag_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1494801086152708098, '1494801046596227072', '用户标签管理-明细', '5', 'zyc', 'fa fa-coffee', '', '4', '1', '2026-04-17 20:45:51', '2026-04-17 20:45:51', 'wechat_user_tag_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1494801086156902400, '1494801046596227072', '用户标签管理-新增', '5', 'zyc', 'fa fa-coffee', '', '5', '1', '2026-04-17 20:45:51', '2026-04-17 20:45:51', 'wechat_user_tag_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1494801086156902401, '1494801046596227072', '用户标签管理-更新', '5', 'zyc', 'fa fa-coffee', '', '6', '1', '2026-04-17 20:45:51', '2026-04-17 20:45:51', 'wechat_user_tag_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1494801086156902402, '1494801046596227072', '用户标签管理-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-04-17 20:45:51', '2026-04-17 20:45:51', 'wechat_user_tag_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1495051432326336512, '1439659600709160960', '服务号管理', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-18 13:20:38', '2026-04-18 13:20:38', 'wechat_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1495051477649985536, '1495051432326336512', '服务号管理-列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1495051477649985537, '1495051432326336512', '服务号管理-分页列表', '5', 'zyc', 'fa fa-coffee', '', '2', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1495051477649985538, '1495051432326336512', '服务号管理-新增页面', '5', 'zyc', 'fa fa-coffee', '', '3', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_add_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1495051477649985539, '1495051432326336512', '服务号管理-明细', '5', 'zyc', 'fa fa-coffee', '', '4', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1495051477649985540, '1495051432326336512', '服务号管理-新增', '5', 'zyc', 'fa fa-coffee', '', '5', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1495051477649985541, '1495051432326336512', '服务号管理-更新', '5', 'zyc', 'fa fa-coffee', '', '6', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_update', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1495051477654179840, '1495051432326336512', '服务号管理-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_delete', '5', '', '', 'zdh', '');
+
