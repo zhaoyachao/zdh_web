@@ -9,6 +9,8 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.WechatSubscriptionInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.pushx.PushxWechatUserService;
+import com.zyc.zdh.pushx.entity.WechatUserRemarkResponse;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
@@ -43,6 +45,8 @@ public class WechatFollowController extends BaseController {
     private ZdhPermissionService zdhPermissionService;
     @Autowired
     private WechatMapper wechatMapper;
+    @Autowired
+    private PushxWechatUserService pushxWechatUserService;
 
     /**
      * 微信关注状态表列表首页
@@ -196,11 +200,18 @@ public class WechatFollowController extends BaseController {
             //checkAttrPermissionByProduct(zdhPermissionService, wechatSubscriptionInfo.getProduct_code(), getAttrEdit());
             //checkAttrPermissionByProduct(zdhPermissionService, oldWechatSubscriptionInfo.getProduct_code(), getAttrEdit());
 
-
             wechatSubscriptionInfo.setCreate_time(oldWechatSubscriptionInfo.getCreate_time());
             wechatSubscriptionInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
             wechatSubscriptionInfo.setIs_delete(Const.NOT_DELETE);
             wechatSubscriptionMapper.updateByPrimaryKeySelective(wechatSubscriptionInfo);
+
+            //如果修改修改备注需要同步微信
+            if(!StringUtils.isEmpty(wechatSubscriptionInfo.getRemark()) && !wechatSubscriptionInfo.getRemark().equals(oldWechatSubscriptionInfo.getRemark())){
+                WechatUserRemarkResponse remarkResponse = pushxWechatUserService.updateRemark(wechatSubscriptionInfo.getWechat_channel(), wechatSubscriptionInfo.getOpenid(), wechatSubscriptionInfo.getRemark());
+                if(!remarkResponse.isSuccess()){
+                    throw new Exception(remarkResponse.getMsg());
+                }
+            }
 
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "更新成功", wechatSubscriptionInfo);
         } catch (Exception e) {
