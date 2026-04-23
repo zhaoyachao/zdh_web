@@ -4383,4 +4383,7 @@
     INSERT INTO resource_tree_info
     (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
     VALUES(1495051477654179840, '1495051432326336512', '服务号管理-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, `text`, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1496940338407804928, '1495051432326336512', '服务号管理-同步粉丝', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-23 18:26:28', '2026-04-23 18:26:28', 'wechat_refresh', '5', '', '', 'zdh', '');
 

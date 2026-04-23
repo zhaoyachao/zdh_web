@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 import javax.persistence.*;
 
 @Table(name = "wechat_info")
-public class WechatInfo {
+public class WechatInfo extends BaseProductAuthInfo{
     @Id
     private String id;
 

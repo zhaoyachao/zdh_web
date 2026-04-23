@@ -106,28 +106,37 @@
               });
 
           },
-          'click #copy': function (e, value, row, index) {
-              $("#id").val(row.id);
-              top.layer.open({
-                  type: 2,
-                  title: '微信信息表配置',
-                  shadeClose: false,
-                  resize: true,
-                  fixed: false,
-                  maxmin: true,
-                  shade: 0.1,
-                  area : ['100%', '100%'],
-                  //area: ['450px', '500px'],
-                  content: server_context+"/wechat_add_index?id="+row.id+"&is_copy=true", //iframe的url
-                  end:function () {
-                      $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: server_context+"/wechat_list_by_page?"+$("#wechat_form").serialize(),
-                          contentType: "application/json;charset=utf-8",
-                          dataType: "json"
-                      });
-                  }
-              });
+          'click #refresh': function (e, value, row, index) {
+              layer.confirm('是否同步粉丝', {
+                  btn: ['确定','取消'] //按钮
+              }, function(index){
+                  $.ajax({
+                      url : server_context+"/wechat_refresh",
+                      data : {"id": row.id},
+                      type : "post",
+                      dataType : "json",
+                      success : function(data) {
+                          if(data.code != '200'){
+                              console.error(data.msg);
+                              parent.layer.msg("执行失败");
+                              return ;
+                          }
+                          parent.layer.msg("执行成功");
+                          $('#exampleTableEvents').bootstrapTable('refresh', {
+                              url: server_context+"/wechat_list_by_page?"+$("#wechat_form").serialize(),
+                              contentType: "application/json;charset=utf-8",
+                              dataType: "json"
+                          });
+                      },
+                      error: function (data) {
+                          console.info("error: " + data.responseText);
+                      }
 
+                  });
+                  layer.close(layer.index)
+              }, function(){
+
+              });
           },
           'click #del': function (e, value, row, index) {
               layer.confirm('是否删除任务', {
@@ -152,7 +161,7 @@
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="edit" name="edit" type="button" class="'+edit_class+'" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
-              ' <button id="copy" name="copy" type="button" class="'+copy_class+'" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
+              ' <button id="refresh" name="refresh" type="button" class="'+copy_class+'" title="刷新粉丝"><i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="del" name="del" type="button" class="'+del_class+'" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +

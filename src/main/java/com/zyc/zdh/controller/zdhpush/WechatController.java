@@ -3,11 +3,11 @@ package com.zyc.zdh.controller.zdhpush;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.WechatMapper;
-import com.zyc.zdh.entity.PageResult;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.WechatInfo;
+import com.zyc.zdh.dao.WechatSubscriptionMapper;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.pushx.PushxWechatFollowService;
+import com.zyc.zdh.pushx.entity.WechatFollowAddResponse;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
@@ -35,9 +35,13 @@ import java.util.List;
 public class WechatController extends BaseController {
 
     @Autowired
+    private WechatSubscriptionMapper wechatSubscriptionMapper;
+    @Autowired
     private WechatMapper wechatMapper;
     @Autowired
     private ZdhPermissionService zdhPermissionService;
+    @Autowired
+    private PushxWechatFollowService pushxWechatFollowService;
 
     /**
      * 微信信息表列表首页
@@ -159,7 +163,7 @@ public class WechatController extends BaseController {
         try {
             WechatInfo wechatInfo = wechatMapper.selectByPrimaryKey(id);
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService,  wechatInfo.getProduct_code(), wechatInfo.getDim_group(), getAttrSelect());
-            //checkAttrPermissionByProduct(zdhPermissionService,  wechatInfo.getProduct_code(), getAttrSelect());
+            checkAttrPermissionByProduct(zdhPermissionService,  wechatInfo.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", wechatInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -182,8 +186,8 @@ public class WechatController extends BaseController {
 
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatInfo.getProduct_code(), wechatInfo.getDim_group(), getAttrEdit());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldWechatInfo.getProduct_code(), oldWechatInfo.getDim_group(), getAttrEdit());
-            //checkAttrPermissionByProduct(zdhPermissionService, wechatInfo.getProduct_code(), getAttrEdit());
-            //checkAttrPermissionByProduct(zdhPermissionService, oldWechatInfo.getProduct_code(), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService, wechatInfo.getProduct_code(), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService, oldWechatInfo.getProduct_code(), getAttrEdit());
 
 
             wechatInfo.setCreate_time(oldWechatInfo.getCreate_time());
@@ -218,7 +222,7 @@ public class WechatController extends BaseController {
             wechatInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatInfo.getProduct_code(), wechatInfo.getDim_group(), getAttrAdd());
-            //checkAttrPermissionByProduct(zdhPermissionService, wechatInfo.getProduct_code(), getAttrAdd());
+            checkAttrPermissionByProduct(zdhPermissionService, wechatInfo.getProduct_code(), getAttrAdd());
             wechatMapper.insertSelective(wechatInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", wechatInfo);
         } catch (Exception e) {
@@ -247,4 +251,46 @@ public class WechatController extends BaseController {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
         }
     }
+
+    /**
+     * 同步微信粉丝数据
+     * @param id
+     * @return
+     */
+    @SentinelResource(value = "wechat_refresh", blockHandler = "handleReturn")
+    @RequestMapping(value = "/wechat_refresh", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo wechat_refresh(String id) {
+        try {
+            WechatInfo wechatInfo = wechatMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProduct(zdhPermissionService, wechatInfo.getProduct_code(), getAttrAdd());
+            //同步粉丝数据-获取当前表中最后一个粉丝
+            Example example=new Example(WechatSubscriptionInfo.class);
+            Example.Criteria criteria=example.createCriteria();
+            criteria.andEqualTo("is_delete", Const.NOT_DELETE);
+            criteria.andEqualTo("wechat_channel", wechatInfo.getWechat_channel());
+            example.setOrderByClause("id desc");
+            RowBounds rowBounds=new RowBounds(0,1);
+
+            List<WechatSubscriptionInfo> wechatSubscriptionInfos = wechatSubscriptionMapper.selectByExampleAndRowBounds(example, rowBounds);
+            if(wechatSubscriptionInfos != null && wechatSubscriptionInfos.size()>0){
+                WechatSubscriptionInfo wechatSubscriptionInfo = wechatSubscriptionInfos.get(0);
+                WechatFollowAddResponse response = pushxWechatFollowService.add(wechatInfo.getWechat_channel(), wechatSubscriptionInfo.getOpenid());
+                if(!response.isSuccess()){
+                    return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "同步失败", response.getMsg());
+                }
+            }else{
+                WechatFollowAddResponse response = pushxWechatFollowService.add(wechatInfo.getWechat_channel(), "");
+                if(!response.isSuccess()){
+                    return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "同步失败", response.getMsg());
+                }
+            }
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "同步成功", null);
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "同步失败", e.getMessage());
+        }
+    }
+
 }
