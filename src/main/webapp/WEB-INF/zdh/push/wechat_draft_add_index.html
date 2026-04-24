@@ -23,7 +23,7 @@
     <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
     <script src="js/jquery.min.js?v=2.1.4"></script>
-    <link rel="stylesheet" data-name="vs/editor/editor.main" href="js/plugins/vs/editor/editor.main.css">
+    <link rel="stylesheet" type="text/css" href="css/plugins/simditor/simditor.css" />
     <link rel="stylesheet" href="js/plugins/vs/editor/zdh.css">
 </head>
 
@@ -153,9 +153,15 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">图文消息的具体内容</label>
                             <div class="col-sm-10">
-                                <input id="content" name="content" type="text"
-                                       placeholder="图文消息的具体内容" class="form-control" aria-required="true"> </span>
+                                <input type="hidden" name="content" id="content">
+<!--                                <input id="content" name="content" type="text"-->
+<!--                                       placeholder="图文消息的具体内容" class="form-control" aria-required="true"> </span>-->
+                                <textarea id="editor" placeholder="图文消息的具体内容" autofocus>
+
+                                </textarea>
                             </div>
+
+
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">即点击“阅读原文”后的URL</label>
@@ -262,10 +268,20 @@
 <script src="js/plugins/jsTree/jstree.min.js"></script>
 <!-- iCheck -->
 <script src="js/plugins/iCheck/icheck.min.js"></script>
+<!-- simditor -->
+<script type="text/javascript" src="js/plugins/simditor/module.js"></script>
+<script type="text/javascript" src="js/plugins/simditor/uploader.js"></script>
+<script type="text/javascript" src="js/plugins/simditor/hotkeys.js"></script>
+<script type="text/javascript" src="js/plugins/simditor/simditor.js"></script>
+
 
 <script src="js/admin/dim_product_common.js"></script>
 
 <script>
+    var editor = new Simditor({
+        textarea: $('#editor'),
+        defaultImage: 'img/a9.jpg'
+    });
     $(document).ready(function () {
         $('.i-checks').iCheck({
             checkboxClass: 'icheckbox_square-green',
@@ -379,7 +395,8 @@
                             $("#media_id").val(media_id);
 
                             var content = data.result.content;
-                            $("#content").val(content);
+                            // $("#content").val(content);
+                            editor.setValue(content);
                             var content_source_url = data.result.content_source_url;
                             $("#content_source_url").val(content_source_url);
                             var thumb_media_id = data.result.thumb_media_id;
@@ -421,6 +438,7 @@
         var index1 = layer.load(1, {
             shade: [0.1,'#fff'] //0.1透明度的白色背景
         });
+        $('#content').val(editor.getValue());
         $.ajax({
             type: 'POST',
             url: server_context+"/wechat_draft_add",
@@ -466,6 +484,7 @@
             s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
         }
 
+        $('#content').val(editor.getValue());
         $.ajax({
             type: 'POST',
             url: server_context+"/wechat_draft_update",
