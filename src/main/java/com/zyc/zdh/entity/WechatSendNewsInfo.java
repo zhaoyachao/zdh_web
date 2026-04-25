@@ -49,6 +49,11 @@ public class WechatSendNewsInfo {
     private String wechat_status;
 
     /**
+     * 评论同步时间
+     */
+    private String wechat_comment_sync_time;
+
+    /**
      * 创建时间
      */
     private Timestamp create_time;
@@ -219,6 +224,24 @@ public class WechatSendNewsInfo {
      */
     public void setWechat_status(String wechat_status) {
         this.wechat_status = wechat_status;
+    }
+
+    /**
+     * 获取评论同步时间
+     *
+     * @return wechat_comment_sync_time - 评论同步时间
+     */
+    public String getWechat_comment_sync_time() {
+        return wechat_comment_sync_time;
+    }
+
+    /**
+     * 设置评论同步时间
+     *
+     * @param wechat_comment_sync_time 评论同步时间
+     */
+    public void setWechat_comment_sync_time(String wechat_comment_sync_time) {
+        this.wechat_comment_sync_time = wechat_comment_sync_time;
     }
 
     /**

@@ -10,6 +10,8 @@ import com.zyc.zdh.entity.RETURN_CODE;
 import com.zyc.zdh.entity.ReturnInfo;
 import com.zyc.zdh.entity.WechatSendNewsInfo;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.pushx.PushxWechatCommentService;
+import com.zyc.zdh.pushx.entity.WechatCommentRequest;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
@@ -44,6 +46,8 @@ public class WechatSendNewsController extends BaseController {
     private ZdhPermissionService zdhPermissionService;
     @Autowired
     private WechatMapper wechatMapper;
+    @Autowired
+    private PushxWechatCommentService pushxWechatCommentService;
 
     /**
      * 微信草稿发布明细列表首页
@@ -255,6 +259,35 @@ public class WechatSendNewsController extends BaseController {
             LogUtil.error(this.getClass(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "删除失败", e.getMessage());
+        }
+    }
+
+
+    /**
+     * 同步评论信息
+     * @param id
+     * @return
+     */
+    @SentinelResource(value = "wechat_send_news_refresh_comment", blockHandler = "handleReturn")
+    @RequestMapping(value = "/wechat_send_news_refresh_comment", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @White
+    public ReturnInfo<WechatSendNewsInfo> wechat_send_news_refresh_comment(String id) {
+        try {
+            WechatSendNewsInfo wechatSendNewsInfo = wechatSendNewsMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, wechatSendNewsInfo.getWechat_channel()), getAttrEdit());
+            //获取上次同步的时间
+            String last_sync_time =wechatSendNewsInfo.getWechat_comment_sync_time();
+
+            WechatCommentRequest wechatCommentRequest = new WechatCommentRequest();
+            wechatCommentRequest.setWechat_channel(wechatSendNewsInfo.getWechat_channel());
+            wechatCommentRequest.setMsg_data_id(wechatSendNewsInfo.getMsg_data_id());
+            wechatCommentRequest.setBegin_create_time(last_sync_time);
+            pushxWechatCommentService.commentSync(wechatCommentRequest);
+
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", wechatSendNewsInfo);
+        } catch (Exception e) {
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
         }
     }
 }
